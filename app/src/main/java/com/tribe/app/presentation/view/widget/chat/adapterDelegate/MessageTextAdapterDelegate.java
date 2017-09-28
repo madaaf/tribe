@@ -48,7 +48,7 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
     if (type == ChatView.FROM_LIVE) {
       vh.message.setTextColor(ContextCompat.getColor(context, R.color.white));
     }
-    setPendingBehavior(m, vh.container, position, m.getMessage(), MessageRealm.TEXT);
+    setPendingBehavior(m, vh.container);
   }
 
   @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {

@@ -153,6 +153,7 @@
         android:layout_alignStart="@+id/editText"
         android:visibility="invisible"
         />
+
     <com.tribe.app.presentation.view.widget.EditTextFont
         android:id="@+id/editText"
         android:layout_width="match_parent"
@@ -165,8 +166,11 @@
         android:layout_toEndOf="@+id/uploadBtn"
         android:layout_toStartOf="@+id/sendBtn"
         android:background="@drawable/shape_rect_chat"
+        android:ems="10"
         android:gravity="bottom"
         android:hint="Aa"
+        android:imeOptions="actionSend"
+        android:inputType="textMultiLine|textShortMessage"
         android:padding="10dp"
         android:textColor="@android:color/black"
         android:textColorHint="@color/grey.chat.grey.hint"

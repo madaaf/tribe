@@ -61,14 +61,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     items = new ArrayList<>();
 
-    subscriptions.add(messageTextAdapterDelegate.onMessagePending().subscribe(onMessagePending));
-    subscriptions.add(messageEmojiAdapterDelegate.onMessagePending().subscribe(onMessagePending));
-    subscriptions.add(messageImageAdapterDelegate.onMessagePending().subscribe(onMessagePending));
-
-   /* subscriptions.add(Observable.merge(messageEmojiAdapterDelegate.onMessagePending(),
-        messageEmojiAdapterDelegate.onMessagePending(),
-        messageImageAdapterDelegate.onMessagePending()).subscribe(onMessagePending));*/
-
   }
 
   @Override public int getItemViewType(int position) {
@@ -110,15 +102,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
     super.notifyDataSetChanged();
   }
 
-  /*
-  public void setItems(List<Message> items, int position) {
-    //some fictitious objectList where we're populating data
-    for (Message obj : items) {
-      this.items.add(position, obj);
-    }
-    super.notifyDataSetChanged();
-  }
-  */
 
   public int getIndexOfMessage(Message message) {
     return items.indexOf(message);
@@ -132,7 +115,5 @@ public class MessageAdapter extends RecyclerView.Adapter {
     return items;
   }
 
-  public Observable<List<Object>> onMessagePending() {
-    return onMessagePending;
-  }
+
 }

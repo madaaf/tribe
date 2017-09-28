@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -48,6 +49,7 @@ import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ResizeAnimation;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -130,6 +132,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   @Inject MessagePresenter messagePresenter;
   @Inject RxImagePicker rxImagePicker;
   @Inject DateUtils dateUtils;
+  @Inject ScreenUtils screenUtils;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -225,18 +228,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   private void initSubscriptions() {
-    subscriptions.add(messageAdapter.onMessagePending().subscribe(list -> {
-      String type = (String) list.get(0);
-      int position = (int) list.get(2);
-
-      if (type.equals(MessageRealm.IMAGE)) {
-        Uri uri = (Uri) list.get(1);
-        sendPicture(uri, position);
-      } else {
-        String data = (String) list.get(1);
-        sendMessage(arrIds, data, type, position);
-      }
-    }));
 
     subscriptions.add(RxView.clicks(uploadImageBtn)
         .delay(200, TimeUnit.MILLISECONDS)
@@ -286,6 +277,16 @@ public class ChatView extends FrameLayout implements ChatMVPView {
             }).start();
           }
         }));
+
+    editText.setOnEditorActionListener((v, actionId, event) -> {
+      boolean handled = false;
+      if (actionId == EditorInfo.IME_ACTION_SEND) {
+        Timber.e("SOEF SEND");
+        sendMessage();
+        handled = true;
+      }
+      return handled;
+    });
   }
 
   private void expendEditText() {
@@ -394,16 +395,21 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   private void sendItemToAdapter(@Message.Type String type, String content, Uri uri) {
     Message message = null;
+    String realmType = null;
+
     switch (type) {
       case MESSAGE_TEXT:
+        realmType = MessageRealm.TEXT;
         message = new MessageText();
         ((MessageText) message).setMessage(content);
         break;
       case MESSAGE_EMOJI:
+        realmType = MessageRealm.EMOJI;
         message = new MessageEmoji(content);
         ((MessageEmoji) message).setEmoji(content);
         break;
       case MESSAGE_IMAGE:
+        realmType = MessageRealm.IMAGE;
         message = new MessageImage();
         Image o = new Image();
         o.setUrl(uri.toString());
@@ -419,6 +425,12 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     message.setId("PENDING_");//+ UUID.randomUUID()
     items.add(message);
     messageAdapter.setItems(items);
+    int position = messageAdapter.getIndexOfMessage(message);
+    if (type.equals(MESSAGE_IMAGE)) {
+      sendPicture(uri, position);
+    } else {
+      sendMessage(arrIds, content, realmType, position);
+    }
     scrollListToBottom();
   }
 
@@ -457,11 +469,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @OnClick(R.id.sendBtn) void onClickSend() {
+    recyclerView.post(() -> recyclerView.scrollToPosition(messageAdapter.getItemCount()));
     if (!isHeart) {
       String m = editText.getText().toString();
-
       String editedMessage = m.replaceAll("\n", "\"n");
-
       if (!editedMessage.isEmpty()) {
         if (StringUtils.isOnlyEmoji(editedMessage)) {
           sendItemToAdapter(MESSAGE_EMOJI, editedMessage, null);
@@ -471,19 +482,30 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       }
       editText.setText("");
     } else {
-      sendBtn.animate()
-          .scaleX(1.3f)
-          .scaleY(1.3f)
-          .setDuration(300)
-          .withEndAction(() -> sendBtn.animate().scaleX(1f).scaleY(1f).setDuration(300).start())
-          .start();
-      sendItemToAdapter(MESSAGE_EMOJI, "\u2764", null);
+      sendMessage();
     }
+  }
+
+  private void sendMessage() {
+    recyclerView.post(() -> recyclerView.scrollToPosition(messageAdapter.getItemCount()));
+    editText.setText("");
+    sendBtn.animate()
+        .scaleX(1.3f)
+        .scaleY(1.3f)
+        .setDuration(300)
+        .withEndAction(() -> sendBtn.animate().scaleX(1f).scaleY(1f).setDuration(300).start())
+        .start();
+    sendItemToAdapter(MESSAGE_EMOJI, "\u2764", null);
   }
 
   @OnTouch(R.id.editText) boolean onClickEditText() {
     editText.setHint("Message");
+    scrollListToBottom();
     return false;
+  }
+
+  @OnClick(R.id.recyclerViewChat) void onClickRecyclerView() {
+    screenUtils.hideKeyboard(this);
   }
 
   @Override public void successLoadingMessage(List<Message> messages) {
@@ -497,12 +519,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   private void scrollListToBottom() {
     //recyclerView.post(() -> recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()),100);
-
-    recyclerView.postDelayed(new Runnable() {
-      @Override public void run() {
-        recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
-      }
-    }, 100);
+    recyclerView.post(() -> recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()));
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messasges) {

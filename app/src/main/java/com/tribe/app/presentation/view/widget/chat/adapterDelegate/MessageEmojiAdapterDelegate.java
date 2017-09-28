@@ -42,7 +42,7 @@ public class MessageEmojiAdapterDelegate extends BaseMessageAdapterDelegate {
 
     vh.emoji.setText(m.getEmoji());
 
-    setPendingBehavior(m, vh.container, position, m.getEmoji(), MessageRealm.EMOJI);
+    setPendingBehavior(m, vh.container);
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,
