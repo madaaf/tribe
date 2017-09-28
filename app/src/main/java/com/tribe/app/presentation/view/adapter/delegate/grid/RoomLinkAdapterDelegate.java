@@ -16,6 +16,8 @@ import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 09/04/2017
@@ -27,6 +29,7 @@ public class RoomLinkAdapterDelegate
   protected Context context;
 
   // RX SUBSCRIPTIONS / SUBJECTS
+  private PublishSubject<Void> onShareLink = PublishSubject.create();
 
   public RoomLinkAdapterDelegate(Context context) {
     this.context = context;
@@ -43,6 +46,7 @@ public class RoomLinkAdapterDelegate
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     RoomLinkViewHolder roomLinkViewHolder =
         new RoomLinkViewHolder(layoutInflater.inflate(R.layout.item_room_link, parent, false));
+    roomLinkViewHolder.btnShare.setOnClickListener(v -> onShareLink.onNext(null));
     return roomLinkViewHolder;
   }
 
@@ -68,5 +72,13 @@ public class RoomLinkAdapterDelegate
       super(itemView);
       ButterKnife.bind(this, itemView);
     }
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<Void> onShareLink() {
+    return onShareLink;
   }
 }

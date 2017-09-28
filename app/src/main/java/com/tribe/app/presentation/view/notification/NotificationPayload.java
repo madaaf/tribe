@@ -27,6 +27,8 @@ public class NotificationPayload implements Serializable {
   public static final String CLICK_ACTION_JOIN_CALL = "join_live";
   public static final String CLICK_ACTION_USER_REGISTERED = "user_registered";
   public static final String CLICK_ACTION_MESSAGE = "message";
+  public static final String CLICK_ACTION_JOINED = "joined";
+  public static final String CLICK_ACTION_LEFT = "left";
 
   private String user_id;
   private String body;
@@ -43,6 +45,7 @@ public class NotificationPayload implements Serializable {
   private int live_users_length;
   private List<MissedCallAction> missedCallList = new ArrayList<>();
   private long time;
+  private String message_picture;
 
   public void setTime(long time) {
     this.time = time;
@@ -162,6 +165,14 @@ public class NotificationPayload implements Serializable {
 
   public void setBadge(int badge) {
     this.badge = badge;
+  }
+
+  public void setMessagePicture(String messagePicture) {
+    this.message_picture = messagePicture;
+  }
+
+  public String getMessagePicture() {
+    return message_picture;
   }
 
   public boolean isLive() {

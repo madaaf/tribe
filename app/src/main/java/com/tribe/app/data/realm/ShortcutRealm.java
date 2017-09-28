@@ -4,6 +4,7 @@ import android.support.annotation.StringDef;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,8 +15,7 @@ import java.util.Map;
 /**
  * Created by tiago on 09/10/2017.
  */
-public class
-ShortcutRealm extends RealmObject {
+public class ShortcutRealm extends RealmObject {
 
   @StringDef({ DEFAULT, HIDDEN, BLOCKED }) public @interface ShortcutStatus {
   }
@@ -33,14 +33,14 @@ ShortcutRealm extends RealmObject {
   public static final String MUTE = "mute";
   public static final String SINGLE = "single";
 
-  @PrimaryKey private String id;
+  @PrimaryKey @Index private String id;
   private String name;
   private String picture;
   private boolean pinned;
   private boolean read;
   private boolean mute;
-  private boolean single;
-  private @ShortcutRealm.ShortcutStatus String status;
+  @Index private boolean single;
+  @Index private @ShortcutRealm.ShortcutStatus String status;
   private Date created_at;
   private Date last_activity_at;
   private RealmList<UserRealm> members;

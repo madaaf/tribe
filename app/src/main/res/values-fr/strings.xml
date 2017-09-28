@@ -730,6 +730,8 @@
 	<string name="home_section_results">Résultats</string>
 	<string name="home_action_join_live">Glissez vers la gauche pour rejoindre</string>
 	<string name="home_action_read_chat">Glissez vers la droite pour ouvrir</string>
+	<string name="home_action_tap_to_chat">Tapez pour discuter</string>
+	<string name="home_action_chat_preview">%1$s : %2$s</string>
 	<string name="home_action_new_chat">Nouveau chat</string>
 	<string name="home_anonymous_user">personne</string>
 	<string name="home_anonymous_users">personnes</string>

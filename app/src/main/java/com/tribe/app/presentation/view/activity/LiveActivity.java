@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.activity;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -41,6 +40,7 @@ import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
@@ -147,6 +147,7 @@ public class LiveActivity extends BaseActivity
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
   @Inject @DataChallengesGame Preference<Set<String>> dataChallengesGames;
   @Inject MissedCallManager missedCallManager;
+
   @BindView(R.id.viewLive) LiveView viewLive;
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
   @BindView(R.id.userInfosNotificationView) UserInfosNotificationView userInfosNotificationView;
@@ -157,6 +158,7 @@ public class LiveActivity extends BaseActivity
   @BindView(R.id.gameDrawView) GameDrawView gameDrawView;
   @BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
   @BindView(R.id.chatview) ChatView chatView;
+
   // VARIABLES
   private TribeAudioManager audioManager;
   private GameManager gameManager;
@@ -164,7 +166,7 @@ public class LiveActivity extends BaseActivity
   private Live live;
   private Room room;
   private boolean liveIsInvite = false;
-  private NotificationReceiver notificationReceiver;
+  private TribeBroadcastReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private AppStateMonitor appStateMonitor;
   private boolean liveDurationIsMoreThan30sec = false;
@@ -299,7 +301,7 @@ public class LiveActivity extends BaseActivity
     onResumeLockPhone();
 
     if (!receiverRegistered) {
-      if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
+      if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
 
       registerReceiver(notificationReceiver,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
@@ -439,7 +441,7 @@ public class LiveActivity extends BaseActivity
   }
 
   private void removeRoomSubscription() {
-    startService(WSService.getCallingIntentUnsubscribeRoom(this));
+    startService(WSService.getCallingIntentUnsubscribeRoom(this, room.getId()));
   }
 
   private void stopCallRouletteService() {
@@ -673,9 +675,7 @@ public class LiveActivity extends BaseActivity
         .subscribe(userId -> livePresenter.removeInvite(room.getId(), userId)));
 
     subscriptions.add(viewLive.onEdit()
-        .filter(aVoid -> {
-          return !StringUtils.isEmpty(live.getShortcutId());
-        })
+        .filter(aVoid -> !StringUtils.isEmpty(live.getShortcutId()))
         .subscribe(aVoid -> subscriptions.add(
             DialogFactory.inputDialog(this, getString(R.string.shortcut_update_name_title),
                 getString(R.string.shortcut_update_name_description),
@@ -683,6 +683,8 @@ public class LiveActivity extends BaseActivity
                 getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT).subscribe(s -> {
               livePresenter.updateShortcutName(live.getShortcutId(), s);
             }))));
+
+    subscriptions.add(viewLive.onShareLink().subscribe(aVoid -> share()));
 
     // TODO CALLROULETTE IN NEW SYSTEM ?
     //subscriptions.add(
@@ -928,9 +930,7 @@ public class LiveActivity extends BaseActivity
         }));
 
     subscriptions.add(viewLive.onChangeCallRouletteRoom().
-        subscribe(aVoid -> {
-          reRollTheDiceFromCallRoulette(true);
-        }));
+        subscribe(aVoid -> reRollTheDiceFromCallRoulette(true)));
   }
 
   private void share() {
@@ -938,7 +938,7 @@ public class LiveActivity extends BaseActivity
     bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
     tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, live.getRoomId(),
+    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, room.getLink(),
         null, false);
   }
 
@@ -959,8 +959,8 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
-        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE &&
+        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -1064,8 +1064,8 @@ public class LiveActivity extends BaseActivity
       }
     }
 
-    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty())
-        && peopleInLive.size() > 1) {
+    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty()) &&
+        peopleInLive.size() > 1) {
       liveIsInvite = false;
       usersIdsInvitedInLiveRoom.clear();
       activeUersIdsInvitedInLiveRoom.clear();
@@ -1255,9 +1255,9 @@ public class LiveActivity extends BaseActivity
     live.setRoom(room);
     viewLive.joinRoom(this.room);
 
-    if (!StringUtils.isEmpty(live.getRoomId())
-        && !StringUtils.isEmpty(room.getName())
-        && !room.getInitiator().getId().equals(getCurrentUser().getId())) {
+    if (!StringUtils.isEmpty(live.getRoomId()) &&
+        !StringUtils.isEmpty(room.getName()) &&
+        !room.getInitiator().getId().equals(getCurrentUser().getId())) {
       NotificationPayload notificationPayload = new NotificationPayload();
       notificationPayload.setBody(EmojiParser.demojizedText(
           getString(R.string.live_notification_initiator_has_been_notified,
@@ -1350,55 +1350,6 @@ public class LiveActivity extends BaseActivity
       SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
       SOURCE_NEW_CALL, SOURCE_JOIN_LIVE, SOURCE_ADD_PEERS, SOURCE_CALL_ROULETTE
   }) public @interface Source {
-  }
-
-  class NotificationReceiver extends BroadcastReceiver {
-
-    @Override public void onReceive(Context context, Intent intent) {
-      NotificationPayload notificationPayload =
-          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
-
-      if (live.hasUser(notificationPayload.getUserId()) || (room != null && room.getId()
-          .equals(notificationPayload.getSessionId()))) {
-        if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
-          displayNotification(EmojiParser.demojizedText(
-              context.getString(R.string.live_notification_guest_declined,
-                  notificationPayload.getUserDisplayName())));
-          if (viewLive.getRowsInLive() < 3) {
-            finishActivityAfterCallDeclined(notificationPayload);
-          } else {
-            viewLive.removeUserFromGrid(notificationPayload.getUserId());
-          }
-        }
-
-        return;
-      }
-
-      LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
-              missedCallManager);
-
-      if (liveNotificationView != null) {
-        subscriptions.add(liveNotificationView.onClickAction()
-            .delay(500, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(action -> {
-              if (action.getIntent() != null) {
-                navigator.navigateToIntent(LiveActivity.this, action.getIntent());
-              } else if (action.getId().equals(NotificationUtils.ACTION_ADD_AS_GUEST)) {
-                TribeGuest tribeGuest = new TribeGuest(notificationPayload.getUserId(),
-                    notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
-                    false, true, null);
-                invite(tribeGuest.getId());
-                viewLive.addTribeGuest(tribeGuest);
-              } else if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
-                declineInvitation(action.getSessionId());
-              }
-            }));
-
-        Alerter.create(LiveActivity.this, liveNotificationView).show();
-      }
-    }
   }
 }
 

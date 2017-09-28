@@ -1588,5 +1588,9 @@ public class LiveView extends FrameLayout {
   public Observable<Boolean> onOpenChat() {
     return onOpenChat;
   }
+
+  public Observable<Void> onShareLink() {
+    return viewLiveInvite.onShareLink();
+  }
 }
 

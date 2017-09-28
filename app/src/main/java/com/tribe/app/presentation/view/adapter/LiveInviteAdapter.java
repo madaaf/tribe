@@ -97,4 +97,8 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
   public Observable<View> onInvite() {
     return userRoomAdapterDelegate.onInvite();
   }
+
+  public Observable<Void> onShareLink() {
+    return roomLinkAdapterDelegate.onShareLink();
+  }
 }

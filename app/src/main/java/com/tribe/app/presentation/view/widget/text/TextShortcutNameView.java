@@ -104,7 +104,9 @@ public class TextShortcutNameView extends LinearLayout {
       shortcutName = shortcut.getName();
     } else if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
-      shortcutName = invite.getShortcut().getName();
+      if (invite.getShortcut() != null) {
+        shortcutName = invite.getShortcut().getName();
+      }
     }
 
     if (StringUtils.isEmpty(shortcutName)) {

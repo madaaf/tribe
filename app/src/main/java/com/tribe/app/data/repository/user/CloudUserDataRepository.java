@@ -106,7 +106,10 @@ import rx.Observable;
   }
 
   @Override public Observable<List<Shortcut>> blockedShortcuts() {
-    return null;
+    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+    return userDataStore.blockedShortcuts()
+        .map(shortcutRealmList -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(shortcutRealmList));
   }
 
   @Override public Observable<Installation> createOrUpdateInstall(String token) {
@@ -147,9 +150,9 @@ import rx.Observable;
 
   @Override public Observable<List<Contact>> contacts() {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.contacts()
-        .map(collection -> this.contactRealmDataMapper.transform(
-            new ArrayList<ContactInterface>(collection)));
+    return userDataStore.contacts().map(collection -> {
+      return this.contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection));
+    });
   }
 
   @Override public Observable<List<Contact>> contactsFB() {

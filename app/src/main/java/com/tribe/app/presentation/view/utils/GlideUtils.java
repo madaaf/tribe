@@ -7,6 +7,7 @@ import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.StringSignature;
+import com.tribe.app.R;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import java.io.File;
@@ -79,8 +80,7 @@ public class GlideUtils {
 
       Random random = new Random();
       int r = random.nextInt(6 - 1) + 1; // From 1 to 6
-      int randomPlaceholder = context.getResources()
-          .getIdentifier("picto_placeholder_" + r, "drawable", context.getPackageName());
+      int randomPlaceholder = R.drawable.picto_avatar_placeholder;
 
       if (bitmap != null) {
         drawableRequestBuilder = Glide.with(context).load(bitmap);

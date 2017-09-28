@@ -503,4 +503,24 @@
   <string name="removeShortcut" translatable="false">
     removeShortcut(shortcutId : \"%1$s\")
   </string>
+
+  <string name="shortcuts.blocked" translatable="false">
+        {
+            user {
+                ...UserInfos
+
+                shortcuts {
+                  blocked {
+                    ...ShortcutInfos
+                  }
+                  hidden {
+                    ...ShortcutInfos
+                  }
+                }
+            }
+        }
+
+        %1$s
+        %2$s
+  </string>
 </resources>

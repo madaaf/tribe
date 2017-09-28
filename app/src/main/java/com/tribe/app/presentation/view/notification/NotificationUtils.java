@@ -110,9 +110,10 @@ public class NotificationUtils {
       NotificationPayload notificationPayload) {
     return new LiveNotificationView.Builder(context,
         notificationPayload.isLive() ? LiveNotificationView.LIVE
-            : LiveNotificationView.ONLINE).imgUrl(notificationPayload.getUserPicture())
+            : LiveNotificationView.ONLINE).userImgUrl(notificationPayload.getUserPicture())
         .title(notificationPayload.getTitle())
         .body(notificationPayload.getBody())
+        .messagePictureUrl(notificationPayload.getMessagePicture())
         .actionClick(notificationPayload.getClickAction());
   }
 

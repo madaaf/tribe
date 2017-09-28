@@ -139,7 +139,7 @@ public class Shortcut extends Recipient implements Serializable {
   }
 
   @Override public String getDisplayName() {
-    return StringUtils.isEmpty(name) ? getUserDisplayNames() : name;
+    return StringUtils.isEmpty(name) || isSingle() ? getUserDisplayNames() : name;
   }
 
   @Override public String getUsername() {

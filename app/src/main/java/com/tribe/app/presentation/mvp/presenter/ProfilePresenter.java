@@ -120,7 +120,7 @@ public class ProfilePresenter extends UpdateUserPresenter {
     shortcutPresenter.unsubscribeLoadShortcuts();
   }
 
-  public void loadSingleBlockedShortcuts() {
-    shortcutPresenter.loadBlockedSingleShortcuts();
+  public void loadBlockedShortcuts() {
+    shortcutPresenter.loadBlockedShortcuts();
   }
 }

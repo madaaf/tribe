@@ -54,6 +54,10 @@ public class LiveCacheImpl implements LiveCache {
     liveMap.remove(id, true);
   }
 
+  @Override public void clearLive() {
+    liveMap.clear();
+  }
+
   @Override public void putInvite(Invite invite) {
     this.inviteMap.remove(invite.getId(), false);
     this.inviteMap.put(invite.getId(), invite);

@@ -54,7 +54,9 @@ import javax.inject.Singleton;
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
-      if (notificationPayload.getBadge() > 0) userCache.updateBadgeValue(notificationPayload.getBadge());
+      if (notificationPayload.getBadge() > 0) {
+        userCache.updateBadgeValue(notificationPayload.getBadge());
+      }
 
       if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
         if (application.getAppState() != null) {

@@ -73,9 +73,10 @@ import timber.log.Timber;
     return intent;
   }
 
-  public static Intent getCallingIntentUnsubscribeRoom(Context context) {
+  public static Intent getCallingIntentUnsubscribeRoom(Context context, String roomId) {
     Intent intent = new Intent(context, WSService.class);
     intent.putExtra(TYPE, CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE);
+    intent.putExtra(ROOM_ID, roomId);
     return intent;
   }
 
@@ -99,7 +100,7 @@ import timber.log.Timber;
   private Map<String, String> headers;
   private @WebSocketConnection.WebSocketState String webSocketState = WebSocketConnection.STATE_NEW;
   private boolean hasSubscribed = false;
-  private String lastRoomSubscriptionId;
+  private Map<String, String> roomSubscriptions;
   private Set<String> userSubscribed;
 
   // OBSERVABLES
@@ -115,6 +116,7 @@ import timber.log.Timber;
 
     headers = new HashMap<>();
     userSubscribed = new HashSet<>();
+    roomSubscriptions = new HashMap<>();
 
     initDependencyInjection();
     prepareHeaders();
@@ -146,20 +148,22 @@ import timber.log.Timber;
   }
 
   public void subscribeRoomUpdate(String roomId) {
-    lastRoomSubscriptionId = generateHash() + ROOM_UDPATED_SUFFIX;
+    String subscriptionId = generateHash() + ROOM_UDPATED_SUFFIX;
+    roomSubscriptions.put(roomId, subscriptionId);
 
     String req = getApplicationContext().getString(R.string.subscription,
-        getApplicationContext().getString(R.string.subscription_roomUpdated, lastRoomSubscriptionId,
+        getApplicationContext().getString(R.string.subscription_roomUpdated, subscriptionId,
             roomId));
 
     webSocketConnection.send(req);
   }
 
-  public void unsubscribeRoomUpdate() {
+  public void unsubscribeRoomUpdate(String roomId) {
     String req = getApplicationContext().getString(R.string.subscription,
-        getApplicationContext().getString(R.string.subscription_remove, lastRoomSubscriptionId));
+        getApplicationContext().getString(R.string.subscription_remove,
+            roomSubscriptions.get(roomId)));
 
-    lastRoomSubscriptionId = null;
+    roomSubscriptions.remove(roomId);
 
     webSocketConnection.send(req);
   }
@@ -173,7 +177,7 @@ import timber.log.Timber;
         } else if (type.equals(CALL_ROOM_UPDATE_SUBSCRIBE_TYPE)) {
           subscribeRoomUpdate(intent.getStringExtra(ROOM_ID));
         } else if (type.equals(CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE)) {
-          unsubscribeRoomUpdate();
+          unsubscribeRoomUpdate(intent.getStringExtra(ROOM_ID));
         } else if (type.equals(CHAT_SUBSCRIBE)) {
           String usersFromatedIds = intent.getStringExtra(CHAT_IDS);
           subscribeChat(usersFromatedIds);
@@ -181,8 +185,9 @@ import timber.log.Timber;
       }
     }
 
-    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
-        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null &&
+        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
+            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -207,9 +212,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous()
-        || StringUtils.isEmpty(accessToken.getTokenType())
-        || StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous() ||
+        StringUtils.isEmpty(accessToken.getTokenType()) ||
+        StringUtils.isEmpty(accessToken.getAccessToken())) {
 
       webSocketConnection.setShouldReconnect(false);
     } else {
@@ -279,6 +284,8 @@ import timber.log.Timber;
                           getApplicationContext().getString(R.string.grid_menu_call_placeholder));
                     }
 
+                    subscribeRoomUpdate(newInvite.getRoom().getId());
+
                     liveCache.putInvite(newInvite);
                   }
                 }
@@ -290,7 +297,10 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(jsonToModel.onInviteRemoved()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
-        .subscribe(invite -> liveCache.removeInvite(invite)));
+        .subscribe(invite -> {
+          if (invite.getRoom() != null) unsubscribeRoomUpdate(invite.getRoom().getId());
+          liveCache.removeInvite(invite);
+        }));
 
     persistentSubscriptions.add(jsonToModel.onAddedLive().subscribe(s -> liveCache.putLive(s)));
 
@@ -308,7 +318,6 @@ import timber.log.Timber;
     }));
 
     persistentSubscriptions.add(jsonToModel.onMessageCreated().subscribe(messagRealm -> {
-
       RealmList<MessageRealm> messages = new RealmList<>();
       messages.add(messagRealm);
       chatCache.putMessages(messages, messagRealm.getThreadId());
@@ -323,11 +332,21 @@ import timber.log.Timber;
     persistentSubscriptions.add(jsonToModel.onUserListUpdated()
         .subscribe(userRealmList -> userCache.updateUserRealmList(userRealmList)));
 
-    persistentSubscriptions.add(jsonToModel.onShortcutCreated()
-        .subscribe(shortcutRealm -> userCache.addShortcut(shortcutRealm)));
+    persistentSubscriptions.add(jsonToModel.onShortcutCreated().subscribe(shortcutRealm -> {
+      for (UserRealm userRealm : shortcutRealm.getMembers()) {
+        if (!userSubscribed.contains(userRealm.getId())) {
+          sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
+              generateHash() + USER_SUFFIX + userSubscribed.size(), user.getId()));
+        }
+      }
 
-    persistentSubscriptions.add(jsonToModel.onShortcutUpdated()
-        .subscribe(shortcutRealm -> userCache.updateShortcut(shortcutRealm)));
+      userCache.addShortcut(shortcutRealm);
+    }));
+
+    persistentSubscriptions.add(jsonToModel.onShortcutUpdated().subscribe(shortcutRealm -> {
+
+      userCache.updateShortcut(shortcutRealm);
+    }));
 
     persistentSubscriptions.add(jsonToModel.onShortcutRemoved()
         .subscribe(shortcutRealm -> userCache.removeShortcut(shortcutRealm)));
@@ -371,9 +390,8 @@ import timber.log.Timber;
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment =
-        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
-            R.string.userfragment_infos) : "");
+    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
+        getApplicationContext().getString(R.string.userfragment_infos) : "");
 
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 

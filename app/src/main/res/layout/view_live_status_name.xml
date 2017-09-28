@@ -16,6 +16,7 @@
       android:paddingEnd="12.5dp"
       android:paddingStart="17.5dp"
       android:shadowColor="@color/black.opacity.50"
+      android:text="@string/action_back"
       android:textAllCaps="true"
       style="@style/Body.Two.Black"
       />

@@ -155,7 +155,7 @@ import timber.log.Timber;
         .registerTypeAdapter(Date.class,
             new DateDeserializer(utcSimpleDateFull, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")))
         .registerTypeAdapter(new TypeToken<List<UserRealm>>() {
-        }.getType(), new UserListDeserializer<>())
+        }.getType(), new UserListDeserializer())
         .registerTypeAdapter(new TypeToken<List<Integer>>() {
         }.getType(), new HowManyFriendsDeserializer())
         .registerTypeAdapter(SearchResultRealm.class, new SearchResultDeserializer())

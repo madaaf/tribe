@@ -42,6 +42,7 @@ import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
+import io.realm.RealmList;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -490,7 +491,7 @@ public class CloudUserDataStore implements UserDataStore {
         return lookupHolder.getContactAllList();
       }
 
-      return null;
+      return new ArrayList<ContactInterface>();
     }).doOnNext(saveToCacheContacts).doOnError(throwable -> Timber.d(throwable));
   }
 
@@ -568,6 +569,8 @@ public class CloudUserDataStore implements UserDataStore {
 
   private final Action1<UserRealm> saveToCacheUser = userRealm -> {
     if (userRealm != null) {
+      liveCache.clearLive();
+
       CloudUserDataStore.this.userCache.put(userRealm);
       CloudUserDataStore.this.userCache.putShortcuts(userRealm.getShortcuts());
 
@@ -594,6 +597,12 @@ public class CloudUserDataStore implements UserDataStore {
           }
         }
       }
+    }
+  };
+
+  private final Action1<List<ShortcutRealm>> saveToCacheShortcuts = shortcutRealmList -> {
+    if (shortcutRealmList != null) {
+      CloudUserDataStore.this.userCache.putShortcuts(shortcutRealmList);
     }
   };
 
@@ -733,6 +742,7 @@ public class CloudUserDataStore implements UserDataStore {
     StringBuilder shortcutInputBuilder = new StringBuilder();
 
     for (Pair<String, String> value : values) {
+      if (value.first.equals(ShortcutRealm.READ)) userCache.decrementBadge();
       if (ShortcutRealm.isKeyABool(value.first)) {
         shortcutInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
         shortcutInputBuilder.append(",");
@@ -825,6 +835,11 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<List<ShortcutRealm>> blockedShortcuts() {
-    return null;
+    return this.tribeApi.getUserInfos(context.getString(R.string.shortcuts_blocked,
+        context.getString(R.string.userfragment_infos),
+        context.getString(R.string.shortcutFragment_infos))).map(userRealm -> {
+      if (userRealm != null) return userRealm.getShortcuts();
+      else return new RealmList<ShortcutRealm>();
+    }).doOnNext(saveToCacheShortcuts);
   }
 }

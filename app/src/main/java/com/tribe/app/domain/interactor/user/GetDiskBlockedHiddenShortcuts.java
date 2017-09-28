@@ -9,11 +9,11 @@ import rx.Observable;
 /**
  * Created by tiago on 09/12/2017.
  */
-public class GetDiskBlockedHiddenSingleShortcuts extends UseCaseDisk {
+public class GetDiskBlockedHiddenShortcuts extends UseCaseDisk {
 
   private UserRepository userRepository;
 
-  @Inject public GetDiskBlockedHiddenSingleShortcuts(DiskUserDataRepository userRepository,
+  @Inject public GetDiskBlockedHiddenShortcuts(DiskUserDataRepository userRepository,
       PostExecutionThread postExecutionThread) {
     super(postExecutionThread);
     this.userRepository = userRepository;

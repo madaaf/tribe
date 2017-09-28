@@ -125,18 +125,15 @@ public class LiveStatusNameView extends FrameLayout {
   private void setAddFriendsTitle() {
     int str = R.string.action_add_friend;
     txtNameInactive.setText(str);
-    txtNameActive.setText(str);
   }
 
   private void setShortcutTitle() {
     txtNameInactive.setText(live.getShortcut().getName());
-    txtNameActive.setText(live.getShortcut().getName());
   }
 
   private void setPeopleCountTitle(int total) {
     String str = getContext().getString(R.string.shortcut_members_count, total);
     txtNameInactive.setText(str);
-    txtNameActive.setText(str);
   }
 
   private void showView(View v) {

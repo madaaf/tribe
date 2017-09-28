@@ -353,5 +353,9 @@ public class LiveInviteView extends FrameLayout
   //////////////////////
   //   OBSERVABLES    //
   //////////////////////
+
+  public Observable<Void> onShareLink() {
+    return adapter.onShareLink();
+  }
 }
 

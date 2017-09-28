@@ -8,7 +8,6 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 import java.util.ArrayList;
 import java.util.List;
@@ -155,6 +154,7 @@ public class UserCacheImpl implements UserCache {
         .map(userRealmList -> userRealmList.get(0))
         .map(user -> realm.copyFromRealm(user))
         .defaultIfEmpty(new UserRealm()), realm.where(ShortcutRealm.class)
+        .equalTo(ShortcutRealm.STATUS, ShortcutRealm.DEFAULT)
         .findAll()
         .asObservable()
         .filter(shortcutList -> shortcutList.isLoaded() && shortcutList.size() > 0)
@@ -178,7 +178,6 @@ public class UserCacheImpl implements UserCache {
 
   @Override public Observable<List<ShortcutRealm>> blockedShortcuts() {
     return realm.where(ShortcutRealm.class)
-        .equalTo(ShortcutRealm.SINGLE, true)
         .in(ShortcutRealm.STATUS, new String[] { ShortcutRealm.BLOCKED, ShortcutRealm.HIDDEN })
         .findAll()
         .asObservable()
@@ -311,19 +310,7 @@ public class UserCacheImpl implements UserCache {
     Realm realm = Realm.getDefaultInstance();
 
     try {
-      realm.executeTransaction(realm1 -> {
-        UserRealm userRealmDB =
-            realm1.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
-
-        ShortcutRealm shortcutRealmDB =
-            realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
-        if (shortcutRealmDB == null) {
-          realm1.insertOrUpdate(shortcutRealm);
-          shortcutRealmDB =
-              realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
-          userRealmDB.getShortcuts().add(shortcutRealmDB);
-        }
-      });
+      realm.executeTransaction(realm1 -> realm1.insertOrUpdate(shortcutRealm));
     } finally {
       realm.close();
     }
@@ -334,20 +321,9 @@ public class UserCacheImpl implements UserCache {
 
     try {
       realm.executeTransaction(realm1 -> {
-        UserRealm userRealmDB =
-            realm1.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
         ShortcutRealm shortcutRealmDB =
             realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
         if (shortcutRealmDB != null) shortcutRealmDB.deleteFromRealm();
-
-        RealmList<ShortcutRealm> newShortcuts = new RealmList<>();
-        for (ShortcutRealm shortcutLoop : userRealmDB.getShortcuts()) {
-          if (!shortcutLoop.getId().equals(shortcutRealm.getId())) {
-            newShortcuts.add(shortcutLoop);
-          }
-        }
-
-        userRealmDB.setShortcuts(newShortcuts);
       });
     } finally {
       realm.close();

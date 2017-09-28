@@ -16,6 +16,7 @@ import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -26,12 +27,19 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
+import com.tribe.app.presentation.view.widget.picto.PictoChatView;
+import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -73,8 +81,13 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   @BindView(R.id.tvBody) TextViewFont txtBody;
   @BindView(R.id.avatar) NewAvatarView avatarView;
   @Nullable @BindView(R.id.imgIcon) ImageView imgIcon;
+  @Nullable @BindView(R.id.layoutDetails) FrameLayout layoutDetails;
+  @Nullable @BindView(R.id.imgMessage) ImageView imgMessage;
+  @Nullable @BindView(R.id.viewPictoChat) PictoChatView viewPictoChat;
+  @Nullable @BindView(R.id.viewPictoLive) PictoLiveView viewPictoLive;
 
   @Inject SoundManager soundManager;
+  @Inject ScreenUtils screenUtils;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -121,6 +134,21 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     notificationContainer.setPadding(notificationContainer.getPaddingLeft(),
         notificationContainer.getPaddingTop() + (getScreenHeight() / SCREEN_SCALE_FACTOR),
         notificationContainer.getPaddingRight(), 0);
+
+    if (type == LIVE || actionType.equals(NotificationPayload.CLICK_ACTION_JOINED)) {
+      layoutDetails.setVisibility(View.VISIBLE);
+      viewPictoLive.setVisibility(View.VISIBLE);
+      viewPictoLive.setStatus(PictoLiveView.ACTIVE);
+    } else if (actionType.equals(NotificationPayload.CLICK_ACTION_MESSAGE) &&
+        !actionType.equals(NotificationPayload.CLICK_ACTION_LEFT) &&
+        !actionType.equals(NotificationPayload.CLICK_ACTION_JOINED)) {
+      layoutDetails.setVisibility(View.VISIBLE);
+      viewPictoChat.setVisibility(View.VISIBLE);
+      viewPictoChat.setStatus(PictoChatView.ACTIVE);
+    } else if (actionType.equals(NotificationPayload.CLICK_ACTION_LEFT)) {
+      layoutDetails.setVisibility(View.VISIBLE);
+      viewPictoLive.setVisibility(View.VISIBLE);
+    }
   }
 
   private void initResources() {
@@ -253,7 +281,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     this.sound = sound;
   }
 
-  private void setImgUrl(String url) {
+  private void setUserImgUrl(String url) {
     if (type == ERROR) {
       imgIcon.setImageResource(R.drawable.picto_lock);
     } else {
@@ -264,6 +292,21 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
       }
       avatarView.load(url);
     }
+  }
+
+  private void setMessagePictureUrl(String url) {
+    if (StringUtils.isEmpty(url)) return;
+
+    imgMessage.setVisibility(View.VISIBLE);
+    viewPictoChat.setVisibility(View.GONE);
+    Glide.with(getContext().getApplicationContext())
+        .load(url)
+        .thumbnail(0.25f)
+        .centerCrop()
+        .bitmapTransform(new RoundedCornersTransformation(getContext(), screenUtils.dpToPx(15), 0))
+        .crossFade()
+        .diskCacheStrategy(DiskCacheStrategy.RESULT)
+        .into(imgMessage);
   }
 
   private int getScreenHeight() {
@@ -283,13 +326,14 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   public static class Builder {
 
     private final Context context;
-    private String imgUrl;
+    private String userImgUrl;
     private String title;
     private String body;
     private List<LiveNotificationActionView.Action> actionList;
     private @LiveNotificationView.LiveNotificationType int type;
     private int sound = -1;
     private String actionClick;
+    private String messagePictureUrl;
 
     public Builder(Context context, @LiveNotificationView.LiveNotificationType int type) {
       this.context = context;
@@ -302,8 +346,13 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
       return this;
     }
 
-    public Builder imgUrl(String imgUrl) {
-      this.imgUrl = imgUrl;
+    public Builder userImgUrl(String userImgUrl) {
+      this.userImgUrl = userImgUrl;
+      return this;
+    }
+
+    public Builder messagePictureUrl(String messagePictureUrl) {
+      this.messagePictureUrl = messagePictureUrl;
       return this;
     }
 
@@ -346,9 +395,10 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
     public LiveNotificationView build() {
       LiveNotificationView view = new LiveNotificationView(context, type, actionClick);
-      view.setImgUrl(imgUrl);
+      view.setUserImgUrl(userImgUrl);
       view.setTitle(title);
       view.setBody(body);
+      view.setMessagePictureUrl(messagePictureUrl);
 
       if (sound != -1) view.setSound(sound);
 

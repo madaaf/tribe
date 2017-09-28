@@ -464,7 +464,7 @@ public class HomeActivity extends BaseActivity
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
         .subscribe(recipient -> {
-          homeGridPresenter.readShortcut(recipient.getId());
+          if (!recipient.isRead()) homeGridPresenter.readShortcut(recipient.getId());
           navigator.navigateToChat(this, recipient);
         }));
 
@@ -699,8 +699,9 @@ public class HomeActivity extends BaseActivity
 
   @Override public void renderRecipientList(List<Recipient> recipientList) {
     if (recipientList != null) {
+      // TODO CHANGE
       //Bundle bundle = new Bundle();
-      //bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, getCurrentUser().getFriendships().size());
+      //bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, getCurrentUser().getShortcutList().size());
       //tagManager.setProperty(bundle);
       onRecipientUpdates.onNext(recipientList);
       canEndRefresh = false;
@@ -879,10 +880,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void lookupContacts() {
-    if (stateManager.shouldDisplay(StateManager.PERMISSION_CONTACT)) {
-      stateManager.addTutorialKey(StateManager.PERMISSION_CONTACT);
-      syncContacts();
-    }
+    syncContacts();
   }
 
   @Override public void onAppDidEnterForeground() {

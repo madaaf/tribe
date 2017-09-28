@@ -181,7 +181,7 @@
             android:background="@drawable/selectable_button_oval_light"
             android:clickable="true"
             android:scaleType="centerInside"
-            android:src="@drawable/picto_game_live_close"
+            android:src="@drawable/picto_game_active"
             android:visibility="visible"
             />
 
@@ -192,7 +192,7 @@
             android:background="@drawable/selectable_button_oval_light"
             android:clickable="true"
             android:scaleType="centerInside"
-            android:src="@drawable/picto_new_game"
+            android:src="@drawable/picto_game_inactive"
             android:visibility="visible"
             />
       </FrameLayout>

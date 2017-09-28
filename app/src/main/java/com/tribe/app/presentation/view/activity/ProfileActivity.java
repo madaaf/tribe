@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.activity;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -44,6 +43,7 @@ import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfilePresenter;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
@@ -60,15 +60,11 @@ import com.tribe.app.presentation.view.component.settings.SettingsFacebookAccoun
 import com.tribe.app.presentation.view.component.settings.SettingsManageShortcutsView;
 import com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
-import com.tribe.app.presentation.view.notification.Alerter;
-import com.tribe.app.presentation.view.notification.NotificationPayload;
-import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
-import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -118,7 +114,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   // VARIABLES
   private boolean disableUI = false;
   private ProgressDialog progressDialog;
-  private NotificationReceiver notificationReceiver;
+  private TribeBroadcastReceiver notificationReceiver;
   private boolean receiverRegistered;
   private FirebaseRemoteConfig firebaseRemoteConfig;
 
@@ -146,7 +142,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   @Override protected void onResume() {
     super.onResume();
     if (!receiverRegistered) {
-      if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
+      if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
 
       registerReceiver(notificationReceiver,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
@@ -430,25 +426,6 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
     intent.putExtra(AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION,
         configurationBuilder.build());
     startActivityForResult(intent, APP_REQUEST_CODE);
-
-    /* authCallback = new AuthCallback() {
-
-      @Override public void success(DigitsSession session, String phoneNumber) {
-        profilePresenter.updatePhoneNumber(getCurrentUser().getId(), session);
-      }
-
-      @Override public void failure(DigitsException error) {
-        showError(error.createdMessages());
-      }
-    };
-
-    AuthConfig.Builder builder = new AuthConfig.Builder();
-    builder.withAuthCallBack(authCallback);
-
-    AuthConfig authConfig = builder.build();
-
-    Digits.logout(); // Force logout
-    Digits.authenticate(authConfig);*/
   }
 
   private void setupFacebookAccountView() {
@@ -500,7 +477,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
         .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0),
             LiveActivity.SOURCE_FRIENDS)));
 
-    profilePresenter.loadSingleBlockedShortcuts();
+    profilePresenter.loadBlockedShortcuts();
   }
 
   private void setupManageFriendshipsView() {
@@ -721,31 +698,5 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
 
   @Override public void onShortcut(Shortcut shortcut) {
 
-  }
-
-  class NotificationReceiver extends BroadcastReceiver {
-
-    @Override public void onReceive(Context context, Intent intent) {
-      NotificationPayload notificationPayload =
-          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
-
-      LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload, null);
-
-      if (liveNotificationView != null) {
-        subscriptions.add(liveNotificationView.onClickAction()
-            .delay(500, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(action -> {
-              if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
-                declineInvite(action.getSessionId());
-              } else if (action.getIntent() != null) {
-                navigator.navigateToIntent(ProfileActivity.this, action.getIntent());
-              }
-            }));
-
-        Alerter.create(ProfileActivity.this, liveNotificationView).show();
-      }
-    }
   }
 }

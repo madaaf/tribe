@@ -24,6 +24,8 @@ import rx.Observable;
 
   void removeLive(String id);
 
+  void clearLive();
+
   void putInvite(Invite invite);
 
   void removeInvite(Invite invite);
