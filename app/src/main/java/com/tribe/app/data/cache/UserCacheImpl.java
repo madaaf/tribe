@@ -350,7 +350,7 @@ public class UserCacheImpl implements UserCache {
     try {
       realm.executeTransaction(realm1 -> {
         BadgeRealm badgeRealm = realm1.where(BadgeRealm.class).findFirst();
-        badgeRealm.setValue(badgeRealm.getValue() + 1);
+        if (badgeRealm != null) badgeRealm.setValue(badgeRealm.getValue() + 1);
       });
     } finally {
       realm.close();
@@ -363,7 +363,7 @@ public class UserCacheImpl implements UserCache {
     try {
       realm.executeTransaction(realm1 -> {
         BadgeRealm badgeRealm = realm1.where(BadgeRealm.class).findFirst();
-        badgeRealm.setValue(Math.min(0, badgeRealm.getValue() - 1));
+        if (badgeRealm != null) badgeRealm.setValue(Math.min(0, badgeRealm.getValue() - 1));
       });
     } finally {
       realm.close();
