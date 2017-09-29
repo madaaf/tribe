@@ -60,7 +60,7 @@ ext {
   firebaseCrashReportingVersion = '10.2.1'
   firebaseInvitesVersion = '10.2.1'
   recyclerViewAnimatorsVersion = '2.2.4'
-  branchIoVersion = '2.5.2'
+  branchIoVersion = '2.12.1'
   timberVersion = '4.4.0'
   blurKitVersion = '1.0.0'
   rxAppStateVersion = '2.0.0'
