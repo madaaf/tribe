@@ -72,12 +72,12 @@
         "source": "/Users/madaaflak/.android/build-cache/ee4072e2c7a32699fc97f85fba71c45000a39bd1/output/res/layout/abc_alert_dialog_material.xml"
     },
     {
-        "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/abc_action_bar_title_item.xml",
-        "source": "/Users/madaaflak/.android/build-cache/ee4072e2c7a32699fc97f85fba71c45000a39bd1/output/res/layout/abc_action_bar_title_item.xml"
-    },
-    {
         "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/abc_expanded_menu_layout.xml",
         "source": "/Users/madaaflak/.android/build-cache/ee4072e2c7a32699fc97f85fba71c45000a39bd1/output/res/layout/abc_expanded_menu_layout.xml"
+    },
+    {
+        "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/abc_action_bar_title_item.xml",
+        "source": "/Users/madaaflak/.android/build-cache/ee4072e2c7a32699fc97f85fba71c45000a39bd1/output/res/layout/abc_action_bar_title_item.xml"
     },
     {
         "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/notification_template_icon_group.xml",
@@ -92,16 +92,16 @@
         "source": "/Users/madaaflak/.android/build-cache/ee4072e2c7a32699fc97f85fba71c45000a39bd1/output/res/layout/abc_activity_chooser_view.xml"
     },
     {
+        "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/notification_template_big_media_narrow_custom.xml",
+        "source": "/Users/madaaflak/.android/build-cache/7363b610fc20f72619594f6af1276754b1b9b700/output/res/layout/notification_template_big_media_narrow_custom.xml"
+    },
+    {
         "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/notification_template_part_time.xml",
         "source": "/Users/madaaflak/.android/build-cache/f70aecea2226660d826decac7ab366575e7b9e04/output/res/layout/notification_template_part_time.xml"
     },
     {
         "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/select_dialog_item_material.xml",
         "source": "/Users/madaaflak/.android/build-cache/ee4072e2c7a32699fc97f85fba71c45000a39bd1/output/res/layout/select_dialog_item_material.xml"
-    },
-    {
-        "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/notification_template_big_media_narrow_custom.xml",
-        "source": "/Users/madaaflak/.android/build-cache/7363b610fc20f72619594f6af1276754b1b9b700/output/res/layout/notification_template_big_media_narrow_custom.xml"
     },
     {
         "merged": "/Users/madaaflak/Desktop/WORKSPACE-Android/tribe-android/tokenlib/build/intermediates/res/merged/release/layout/abc_screen_content_include.xml",

@@ -95,7 +95,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private Context context;
-  private int type;
   private MessageAdapter messageAdapter;
   private ChatUserAdapter chatUserAdapter;
   private LinearLayoutManager layoutManager, layoutManagerGrp;
@@ -107,8 +106,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     DateTime d2 = parser.parseDateTime(o2.getCreationDate());
     return d1.compareTo(d2);
   });
-  private Set<Message> diskMessages = new HashSet<>();
-  private boolean editTextChange = false, isHeart = false;
+
+  private int type, widthRefExpended, widthRefInit;
+  private boolean editTextChange = false, isHeart = false, load = false;
   private String[] arrIds;
 
   @BindView(R.id.editText) EditTextFont editText;
@@ -143,11 +143,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   public ChatView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
-
     TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChatView);
     this.type = a.getInt(R.styleable.ChatView_chatViewType, 0);
-    //setType();
-
     initView(context);
   }
 
@@ -160,6 +157,17 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     initRecyclerView();
     initDependencyInjector();
     initSubscriptions();
+    initParams();
+  }
+
+  private void initParams() {
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override public void onGlobalLayout() {
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        widthRefExpended = refExpended.getWidth();
+        widthRefInit = refInit.getWidth();
+      }
+    });
   }
 
   public void setChatId(List<User> friends, Shortcut shortcut) {
@@ -265,8 +273,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
               sendBtn.animate().setDuration(200).alpha(1f).start();
             }).start();
 
-            // shrankEditText();
+            shrankEditText();
           } else if (!text.isEmpty() && !editTextChange) {
+            Timber.e("OOK " + text);
             editTextChange = true;
             isHeart = false;
             sendBtn.animate().setDuration(200).alpha(0f).withEndAction(() -> {
@@ -274,7 +283,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
                   ContextCompat.getDrawable(context, R.drawable.picto_chat_send));
               sendBtn.animate().setDuration(200).alpha(1f).start();
 
-              // expendEditText();
+              expendEditText();
             }).start();
           }
         }));
@@ -295,22 +304,17 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
             editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            Timber.e("SOEF expendEditText "
-                + refExpended.getWidth()
-                + " "
-                + editText.getWidth()
-                + " "
-                + editText.getHeight());
             ResizeAnimation a = new ResizeAnimation(editText);
             a.setDuration(300);
             a.setInterpolator(new LinearInterpolator());
             a.setAnimationListener(new AnimationListenerAdapter() {
               @Override public void onAnimationStart(Animation animation) {
+                uploadImageBtn.setAlpha(0f);
                 uploadImageBtn.setVisibility(GONE);
               }
             });
-            a.setParams(editText.getWidth(), refExpended.getWidth(), editText.getHeight(),
-                editText.getHeight());
+            a.setParams(editText.getWidth(), widthRefExpended, LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT);
             editText.startAnimation(a);
           }
         });
@@ -321,28 +325,21 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
             editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            Timber.e("SOEF shrankEditText "
-                + refExpended.getWidth()
-                + " "
-                + editText.getWidth()
-                + " "
-                + editText.getHeight());
             ResizeAnimation a = new ResizeAnimation(editText);
             a.setDuration(300);
             a.setInterpolator(new LinearInterpolator());
             a.setAnimationListener(new AnimationListenerAdapter() {
               @Override public void onAnimationEnd(Animation animation) {
-                //uploadImageBtn.setVisibility(VISIBLE);
+                uploadImageBtn.setVisibility(VISIBLE);
+                uploadImageBtn.animate().setDuration(300).alpha(1f).start();
               }
             });
-            a.setParams(editText.getWidth(), refInit.getWidth(), editText.getHeight(),
-                editText.getHeight());
+            a.setParams(editText.getWidth(), widthRefInit, LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT);
             editText.startAnimation(a);
           }
         });
   }
-
-  boolean load = false;
 
   private void initRecyclerView() {
     layoutManager = new LinearLayoutManager(getContext());

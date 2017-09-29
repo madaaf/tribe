@@ -214,7 +214,8 @@ public class PulseLayout extends RelativeLayout {
 
       if (paint != null) {
         paint.setColor(color);
-        requestLayout();
+        reset();
+        invalidate();
       }
     }
   }
