@@ -64,6 +64,7 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     vh.name.setText(i.getDisplayName());
     vh.avatarView.load(i.getProfilePicture());
     Timber.e("SOEF IS ON LIGNE " + position + " " + i.toString());
+
     if (i.isOnline()) {
       vh.container.setBackground(
           ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_blue));
@@ -89,6 +90,15 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     } else {
       vh.dotsContainer.setAnimation(null);
       vh.dotsContainer.setVisibility(View.GONE);
+    }
+
+    if (i.isOnline()) {
+      vh.container.setBackground(
+          ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_blue));
+      vh.name.setTextColor(ContextCompat.getColor(context, R.color.blue_new));
+    } else {
+      vh.container.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_rect_chat));
+      vh.name.setTextColor(ContextCompat.getColor(context, R.color.grey_chat_border));
     }
   }
 

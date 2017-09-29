@@ -15,7 +15,6 @@ import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -125,15 +124,14 @@ import timber.log.Timber;
               MessageRealm messageRealm =
                   gson.fromJson(entry.getValue().toString(), MessageRealm.class);
               JsonArray jsonElements = jo.get("thread_id").getAsJsonArray();
-              int size = jsonElements.size() - 1;
-              String[] array = new String[size];
+
+              ArrayList<String> list = new ArrayList<>();
               for (int i = 0; i < jsonElements.size(); i++) {
                 String el = jsonElements.get(i).getAsString();
-                if (!el.equals(user.getId())) {
-                  array[i] = el;
-                }
+                if (!el.equals(user.getId())) list.add(el);
               }
-              messageRealm.setThreadId(JsonUtils.arrayToJson(array));
+              String formatedString = list.toString().replace("[", "\"").replace("]", "\"");
+              messageRealm.setThreadId(formatedString);
               onMessageCreated.onNext(messageRealm);
             } else if (entry.getKey().contains(WSService.ROOM_UDPATED_SUFFIX)) {
               Timber.d("onRoomUpdate : " + entry.getValue().toString());

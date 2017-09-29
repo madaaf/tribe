@@ -158,6 +158,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_chat, this, true);
     unbinder = ButterKnife.bind(this);
+    Timber.w("SOEF  INIT VIEW");
 
     initRecyclerView();
     initDependencyInjector();
@@ -209,6 +210,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       title.setTextColor(Color.BLACK);
     }
 
+    Timber.w(" SOEF SET CHAT ID AND CALL PRESENTER ");
     messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
     messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
     messagePresenter.getDiskShortcut(shortcut.getId());
@@ -476,7 +478,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messagePresenter.onViewDetached();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
-      Timber.e("DETACHED SUBSC");
+      Timber.w("DETACHED SUBSC");
       subscriptions.unsubscribe();
       subscriptions.clear();
     }
@@ -595,8 +597,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void isTypingEvent(String userId) {
+    if (userId.equals(user.getId())) {
+      return;
+    }
     Timber.e("SOEF IS TYPING " + userId);
-
 /*    subscriptions.add(Observable.interval(INTERVAL_IM_TYPING, TimeUnit.SECONDS)
         .timeInterval()
         .observeOn(AndroidSchedulers.mainThread())
@@ -619,7 +623,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     int pos = chatUserAdapter.getIndexOfUser(userTyping);
     chatUserAdapter.notifyItemChanged(pos, userTyping);
 
-    userId = null;
     // chatUserAdapter.notifyItemMoved(pos, 0);
     //populateUsersHorizontalList();
   }
