@@ -45,4 +45,8 @@ import rx.Observable;
         (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
     return chatDataStore.isTyping();
   }
+
+  @Override public Observable<Boolean> imTyping(String[] userIds) {
+   return null;
+  }
 }

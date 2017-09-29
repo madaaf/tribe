@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
+import com.tribe.app.domain.interactor.chat.ImTyping;
 import com.tribe.app.domain.interactor.chat.IsTypingFromDisk;
 import com.tribe.app.domain.interactor.chat.UserMessageInfos;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -27,20 +28,27 @@ public class MessagePresenter implements Presenter {
   protected GetMessageFromDisk getMessageFromDisk;
   protected GetDiskShortcut getDiskShortcut;
   protected IsTypingFromDisk isTypingFromDisk;
+  protected ImTyping imTyping;
 
   @Inject public MessagePresenter(UserMessageInfos userMessageInfos, CreateMessage createMessage,
       GetMessageFromDisk getMessageFromDisk, GetDiskShortcut getDiskShortcut,
-      IsTypingFromDisk isTypingFromDisk) {
+      IsTypingFromDisk isTypingFromDisk, ImTyping imTyping) {
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
     this.getMessageFromDisk = getMessageFromDisk;
     this.getDiskShortcut = getDiskShortcut;
     this.isTypingFromDisk = isTypingFromDisk;
+    this.imTyping = imTyping;
   }
 
   public void getDiskShortcut(String shortcutId) {
     getDiskShortcut.setShortcutId(shortcutId);
     getDiskShortcut.execute(new GetDiskShortcutSubscriber());
+  }
+
+  public void imTypingMessage(String[] userIds) {
+    imTyping.setUserIds(userIds);
+    imTyping.execute(new DefaultSubscriber());
   }
 
   public void getIsTyping() {
@@ -125,6 +133,20 @@ public class MessagePresenter implements Presenter {
 
     @Override public void onNext(List<Message> messages) {
       if (chatMVPView != null) chatMVPView.successLoadingMessageDisk(messages);
+    }
+  }
+
+  private class IamTypingSubscriber extends DefaultSubscriber<Boolean> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
+    }
+
+    @Override public void onNext(Boolean isTyping) {
+      Timber.e("OK SEND ");
     }
   }
 

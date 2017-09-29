@@ -72,6 +72,8 @@ import javax.inject.Inject;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -86,8 +88,9 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
 
 public class ChatView extends FrameLayout implements ChatMVPView {
 
-  final public static int FROM_CHAT = 0;
-  final public static int FROM_LIVE = 1;
+  public final static int FROM_CHAT = 0;
+  public final static int FROM_LIVE = 1;
+  private final static int INTERVAL_IM_TYPING = 2;
   private final static String TYPE_NORMAL = "TYPE_NORMAL";
   private final static String TYPE_LIVE = "TYPE_LIVE";
   private final static String TYPE_ONLINE = "TYPE_ONLINE";
@@ -107,6 +110,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     return d1.compareTo(d2);
   });
 
+  private String editTextString;
   private int type, widthRefExpended, widthRefInit;
   private boolean editTextChange = false, isHeart = false, load = false;
   private String[] arrIds;
@@ -135,6 +139,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   @Inject ScreenUtils screenUtils;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Subscription counterSubscription = null;
 
   public ChatView(@NonNull Context context) {
     super(context);
@@ -256,8 +261,20 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         }))
         .subscribe());
 
+    subscriptions.add(Observable.interval(INTERVAL_IM_TYPING, TimeUnit.SECONDS)
+        .timeInterval()
+        .observeOn(AndroidSchedulers.mainThread())
+        .onBackpressureDrop()
+        .subscribe(avoid -> {
+          if (!editTextString.isEmpty()) {
+            messagePresenter.imTypingMessage(arrIds);
+          }
+        }));
+
     subscriptions.add(
         RxTextView.textChanges(editText).map(CharSequence::toString).subscribe(text -> {
+          this.editTextString = text;
+
           if (text.isEmpty()) {
             editText.setHint("Aa");
             isHeart = true;
@@ -305,7 +322,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
           @Override public void onGlobalLayout() {
             editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             ResizeAnimation a = new ResizeAnimation(editText);
-            a.setDuration(300);
+            a.setDuration(200);
             a.setInterpolator(new LinearInterpolator());
             a.setAnimationListener(new AnimationListenerAdapter() {
               @Override public void onAnimationStart(Animation animation) {
@@ -326,12 +343,12 @@ public class ChatView extends FrameLayout implements ChatMVPView {
           @Override public void onGlobalLayout() {
             editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             ResizeAnimation a = new ResizeAnimation(editText);
-            a.setDuration(300);
+            a.setDuration(200);
             a.setInterpolator(new LinearInterpolator());
             a.setAnimationListener(new AnimationListenerAdapter() {
               @Override public void onAnimationEnd(Animation animation) {
                 uploadImageBtn.setVisibility(VISIBLE);
-                uploadImageBtn.animate().setDuration(300).alpha(1f).start();
+                uploadImageBtn.animate().setDuration(200).alpha(1f).start();
               }
             });
             a.setParams(editText.getWidth(), widthRefInit, LayoutParams.WRAP_CONTENT,
@@ -432,10 +449,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     scrollListToBottom();
   }
 
-  private void dispose() {
-    pulseLayout.clearAnimation();
-  }
-
   protected void initDependencyInjector() {
     DaggerUserComponent.builder()
         .activityModule(getActivityModule())
@@ -461,8 +474,17 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override protected void onDetachedFromWindow() {
     messagePresenter.onViewDetached();
-    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
-    dispose();
+
+    if (subscriptions != null && subscriptions.hasSubscriptions()) {
+      Timber.e("DETACHED SUBSC");
+      subscriptions.unsubscribe();
+      counterSubscription.unsubscribe();
+      subscriptions.clear();
+    }
+    pulseLayout.clearAnimation();
+    recyclerView.setAdapter(null);
+    recyclerViewGrp.setAdapter(null);
+
     super.onDetachedFromWindow();
   }
 

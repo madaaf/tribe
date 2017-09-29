@@ -50,4 +50,9 @@ import rx.Observable;
   @Override public Observable<String> isTyping() {
     return null;
   }
+
+  @Override public Observable<Boolean> imTyping(String[] userIds) {
+    final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
+    return userDataStore.imTyping(userIds);
+  }
 }
