@@ -95,8 +95,6 @@ import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -116,6 +114,13 @@ import static android.view.View.VISIBLE;
 public class LiveActivity extends BaseActivity
     implements LiveMVPView, ShortcutMVPView, RoomMVPView, AppStateListener {
 
+  @StringDef({
+      SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
+      SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
+      SOURCE_NEW_CALL, SOURCE_JOIN_LIVE, SOURCE_ADD_PEERS, SOURCE_CALL_ROULETTE
+  }) public @interface Source {
+  }
+
   public static final String SOURCE_GRID = "Grid";
   public static final String SOURCE_DEEPLINK = "DeepLink";
   public static final String SOURCE_SEARCH = "Search";
@@ -129,6 +134,7 @@ public class LiveActivity extends BaseActivity
   public static final String SOURCE_CALL_ROULETTE = "CallRoulette";
   public static final String SOURCE_JOIN_LIVE = "JoinLive";
   public static final String SOURCE_ADD_PEERS = "AddPeers";
+
   public static final String ROOM_ID = "ROOM_ID";
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
@@ -183,7 +189,6 @@ public class LiveActivity extends BaseActivity
   private int createRoomErrorCount = 0;
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<List<Shortcut>> onUpdateSingleShortcutList = PublishSubject.create();
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
 
   public static Live getLive(Recipient recipient, int color, @Source String source) {
@@ -392,7 +397,6 @@ public class LiveActivity extends BaseActivity
 
         initSubscriptions();
 
-        livePresenter.loadSingleShortcuts();
         if (live.getUserIds() != null && live.getUserIds().size() > 0) {
           livePresenter.shortcutForUserIds(live.getUserIds());
         }
@@ -533,7 +537,8 @@ public class LiveActivity extends BaseActivity
   }
 
   private void initChatService(String usersFromatedId) {
-    startService(WSService.getCallingSubscribeChat(this, WSService.CHAT_SUBSCRIBE, usersFromatedId));
+    startService(
+        WSService.getCallingSubscribeChat(this, WSService.CHAT_SUBSCRIBE, usersFromatedId));
   }
 
   private void initSubscriptions() {
@@ -559,45 +564,6 @@ public class LiveActivity extends BaseActivity
             .setListener(null);
       }
     }));
-
-    subscriptions.add(Observable.combineLatest(onUpdateSingleShortcutList,
-        viewLive.onLiveChanged().startWith(new HashMap<>()),
-        //viewLive.onInvitesChanged().startWith(new HashMap<>()),
-        (singleShortcutList, liveMap) -> {
-          List<String> idsToFilter = new ArrayList<>();
-          idsToFilter.addAll(liveMap.keySet());
-          //idsToFilter.addAll(invitesMap.keySet());
-
-          //usersIdsInvitedInLiveRoom.addAll(invitesMap.keySet());
-          Collections.sort(singleShortcutList,
-              (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
-
-          List<Shortcut> filteredSingleShortcut = new ArrayList<>();
-          liveIsInvite = live.fromRoom();
-          if (live.getUsers() != null) {
-            for (Shortcut shortcut : singleShortcutList) {
-              User single = shortcut.getSingleFriend();
-              if (!live.hasUser(single.getId()) && !idsToFilter.contains(single.getId())) {
-                filteredSingleShortcut.add(shortcut);
-              }
-            }
-          } else {
-            for (Shortcut shortcut : singleShortcutList) {
-              User single = shortcut.getSingleFriend();
-              if (!idsToFilter.contains(single.getId())) {
-                filteredSingleShortcut.add(shortcut);
-              }
-            }
-          }
-          return filteredSingleShortcut;
-        })
-        .delay(500, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(filteredFriendships -> {
-          // TODO CHANGE THIS WITH THE NEW LIVE INVITE VIEW
-          //viewInviteLive.renderShortcutList(filteredFriendships,
-          //    live.getSource());
-        }));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       if (StringUtils.isEmpty(live.getRoomId())) displayBuzzPopupTutorial();
@@ -686,26 +652,6 @@ public class LiveActivity extends BaseActivity
 
     subscriptions.add(viewLive.onShareLink().subscribe(aVoid -> share()));
 
-    // TODO CALLROULETTE IN NEW SYSTEM ?
-    //subscriptions.add(
-    //    viewLiveContainer.onDropped().map(TileView::getRecipient).subscribe(recipient -> {
-    //      if (recipient.getId().equals(Recipient.ID_CALL_ROULETTE) && FacebookUtils.isLoggedIn()) {
-    //        Timber.d("on dropped the dice :" + live.getRoomId());
-    //        livePresenter.roomAcceptRandom(live.getRoomId());
-    //        reRollTheDiceFromLiveRoom();
-    //        initCallRouletteService();
-    //      } else {
-    //        invite(recipient.getSubId());
-    //      }
-    //    }));
-
-    // TODO CALLROULETTE IN NEW SYSTEM ?
-    //subscriptions.add(viewLiveContainer.onDroppedUnder13().subscribe(peerId -> {
-    //  Timber.d("user under 13 dropped" + peerId);
-    //  userUnder13List.add(peerId);
-    //  viewLive.sendUnlockDice(peerId, user);
-    //}));
-
     subscriptions.add(viewLive.unlockRollTheDice().
         subscribeOn(Schedulers.newThread()).
         observeOn(AndroidSchedulers.mainThread()).
@@ -719,14 +665,9 @@ public class LiveActivity extends BaseActivity
         }));
 
     subscriptions.add(viewLive.unlockedRollTheDice().
-
         subscribeOn(Schedulers.newThread()).
-
         observeOn(AndroidSchedulers.mainThread()).
-
-        subscribe(s ->
-
-        {
+        subscribe(s -> {
           userUnder13List.remove(s);
           if (userUnder13List.isEmpty()) {
             livePresenter.roomAcceptRandom(live.getRoomId());
@@ -736,37 +677,21 @@ public class LiveActivity extends BaseActivity
         }));
 
     subscriptions.add(viewLive.onEndCall().
-
         subscribeOn(Schedulers.newThread()).
-
         observeOn(AndroidSchedulers.mainThread()).
-
-        subscribe(duration ->
-
-        {
-          livePresenter.incrementTimeInCall(user.getId(), duration);
-        }));
+        subscribe(duration -> livePresenter.incrementTimeInCall(user.getId(), duration)));
 
     subscriptions.add(notificationContainerView.onFacebookSuccess().
-
         subscribeOn(Schedulers.newThread()).
-
         observeOn(AndroidSchedulers.mainThread()).
-
-        subscribe(unlockRollTheDiceSenderId ->
-
-        {
+        subscribe(unlockRollTheDiceSenderId -> {
           blockView.setVisibility(View.GONE);
-          //viewLiveContainer.blockOpenInviteView(false);
           initCallRouletteService();
           viewLive.sendUnlockedDice(unlockRollTheDiceSenderId);
         }));
 
     subscriptions.add(viewLive.onRollTheDice().
-
-        subscribe(s ->
-
-        {
+        subscribe(s -> {
           // TODO CALLROULETTE
           //viewInviteLive.diceDragued();
           //viewInviteLive.requestLayout();
@@ -1165,12 +1090,6 @@ public class LiveActivity extends BaseActivity
     livePresenter.createRoom(live);
   }
 
-  private void invite(String userId) {
-    Bundle bundle = new Bundle();
-    bundle.putBoolean(TagManagerUtils.SWIPE, true);
-    livePresenter.createInvite(room.getId(), userId);
-  }
-
   private void roomFull() {
     putExtraErrorNotif();
     finish();
@@ -1236,7 +1155,7 @@ public class LiveActivity extends BaseActivity
   ////////////////
 
   @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
-    onUpdateSingleShortcutList.onNext(singleShortcutList);
+
   }
 
   @Override public void randomRoomAssignedSubscriber(String roomId) {
@@ -1335,21 +1254,6 @@ public class LiveActivity extends BaseActivity
     if (viewLive != null) {
       viewLive.setCameraEnabled(false, TribePeerMediaConfiguration.APP_IN_BACKGROUND);
     }
-  }
-
-  private void declineInvitation(String sessionId) {
-    livePresenter.declineInvite(sessionId);
-  }
-
-  /////////////////
-  //  BROADCAST  //
-  /////////////////
-
-  @StringDef({
-      SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
-      SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
-      SOURCE_NEW_CALL, SOURCE_JOIN_LIVE, SOURCE_ADD_PEERS, SOURCE_CALL_ROULETTE
-  }) public @interface Source {
   }
 }
 

@@ -103,11 +103,15 @@ public class LiveControlsView extends FrameLayout {
 
   @BindViews({
       R.id.btnExpand, R.id.layoutGame
-  }) List<View> viewToHideFilters;
+  }) List<View> viewToHideBottomFilters;
+
+  @BindViews({ R.id.btnChat, R.id.viewStatusName }) List<View> viewToHideTopFilters;
 
   @BindViews({
       R.id.btnExpand, R.id.layoutFilter
-  }) List<View> viewToHideGames;
+  }) List<View> viewToHideBottomGames;
+
+  @BindViews({ R.id.btnChat, R.id.viewStatusName }) List<View> viewToHideTopGames;
 
   @BindViews({
       R.id.viewStatusName, R.id.btnLeave
@@ -393,8 +397,12 @@ public class LiveControlsView extends FrameLayout {
         .setInterpolator(new DecelerateInterpolator())
         .start();
 
-    for (View v : viewToHideFilters) {
+    for (View v : viewToHideBottomFilters) {
       hideView(v, false);
+    }
+
+    for (View v : viewToHideTopFilters) {
+      hideView(v, true);
     }
 
     if (currentGameView != null) hideView(currentGameView, false);
@@ -416,7 +424,11 @@ public class LiveControlsView extends FrameLayout {
 
     imgTriangleCloseFilters.setVisibility(View.GONE);
 
-    for (View v : viewToHideFilters) {
+    for (View v : viewToHideBottomFilters) {
+      showView(v);
+    }
+
+    for (View v : viewToHideTopFilters) {
       showView(v);
     }
 
@@ -449,8 +461,12 @@ public class LiveControlsView extends FrameLayout {
         .setInterpolator(new DecelerateInterpolator())
         .start();
 
-    for (View v : viewToHideGames) {
+    for (View v : viewToHideBottomGames) {
       hideView(v, false);
+    }
+
+    for (View v : viewToHideTopGames) {
+      hideView(v, true);
     }
 
     showRecyclerView(recyclerViewGames);
@@ -463,7 +479,11 @@ public class LiveControlsView extends FrameLayout {
 
     hideRecyclerView(recyclerViewGames);
 
-    for (View v : viewToHideGames) {
+    for (View v : viewToHideBottomGames) {
+      if (v != btnExpand || !filtersMenuOn) showView(v);
+    }
+
+    for (View v : viewToHideTopGames) {
       if (v != btnExpand || !filtersMenuOn) showView(v);
     }
 
@@ -484,7 +504,11 @@ public class LiveControlsView extends FrameLayout {
 
     imgTriangleCloseGames.setVisibility(View.GONE);
 
-    for (View v : viewToHideGames) {
+    for (View v : viewToHideBottomGames) {
+      showView(v);
+    }
+
+    for (View v : viewToHideTopGames) {
       showView(v);
     }
 
