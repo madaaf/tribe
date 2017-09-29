@@ -13,4 +13,8 @@ public interface ChatRepository {
   Observable<Message> createMessage(final String[] userIds, String type, String data);
 
   Observable<List<Message>> loadMessages(final String[] userIds, String date);
+
+  Observable<String> isTyping();
+
+  Observable<Boolean> imTyping(String[] userIds);
 }

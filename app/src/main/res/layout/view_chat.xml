@@ -51,6 +51,7 @@
       android:layout_height="match_parent"
       android:layout_below="@+id/topbar"
       android:background="@android:color/white"
+      android:clickable="true"
       />
 
   <android.support.v7.widget.RecyclerView
@@ -120,6 +121,7 @@
       android:layout_alignParentBottom="true"
       android:layout_alignParentStart="true"
       android:layout_gravity="bottom"
+      android:layout_marginBottom="5dp"
       android:gravity="bottom"
       >
 
@@ -153,20 +155,25 @@
         android:layout_alignStart="@+id/editText"
         android:visibility="invisible"
         />
+
     <com.tribe.app.presentation.view.widget.EditTextFont
         android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:layout_toEndOf="@+id/uploadBtn"
         android:layout_toStartOf="@+id/sendBtn"
         android:background="@drawable/shape_rect_chat"
+        android:ems="10"
         android:gravity="bottom"
         android:hint="Aa"
+        android:imeOptions="actionSend"
+        android:inputType="textMultiLine|textShortMessage"
+        android:minHeight="40dp"
         android:padding="10dp"
         android:textColor="@android:color/black"
         android:textColorHint="@color/grey.chat.grey.hint"
@@ -193,14 +200,14 @@
 
     <com.tribe.app.presentation.view.widget.PulseLayout
         android:id="@+id/layoutPulse"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_alignBottom="@+id/editText"
         android:layout_alignParentEnd="true"
         android:layout_gravity="bottom"
         android:layout_marginTop="5dp"
         android:gravity="bottom"
-        app:pulseColor="@color/red.pulse"
+        app:pulseColor="@null"
         app:pulseCount="3"
         app:pulseDuration="3000"
         >

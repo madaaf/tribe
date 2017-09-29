@@ -92,7 +92,7 @@ public class ChatActivity extends BaseActivity {
   }
 
   private void initChatService(String usersFromatedId) {
-    startService(WSService.getCallingIntent(this, WSService.CHAT_SUBSCRIBE, usersFromatedId));
+    startService(WSService.getCallingSubscribeChat(this, WSService.CHAT_SUBSCRIBE, usersFromatedId));
   }
 
   private void initDependencyInjector() {

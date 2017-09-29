@@ -17,4 +17,8 @@ public interface ChatDataStore {
   Observable<UserRealm> loadMessages(final String[] userIds, String dateBefore);
 
   Observable<List<MessageRealm>> getMessages(String[] userIds);
+
+  Observable<String> isTyping();
+
+  Observable<Boolean> imTyping(String[] userIds);
 }

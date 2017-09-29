@@ -65,7 +65,7 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
       }
     });
 
-    if (uri != null) setPendingBehavior(m, vh.container, position, uri, MessageRealm.IMAGE); // is pending
+    if (uri != null) setPendingBehavior(m, vh.container); // is pending
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,

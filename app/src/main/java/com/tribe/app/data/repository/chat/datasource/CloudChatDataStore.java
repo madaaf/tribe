@@ -10,7 +10,6 @@ import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.RealmList;
 import java.util.List;
 import rx.Observable;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -50,5 +49,15 @@ public class CloudChatDataStore implements ChatDataStore {
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
     return null;
+  }
+
+  @Override public Observable<String> isTyping() {
+    return null;
+  }
+
+  @Override public Observable<Boolean> imTyping(String[] userIds) {
+    final String request = context.getString(R.string.mutation,
+        context.getString(R.string.imTyping, JsonUtils.arrayToJson(userIds)));
+    return this.tribeApi.imTyping(request);
   }
 }

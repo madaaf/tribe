@@ -209,11 +209,13 @@ public class PulseLayout extends RelativeLayout {
    * @param color : an integer representation of color
    */
   public void setColor(int color) {
-    if (color != color) {
+    if (this.color != color) {
       this.color = color;
 
       if (paint != null) {
         paint.setColor(color);
+        reset();
+        invalidate();
       }
     }
   }

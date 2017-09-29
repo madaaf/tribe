@@ -58,10 +58,19 @@ import timber.log.Timber;
   public static final String SHORTCUT_UPDATED_SUFFIX = "___su";
   public static final String SHORTCUT_REMOVED_SUFFIX = "___sr";
   public static final String MESSAGE_CREATED_SUFFIX = "___mc";
+  public static final String MESSAGE_IS_TYPING_SUFFIX = "___mit";
+
+  public static Intent getCallingSubscribeChat(Context context, String type,
+      String usersFromatedIds) {
+    Timber.e("SOEF SUBSCRIBE TO " + usersFromatedIds);
+    Intent intent = new Intent(context, WSService.class);
+    intent.putExtra(CHAT_IDS, usersFromatedIds);
+    intent.putExtra(TYPE, type);
+    return intent;
+  }
 
   public static Intent getCallingIntent(Context context, String type, String usersFromatedIds) {
     Intent intent = new Intent(context, WSService.class);
-    intent.putExtra(CHAT_IDS, usersFromatedIds);
     intent.putExtra(TYPE, type);
     return intent;
   }
@@ -145,6 +154,12 @@ import timber.log.Timber;
         getApplicationContext().getString(R.string.subscription_messageCreated, suffix, userIds));
 
     webSocketConnection.send(req);
+
+    String suffix2 = generateHash() + MESSAGE_IS_TYPING_SUFFIX;
+    String req2 = getApplicationContext().getString(R.string.subscription,
+        getApplicationContext().getString(R.string.subscription_isTyping, suffix2, userIds));
+
+    webSocketConnection.send(req2);
   }
 
   public void subscribeRoomUpdate(String roomId) {
@@ -321,6 +336,10 @@ import timber.log.Timber;
       RealmList<MessageRealm> messages = new RealmList<>();
       messages.add(messagRealm);
       chatCache.putMessages(messages, messagRealm.getThreadId());
+    }));
+
+    persistentSubscriptions.add(jsonToModel.onTyping().subscribe(userID -> {
+      chatCache.onTyping(userID);
     }));
 
     persistentSubscriptions.add(

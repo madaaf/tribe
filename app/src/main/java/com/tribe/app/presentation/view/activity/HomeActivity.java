@@ -288,7 +288,8 @@ public class HomeActivity extends BaseActivity
 
     homeGridPresenter.loadContactsOnApp();
 
-    startService(WSService.getCallingIntent(this, null, null));
+    startService(WSService.
+        getCallingIntent(this, null, null));
 
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);

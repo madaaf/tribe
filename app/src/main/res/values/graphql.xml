@@ -57,7 +57,7 @@
                 {
                   user {
                     id
-                    messages(usersIds: [%1$s], before: \"%2$s\", limit:15) {
+                    messages(usersIds: [%1$s], before: \"%2$s\", limit:20) {
                       ...MessagePayload
                     }
                   }
@@ -73,6 +73,10 @@
                 }
        %4$s
     </string>
+
+  <string name="imTyping" translatable="false">
+            imTyping(usersIds:[%1$s])
+  </string>
 
   <string name="user.infos.friendships" translatable="false">
         {
@@ -324,6 +328,10 @@
 
   <string name="subscription.messageCreated" translatable="false">
         %1$s : messageCreated ( usersIds : [%2$s] )
+  </string>
+
+  <string name="subscription.isTyping" translatable="false">
+        %1$s : isTyping ( usersIds : [%2$s] )
   </string>
 
   <string name="subscription.shortcutCreated" translatable="false">

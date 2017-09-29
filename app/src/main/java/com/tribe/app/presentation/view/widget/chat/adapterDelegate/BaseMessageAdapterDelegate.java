@@ -20,7 +20,6 @@ import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
-import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -39,8 +38,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
   protected Context context;
   protected int type;
   protected LayoutInflater layoutInflater;
-  protected List<Message> pendingMessages = new ArrayList<>();
-  protected PublishSubject<List<Object>> onMessagePending = PublishSubject.create();
+
 
   public BaseMessageAdapterDelegate(Context context, int type) {
     this.type = type;
@@ -65,18 +63,9 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     Timber.e("PLAYLOAD " + position + " " + payloads.toString());
   }
 
-  protected void setPendingBehavior(Message m, View container, int position, Object content,
-      String type) {
+  protected void setPendingBehavior(Message m, View container) {
     if (m.isPending()) {
       container.setAlpha(0.4f);
-      if (!pendingMessages.contains(m)) {
-        List<Object> list = new ArrayList<>();
-        list.add(type);
-        list.add(content);
-        list.add(position);
-        onMessagePending.onNext(list);
-        pendingMessages.add(m);
-      }
     } else {
       container.setAlpha(1f);
     }
@@ -102,6 +91,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     vh.time.setText(dateUtils.getHourAndMinuteInLocal(time));
     vh.avatarView.load(m.getAuthor().getProfilePicture());
     vh.name.setText(m.getAuthor().getDisplayName());
+
     vh.daySeparator.setText(dateUtils.getFormattedDayId(time));
 
     if (position > 0) {
@@ -150,7 +140,4 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     protected abstract ViewGroup getLayoutContent();
   }
 
-  public Observable<List<Object>> onMessagePending() {
-    return onMessagePending;
-  }
 }
