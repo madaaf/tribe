@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.widget.chat;
 
 import android.content.Context;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -93,26 +92,6 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     }
   }
 
-  CountDownTimer countDownTimer;
-
-  private void setCounter() {
-    if (countDownTimer != null) {
-      return;
-    }
-    countDownTimer = new CountDownTimer(COUNTER_SECONDE * 1000, 1000) {
-      public void onTick(long millisUntilFinished) {
-        Timber.w("SOEF  COUNTER " + +millisUntilFinished / 1000);
-      }
-
-      public void onFinish() {
-        Timber.w("SOEF  FINISH ");
-      }
-    };
-
-    countDownTimer.cancel();
-    countDownTimer.start();
-  }
-
   private void extendsDots(ChatUserViewHolder vh) {
     vh.dotsContainer.setVisibility(View.VISIBLE);
     vh.container.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_blue));
@@ -147,7 +126,7 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
       View v = new View(context);
       v.setBackgroundResource(R.drawable.shape_oval_grey);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
-      lp.setMargins(0, 0, 5, 0);
+      lp.setMargins(0, 0, 7, 0);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
       viewDots.add(v);

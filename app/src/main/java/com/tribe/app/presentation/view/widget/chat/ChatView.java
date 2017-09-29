@@ -88,9 +88,9 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
 
 public class ChatView extends FrameLayout implements ChatMVPView {
 
+  private final static int INTERVAL_IM_TYPING = 2;
   public final static int FROM_CHAT = 0;
   public final static int FROM_LIVE = 1;
-  private final static int INTERVAL_IM_TYPING = 2;
   private final static String TYPE_NORMAL = "TYPE_NORMAL";
   private final static String TYPE_LIVE = "TYPE_LIVE";
   private final static String TYPE_ONLINE = "TYPE_ONLINE";
@@ -478,7 +478,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
       Timber.e("DETACHED SUBSC");
       subscriptions.unsubscribe();
-      counterSubscription.unsubscribe();
       subscriptions.clear();
     }
     pulseLayout.clearAnimation();
@@ -597,6 +596,18 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   @Override public void isTypingEvent(String userId) {
     Timber.e("SOEF IS TYPING " + userId);
+
+/*    subscriptions.add(Observable.interval(INTERVAL_IM_TYPING, TimeUnit.SECONDS)
+        .timeInterval()
+        .observeOn(AndroidSchedulers.mainThread())
+        .onBackpressureDrop()
+        .subscribe(avoid -> {
+          for (User u : members) {
+
+          }
+        }));*/
+
+    // COUNTER EVERY 2 SEC. IF NOTHING IS RECEIVED? SEND IS TYÏNG TO FALSE TO THE ADAPTER
     User userTyping = null;
     for (User u : members) {
       if (u.getId().equals(userId)) {
@@ -607,6 +618,8 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     }
     int pos = chatUserAdapter.getIndexOfUser(userTyping);
     chatUserAdapter.notifyItemChanged(pos, userTyping);
+
+    userId = null;
     // chatUserAdapter.notifyItemMoved(pos, 0);
     //populateUsersHorizontalList();
   }
