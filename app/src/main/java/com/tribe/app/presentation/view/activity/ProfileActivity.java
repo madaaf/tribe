@@ -506,6 +506,11 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
       profilePresenter.muteShortcut(shortcut.getId(), shortcut.isMute());
     }).subscribe());
 
+    subscriptions.add(viewSettingsManageFriendships.onClickMuteAll().doOnNext(aVoid -> {
+      profilePresenter.updateUserPushNotif(!getCurrentUser().isPushNotif());
+      getCurrentUser().setPushNotif(!getCurrentUser().isPushNotif());
+    }).subscribe());
+
     profilePresenter.loadSingleShortcuts();
   }
 
@@ -582,7 +587,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
 
   @Override public void successUpdateUser(User user) {
     viewProfile.reloadUserUI();
-    this.clickBack();
+    if (viewSettingsManageFriendships == null) this.clickBack();
   }
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {

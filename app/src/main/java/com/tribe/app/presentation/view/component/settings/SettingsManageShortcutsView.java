@@ -2,11 +2,11 @@ package com.tribe.app.presentation.view.component.settings;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.util.AttributeSet;
 import android.util.Pair;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
@@ -22,6 +22,7 @@ import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDec
 import com.tribe.app.presentation.view.adapter.manager.ShortcutsLayoutManager;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -32,11 +33,15 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 05/11/2017.
  */
 
-public class SettingsManageShortcutsView extends FrameLayout {
+public class SettingsManageShortcutsView extends LinearLayout {
 
   @Inject User user;
 
   @Inject ScreenUtils screenUtils;
+
+  @BindView(R.id.switchMute) SwitchCompat switchMute;
+
+  @BindView(R.id.txtNbFriends) TextViewFont txtNbFriends;
 
   @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
@@ -48,6 +53,7 @@ public class SettingsManageShortcutsView extends FrameLayout {
   private CompositeSubscription subscriptions;
   private PublishSubject<Shortcut> onClickMute = PublishSubject.create();
   private PublishSubject<Recipient> onClickRemove = PublishSubject.create();
+  private PublishSubject<Void> onClickMuteAll = PublishSubject.create();
 
   public SettingsManageShortcutsView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -57,6 +63,7 @@ public class SettingsManageShortcutsView extends FrameLayout {
     super.onFinishInflate();
     ButterKnife.bind(this);
 
+    setOrientation(VERTICAL);
     init();
   }
 
@@ -106,6 +113,9 @@ public class SettingsManageShortcutsView extends FrameLayout {
     subscriptions.add(adapter.onClickRemove()
         .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
         .subscribe(onClickRemove));
+
+    switchMute.setChecked(!user.isPushNotif());
+    switchMute.setOnClickListener(v -> onClickMuteAll.onNext(null));
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -130,6 +140,8 @@ public class SettingsManageShortcutsView extends FrameLayout {
 
   public void renderUnblockedShortcutList(List<Shortcut> shortcutList) {
     adapter.setItems(shortcutList);
+    txtNbFriends.setText(
+        getResources().getString(R.string.live_sharing_infos_you_friends, shortcutList.size()));
   }
 
   public void remove(Shortcut shortcut) {
@@ -146,5 +158,9 @@ public class SettingsManageShortcutsView extends FrameLayout {
 
   public Observable<Recipient> onClickRemove() {
     return onClickRemove;
+  }
+
+  public Observable<Void> onClickMuteAll() {
+    return onClickMuteAll;
   }
 }
