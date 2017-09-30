@@ -13,10 +13,8 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -34,7 +32,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
     return d1.compareTo(d2);
   });
 
-
   private MessageEmojiAdapterDelegate messageEmojiAdapterDelegate;
   private MessageTextAdapterDelegate messageTextAdapterDelegate;
   private MessageImageAdapterDelegate messageImageAdapterDelegate;
@@ -42,7 +39,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<Object>> onMessagePending = PublishSubject.create();
-
 
   public MessageAdapter(Context context, int type) {
     delegatesManager = new RxAdapterDelegatesManager<>();
@@ -60,7 +56,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
     delegatesManager.addDelegate(messageImageAdapterDelegate);
 
     items = new ArrayList<>();
-
   }
 
   @Override public int getItemViewType(int position) {
@@ -83,7 +78,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
       Message last = items.get(items.size() - 1);
       last.setPending(false);
       last.setId(m.getId());
-      Timber.e("SOEF PLAYLOAD BINDING " + m.toString());
+      //  Timber.e("SOEF PLAYLOAD BINDING " + m.toString());
       delegatesManager.onBindViewHolder(items, holder, position, payloads);
     } else {
       delegatesManager.onBindViewHolder(items, position, holder);
@@ -97,11 +92,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
   public void setItems(Collection<Message> items) {
     this.items.clear();
     this.treeSet.addAll(items);
-    this.items.addAll(new ArrayList<>(treeSet)); // Use tree set to put items in bottom or in top of the list
-    Timber.e("SOEF ADD ITEM " + this.items.size());
+    this.items.addAll(
+        new ArrayList<>(treeSet)); // Use tree set to put items in bottom or in top of the list
+    //  Timber.e("SOEF ADD ITEM " + this.items.size());
     super.notifyDataSetChanged();
   }
-
 
   public int getIndexOfMessage(Message message) {
     return items.indexOf(message);
@@ -114,6 +109,4 @@ public class MessageAdapter extends RecyclerView.Adapter {
   public List<Message> getItems() {
     return items;
   }
-
-
 }

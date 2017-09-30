@@ -92,7 +92,6 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
-import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -536,23 +535,19 @@ public class LiveActivity extends BaseActivity
     }
   }
 
+<<<<<<< HEAD
   private void initChatService(String usersFromatedId) {
     startService(
         WSService.getCallingSubscribeChat(this, WSService.CHAT_SUBSCRIBE, usersFromatedId));
   }
 
+=======
+>>>>>>> work on subscriptions
   private void initSubscriptions() {
     subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
       Timber.e("ON CHAT OPEN");
       if (open) {
         List<User> friends = live.getShortcut().getMembers();
-
-        String[] ids = new String[friends.size()];
-        for (int i = 0; i < friends.size(); i++) {
-          ids[i] = friends.get(i).getId();
-        }
-        String arrayIds = JsonUtils.arrayToJson(ids);
-        initChatService(arrayIds);
         chatView.setChatId(friends, live.getShortcut());
         chatView.setVisibility(VISIBLE);
         chatView.animate().setDuration(300).alpha(1f).setListener(null);
@@ -884,8 +879,8 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE &&
-        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
+        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -989,8 +984,8 @@ public class LiveActivity extends BaseActivity
       }
     }
 
-    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty()) &&
-        peopleInLive.size() > 1) {
+    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty())
+        && peopleInLive.size() > 1) {
       liveIsInvite = false;
       usersIdsInvitedInLiveRoom.clear();
       activeUersIdsInvitedInLiveRoom.clear();
@@ -1174,9 +1169,9 @@ public class LiveActivity extends BaseActivity
     live.setRoom(room);
     viewLive.joinRoom(this.room);
 
-    if (!StringUtils.isEmpty(live.getRoomId()) &&
-        !StringUtils.isEmpty(room.getName()) &&
-        !room.getInitiator().getId().equals(getCurrentUser().getId())) {
+    if (!StringUtils.isEmpty(live.getRoomId())
+        && !StringUtils.isEmpty(room.getName())
+        && !room.getInitiator().getId().equals(getCurrentUser().getId())) {
       NotificationPayload notificationPayload = new NotificationPayload();
       notificationPayload.setBody(EmojiParser.demojizedText(
           getString(R.string.live_notification_initiator_has_been_notified,

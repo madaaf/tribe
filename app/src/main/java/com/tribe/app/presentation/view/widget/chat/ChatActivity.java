@@ -82,8 +82,8 @@ public class ChatActivity extends BaseActivity {
   }
 
   @Override protected void onResume() {
-    initChatService(arrayIds);
     super.onResume();
+    chatView.onResumeView();
   }
 
   @Override public void finish() {
@@ -91,9 +91,6 @@ public class ChatActivity extends BaseActivity {
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_left);
   }
 
-  private void initChatService(String usersFromatedId) {
-    startService(WSService.getCallingSubscribeChat(this, WSService.CHAT_SUBSCRIBE, usersFromatedId));
-  }
 
   private void initDependencyInjector() {
     DaggerUserComponent.builder()

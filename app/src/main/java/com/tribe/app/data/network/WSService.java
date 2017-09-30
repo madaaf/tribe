@@ -44,6 +44,8 @@ import timber.log.Timber;
   public static final String CHAT_IDS = "CHAT_IDS";
 
   public static final String CHAT_SUBSCRIBE = "CHAT_SUBSCRIBE";
+  public static final String CHAT_SUBSCRIBE_IMTYPING = "CHAT_SUBSCRIBE_IMTYPING";
+  public static final String CHAT_UNSUBSCRIBE = "CHAT_UNSUBSCRIBE";
   public static final String CALL_ROULETTE_TYPE = "CALL_ROULETTE_TYPE";
   public static final String CALL_ROOM_UPDATE_SUBSCRIBE_TYPE = "CALL_ROOM_UPDATE_TYPE";
   public static final String CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE =
@@ -62,10 +64,16 @@ import timber.log.Timber;
 
   public static Intent getCallingSubscribeChat(Context context, String type,
       String usersFromatedIds) {
-    Timber.e("SOEF SUBSCRIBE TO " + usersFromatedIds);
     Intent intent = new Intent(context, WSService.class);
     intent.putExtra(CHAT_IDS, usersFromatedIds);
     intent.putExtra(TYPE, type);
+    return intent;
+  }
+
+  public static Intent getCallingUnSubscribeChat(Context context, String usersFromatedIds) {
+    Intent intent = new Intent(context, WSService.class);
+    intent.putExtra(CHAT_IDS, usersFromatedIds);
+    intent.putExtra(TYPE, CHAT_UNSUBSCRIBE);
     return intent;
   }
 
@@ -110,6 +118,7 @@ import timber.log.Timber;
   private @WebSocketConnection.WebSocketState String webSocketState = WebSocketConnection.STATE_NEW;
   private boolean hasSubscribed = false;
   private Map<String, String> roomSubscriptions;
+  private Map<String, String> chatSubscriptions;
   private Set<String> userSubscribed;
 
   // OBSERVABLES
@@ -126,6 +135,7 @@ import timber.log.Timber;
     headers = new HashMap<>();
     userSubscribed = new HashSet<>();
     roomSubscriptions = new HashMap<>();
+    chatSubscriptions = new HashMap<>();
 
     initDependencyInjection();
     prepareHeaders();
@@ -150,16 +160,28 @@ import timber.log.Timber;
 
   public void subscribeChat(String userIds) {
     String suffix = generateHash() + MESSAGE_CREATED_SUFFIX;
+    chatSubscriptions.put(userIds + MESSAGE_CREATED_SUFFIX, suffix);
+
     String req = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_messageCreated, suffix, userIds));
 
+    Timber.i("SOEF " + req);
     webSocketConnection.send(req);
 
     String suffix2 = generateHash() + MESSAGE_IS_TYPING_SUFFIX;
+    chatSubscriptions.put(userIds + MESSAGE_IS_TYPING_SUFFIX, suffix2);
     String req2 = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_isTyping, suffix2, userIds));
 
+    Timber.i("SOEF " + req2);
     webSocketConnection.send(req2);
+  }
+
+  public void subscribeImTyping(String userIds) {
+    String req = getApplicationContext().getString(R.string.mutation,
+        getApplicationContext().getString(R.string.imTyping, userIds));
+    Timber.i("SOEF " + req);
+    webSocketConnection.send(req);
   }
 
   public void subscribeRoomUpdate(String roomId) {
@@ -183,6 +205,22 @@ import timber.log.Timber;
     webSocketConnection.send(req);
   }
 
+  public void unsubscribeChat(String userIds) {
+    String req1 = getApplicationContext().getString(R.string.subscription,
+        getApplicationContext().getString(R.string.subscription_remove,
+            chatSubscriptions.get(userIds + MESSAGE_CREATED_SUFFIX)));
+    String req2 = getApplicationContext().getString(R.string.subscription,
+        getApplicationContext().getString(R.string.subscription_remove,
+            chatSubscriptions.get(userIds + MESSAGE_IS_TYPING_SUFFIX)));
+    Timber.i("SOEF REMOVE " + req1);
+    Timber.i("SOEF REMOVE " + req2);
+    chatSubscriptions.remove(userIds + MESSAGE_CREATED_SUFFIX);
+    chatSubscriptions.remove(userIds + MESSAGE_IS_TYPING_SUFFIX);
+
+    webSocketConnection.send(req1);
+    webSocketConnection.send(req2);
+  }
+
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
     if (intent != null) {
       String type = intent.getStringExtra(TYPE);
@@ -196,13 +234,18 @@ import timber.log.Timber;
         } else if (type.equals(CHAT_SUBSCRIBE)) {
           String usersFromatedIds = intent.getStringExtra(CHAT_IDS);
           subscribeChat(usersFromatedIds);
+        } else if (type.equals(CHAT_SUBSCRIBE_IMTYPING)) {
+          String usersFromatedIds = intent.getStringExtra(CHAT_IDS);
+          subscribeImTyping(usersFromatedIds);
+        } else if (type.equals(CHAT_UNSUBSCRIBE)) {
+          String usersFromatedIds = intent.getStringExtra(CHAT_IDS);
+          unsubscribeChat(usersFromatedIds);
         }
       }
     }
 
-    if (webSocketState != null &&
-        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
-            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
+        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -227,9 +270,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous() ||
-        StringUtils.isEmpty(accessToken.getTokenType()) ||
-        StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous()
+        || StringUtils.isEmpty(accessToken.getTokenType())
+        || StringUtils.isEmpty(accessToken.getAccessToken())) {
 
       webSocketConnection.setShouldReconnect(false);
     } else {
@@ -411,8 +454,9 @@ import timber.log.Timber;
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
-        getApplicationContext().getString(R.string.userfragment_infos) : "");
+    String userInfosFragment =
+        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
+            R.string.userfragment_infos) : "");
 
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 

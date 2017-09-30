@@ -32,6 +32,7 @@ import com.google.firebase.storage.UploadTask;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tribe.app.R;
+import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Shortcut;
@@ -60,11 +61,15 @@ import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
+import com.tribe.tribelivesdk.util.JsonUtils;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
@@ -78,6 +83,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
+import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMTYPING;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_EMOJI;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_IMAGE;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_TEXT;
@@ -114,6 +120,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private int type, widthRefExpended, widthRefInit;
   private boolean editTextChange = false, isHeart = false, load = false;
   private String[] arrIds;
+  private Shortcut shortcut;
 
   @BindView(R.id.editText) EditTextFont editText;
   @BindView(R.id.recyclerViewChat) RecyclerView recyclerView;
@@ -139,7 +146,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   @Inject ScreenUtils screenUtils;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription counterSubscription = null;
 
   public ChatView(@NonNull Context context) {
     super(context);
@@ -166,6 +172,16 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     initParams();
   }
 
+  public void onResumeView() {
+    Timber.w(" SOEF SET CHAT ID AND CALL PRESENTER ");
+    context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
+        JsonUtils.arrayToJson(arrIds)));
+    messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
+    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
+    messagePresenter.getDiskShortcut(shortcut.getId());
+    messagePresenter.getIsTyping();
+  }
+
   private void initParams() {
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
@@ -176,8 +192,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     });
   }
 
-  public void setChatId(List<User> friends, Shortcut shortcut) {
-
+  private void setTypeChatUX() {
     if (type == (FROM_LIVE)) {
       topbar.setVisibility(GONE);
       containerUsers.setVisibility(GONE);
@@ -194,14 +209,19 @@ public class ChatView extends FrameLayout implements ChatMVPView {
           ContextCompat.getDrawable(context, R.drawable.background_blur));
       editText.setTextColor(ContextCompat.getColor(context, R.color.white));
     }
+  }
 
+  public void setChatId(List<User> friends, Shortcut shortcut) {
+    this.shortcut = shortcut;
+    setTypeChatUX();
     avatarView.load(friends.get(0).getProfilePicture());
     List<String> userIds = new ArrayList<>();
     for (User friend : friends) {
       userIds.add(friend.getId());
     }
     this.members = friends;
-    arrIds = userIds.toArray(new String[userIds.size()]);
+    this.arrIds = userIds.toArray(new String[userIds.size()]);
+
     if (friends.size() > 1) {
       title.setText(context.getString(R.string.shortcut_members_count, friends.size()));
       title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_edit_chat, 0);
@@ -209,12 +229,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
       title.setText(friends.get(0).getDisplayName());
       title.setTextColor(Color.BLACK);
     }
-
-    Timber.w(" SOEF SET CHAT ID AND CALL PRESENTER ");
-    messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
-    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
-    messagePresenter.getDiskShortcut(shortcut.getId());
-    messagePresenter.getIsTyping();
   }
 
   private void sendPicture(Uri uri, int position) {
@@ -269,7 +283,9 @@ public class ChatView extends FrameLayout implements ChatMVPView {
         .onBackpressureDrop()
         .subscribe(avoid -> {
           if (!editTextString.isEmpty()) {
-            messagePresenter.imTypingMessage(arrIds);
+            //  messagePresenter.imTypingMessage(arrIds);//MADA
+            context.startService(WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMTYPING,
+                JsonUtils.arrayToJson(arrIds)));
           }
         }));
 
@@ -468,6 +484,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override protected void onAttachedToWindow() {
+    Timber.w("DETACHED onAttachedToWindow");
     super.onAttachedToWindow();
     messagePresenter.onViewAttached(this);
     populateUsersHorizontalList();
@@ -479,13 +496,26 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messagePresenter.onViewDetached();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
-      Timber.w("DETACHED SUBSC");
+
+      Iterator it = callDurationSubscription.entrySet().iterator();
+      while (it.hasNext()) {
+        Map.Entry pair = (Map.Entry) it.next();
+        it.remove();
+        Subscription sub = (Subscription) pair.getValue();
+        subscriptions.remove(sub);
+        sub.unsubscribe();
+      }
+      callDurationSubscription = null;
       subscriptions.unsubscribe();
       subscriptions.clear();
+      Timber.w("DETACHED SUBSC");
     }
     pulseLayout.clearAnimation();
     recyclerView.setAdapter(null);
     recyclerViewGrp.setAdapter(null);
+
+    context.startService(
+        WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
 
     super.onDetachedFromWindow();
   }
@@ -571,20 +601,17 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private void setAnimation(String type) {
     switch (type) {
       case TYPE_NORMAL:
-        Timber.e("SOEF TYPE TYPE_NORMAL");
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video));
         pulseLayout.stop();
         break;
       case TYPE_LIVE:
-        Timber.e("SOEF TYPE TYPE_LIVE");
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_red));
         pulseLayout.setColor(ContextCompat.getColor(context, R.color.red_pulse));
         pulseLayout.start();
         break;
       case TYPE_ONLINE:
-        Timber.e("SOEF TYPE ONLINE");
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_live));
         pulseLayout.setColor(ContextCompat.getColor(context, R.color.blue_new));
@@ -597,34 +624,46 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     Timber.e("SOEF errorLoadingMessageDisk");
   }
 
+  private Map<String, Subscription> callDurationSubscription = new HashMap<>();
+
   @Override public void isTypingEvent(String userId) {
     if (userId.equals(user.getId())) {
       return;
     }
-    Timber.e("SOEF IS TYPING " + userId);
-/*    subscriptions.add(Observable.interval(INTERVAL_IM_TYPING, TimeUnit.SECONDS)
-        .timeInterval()
-        .observeOn(AndroidSchedulers.mainThread())
-        .onBackpressureDrop()
-        .subscribe(avoid -> {
-          for (User u : members) {
 
-          }
-        }));*/
-
-    // COUNTER EVERY 2 SEC. IF NOTHING IS RECEIVED? SEND IS TYÏNG TO FALSE TO THE ADAPTER
-    User userTyping = null;
     for (User u : members) {
+
       if (u.getId().equals(userId)) {
-        userTyping = u;
-        userTyping.setTyping(true);
-        userTyping.setIsOnline(true);
+
+        if (!u.isTyping()) {
+          u.setTyping(true);
+          u.setIsOnline(true);
+          Timber.e("IS TYPING " + " " + u.toString());
+          int pos = chatUserAdapter.getIndexOfUser(u);
+          chatUserAdapter.notifyItemChanged(pos, u);
+        }
+
+        if (callDurationSubscription.get(userId) == null) {
+          Subscription ok = Observable.interval(5, TimeUnit.SECONDS)
+              .timeInterval()
+              .observeOn(AndroidSchedulers.mainThread())
+              .onBackpressureDrop()
+              .subscribe(avoid -> {
+                Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
+                if (u.isTyping()) {
+                  u.setTyping(false);
+                  int i = chatUserAdapter.getIndexOfUser(u);
+                  chatUserAdapter.notifyItemChanged(i, u);
+                }
+              });
+
+          callDurationSubscription.put(userId, ok);
+          subscriptions.add(ok);
+        }
       }
     }
-    int pos = chatUserAdapter.getIndexOfUser(userTyping);
-    chatUserAdapter.notifyItemChanged(pos, userTyping);
 
-    // chatUserAdapter.notifyItemMoved(pos, 0);
+    //chatUserAdapter.notifyItemMoved(pos, 0);
     //populateUsersHorizontalList();
   }
 
@@ -638,7 +677,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successShortcutUpdate(Shortcut shortcut) {
-    for (User u : shortcut.getMembers()) {
+  /*  for (User u : shortcut.getMembers()) {
       Timber.e("SOEF SHORTCUT UPDATED "
           + u.getDisplayName()
           + " "
@@ -646,7 +685,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
           + " isShortcutOnline ="
           + shortcut.isOnline());
     }
-
+*/
     chatUserAdapter.setItems(shortcut.getMembers());
     if (shortcut.isLive()) {
       setAnimation(TYPE_LIVE);

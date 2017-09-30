@@ -25,7 +25,8 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.ArrayList;
 import java.util.List;
-import timber.log.Timber;
+
+import static android.view.View.GONE;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -63,7 +64,7 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     User i = items.get(position);
     vh.name.setText(i.getDisplayName());
     vh.avatarView.load(i.getProfilePicture());
-    Timber.e("SOEF IS ON LIGNE " + position + " " + i.toString());
+    // Timber.i("SOEF onBindViewHolder " + position + " " + i.toString());
 
     if (i.isOnline()) {
       vh.container.setBackground(
@@ -80,16 +81,14 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
       int position, List<Object> payloads) {
     User i = (User) payloads.get(0);
 
-    Timber.e("PLAYLOAD " + position + " " + i.toString());
+    // Timber.i("SOEF onBindViewHolder PLAYLOAD " + position + " " + i.toString());
     ChatUserViewHolder vh = (ChatUserViewHolder) holder;
     counter++;
 
     if (i.isTyping()) {
-      // setCounter();
       extendsDots(vh);
     } else {
-      vh.dotsContainer.setAnimation(null);
-      vh.dotsContainer.setVisibility(View.GONE);
+      shrankContainer(vh);
     }
 
     if (i.isOnline()) {
@@ -129,6 +128,17 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
         });
   }
 
+  private void shrankContainer(ChatUserViewHolder vh) {
+    vh.dotsContainer.setVisibility(GONE);
+    LinearLayout.LayoutParams params =
+        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, height);
+
+    params.setMargins(0, 0, 20, 0);
+    vh.container.setLayoutParams(params);
+    vh.container.invalidate();
+    vh.container.requestLayout();
+  }
+
   private LinearLayout initDots(LinearLayout container) {
     if (container.getChildCount() > 0) return container;
     int sizeDot = context.getResources().getDimensionPixelSize(R.dimen.view_dot_size_chat);
@@ -136,7 +146,7 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
       View v = new View(context);
       v.setBackgroundResource(R.drawable.shape_oval_grey);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
-      lp.setMargins(0, 0, 7, 0);
+      lp.setMargins(0, 0, 10, 0);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
       viewDots.add(v);
