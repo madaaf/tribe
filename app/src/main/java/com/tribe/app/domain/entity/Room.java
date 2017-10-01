@@ -198,10 +198,10 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
 
   public synchronized void onJoinSuccess(User currentUser) {
     live_users.add(currentUser);
-    update(currentUser, this, true);
+    update(this, true);
   }
 
-  public synchronized void update(User currentUser, Room room, boolean shouldOverwrite) {
+  public synchronized void update(Room room, boolean shouldOverwrite) {
     this.name = room.name;
     this.accept_random = room.accept_random;
 

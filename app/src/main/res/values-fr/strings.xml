@@ -12,6 +12,7 @@
 	<string name="action_enter">Entrer</string>
 	<string name="action_start">Commencer</string>
 	<string name="action_unsend">Dés-envoyer</string>
+	<string name="action_resend">Ré-envoyer</string>
 	<string name="action_hide">Masquer</string>
 	<string name="action_copy">Copier</string>
 	

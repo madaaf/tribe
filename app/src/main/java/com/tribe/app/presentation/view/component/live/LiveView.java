@@ -22,7 +22,6 @@ import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.CallLevelHelper;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -61,7 +60,6 @@ import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -267,8 +265,6 @@ public class LiveView extends FrameLayout {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
-
-      endCallLevel();
 
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
       tagMap.put(TagManagerUtils.SOURCE, live.getSource());
@@ -654,8 +650,6 @@ public class LiveView extends FrameLayout {
           // TODO CHANGE WITH NEW SYSTEM
           //webRTCRoom.sendToPeer(remotePeer, getInvitedPayload(), true);
 
-          startCallLevel();
-
           live.getRoom().userJoinedWebRTC(remotePeer.getSession().getUserId());
 
           LiveRowView row = liveRowViewMap.get(remotePeer.getSession().getUserId());
@@ -675,10 +669,6 @@ public class LiveView extends FrameLayout {
 
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
           removeFromPeers(remotePeer.getSession().getUserId());
-
-          if (nbOtherUsersInRoom() == 0) {
-            endCallLevel();
-          }
 
           if (shouldLeave()) {
             onLeave.onNext(null);
@@ -754,37 +744,7 @@ public class LiveView extends FrameLayout {
     webRTCRoom.connect(options);
 
     // We just want to trigger the updates to update the UI
-    live.getRoom().update(user, room, false);
-  }
-
-  private void startCallLevel() {
-
-    if (callDurationSubscription == null) {
-      Date startedAt = new Date();
-
-      callDurationSubscription = Observable.interval(1, TimeUnit.SECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(tick -> {
-            //if (viewStatusName == null) return;
-
-            String level = CallLevelHelper.getCurrentLevel(getContext(), startedAt);
-            String duration = CallLevelHelper.getFormattedDuration(startedAt);
-
-            // TODO NEW THING ?
-            //viewStatusName.setStatusText(level, " " + duration);
-          });
-
-      tempSubscriptions.add(callDurationSubscription);
-    }
-  }
-
-  private void endCallLevel() {
-
-    if (callDurationSubscription != null) {
-      tempSubscriptions.remove(callDurationSubscription);
-      callDurationSubscription.unsubscribe();
-      callDurationSubscription = null;
-    }
+    live.getRoom().update(room, false);
   }
 
   public void initAnonymousSubscription(Observable<List<User>> obs) {

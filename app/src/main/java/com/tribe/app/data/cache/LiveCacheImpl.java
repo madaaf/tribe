@@ -1,6 +1,7 @@
 package com.tribe.app.data.cache;
 
 import android.content.Context;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
@@ -16,6 +17,8 @@ import rx.subjects.PublishSubject;
 public class LiveCacheImpl implements LiveCache {
 
   private Context context;
+  private UserRealm userRealm;
+
   private ObservableRxHashMap<String, Boolean> onlineMap;
   private ObservableRxHashMap<String, Boolean> liveMap;
   private ObservableRxHashMap<String, Invite> inviteMap;
@@ -25,6 +28,7 @@ public class LiveCacheImpl implements LiveCache {
 
   @Inject public LiveCacheImpl(Context context) {
     this.context = context;
+    this.userRealm = userRealm;
     onlineMap = new ObservableRxHashMap<>();
     liveMap = new ObservableRxHashMap<>();
     inviteMap = new ObservableRxHashMap<>();
@@ -96,6 +100,11 @@ public class LiveCacheImpl implements LiveCache {
   }
 
   @Override public void onRoomUpdated(Room roomUpdated) {
+    for (Invite invite : inviteMap.getMap().values()) {
+      if (invite.getRoom() != null && invite.getRoom().getId().equals(roomUpdated)) {
+        invite.getRoom().update(roomUpdated, true);
+      }
+    }
     onRoomUpdated.onNext(roomUpdated);
   }
 

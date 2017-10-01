@@ -1071,7 +1071,7 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onRoomUpdate(Room room) {
-    this.room.update(user, room, true);
+    this.room.update(room, true);
   }
 
   private void displayNotification(String txt) {
