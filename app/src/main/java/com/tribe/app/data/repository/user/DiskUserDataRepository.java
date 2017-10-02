@@ -22,7 +22,6 @@ import com.tribe.app.domain.interactor.user.UserRepository;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -237,7 +236,7 @@ import rx.Observable;
   @Override public Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
-    return Observable.combineLatest(userDataStore.shortcuts()
+    return Observable.combineLatest(userDataStore.singleShortcuts()
             .map(shortcutList -> userRealmDataMapper.getShortcutRealmDataMapper()
                 .transform(shortcutList)), userDataStore.contactsOnApp()
             .map(contactInterfaces -> contactRealmDataMapper.transform(contactInterfaces)),
@@ -247,26 +246,31 @@ import rx.Observable;
           List<Object> result = new ArrayList<>();
           Set<String> setAdded = new HashSet<>();
 
-          result.addAll(shortcutList);
+          for (Shortcut shortcut : shortcutList) {
+            result.add(shortcut);
+            if (shortcut.isSingle()) {
+              setAdded.add(shortcut.getSingleFriend().getId());
+            }
+          }
 
-          //for (Contact contact : contactOnAppList) {
-          //  compute(mapUsersAdded, includedUserIds, contact, result);
-          //}
+          for (Contact contact : contactOnAppList) {
+            compute(setAdded, includedUserIds, contact, result);
+          }
 
-          //for (Contact contact : contactInviteList) {
-          //  compute(mapUsersAdded, includedUserIds, contact, result);
-          //}
+          for (Contact contact : contactInviteList) {
+            compute(setAdded, includedUserIds, contact, result);
+          }
 
           return result;
         });
   }
 
-  private void compute(Map<String, User> mapUsersAdded, Set<String> includedUserIds,
-      Contact contact, List<Object> result) {
+  private void compute(Set<String> setAdded, Set<String> includedUserIds, Contact contact,
+      List<Object> result) {
     boolean shouldAdd = true;
     if (contact.getUserList() != null) {
       for (User userInList : contact.getUserList()) {
-        if (mapUsersAdded.containsKey(userInList.getId()) &&
+        if (setAdded.contains(userInList.getId()) &&
             (includedUserIds == null || !includedUserIds.contains(userInList.getId()))) {
           shouldAdd = false;
         }

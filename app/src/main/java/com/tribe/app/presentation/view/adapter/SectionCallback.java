@@ -1,10 +1,10 @@
 package com.tribe.app.presentation.view.adapter;
 
-import com.tribe.app.presentation.view.widget.header.HomeListViewHeader;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 
 public interface SectionCallback {
 
-    boolean isSection(int position);
+  boolean isSection(int position);
 
-    @HomeListViewHeader.HeaderType int getSectionType(int position);
-  }
+  @BaseSectionItemDecoration.HeaderType int getSectionType(int position);
+}

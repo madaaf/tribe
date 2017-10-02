@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/item_base_list_height"
+    >
+
+  <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+      android:id="@+id/viewNewAvatar"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
+      android:layout_gravity="center_vertical"
+      android:layout_marginStart="@dimen/horizontal_margin"
+      />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:layout_marginStart="76dp"
+      android:orientation="vertical"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Title.2.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:maxLines="1"
+        android:visibility="gone"
+        style="@style/Caption.One.Black"
+        />
+
+  </LinearLayout>
+
+  <ImageView
+      android:id="@+id/btnAdd"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="end|center_vertical"
+      android:layout_marginEnd="@dimen/horizontal_margin"
+      android:clickable="true"
+      android:foreground="@drawable/selectable_button_oval"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_add"
+      />
+
+</FrameLayout>

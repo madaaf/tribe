@@ -18,12 +18,12 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
  * https://github.com/paetztm/recycler_view_headers
  */
 
-public class RecyclerSectionItemDecoration extends BaseSectionItemDecoration {
+public class SearchSectionItemDecoration extends BaseSectionItemDecoration {
 
   private TextViewFont txtLabel;
   private ImageView imgPicto;
 
-  public RecyclerSectionItemDecoration(int headerHeight, boolean sticky,
+  public SearchSectionItemDecoration(int headerHeight, boolean sticky,
       @NonNull SectionCallback sectionCallback, ScreenUtils screenUtils) {
     super(headerHeight, sticky, sectionCallback, screenUtils);
   }
@@ -31,22 +31,22 @@ public class RecyclerSectionItemDecoration extends BaseSectionItemDecoration {
   @Override protected void populateHeader(Context context, int headerType,
       GradientDrawable gradientDrawable) {
     switch (headerType) {
-      case HOME_ONGOING:
-        txtLabel.setText(R.string.home_section_ongoing);
+      case SEARCH_RESULTS:
+        txtLabel.setText(R.string.home_section_results);
         imgPicto.setImageResource(R.drawable.picto_header_ongoing);
-        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.violet_home));
+        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
         break;
 
-      case HOME_ONLINE:
-        txtLabel.setText(R.string.home_section_online);
+      case SEARCH_SUGGESTED_CONTACTS:
+        txtLabel.setText(R.string.home_section_suggested_friends);
         imgPicto.setImageResource(R.drawable.picto_header_online);
-        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.blue_new));
+        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
         break;
 
-      case HOME_RECENT:
-        txtLabel.setText(R.string.home_section_recent);
+      case SEARCH_INVITES_TO_SEND:
+        txtLabel.setText(R.string.home_section_invites_to_send);
         imgPicto.setImageResource(R.drawable.picto_recent);
-        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.grey_offline));
+        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
         break;
     }
   }

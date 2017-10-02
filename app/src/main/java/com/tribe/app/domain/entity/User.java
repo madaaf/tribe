@@ -2,12 +2,12 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.app.domain.entity.helpers.Changeable;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
-import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 04/05/2016.
@@ -377,24 +376,24 @@ public class User
 
   @Override public int getSectionType() {
     if (isUserInCall()) {
-      return LiveInviteViewHeader.CHAT_MEMBERS;
+      return BaseSectionItemDecoration.LIVE_CHAT_MEMBERS;
     } else {
-      return LiveInviteViewHeader.ADD_FRIENDS_IN_CALL;
+      return BaseSectionItemDecoration.LIVE_ADD_FRIENDS_IN_CALL;
     }
   }
 
   @Override public String toString() {
-    return "User{"
-        + "id='"
-        + id
-        + '\''
-        + ", display_name='"
-        + display_name
-        + '\''
-        + ", is_online="
-        + isOnline()
-        + ", isTyping="
-        + isTyping()
-        + '}';
+    return "User{" +
+        "id='" +
+        id +
+        '\'' +
+        ", display_name='" +
+        display_name +
+        '\'' +
+        ", is_online=" +
+        isOnline() +
+        ", isTyping=" +
+        isTyping() +
+        '}';
   }
 }

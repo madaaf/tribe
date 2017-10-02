@@ -1,10 +1,10 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.utils.ObjectUtils;
-import com.tribe.app.presentation.view.widget.header.HomeListViewHeader;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -109,13 +109,13 @@ public abstract class Recipient implements Serializable, BaseListInterface {
         getId().equals(Recipient.ID_CALL_ROULETTE));
   }
 
-  public @HomeListViewHeader.HeaderType int getSectionType() {
+  public @BaseSectionItemDecoration.HeaderType int getSectionType() {
     if (isLive() || !isRead()) {
-      return HomeListViewHeader.ONGOING;
+      return BaseSectionItemDecoration.HOME_ONGOING;
     } else if (isOnline()) {
-      return HomeListViewHeader.ONLINE;
+      return BaseSectionItemDecoration.HOME_ONLINE;
     } else {
-      return HomeListViewHeader.RECENT;
+      return BaseSectionItemDecoration.HOME_RECENT;
     }
   }
 

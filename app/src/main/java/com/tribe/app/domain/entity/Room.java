@@ -1,7 +1,7 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
-import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -341,6 +341,6 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   }
 
   @Override public int getSectionType() {
-    return LiveInviteViewHeader.INVITE_LINK;
+    return BaseSectionItemDecoration.LIVE_INVITE_LINK;
   }
 }

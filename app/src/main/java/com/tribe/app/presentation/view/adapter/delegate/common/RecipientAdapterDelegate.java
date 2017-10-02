@@ -59,8 +59,9 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
     vh.viewListItem.setRecipient(recipient);
   }
 
-  @Override public void onBindViewHolder(@NonNull List<Recipient> items,
-      @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+  @Override
+  public void onBindViewHolder(@NonNull List<Recipient> items, @NonNull RecyclerView.ViewHolder holder,
+      int position, List<Object> payloads) {
     RecipientHomeViewHolder vh = (RecipientHomeViewHolder) holder;
     Recipient recipient = items.get(position);
 

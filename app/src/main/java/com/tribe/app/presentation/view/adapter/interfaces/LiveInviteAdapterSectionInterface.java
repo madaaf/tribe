@@ -1,6 +1,6 @@
 package com.tribe.app.presentation.view.adapter.interfaces;
 
-import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 
 public interface LiveInviteAdapterSectionInterface {
 
@@ -14,5 +14,5 @@ public interface LiveInviteAdapterSectionInterface {
 
   String getCurrentRoomId();
 
-  @LiveInviteViewHeader.HeaderType int getSectionType();
+  @BaseSectionItemDecoration.HeaderType int getSectionType();
 }

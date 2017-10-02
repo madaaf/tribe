@@ -3,8 +3,11 @@ package com.tribe.app.presentation.view.adapter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.presentation.view.adapter.delegate.common.ShortcutAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -20,8 +23,11 @@ public class SearchAdapter extends RecyclerView.Adapter {
   public static final int EMPTY_VIEW_TYPE = 97;
 
   // DELEGATES
-  protected RxAdapterDelegatesManager delegatesManager;
-  protected ShortcutAdapterDelegate shortcutAdapterDelegate;
+  private RxAdapterDelegatesManager delegatesManager;
+  private ShortcutAdapterDelegate shortcutAdapterDelegate;
+  private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
+  private UserToAddAdapterDelegate userToAddAdapterDelegate;
+  private ContactToInviteAdapterDelegate contactToInviteAdapterDelegate;
 
   // VARIABLES
   private List<Object> items;
@@ -34,10 +40,17 @@ public class SearchAdapter extends RecyclerView.Adapter {
 
     delegatesManager = new RxAdapterDelegatesManager();
 
-    delegatesManager.addDelegate(HEADER_TYPE, new ContactsHeaderAdapterDelegate(context));
-
     shortcutAdapterDelegate = new ShortcutAdapterDelegate(context);
     delegatesManager.addDelegate(shortcutAdapterDelegate);
+
+    searchResultGridAdapterDelegate = new SearchResultGridAdapterDelegate(context);
+    delegatesManager.addDelegate(searchResultGridAdapterDelegate);
+
+    userToAddAdapterDelegate = new UserToAddAdapterDelegate(context);
+    delegatesManager.addDelegate(userToAddAdapterDelegate);
+
+    contactToInviteAdapterDelegate = new ContactToInviteAdapterDelegate(context);
+    delegatesManager.addDelegate(contactToInviteAdapterDelegate);
 
     setHasStableIds(true);
   }
@@ -94,6 +107,17 @@ public class SearchAdapter extends RecyclerView.Adapter {
 
   public void clear() {
     this.items.clear();
+    this.notifyDataSetChanged();
+  }
+
+  public void updateSearch(SearchResult searchResult, List<Object> contactList) {
+    this.items.clear();
+    this.items.add(searchResult);
+
+    if (contactList != null && contactList.size() > 0) {
+      this.items.addAll(contactList);
+    }
+
     this.notifyDataSetChanged();
   }
 }

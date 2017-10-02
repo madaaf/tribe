@@ -10,7 +10,6 @@ import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.TribeGuestAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
@@ -29,7 +28,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
   // DELEGATES
   protected RxAdapterDelegatesManager delegatesManager;
-  private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
+  //private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
   private ContactsGridAdapterDelegate contactsGridAdapterDelegate;
   private UserListAdapterDelegate userListAdapterDelegate;
   private RecipientListAdapterDelegate recipientListAdapterDelegate;
@@ -46,8 +45,8 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
     delegatesManager = new RxAdapterDelegatesManager();
 
-    searchResultGridAdapterDelegate = new SearchResultGridAdapterDelegate(context);
-    delegatesManager.addDelegate(searchResultGridAdapterDelegate);
+    //searchResultGridAdapterDelegate = new SearchResultGridAdapterDelegate(context);
+    //delegatesManager.addDelegate(searchResultGridAdapterDelegate);
 
     contactsGridAdapterDelegate = new ContactsGridAdapterDelegate(context);
     delegatesManager.addDelegate(contactsGridAdapterDelegate);
@@ -159,8 +158,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
 
   // OBSERVABLES
   public Observable<View> onClickAdd() {
-    return Observable.merge(searchResultGridAdapterDelegate.clickAdd(),
-        userListAdapterDelegate.clickAdd());
+    return userListAdapterDelegate.clickAdd();
   }
 
   public Observable<View> onClickInvite() {
@@ -169,8 +167,7 @@ public class ContactAdapter extends RecyclerView.Adapter {
   }
 
   public Observable<View> onHangLive() {
-    return Observable.merge(searchResultGridAdapterDelegate.onHangLive(),
-        recipientListAdapterDelegate.onHangLive());
+    return recipientListAdapterDelegate.onHangLive();
   }
 
   public Observable<View> onUnblock() {

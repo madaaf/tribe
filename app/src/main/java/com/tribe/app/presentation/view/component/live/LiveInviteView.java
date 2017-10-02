@@ -26,13 +26,13 @@ import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.adapter.LiveInviteAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.InviteListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.LiveInviteSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.diff.LiveInviteDiffCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.header.LiveInviteViewHeader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -185,7 +185,7 @@ public class LiveInviteView extends FrameLayout
       }
 
       @Override public int getSectionType(int position) {
-        if (position == -1) return LiveInviteViewHeader.CHAT_MEMBERS;
+        if (position == -1) return BaseSectionItemDecoration.LIVE_CHAT_MEMBERS;
         return itemsList.get(position).getSectionType();
       }
     };

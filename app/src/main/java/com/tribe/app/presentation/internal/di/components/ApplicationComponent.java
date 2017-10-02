@@ -70,13 +70,15 @@ import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.common.RecipientAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.ManageShortcutListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.common.RecipientAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
@@ -109,7 +111,6 @@ import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TooltipView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
-import com.tribe.app.presentation.view.widget.header.HomeListViewHeader;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
 import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
@@ -209,8 +210,6 @@ public interface ApplicationComponent {
 
   void inject(TextHomeNameActionView textHomeNameStatusView);
 
-  void inject(HomeListViewHeader homeListViewHeader);
-
   void inject(LiveViewFake liveViewFake);
 
   void inject(RoomLinkAdapterDelegate roomAdapterDelegate);
@@ -220,6 +219,10 @@ public interface ApplicationComponent {
   void inject(TopBarLogoView topBarLogoView);
 
   void inject(TribeBroadcastReceiver receiver);
+
+  void inject(UserToAddAdapterDelegate userToAddAdapterDelegate);
+
+  void inject(ContactToInviteAdapterDelegate contactToInviteAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);

@@ -14,7 +14,6 @@
       android:layout_marginStart="@dimen/horizontal_margin_small"
       android:maxLines="1"
       android:textAllCaps="true"
-      android:text="Heylolalalal"
       style="@style/Title.2.White"
       />
 </LinearLayout>

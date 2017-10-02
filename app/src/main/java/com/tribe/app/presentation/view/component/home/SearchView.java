@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.Recipient;
@@ -45,7 +47,11 @@ import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.adapter.SearchAdapter;
+import com.tribe.app.presentation.view.adapter.SectionCallback;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.DividerHeadersItemDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.SearchSectionItemDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.SearchViewDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -178,12 +184,20 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   private void initRecyclerView() {
-    this.layoutManager = new ContactsLayoutManager(context());
-    this.recyclerViewContacts.setLayoutManager(layoutManager);
-    this.recyclerViewContacts.setItemAnimator(null);
-    this.recyclerViewContacts.addItemDecoration(
+    layoutManager = new ContactsLayoutManager(context());
+    recyclerViewContacts.setLayoutManager(layoutManager);
+    recyclerViewContacts.setItemAnimator(null);
+    recyclerViewContacts.addItemDecoration(
         new DividerHeadersItemDecoration(screenUtils.dpToPx(10), screenUtils.dpToPx(10)));
-    this.recyclerViewContacts.setAdapter(searchAdapter);
+    recyclerViewContacts.setAdapter(searchAdapter);
+    recyclerViewContacts.addItemDecoration(new SearchViewDividerDecoration(context(),
+        ContextCompat.getColor(context(), R.color.grey_divider), screenUtils.dpToPx(0.5f),
+        getSectionCallback(searchAdapter.getItems())));
+
+    SearchSectionItemDecoration sectionItemDecoration = new SearchSectionItemDecoration(
+        getResources().getDimensionPixelSize(R.dimen.list_search_header_height), false,
+        getSectionCallback(searchAdapter.getItems()), screenUtils);
+    recyclerViewContacts.addItemDecoration(sectionItemDecoration);
 
     searchAdapter.setItems(new ArrayList<>());
 
@@ -267,6 +281,32 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
     //    }));
   }
 
+  private SectionCallback getSectionCallback(final List<Object> itemList) {
+    return new SectionCallback() {
+      @Override public boolean isSection(int position) {
+        if (position == 0) return true;
+
+        Object item = itemList.get(position);
+        Object itemPrevious = itemList.get(position - 1);
+
+        return position > 0 &&
+            !item.getClass().equals(itemPrevious.getClass()) &&
+            !(item instanceof Shortcut && itemPrevious instanceof SearchResult);
+      }
+
+      @Override public int getSectionType(int position) {
+        Object item = itemList.get(position);
+        if (item instanceof SearchResult || item instanceof Shortcut) {
+          return BaseSectionItemDecoration.SEARCH_RESULTS;
+        } else if (item instanceof User) {
+          return BaseSectionItemDecoration.SEARCH_SUGGESTED_CONTACTS;
+        } else {
+          return BaseSectionItemDecoration.SEARCH_INVITES_TO_SEND;
+        }
+      }
+    };
+  }
+
   protected ApplicationComponent getApplicationComponent() {
     return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
   }
@@ -285,78 +325,41 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   private void refactorContacts(List<Object> contactList) {
     this.filteredContactList.clear();
-    this.filteredContactList.addAll(contactList);
 
-    //boolean hasDoneSuggested = false, hasDoneContacts = false, hasNewFriends = false;
     //Set<String> setLinkedUser = new HashSet<>();
-    //
-    //for (Object obj : contactList) {
-    //  boolean shouldAdd = false;
-    //  if (obj instanceof Contact) {
-    //    Contact contact = (Contact) obj;
-    //    if (!StringUtils.isEmpty(contact.getName()) &&
-    //        contact.getName().toLowerCase().startsWith(search)) {
-    //      shouldAdd = true;
-    //    }
-    //  } else if (obj instanceof Recipient) {
-    //    Recipient recipient = (Recipient) obj;
-    //    if (!StringUtils.isEmpty(search) &&
-    //        ((!StringUtils.isEmpty(recipient.getDisplayName()) &&
-    //            recipient.getDisplayName().toLowerCase().startsWith(search)) ||
-    //            (recipient.getUsername() != null &&
-    //                recipient.getUsername().toLowerCase().startsWith(search)))) {
-    //      shouldAdd = true;
-    //    }
-    //  }
-    //
-    //  if (shouldAdd) {
-    //    if (!hasDoneSuggested && obj instanceof Recipient) {
-    //      hasDoneSuggested = true;
-    //      this.filteredContactList.add(
-    //          EmojiParser.demojizedText(getContext().getString(R.string.search_already_friends)));
-    //    } else if (!hasDoneContacts && obj instanceof Contact) {
-    //      Contact contact = (Contact) obj;
-    //      if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-    //        User user = contact.getUserList().get(0);
-    //        user.setNew(contact.isNew());
-    //
-    //        if (contact.isNew()) {
-    //          hasNewFriends = true;
-    //        }
-    //        if (hasNewFriends) {
-    //          String titleNewfriend =
-    //              EmojiParser.demojizedText(getContext().getString(R.string.search_new_friends));
-    //          if (!filteredContactList.contains(titleNewfriend)) {
-    //            this.filteredContactList.add(0, titleNewfriend);
-    //          }
-    //          this.filteredContactList.add(1, user);
-    //        }
-    //
-    //        if (!hasDoneSuggested) {
-    //          hasDoneSuggested = true;
-    //          String titleAlreadyFriend = EmojiParser.demojizedText(
-    //              getContext().getString(R.string.search_already_friends));
-    //          if (!filteredContactList.contains(titleAlreadyFriend)) {
-    //            this.filteredContactList.add(titleAlreadyFriend);
-    //          }
-    //        }
-    //
-    //        if (!filteredContactList.contains(user) && !setLinkedUser.contains(user.getId())) {
-    //          this.filteredContactList.add(user);
-    //          setLinkedUser.add(user.getId());
-    //        }
-    //
-    //        shouldAdd = false;
-    //      } else {
-    //        this.filteredContactList.add(
-    //            EmojiParser.demojizedText(getContext().getString(R.string.search_invite_contacts)));
-    //        hasDoneContacts = true;
-    //      }
-    //    }
-    //
-    //    if (shouldAdd) this.filteredContactList.add(obj);
-    //  }
-    //}
+    boolean hasNewFriends = false;
+
+    for (Object obj : contactList) {
+      boolean shouldAdd = false;
+      if (obj instanceof Contact) {
+        Contact contact = (Contact) obj;
+        if (!StringUtils.isEmpty(contact.getName()) &&
+            contact.getName().toLowerCase().startsWith(search)) {
+          shouldAdd = true;
+        }
+      } else if (obj instanceof Recipient) {
+        Recipient recipient = (Recipient) obj;
+        if (!StringUtils.isEmpty(search) &&
+            ((!StringUtils.isEmpty(recipient.getDisplayName()) &&
+                recipient.getDisplayName().toLowerCase().startsWith(search)) ||
+                (recipient.getUsername() != null &&
+                    recipient.getUsername().toLowerCase().startsWith(search)))) {
+          shouldAdd = true;
+        }
+      }
+
+      if (shouldAdd) {
+        if (obj instanceof Contact) {
+          Contact contact = (Contact) obj;
+          if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+            User user = contact.getUserList().get(0);
+            user.setNew(contact.isNew());
+          }
+        }
+
+        if (shouldAdd) this.filteredContactList.add(obj);
+      }
+    }
   }
 
   private void filter() {
@@ -369,7 +372,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   private void updateSearch() {
     filter();
-    //this.contactAdapter.updateSearch(searchResult, filteredContactList);
+    this.searchAdapter.updateSearch(searchResult, filteredContactList);
   }
 
   public void refactorWarning(boolean open) {
