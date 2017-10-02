@@ -826,6 +826,10 @@ public class CloudUserDataStore implements UserDataStore {
     return this.tribeApi.removeShortcut(request);
   }
 
+  @Override public Observable<List<ShortcutRealm>> singleShortcuts() {
+    return null;
+  }
+
   @Override public Observable<List<ShortcutRealm>> shortcuts() {
     return null;
   }

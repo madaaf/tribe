@@ -135,6 +135,8 @@ public interface UserRepository {
   /**
    * Get an {@link Observable} which will emit a {@link List<Shortcut>}
    */
+  Observable<List<Shortcut>> singleShortcuts();
+
   Observable<List<Shortcut>> shortcuts();
 
   Observable<Shortcut> shortcutForUserIds(String... userIds);

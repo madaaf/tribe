@@ -76,12 +76,12 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdap
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.RecipientHomeAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.common.RecipientAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.VisualizerView;
-import com.tribe.app.presentation.view.component.home.HomeListView;
+import com.tribe.app.presentation.view.component.common.ShortcutListView;
 import com.tribe.app.presentation.view.component.home.NewChatView;
 import com.tribe.app.presentation.view.component.home.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.TopBarLogoView;
@@ -199,9 +199,9 @@ public interface ApplicationComponent {
 
   void inject(NotificationBuilder notificationBuilder);
 
-  void inject(HomeListView homeListView);
+  void inject(ShortcutListView homeListView);
 
-  void inject(RecipientHomeAdapterDelegate homeAdapterDelegate);
+  void inject(RecipientAdapterDelegate homeAdapterDelegate);
 
   void inject(PictoChatView pictoChatView);
 

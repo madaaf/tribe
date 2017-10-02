@@ -130,6 +130,8 @@ public interface UserDataStore {
 
   Observable<Boolean> removeShortcut(String shortcutId);
 
+  Observable<List<ShortcutRealm>> singleShortcuts();
+
   Observable<List<ShortcutRealm>> shortcuts();
 
   Observable<ShortcutRealm> shortcutForUserIds(String... userIds);

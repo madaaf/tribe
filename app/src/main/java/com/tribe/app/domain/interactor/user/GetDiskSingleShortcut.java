@@ -20,6 +20,6 @@ public class GetDiskSingleShortcut extends UseCaseDisk {
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return userRepository.shortcuts();
+    return userRepository.singleShortcuts();
   }
 }

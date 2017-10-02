@@ -14,7 +14,11 @@ import rx.Observable;
 
   Observable<Map<String, Boolean>> onlineMap();
 
+  Map<String, Boolean> getOnlineMap();
+
   Observable<Map<String, Boolean>> liveMap();
+
+  Map<String, Boolean> getLiveMap();
 
   void putOnline(String id);
 

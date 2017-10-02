@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.component.home;
+package com.tribe.app.presentation.view.component.common;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -25,7 +25,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 09/04/2017.
  */
-public class HomeListView extends RelativeLayout {
+public class ShortcutListView extends RelativeLayout {
 
   @IntDef({ NORMAL, LIVE, CHAT }) public @interface Type {
   }
@@ -54,16 +54,16 @@ public class HomeListView extends RelativeLayout {
   private int type;
   private Recipient recipient;
 
-  public HomeListView(Context context) {
+  public ShortcutListView(Context context) {
     super(context);
     init();
   }
 
-  public HomeListView(Context context, AttributeSet attrs) {
+  public ShortcutListView(Context context, AttributeSet attrs) {
     super(context, attrs);
 
-    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.HomeListView);
-    type = a.getInt(R.styleable.HomeListView_homeViewType, NORMAL);
+    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ShortcutListView);
+    type = a.getInt(R.styleable.ShortcutListView_homeViewType, NORMAL);
     a.recycle();
 
     init();

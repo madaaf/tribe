@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.adapter.delegate.grid;
+package com.tribe.app.presentation.view.adapter.delegate.common;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -13,7 +13,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.helper.ItemTouchHelperViewHolder;
-import com.tribe.app.presentation.view.component.home.HomeListView;
+import com.tribe.app.presentation.view.component.common.ShortcutListView;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -22,7 +22,7 @@ import timber.log.Timber;
 /**
  * Created by tiago on 09/04/2017
  */
-public abstract class RecipientHomeAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
+public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Recipient>> {
 
   protected LayoutInflater layoutInflater;
   protected Context context;
@@ -33,7 +33,7 @@ public abstract class RecipientHomeAdapterDelegate extends RxAdapterDelegate<Lis
   protected final PublishSubject<View> longClick = PublishSubject.create();
   protected final PublishSubject<View> onChatClick = PublishSubject.create();
 
-  public RecipientHomeAdapterDelegate(Context context) {
+  public RecipientAdapterDelegate(Context context) {
     this.context = context;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -88,7 +88,7 @@ public abstract class RecipientHomeAdapterDelegate extends RxAdapterDelegate<Lis
   static class RecipientHomeViewHolder extends RecyclerView.ViewHolder
       implements ItemTouchHelperViewHolder {
 
-    @BindView(R.id.viewListItem) HomeListView viewListItem;
+    @BindView(R.id.viewListItem) ShortcutListView viewListItem;
 
     public RecipientHomeViewHolder(View itemView) {
       super(itemView);

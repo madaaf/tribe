@@ -9,7 +9,6 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.Realm;
 import io.realm.RealmResults;
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -146,28 +145,29 @@ public class UserCacheImpl implements UserCache {
 
   // ALWAYS CALLED ON MAIN THREAD
   @Override public Observable<UserRealm> userInfos(String userId) {
-    return Observable.combineLatest(realm.where(UserRealm.class)
+    return realm.where(UserRealm.class)
         .equalTo("id", userId)
         .findAll()
         .asObservable()
         .filter(userRealmList -> userRealmList.isLoaded() && userRealmList.size() > 0)
         .map(userRealmList -> userRealmList.get(0))
         .map(user -> realm.copyFromRealm(user))
-        .defaultIfEmpty(new UserRealm()), realm.where(ShortcutRealm.class)
+        .unsubscribeOn(AndroidSchedulers.mainThread());
+  }
+
+  @Override public Observable<List<ShortcutRealm>> singleShortcuts() {
+    return realm.where(ShortcutRealm.class)
+        .equalTo(ShortcutRealm.SINGLE, true)
         .equalTo(ShortcutRealm.STATUS, ShortcutRealm.DEFAULT)
         .findAll()
         .asObservable()
-        .filter(shortcutList -> shortcutList.isLoaded() && shortcutList.size() > 0)
-        .map(shortcutList -> realm.copyFromRealm(shortcutList))
-        .defaultIfEmpty(new ArrayList<>()), (userRealm, shortcutRealmList) -> {
-      userRealm.setShortcuts(shortcutRealmList);
-      return userRealm;
-    }).unsubscribeOn(AndroidSchedulers.mainThread());
+        .filter(singleShortcutList -> singleShortcutList.isLoaded())
+        .map(singleShortcutList -> realm.copyFromRealm(singleShortcutList))
+        .unsubscribeOn(AndroidSchedulers.mainThread());
   }
 
   @Override public Observable<List<ShortcutRealm>> shortcuts() {
     return realm.where(ShortcutRealm.class)
-        .equalTo(ShortcutRealm.SINGLE, true)
         .equalTo(ShortcutRealm.STATUS, ShortcutRealm.DEFAULT)
         .findAll()
         .asObservable()

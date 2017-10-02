@@ -61,7 +61,7 @@
     </attr>
   </declare-styleable>
 
-  <declare-styleable name="HomeListView">
+  <declare-styleable name="ShortcutListView">
     <attr format="enum" name="homeViewType">
       <enum name="normal" value="0" />
       <enum name="live" value="1" />

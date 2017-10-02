@@ -93,7 +93,11 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
   }
 
-  @Override public Observable<List<Shortcut>> shortcuts() { // TOSO
+  @Override public Observable<List<Shortcut>> singleShortcuts() { // TOSO
+    return null;
+  }
+
+  @Override public Observable<List<Shortcut>> shortcuts() {
     return null;
   }
 

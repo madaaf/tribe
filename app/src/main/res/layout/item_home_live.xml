@@ -15,7 +15,7 @@
       android:background="@drawable/bg_gradient_live"
       />
 
-  <com.tribe.app.presentation.view.component.home.HomeListView
+  <com.tribe.app.presentation.view.component.common.ShortcutListView
       android:id="@+id/viewListItem"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"

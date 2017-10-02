@@ -34,26 +34,9 @@ public class DiskLiveDataRepository implements LiveRepository {
   @Override public Observable<Room> getRoomUpdated() {
     final DiskLiveDataStore liveDataStore =
         (DiskLiveDataStore) this.dataStoreFactory.createDiskDataStore();
-    return Observable.combineLatest(liveDataStore.onlineMap().startWith(new HashMap<>()),
-        liveDataStore.getRoomUpdated().startWith(Observable.empty()), (onlineMap, room) -> {
-          updateOnlineLiveRoom(room, onlineMap);
-          return room;
-        });
+    return liveDataStore.getRoomUpdated();
   }
 
-  private void updateOnlineLiveRoom(Room room, Map<String, Boolean> onlineMap) {
-    if (room.getLiveUsers() != null) {
-      for (User user : room.getLiveUsers()) {
-        user.setIsOnline(onlineMap.containsKey(user.getId()));
-      }
-    }
-
-    if (room.getInvitedUsers() != null) {
-      for (User user : room.getInvitedUsers()) {
-        user.setIsOnline(onlineMap.containsKey(user.getId()));
-      }
-    }
-  }
 
   @Override public Observable<Room> getRoom(Live live) {
     return null;

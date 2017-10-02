@@ -31,6 +31,8 @@ import rx.Observable;
 
   Observable<UserRealm> userInfos(String userId);
 
+  Observable<List<ShortcutRealm>> singleShortcuts();
+
   Observable<List<ShortcutRealm>> shortcuts();
 
   Observable<List<ShortcutRealm>> blockedShortcuts();

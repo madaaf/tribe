@@ -5,12 +5,13 @@ import android.support.annotation.NonNull;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.presentation.view.adapter.delegate.common.RecipientAdapterDelegate;
 import java.util.List;
 
 /**
  * Created by tiago on 01/18/2017.
  */
-public class ShortcutChatActiveHomeAdapterDelegate extends RecipientHomeAdapterDelegate {
+public class ShortcutChatActiveHomeAdapterDelegate extends RecipientAdapterDelegate {
 
   public ShortcutChatActiveHomeAdapterDelegate(Context context) {
     super(context);

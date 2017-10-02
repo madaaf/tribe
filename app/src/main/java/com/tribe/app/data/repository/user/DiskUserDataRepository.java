@@ -5,7 +5,6 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
@@ -20,10 +19,8 @@ import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
-import com.tribe.app.presentation.utils.StringUtils;
-import io.realm.RealmList;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,18 +70,13 @@ import rx.Observable;
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-    return Observable.combineLatest(userDataStore.userInfos(null),
-        userDataStore.onlineMap().startWith(new HashMap<>()),
-        userDataStore.liveMap().startWith(new HashMap<>()), userDataStore.inviteMap(),
-        (userRealm, onlineMap, liveMap, inviteMap) -> {
+    return Observable.combineLatest(userDataStore.userInfos(null), userDataStore.inviteMap(),
+        (userRealm, inviteMap) -> {
           User user = userRealmDataMapper.transform(userRealm);
 
           if (user != null && user.getShortcutList() != null) {
-            List<Shortcut> shortcutList =
-                updateOnlineLiveShortcuts(user.getShortcutList(), onlineMap, true);
-
             if (inviteMap != null && inviteMap.size() > 0) {
-              for (Shortcut shortcut : shortcutList) {
+              for (Shortcut shortcut : user.getShortcutList()) {
                 for (Invite invite : inviteMap.values()) {
                   List<String> shortcutMembersIds = shortcut.getMembersIds();
                   // we add the current user id because he's not included in the shortcut
@@ -108,42 +100,16 @@ import rx.Observable;
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-    return Observable.combineLatest(userDataStore.userInfos(null),
-        userDataStore.onlineMap().startWith(new HashMap<>()),
-        userDataStore.liveMap().startWith(new HashMap<>()), (userRealm, onlineMap, liveMap) -> {
-
-          List<Shortcut> shortcutList = null;
-          User user = userRealmDataMapper.transform(userRealm);
-          if (user != null && user.getShortcutList() != null) {
-            shortcutList = updateOnlineLiveShortcuts(user.getShortcutList(), onlineMap, true);
+    return userDataStore.shortcuts()
+        .map(shortcutRealmList -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(shortcutRealmList))
+        .map(list -> {
+          Shortcut shortcut = null;
+          for (Shortcut sc : list) {
+            if (sc.getId().equals(shortcutId)) shortcut = sc;
           }
-
-          return shortcutList;
-        }).map(list -> {
-      Shortcut shortcut = null;
-      for (Shortcut sc : list) {
-        if (sc.getId().equals(shortcutId)) shortcut = sc;
-      }
-      return shortcut;
-    });
-
-
-/*    return Observable.combineLatest(userDataStore.userInfos(null),
-        userDataStore.onlineMap().startWith(new HashMap<>()), ((userRealm, onlineMap) -> {
-          List<Shortcut> shortcutList = null;
-          User user = userRealmDataMapper.transform(userRealm);
-          if (user != null && user.getShortcutList() != null) {
-            shortcutList = updateOnlineLiveShortcuts(user.getShortcutList(), onlineMap, true);
-          }
-
-          return shortcutList;
-        })).map(list -> {
-      List<Shortcut> shortcutListFiltred = new ArrayList<Shortcut>();
-      for (Shortcut sc : list) {
-        if (sc.getId().equals(shortcutId)) shortcutListFiltred.add(sc);
-      }
-      return shortcutListFiltred;
-    });*/
+          return shortcut;
+        });
   }
 
   @Override public Observable<User> getFbIdUpdated() {
@@ -173,15 +139,22 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<List<Shortcut>> singleShortcuts() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+
+    return userDataStore.singleShortcuts()
+        .map(listShortcuts -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(listShortcuts));
+  }
+
   @Override public Observable<List<Shortcut>> shortcuts() {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-    return Observable.combineLatest(userDataStore.shortcuts(),
-        userDataStore.onlineMap().startWith(new HashMap<>()),
-        userDataStore.liveMap().startWith(new HashMap<>()),
-        (shortcuts, onlineMap, liveMap) -> userRealmDataMapper.getShortcutRealmDataMapper()
-            .transform(shortcuts));
+    return userDataStore.shortcuts()
+        .map(listShortcuts -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(listShortcuts));
   }
 
   @Override public Observable<Shortcut> shortcutForUserIds(String... userIds) {
@@ -197,42 +170,9 @@ import rx.Observable;
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-    return Observable.combineLatest(userDataStore.blockedShortcuts(),
-        userDataStore.onlineMap().startWith(new HashMap<>()),
-        userDataStore.liveMap().startWith(new HashMap<>()),
-        (shortcuts, onlineMap, liveMap) -> userRealmDataMapper.getShortcutRealmDataMapper()
-            .transform(updateOnlineLiveShortcutsRealm(shortcuts, onlineMap, false)));
-  }
-
-  private RealmList<ShortcutRealm> updateOnlineLiveShortcutsRealm(
-      List<ShortcutRealm> shortcutRealmList, Map<String, Boolean> onlineMap,
-      boolean excludeBlocked) {
-    RealmList<ShortcutRealm> result = new RealmList<>();
-
-    for (ShortcutRealm st : shortcutRealmList) {
-      st.computeMembersOnline(onlineMap);
-
-      if (!excludeBlocked || (!StringUtils.isEmpty(st.getStatus()) && st.getStatus()
-          .equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
-        st.setOnline(onlineMap.containsKey(st.getId()) || st.isUniqueMemberOnline());
-        result.add(st);
-      }
-    }
-    return result;
-  }
-
-  private List<Shortcut> updateOnlineLiveShortcuts(List<Shortcut> shortcutList,
-      Map<String, Boolean> onlineMap, boolean excludeBlocked) {
-    List<Shortcut> result = new ArrayList<>();
-
-    for (Shortcut st : shortcutList) {
-      if (!excludeBlocked || (!StringUtils.isEmpty(st.getStatus()) && st.getStatus()
-          .equalsIgnoreCase(ShortcutRealm.DEFAULT))) {
-        st.setOnline(onlineMap.containsKey(st.getId()) || st.isUniqueMemberOnline(onlineMap));
-        result.add(st);
-      }
-    }
-    return result;
+    return userDataStore.blockedShortcuts()
+        .map(blockedShortcuts -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(blockedShortcuts));
   }
 
   @Override public Observable<User> updateUser(List<Pair<String, String>> values) {
@@ -297,24 +237,25 @@ import rx.Observable;
   @Override public Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
-    return Observable.combineLatest(
-        userDataStore.userInfos(null).map(userRealm -> userRealmDataMapper.transform(userRealm)),
-        userDataStore.contactsOnApp()
+    return Observable.combineLatest(userDataStore.shortcuts()
+            .map(shortcutList -> userRealmDataMapper.getShortcutRealmDataMapper()
+                .transform(shortcutList)), userDataStore.contactsOnApp()
             .map(contactInterfaces -> contactRealmDataMapper.transform(contactInterfaces)),
         userDataStore.contactsToInvite()
             .map(contactInterfaces -> contactRealmDataMapper.transform(contactInterfaces)),
-        userDataStore.liveMap(), userDataStore.onlineMap(),
-        (user, contactOnAppList, contactInviteList, liveMap, onlineMap) -> {
+        (shortcutList, contactOnAppList, contactInviteList) -> {
           List<Object> result = new ArrayList<>();
-          Map<String, User> mapUsersAdded = new HashMap<>();
+          Set<String> setAdded = new HashSet<>();
 
-          for (Contact contact : contactOnAppList) {
-            compute(mapUsersAdded, includedUserIds, contact, result);
-          }
+          result.addAll(shortcutList);
 
-          for (Contact contact : contactInviteList) {
-            compute(mapUsersAdded, includedUserIds, contact, result);
-          }
+          //for (Contact contact : contactOnAppList) {
+          //  compute(mapUsersAdded, includedUserIds, contact, result);
+          //}
+
+          //for (Contact contact : contactInviteList) {
+          //  compute(mapUsersAdded, includedUserIds, contact, result);
+          //}
 
           return result;
         });
@@ -325,8 +266,8 @@ import rx.Observable;
     boolean shouldAdd = true;
     if (contact.getUserList() != null) {
       for (User userInList : contact.getUserList()) {
-        if (mapUsersAdded.containsKey(userInList.getId()) && (includedUserIds == null
-            || !includedUserIds.contains(userInList.getId()))) {
+        if (mapUsersAdded.containsKey(userInList.getId()) &&
+            (includedUserIds == null || !includedUserIds.contains(userInList.getId()))) {
           shouldAdd = false;
         }
       }
@@ -339,11 +280,8 @@ import rx.Observable;
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-    return Observable.combineLatest(userDataStore.findByUsername(username)
-            .map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm)),
-        userDataStore.liveMap(), userDataStore.onlineMap(), (searchResult, liveMap, onlineMap) -> {
-          return searchResult;
-        });
+    return userDataStore.findByUsername(username)
+        .map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm));
   }
 
   @Override public Observable<Boolean> lookupUsername(String username) {

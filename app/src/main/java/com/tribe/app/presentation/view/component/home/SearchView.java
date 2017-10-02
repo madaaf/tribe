@@ -11,7 +11,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +23,6 @@ import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.ShortcutRealm;
-import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.Recipient;
@@ -47,7 +44,7 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
-import com.tribe.app.presentation.view.adapter.ContactAdapter;
+import com.tribe.app.presentation.view.adapter.SearchAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerHeadersItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
@@ -57,9 +54,7 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.CustomFrameLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -79,7 +74,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   @Inject SearchPresenter searchPresenter;
 
-  @Inject ContactAdapter contactAdapter;
+  @Inject SearchAdapter searchAdapter;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 
@@ -188,88 +183,88 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
     this.recyclerViewContacts.setItemAnimator(null);
     this.recyclerViewContacts.addItemDecoration(
         new DividerHeadersItemDecoration(screenUtils.dpToPx(10), screenUtils.dpToPx(10)));
-    this.recyclerViewContacts.setAdapter(contactAdapter);
+    this.recyclerViewContacts.setAdapter(searchAdapter);
 
-    contactAdapter.setItems(new ArrayList<>());
+    searchAdapter.setItems(new ArrayList<>());
 
-    subscriptions.add(contactAdapter.onClickAdd()
-        .map(view -> contactAdapter.getItemAtPosition(
-            recyclerViewContacts.getChildLayoutPosition(view)))
-        .doOnError(throwable -> throwable.printStackTrace())
-        .subscribe(o -> {
-          if (o instanceof SearchResult) {
-            SearchResult searchResult = (SearchResult) o;
-            if (searchResult.isInvisible()) {
-              DialogFactory.dialog(getContext(), searchResult.getDisplayName(),
-                  EmojiParser.demojizedText(
-                      getContext().getString(R.string.add_friend_error_invisible)),
-                  context().getString(R.string.add_friend_error_invisible_invite_android),
-                  context().getString(R.string.add_friend_error_invisible_cancel))
-                  .filter(x -> x == true)
-                  .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
-            } else if (searchResult.getShortcut() == null) {
-              if (searchResult.getUsername() != null &&
-                  !searchResult.getUsername().equals(user.getUsername())) {
-                searchPresenter.createShortcut(searchResult.getId());
-              }
-            } else {
-              searchResult.getShortcut().setStatus(ShortcutRealm.DEFAULT);
-              onUnblock.onNext(searchResult.getShortcut());
-            }
-          } else if (o instanceof Contact) {
-            Contact contact = (Contact) o;
-            searchPresenter.createShortcut(contact.getUserList().get(0).getId());
-          } else if (o instanceof User) {
-            User user = (User) o;
-            searchPresenter.createShortcut(user.getId());
-          }
-        }));
-
-    subscriptions.add(contactAdapter.onClickInvite()
-        .map(view -> contactAdapter.getItemAtPosition(
-            recyclerViewContacts.getChildLayoutPosition(view)))
-        .doOnError(throwable -> throwable.printStackTrace())
-        .subscribe(o -> {
-          if (o instanceof ContactAB) {
-            ContactAB contact = (ContactAB) o;
-            onInvite.onNext(contact);
-          }
-        }));
-
-    subscriptions.add(contactAdapter.onHangLive()
-        .map(view -> contactAdapter.getItemAtPosition(
-            recyclerViewContacts.getChildLayoutPosition(view)))
-        .doOnError(throwable -> throwable.printStackTrace())
-        .subscribe(o -> {
-          if (o instanceof Recipient) {
-            onHangLive.onNext((Recipient) o);
-          } else if (o instanceof SearchResult) {
-            onHangLive.onNext(((SearchResult) o).getShortcut());
-          }
-        }));
-
-    subscriptions.add(contactAdapter.onUnblock()
-        .map(view -> {
-          int position = recyclerViewContacts.getChildLayoutPosition(view);
-          Recipient recipient = (Recipient) contactAdapter.getItemAtPosition(position);
-          return new Pair<>(position, recipient);
-        })
-        .doOnError(throwable -> throwable.printStackTrace())
-        .flatMap(pairPositionRecipient -> DialogFactory.dialog(getContext(),
-            pairPositionRecipient.second.getDisplayName(),
-            context().getString(R.string.search_unblock_alert_message),
-            context().getString(R.string.search_unblock_alert_unblock,
-                pairPositionRecipient.second.getDisplayName()),
-            context().getString(R.string.search_unblock_alert_cancel)),
-            (pairPositionRecipient, aBoolean) -> new Pair<>(pairPositionRecipient, aBoolean))
-        .filter(pair -> pair.second == true)
-        .subscribe(pair -> {
-          Shortcut shortcut = (Shortcut) pair.first.second;
-          onUnblock.onNext(pair.first.second);
-          shortcut.setStatus(ShortcutRealm.DEFAULT);
-          shortcut.setAnimateAdd(true);
-          contactAdapter.notifyItemChanged(pair.first.first);
-        }));
+    //subscriptions.add(contactAdapter.onClickAdd()
+    //    .map(view -> contactAdapter.getItemAtPosition(
+    //        recyclerViewContacts.getChildLayoutPosition(view)))
+    //    .doOnError(throwable -> throwable.printStackTrace())
+    //    .subscribe(o -> {
+    //      if (o instanceof SearchResult) {
+    //        SearchResult searchResult = (SearchResult) o;
+    //        if (searchResult.isInvisible()) {
+    //          DialogFactory.dialog(getContext(), searchResult.getDisplayName(),
+    //              EmojiParser.demojizedText(
+    //                  getContext().getString(R.string.add_friend_error_invisible)),
+    //              context().getString(R.string.add_friend_error_invisible_invite_android),
+    //              context().getString(R.string.add_friend_error_invisible_cancel))
+    //              .filter(x -> x == true)
+    //              .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
+    //        } else if (searchResult.getShortcut() == null) {
+    //          if (searchResult.getUsername() != null &&
+    //              !searchResult.getUsername().equals(user.getUsername())) {
+    //            searchPresenter.createShortcut(searchResult.getId());
+    //          }
+    //        } else {
+    //          searchResult.getShortcut().setStatus(ShortcutRealm.DEFAULT);
+    //          onUnblock.onNext(searchResult.getShortcut());
+    //        }
+    //      } else if (o instanceof Contact) {
+    //        Contact contact = (Contact) o;
+    //        searchPresenter.createShortcut(contact.getUserList().get(0).getId());
+    //      } else if (o instanceof User) {
+    //        User user = (User) o;
+    //        searchPresenter.createShortcut(user.getId());
+    //      }
+    //    }));
+    //
+    //subscriptions.add(contactAdapter.onClickInvite()
+    //    .map(view -> contactAdapter.getItemAtPosition(
+    //        recyclerViewContacts.getChildLayoutPosition(view)))
+    //    .doOnError(throwable -> throwable.printStackTrace())
+    //    .subscribe(o -> {
+    //      if (o instanceof ContactAB) {
+    //        ContactAB contact = (ContactAB) o;
+    //        onInvite.onNext(contact);
+    //      }
+    //    }));
+    //
+    //subscriptions.add(contactAdapter.onHangLive()
+    //    .map(view -> contactAdapter.getItemAtPosition(
+    //        recyclerViewContacts.getChildLayoutPosition(view)))
+    //    .doOnError(throwable -> throwable.printStackTrace())
+    //    .subscribe(o -> {
+    //      if (o instanceof Recipient) {
+    //        onHangLive.onNext((Recipient) o);
+    //      } else if (o instanceof SearchResult) {
+    //        onHangLive.onNext(((SearchResult) o).getShortcut());
+    //      }
+    //    }));
+    //
+    //subscriptions.add(contactAdapter.onUnblock()
+    //    .map(view -> {
+    //      int position = recyclerViewContacts.getChildLayoutPosition(view);
+    //      Recipient recipient = (Recipient) contactAdapter.getItemAtPosition(position);
+    //      return new Pair<>(position, recipient);
+    //    })
+    //    .doOnError(throwable -> throwable.printStackTrace())
+    //    .flatMap(pairPositionRecipient -> DialogFactory.dialog(getContext(),
+    //        pairPositionRecipient.second.getDisplayName(),
+    //        context().getString(R.string.search_unblock_alert_message),
+    //        context().getString(R.string.search_unblock_alert_unblock,
+    //            pairPositionRecipient.second.getDisplayName()),
+    //        context().getString(R.string.search_unblock_alert_cancel)),
+    //        (pairPositionRecipient, aBoolean) -> new Pair<>(pairPositionRecipient, aBoolean))
+    //    .filter(pair -> pair.second == true)
+    //    .subscribe(pair -> {
+    //      Shortcut shortcut = (Shortcut) pair.first.second;
+    //      onUnblock.onNext(pair.first.second);
+    //      shortcut.setStatus(ShortcutRealm.DEFAULT);
+    //      shortcut.setAnimateAdd(true);
+    //      contactAdapter.notifyItemChanged(pair.first.first);
+    //    }));
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -290,77 +285,78 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   private void refactorContacts(List<Object> contactList) {
     this.filteredContactList.clear();
+    this.filteredContactList.addAll(contactList);
 
-    boolean hasDoneSuggested = false, hasDoneContacts = false, hasNewFriends = false;
-    Set<String> setLinkedUser = new HashSet<>();
-
-    for (Object obj : contactList) {
-      boolean shouldAdd = false;
-      if (obj instanceof Contact) {
-        Contact contact = (Contact) obj;
-        if (!StringUtils.isEmpty(contact.getName()) &&
-            contact.getName().toLowerCase().startsWith(search)) {
-          shouldAdd = true;
-        }
-      } else if (obj instanceof Recipient) {
-        Recipient recipient = (Recipient) obj;
-        if (!StringUtils.isEmpty(search) &&
-            ((!StringUtils.isEmpty(recipient.getDisplayName()) &&
-                recipient.getDisplayName().toLowerCase().startsWith(search)) ||
-                (recipient.getUsername() != null &&
-                    recipient.getUsername().toLowerCase().startsWith(search)))) {
-          shouldAdd = true;
-        }
-      }
-
-      if (shouldAdd) {
-        if (!hasDoneSuggested && obj instanceof Recipient) {
-          hasDoneSuggested = true;
-          this.filteredContactList.add(
-              EmojiParser.demojizedText(getContext().getString(R.string.search_already_friends)));
-        } else if (!hasDoneContacts && obj instanceof Contact) {
-          Contact contact = (Contact) obj;
-          if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-            User user = contact.getUserList().get(0);
-            user.setNew(contact.isNew());
-
-            if (contact.isNew()) {
-              hasNewFriends = true;
-            }
-            if (hasNewFriends) {
-              String titleNewfriend =
-                  EmojiParser.demojizedText(getContext().getString(R.string.search_new_friends));
-              if (!filteredContactList.contains(titleNewfriend)) {
-                this.filteredContactList.add(0, titleNewfriend);
-              }
-              this.filteredContactList.add(1, user);
-            }
-
-            if (!hasDoneSuggested) {
-              hasDoneSuggested = true;
-              String titleAlreadyFriend = EmojiParser.demojizedText(
-                  getContext().getString(R.string.search_already_friends));
-              if (!filteredContactList.contains(titleAlreadyFriend)) {
-                this.filteredContactList.add(titleAlreadyFriend);
-              }
-            }
-
-            if (!filteredContactList.contains(user) && !setLinkedUser.contains(user.getId())) {
-              this.filteredContactList.add(user);
-              setLinkedUser.add(user.getId());
-            }
-
-            shouldAdd = false;
-          } else {
-            this.filteredContactList.add(
-                EmojiParser.demojizedText(getContext().getString(R.string.search_invite_contacts)));
-            hasDoneContacts = true;
-          }
-        }
-
-        if (shouldAdd) this.filteredContactList.add(obj);
-      }
-    }
+    //boolean hasDoneSuggested = false, hasDoneContacts = false, hasNewFriends = false;
+    //Set<String> setLinkedUser = new HashSet<>();
+    //
+    //for (Object obj : contactList) {
+    //  boolean shouldAdd = false;
+    //  if (obj instanceof Contact) {
+    //    Contact contact = (Contact) obj;
+    //    if (!StringUtils.isEmpty(contact.getName()) &&
+    //        contact.getName().toLowerCase().startsWith(search)) {
+    //      shouldAdd = true;
+    //    }
+    //  } else if (obj instanceof Recipient) {
+    //    Recipient recipient = (Recipient) obj;
+    //    if (!StringUtils.isEmpty(search) &&
+    //        ((!StringUtils.isEmpty(recipient.getDisplayName()) &&
+    //            recipient.getDisplayName().toLowerCase().startsWith(search)) ||
+    //            (recipient.getUsername() != null &&
+    //                recipient.getUsername().toLowerCase().startsWith(search)))) {
+    //      shouldAdd = true;
+    //    }
+    //  }
+    //
+    //  if (shouldAdd) {
+    //    if (!hasDoneSuggested && obj instanceof Recipient) {
+    //      hasDoneSuggested = true;
+    //      this.filteredContactList.add(
+    //          EmojiParser.demojizedText(getContext().getString(R.string.search_already_friends)));
+    //    } else if (!hasDoneContacts && obj instanceof Contact) {
+    //      Contact contact = (Contact) obj;
+    //      if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+    //        User user = contact.getUserList().get(0);
+    //        user.setNew(contact.isNew());
+    //
+    //        if (contact.isNew()) {
+    //          hasNewFriends = true;
+    //        }
+    //        if (hasNewFriends) {
+    //          String titleNewfriend =
+    //              EmojiParser.demojizedText(getContext().getString(R.string.search_new_friends));
+    //          if (!filteredContactList.contains(titleNewfriend)) {
+    //            this.filteredContactList.add(0, titleNewfriend);
+    //          }
+    //          this.filteredContactList.add(1, user);
+    //        }
+    //
+    //        if (!hasDoneSuggested) {
+    //          hasDoneSuggested = true;
+    //          String titleAlreadyFriend = EmojiParser.demojizedText(
+    //              getContext().getString(R.string.search_already_friends));
+    //          if (!filteredContactList.contains(titleAlreadyFriend)) {
+    //            this.filteredContactList.add(titleAlreadyFriend);
+    //          }
+    //        }
+    //
+    //        if (!filteredContactList.contains(user) && !setLinkedUser.contains(user.getId())) {
+    //          this.filteredContactList.add(user);
+    //          setLinkedUser.add(user.getId());
+    //        }
+    //
+    //        shouldAdd = false;
+    //      } else {
+    //        this.filteredContactList.add(
+    //            EmojiParser.demojizedText(getContext().getString(R.string.search_invite_contacts)));
+    //        hasDoneContacts = true;
+    //      }
+    //    }
+    //
+    //    if (shouldAdd) this.filteredContactList.add(obj);
+    //  }
+    //}
   }
 
   private void filter() {
@@ -368,12 +364,12 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   private void showContactList() {
-    if (!isSearchMode) contactAdapter.setItems(this.filteredContactList);
+    if (!isSearchMode) searchAdapter.setItems(this.filteredContactList);
   }
 
   private void updateSearch() {
     filter();
-    this.contactAdapter.updateSearch(searchResult, filteredContactList);
+    //this.contactAdapter.updateSearch(searchResult, filteredContactList);
   }
 
   public void refactorWarning(boolean open) {
@@ -749,7 +745,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
-    contactAdapter.updateAdd(shortcut.getSingleFriend());
+    //contactAdapter.updateAdd(shortcut.getSingleFriend());
   }
 
   @Override public void onShortcutCreatedError() {

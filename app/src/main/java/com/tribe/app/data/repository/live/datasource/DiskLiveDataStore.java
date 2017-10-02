@@ -13,7 +13,7 @@ import rx.Observable;
 public class DiskLiveDataStore
     implements LiveDataStore, com.tribe.app.data.repository.user.datasource.LiveDataStore {
 
-  private final LiveCache liveCache;
+  private LiveCache liveCache;
 
   public DiskLiveDataStore(LiveCache liveCache) {
     this.liveCache = liveCache;
@@ -72,6 +72,27 @@ public class DiskLiveDataStore
   }
 
   @Override public Observable<Room> getRoomUpdated() {
-    return liveCache.getRoomUpdated();
+    return Observable.combineLatest(liveCache.getRoomUpdated().startWith(Observable.empty()),
+        liveCache.liveMap(), liveCache.onlineMap(), (room, liveMap, onlineMap) -> room)
+        .compose(onlineLiveTransformer);
   }
+
+  private Observable.Transformer<Room, Room> onlineLiveTransformer =
+      roomObservable -> roomObservable.map(room -> {
+        Map<String, Boolean> onlineMap = liveCache.getOnlineMap();
+
+        if (room.getLiveUsers() != null) {
+          for (User user : room.getLiveUsers()) {
+            user.setIsOnline(onlineMap.containsKey(user.getId()));
+          }
+        }
+
+        if (room.getInvitedUsers() != null) {
+          for (User user : room.getInvitedUsers()) {
+            user.setIsOnline(onlineMap.containsKey(user.getId()));
+          }
+        }
+
+        return room;
+      });
 }

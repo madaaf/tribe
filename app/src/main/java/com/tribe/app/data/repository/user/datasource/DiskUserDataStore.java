@@ -29,7 +29,7 @@ import rx.Observable;
 public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
   private final UserCache userCache;
-  private final LiveCache liveCache;
+  private LiveCache liveCache;
   private final ContactCache contactCache;
   private final AccessToken accessToken;
 
@@ -64,7 +64,12 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override public Observable<UserRealm> userInfos(String userId) {
-    return this.userCache.userInfos(accessToken.getUserId());
+    return Observable.combineLatest(this.userCache.userInfos(accessToken.getUserId()),
+        this.userCache.shortcuts().compose(listShortcutOnlineTransformer), liveCache.onlineMap(),
+        (userRealm, shortcutRealmList, onlineMap) -> {
+          userRealm.setShortcuts(shortcutRealmList);
+          return userRealm;
+        });
   }
 
   @Override public Observable<List<UserRealm>> userInfosList(List<String> userIds) {
@@ -174,19 +179,51 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
+  @Override public Observable<List<ShortcutRealm>> singleShortcuts() {
+    return Observable.combineLatest(userCache.singleShortcuts(), onlineMap(),
+        (shortcutRealmList, onlineMap) -> shortcutRealmList).compose(listShortcutOnlineTransformer);
+  }
+
   @Override public Observable<List<ShortcutRealm>> shortcuts() {
-    return userCache.shortcuts();
+    return Observable.combineLatest(userCache.shortcuts(), onlineMap(),
+        (shortcutRealmList, onlineMap) -> shortcutRealmList).compose(listShortcutOnlineTransformer);
   }
 
   @Override public Observable<ShortcutRealm> shortcutForUserIds(String... userIds) {
-    return userCache.shortcutForUserIds(userIds);
+    return Observable.combineLatest(userCache.shortcutForUserIds(userIds), onlineMap(),
+        (shortcutRealmList, onlineMap) -> shortcutRealmList).compose(shortcutOnlineTransformer);
   }
 
   @Override public Observable<List<ShortcutRealm>> blockedShortcuts() {
-    return userCache.blockedShortcuts();
+    return Observable.combineLatest(userCache.blockedShortcuts(), onlineMap(),
+        (shortcutRealmList, onlineMap) -> shortcutRealmList).compose(listShortcutOnlineTransformer);
   }
 
   @Override public Observable<Map<String, Invite>> inviteMap() {
     return liveCache.inviteMap();
+  }
+
+  private Observable.Transformer<List<ShortcutRealm>, List<ShortcutRealm>>
+      listShortcutOnlineTransformer =
+      shortcutRealmObservable -> shortcutRealmObservable.map(shortcutRealmList -> {
+        for (ShortcutRealm shortcutRealm : shortcutRealmList) {
+          transformOnlineShortcut(shortcutRealm);
+        }
+
+        return shortcutRealmList;
+      });
+
+  private Observable.Transformer<ShortcutRealm, ShortcutRealm> shortcutOnlineTransformer =
+      shortcutRealmObservable -> shortcutRealmObservable.map(shortcutRealm -> {
+        transformOnlineShortcut(shortcutRealm);
+        return shortcutRealm;
+      });
+
+  private void transformOnlineShortcut(ShortcutRealm shortcutRealm) {
+    Map<String, Boolean> onlineMap = liveCache.getOnlineMap();
+    shortcutRealm.computeMembersOnline(onlineMap);
+
+    shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId()) ||
+        shortcutRealm.isUniqueMemberOnline());
   }
 }

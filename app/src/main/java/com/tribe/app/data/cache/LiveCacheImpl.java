@@ -1,7 +1,6 @@
 package com.tribe.app.data.cache;
 
 import android.content.Context;
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
@@ -17,7 +16,6 @@ import rx.subjects.PublishSubject;
 public class LiveCacheImpl implements LiveCache {
 
   private Context context;
-  private UserRealm userRealm;
 
   private ObservableRxHashMap<String, Boolean> onlineMap;
   private ObservableRxHashMap<String, Boolean> liveMap;
@@ -28,7 +26,6 @@ public class LiveCacheImpl implements LiveCache {
 
   @Inject public LiveCacheImpl(Context context) {
     this.context = context;
-    this.userRealm = userRealm;
     onlineMap = new ObservableRxHashMap<>();
     liveMap = new ObservableRxHashMap<>();
     inviteMap = new ObservableRxHashMap<>();
@@ -38,8 +35,16 @@ public class LiveCacheImpl implements LiveCache {
     return onlineMap.getMapObservable().startWith(onlineMap.getMap());
   }
 
+  @Override public Map<String, Boolean> getOnlineMap() {
+    return onlineMap.getMap();
+  }
+
   @Override public Observable<Map<String, Boolean>> liveMap() {
     return liveMap.getMapObservable().startWith(liveMap.getMap());
+  }
+
+  @Override public Map<String, Boolean> getLiveMap() {
+    return liveMap.getMap();
   }
 
   @Override public void putOnline(String id) {

@@ -1,18 +1,19 @@
-package com.tribe.app.presentation.view.adapter.delegate.grid;
+package com.tribe.app.presentation.view.adapter.delegate.common;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.presentation.view.adapter.delegate.common.RecipientAdapterDelegate;
 import java.util.List;
 
 /**
  * Created by tiago on 18/05/2016.
  */
-public class ShortcutHomeAdapterDelegate extends RecipientHomeAdapterDelegate {
+public class ShortcutAdapterDelegate extends RecipientAdapterDelegate {
 
-  public ShortcutHomeAdapterDelegate(Context context) {
+  public ShortcutAdapterDelegate(Context context) {
     super(context);
   }
 
