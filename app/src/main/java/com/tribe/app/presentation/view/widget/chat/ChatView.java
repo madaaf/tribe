@@ -472,6 +472,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messagePresenter.onViewAttached(this);
     populateUsersHorizontalList();
     setAnimation(TYPE_NORMAL);
+    screenUtils.showKeyboard(this, 1000);
   }
 
   @Override protected void onDetachedFromWindow() {

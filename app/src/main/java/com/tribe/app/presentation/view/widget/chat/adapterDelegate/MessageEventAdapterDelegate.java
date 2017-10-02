@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import com.tribe.app.R;
@@ -43,11 +44,13 @@ public class MessageEventAdapterDelegate extends BaseMessageAdapterDelegate {
     vh.notifContent.setText(m.getContent(m.getUser().getDisplayName()));
     vh.avatarNotif.load(m.getUser().getProfilePicture());
     if (m.getAction().equals(MessageEvent.ACTION_JOIN)) {
-      vh.container.setBackground(
-          ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_notif));
+      vh.notifContent.setTextColor(ContextCompat.getColor(context, R.color.red_13));
+      vh.videoCallBtn.setImageDrawable(
+          ContextCompat.getDrawable(context, R.drawable.picto_chat_video_red));
     } else {
-      vh.container.setBackground(
-          ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_notif_offline));
+      vh.notifContent.setTextColor(ContextCompat.getColor(context, R.color.grey_offline));
+      vh.videoCallBtn.setImageDrawable(
+          ContextCompat.getDrawable(context, R.drawable.picto_chat_video_grey));
     }
   }
 
@@ -62,6 +65,7 @@ public class MessageEventAdapterDelegate extends BaseMessageAdapterDelegate {
     @BindView(R.id.viewAvatarNotif) public AvatarView avatarNotif;
     @BindView(R.id.notifContent) public TextViewFont notifContent;
     @BindView(R.id.containerNotif) public LinearLayout container;
+    @BindView(R.id.videoCallBtn) public ImageView videoCallBtn;
 
     @Override protected ViewGroup getLayoutContent() {
       return null;
