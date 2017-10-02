@@ -535,14 +535,6 @@ public class LiveActivity extends BaseActivity
     }
   }
 
-<<<<<<< HEAD
-  private void initChatService(String usersFromatedId) {
-    startService(
-        WSService.getCallingSubscribeChat(this, WSService.CHAT_SUBSCRIBE, usersFromatedId));
-  }
-
-=======
->>>>>>> work on subscriptions
   private void initSubscriptions() {
     subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
       Timber.e("ON CHAT OPEN");
