@@ -6,7 +6,6 @@ import android.os.Bundle;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
-import com.tribe.app.data.network.WSService;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
@@ -86,11 +85,15 @@ public class ChatActivity extends BaseActivity {
     chatView.onResumeView();
   }
 
+  @Override protected void onDestroy() {
+    super.onDestroy();
+    chatView.dispose();
+  }
+
   @Override public void finish() {
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_left);
   }
-
 
   private void initDependencyInjector() {
     DaggerUserComponent.builder()

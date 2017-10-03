@@ -47,6 +47,6 @@ import rx.Observable;
   }
 
   @Override public Observable<Boolean> imTyping(String[] userIds) {
-   return null;
+    return null;
   }
 }

@@ -159,6 +159,11 @@ import timber.log.Timber;
   }
 
   public void subscribeChat(String userIds) {
+    if (chatSubscriptions.get(userIds + MESSAGE_CREATED_SUFFIX) != null
+        && chatSubscriptions.get(userIds + MESSAGE_IS_TYPING_SUFFIX) != null) {
+      Timber.i("SOEF already subscribe");
+      return;
+    }
     String suffix = generateHash() + MESSAGE_CREATED_SUFFIX;
     chatSubscriptions.put(userIds + MESSAGE_CREATED_SUFFIX, suffix);
 
@@ -378,7 +383,6 @@ import timber.log.Timber;
     persistentSubscriptions.add(jsonToModel.onMessageCreated().subscribe(messagRealm -> {
       RealmList<MessageRealm> messages = new RealmList<>();
       messages.add(messagRealm);
-      chatCache.putMessages(messages, messagRealm.getThreadId());
     }));
 
     persistentSubscriptions.add(jsonToModel.onTyping().subscribe(userID -> {

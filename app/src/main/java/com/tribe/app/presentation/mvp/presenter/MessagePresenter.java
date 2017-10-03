@@ -162,7 +162,7 @@ public class MessagePresenter implements Presenter {
 
     @Override public void onError(Throwable e) {
       Timber.e(e.getMessage());
-      if (chatMVPView != null) chatMVPView.errorMessageCreation();
+      if (chatMVPView != null) chatMVPView.errorMessageCreation(positon);
     }
 
     @Override public void onNext(Message message) {

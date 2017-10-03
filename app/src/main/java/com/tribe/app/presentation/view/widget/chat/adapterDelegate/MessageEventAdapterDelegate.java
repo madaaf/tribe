@@ -46,7 +46,7 @@ public class MessageEventAdapterDelegate extends BaseMessageAdapterDelegate {
     if (m.getAction().equals(MessageEvent.ACTION_JOIN)) {
       vh.notifContent.setTextColor(ContextCompat.getColor(context, R.color.red_13));
       vh.videoCallBtn.setImageDrawable(
-          ContextCompat.getDrawable(context, R.drawable.picto_chat_video_red));
+          ContextCompat.getDrawable(context, R.drawable.picto_chat_video_connected));
     } else {
       vh.notifContent.setTextColor(ContextCompat.getColor(context, R.color.grey_offline));
       vh.videoCallBtn.setImageDrawable(

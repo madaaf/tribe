@@ -79,7 +79,11 @@ public class MessageRealm extends RealmObject {
   }
 
   public String getAction() {
-    return action;
+    if (action != null) {
+      return action.toUpperCase();
+    } else {
+      return action;
+    }
   }
 
   public UserRealm getUser() {
@@ -91,7 +95,11 @@ public class MessageRealm extends RealmObject {
   }
 
   public void setAction(String action) {
-    this.action = action;
+    if (action != null) {
+      this.action = action.toUpperCase();
+    } else {
+      this.action = action;
+    }
   }
 
   public MessageRealm(String id) {

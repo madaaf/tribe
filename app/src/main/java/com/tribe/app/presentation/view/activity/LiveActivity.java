@@ -301,7 +301,7 @@ public class LiveActivity extends BaseActivity
 
   @Override protected void onResume() {
     super.onResume();
-
+    chatView.onResumeView();
     onResumeLockPhone();
 
     if (!receiverRegistered) {
@@ -337,6 +337,7 @@ public class LiveActivity extends BaseActivity
     soundManager.cancelMediaPlayer();
 
     viewLive.dispose(false);
+    chatView.dispose();
 
     gameManager.setCurrentGame(null);
 
@@ -539,8 +540,6 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
       Timber.e("ON CHAT OPEN");
       if (open) {
-        List<User> friends = live.getShortcut().getMembers();
-        chatView.setChatId(friends, live.getShortcut());
         chatView.setVisibility(VISIBLE);
         chatView.animate().setDuration(300).alpha(1f).setListener(null);
       } else {
@@ -1199,6 +1198,8 @@ public class LiveActivity extends BaseActivity
 
   @Override public void onShortcut(Shortcut shortcut) {
     live.setShortcut(shortcut);
+    chatView.setChatId(live.getShortcut().getMembers(), live.getShortcut());
+    chatView.onResumeView();
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {

@@ -119,7 +119,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   private String editTextString;
   private int type, widthRefExpended, widthRefInit;
   private boolean editTextChange = false, isHeart = false, load = false;
-  private String[] arrIds;
+  private String[] arrIds = null;
   private Shortcut shortcut;
 
   @BindView(R.id.editText) EditTextFont editText;
@@ -172,14 +172,42 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     initParams();
   }
 
+  public void setChatId(List<User> friends, Shortcut shortcut) {
+    this.shortcut = shortcut;
+    setTypeChatUX();
+    avatarView.load(friends.get(0).getProfilePicture());
+    List<String> userIds = new ArrayList<>();
+    for (User friend : friends) {
+      userIds.add(friend.getId());
+    }
+    this.members = friends;
+    this.arrIds = userIds.toArray(new String[userIds.size()]);
+
+    if (friends.size() > 1) {
+      title.setText(context.getString(R.string.shortcut_members_count, friends.size()));
+      title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_edit_chat, 0);
+    } else {
+      title.setText(friends.get(0).getDisplayName());
+      title.setTextColor(Color.BLACK);
+    }
+  }
+
   public void onResumeView() {
     Timber.w(" SOEF SET CHAT ID AND CALL PRESENTER ");
+    if (arrIds == null) {
+      return;
+    }
     context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
         JsonUtils.arrayToJson(arrIds)));
     messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
     messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
-    messagePresenter.getDiskShortcut(shortcut.getId());
+    if (shortcut != null) messagePresenter.getDiskShortcut(shortcut.getId());
     messagePresenter.getIsTyping();
+  }
+
+  public void dispose() {
+    context.startService(
+        WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
   }
 
   private void initParams() {
@@ -211,26 +239,6 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     }
   }
 
-  public void setChatId(List<User> friends, Shortcut shortcut) {
-    this.shortcut = shortcut;
-    setTypeChatUX();
-    avatarView.load(friends.get(0).getProfilePicture());
-    List<String> userIds = new ArrayList<>();
-    for (User friend : friends) {
-      userIds.add(friend.getId());
-    }
-    this.members = friends;
-    this.arrIds = userIds.toArray(new String[userIds.size()]);
-
-    if (friends.size() > 1) {
-      title.setText(context.getString(R.string.shortcut_members_count, friends.size()));
-      title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_edit_chat, 0);
-    } else {
-      title.setText(friends.get(0).getDisplayName());
-      title.setTextColor(Color.BLACK);
-    }
-  }
-
   private void sendPicture(Uri uri, int position) {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     StorageReference storageRef = storage.getReference();
@@ -254,6 +262,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   private void sendMessage(String[] arrIds, String data, String type, int position) {
+    Timber.w("sendMessage" + position + "  " + data);
     messagePresenter.createMessage(arrIds, data, type, position);
   }
 
@@ -340,7 +349,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
           @Override public void onGlobalLayout() {
             editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             ResizeAnimation a = new ResizeAnimation(editText);
-            a.setDuration(200);
+            a.setDuration(100);
             a.setInterpolator(new LinearInterpolator());
             a.setAnimationListener(new AnimationListenerAdapter() {
               @Override public void onAnimationStart(Animation animation) {
@@ -361,12 +370,12 @@ public class ChatView extends FrameLayout implements ChatMVPView {
           @Override public void onGlobalLayout() {
             editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             ResizeAnimation a = new ResizeAnimation(editText);
-            a.setDuration(200);
+            a.setDuration(100);
             a.setInterpolator(new LinearInterpolator());
             a.setAnimationListener(new AnimationListenerAdapter() {
               @Override public void onAnimationEnd(Animation animation) {
                 uploadImageBtn.setVisibility(VISIBLE);
-                uploadImageBtn.animate().setDuration(200).alpha(1f).start();
+                uploadImageBtn.animate().setDuration(100).alpha(1f).start();
               }
             });
             a.setParams(editText.getWidth(), widthRefInit, LayoutParams.WRAP_CONTENT,
@@ -382,7 +391,12 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     layoutManager.setStackFromEnd(true);
 /*
     layoutManager.setReverseLayout(true);*/
-    recyclerView.setItemAnimator(null);
+    DefaultItemAnimator animator = new DefaultItemAnimator() {
+      @Override public boolean canReuseUpdatedViewHolder(RecyclerView.ViewHolder viewHolder) {
+        return true;
+      }
+    };
+    recyclerView.setItemAnimator(animator);
     recyclerView.setLayoutManager(layoutManager);
     recyclerView.setHasFixedSize(true);
     recyclerView.setAdapter(messageAdapter);
@@ -411,6 +425,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
                 recyclerViewPositionOffset = 0 - bottomView.getHeight();
               }
               layoutManager.scrollToPositionWithOffset(lastAdapterItem, recyclerViewPositionOffset);
+              Timber.e("soef scrollToPositionWithOffset"
+                  + lastAdapterItem
+                  + " "
+                  + recyclerViewPositionOffset);
             });
           }
         });
@@ -455,7 +473,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     message.setAuthor(user);
     message.setCreationDate(dateUtils.getUTCDateAsString());
     message.setPending(true);
-    message.setId("PENDING_");//+ UUID.randomUUID()
+    message.setId(Message.PENDING);//+ UUID.randomUUID()
     items.add(message);
     messageAdapter.setItems(items);
     int position = messageAdapter.getIndexOfMessage(message);
@@ -489,7 +507,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     messagePresenter.onViewAttached(this);
     populateUsersHorizontalList();
     setAnimation(TYPE_NORMAL);
-    screenUtils.showKeyboard(this, 1000);
+    if (type == FROM_CHAT) screenUtils.showKeyboard(editText, 0);
   }
 
   @Override protected void onDetachedFromWindow() {
@@ -513,15 +531,11 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     pulseLayout.clearAnimation();
     recyclerView.setAdapter(null);
     recyclerViewGrp.setAdapter(null);
-
-    context.startService(
-        WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
-
     super.onDetachedFromWindow();
   }
 
   @OnClick(R.id.sendBtn) void onClickSend() {
-    recyclerView.post(() -> recyclerView.scrollToPosition(messageAdapter.getItemCount()));
+    scrollListToBottom();
     if (!isHeart) {
       String m = editText.getText().toString();
       String editedMessage = m.replaceAll("\n", "\"n");
@@ -539,7 +553,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   private void sendMessage() {
-    recyclerView.post(() -> recyclerView.scrollToPosition(messageAdapter.getItemCount()));
+    scrollListToBottom();
     editText.setText("");
     sendBtn.animate()
         .scaleX(1.3f)
@@ -562,7 +576,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successLoadingMessage(List<Message> messages) {
-    Timber.e("SOEF successLoadingMessage " + messages.size());
+    Timber.e("SOEF successLoadingMessage " + messages.size() + " " + messages.get(0).toString());
     load = false;
   }
 
@@ -572,6 +586,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
 
   private void scrollListToBottom() {
     //recyclerView.post(() -> recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()),100);
+    Timber.e("soef smoothScrollToPosition to botom " + messageAdapter.getItemCount());
     recyclerView.post(() -> recyclerView.smoothScrollToPosition(messageAdapter.getItemCount()));
   }
 
@@ -583,17 +598,25 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     for (Message m : messasges) {
       if (!adapterList.contains(m)) {
         unreadDiskMessages.add(m);
+        Timber.i(m.toString());
+      } else {
+        //Timber.w("WGY / " + m.toString());
       }
     }
     Timber.e(
         "SOEF successLoadingMessageDisk " + messasges.size() + " " + unreadDiskMessages.size());
     if (!unreadDiskMessages.isEmpty()) {
       messageAdapter.setItems(unreadDiskMessages);
-      int index = messageAdapter.getIndexOfMessage(unreadDiskMessages.last());
-      recyclerView.post(() -> {
-        Timber.e("smooth scroll to position " + (index + 1));
-        recyclerView.smoothScrollToPosition(index + 1);
-      });
+      //int index = messageAdapter.getIndexOfMessage(unreadDiskMessages.last());
+      int index = messageAdapter.getItemCount();
+      if (index >= 0) {
+        recyclerView.post(() -> {
+          Timber.e("smooth scroll to position " + (index + 1));
+          recyclerView.smoothScrollToPosition(index + 1);
+        });
+      } else {
+        Timber.e("SOEF scroll error index = -1");
+      }
       unreadDiskMessages.clear();
     }
   }
@@ -632,9 +655,7 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     }
 
     for (User u : members) {
-
       if (u.getId().equals(userId)) {
-
         if (!u.isTyping()) {
           u.setTyping(true);
           u.setIsOnline(true);
@@ -668,12 +689,23 @@ public class ChatView extends FrameLayout implements ChatMVPView {
   }
 
   @Override public void successMessageCreated(Message message, int position) {
-    Timber.e("SOEF successMessageCreated " + message.toString());
-    messageAdapter.notifyItemChanged(position, message);
+    Timber.w("SOEF successMessageCreated "
+        + message.toString()
+        + " "
+        + counterMessageNotSend
+        + " "
+        + messageAdapter.getItemCount());
+    messageAdapter.updateItem(messageAdapter.getItemCount() - 1, message);
+    //counterMessageNotSend = 0;
+    //this is false!
+    //if (position != -1) messageAdapter.notifyItemChanged(position, message);
   }
 
-  @Override public void errorMessageCreation() {
-    Timber.e("SOEF errorMessageCreation");
+  int counterMessageNotSend = 0;
+
+  @Override public void errorMessageCreation(int position) {
+    counterMessageNotSend++;
+    Timber.i("SOEF errorMessageCreation " + position + " " + counterMessageNotSend);
   }
 
   @Override public void successShortcutUpdate(Shortcut shortcut) {

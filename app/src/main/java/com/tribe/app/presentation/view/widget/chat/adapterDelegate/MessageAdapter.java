@@ -13,8 +13,8 @@ import java.util.TreeSet;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -24,6 +24,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
   protected RxAdapterDelegatesManager<List<Message>> delegatesManager;
   private List<Message> items;
+  private List<Integer> positionPendingMessage = new ArrayList<>();
 
   private Set<Message> treeSet = new TreeSet<>((o1, o2) -> {
     DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
@@ -38,7 +39,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
   private MessageEventAdapterDelegate messageEventAdapterDelegate;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<List<Object>> onMessagePending = PublishSubject.create();
 
   public MessageAdapter(Context context, int type) {
     delegatesManager = new RxAdapterDelegatesManager<>();
@@ -67,21 +67,22 @@ public class MessageAdapter extends RecyclerView.Adapter {
   }
 
   @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-  /*  delegatesManager.onBindViewHolder(items, position, holder);
-    Timber.w("BIND HOLDER EMPTY");*/
+    // delegatesManager.onBindViewHolder(items, position, holder);
   }
 
   @Override
   public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List payloads) {
     if (!payloads.isEmpty()) {
       Message m = (Message) payloads.get(0);
-      Message last = items.get(items.size() - 1);
+/*      Message last = items.get(items.size() - 1);
       last.setPending(false);
-      last.setId(m.getId());
-      //  Timber.e("SOEF PLAYLOAD BINDING " + m.toString());
+      last.setId(m.getId());*/
+      Timber.w("SOEF PLAYLOAD BINDING " + m.toString());
       delegatesManager.onBindViewHolder(items, holder, position, payloads);
     } else {
       delegatesManager.onBindViewHolder(items, position, holder);
+      //Timber.w("SOEF PLAYLOAD BINDING " + ((Message)items.get(position)).toString());
+
     }
   }
 
@@ -99,6 +100,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
   }
 
   public int getIndexOfMessage(Message message) {
+    for (Message m : items) {
+      Timber.i(items.indexOf(m) + " " + m.toString());
+    }
     return items.indexOf(message);
   }
 
@@ -108,5 +112,23 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
   public List<Message> getItems() {
     return items;
+  }
+
+  public void updateItem(int position, Message message) {
+    Message pendingItem = items.get(position);
+    Timber.w("SOEF UPDATE ITEM : " + position + " " + pendingItem.toString());
+    pendingItem.setId(message.getId());
+    pendingItem.setPending(false);
+    if (position != -1) notifyItemChanged(position, pendingItem);
+  }
+
+  public int getPendingMessage() {
+    positionPendingMessage = new ArrayList<>();
+    for (Message m : items) {
+      if (m.getId().equals(Message.PENDING)) {
+        positionPendingMessage.add(items.indexOf(m));
+      }
+    }
+    return (positionPendingMessage.size() - 1);
   }
 }

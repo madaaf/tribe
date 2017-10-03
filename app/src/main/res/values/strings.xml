@@ -403,6 +403,7 @@
 	<string name="live_members_ringing">Ringing</string>
 	<string name="live_members_waiting">Waiting</string>
 	<string name="live_members_add_friends">Add friends</string>
+	<string name="live_other_user_hung_up">We re-invited your friend automatically</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>

@@ -21,8 +21,6 @@ import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
 import java.util.List;
-import rx.Observable;
-import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 /**
@@ -39,7 +37,6 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
   protected int type;
   protected LayoutInflater layoutInflater;
 
-
   public BaseMessageAdapterDelegate(Context context, int type) {
     this.type = type;
     this.context = context;
@@ -51,7 +48,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
   @Override public boolean isForViewType(@NonNull List<Message> items, int position) {
     Message m = items.get(position);
-    return !(m instanceof MessageEvent);
+    return (m != null);
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
@@ -85,6 +82,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
     if (m instanceof MessageEvent) {
       vh.header.setVisibility(View.GONE);
+      return;
     }
 
     String time = m.getCreationDate();
@@ -139,5 +137,4 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
     protected abstract ViewGroup getLayoutContent();
   }
-
 }
