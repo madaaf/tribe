@@ -32,7 +32,7 @@ public class SearchSectionItemDecoration extends BaseSectionItemDecoration {
   @Override protected void populateHeader(Context context, int headerType,
       GradientDrawable gradientDrawable) {
 
-    gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
+    gradientDrawable.setColor(ContextCompat.getColor(context, R.color.grey_offline));
 
     switch (headerType) {
       case SEARCH_RESULTS:

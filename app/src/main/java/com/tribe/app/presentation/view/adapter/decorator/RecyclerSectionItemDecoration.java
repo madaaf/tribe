@@ -46,7 +46,7 @@ public class RecyclerSectionItemDecoration extends BaseSectionItemDecoration {
       case HOME_RECENT:
         txtLabel.setText(R.string.home_section_recent);
         imgPicto.setImageResource(R.drawable.picto_recent);
-        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.grey_offline));
+        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
         break;
     }
   }
