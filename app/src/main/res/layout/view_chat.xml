@@ -54,23 +54,15 @@
       android:clickable="true"
       />
 
-  <android.support.v7.widget.RecyclerView
+  <com.tribe.app.presentation.view.widget.chat.RecyclerMessageView
       android:id="@+id/recyclerViewChat"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="match_parent"
       android:layout_above="@+id/containerUsers"
       android:layout_below="@+id/topbar"
-      android:background="@android:color/transparent"
-      android:fadeScrollbars="true"
-      android:overScrollMode="never"
-      android:paddingEnd="15dp"
-      android:paddingStart="15dp"
-      android:scrollbarSize="3dp"
-      android:scrollbarThumbVertical="@android:color/darker_gray"
-      android:scrollbars="vertical"
       >
 
-  </android.support.v7.widget.RecyclerView>
+  </com.tribe.app.presentation.view.widget.chat.RecyclerMessageView>
 
   <FrameLayout
       android:id="@+id/containerUsers"

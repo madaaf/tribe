@@ -8,11 +8,6 @@ import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -25,13 +20,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
   protected RxAdapterDelegatesManager<List<Message>> delegatesManager;
   private List<Message> items;
   private List<Integer> positionPendingMessage = new ArrayList<>();
-
-  private Set<Message> treeSet = new TreeSet<>((o1, o2) -> {
-    DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
-    DateTime d1 = parser.parseDateTime(o1.getCreationDate());
-    DateTime d2 = parser.parseDateTime(o2.getCreationDate());
-    return d1.compareTo(d2);
-  });
 
   private MessageEmojiAdapterDelegate messageEmojiAdapterDelegate;
   private MessageTextAdapterDelegate messageTextAdapterDelegate;
@@ -92,10 +80,12 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
   public void setItems(Collection<Message> items) {
     this.items.clear();
-    this.treeSet.addAll(items);
-    this.items.addAll(
-        new ArrayList<>(treeSet)); // Use tree set to put items in bottom or in top of the list
-    //  Timber.e("SOEF ADD ITEM " + this.items.size());
+    this.items.addAll(items);
+    super.notifyDataSetChanged();
+  }
+
+  public void setItem(Message message) {
+    this.items.add(message);
     super.notifyDataSetChanged();
   }
 

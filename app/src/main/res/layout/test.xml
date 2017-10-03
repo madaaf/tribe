@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/contentView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerViewChatHOHO"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_above="@+id/containerUsers"
+      android:layout_below="@+id/topbar"
+      android:background="@android:color/transparent"
+      android:fadeScrollbars="true"
+      android:overScrollMode="never"
+      android:paddingEnd="15dp"
+      android:paddingStart="15dp"
+      android:scrollbarSize="3dp"
+      android:scrollbarThumbVertical="@android:color/darker_gray"
+      android:scrollbars="vertical"
+      >
+
+  </android.support.v7.widget.RecyclerView>
+
+</FrameLayout>

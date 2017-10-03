@@ -48,7 +48,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
   @Override public boolean isForViewType(@NonNull List<Message> items, int position) {
     Message m = items.get(position);
-    return (m != null);
+    return true;
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {

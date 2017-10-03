@@ -7,6 +7,7 @@ import com.tribe.app.data.realm.UserRealm;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
+import io.realm.RealmResults;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -29,10 +30,9 @@ public class ChatCacheImpl implements ChatCache {
     this.realm = realm;
   }
 
-  @Override public void putMessages(RealmList<MessageRealm> messages, String userId) {
-    Timber.e("SOEF PUT MESSAGE IN CACH " + userId);
+  @Override public void putMessages(RealmList<MessageRealm> messages, String userIds) {
+    Timber.e("SOEF PUT MESSAGE IN CACH " + userIds);
     Realm obsRealm = Realm.getDefaultInstance();
-
     try {
       obsRealm.executeTransaction(realm1 -> {
 
@@ -47,7 +47,7 @@ public class ChatCacheImpl implements ChatCache {
             m = messageRealmDB;
           }
 
-          m.setLocalId(userId);
+          m.setLocalId(userIds);
           m.set__typename(message.get__typename());
           m.setData(message.getData());
           m.setAction(message.getAction());
@@ -111,9 +111,37 @@ public class ChatCacheImpl implements ChatCache {
           }
           realm1.insertOrUpdate(m);
         }
+
       });
     } catch (Exception ex) {
       Timber.e(ex.toString());
+    } finally {
+      obsRealm.close();
+    }
+
+   // delete(userIds);
+  }
+
+  public void delete(String userIds) {
+    Realm obsRealm = Realm.getDefaultInstance();
+    try {
+      obsRealm.beginTransaction();
+
+      RealmResults<MessageRealm> ok =
+          obsRealm.where(MessageRealm.class).equalTo("localId", userIds).findAll();
+ /*     for (MessageRealm m : ok) {
+        m.deleteFromRealm();
+      }*/
+
+      for (int i = 0; i < ok.size(); i++) {
+        MessageRealm m = ok.get(i);
+        m.deleteFromRealm();
+      }
+
+      obsRealm.commitTransaction();
+    } catch (IllegalStateException ex) {
+      if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
+      ex.printStackTrace();
     } finally {
       obsRealm.close();
     }
@@ -128,11 +156,14 @@ public class ChatCacheImpl implements ChatCache {
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
-    return realm.where(MessageRealm.class)
+    RealmResults<MessageRealm> ok = realm.where(MessageRealm.class)
         .equalTo("localId", JsonUtils.arrayToJson(userIds))
-        .findAll()
-        .asObservable()
-        .filter(singleShortcutList -> singleShortcutList.isLoaded())
+        .findAll();
+
+    Timber.e("GET MESSAGE " + ok.size());
+
+    return ok.asObservable()
+        .filter(RealmResults::isLoaded)
         .map(singleShortcutList -> realm.copyFromRealm(singleShortcutList))
         .unsubscribeOn(AndroidSchedulers.mainThread());
   }
