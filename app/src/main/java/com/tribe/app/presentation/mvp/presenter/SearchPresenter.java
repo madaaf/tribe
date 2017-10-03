@@ -8,6 +8,7 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.FindByUsername;
+import com.tribe.app.domain.interactor.user.GetDiskContactInviteList;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.SearchLocally;
@@ -19,6 +20,7 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,11 +44,13 @@ public class SearchPresenter extends UpdateUserPresenter {
   private SearchLocally searchLocally;
   private UseCase synchroContactList;
   private GetDiskContactOnAppList getDiskContactOnAppList;
+  private GetDiskContactInviteList getDiskContactInviteList;
 
   // SUBSCRIBERS
   private DefaultSubscriber findByUsernameSubscriber;
   private ContactListSubscriber contactListSubscriber;
   private ContactListOnAppSubscriber contactListOnAppSubscriber;
+  private ContactListInviteSubscriber contactListInviteSubscriber;
   private LookupContactsSubscriber lookupContactsSubscriber;
 
   @Inject public SearchPresenter(ShortcutPresenter shortcutPresenter, JobManager jobManager,
@@ -55,7 +59,8 @@ public class SearchPresenter extends UpdateUserPresenter {
       @Named("synchroContactList") UseCase synchroContactList, RxFacebook rxFacebook,
       UpdateUser updateUser, UpdateUserPhoneNumber updateUserPhoneNumber,
       UpdateUserFacebook updateUserFacebook, LookupUsername lookupUsername,
-      GetDiskContactOnAppList getDiskContactOnAppList) {
+      GetDiskContactOnAppList getDiskContactOnAppList,
+      GetDiskContactInviteList getDiskContactInviteList) {
     super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
     this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
@@ -64,6 +69,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     this.searchLocally = searchLocally;
     this.synchroContactList = synchroContactList;
     this.getDiskContactOnAppList = getDiskContactOnAppList;
+    this.getDiskContactInviteList = getDiskContactInviteList;
   }
 
   @Override protected UpdateUserMVPView getUpdateUserView() {
@@ -77,6 +83,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     searchLocally.unsubscribe();
     synchroContactList.unsubscribe();
     getDiskContactOnAppList.unsubscribe();
+    getDiskContactInviteList.unsubscribe();
     searchView = null;
   }
 
@@ -86,6 +93,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     initSearchResult();
     searchLocally("");
     contactsInApp();
+    contactsInvite();
   }
 
   public void findByUsername(String username) {
@@ -180,9 +188,30 @@ public class SearchPresenter extends UpdateUserPresenter {
     }
 
     @Override public void onNext(List<Contact> contactList) {
-      if (contactList != null && contactList.size() > 0) {
-        searchView.renderContactListOnApp(contactList);
-      }
+      searchView.renderContactListOnApp(new ArrayList<>(contactList));
+    }
+  }
+
+  public void contactsInvite() {
+    if (contactListInviteSubscriber != null) {
+      contactListInviteSubscriber.unsubscribe();
+    }
+
+    contactListInviteSubscriber = new ContactListInviteSubscriber();
+    getDiskContactInviteList.execute(contactListInviteSubscriber);
+  }
+
+  private final class ContactListInviteSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(List<Contact> contactList) {
+      searchView.renderContactListInvite(new ArrayList<>(contactList));
     }
   }
 

@@ -222,8 +222,9 @@ import rx.Observable;
 
   @Override public Observable<List<Contact>> contactsInvite() {
     final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-    return Observable.combineLatest(userDataStore.userInfos(null), userDataStore.contactsOnApp(),
-        userDataStore.contactsToInvite(), (userRealm, contactOnAppList, contactInviteList) -> {
+    return Observable.combineLatest(userDataStore.userInfos(null),
+        userDataStore.contactsToInvite().startWith(new ArrayList<ContactInterface>()),
+        (userRealm, contactInviteList) -> {
           List<ContactInterface> ciList = new ArrayList<>();
 
           ciList.addAll(contactInviteList);
@@ -236,48 +237,22 @@ import rx.Observable;
   @Override public Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
-    return Observable.combineLatest(userDataStore.singleShortcuts()
-            .map(shortcutList -> userRealmDataMapper.getShortcutRealmDataMapper()
-                .transform(shortcutList)), userDataStore.contactsOnApp()
-            .map(contactInterfaces -> contactRealmDataMapper.transform(contactInterfaces)),
-        userDataStore.contactsToInvite()
-            .map(contactInterfaces -> contactRealmDataMapper.transform(contactInterfaces)),
-        (shortcutList, contactOnAppList, contactInviteList) -> {
-          List<Object> result = new ArrayList<>();
-          Set<String> setAdded = new HashSet<>();
+    return userDataStore.singleShortcuts().map(shortcutRealmList -> {
+      List<Shortcut> shortcutList =
+          userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealmList);
 
-          for (Shortcut shortcut : shortcutList) {
-            result.add(shortcut);
-            if (shortcut.isSingle()) {
-              setAdded.add(shortcut.getSingleFriend().getId());
-            }
-          }
+      List<Object> result = new ArrayList<>();
+      Set<String> setAdded = new HashSet<>();
 
-          for (Contact contact : contactOnAppList) {
-            result.add(contact);
-          }
-
-          for (Contact contact : contactInviteList) {
-            compute(setAdded, includedUserIds, contact, result);
-          }
-
-          return result;
-        });
-  }
-
-  private void compute(Set<String> setAdded, Set<String> includedUserIds, Contact contact,
-      List<Object> result) {
-    boolean shouldAdd = true;
-    if (contact.getUserList() != null) {
-      for (User userInList : contact.getUserList()) {
-        if (setAdded.contains(userInList.getId()) &&
-            (includedUserIds == null || !includedUserIds.contains(userInList.getId()))) {
-          shouldAdd = false;
+      for (Shortcut shortcut : shortcutList) {
+        result.add(shortcut);
+        if (shortcut.isSingle()) {
+          setAdded.add(shortcut.getSingleFriend().getId());
         }
       }
-    }
 
-    if (shouldAdd) result.add(contact);
+      return result;
+    });
   }
 
   @Override public Observable<SearchResult> findByUsername(String username) {

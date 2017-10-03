@@ -514,8 +514,10 @@ public class ChatView extends FrameLayout implements ChatMVPView {
     recyclerView.setAdapter(null);
     recyclerViewGrp.setAdapter(null);
 
-    context.startService(
-        WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
+    if (arrIds != null || arrIds.length > 0) {
+      context.startService(
+          WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
+    }
 
     super.onDetachedFromWindow();
   }

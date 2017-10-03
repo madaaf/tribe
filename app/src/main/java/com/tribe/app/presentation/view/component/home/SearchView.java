@@ -68,6 +68,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -116,7 +117,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   private ContactsLayoutManager layoutManager;
   private List<Object> filteredContactList;
   private List<Object> originalContactList;
-  private List<Contact> contactList;
+  private List<Object> contactList;
   private SearchResult searchResult;
   private String username;
   private boolean isSearchMode = false;
@@ -125,6 +126,10 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<SearchResult> onSearchResult = PublishSubject.create();
+  private PublishSubject<List<Object>> onContactsInApp = PublishSubject.create();
+  private PublishSubject<List<Object>> onContactsInvite = PublishSubject.create();
+  private PublishSubject<List<Object>> onContacts = PublishSubject.create();
   private PublishSubject<Void> onGone = PublishSubject.create();
   private PublishSubject<Void> onShow = PublishSubject.create();
   private PublishSubject<Void> onNavigateToSmsForInvites = PublishSubject.create();
@@ -167,6 +172,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
     initUI();
     initRecyclerView();
+    initSubscriptions();
   }
 
   private void initUI() {
@@ -266,6 +272,38 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
     //      }
     //    }));
     //
+  }
+
+  private void initSubscriptions() {
+    subscriptions.add(
+        Observable.combineLatest(onSearchResult.startWith(new SearchResult()), onContacts,
+            onContactsInApp, onContactsInvite,
+            (searchResult, shortcutAndContactNotInAppList, contactInAppList, contactInviteList) -> {
+              if (isSearchMode) {
+                searchResult.setAnimateAdd(this.searchResult.isAnimateAdd());
+                this.searchResult = searchResult;
+                this.searchResult.setMyself(searchResult.getUsername() != null &&
+                    searchResult.getUsername().equals(user.getUsername()));
+                updateSearch();
+              }
+
+              originalContactList.clear();
+              originalContactList.addAll(contactList);
+
+              if (contactList.size() == 0) {
+                contactList.addAll(contactInAppList);
+              }
+
+              originalContactList.addAll(contactList);
+              originalContactList.addAll(contactInviteList);
+
+              refactorContacts(contactList);
+
+              return null;
+            })
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(o -> showContactList()));
   }
 
   private SectionCallback getSectionCallback(final List<Object> itemList) {
@@ -606,6 +644,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   public void hide() {
     search = "";
+    contactList.clear();
 
     recyclerViewContacts.setVisibility(View.GONE);
 
@@ -675,24 +714,19 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   @Override public void renderSearchResult(SearchResult searchResult) {
-    if (isSearchMode) {
-      searchResult.setAnimateAdd(this.searchResult.isAnimateAdd());
-      this.searchResult = searchResult;
-      this.searchResult.setMyself(searchResult.getUsername() != null &&
-          searchResult.getUsername().equals(user.getUsername()));
-      updateSearch();
-    }
+    onSearchResult.onNext(searchResult);
   }
 
   @Override public void renderContactList(List<Object> contactList) {
-    this.originalContactList.clear();
-    this.originalContactList.addAll(contactList);
-    refactorContacts(contactList);
-    showContactList();
+    onContacts.onNext(contactList);
   }
 
-  @Override public void renderContactListOnApp(List<Contact> contactListOnApp) {
+  @Override public void renderContactListOnApp(List<Object> contactListOnApp) {
+    onContactsInApp.onNext(contactListOnApp);
+  }
 
+  @Override public void renderContactListInvite(List<Object> contactListInvite) {
+    onContactsInvite.onNext(contactListInvite);
   }
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
