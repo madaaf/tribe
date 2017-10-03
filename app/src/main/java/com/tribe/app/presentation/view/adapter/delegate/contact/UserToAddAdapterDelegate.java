@@ -16,6 +16,8 @@ import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 01/02/2017.
@@ -24,6 +26,9 @@ public class UserToAddAdapterDelegate extends RxAdapterDelegate<List<Object>> {
 
   private Context context;
   private LayoutInflater layoutInflater;
+
+  // OBSERVABLES
+  private PublishSubject<View> onClick = PublishSubject.create();
 
   public UserToAddAdapterDelegate(Context context) {
     this.context = context;
@@ -35,6 +40,7 @@ public class UserToAddAdapterDelegate extends RxAdapterDelegate<List<Object>> {
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     UserToAddViewHolder vh =
         new UserToAddViewHolder(layoutInflater.inflate(R.layout.item_user_to_add, parent, false));
+    vh.btnAdd.setOnClickListener(view -> onClick.onNext(vh.itemView));
     return vh;
   }
 
@@ -55,7 +61,9 @@ public class UserToAddAdapterDelegate extends RxAdapterDelegate<List<Object>> {
     vh.txtName.setText(user.getDisplayName());
     vh.txtUsername.setText(user.getUsername());
     vh.viewNewAvatar.load(user.getProfilePicture());
-    vh.viewNew.setVisibility(user.isNew() ? View.VISIBLE : View.GONE);
+    //vh.viewNew.setVisibility(user.isNew() ? View.VISIBLE : View.GONE);
+
+    vh.btnAdd.setImageResource(user.isFriend() ? R.drawable.picto_added : R.drawable.picto_add);
   }
 
   class UserToAddViewHolder extends RecyclerView.ViewHolder {
@@ -74,5 +82,13 @@ public class UserToAddAdapterDelegate extends RxAdapterDelegate<List<Object>> {
     @BindView(R.id.viewNew) public View viewNew;
 
     @BindView(R.id.btnAdd) public ImageView btnAdd;
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<View> onClick() {
+    return onClick;
   }
 }

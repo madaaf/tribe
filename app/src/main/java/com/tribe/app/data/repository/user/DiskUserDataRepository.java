@@ -130,7 +130,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Boolean> removeShortcut(String shortcutId) {
+  @Override public Observable<Void> removeShortcut(String shortcutId) {
     return null;
   }
 
@@ -160,9 +160,9 @@ import rx.Observable;
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-    return userDataStore.shortcutForUserIds(userIds).map(shortcutRealm -> {
-      return userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealm);
-    });
+    return userDataStore.shortcutForUserIds(userIds)
+        .map(shortcutRealm -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(shortcutRealm));
   }
 
   @Override public Observable<List<Shortcut>> blockedShortcuts() {
@@ -254,7 +254,7 @@ import rx.Observable;
           }
 
           for (Contact contact : contactOnAppList) {
-            compute(setAdded, includedUserIds, contact, result);
+            result.add(contact);
           }
 
           for (Contact contact : contactInviteList) {

@@ -175,7 +175,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<Boolean> removeShortcut(String shortcutId) {
+  @Override public Observable<Void> removeShortcut(String shortcutId) {
     return null;
   }
 

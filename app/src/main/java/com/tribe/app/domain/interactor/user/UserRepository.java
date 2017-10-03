@@ -147,5 +147,5 @@ public interface UserRepository {
 
   Observable<Shortcut> updateShortcut(String shortcutId, List<Pair<String, String>> values);
 
-  Observable<Boolean> removeShortcut(String shortcutId);
+  Observable<Void> removeShortcut(String shortcutId);
 }

@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.presentation.view.adapter.delegate.common.ShortcutAdapterDelegate;
@@ -11,6 +12,7 @@ import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapter
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -119,5 +121,18 @@ public class SearchAdapter extends RecyclerView.Adapter {
     }
 
     this.notifyDataSetChanged();
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<View> onClick() {
+    return Observable.merge(searchResultGridAdapterDelegate.onClick(),
+        userToAddAdapterDelegate.onClick());
+  }
+
+  public Observable<View> onInvite() {
+    return contactToInviteAdapterDelegate.onInvite();
   }
 }

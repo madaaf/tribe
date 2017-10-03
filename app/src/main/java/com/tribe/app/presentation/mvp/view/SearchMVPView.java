@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.view;
 
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.SearchResult;
 import java.util.List;
 
@@ -11,6 +12,8 @@ public interface SearchMVPView extends UpdateUserMVPView {
   void renderSearchResult(SearchResult searchResult);
 
   void renderContactList(List<Object> contactList);
+
+  void renderContactListOnApp(List<Contact> contactListOnApp);
 
   void syncDone();
 }

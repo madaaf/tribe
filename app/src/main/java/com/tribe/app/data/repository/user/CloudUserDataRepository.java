@@ -239,7 +239,7 @@ import rx.Observable;
             .transform(shortcutRealm));
   }
 
-  @Override public Observable<Boolean> removeShortcut(String shortcutId) {
+  @Override public Observable<Void> removeShortcut(String shortcutId) {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.removeShortcut(shortcutId);

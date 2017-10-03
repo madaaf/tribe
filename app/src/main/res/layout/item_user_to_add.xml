@@ -46,13 +46,13 @@
 
         <View
             android:id="@+id/viewNew"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="5dp"
+            android:layout_height="5dp"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/horizontal_margin_xsmall"
             android:layout_toRightOf="@id/txtName"
             android:background="@drawable/shape_oval_green"
-            android:visibility="gone"
+            android:visibility="visible"
             />
       </RelativeLayout>
     </LinearLayout>
@@ -80,5 +80,4 @@
       android:scaleType="centerInside"
       android:src="@drawable/picto_add"
       />
-
 </FrameLayout>
