@@ -171,7 +171,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds) {
+  @Override public Observable<List<Shortcut>> searchLocally(String s, Set<String> includedUserIds) {
     return null;
   }
 

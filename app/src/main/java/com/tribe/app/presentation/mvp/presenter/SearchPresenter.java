@@ -4,6 +4,7 @@ import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.SearchResult;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
@@ -20,7 +21,6 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -132,7 +132,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     searchLocally.execute(contactListSubscriber);
   }
 
-  private final class ContactListSubscriber extends DefaultSubscriber<List<Object>> {
+  private final class ContactListSubscriber extends DefaultSubscriber<List<Shortcut>> {
 
     @Override public void onCompleted() {
     }
@@ -141,7 +141,7 @@ public class SearchPresenter extends UpdateUserPresenter {
 
     }
 
-    @Override public void onNext(List<Object> contactList) {
+    @Override public void onNext(List<Shortcut> contactList) {
       if (contactList != null && contactList.size() > 0) {
         searchView.renderContactList(contactList);
       }
@@ -188,7 +188,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     }
 
     @Override public void onNext(List<Contact> contactList) {
-      searchView.renderContactListOnApp(new ArrayList<>(contactList));
+      searchView.renderContactListOnApp(contactList);
     }
   }
 
@@ -211,7 +211,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     }
 
     @Override public void onNext(List<Contact> contactList) {
-      searchView.renderContactListInvite(new ArrayList<>(contactList));
+      searchView.renderContactListInvite(contactList);
     }
   }
 

@@ -20,7 +20,6 @@ import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
@@ -234,24 +233,13 @@ import rx.Observable;
             new ArrayList<ContactInterface>(collection)));
   }
 
-  @Override public Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds) {
+  @Override public Observable<List<Shortcut>> searchLocally(String s, Set<String> includedUserIds) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
     return userDataStore.singleShortcuts().map(shortcutRealmList -> {
       List<Shortcut> shortcutList =
           userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealmList);
-
-      List<Object> result = new ArrayList<>();
-      Set<String> setAdded = new HashSet<>();
-
-      for (Shortcut shortcut : shortcutList) {
-        result.add(shortcut);
-        if (shortcut.isSingle()) {
-          setAdded.add(shortcut.getSingleFriend().getId());
-        }
-      }
-
-      return result;
+      return shortcutList;
     });
   }
 

@@ -72,6 +72,7 @@ import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.common.RecipientAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.EmptyContactAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.ManageShortcutListAdapterDelegate;
@@ -223,6 +224,8 @@ public interface ApplicationComponent {
   void inject(UserToAddAdapterDelegate userToAddAdapterDelegate);
 
   void inject(ContactToInviteAdapterDelegate contactToInviteAdapterDelegate);
+
+  void inject(EmptyContactAdapterDelegate emptyContactAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);
