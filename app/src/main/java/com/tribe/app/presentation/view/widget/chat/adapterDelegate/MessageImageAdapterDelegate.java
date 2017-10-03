@@ -16,7 +16,6 @@ import butterknife.BindView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
@@ -71,13 +70,17 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
   @Override public void onBindViewHolder(@NonNull List<Message> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     MessageImageViewHolder vh = (MessageImageViewHolder) holder;
-    vh.container.setAlpha(1f);
+    MessageImage m = (MessageImage) items.get(position);
+    if (m.isPending()) {
+      vh.container.setAlpha(0.4f);
+    } else {
+      vh.container.setAlpha(1f);
+    }
   }
 
   @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {
-    MessageImageViewHolder vh = new MessageImageViewHolder(
+    return new MessageImageViewHolder(
         layoutInflater.inflate(R.layout.item_message_image, parent, false));
-    return vh;
   }
 
   static class MessageImageViewHolder extends BaseTextViewHolder {

@@ -55,6 +55,10 @@ public class CloudChatDataStore implements ChatDataStore {
     return null;
   }
 
+  @Override public Observable<List<MessageRealm>> onMessageReceived() {
+    return null;
+  }
+
   @Override public Observable<Boolean> imTyping(String[] userIds) {
     final String request = context.getString(R.string.mutation,
         context.getString(R.string.imTyping, JsonUtils.arrayToJson(userIds)));

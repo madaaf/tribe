@@ -37,10 +37,8 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
   }
 
   @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {
-    MessageTextViewHolder vh = new MessageTextViewHolder(
+    return new MessageTextViewHolder(
         layoutInflater.inflate(R.layout.item_message_text, parent, false));
-
-    return vh;
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,

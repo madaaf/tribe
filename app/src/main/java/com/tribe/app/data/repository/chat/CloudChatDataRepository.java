@@ -47,6 +47,10 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm).getMessages());
   }
 
+  @Override public Observable<List<Message>> onMessageReceived() {
+    return null;
+  }
+
   @Override public Observable<String> isTyping() {
     return null;
   }

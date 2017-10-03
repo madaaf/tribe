@@ -49,4 +49,10 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView {
 
   public void errorShortcutUpdate() {
   }
+
+  public void successMessageReceived(List<Message> messages) {
+  }
+
+  public void errorMessageReveived() {
+  }
 }

@@ -14,6 +14,8 @@ import rx.Observable;
 
   void putMessages(RealmList<MessageRealm> messages, String userIds);
 
+  Observable<List<MessageRealm>> onMessageReceived();
+
   void onTyping(String userIds);
 
   Observable<String> isTyping();

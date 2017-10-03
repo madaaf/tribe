@@ -24,14 +24,21 @@ public class ChatCacheImpl implements ChatCache {
   private Context context;
   private Realm realm;
   private PublishSubject<String> onTyping = PublishSubject.create();
+  private PublishSubject<List<MessageRealm>> onMessageReceived = PublishSubject.create();
 
   @Inject public ChatCacheImpl(Context context, Realm realm) {
     this.context = context;
     this.realm = realm;
   }
 
+  @Override public Observable<List<MessageRealm>> onMessageReceived() {
+    return onMessageReceived;
+  }
+
   @Override public void putMessages(RealmList<MessageRealm> messages, String userIds) {
     Timber.e("SOEF PUT MESSAGE IN CACH " + userIds);
+    onMessageReceived.onNext(messages);
+
     Realm obsRealm = Realm.getDefaultInstance();
     try {
       obsRealm.executeTransaction(realm1 -> {
@@ -111,7 +118,6 @@ public class ChatCacheImpl implements ChatCache {
           }
           realm1.insertOrUpdate(m);
         }
-
       });
     } catch (Exception ex) {
       Timber.e(ex.toString());
@@ -119,7 +125,7 @@ public class ChatCacheImpl implements ChatCache {
       obsRealm.close();
     }
 
-   // delete(userIds);
+    // delete(userIds);
   }
 
   public void delete(String userIds) {

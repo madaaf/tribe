@@ -66,12 +66,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -102,7 +98,6 @@ public class ChatView extends ChatMVPView {
   private ChatUserAdapter chatUserAdapter;
   private LinearLayoutManager layoutManagerGrp;
   private List<User> members = new ArrayList<>();
-
 
   private String editTextString;
   private int type, widthRefExpended, widthRefInit;
