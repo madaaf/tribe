@@ -104,7 +104,7 @@ public class ChatView extends ChatMVPView {
   private List<User> members = new ArrayList<>();
 
   private String editTextString;
-  private int type, widthRefExpended, widthRefInit;
+  private int type, widthRefExpended, widthRefInit, containerUsersHeight;
   private boolean editTextChange = false, isHeart = false;
   private String[] arrIds = null;
   private Shortcut shortcut;
@@ -181,7 +181,6 @@ public class ChatView extends ChatMVPView {
     } else {
       title.setText(friends.get(0).getDisplayName());
       title.setTextColor(Color.BLACK);
-    //q  recyclerViewGrp.setVisibility(GONE);
     }
   }
 
@@ -208,6 +207,8 @@ public class ChatView extends ChatMVPView {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
         widthRefExpended = refExpended.getWidth();
         widthRefInit = refInit.getWidth();
+        containerUsersHeight = containerUsers.getHeight();
+        if (members.size() > 1) containerUsers.getLayoutParams().height = 0;
       }
     });
   }
@@ -525,6 +526,36 @@ public class ChatView extends ChatMVPView {
     }
   }
 
+  private void expendRecyclerViewGrp() {
+    containerUsers.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            containerUsers.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            ResizeAnimation a = new ResizeAnimation(containerUsers);
+            a.setDuration(300);
+            a.setInterpolator(new LinearInterpolator());
+            a.setParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT,
+                containerUsers.getHeight(), 0);
+            containerUsers.startAnimation(a);
+          }
+        });
+  }
+
+  private void expendRecyclerViewGrp2() {
+    containerUsers.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            containerUsers.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            ResizeAnimation a = new ResizeAnimation(containerUsers);
+            a.setDuration(300);
+            a.setInterpolator(new LinearInterpolator());
+            a.setParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT,
+                containerUsers.getHeight(), containerUsersHeight);
+            containerUsers.startAnimation(a);
+          }
+        });
+  }
+
   @Override public void isTypingEvent(String userId) {
     if (userId.equals(user.getId())) {
       return;
@@ -534,7 +565,9 @@ public class ChatView extends ChatMVPView {
         if (!u.isTyping()) {
           u.setTyping(true);
           u.setIsOnline(true);
-          Timber.e("IS TYPING " + " " + u.toString());
+          if (members.size() < 2) {
+            expendRecyclerViewGrp2();
+          }
           int pos = chatUserAdapter.getIndexOfUser(u);
           chatUserAdapter.notifyItemChanged(pos, u);
         }
@@ -548,6 +581,9 @@ public class ChatView extends ChatMVPView {
                 Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
                 if (u.isTyping()) {
                   u.setTyping(false);
+                  if (members.size() < 2) {
+                    expendRecyclerViewGrp();
+                  }
                   int i = chatUserAdapter.getIndexOfUser(u);
                   chatUserAdapter.notifyItemChanged(i, u);
                 }

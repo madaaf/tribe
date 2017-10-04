@@ -48,7 +48,7 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
     MessageText m = (MessageText) items.get(position);
     MessageTextViewHolder vh = (MessageTextViewHolder) holder;
 
-    vh.message.setText(position + " " + m.getMessage());
+    vh.message.setText(m.getMessage());
 
     if (type == ChatView.FROM_LIVE) {
       vh.message.setTextColor(ContextCompat.getColor(context, R.color.white));

@@ -27,11 +27,6 @@ public class ResizeAnimation extends Animation {
     view.requestLayout();
   }
 
-  public void setParams(int startWidth, int endWidth) {
-    this.startWidth = startWidth;
-    deltaWidth = endWidth - startWidth;
-  }
-
   public void setParams(int startWidth, int endWidth, int startHeight, int endHeight) {
     this.startHeight = startHeight;
     deltaHeight = endHeight - startHeight;

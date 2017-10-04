@@ -222,8 +222,6 @@ public class RecyclerMessageView extends ChatMVPView {
       DateTime d1 = parser.parseDateTime(s1);
       DateTime d2 = parser.parseDateTime(s2);
       ok = d1.compareTo(d2);
-      Timber.e("SOEF OK " + ok);
-      Timber.e("SOE" + "F OK " + d2.compareTo(d1));
     }
 
     if (!unreadMessage.isEmpty()) {
