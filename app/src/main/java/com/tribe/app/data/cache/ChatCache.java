@@ -21,5 +21,7 @@ import rx.Observable;
   Observable<String> isTyping();
 
   Observable<List<MessageRealm>> getMessages(String[] userIds);
+
+  void setOnMessageReceived(RealmList<MessageRealm> messages);
 }
 

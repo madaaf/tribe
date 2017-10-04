@@ -35,9 +35,12 @@ public class ChatCacheImpl implements ChatCache {
     return onMessageReceived;
   }
 
+  @Override public void setOnMessageReceived(RealmList<MessageRealm> messages) {
+    onMessageReceived.onNext(messages);
+  }
+
   @Override public void putMessages(RealmList<MessageRealm> messages, String userIds) {
     Timber.e("SOEF PUT MESSAGE IN CACH " + userIds);
-    onMessageReceived.onNext(messages);
 
     Realm obsRealm = Realm.getDefaultInstance();
     try {
@@ -124,8 +127,6 @@ public class ChatCacheImpl implements ChatCache {
     } finally {
       obsRealm.close();
     }
-
-    // delete(userIds);
   }
 
   public void delete(String userIds) {

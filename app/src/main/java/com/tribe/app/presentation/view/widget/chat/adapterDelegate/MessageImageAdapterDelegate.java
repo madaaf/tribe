@@ -20,6 +20,7 @@ import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
 import java.util.List;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -52,7 +53,7 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
             .get(0)
             .getUrl() : null;
     String url = (lowUrlImage != null) ? lowUrlImage : o.getUrl();
-
+    Timber.e(url);
     Uri uri = m.getUri();
 
     Glide.with(context).load(url).asBitmap().into(new BitmapImageViewTarget(vh.image) {
