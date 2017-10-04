@@ -25,6 +25,7 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -131,11 +132,11 @@ public class RecyclerMessageView extends ChatMVPView {
     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
       @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         if (dy < 0) {
-          if (layoutManager.findFirstVisibleItemPosition() < 3 && !load) {
+          if (layoutManager.findFirstVisibleItemPosition() < 5 && !load) {
             Timber.w("SCROOL OK " + messageAdapter.getMessage(0).getContent());
             String lasteDate = messageAdapter.getMessage(0).getCreationDate();
-            /* messagePresenter.loadMessage(arrIds, lasteDate);
-            load = true;*/
+            messagePresenter.loadMessage(arrIds, lasteDate);
+            load = true;
           }
         }
       }
@@ -192,14 +193,53 @@ public class RecyclerMessageView extends ChatMVPView {
    * MESSAGE RECEPTION
    */
 
+  private void sortMessageList(List<Message> list) {
+    Collections.sort(list, (o1, o2) -> {
+      DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
+      DateTime d1 = parser.parseDateTime(o1.getCreationDate());
+      DateTime d2 = parser.parseDateTime(o2.getCreationDate());
+      return d1.compareTo(d2);
+    });
+  }
+
   List<Message> unreadMessage = new ArrayList<>();
-  boolean successMessageCreated = false;
 
   @Override public void successLoadingMessage(List<Message> messages) {
     Timber.w("SOEF successLoadingMessage " + messages.size() + " ");
-    treeSet.addAll(messages);
-    messageAdapter.setItems(new ArrayList<Message>(treeSet));
-    scrollListToBottom();
+    for (Message m : messages) {
+      if (!messageAdapter.getItems().contains(m)) {
+        unreadMessage.add(m);
+      }
+    }
+
+    int ok = 0;
+    if (!messageAdapter.getItems().isEmpty()) {
+      Message m = messageAdapter.getItems().get(0);
+      String s1 = m.getCreationDate();
+      String s2 = messages.get(messages.size() - 1).getCreationDate();
+
+      DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
+      DateTime d1 = parser.parseDateTime(s1);
+      DateTime d2 = parser.parseDateTime(s2);
+      ok = d1.compareTo(d2);
+      Timber.e("SOEF OK " + ok);
+      Timber.e("SOE" + "F OK " + d2.compareTo(d1));
+    }
+
+    if (!unreadMessage.isEmpty()) {
+      sortMessageList(unreadMessage);
+      if (ok > 0) {
+        messageAdapter.setItems(unreadMessage, 0);
+        int index = messageAdapter.getIndexOfMessage(unreadMessage.get(unreadMessage.size() - 1));
+        Timber.e("SOEF OK INDEX " + index + " ");
+        layoutManager.scrollToPosition(index + 5);
+      } else {
+        messageAdapter.setItems(unreadMessage, messageAdapter.getItemCount());
+        scrollListToBottom();
+      }
+      unreadMessage.clear();
+    }
+
     load = false;
   }
 
@@ -239,39 +279,3 @@ public class RecyclerMessageView extends ChatMVPView {
     Timber.i("SOOoOOOOOOOOOOOOEF errorMessageReveived ");
   }
 }
-
-
-
-
-
-
-  /*
-    Set<Message> adapterList = new HashSet<>();
-    adapterList.addAll(messageAdapter.getItems());
-
-    for (Message m : messasges) {
-      if (!adapterList.contains(m)) {
-        unreadDiskMessages.add(m);
-        Timber.i(m.toString());
-      } else {
-        //Timber.w("WGY / " + m.toString());
-      }
-    }
-    Timber.e(
-        "SOEF successLoadingMessageDisk " + messasges.size() + " " + unreadDiskMessages.size());
-    if (!unreadDiskMessages.isEmpty()) {
-      messageAdapter.setItems(unreadDiskMessages);
-      //int index = messageAdapter.getIndexOfMessage(unreadDiskMessages.last());
-      int index = messageAdapter.getItemCount();
-      if (index >= 0) {
-        recyclerView.post(() -> {
-          Timber.e("smooth scroll to position " + (index + 1));
-          // recyclerView.scrollToPosition(index + 1);
-        });
-      } else {
-        Timber.e("SOEF scroll error index = -1");
-      }
-      unreadDiskMessages.clear();
-    }*/
-
-

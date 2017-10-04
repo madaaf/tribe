@@ -404,6 +404,9 @@
 	<string name="live_members_waiting">Waiting</string>
 	<string name="live_members_add_friends">Add friends</string>
 	<string name="live_other_user_hung_up">We re-invited your friend automatically</string>
+	<string name="live_members_menu_more">More</string>
+	<string name="live_members_menu_less">Less</string>
+	<string name="live_members_menu_added">Added</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>
@@ -777,4 +780,7 @@
 	<string name="chat_live_status_hide">Hide</string>
 	<string name="chat_live_status_switching">Switching</string>
 	<string name="chat_quickchat_back_to_group">Group</string>
+	<string name="chat_placeholder_message">Message</string>
+	<string name="chat_placeholder_tap_and_hold">Tap and Hold!</string>
+	<string name="chat_placeholder_slide_to_cancel">Slide to cancel</string>
 </resources>

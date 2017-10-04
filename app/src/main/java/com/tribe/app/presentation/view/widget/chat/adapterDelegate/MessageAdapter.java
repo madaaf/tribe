@@ -62,14 +62,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
   public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List payloads) {
     if (!payloads.isEmpty()) {
       Message newMessage = (Message) payloads.get(0);
-
       Message m = items.get(position);
       m.setPending(false);
       m.setId(newMessage.getId());
-
-/*      Message last = items.get(items.size() - 1);
-      last.setPending(false);
-      last.setId(m.getId());*/
       Timber.w("SOEF PLAYLOAD BINDING " + position + " " + m.toString());
       delegatesManager.onBindViewHolder(items, holder, position, payloads);
     } else {
@@ -81,9 +76,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
     return items.size();
   }
 
-  public void setItems(Collection<Message> items) {
-    this.items.clear();
-    this.items.addAll(items);
+  public void setItems(Collection<Message> items, int position) {
+    // this.items.clear();
+    this.items.addAll(position, items);
     super.notifyDataSetChanged();
   }
 
