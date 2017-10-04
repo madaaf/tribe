@@ -108,6 +108,7 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
       if (chatMVPView != null) chatMVPView.errorMessageReveived();
     }
 
@@ -122,6 +123,7 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
       if (chatMVPView != null) chatMVPView.errorShortcutUpdate();
     }
 
@@ -150,6 +152,7 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
       if (chatMVPView != null) chatMVPView.errorLoadingMessageDisk();
     }
 

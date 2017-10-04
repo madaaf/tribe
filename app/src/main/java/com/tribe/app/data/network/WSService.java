@@ -383,7 +383,9 @@ import timber.log.Timber;
     persistentSubscriptions.add(jsonToModel.onMessageCreated().subscribe(messagRealm -> {
       RealmList<MessageRealm> messages = new RealmList<>();
       messages.add(messagRealm);
-      chatCache.setOnMessageReceived(messages);
+      if (!messagRealm.getAuthor().getId().equals(user.getId())) {
+        chatCache.setOnMessageReceived(messages);
+      }
       chatCache.putMessages(messages, messagRealm.getThreadId());
     }));
 

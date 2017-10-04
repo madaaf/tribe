@@ -53,7 +53,11 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
             .get(0)
             .getUrl() : null;
     String url = (lowUrlImage != null) ? lowUrlImage : o.getUrl();
+    if (url.equals("STAMP")) {
+      Timber.e("SOEF");
+    }
     Timber.e(url);
+    Timber.e("ON BIND " + m.toString());
     Uri uri = m.getUri();
 
     Glide.with(context).load(url).asBitmap().into(new BitmapImageViewTarget(vh.image) {

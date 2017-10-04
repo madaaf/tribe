@@ -63,7 +63,7 @@ public class ChatCacheImpl implements ChatCache {
           m.setAction(message.getAction());
           m.setCreated_at(message.getCreated_at());
 
-          if (message.getOriginal() != null) {
+         /* if (message.getOriginal() != null) {
             ImageRealm imageRealmDB = realm1.where(ImageRealm.class)
                 .equalTo("url", message.getOriginal().getUrl())
                 .findFirst();
@@ -75,7 +75,7 @@ public class ChatCacheImpl implements ChatCache {
               imageRealmDB.setWidth(message.getOriginal().getWidth());
             }
             m.setOriginal(imageRealmDB);
-          }
+          }*/
 
           if (message.getAlts() != null) {
             RealmList<ImageRealm> alts = new RealmList<>();
@@ -136,10 +136,6 @@ public class ChatCacheImpl implements ChatCache {
 
       RealmResults<MessageRealm> ok =
           obsRealm.where(MessageRealm.class).equalTo("localId", userIds).findAll();
- /*     for (MessageRealm m : ok) {
-        m.deleteFromRealm();
-      }*/
-
       for (int i = 0; i < ok.size(); i++) {
         MessageRealm m = ok.get(i);
         m.deleteFromRealm();

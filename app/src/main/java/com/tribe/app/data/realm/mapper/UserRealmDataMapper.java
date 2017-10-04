@@ -81,6 +81,7 @@ import javax.inject.Singleton;
 
   public List<Image> transformOriginalRealmList(List<ImageRealm> collection) {
     List<Image> originalList = new ArrayList<>();
+
     if (collection != null) {
       ImageRealm stamp = new ImageRealm();
       stamp.setUrl("STAMP");

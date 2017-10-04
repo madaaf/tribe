@@ -2,6 +2,7 @@ package com.tribe.app.data.realm;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -21,7 +22,7 @@ public class MessageRealm extends RealmObject {
   private UserRealm user;
   private String data;
   private String __typename;
-  private ImageRealm original;
+  @Ignore private ImageRealm original;
   private RealmList<ImageRealm> alts;
   private String action;
   private String created_at;

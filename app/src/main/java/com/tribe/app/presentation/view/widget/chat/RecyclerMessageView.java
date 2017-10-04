@@ -195,16 +195,11 @@ public class RecyclerMessageView extends ChatMVPView {
   boolean successMessageCreated = false;
 
   @Override public void successLoadingMessage(List<Message> messages) {
-    Timber.w("SOEF successLoadingMessage " + messages.size() + " " + messages.get(0).toString());
-    load = false;
-
-    if (messages.size() == 1) {
-      messageAdapter.setItem(messages.get(0));
-    } else {
-      treeSet.addAll(messages);
-      messageAdapter.setItems(new ArrayList<Message>(treeSet));
-    }
+    Timber.w("SOEF successLoadingMessage " + messages.size() + " ");
+    treeSet.addAll(messages);
+    messageAdapter.setItems(new ArrayList<Message>(treeSet));
     scrollListToBottom();
+    load = false;
   }
 
   @Override public void successMessageCreated(Message message, int position) {
@@ -213,9 +208,7 @@ public class RecyclerMessageView extends ChatMVPView {
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
-    Timber.w(
-        "successLoadingMessageDisk " + messages.size() + " " + messages.get(messages.size() - 1)
-            .toString());
+    Timber.w("successLoadingMessageDisk " + messages.size() + " ");
     // DO SAME THING THE SUCVCESSLOADING MESSAGE/
   }
 
@@ -236,10 +229,7 @@ public class RecyclerMessageView extends ChatMVPView {
   }
 
   public void successMessageReceived(List<Message> messages) {
-    Message m = messages.get(0);
-    if (!m.getId().equals(user.getId())) {
-      messageAdapter.setItem(m);
-    }
+    messageAdapter.setItem(messages.get(0));
     scrollListToBottom();
     Timber.i("SOOoOOOOOOOOOOOOEF successMessageReceived " + messages);
   }
