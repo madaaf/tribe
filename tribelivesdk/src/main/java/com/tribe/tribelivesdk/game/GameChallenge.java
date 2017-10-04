@@ -22,8 +22,9 @@ public class GameChallenge extends Game {
   private TribeGuest currentChallenger;
   private String previousGuestId = null;
 
-  public GameChallenge(Context context, @GameType String id, String name, int drawableRes) {
-    super(context, id, name, drawableRes);
+  public GameChallenge(Context context, @GameType String id, String name, int drawableRes,
+      boolean available) {
+    super(context, id, name, drawableRes, available);
     nameList = new ArrayList<>();
     guestList = new ArrayList<>();
   }

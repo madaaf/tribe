@@ -23,12 +23,27 @@ public abstract class Game extends GameFilter {
   public static final String STOP = "stop";
   public static final String CURRENT_GAME = "currentGame";
 
-  @StringDef({ GAME_POST_IT, GAME_CHALLENGE, GAME_DRAW }) public @interface GameType {
+  @StringDef({
+      GAME_POST_IT, GAME_CHALLENGE, GAME_DRAW, GAME_BATTLE_MUSIC, GAME_SCREAM, GAME_INVADERS,
+      GAME_DROP_IT, GAME_SING_ALONG, GAME_FACESWAP, GAME_HAND_FIGHT, GAME_LAVA_FLOOR, GAME_TABOO,
+      GAME_BACKGAMON, GAME_BEATS
+  }) public @interface GameType {
   }
 
   public static final String GAME_POST_IT = "post-it";
   public static final String GAME_DRAW = "draw";
   public static final String GAME_CHALLENGE = "challenges";
+  public static final String GAME_BATTLE_MUSIC = "battlemusic";
+  public static final String GAME_SCREAM = "scream";
+  public static final String GAME_INVADERS = "invaders";
+  public static final String GAME_DROP_IT = "dropit";
+  public static final String GAME_SING_ALONG = "singalong";
+  public static final String GAME_FACESWAP = "faceswap";
+  public static final String GAME_HAND_FIGHT = "handfight";
+  public static final String GAME_LAVA_FLOOR = "lavafloor";
+  public static final String GAME_TABOO = "taboo";
+  public static final String GAME_BACKGAMON = "backgamon";
+  public static final String GAME_BEATS = "beats";
 
   protected boolean localFrameDifferent = false;
   private boolean isUserAction = false;
@@ -38,8 +53,9 @@ public abstract class Game extends GameFilter {
   protected PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
   protected PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
 
-  public Game(Context context, @GameType String id, String name, int drawableRes) {
-    super(context, id, name, drawableRes);
+  public Game(Context context, @GameType String id, String name, int drawableRes,
+      boolean available) {
+    super(context, id, name, drawableRes, available);
     this.localFrameDifferent = id.equals(GAME_POST_IT);
   }
 

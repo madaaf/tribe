@@ -12,13 +12,15 @@ public class GameFilter {
   protected String id;
   protected String name;
   protected int drawableRes;
+  protected boolean available;
   private boolean activated = false;
 
-  public GameFilter(Context context, String id, String name, int drawableRes) {
+  public GameFilter(Context context, String id, String name, int drawableRes, boolean available) {
     this.context = context;
     this.id = id;
     this.name = name;
     this.drawableRes = drawableRes;
+    this.available = available;
   }
 
   public Context getContext() {
@@ -55,5 +57,13 @@ public class GameFilter {
 
   public boolean isActivated() {
     return activated;
+  }
+
+  public boolean isAvailable() {
+    return available;
+  }
+
+  public void setAvailable(boolean available) {
+    this.available = available;
   }
 }

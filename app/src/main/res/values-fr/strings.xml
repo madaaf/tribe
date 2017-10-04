@@ -399,7 +399,7 @@
 	<string name="live_invite_section_add_friends">Ajouter des amis dans cette conversation</string>
 	<string name="live_members_chat_section_title">MEMBRES DU CHAT</string>
 	<string name="live_members_invite_link_section_title">LIEN D\'INVITATION</string>
-	<string name="live_members_invite_friends_section_title">AJOUTER UN AMI DANS LE LIVE</string>
+	<string name="live_members_invite_friends_section_title">AJOUTER</string>
 	<string name="live_members_ringing">Appel en cours</string>
 	<string name="live_members_waiting">En attente</string>
 	<string name="live_members_add_friends">Ajouter des amis</string>

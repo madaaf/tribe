@@ -10,8 +10,9 @@ import com.tribe.tribelivesdk.entity.GameFilter;
 
 public abstract class Filter extends GameFilter {
 
-  public Filter(Context context, String id, String name, @DrawableRes int drawableRes) {
-    super(context, id, name, drawableRes);
+  public Filter(Context context, String id, String name, @DrawableRes int drawableRes,
+      boolean available) {
+    super(context, id, name, drawableRes, available);
   }
 
   public abstract void apply(byte[] argb);

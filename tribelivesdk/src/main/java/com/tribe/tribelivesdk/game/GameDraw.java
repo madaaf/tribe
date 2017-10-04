@@ -14,6 +14,7 @@ import timber.log.Timber;
  */
 
 public class GameDraw extends Game {
+
   private List<String> nameList;
   private List<TribeGuest> guestList;
 
@@ -21,8 +22,9 @@ public class GameDraw extends Game {
   private TribeGuest currentDrawer = null;
   private String previousGuestId = null;
 
-  public GameDraw(Context context, @GameType String id, String name, int drawableRes) {
-    super(context, id, name, drawableRes);
+  public GameDraw(Context context, @GameType String id, String name, int drawableRes,
+      boolean available) {
+    super(context, id, name, drawableRes, available);
     nameList = new ArrayList<>();
     guestList = new ArrayList<>();
   }
