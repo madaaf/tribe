@@ -164,9 +164,6 @@ public class RecyclerMessageView extends ChatMVPView {
     if (arrIds == null) {
       return;
     }
-    messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
-    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
-    messagePresenter.onMessageReceivedFromDisk();
   }
 
   public void scrollListToBottom() {
@@ -175,6 +172,9 @@ public class RecyclerMessageView extends ChatMVPView {
 
   public void setArrIds(String[] arrIds) {
     this.arrIds = arrIds;
+    messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
+    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
+    messagePresenter.onMessageReceivedFromDisk();
   }
 
   public void sendMessageToNetwork(String[] arrIds, String data, String type, int position) {
@@ -183,6 +183,7 @@ public class RecyclerMessageView extends ChatMVPView {
   }
 
   public void sendMyMessageToAdapter(Message pendingMessage) {
+    Timber.w("SEND PENDING MESSAGE " + pendingMessage.toString());
     messageAdapter.setItem(pendingMessage);
     scrollListToBottom();
   }
@@ -238,33 +239,6 @@ public class RecyclerMessageView extends ChatMVPView {
     Timber.i("SOOoOOOOOOOOOOOOEF errorMessageReveived ");
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

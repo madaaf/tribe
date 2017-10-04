@@ -33,6 +33,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -41,12 +42,15 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ResizeAnimation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.EditTextFont;
@@ -104,6 +108,7 @@ public class ChatView extends ChatMVPView {
   private boolean editTextChange = false, isHeart = false;
   private String[] arrIds = null;
   private Shortcut shortcut;
+  private Recipient recipient;
 
   @BindView(R.id.editText) EditTextFont editText;
   @BindView(R.id.recyclerViewChat) RecyclerMessageView recyclerView;
@@ -127,6 +132,7 @@ public class ChatView extends ChatMVPView {
   @Inject RxImagePicker rxImagePicker;
   @Inject DateUtils dateUtils;
   @Inject ScreenUtils screenUtils;
+  @Inject Navigator navigator;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Map<String, Subscription> callDurationSubscription = new HashMap<>();
@@ -156,7 +162,8 @@ public class ChatView extends ChatMVPView {
     initParams();
   }
 
-  public void setChatId(List<User> friends, Shortcut shortcut) {
+  public void setChatId(List<User> friends, Shortcut shortcut, Recipient recipient) {
+    this.recipient = recipient;
     this.shortcut = shortcut;
     setTypeChatUX();
     avatarView.load(friends.get(0).getProfilePicture());
@@ -174,6 +181,7 @@ public class ChatView extends ChatMVPView {
     } else {
       title.setText(friends.get(0).getDisplayName());
       title.setTextColor(Color.BLACK);
+    //q  recyclerViewGrp.setVisibility(GONE);
     }
   }
 
@@ -452,7 +460,6 @@ public class ChatView extends ChatMVPView {
   }
 
   @OnClick(R.id.sendBtn) void onClickSend() {
-    //recyclerView.scrollListToBottom();
     if (!isHeart) {
       String m = editText.getText().toString();
       String editedMessage = m.replaceAll("\n", "\"n");
@@ -469,8 +476,13 @@ public class ChatView extends ChatMVPView {
     }
   }
 
+  @OnClick(R.id.videoCallBtn) void onClickVideoCall() {
+
+    navigator.navigateToLive((Activity) context, recipient, PaletteGrid.get(0),
+        LiveActivity.SOURCE_GRID);
+  }
+
   private void sendMessage() {
-    //recyclerView.scrollListToBottom();
     editText.setText("");
     sendBtn.animate()
         .scaleX(1.3f)
@@ -528,7 +540,7 @@ public class ChatView extends ChatMVPView {
         }
 
         if (callDurationSubscription.get(userId) == null) {
-          Subscription ok = Observable.interval(5, TimeUnit.SECONDS)
+          Subscription ok = Observable.interval(10, TimeUnit.SECONDS)
               .timeInterval()
               .observeOn(AndroidSchedulers.mainThread())
               .onBackpressureDrop()
@@ -546,8 +558,6 @@ public class ChatView extends ChatMVPView {
         }
       }
     }
-    //chatUserAdapter.notifyItemMoved(pos, 0);
-    //populateUsersHorizontalList();
   }
 
   @Override public void successShortcutUpdate(Shortcut shortcut) {

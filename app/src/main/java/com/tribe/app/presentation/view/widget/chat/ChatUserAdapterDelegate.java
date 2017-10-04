@@ -81,7 +81,6 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
       int position, List<Object> payloads) {
     User i = (User) payloads.get(0);
 
-    // Timber.i("SOEF onBindViewHolder PLAYLOAD " + position + " " + i.toString());
     ChatUserViewHolder vh = (ChatUserViewHolder) holder;
     counter++;
 
@@ -122,7 +121,7 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
                 animateSpin();
               }
             });
-            a.setParams(width, width + 60, height, height);
+            a.setParams(width, width + 70, height, height);
             vh.container.startAnimation(a);
           }
         });

@@ -1198,7 +1198,7 @@ public class LiveActivity extends BaseActivity
 
   @Override public void onShortcut(Shortcut shortcut) {
     live.setShortcut(shortcut);
-    chatView.setChatId(live.getShortcut().getMembers(), live.getShortcut());
+    chatView.setChatId(live.getShortcut().getMembers(), live.getShortcut(), null);
     chatView.onResumeView();
   }
 

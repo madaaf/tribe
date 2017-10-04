@@ -69,7 +69,7 @@ public class ChatActivity extends BaseActivity {
         Timber.e(" EMPTY LIST ID ");
         return;
       }
-      chatView.setChatId(friends, shortcut);
+      chatView.setChatId(friends, shortcut, recipient);
 
       String[] ids = new String[friends.size()];
       for (int i = 0; i < friends.size(); i++) {
