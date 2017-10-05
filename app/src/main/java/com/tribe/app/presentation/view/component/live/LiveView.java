@@ -324,6 +324,8 @@ public class LiveView extends FrameLayout {
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
 
+    viewLiveInvite.updateWidth(screenUtils.dpToPx(LiveInviteView.WIDTH));
+
     gameManager = GameManager.getInstance(getContext());
 
     initResources();
@@ -347,6 +349,10 @@ public class LiveView extends FrameLayout {
     lp.width = screenUtils.getWidthPx();
     lp.height = screenUtils.getHeightPx() - statusBarHeight;
     view.setLayoutParams(lp);
+  }
+
+  private void updateInviteViewWidth(int width) {
+
   }
 
   //////////////////////

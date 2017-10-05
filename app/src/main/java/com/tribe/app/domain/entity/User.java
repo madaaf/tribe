@@ -374,7 +374,7 @@ public class User
     return id.hashCode();
   }
 
-  @Override public int getSectionType() {
+  @Override public int getLiveInviteSectionType() {
     if (isUserInCall()) {
       return BaseSectionItemDecoration.LIVE_CHAT_MEMBERS;
     } else {

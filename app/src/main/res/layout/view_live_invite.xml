@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <android.support.v7.widget.RecyclerView
+  <com.tribe.app.presentation.view.widget.RecyclerViewInvite
       android:id="@+id/recyclerViewInvite"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:background="@null"
+      android:background="@android:color/white"
       android:fadingEdgeLength="0dp"
       android:overScrollMode="never"
       android:requiresFadingEdge="none"

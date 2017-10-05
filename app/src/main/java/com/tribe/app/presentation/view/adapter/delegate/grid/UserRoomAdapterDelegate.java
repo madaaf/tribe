@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
@@ -19,8 +18,6 @@ import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSecti
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.List;
-import rx.Observable;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 09/04/2017
@@ -30,9 +27,6 @@ public class UserRoomAdapterDelegate
 
   protected LayoutInflater layoutInflater;
   protected Context context;
-
-  // RX SUBSCRIPTIONS / SUBJECTS
-  private PublishSubject<View> onInvite = PublishSubject.create();
 
   public UserRoomAdapterDelegate(Context context) {
     this.context = context;
@@ -50,8 +44,6 @@ public class UserRoomAdapterDelegate
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     UserRoomViewHolder userRoomViewHolder =
         new UserRoomViewHolder(layoutInflater.inflate(R.layout.item_user_room, parent, false));
-    userRoomViewHolder.btnInvite.setOnClickListener(
-        v -> onInvite.onNext(userRoomViewHolder.itemView));
     return userRoomViewHolder;
   }
 
@@ -79,7 +71,6 @@ public class UserRoomAdapterDelegate
     }
 
     vh.viewNewAvatar.load(user.getProfilePicture());
-    vh.btnInvite.setVisibility((user.isUserInCall()) ? View.GONE : View.VISIBLE);
   }
 
   @Override public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items,
@@ -92,7 +83,6 @@ public class UserRoomAdapterDelegate
     @BindView(R.id.viewNewAvatar) NewAvatarView viewNewAvatar;
     @BindView(R.id.txtName) TextViewFont txtName;
     @BindView(R.id.txtStatus) TextViewFont txtStatus;
-    @BindView(R.id.btnInvite) ImageView btnInvite;
 
     public UserRoomViewHolder(View itemView) {
       super(itemView);
@@ -103,8 +93,4 @@ public class UserRoomAdapterDelegate
   /////////////////
   // OBSERVABLES //
   /////////////////
-
-  public Observable<View> onInvite() {
-    return onInvite;
-  }
 }

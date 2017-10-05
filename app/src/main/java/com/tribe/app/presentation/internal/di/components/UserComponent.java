@@ -35,6 +35,7 @@ import com.tribe.app.presentation.view.component.live.LiveRoomView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
+import com.tribe.app.presentation.view.component.live.TileInviteView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -183,4 +184,6 @@ import dagger.Component;
   void inject(NewChatActivity newChatActivity);
 
   void inject(ShortcutCompletionTokenView shortcutCompletionTokenView);
+
+  void inject(TileInviteView tileInviteView);
 }

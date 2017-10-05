@@ -340,7 +340,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     return onRoomUpdated;
   }
 
-  @Override public int getSectionType() {
-    return BaseSectionItemDecoration.LIVE_INVITE_LINK;
+  @Override public int getLiveInviteSectionType() {
+    return BaseSectionItemDecoration.LIVE_CHAT_MEMBERS;
   }
 }

@@ -19,13 +19,12 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 public abstract class BaseSectionItemDecoration extends RecyclerView.ItemDecoration {
 
   @IntDef({
-      LIVE_CHAT_MEMBERS, LIVE_INVITE_LINK, LIVE_ADD_FRIENDS_IN_CALL, HOME_ONGOING, HOME_ONLINE,
+      LIVE_CHAT_MEMBERS, LIVE_ADD_FRIENDS_IN_CALL, HOME_ONGOING, HOME_ONLINE,
       HOME_RECENT
   }) public @interface HeaderType {
   }
 
   public static final int LIVE_CHAT_MEMBERS = 0;
-  public static final int LIVE_INVITE_LINK = 1;
   public static final int LIVE_ADD_FRIENDS_IN_CALL = 2;
   public static final int HOME_ONGOING = 3;
   public static final int HOME_ONLINE = 4;
