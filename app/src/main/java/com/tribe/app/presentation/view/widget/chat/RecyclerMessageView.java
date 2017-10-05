@@ -22,13 +22,12 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import javax.inject.Inject;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -41,26 +40,18 @@ import timber.log.Timber;
 
 public class RecyclerMessageView extends ChatMVPView {
 
-  public final static int FROM_CHAT = 0;
-  public final static int FROM_LIVE = 1;
-
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private Context context;
   private LinearLayoutManager layoutManager;
   private MessageAdapter messageAdapter;
 
-  int counterMessageNotSend;
-  boolean load = false;
+  private int counterMessageNotSend, type;
+  private boolean load = false, errorLoadingMessages = false;
+  private List<Message> unreadMessage = new ArrayList<>();
   private String[] arrIds = null;
-  private Set<Message> treeSet = new TreeSet<>((o1, o2) -> {
-    DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
-    DateTime d1 = parser.parseDateTime(o1.getCreationDate());
-    DateTime d2 = parser.parseDateTime(o2.getCreationDate());
-    return d1.compareTo(d2);
-  });
 
-  @BindView(R.id.recyclerViewChatHOHO) RecyclerView recyclerView;
+  @BindView(R.id.recyclerViewMessageChat) RecyclerView recyclerView;
 
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
@@ -75,6 +66,11 @@ public class RecyclerMessageView extends ChatMVPView {
   public RecyclerMessageView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     this.context = context;
+    if (context instanceof LiveActivity) {
+      this.type = ChatView.FROM_LIVE;
+    } else {
+      this.type = ChatView.FROM_CHAT;
+    }
     initView();
   }
 
@@ -116,7 +112,7 @@ public class RecyclerMessageView extends ChatMVPView {
 
   private void initRecyclerView() {
     layoutManager = new LinearLayoutManager(getContext());
-    messageAdapter = new MessageAdapter(getContext(), FROM_CHAT);
+    messageAdapter = new MessageAdapter(getContext(), type);
     layoutManager.setStackFromEnd(true);
 
     DefaultItemAnimator animator = new DefaultItemAnimator() {
@@ -187,10 +183,6 @@ public class RecyclerMessageView extends ChatMVPView {
     scrollListToBottom();
   }
 
-  /**
-   * MESSAGE RECEPTION
-   */
-
   private void sortMessageList(List<Message> list) {
     Collections.sort(list, (o1, o2) -> {
       DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
@@ -200,10 +192,14 @@ public class RecyclerMessageView extends ChatMVPView {
     });
   }
 
-  List<Message> unreadMessage = new ArrayList<>();
+  /**
+   * MESSAGE RECEPTION
+   */
 
   @Override public void successLoadingMessage(List<Message> messages) {
     Timber.w("SOEF successLoadingMessage " + messages.size() + " ");
+    errorLoadingMessages = false;
+
     for (Message m : messages) {
       if (!messageAdapter.getItems().contains(m)) {
         unreadMessage.add(m);
@@ -246,12 +242,17 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.w("successLoadingMessageDisk " + messages.size() + " ");
+    if (errorLoadingMessages) {
+      messageAdapter.setItems(messages, 0);
+      scrollListToBottom();
+    }
     // DO SAME THING THE SUCVCESSLOADING MESSAGE/
   }
 
   /**
    * ERROR NETWORK
    */
+
   @Override public void errorLoadingMessageDisk() {
     Timber.w("errorLoadingMessageDisk");
   }
@@ -263,6 +264,7 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void errorLoadingMessage() {
     Timber.w("errorLoadingMessage");
+    errorLoadingMessages = true;
   }
 
   public void successMessageReceived(List<Message> messages) {

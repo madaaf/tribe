@@ -80,6 +80,11 @@ public class ChatActivity extends BaseActivity {
     }
   }
 
+  @Override protected void onPause() {
+    super.onPause();
+    chatView.dispose();
+  }
+
   @Override protected void onResume() {
     super.onResume();
     chatView.onResumeView();
@@ -87,7 +92,6 @@ public class ChatActivity extends BaseActivity {
 
   @Override protected void onDestroy() {
     super.onDestroy();
-    chatView.dispose();
   }
 
   @Override public void finish() {

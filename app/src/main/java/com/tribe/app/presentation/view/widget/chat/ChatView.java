@@ -155,11 +155,14 @@ public class ChatView extends ChatMVPView {
     inflater.inflate(R.layout.view_chat, this, true);
     unbinder = ButterKnife.bind(this);
     Timber.w("SOEF  INIT VIEW");
-
     initRecyclerView();
     initDependencyInjector();
     initSubscriptions();
     initParams();
+  }
+
+  public int getType() {
+    return type;
   }
 
   public void setChatId(List<User> friends, Shortcut shortcut, Recipient recipient) {
@@ -197,8 +200,10 @@ public class ChatView extends ChatMVPView {
   }
 
   public void dispose() {
-    context.startService(
-        WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
+    if (arrIds != null) {
+      context.startService(
+          WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
+    }
   }
 
   private void initParams() {
@@ -219,7 +224,8 @@ public class ChatView extends ChatMVPView {
     if (type == (FROM_LIVE)) {
       topbar.setVisibility(GONE);
       containerUsers.setVisibility(GONE);
-      pulseLayout.setVisibility(INVISIBLE);
+      pulseLayout.getLayoutParams().height = 0;
+      pulseLayout.getLayoutParams().width = 0;
       container.setBackground(null);
       uploadImageBtn.setImageDrawable(
           ContextCompat.getDrawable(context, R.drawable.picto_chat_upload_white));
@@ -324,6 +330,9 @@ public class ChatView extends ChatMVPView {
   }
 
   private void expendEditText() {
+    if (type == FROM_LIVE) {
+      return;
+    }
     editText.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
@@ -345,6 +354,9 @@ public class ChatView extends ChatMVPView {
   }
 
   private void shrankEditText() {
+    if (type == FROM_LIVE) {
+      return;
+    }
     editText.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
