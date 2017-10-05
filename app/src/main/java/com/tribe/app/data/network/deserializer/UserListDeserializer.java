@@ -5,6 +5,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.data.realm.UserRealm;
 import java.lang.reflect.Type;
@@ -18,7 +20,11 @@ public class UserListDeserializer implements JsonDeserializer<List<UserRealm>> {
 
     JsonArray results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("users");
     if (results == null) {
-      results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonArray("lookupByUserId");
+      JsonElement element = je.getAsJsonObject().getAsJsonObject("data");
+      JsonObject propertyToBeCopied = (JsonObject) element;
+      if (!(propertyToBeCopied.get("lookupByUserId") instanceof JsonNull)) {
+        results = propertyToBeCopied.getAsJsonArray("lookupByUserId");
+      }
     }
 
     if (results == null || results.size() == 0) {

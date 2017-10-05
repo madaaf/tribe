@@ -11,12 +11,12 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.util.List;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -36,12 +36,9 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
     return message instanceof MessageText;
   }
 
-
   @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {
-    MessageTextViewHolder vh = new MessageTextViewHolder(
+    return new MessageTextViewHolder(
         layoutInflater.inflate(R.layout.item_message_text, parent, false));
-
-    return vh;
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,
@@ -59,11 +56,18 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
     setPendingBehavior(m, vh.container);
   }
 
-
   @Override public void onBindViewHolder(@NonNull List<Message> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     MessageTextViewHolder vh = (MessageTextViewHolder) holder;
-    vh.container.setAlpha(1f);
+    MessageText m = (MessageText) items.get(position);
+    Timber.w("PUT 1f " + m.toString() + ((MessageText) payloads.get(0)).toString());
+    if (m.isPending()) {
+      vh.container.setAlpha(0.4f);
+      vh.message.setText(vh.message.getText().toString());
+    } else {
+      vh.container.setAlpha(1f);
+      vh.message.setText(vh.message.getText().toString());
+    }
   }
 
   static class MessageTextViewHolder extends BaseTextViewHolder {

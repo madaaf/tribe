@@ -12,6 +12,8 @@ public class Message {
   @StringDef({ MESSAGE_TEXT, MESSAGE_EMOJI, MESSAGE_IMAGE, MESSAGE_EVENT }) public @interface Type {
   }
 
+  public static final String PENDING = "PENDING";
+
   public static final String MESSAGE_TEXT = "TextMessage";
   public static final String MESSAGE_EMOJI = "EmojiMessage";
   public static final String MESSAGE_IMAGE = "ImageMessage";
@@ -90,7 +92,6 @@ public class Message {
 
     if (!(obj instanceof Message)) return false;
     Message other = (Message) obj;
-    boolean ok = this.id.equals(other.id);
 
     return (this.id.equals(other.id) && this.id.equals(other.id));
   }

@@ -25,6 +25,6 @@ public class MessageEmoji extends Message {
   }
 
   @Override public String toString() {
-    return "MessageEmoji{" + "emoji='" + emoji + '\'' + '}';
+    return "MessageEmoji{" + "emoji='  id " + getId() + " " + emoji + '\'' + '}';
   }
 }

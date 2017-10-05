@@ -8,13 +8,8 @@ import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -24,13 +19,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
   protected RxAdapterDelegatesManager<List<Message>> delegatesManager;
   private List<Message> items;
-
-  private Set<Message> treeSet = new TreeSet<>((o1, o2) -> {
-    DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
-    DateTime d1 = parser.parseDateTime(o1.getCreationDate());
-    DateTime d2 = parser.parseDateTime(o2.getCreationDate());
-    return d1.compareTo(d2);
-  });
+  private List<Integer> positionPendingMessage = new ArrayList<>();
 
   private MessageEmojiAdapterDelegate messageEmojiAdapterDelegate;
   private MessageTextAdapterDelegate messageTextAdapterDelegate;
@@ -38,7 +27,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
   private MessageEventAdapterDelegate messageEventAdapterDelegate;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<List<Object>> onMessagePending = PublishSubject.create();
 
   public MessageAdapter(Context context, int type) {
     delegatesManager = new RxAdapterDelegatesManager<>();
@@ -67,18 +55,17 @@ public class MessageAdapter extends RecyclerView.Adapter {
   }
 
   @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-  /*  delegatesManager.onBindViewHolder(items, position, holder);
-    Timber.w("BIND HOLDER EMPTY");*/
+    // delegatesManager.onBindViewHolder(items, position, holder);
   }
 
   @Override
   public void onBindViewHolder(RecyclerView.ViewHolder holder, int position, List payloads) {
     if (!payloads.isEmpty()) {
-      Message m = (Message) payloads.get(0);
-      Message last = items.get(items.size() - 1);
-      last.setPending(false);
-      last.setId(m.getId());
-      //  Timber.e("SOEF PLAYLOAD BINDING " + m.toString());
+      Message newMessage = (Message) payloads.get(0);
+      Message m = items.get(position);
+      m.setPending(false);
+      m.setId(newMessage.getId());
+      Timber.w("SOEF PLAYLOAD BINDING " + position + " " + m.toString());
       delegatesManager.onBindViewHolder(items, holder, position, payloads);
     } else {
       delegatesManager.onBindViewHolder(items, position, holder);
@@ -89,16 +76,25 @@ public class MessageAdapter extends RecyclerView.Adapter {
     return items.size();
   }
 
-  public void setItems(Collection<Message> items) {
-    this.items.clear();
-    this.treeSet.addAll(items);
-    this.items.addAll(
-        new ArrayList<>(treeSet)); // Use tree set to put items in bottom or in top of the list
-    //  Timber.e("SOEF ADD ITEM " + this.items.size());
+  public void setItems(Collection<Message> items, int position) {
+    // this.items.clear();
+    this.items.addAll(position, items);
     super.notifyDataSetChanged();
   }
 
+  public void setItem(Message message) {
+    this.items.add(message);
+    super.notifyDataSetChanged();
+  }
+
+  public void setAllAndClear(Message message) {
+
+  }
+
   public int getIndexOfMessage(Message message) {
+    for (Message m : items) {
+      Timber.i(items.indexOf(m) + " " + m.toString());
+    }
     return items.indexOf(message);
   }
 
@@ -108,5 +104,23 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
   public List<Message> getItems() {
     return items;
+  }
+
+  public void updateItem(int position, Message message) {
+    Message pendingItem = items.get(position);
+    Timber.w("SOEF UPDATE ITEM : " + position + " " + pendingItem.toString());
+    pendingItem.setId(message.getId());
+    pendingItem.setPending(false);
+    if (position != -1) notifyItemChanged(position, pendingItem);
+  }
+
+  public int getPendingMessage() {
+    positionPendingMessage = new ArrayList<>();
+    for (Message m : items) {
+      if (m.getId().equals(Message.PENDING)) {
+        positionPendingMessage.add(items.indexOf(m));
+      }
+    }
+    return (positionPendingMessage.size() - 1);
   }
 }

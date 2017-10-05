@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
@@ -48,14 +47,18 @@ public class MessageEmojiAdapterDelegate extends BaseMessageAdapterDelegate {
   @Override public void onBindViewHolder(@NonNull List<Message> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     MessageEmojiViewHolder vh = (MessageEmojiViewHolder) holder;
-    vh.container.setAlpha(1f);
+
+    MessageEmoji m = (MessageEmoji) items.get(position);
+    if (m.isPending()) {
+      vh.container.setAlpha(0.4f);
+    } else {
+      vh.container.setAlpha(1f);
+    }
   }
 
   @Override protected BaseTextViewHolder getViewHolder(ViewGroup parent) {
-    MessageEmojiViewHolder vh = new MessageEmojiViewHolder(
+    return new MessageEmojiViewHolder(
         layoutInflater.inflate(R.layout.item_message_emoji, parent, false));
-
-    return vh;
   }
 
   static class MessageEmojiViewHolder extends BaseTextViewHolder {

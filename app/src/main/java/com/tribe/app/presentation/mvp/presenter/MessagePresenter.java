@@ -5,6 +5,7 @@ import com.tribe.app.domain.interactor.chat.CreateMessage;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
 import com.tribe.app.domain.interactor.chat.ImTyping;
 import com.tribe.app.domain.interactor.chat.IsTypingFromDisk;
+import com.tribe.app.domain.interactor.chat.OnMessageReceivedFromDisk;
 import com.tribe.app.domain.interactor.chat.UserMessageInfos;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.GetDiskShortcut;
@@ -28,17 +29,24 @@ public class MessagePresenter implements Presenter {
   protected GetMessageFromDisk getMessageFromDisk;
   protected GetDiskShortcut getDiskShortcut;
   protected IsTypingFromDisk isTypingFromDisk;
+  protected OnMessageReceivedFromDisk onMessageReceivedFromDisk;
   protected ImTyping imTyping;
 
   @Inject public MessagePresenter(UserMessageInfos userMessageInfos, CreateMessage createMessage,
       GetMessageFromDisk getMessageFromDisk, GetDiskShortcut getDiskShortcut,
-      IsTypingFromDisk isTypingFromDisk, ImTyping imTyping) {
+      IsTypingFromDisk isTypingFromDisk, ImTyping imTyping,
+      OnMessageReceivedFromDisk onMessageReceivedFromDisk) {
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
     this.getMessageFromDisk = getMessageFromDisk;
     this.getDiskShortcut = getDiskShortcut;
     this.isTypingFromDisk = isTypingFromDisk;
     this.imTyping = imTyping;
+    this.onMessageReceivedFromDisk = onMessageReceivedFromDisk;
+  }
+
+  public void onMessageReceivedFromDisk() {
+    onMessageReceivedFromDisk.execute(new GetDiskMessageReceivedSubscriber());
   }
 
   public void getDiskShortcut(String shortcutId) {
@@ -94,12 +102,28 @@ public class MessagePresenter implements Presenter {
     }
   }
 
+  private class GetDiskMessageReceivedSubscriber extends DefaultSubscriber<List<Message>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
+      if (chatMVPView != null) chatMVPView.errorMessageReveived();
+    }
+
+    @Override public void onNext(List<Message> messages) {
+      if (chatMVPView != null) chatMVPView.successMessageReceived(messages);
+    }
+  }
+
   private class GetDiskShortcutSubscriber extends DefaultSubscriber<Shortcut> {
 
     @Override public void onCompleted() {
     }
 
     @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
       if (chatMVPView != null) chatMVPView.errorShortcutUpdate();
     }
 
@@ -128,6 +152,7 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
       if (chatMVPView != null) chatMVPView.errorLoadingMessageDisk();
     }
 
@@ -162,7 +187,7 @@ public class MessagePresenter implements Presenter {
 
     @Override public void onError(Throwable e) {
       Timber.e(e.getMessage());
-      if (chatMVPView != null) chatMVPView.errorMessageCreation();
+      if (chatMVPView != null) chatMVPView.errorMessageCreation(positon);
     }
 
     @Override public void onNext(Message message) {

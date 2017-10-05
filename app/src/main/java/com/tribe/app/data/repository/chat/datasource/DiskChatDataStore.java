@@ -37,7 +37,13 @@ public class DiskChatDataStore implements ChatDataStore {
     return chatCache.isTyping();
   }
 
-  @Override public Observable<Boolean> imTyping(String[] userIds) {
+  @Override public Observable<List<MessageRealm>> onMessageReceived() {
+    return chatCache.onMessageReceived();
+  }
+
+  @Override
+
+  public Observable<Boolean> imTyping(String[] userIds) {
     return null;
   }
 }

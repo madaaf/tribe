@@ -1,6 +1,8 @@
 package com.tribe.app.presentation.view.widget.chat.model;
 
+import android.content.Context;
 import android.support.annotation.StringDef;
+import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 
 /**
@@ -30,7 +32,7 @@ public class MessageEvent extends Message {
         content += " joined live";
         break;
       case ACTION_LEAVE:
-        content += " leaved live";
+        content += " left live";
         break;
       case ACTION_SWITCH:
         content += " switched";
@@ -57,6 +59,14 @@ public class MessageEvent extends Message {
   }
 
   @Override public String toString() {
-    return "MessageEvent{" + "action='" + action + '\'' + ", user=" + user + '}';
+    return "MessageEvent{"
+        + "id = "
+        + getId()
+        + " action='"
+        + action
+        + '\''
+        + ", user="
+        + user
+        + '}';
   }
 }

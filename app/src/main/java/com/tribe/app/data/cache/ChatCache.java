@@ -14,10 +14,14 @@ import rx.Observable;
 
   void putMessages(RealmList<MessageRealm> messages, String userIds);
 
+  Observable<List<MessageRealm>> onMessageReceived();
+
   void onTyping(String userIds);
 
   Observable<String> isTyping();
 
   Observable<List<MessageRealm>> getMessages(String[] userIds);
+
+  void setOnMessageReceived(RealmList<MessageRealm> messages);
 }
 

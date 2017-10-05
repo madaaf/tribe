@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:anndroid="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/contentView"
     android:layout_width="match_parent"
@@ -54,23 +53,15 @@
       android:clickable="true"
       />
 
-  <android.support.v7.widget.RecyclerView
+  <com.tribe.app.presentation.view.widget.chat.RecyclerMessageView
       android:id="@+id/recyclerViewChat"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="match_parent"
       android:layout_above="@+id/containerUsers"
       android:layout_below="@+id/topbar"
-      android:background="@android:color/transparent"
-      android:fadeScrollbars="true"
-      android:overScrollMode="never"
-      android:paddingEnd="15dp"
-      android:paddingStart="15dp"
-      android:scrollbarSize="3dp"
-      android:scrollbarThumbVertical="@android:color/darker_gray"
-      android:scrollbars="vertical"
       >
 
-  </android.support.v7.widget.RecyclerView>
+  </com.tribe.app.presentation.view.widget.chat.RecyclerMessageView>
 
   <FrameLayout
       android:id="@+id/containerUsers"
@@ -78,6 +69,8 @@
       android:layout_height="wrap_content"
       android:layout_above="@+id/separator"
       android:layout_alignParentStart="true"
+      android:layout_gravity="center_vertical"
+      android:gravity="center_vertical"
       >
 
     <View
@@ -90,7 +83,9 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewGrp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
         android:orientation="horizontal"
         android:overScrollMode="never"
         android:paddingBottom="10dp"
@@ -121,8 +116,10 @@
       android:layout_alignParentBottom="true"
       android:layout_alignParentStart="true"
       android:layout_gravity="bottom"
-      android:layout_marginBottom="5dp"
       android:gravity="bottom"
+      android:paddingBottom="5dp"
+      android:paddingEnd="5dp"
+      android:paddingStart="5dp"
       >
 
     <ImageView
@@ -190,7 +187,7 @@
         android:layout_gravity="bottom"
         android:layout_marginBottom="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="5dp"
         android:layout_toStartOf="@+id/layoutPulse"
         android:gravity="bottom"
         android:scaleType="centerInside"
@@ -220,7 +217,6 @@
           android:layout_centerVertical="true"
           android:scaleType="centerInside"
           android:src="@drawable/picto_chat_video"
-          anndroid:layout_marginStart="4dp"
           />
     </com.tribe.app.presentation.view.widget.PulseLayout>
   </RelativeLayout>

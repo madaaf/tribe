@@ -1,5 +1,10 @@
 package com.tribe.app.presentation.mvp.view;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.widget.FrameLayout;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
@@ -8,23 +13,46 @@ import java.util.List;
  * Created by madaaflak on 06/09/2017.
  */
 
-public interface ChatMVPView extends MVPView {
+public abstract class ChatMVPView extends FrameLayout implements MVPView {
 
-  void successLoadingMessage(List<Message> messages);
+  public ChatMVPView(@NonNull Context context) {
+    super(context);
+  }
 
-  void errorLoadingMessage();
+  public ChatMVPView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-  void successLoadingMessageDisk(List<Message> messages);
+  public void successLoadingMessage(List<Message> messages) {
+  }
 
-  void errorLoadingMessageDisk();
+  public void errorLoadingMessage() {
+  }
 
-  void isTypingEvent(String userId);
+  public void successLoadingMessageDisk(List<Message> messages) {
+  }
 
-  void successMessageCreated(Message message, int position);
+  public void errorLoadingMessageDisk() {
+  }
 
-  void errorMessageCreation();
+  public void successMessageCreated(Message message, int position) {
+  }
 
-  void successShortcutUpdate(Shortcut shortcut);
+  public void errorMessageCreation(int position) {
+  }
 
-  void errorShortcutUpdate();
+  public void isTypingEvent(String userId) {
+  }
+
+  public void successShortcutUpdate(Shortcut shortcut) {
+  }
+
+  public void errorShortcutUpdate() {
+  }
+
+  public void successMessageReceived(List<Message> messages) {
+  }
+
+  public void errorMessageReveived() {
+  }
 }
