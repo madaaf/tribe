@@ -1064,7 +1064,7 @@ public class LiveView extends FrameLayout {
 
     jsonPut(path, "hexColor", "F9AD25");
     jsonPut(path, "lineWidth", 6.0);
-    jsonPut(path, "id", "test");
+    jsonPut(path, "id", "view_recycler_message");
     jsonPut(path, "points", array);
 
     JSONObject gameObject = new JSONObject();

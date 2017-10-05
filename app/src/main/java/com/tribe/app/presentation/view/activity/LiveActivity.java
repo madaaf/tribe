@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import butterknife.BindView;
@@ -541,12 +542,16 @@ public class LiveActivity extends BaseActivity
       if (open) {
         chatView.setChatId(live.getShortcut().getMembers(), live.getShortcut(), null);
         chatView.onResumeView();
+        chatView.setAlpha(0);
+        chatView.setTranslationX(-screenUtils.getWidthPx());
         chatView.setVisibility(VISIBLE);
-        chatView.animate().setDuration(300).alpha(1f).setListener(null);
+        chatView.animate()
+            .setInterpolator(new OvershootInterpolator()).setDuration(300).alpha(1f).translationX(0).setListener(null);
       } else {
         chatView.animate()
             .setDuration(300)
             .alpha(0f)
+            .translationX(-screenUtils.getWidthPx())
             .withEndAction(() -> chatView.setVisibility(View.GONE))
             .setListener(null);
       }

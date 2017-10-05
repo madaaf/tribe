@@ -13,6 +13,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -126,6 +127,7 @@ public class ChatView extends ChatMVPView {
   @BindView(R.id.containerUsers) FrameLayout containerUsers;
   @BindView(R.id.container) FrameLayout container;
   @BindView(R.id.containerEditText) RelativeLayout containerEditText;
+  @BindView(R.id.separator) View separator;
 
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
@@ -232,10 +234,12 @@ public class ChatView extends ChatMVPView {
       videoCallBtn.setVisibility(GONE);
       sendBtn.setImageDrawable(
           ContextCompat.getDrawable(context, R.drawable.picto_like_heart_white));
-      editText.setBackground(
-          ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_black10));
-      containerEditText.setBackground(
-          ContextCompat.getDrawable(context, R.drawable.background_blur));
+      separator.setVisibility(GONE);
+
+    /*  editText.setBackground(
+          ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_black10));*/
+    /*  containerEditText.setBackground(
+          ContextCompat.getDrawable(context, R.drawable.background_blur));*/
       editText.setTextColor(ContextCompat.getColor(context, R.color.white));
     }
   }
