@@ -407,6 +407,7 @@
 	<string name="live_members_menu_more">More</string>
 	<string name="live_members_menu_less">Less</string>
 	<string name="live_members_menu_added">Added</string>
+	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>
 	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
