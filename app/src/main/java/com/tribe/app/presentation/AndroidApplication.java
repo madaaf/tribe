@@ -223,24 +223,51 @@ public class AndroidApplication extends Application {
     FilterManager filterManager = FilterManager.getInstance(this);
     List<Filter> filterList = new ArrayList<>();
     filterList.add(new LUT3DFilter(this, LUT3DFilter.LUT3D_TAN, "Tan", R.drawable.picto_filter_tan,
-        R.drawable.lut_settled));
+        R.drawable.lut_settled, true));
     filterList.add(
         new LUT3DFilter(this, LUT3DFilter.LUT3D_HIPSTER, "Hipster", R.drawable.picto_filter_hipster,
-            R.drawable.lut_pola669));
+            R.drawable.lut_pola669, true));
     filterList.add(new LUT3DFilter(this, LUT3DFilter.LUT3D_BW, "B&W", R.drawable.picto_filter_bw,
-        R.drawable.lut_litho));
+        R.drawable.lut_litho, true));
     filterManager.initFilters(filterList);
   }
 
   private void initGameManager() {
     GameManager gameManager = GameManager.getInstance(this);
     gameManager.addGame(new GamePostIt(this, Game.GAME_POST_IT, getString(R.string.game_post_it),
-        R.drawable.picto_game_post_it));
+        R.drawable.picto_game_post_it, true));
     gameManager.addGame(
         new GameChallenge(this, Game.GAME_CHALLENGE, getString(R.string.game_challenges),
-            R.drawable.icon_game_challenge));
-    gameManager.addGame(new GameDraw(this, Game.GAME_DRAW, getString(R.string.game_draw),
-        R.drawable.icon_game_draw));
+            R.drawable.icon_game_challenge, true));
+    gameManager.addGame(
+        new GameDraw(this, Game.GAME_DRAW, getString(R.string.game_draw), R.drawable.icon_game_draw,
+            true));
+    gameManager.addGame(
+        new GameDraw(this, Game.GAME_BATTLE_MUSIC, getString(R.string.game_song_pop),
+            R.drawable.icon_game_battle_music, false));
+    gameManager.addGame(new GameDraw(this, Game.GAME_SCREAM, getString(R.string.game_scream),
+        R.drawable.icon_game_scream, false));
+    gameManager.addGame(new GameDraw(this, Game.GAME_INVADERS, getString(R.string.game_invaders),
+        R.drawable.icon_game_invaders, false));
+    gameManager.addGame(new GameDraw(this, Game.GAME_DROP_IT, getString(R.string.game_drop_it),
+        R.drawable.icon_game_drop_it, false));
+    gameManager.addGame(
+        new GameDraw(this, Game.GAME_SING_ALONG, getString(R.string.game_sing_along),
+            R.drawable.icon_game_sing_along, false));
+    gameManager.addGame(new GameDraw(this, Game.GAME_FACESWAP, getString(R.string.game_faceswap),
+        R.drawable.icon_game_faceswap, false));
+    gameManager.addGame(
+        new GameDraw(this, Game.GAME_HAND_FIGHT, getString(R.string.game_hand_fight),
+            R.drawable.icon_game_handfight, false));
+    gameManager.addGame(
+        new GameDraw(this, Game.GAME_LAVA_FLOOR, getString(R.string.game_lava_floor),
+            R.drawable.icon_game_lava, false));
+    gameManager.addGame(new GameDraw(this, Game.GAME_TABOO, getString(R.string.game_taboo),
+        R.drawable.icon_game_taboo, false));
+    gameManager.addGame(new GameDraw(this, Game.GAME_BACKGAMON, getString(R.string.game_backgam),
+        R.drawable.icon_game_backgamon, false));
+    gameManager.addGame(new GameDraw(this, Game.GAME_BEATS, getString(R.string.game_beats),
+        R.drawable.icon_game_beats, false));
   }
 
   private class SampleAppStateListener implements AppStateListener {

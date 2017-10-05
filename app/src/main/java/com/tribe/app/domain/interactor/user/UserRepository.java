@@ -97,7 +97,7 @@ public interface UserRepository {
 
   Observable<List<Contact>> contactsInvite();
 
-  Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds);
+  Observable<List<Shortcut>> searchLocally(String s, Set<String> includedUserIds);
 
   /**
    * Get an {@link Observable} which will emit a {@link SearchResult} containing infos
@@ -147,5 +147,5 @@ public interface UserRepository {
 
   Observable<Shortcut> updateShortcut(String shortcutId, List<Pair<String, String>> values);
 
-  Observable<Boolean> removeShortcut(String shortcutId);
+  Observable<Void> removeShortcut(String shortcutId);
 }

@@ -6,15 +6,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 01/02/2017.
@@ -23,6 +26,9 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
 
   private Context context;
   private LayoutInflater layoutInflater;
+
+  // OBSERVABLES
+  private PublishSubject<View> onInvite = PublishSubject.create();
 
   public ContactToInviteAdapterDelegate(Context context) {
     this.context = context;
@@ -34,6 +40,7 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     ContactToInviteViewHolder vh = new ContactToInviteViewHolder(
         layoutInflater.inflate(R.layout.item_contact_to_invite, parent, false));
+    vh.btnInvite.setOnClickListener(view -> onInvite.onNext(vh.itemView));
     return vh;
   }
 
@@ -54,6 +61,12 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
     vh.txtName.setText(contact.getName());
     vh.txtDetails.setText(context.getString(R.string.contacts_section_addressbook_friends_in_app,
         contact.getHowManyFriends()));
+
+    if (contact instanceof ContactAB) {
+      vh.btnInvite.setImageResource(R.drawable.picto_invite);
+    } else {
+      vh.btnInvite.setImageResource(R.drawable.picto_messenger);
+    }
   }
 
   class ContactToInviteViewHolder extends RecyclerView.ViewHolder {
@@ -66,5 +79,15 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
     @BindView(R.id.txtName) public TextViewFont txtName;
 
     @BindView(R.id.txtDetails) public TextViewFont txtDetails;
+
+    @BindView(R.id.btnInvite) public ImageView btnInvite;
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<View> onInvite() {
+    return onInvite;
   }
 }

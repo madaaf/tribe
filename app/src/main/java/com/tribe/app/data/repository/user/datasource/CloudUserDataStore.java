@@ -814,16 +814,13 @@ public class CloudUserDataStore implements UserDataStore {
     }
   }
 
-  @Override public Observable<Boolean> removeShortcut(String shortcutId) {
+  @Override public Observable<Void> removeShortcut(String shortcutId) {
     String body = context.getString(R.string.removeShortcut, shortcutId);
 
-    final String request = context.getString(R.string.mutation, body) +
-        "\n" +
-        context.getString(R.string.shortcutFragment_infos) +
-        "\n" +
-        context.getString(R.string.userfragment_infos_light);
+    final String request = context.getString(R.string.mutation, body);
 
-    return this.tribeApi.removeShortcut(request);
+    return this.tribeApi.removeShortcut(request)
+        .doOnNext(aVoid -> userCache.removeShortcut(shortcutId));
   }
 
   @Override public Observable<List<ShortcutRealm>> singleShortcuts() {
@@ -842,8 +839,11 @@ public class CloudUserDataStore implements UserDataStore {
     return this.tribeApi.getUserInfos(context.getString(R.string.shortcuts_blocked,
         context.getString(R.string.userfragment_infos),
         context.getString(R.string.shortcutFragment_infos))).map(userRealm -> {
-      if (userRealm != null) return userRealm.getShortcuts();
-      else return new RealmList<ShortcutRealm>();
+      if (userRealm != null) {
+        return userRealm.getShortcuts();
+      } else {
+        return new RealmList<ShortcutRealm>();
+      }
     }).doOnNext(saveToCacheShortcuts);
   }
 }

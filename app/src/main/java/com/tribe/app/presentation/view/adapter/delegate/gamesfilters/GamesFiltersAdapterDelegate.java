@@ -50,9 +50,8 @@ public abstract class GamesFiltersAdapterDelegate extends RxAdapterDelegate<List
 
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
-    sizeDisabled =
-        context.getResources().getDimensionPixelSize(R.dimen.filter_game_size) - screenUtils.dpToPx(
-            5);
+    sizeDisabled = context.getResources().getDimensionPixelSize(R.dimen.filter_game_size) -
+        screenUtils.dpToPx(5);
     sizeEnabled =
         context.getResources().getDimensionPixelSize(R.dimen.filter_game_size_with_border);
   }
@@ -87,6 +86,12 @@ public abstract class GamesFiltersAdapterDelegate extends RxAdapterDelegate<List
         .resourceId(gameFilter.getDrawableRes())
         .target(vh.image)
         .load();
+
+    if (!gameFilter.isAvailable()) {
+      vh.itemView.setAlpha(0.5f);
+    } else {
+      vh.itemView.setAlpha(1);
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<GameFilter> items,

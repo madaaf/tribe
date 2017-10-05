@@ -30,4 +30,15 @@
         style="@style/Caption.One.Black40"
         />
   </LinearLayout>
+
+  <ImageView
+      android:id="@+id/btnInvite"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="end|center_vertical"
+      android:layout_marginEnd="@dimen/horizontal_margin"
+      android:clickable="true"
+      android:foreground="@drawable/selectable_button_oval"
+      android:scaleType="centerInside"
+      />
 </FrameLayout>

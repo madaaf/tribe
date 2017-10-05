@@ -118,6 +118,6 @@ public interface TribeApi {
   @Multipart @POST("/graphql") Observable<ShortcutRealm> updateShortcutMedia(
       @Part("query") RequestBody query, @Part MultipartBody.Part file);
 
-  @FormUrlEncoded @POST("/graphql") Observable<Boolean> removeShortcut(
+  @FormUrlEncoded @POST("/graphql") Observable<Void> removeShortcut(
       @Field("query") String query);
 }

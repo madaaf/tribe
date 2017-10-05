@@ -540,7 +540,7 @@ public class HomeActivity extends BaseActivity
           List<Recipient> temp = new ArrayList<>();
           temp.add(new Shortcut(Recipient.ID_HEADER));
           temp.addAll(recipientList);
-          ListUtils.addEmptyItems(screenUtils, temp);
+          ListUtils.addEmptyItemsHome(temp);
 
           if (latestRecipientList.size() != 0) {
             diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));

@@ -17,6 +17,8 @@ import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 18/05/2016.
@@ -25,19 +27,21 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
 
   private Context context;
   private LayoutInflater layoutInflater;
-  private int avatarSize;
+
+  // OBSERVABLES
+  private PublishSubject<View> onClick = PublishSubject.create();
 
   public SearchResultGridAdapterDelegate(Context context) {
     this.context = context;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    this.avatarSize = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     SearchResultGridViewHolder vh = new SearchResultGridViewHolder(
         layoutInflater.inflate(R.layout.item_search_result, parent, false));
+    vh.btnAdd.setOnClickListener(view -> onClick.onNext(vh.itemView));
     return vh;
   }
 
@@ -70,6 +74,12 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
     vh.txtName.setText(displayName);
     vh.txtUsername.setText(username);
     vh.viewNewAvatar.load(picture);
+
+    if (searchResult.getShortcut() != null) {
+      vh.btnAdd.setImageResource(R.drawable.picto_added);
+    } else {
+      vh.btnAdd.setImageResource(R.drawable.picto_add);
+    }
   }
 
   class SearchResultGridViewHolder extends RecyclerView.ViewHolder {
@@ -86,5 +96,13 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
     @BindView(R.id.txtUsername) public TextViewFont txtUsername;
 
     @BindView(R.id.btnAdd) public ImageView btnAdd;
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<View> onClick() {
+    return onClick;
   }
 }

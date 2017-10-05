@@ -22,6 +22,7 @@ public class SearchSectionItemDecoration extends BaseSectionItemDecoration {
 
   private TextViewFont txtLabel;
   private ImageView imgPicto;
+  private ImageView imgEmpty;
 
   public SearchSectionItemDecoration(int headerHeight, boolean sticky,
       @NonNull SectionCallback sectionCallback, ScreenUtils screenUtils) {
@@ -30,32 +31,42 @@ public class SearchSectionItemDecoration extends BaseSectionItemDecoration {
 
   @Override protected void populateHeader(Context context, int headerType,
       GradientDrawable gradientDrawable) {
+
+    gradientDrawable.setColor(ContextCompat.getColor(context, R.color.grey_offline));
+
     switch (headerType) {
       case SEARCH_RESULTS:
         txtLabel.setText(R.string.home_section_results);
+        txtLabel.setVisibility(View.VISIBLE);
         imgPicto.setImageResource(R.drawable.picto_header_ongoing);
-        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
         break;
 
       case SEARCH_SUGGESTED_CONTACTS:
         txtLabel.setText(R.string.home_section_suggested_friends);
+        txtLabel.setVisibility(View.VISIBLE);
         imgPicto.setImageResource(R.drawable.picto_header_online);
-        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
         break;
 
       case SEARCH_INVITES_TO_SEND:
         txtLabel.setText(R.string.home_section_invites_to_send);
+        txtLabel.setVisibility(View.VISIBLE);
         imgPicto.setImageResource(R.drawable.picto_recent);
-        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
+        break;
+
+      case SEARCH_EMPTY:
+        imgEmpty.setVisibility(View.VISIBLE);
+        txtLabel.setVisibility(View.GONE);
+        imgPicto.setImageResource(R.drawable.picto_empty_header);
         break;
     }
   }
 
   @Override protected View inflateHeaderView(RecyclerView parent) {
     View view = LayoutInflater.from(parent.getContext())
-        .inflate(R.layout.item_home_list_header, parent, false);
+        .inflate(R.layout.item_search_list_header, parent, false);
     txtLabel = ButterKnife.findById(view, R.id.txtLabel);
     imgPicto = ButterKnife.findById(view, R.id.imgPicto);
+    imgEmpty = ButterKnife.findById(view, R.id.imgEmpty);
     return view;
   }
 }

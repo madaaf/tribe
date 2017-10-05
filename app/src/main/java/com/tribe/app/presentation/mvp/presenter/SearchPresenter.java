@@ -1,12 +1,16 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.SearchResult;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.FindByUsername;
+import com.tribe.app.domain.interactor.user.GetDiskContactInviteList;
+import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.SearchLocally;
 import com.tribe.app.domain.interactor.user.UpdateUser;
@@ -39,10 +43,14 @@ public class SearchPresenter extends UpdateUserPresenter {
   private DiskSearchResults searchResults;
   private SearchLocally searchLocally;
   private UseCase synchroContactList;
+  private GetDiskContactOnAppList getDiskContactOnAppList;
+  private GetDiskContactInviteList getDiskContactInviteList;
 
   // SUBSCRIBERS
   private DefaultSubscriber findByUsernameSubscriber;
   private ContactListSubscriber contactListSubscriber;
+  private ContactListOnAppSubscriber contactListOnAppSubscriber;
+  private ContactListInviteSubscriber contactListInviteSubscriber;
   private LookupContactsSubscriber lookupContactsSubscriber;
 
   @Inject public SearchPresenter(ShortcutPresenter shortcutPresenter, JobManager jobManager,
@@ -50,7 +58,9 @@ public class SearchPresenter extends UpdateUserPresenter {
       @Named("diskSearchResults") DiskSearchResults diskSearchResults, SearchLocally searchLocally,
       @Named("synchroContactList") UseCase synchroContactList, RxFacebook rxFacebook,
       UpdateUser updateUser, UpdateUserPhoneNumber updateUserPhoneNumber,
-      UpdateUserFacebook updateUserFacebook, LookupUsername lookupUsername) {
+      UpdateUserFacebook updateUserFacebook, LookupUsername lookupUsername,
+      GetDiskContactOnAppList getDiskContactOnAppList,
+      GetDiskContactInviteList getDiskContactInviteList) {
     super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
     this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
@@ -58,6 +68,8 @@ public class SearchPresenter extends UpdateUserPresenter {
     this.searchResults = diskSearchResults;
     this.searchLocally = searchLocally;
     this.synchroContactList = synchroContactList;
+    this.getDiskContactOnAppList = getDiskContactOnAppList;
+    this.getDiskContactInviteList = getDiskContactInviteList;
   }
 
   @Override protected UpdateUserMVPView getUpdateUserView() {
@@ -70,6 +82,8 @@ public class SearchPresenter extends UpdateUserPresenter {
     searchResults.unsubscribe();
     searchLocally.unsubscribe();
     synchroContactList.unsubscribe();
+    getDiskContactOnAppList.unsubscribe();
+    getDiskContactInviteList.unsubscribe();
     searchView = null;
   }
 
@@ -77,7 +91,9 @@ public class SearchPresenter extends UpdateUserPresenter {
     searchView = (SearchMVPView) v;
     shortcutPresenter.onViewAttached(v);
     initSearchResult();
-    loadContacts("");
+    searchLocally("");
+    contactsInApp();
+    contactsInvite();
   }
 
   public void findByUsername(String username) {
@@ -106,7 +122,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     }
   }
 
-  public void loadContacts(String s) {
+  public void searchLocally(String s) {
     if (contactListSubscriber != null) {
       contactListSubscriber.unsubscribe();
     }
@@ -116,7 +132,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     searchLocally.execute(contactListSubscriber);
   }
 
-  private final class ContactListSubscriber extends DefaultSubscriber<List<Object>> {
+  private final class ContactListSubscriber extends DefaultSubscriber<List<Shortcut>> {
 
     @Override public void onCompleted() {
     }
@@ -125,7 +141,7 @@ public class SearchPresenter extends UpdateUserPresenter {
 
     }
 
-    @Override public void onNext(List<Object> contactList) {
+    @Override public void onNext(List<Shortcut> contactList) {
       if (contactList != null && contactList.size() > 0) {
         searchView.renderContactList(contactList);
       }
@@ -153,7 +169,61 @@ public class SearchPresenter extends UpdateUserPresenter {
     }
   }
 
+  public void contactsInApp() {
+    if (contactListOnAppSubscriber != null) {
+      contactListOnAppSubscriber.unsubscribe();
+    }
+
+    contactListOnAppSubscriber = new ContactListOnAppSubscriber();
+    getDiskContactOnAppList.execute(contactListOnAppSubscriber);
+  }
+
+  private final class ContactListOnAppSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(List<Contact> contactList) {
+      searchView.renderContactListOnApp(contactList);
+    }
+  }
+
+  public void contactsInvite() {
+    if (contactListInviteSubscriber != null) {
+      contactListInviteSubscriber.unsubscribe();
+    }
+
+    contactListInviteSubscriber = new ContactListInviteSubscriber();
+    getDiskContactInviteList.execute(contactListInviteSubscriber);
+  }
+
+  private final class ContactListInviteSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(List<Contact> contactList) {
+      searchView.renderContactListInvite(contactList);
+    }
+  }
+
   public void createShortcut(String... userIds) {
     shortcutPresenter.createShortcut(userIds);
+  }
+
+  public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status) {
+    shortcutPresenter.updateShortcutStatus(shortcutId, status);
+  }
+
+  public void removeShortcut(String shortcutId) {
+    shortcutPresenter.removeShortcut(shortcutId);
   }
 }

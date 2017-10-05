@@ -459,6 +459,17 @@ public class ChatView extends ChatMVPView {
       subscriptions.clear();
     }
     pulseLayout.clearAnimation();
+<<<<<<< HEAD
+=======
+    recyclerView.setAdapter(null);
+    recyclerViewGrp.setAdapter(null);
+
+    if (arrIds != null && arrIds.length > 0) {
+      context.startService(
+          WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
+    }
+
+>>>>>>> origin/develop-new-iteration
     super.onDetachedFromWindow();
   }
 

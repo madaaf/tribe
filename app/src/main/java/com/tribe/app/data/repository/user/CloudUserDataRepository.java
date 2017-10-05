@@ -171,7 +171,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds) {
+  @Override public Observable<List<Shortcut>> searchLocally(String s, Set<String> includedUserIds) {
     return null;
   }
 
@@ -239,7 +239,7 @@ import rx.Observable;
             .transform(shortcutRealm));
   }
 
-  @Override public Observable<Boolean> removeShortcut(String shortcutId) {
+  @Override public Observable<Void> removeShortcut(String shortcutId) {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.removeShortcut(shortcutId);

@@ -2,15 +2,20 @@ package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.SearchResult;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.common.ShortcutAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.EmptyContactAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -28,6 +33,7 @@ public class SearchAdapter extends RecyclerView.Adapter {
   private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
   private UserToAddAdapterDelegate userToAddAdapterDelegate;
   private ContactToInviteAdapterDelegate contactToInviteAdapterDelegate;
+  private EmptyContactAdapterDelegate emptyContactAdapterDelegate;
 
   // VARIABLES
   private List<Object> items;
@@ -51,6 +57,9 @@ public class SearchAdapter extends RecyclerView.Adapter {
 
     contactToInviteAdapterDelegate = new ContactToInviteAdapterDelegate(context);
     delegatesManager.addDelegate(contactToInviteAdapterDelegate);
+
+    emptyContactAdapterDelegate = new EmptyContactAdapterDelegate(context);
+    delegatesManager.addDelegate(EMPTY_VIEW_TYPE, emptyContactAdapterDelegate);
 
     setHasStableIds(true);
   }
@@ -119,5 +128,42 @@ public class SearchAdapter extends RecyclerView.Adapter {
     }
 
     this.notifyDataSetChanged();
+  }
+
+  public void updateAdd(User user) {
+    for (Object obj : items) {
+      if (obj instanceof Contact) {
+        Contact c = (Contact) obj;
+        if (c.getUserList() != null && c.getUserList().size() > 0) {
+          User oldUser = c.getUserList().get(0);
+          if (oldUser.equals(user)) {
+            oldUser.setAnimateAdd(true);
+            oldUser.setFriend(true);
+            notifyDataSetChanged();
+            break;
+          }
+        }
+      } else if (obj instanceof User) {
+        User u = (User) obj;
+        if (u.equals(user)) {
+          u.setAnimateAdd(true);
+          u.setFriend(true);
+          notifyDataSetChanged();
+        }
+      }
+    }
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<View> onClick() {
+    return Observable.merge(searchResultGridAdapterDelegate.onClick(),
+        userToAddAdapterDelegate.onClick());
+  }
+
+  public Observable<View> onInvite() {
+    return contactToInviteAdapterDelegate.onInvite();
   }
 }

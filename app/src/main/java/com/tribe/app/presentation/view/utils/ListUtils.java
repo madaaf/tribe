@@ -6,7 +6,19 @@ import java.util.List;
 
 public class ListUtils {
 
-  public static void addEmptyItems(ScreenUtils screenUtils, List<Recipient> items) {
+  public static void addEmptyItemsHome(List<Recipient> items) {
+    double minItems = 10;
+
+    if (items.size() < minItems) {
+      for (int i = items.size(); i < minItems; i++) {
+        items.add(new Shortcut(Recipient.ID_EMPTY));
+      }
+    } else {
+      items.add(new Shortcut(Recipient.ID_EMPTY));
+    }
+  }
+
+  public static void addEmptyItemsSearch(List<Object> items) {
     double minItems = 10;
 
     if (items.size() < minItems) {

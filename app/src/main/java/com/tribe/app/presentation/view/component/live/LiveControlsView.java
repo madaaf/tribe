@@ -17,6 +17,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
@@ -288,6 +289,14 @@ public class LiveControlsView extends FrameLayout {
           return new Pair<>(view, game);
         })
         .observeOn(AndroidSchedulers.mainThread())
+        .filter(viewGamePair -> {
+          if (!viewGamePair.second.isAvailable()) {
+            Toast.makeText(getContext().getApplicationContext(), R.string.live_mask_available_soon,
+                Toast.LENGTH_LONG).show();
+          }
+
+          return viewGamePair.second.isAvailable();
+        })
         .doOnNext(pairViewGame -> {
           gamesAdapter.updateSelected(pairViewGame.second);
           gameManager.setCurrentGame(pairViewGame.second);

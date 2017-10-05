@@ -33,6 +33,7 @@ public abstract class BaseSectionItemDecoration extends RecyclerView.ItemDecorat
   public static final int SEARCH_RESULTS = 6;
   public static final int SEARCH_SUGGESTED_CONTACTS = 7;
   public static final int SEARCH_INVITES_TO_SEND = 8;
+  public static final int SEARCH_EMPTY = 9;
 
   protected final int headerOffset;
   protected final boolean sticky;
@@ -134,7 +135,8 @@ public abstract class BaseSectionItemDecoration extends RecyclerView.ItemDecorat
     view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
   }
 
-  protected abstract void populateHeader(Context context, int headerType, GradientDrawable gradientDrawable);
+  protected abstract void populateHeader(Context context, int headerType,
+      GradientDrawable gradientDrawable);
 
   protected abstract View inflateHeaderView(RecyclerView parent);
 }
