@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -181,7 +182,8 @@ public class ChatView extends ChatMVPView {
     recyclerView.setArrIds(arrIds);
 
     if (friends.size() > 1) {
-      title.setText(context.getString(R.string.shortcut_members_count, friends.size()));
+      String txt = context.getString(R.string.shortcut_members_count, friends.size()) + " ";
+      title.setText(txt);
       title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_edit_chat, 0);
     } else {
       title.setText(friends.get(0).getDisplayName());
@@ -493,6 +495,20 @@ public class ChatView extends ChatMVPView {
     } else {
       sendMessage();
     }
+  }
+
+  @OnClick(R.id.txtTitle) void onClickTitle() {
+    if (members.size() < 2) return;
+    subscriptions.add(
+        DialogFactory.inputDialog(context, context.getString(R.string.shortcut_update_name_title),
+            context.getString(R.string.shortcut_update_name_description),
+            context.getString(R.string.shortcut_update_name_validate),
+            context.getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT).subscribe(s -> {
+          Timber.e("SOU SUH " + s);
+          messagePresenter.updateShortcutName(shortcut.getId(), s);
+          title.setText(s);
+          title.setTextColor(Color.BLACK);
+        }));
   }
 
   @OnClick(R.id.videoCallBtn) void onClickVideoCall() {

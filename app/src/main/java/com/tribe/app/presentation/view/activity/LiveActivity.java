@@ -14,9 +14,9 @@ import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import butterknife.BindView;
@@ -546,7 +546,11 @@ public class LiveActivity extends BaseActivity
         chatView.setTranslationX(-screenUtils.getWidthPx());
         chatView.setVisibility(VISIBLE);
         chatView.animate()
-            .setInterpolator(new OvershootInterpolator()).setDuration(300).alpha(1f).translationX(0).setListener(null);
+            .setInterpolator(new AccelerateInterpolator())
+            .setDuration(300)
+            .alpha(1f)
+            .translationX(0)
+            .setListener(null);
       } else {
         chatView.animate()
             .setDuration(300)
