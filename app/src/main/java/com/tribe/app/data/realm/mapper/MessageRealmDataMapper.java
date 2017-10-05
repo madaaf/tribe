@@ -46,11 +46,14 @@ import javax.inject.Singleton;
           break;
         case Message.MESSAGE_IMAGE:
           message = new MessageImage(messageRealm.getId());
-          ImageRealm o = messageRealm.getOriginal();
+          // ImageRealm o = messageRealm.getOriginal();
+
           List<ImageRealm> ressources = messageRealm.getAlts();
-          ((MessageImage) message).setOriginal(userRealmDataMapper.transform(o));
-          ((MessageImage) message).setRessources(
-              userRealmDataMapper.transformOriginalRealmList(ressources));
+          Image o = userRealmDataMapper.transformOriginalRealmList(ressources);
+          ((MessageImage) message).setOriginal(o);
+
+            /*((MessageImage) message).setRessources(
+              userRealmDataMapper.transformOriginalRealmList(ressources));*/
           message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
           break;
         case Message.MESSAGE_EVENT:
@@ -98,9 +101,9 @@ import javax.inject.Singleton;
           break;
         case Message.MESSAGE_IMAGE:
           Image o = ((MessageImage) message).getOriginal();
-          List<Image> ressources = ((MessageImage) message).getRessources();
           messageRealm.setOriginal(userRealmDataMapper.transform(o));
-          messageRealm.setAlts(userRealmDataMapper.transformOriginalList(ressources));
+          //List<Image> ressources = ((MessageImage) message).getRessources();
+          //messageRealm.setAlts(userRealmDataMapper.transformOriginalList(ressources));
           break;
         case Message.MESSAGE_EVENT:
           messageRealm.setAction(((MessageEvent) message).getAction());
