@@ -208,7 +208,9 @@ public class ChatView extends ChatMVPView {
         widthRefExpended = refExpended.getWidth();
         widthRefInit = refInit.getWidth();
         containerUsersHeight = containerUsers.getHeight();
-        if (members.size() > 1) containerUsers.getLayoutParams().height = 0;
+        if (members.size() < 2) {
+          containerUsers.setVisibility(GONE);
+        }
       }
     });
   }
@@ -526,6 +528,22 @@ public class ChatView extends ChatMVPView {
     }
   }
 
+  private void shrankRecyclerViewGrp() {
+    containerUsers.setVisibility(VISIBLE);
+    containerUsers.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            containerUsers.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            ResizeAnimation a = new ResizeAnimation(containerUsers);
+            a.setDuration(300);
+            a.setInterpolator(new LinearInterpolator());
+            a.setParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, containerUsersHeight,
+                0);
+            containerUsers.startAnimation(a);
+          }
+        });
+  }
+
   private void expendRecyclerViewGrp() {
     containerUsers.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -534,23 +552,8 @@ public class ChatView extends ChatMVPView {
             ResizeAnimation a = new ResizeAnimation(containerUsers);
             a.setDuration(300);
             a.setInterpolator(new LinearInterpolator());
-            a.setParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT,
-                containerUsers.getHeight(), 0);
-            containerUsers.startAnimation(a);
-          }
-        });
-  }
-
-  private void expendRecyclerViewGrp2() {
-    containerUsers.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            containerUsers.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            ResizeAnimation a = new ResizeAnimation(containerUsers);
-            a.setDuration(300);
-            a.setInterpolator(new LinearInterpolator());
-            a.setParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT,
-                containerUsers.getHeight(), containerUsersHeight);
+            a.setParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 0,
+                containerUsersHeight);
             containerUsers.startAnimation(a);
           }
         });
@@ -566,8 +569,9 @@ public class ChatView extends ChatMVPView {
           u.setTyping(true);
           u.setIsOnline(true);
           if (members.size() < 2) {
-            expendRecyclerViewGrp2();
+            expendRecyclerViewGrp();
           }
+          Timber.i("START TYPING");
           int pos = chatUserAdapter.getIndexOfUser(u);
           chatUserAdapter.notifyItemChanged(pos, u);
         }
@@ -580,9 +584,10 @@ public class ChatView extends ChatMVPView {
               .subscribe(avoid -> {
                 Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
                 if (u.isTyping()) {
+                  Timber.i("STOP TYPING");
                   u.setTyping(false);
                   if (members.size() < 2) {
-                    expendRecyclerViewGrp();
+                    shrankRecyclerViewGrp();
                   }
                   int i = chatUserAdapter.getIndexOfUser(u);
                   chatUserAdapter.notifyItemChanged(i, u);
@@ -597,19 +602,22 @@ public class ChatView extends ChatMVPView {
   }
 
   @Override public void successShortcutUpdate(Shortcut shortcut) {
-  /*  for (User u : shortcut.getMembers()) {
-        Timber.e("SOEF SHORTCUT UPDATED "
-          + u.getDisplayName()
-          + " "
-          + u.isOnline()
-          + " isShortcutOnline ="
-          + shortcut.isOnline());
+    Timber.e(
+        "SHORTCUT " + shortcut.isOnline() + " " + shortcut.isLive() + " " + shortcut.toString());
+
+    for (User ok : shortcut.getMembers()) {
+      Timber.e("SHORTCUT MEM + " + ok.toString());
     }
-    */
+    boolean isOnline = false;
+    boolean isLive = false;
+    for (User u : shortcut.getMembers()) {
+      if (u.isOnline()) isOnline = true;
+    }
     chatUserAdapter.setItems(shortcut.getMembers());
+
     if (shortcut.isLive()) {
       setAnimation(TYPE_LIVE);
-    } else if (shortcut.isOnline()) {
+    } else if (shortcut.isOnline() || isOnline) {
       setAnimation(TYPE_ONLINE);
     } else {
       setAnimation(TYPE_NORMAL);

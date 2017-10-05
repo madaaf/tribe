@@ -153,8 +153,6 @@ public class RecyclerMessageView extends ChatMVPView {
                 recyclerViewPositionOffset = 0 - bottomView.getHeight();
               }
               layoutManager.scrollToPositionWithOffset(lastAdapterItem, recyclerViewPositionOffset);
-              Timber.e(
-                  "scrollToPosWithOffset" + lastAdapterItem + " " + recyclerViewPositionOffset);
             });
           }
         });

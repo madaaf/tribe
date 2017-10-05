@@ -63,10 +63,10 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
     Timber.w("PUT 1f " + m.toString() + ((MessageText) payloads.get(0)).toString());
     if (m.isPending()) {
       vh.container.setAlpha(0.4f);
-      vh.message.setText(vh.message.getText().toString() + " 0.4f on BOND");
+      vh.message.setText(vh.message.getText().toString());
     } else {
       vh.container.setAlpha(1f);
-      vh.message.setText(vh.message.getText().toString() + " 1f on BIND");
+      vh.message.setText(vh.message.getText().toString());
     }
   }
 
