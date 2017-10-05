@@ -22,6 +22,8 @@ import rx.Observable;
 
   Observable<List<MessageRealm>> getMessages(String[] userIds);
 
+  Observable<List<MessageRealm>> getMessagesImage(String[] userIds);
+
   void setOnMessageReceived(RealmList<MessageRealm> messages);
 }
 

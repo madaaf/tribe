@@ -170,6 +170,7 @@ public class RecyclerMessageView extends ChatMVPView {
 
   public void setArrIds(String[] arrIds) {
     this.arrIds = arrIds;
+    messageAdapter.setArrIds(arrIds);
     messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
     messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
     messagePresenter.onMessageReceivedFromDisk();

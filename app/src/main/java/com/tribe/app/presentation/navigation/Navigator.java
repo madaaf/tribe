@@ -36,6 +36,7 @@ import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.PictureActivity;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -131,9 +132,9 @@ public class Navigator {
         intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
       }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-          Intent.FLAG_ACTIVITY_CLEAR_TASK |
-          Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+          | Intent.FLAG_ACTIVITY_CLEAR_TASK
+          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
       if (linkRoomId != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -229,8 +230,8 @@ public class Navigator {
     }
   }
 
-  public void navigateToPicture(Context activity, String uri) {
-    Intent intent = PictureActivity.getCallingIntent(activity, uri);
+  public void navigateToPicture(Context activity, String messageId, String[] arrIds) {
+    Intent intent = PictureActivity.getCallingIntent(activity, messageId, arrIds);
     activity.startActivity(intent);
     // activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
   }
@@ -384,8 +385,8 @@ public class Navigator {
 
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
-    } else if (activity.getIntent() != null &&
-        activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
+    } else if (activity.getIntent() != null && activity.getIntent()
+        .hasExtra(Extras.IS_FROM_FACEBOOK)) {
       openFacebookAppInvites(activity, url);
     } else {
       openDefaultMessagingApp(activity, text);

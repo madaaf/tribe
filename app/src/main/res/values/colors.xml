@@ -68,6 +68,8 @@
   <color name="blue.facebook.dark.hard">#2C448A</color>
   <color name="blue.opaque">#0099E4</color>
   <color name="blue.new">#3DE9DA</color>
+  <color name="blue.new.opacity.40">#663DE9DA</color>
+
   <color name="blue.new.opacity.10">#1A3DE9DA</color>
   <color name="blue.dialogs">#316DF8</color>
   <color name="blue.gradient.chat.opacity.5">#0D21A6FF</color>

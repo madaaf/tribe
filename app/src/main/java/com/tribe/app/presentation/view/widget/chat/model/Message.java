@@ -2,12 +2,13 @@ package com.tribe.app.presentation.view.widget.chat.model;
 
 import android.support.annotation.StringDef;
 import com.tribe.app.domain.entity.User;
+import java.io.Serializable;
 
 /**
  * Created by madaaflak on 05/09/2017.
  */
 
-public class Message {
+public class Message implements Serializable {
 
   @StringDef({ MESSAGE_TEXT, MESSAGE_EMOJI, MESSAGE_IMAGE, MESSAGE_EVENT }) public @interface Type {
   }

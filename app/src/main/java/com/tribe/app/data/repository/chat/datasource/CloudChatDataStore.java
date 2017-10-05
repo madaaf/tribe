@@ -51,6 +51,10 @@ public class CloudChatDataStore implements ChatDataStore {
     return null;
   }
 
+  @Override public Observable<List<MessageRealm>> getMessagesImage(String[] userIds) {
+    return null;
+  }
+
   @Override public Observable<String> isTyping() {
     return null;
   }

@@ -46,6 +46,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
     items = new ArrayList<>();
   }
 
+  public void setArrIds(String[] arrIds) {
+    messageImageAdapterDelegate.setArrIds(arrIds);
+  }
+
   @Override public int getItemViewType(int position) {
     return delegatesManager.getItemViewType(items, position);
   }

@@ -506,7 +506,7 @@ public class ChatView extends ChatMVPView {
             context.getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT).subscribe(s -> {
           Timber.e("SOU SUH " + s);
           messagePresenter.updateShortcutName(shortcut.getId(), s);
-          title.setText(s);
+          title.setText(s + " ");
           title.setTextColor(Color.BLACK);
         }));
   }
@@ -554,7 +554,7 @@ public class ChatView extends ChatMVPView {
       case TYPE_ONLINE:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_live));
-        pulseLayout.setColor(ContextCompat.getColor(context, R.color.blue_new));
+        pulseLayout.setColor(ContextCompat.getColor(context, R.color.blue_new_opacity_40));
         pulseLayout.start();
         break;
     }

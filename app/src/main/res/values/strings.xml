@@ -407,6 +407,7 @@
 	<string name="live_members_menu_more">More</string>
 	<string name="live_members_menu_less">Less</string>
 	<string name="live_members_menu_added">Added</string>
+	<string name="live_members_drop_zone">DROP HERE</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>

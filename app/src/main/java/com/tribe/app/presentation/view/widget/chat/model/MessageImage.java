@@ -47,6 +47,8 @@ public class MessageImage extends Message {
 
   @Override public String toString() {
     return "MessageImage{"
+        + "id = "
+        + getId()
         + "original="
         + original
         + ", ressources="

@@ -276,6 +276,8 @@ public interface ApplicationComponent {
 
   ScreenUtils screenUtils();
 
+  Navigator navigator();
+
   IntentFilter IntentFilter();
 
   SmsListener SmsListener();

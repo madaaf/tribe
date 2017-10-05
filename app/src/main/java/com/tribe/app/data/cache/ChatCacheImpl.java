@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -166,6 +167,17 @@ public class ChatCacheImpl implements ChatCache {
     Timber.e("GET MESSAGE " + ok.size());
 
     return ok.asObservable()
+        .filter(RealmResults::isLoaded)
+        .map(singleShortcutList -> realm.copyFromRealm(singleShortcutList))
+        .unsubscribeOn(AndroidSchedulers.mainThread());
+  }
+
+  @Override public Observable<List<MessageRealm>> getMessagesImage(String[] userIds) {
+    return realm.where(MessageRealm.class)
+        .equalTo("localId", JsonUtils.arrayToJson(userIds))
+        .equalTo("__typename", Message.MESSAGE_IMAGE)
+        .findAll()
+        .asObservable()
         .filter(RealmResults::isLoaded)
         .map(singleShortcutList -> realm.copyFromRealm(singleShortcutList))
         .unsubscribeOn(AndroidSchedulers.mainThread());

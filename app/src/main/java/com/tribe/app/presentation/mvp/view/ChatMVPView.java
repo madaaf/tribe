@@ -55,4 +55,6 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView {
 
   public void errorMessageReveived() {
   }
+
+
 }

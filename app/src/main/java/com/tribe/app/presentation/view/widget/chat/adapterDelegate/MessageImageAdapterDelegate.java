@@ -20,13 +20,14 @@ import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
 import java.util.List;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
  */
 
 public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
+
+  private String[] arrIds;
 
   public MessageImageAdapterDelegate(Context context, int type) {
     super(context, type);
@@ -64,7 +65,13 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
       }
     });
 
+    vh.image.setOnClickListener(view -> navigator.navigateToPicture(context, m.getId(), arrIds));
+
     if (uri != null) setPendingBehavior(m, vh.container); // is pending
+  }
+
+  public void setArrIds(String[] arrIds) {
+    this.arrIds = arrIds;
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,
