@@ -22,7 +22,6 @@
         android:background="@drawable/shape_rect_white_rounded_corners_top"
         >
 
-
       <ImageView
           android:id="@+id/imageView4"
           android:layout_width="match_parent"
@@ -30,7 +29,6 @@
           android:scaleType="fitXY"
           android:src="@drawable/banner_fb_callroulette"
           />
-
     </FrameLayout>
 
 
@@ -69,7 +67,6 @@
           />
 
     </LinearLayout>
-
 
     <FrameLayout
         android:id="@+id/btnAction"

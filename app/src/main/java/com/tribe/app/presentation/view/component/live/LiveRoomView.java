@@ -4,7 +4,6 @@ import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Handler;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
@@ -21,7 +20,6 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.google.android.flexbox.FlexboxLayout;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -60,8 +58,6 @@ public class LiveRoomView extends FrameLayout {
 
   @BindView(R.id.flexbox_layout) FlexboxLayout flexboxLayout;
 
-  @BindView(R.id.cardview) CardView cardView;
-
   @BindView(R.id.diceLayoutRoomView) DiceView diceView;
 
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
@@ -92,11 +88,6 @@ public class LiveRoomView extends FrameLayout {
     flexboxLayout.setAlignContent(FlexboxLayout.ALIGN_CONTENT_STRETCH);
     flexboxLayout.setAlignItems(FlexboxLayout.ALIGN_ITEMS_STRETCH);
     flexboxLayout.setFlexWrap(FlexboxLayout.FLEX_WRAP_WRAP);
-
-    // retro-compatibiliy with lollipop
-    cardView.setPreventCornerOverlap(false);
-    cardView.setMaxCardElevation(0);
-    cardView.setRadius(screenUtils.dpToPx(CORNER_RADIUS));
 
     if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
       landscapeMode = true;

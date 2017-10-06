@@ -7,13 +7,11 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,7 +22,6 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -55,7 +52,7 @@ public class LiveLocalView extends FrameLayout {
 
   @BindView(R.id.viewPeerOverlay) LivePeerOverlayView viewPeerOverlay;
 
-  @BindView(R.id.cardViewStreamLayout) CardView cardViewStreamLayout;
+  @BindView(R.id.layoutStream) FrameLayout layoutStream;
 
   private LocalPeerView viewPeerLocal;
 
@@ -100,9 +97,6 @@ public class LiveLocalView extends FrameLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_local, this);
     unbinder = ButterKnife.bind(this);
 
-    cardViewStreamLayout.setPreventCornerOverlap(false);
-    cardViewStreamLayout.setMaxCardElevation(0);
-    cardViewStreamLayout.setCardElevation(0);
     ViewCompat.setElevation(viewPeerOverlay, 0);
 
     gestureDetector = new GestureDetectorCompat(getContext(), new TapGestureListener());
@@ -115,10 +109,9 @@ public class LiveLocalView extends FrameLayout {
     viewPeerLocal.setBackgroundColor(Color.BLACK);
 
     // We add the view in between the background and overlay
-    cardViewStreamLayout.addView(viewPeerLocal, 0,
-        new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT));
-    cardViewStreamLayout.setRadius(screenUtils.dpToPx(5));
+    layoutStream.addView(viewPeerLocal, 0,
+        new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT));
 
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
@@ -166,16 +159,16 @@ public class LiveLocalView extends FrameLayout {
 
   private void computeDisplay(boolean animate) {
     if (!localMediaConfiguration.isVideoEnabled()) {
-      UIUtils.hideReveal(cardViewStreamLayout, animate, new AnimatorListenerAdapter() {
+      UIUtils.hideReveal(layoutStream, animate, new AnimatorListenerAdapter() {
         @Override public void onAnimationEnd(Animator animation) {
           if (animation != null) animation.removeAllListeners();
-          cardViewStreamLayout.setVisibility(View.GONE);
+          layoutStream.setVisibility(View.GONE);
         }
       });
     } else {
-      UIUtils.showReveal(cardViewStreamLayout, animate, new AnimatorListenerAdapter() {
+      UIUtils.showReveal(layoutStream, animate, new AnimatorListenerAdapter() {
         @Override public void onAnimationStart(Animator animation) {
-          cardViewStreamLayout.setVisibility(View.VISIBLE);
+          layoutStream.setVisibility(View.VISIBLE);
         }
 
         @Override public void onAnimationEnd(Animator animation) {

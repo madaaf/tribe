@@ -22,6 +22,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 10/05/2017.
@@ -62,6 +63,7 @@ public class LiveContainer extends FrameLayout {
   private int touchSlop;
   private int currentOffsetRight;
   private boolean isOpened = false;
+  private boolean isOpenedFully = false;
   private boolean isDown = false;
   private long longDown = 0L;
   private float downX, downY, currentX, currentY, diffDown, scrollTolerance;
@@ -208,6 +210,7 @@ public class LiveContainer extends FrameLayout {
         break;
       case MotionEvent.ACTION_UP:
       case MotionEvent.ACTION_CANCEL:
+        clearTouch();
         break;
     }
 
@@ -266,11 +269,19 @@ public class LiveContainer extends FrameLayout {
           }
         }
 
+        clearTouch();
         break;
       }
     }
 
     return true;
+  }
+
+  private void clearTouch() {
+    beingDragged = false;
+    activePointerId = INVALID_POINTER;
+    overallScrollY = 0;
+    isDown = false;
   }
 
   ///////////////////////
