@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -106,7 +107,7 @@ public class ChatView extends ChatMVPView {
   private List<User> members = new ArrayList<>();
 
   private String editTextString;
-  private int type, widthRefExpended, widthRefInit, containerUsersHeight;
+  private int type, widthRefExpended, widthRefInit, containerUsersHeight, refMaxExpendedWidth;
   private boolean editTextChange = false, isHeart = false;
   private String[] arrIds = null;
   private Shortcut shortcut;
@@ -121,6 +122,7 @@ public class ChatView extends ChatMVPView {
   @BindView(R.id.layoutPulse) PulseLayout pulseLayout;
   @BindView(R.id.viewAvatar) AvatarView avatarView;
   @BindView(R.id.refExpended) FrameLayout refExpended;
+  @BindView(R.id.refMaxExpended) FrameLayout refMaxExpended;
   @BindView(R.id.refInit) FrameLayout refInit;
   @BindView(R.id.txtTitle) TextViewFont title;
 
@@ -129,6 +131,9 @@ public class ChatView extends ChatMVPView {
   @BindView(R.id.container) FrameLayout container;
   @BindView(R.id.containerEditText) RelativeLayout containerEditText;
   @BindView(R.id.separator) View separator;
+  @BindView(R.id.voiceNoteBtnRef) ImageView voiceBtnRef;
+  @BindView(R.id.voiceNoteBtn) ImageView voiceNoteBtn;
+  @BindView(R.id.recordingView) FrameLayout recordingView;
 
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
@@ -216,7 +221,15 @@ public class ChatView extends ChatMVPView {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
         widthRefExpended = refExpended.getWidth();
         widthRefInit = refInit.getWidth();
+        refMaxExpendedWidth = refMaxExpended.getWidth();
         containerUsersHeight = containerUsers.getHeight();
+        voiceNoteBtn.setTranslationX(voiceBtnRef.getX() - screenUtils.dpToPx(5));
+        float transX =
+            voiceBtnRef.getX() + (voiceBtnRef.getWidth() / 2) - (recordingView.getWidth() / 2);
+        recordingView.setTranslationX(transX);
+        recordingView.setTranslationY(recordingView.getHeight());
+        voiceNoteBtn.setOnClickListener(view -> onClickVoiceNote());
+
         if (members.size() < 2) {
           containerUsers.setVisibility(GONE);
         }
@@ -509,6 +522,46 @@ public class ChatView extends ChatMVPView {
           title.setText(s + " ");
           title.setTextColor(Color.BLACK);
         }));
+  }
+
+  private void onClickVoiceNote() {
+    Timber.e("VOICE NOTE TAP");
+    voiceNoteBtn.animate()
+        .scaleX(1.7f)
+        .scaleY(1.7f)
+        .setInterpolator(new OvershootInterpolator())
+        .setDuration(300)
+        .withStartAction(() -> {
+          sendBtn.setVisibility(GONE);
+          uploadImageBtn.setVisibility(GONE);
+          pulseLayout.setVisibility(GONE);
+          recordingView.animate()
+              .translationY(-(recordingView.getHeight() * 2))
+              .setInterpolator(new OvershootInterpolator())
+              .setDuration(300)
+              .start();
+          editText.setHint("Slide to cancel");
+        })
+        .start();
+
+    editText.getViewTreeObserver().
+        addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            ResizeAnimation a = new ResizeAnimation(editText);
+            a.setDuration(500);
+            a.setInterpolator(new LinearInterpolator());
+            a.setAnimationListener(new AnimationListenerAdapter() {
+              @Override public void onAnimationStart(Animation animation) {
+                uploadImageBtn.setAlpha(0f);
+                uploadImageBtn.setVisibility(GONE);
+              }
+            });
+            a.setParams(editText.getWidth(), LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT);
+            editText.startAnimation(a);
+          }
+        });
   }
 
   @OnClick(R.id.videoCallBtn) void onClickVideoCall() {
