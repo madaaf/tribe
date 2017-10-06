@@ -9,6 +9,15 @@
       android:visibility="visible"
       />
 
+  <View
+      android:id="@+id/viewShadow"
+      android:layout_width="10dp"
+      android:layout_height="match_parent"
+      android:layout_gravity="end"
+      android:layout_marginEnd="-10dp"
+      android:background="@drawable/shadow_right"
+      />
+
   <com.tribe.app.presentation.view.component.live.LiveRoomView
       android:id="@+id/viewRoom"
       android:layout_width="match_parent"
@@ -65,7 +74,6 @@
       android:id="@+id/viewControlsLive"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:visibility="gone"
       />
 
 

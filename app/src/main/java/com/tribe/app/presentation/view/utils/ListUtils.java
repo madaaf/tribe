@@ -8,7 +8,7 @@ import java.util.List;
 public class ListUtils {
 
   public static void addEmptyItemsHome(List<Recipient> items) {
-    double minItems = 10;
+    double minItems = 20;
 
     if (items.size() < minItems) {
       for (int i = items.size(); i < minItems; i++) {

@@ -9,14 +9,17 @@
       android:layout_gravity="end|center_vertical"
       android:layout_marginEnd="40dp"
       android:text="@string/action_more"
+      android:textAllCaps="true"
       style="@style/Body.Two.Black"
       />
 
   <ImageView
-      android:layout_width="wrap_content"
-      android:layout_height="16dp"
+      android:id="@+id/imgExpand"
+      android:layout_width="16dp"
+      android:layout_height="8dp"
       android:layout_gravity="right|center_vertical"
       android:layout_marginEnd="15dp"
+      android:scaleType="fitXY"
       android:src="@drawable/picto_expand_invite"
       />
 </merge>

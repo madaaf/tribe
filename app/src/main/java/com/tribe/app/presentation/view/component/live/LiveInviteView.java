@@ -6,9 +6,6 @@ import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,7 +52,8 @@ import rx.subscriptions.CompositeSubscription;
 public class LiveInviteView extends FrameLayout
     implements LiveInviteMVPView, RoomMVPView, ShortcutMVPView {
 
-  public static final int WIDTH = 100;
+  public static final int WIDTH_PARTIAL = 100;
+  public static final int WIDTH_FULL = 220;
 
   private static final int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
   private static final int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
@@ -74,6 +72,8 @@ public class LiveInviteView extends FrameLayout
 
   @BindView(R.id.recyclerViewInvite) RecyclerViewInvite recyclerViewInvite;
 
+  @BindView(R.id.btnMore) LiveInviteBottomView viewInviteBottom;
+
   // VARIABLES
   private Unbinder unbinder;
   private LiveInviteLayoutManager layoutManager;
@@ -89,6 +89,7 @@ public class LiveInviteView extends FrameLayout
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<Shortcut>> onShortcutUpdate = PublishSubject.create();
   private PublishSubject<Integer> onInviteViewWidthChanged = PublishSubject.create();
+  private PublishSubject<Void> onClickBottom = PublishSubject.create();
 
   public LiveInviteView(Context context) {
     super(context);
@@ -299,34 +300,14 @@ public class LiveInviteView extends FrameLayout
     }));
   }
 
-  public void openInvite() {
-    setVisibility(View.VISIBLE);
-
-    recyclerViewInvite.animate()
-        .alpha(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-
-    recyclerViewInvite.animate()
-        .translationY(0)
-        .setInterpolator(new OvershootInterpolator(OVERSHOOT))
-        .setDuration(DURATION)
-        .start();
-  }
-
-  public void closeInvite() {
-    recyclerViewInvite.animate()
-        .alpha(0)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-
-    recyclerViewInvite.animate()
-        .translationY(translationY)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
+  public void initDrawerEventChangeObservable(Observable<Integer> onEventChange) {
+    subscriptions.add(onEventChange.subscribe(event -> {
+      if (event == LiveContainer.OPEN_FULL) {
+        viewInviteBottom.showLess();
+      } else {
+        viewInviteBottom.showMore();
+      }
+    }));
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
@@ -386,7 +367,7 @@ public class LiveInviteView extends FrameLayout
   //////////////////////
 
   @OnClick(R.id.btnMore) void onClickMore() {
-
+    onClickBottom.onNext(null);
   }
 
   //////////////////////
@@ -395,6 +376,10 @@ public class LiveInviteView extends FrameLayout
 
   public Observable<Void> onShareLink() {
     return adapter.onShareLink();
+  }
+
+  public Observable<Void> onClickBottom() {
+    return onClickBottom;
   }
 }
 

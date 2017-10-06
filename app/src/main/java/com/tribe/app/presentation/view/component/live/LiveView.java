@@ -41,6 +41,7 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
@@ -131,6 +132,8 @@ public class LiveView extends FrameLayout {
   @BindView(R.id.viewRinging) LiveRingingView viewRinging;
 
   @BindView(R.id.viewLiveInvite) LiveInviteView viewLiveInvite;
+
+  @BindView(R.id.viewShadow) View viewShadow;
 
   // VARIABLES
   private Live live;
@@ -324,7 +327,7 @@ public class LiveView extends FrameLayout {
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
 
-    viewLiveInvite.updateWidth(screenUtils.dpToPx(LiveInviteView.WIDTH));
+    viewLiveInvite.updateWidth(getLiveInviteViewPartialWidth());
 
     gameManager = GameManager.getInstance(getContext());
 
@@ -425,8 +428,8 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(
         viewControlsLive.onOpenChat().subscribe(aBoolean -> onOpenChat.onNext(true)));
 
-    persistentSubscriptions.add(
-        viewControlsLive.onOpenInvite().subscribe(aBoolean -> viewLiveInvite.openInvite()));
+    //persistentSubscriptions.add(
+    //    viewControlsLive.onOpenInvite().subscribe(aBoolean -> viewLiveInvite.openInvite()));
 
     persistentSubscriptions.add(
         Observable.merge(viewControlsLive.onCloseChat(), viewControlsLive.onCloseInvite())
@@ -440,8 +443,8 @@ public class LiveView extends FrameLayout {
               viewRinging.show();
             }));
 
-    persistentSubscriptions.add(
-        viewControlsLive.onCloseInvite().subscribe(aBoolean -> viewLiveInvite.closeInvite()));
+    //persistentSubscriptions.add(
+    //    viewControlsLive.onCloseInvite().subscribe(aBoolean -> viewLiveInvite.closeInvite()));
 
     persistentSubscriptions.add(
         viewControlsLive.onCloseChat().subscribe(aBoolean -> onOpenChat.onNext(false)));
@@ -753,6 +756,10 @@ public class LiveView extends FrameLayout {
     live.getRoom().update(room, false);
   }
 
+  public void initDrawerEventChangeObservable(Observable<Integer> obs) {
+    viewLiveInvite.initDrawerEventChangeObservable(obs);
+  }
+
   public void initAnonymousSubscription(Observable<List<User>> obs) {
     persistentSubscriptions.add(obs.subscribe(userList -> {
       if (!userList.isEmpty()) {
@@ -778,19 +785,27 @@ public class LiveView extends FrameLayout {
     return live;
   }
 
-  public int getViewInviteWidth() {
-    return viewLiveInvite.getWidth();
-  }
-
   public void applyTranslateX(float value) {
     viewControlsLive.setTranslationX(value);
     viewRoom.setTranslationX(value);
     viewRinging.setTranslationX(value);
     viewDarkOverlay.setTranslationX(value);
+    viewShadow.setTranslationX(value);
+    if (Math.abs(value) >= getLiveInviteViewPartialWidth()) {
+      UIUtils.changeWidthOfView(viewLiveInvite, (int) Math.abs(value));
+    }
   }
 
   public boolean hasJoined() {
     return hasJoined;
+  }
+
+  public int getLiveInviteViewPartialWidth() {
+    return screenUtils.dpToPx(LiveInviteView.WIDTH_PARTIAL);
+  }
+
+  public int getLiveInviteViewFullWidth() {
+    return screenUtils.dpToPx(LiveInviteView.WIDTH_FULL);
   }
 
   public void start(Live live) {
@@ -1568,6 +1583,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onShareLink() {
     return viewLiveInvite.onShareLink();
+  }
+
+  public Observable<Void> onInviteMoreClick() {
+    return viewLiveInvite.onClickBottom();
   }
 }
 
