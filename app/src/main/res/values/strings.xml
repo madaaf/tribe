@@ -403,7 +403,7 @@
 	<string name="live_members_ringing">Ringing</string>
 	<string name="live_members_waiting">Waiting</string>
 	<string name="live_members_add_friends">Add friends</string>
-	<string name="live_other_user_hung_up">We re-invited your friend automatically</string>
+	<string name="live_other_user_hung_up">We re-invited %1$s automatically</string>
 	<string name="live_members_menu_more">More</string>
 	<string name="live_members_menu_less">Less</string>
 	<string name="live_members_menu_added">Added</string>

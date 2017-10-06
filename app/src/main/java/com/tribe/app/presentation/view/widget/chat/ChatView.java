@@ -131,9 +131,9 @@ public class ChatView extends ChatMVPView {
   @BindView(R.id.container) FrameLayout container;
   @BindView(R.id.containerEditText) RelativeLayout containerEditText;
   @BindView(R.id.separator) View separator;
-  @BindView(R.id.voiceNoteBtnRef) ImageView voiceBtnRef;
-  @BindView(R.id.voiceNoteBtn) ImageView voiceNoteBtn;
+  @BindView(R.id.voiceNoteBtn) View voiceNoteBtn;
   @BindView(R.id.recordingView) FrameLayout recordingView;
+  @BindView(R.id.pictoVoiceNote) ImageView pictoVoiceNote;
 
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
@@ -223,12 +223,28 @@ public class ChatView extends ChatMVPView {
         widthRefInit = refInit.getWidth();
         refMaxExpendedWidth = refMaxExpended.getWidth();
         containerUsersHeight = containerUsers.getHeight();
-        voiceNoteBtn.setTranslationX(voiceBtnRef.getX() - screenUtils.dpToPx(5));
+
+        int size = editText.getHeight() - screenUtils.dpToPx(8);
+        voiceNoteBtn.getLayoutParams().height = size;
+        voiceNoteBtn.getLayoutParams().width = size;
+
+        voiceNoteBtn.setTranslationX(
+            editText.getX() + editText.getWidth() - voiceNoteBtn.getWidth() - screenUtils.dpToPx(
+                5));
+        voiceNoteBtn.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2));
+
+        pictoVoiceNote.setTranslationX(
+            voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
+
+        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (pictoVoiceNote.getHeight()/2));
+        //+ (pictoVoiceNote.getHeight() / 2)
+        voiceNoteBtn.setOnClickListener(view -> onClickVoiceNote());
+
         float transX =
-            voiceBtnRef.getX() + (voiceBtnRef.getWidth() / 2) - (recordingView.getWidth() / 2);
+            voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (recordingView.getWidth() / 2);
+
         recordingView.setTranslationX(transX);
         recordingView.setTranslationY(recordingView.getHeight());
-        voiceNoteBtn.setOnClickListener(view -> onClickVoiceNote());
 
         if (members.size() < 2) {
           containerUsers.setVisibility(GONE);
@@ -526,9 +542,10 @@ public class ChatView extends ChatMVPView {
 
   private void onClickVoiceNote() {
     Timber.e("VOICE NOTE TAP");
+    voiceNoteBtn.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_circle_blue));
     voiceNoteBtn.animate()
-        .scaleX(1.7f)
-        .scaleY(1.7f)
+        .scaleX(2f)
+        .scaleY(2f)
         .setInterpolator(new OvershootInterpolator())
         .setDuration(300)
         .withStartAction(() -> {
