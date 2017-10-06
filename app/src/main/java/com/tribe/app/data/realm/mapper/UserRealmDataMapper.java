@@ -79,8 +79,9 @@ import javax.inject.Singleton;
     return original;
   }
 
-  public List<Image> transformOriginalRealmList(List<ImageRealm> collection) {
+  public Image transformOriginalRealmList(List<ImageRealm> collection) {
     List<Image> originalList = new ArrayList<>();
+    Image original = new Image();
 
     if (collection != null) {
       ImageRealm stamp = new ImageRealm();
@@ -96,12 +97,12 @@ import javax.inject.Singleton;
 
       int position = collection.indexOf(stamp);
       ImageRealm imageSelected = collection.get(position - 1);
-      Image original = transform(imageSelected);
-      originalList.add(original);
-      return originalList;
+      original = transform(imageSelected);
+      // originalList.add(original);
+      return original;
     }
 
-    return originalList;
+    return original;
   }
 
   public RealmList<ImageRealm> transformOriginalList(Collection<Image> collection) {

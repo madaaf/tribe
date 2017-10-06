@@ -92,10 +92,13 @@ public class RecyclerMessageView extends ChatMVPView {
 
   private void initView() {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    inflater.inflate(R.layout.test, this, true);
+    inflater.inflate(R.layout.view_recycler_message, this, true);
     unbinder = ButterKnife.bind(this);
     initRecyclerView();
     initDependencyInjector();
+    if (type == ChatView.FROM_LIVE) {
+      recyclerView.setVerticalScrollBarEnabled(false);
+    }
   }
 
   @Override protected void onAttachedToWindow() {
@@ -167,6 +170,7 @@ public class RecyclerMessageView extends ChatMVPView {
 
   public void setArrIds(String[] arrIds) {
     this.arrIds = arrIds;
+    messageAdapter.setArrIds(arrIds);
     messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
     messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
     messagePresenter.onMessageReceivedFromDisk();

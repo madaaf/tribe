@@ -12,6 +12,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -32,6 +33,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
   final private static int DIFF_TIMING_ALLOWED_MINUTE = 2;
   protected DateUtils dateUtils;
   protected ScreenUtils screenUtils;
+  protected Navigator navigator;
 
   protected Context context;
   protected int type;
@@ -44,6 +46,8 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
         .dateUtils();
     screenUtils = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent()
         .screenUtils();
+    navigator = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent()
+        .navigator();
   }
 
   @Override public boolean isForViewType(@NonNull List<Message> items, int position) {

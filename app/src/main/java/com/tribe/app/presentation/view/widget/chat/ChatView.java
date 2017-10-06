@@ -11,8 +11,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -126,6 +128,7 @@ public class ChatView extends ChatMVPView {
   @BindView(R.id.containerUsers) FrameLayout containerUsers;
   @BindView(R.id.container) FrameLayout container;
   @BindView(R.id.containerEditText) RelativeLayout containerEditText;
+  @BindView(R.id.separator) View separator;
 
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
@@ -179,7 +182,8 @@ public class ChatView extends ChatMVPView {
     recyclerView.setArrIds(arrIds);
 
     if (friends.size() > 1) {
-      title.setText(context.getString(R.string.shortcut_members_count, friends.size()));
+      String txt = context.getString(R.string.shortcut_members_count, friends.size()) + " ";
+      title.setText(txt);
       title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_edit_chat, 0);
     } else {
       title.setText(friends.get(0).getDisplayName());
@@ -232,10 +236,12 @@ public class ChatView extends ChatMVPView {
       videoCallBtn.setVisibility(GONE);
       sendBtn.setImageDrawable(
           ContextCompat.getDrawable(context, R.drawable.picto_like_heart_white));
-      editText.setBackground(
-          ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_black10));
-      containerEditText.setBackground(
-          ContextCompat.getDrawable(context, R.drawable.background_blur));
+      separator.setVisibility(GONE);
+
+    /*  editText.setBackground(
+          ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_black10));*/
+    /*  containerEditText.setBackground(
+          ContextCompat.getDrawable(context, R.drawable.background_blur));*/
       editText.setTextColor(ContextCompat.getColor(context, R.color.white));
     }
   }
@@ -491,6 +497,20 @@ public class ChatView extends ChatMVPView {
     }
   }
 
+  @OnClick(R.id.txtTitle) void onClickTitle() {
+    if (members.size() < 2) return;
+    subscriptions.add(
+        DialogFactory.inputDialog(context, context.getString(R.string.shortcut_update_name_title),
+            context.getString(R.string.shortcut_update_name_description),
+            context.getString(R.string.shortcut_update_name_validate),
+            context.getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT).subscribe(s -> {
+          Timber.e("SOU SUH " + s);
+          messagePresenter.updateShortcutName(shortcut.getId(), s);
+          title.setText(s + " ");
+          title.setTextColor(Color.BLACK);
+        }));
+  }
+
   @OnClick(R.id.videoCallBtn) void onClickVideoCall() {
 
     navigator.navigateToLive((Activity) context, recipient, PaletteGrid.get(0),
@@ -534,7 +554,7 @@ public class ChatView extends ChatMVPView {
       case TYPE_ONLINE:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_live));
-        pulseLayout.setColor(ContextCompat.getColor(context, R.color.blue_new));
+        pulseLayout.setColor(ContextCompat.getColor(context, R.color.blue_new_opacity_40));
         pulseLayout.start();
         break;
     }

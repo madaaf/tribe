@@ -33,6 +33,10 @@ public class DiskChatDataStore implements ChatDataStore {
     return chatCache.getMessages(userIds).debounce(600, TimeUnit.MILLISECONDS);
   }
 
+  @Override public Observable<List<MessageRealm>> getMessagesImage(String[] userIds) {
+    return chatCache.getMessagesImage(userIds).debounce(600, TimeUnit.MILLISECONDS);
+  }
+
   @Override public Observable<String> isTyping() {
     return chatCache.isTyping();
   }

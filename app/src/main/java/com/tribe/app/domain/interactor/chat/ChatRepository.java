@@ -14,6 +14,8 @@ public interface ChatRepository {
 
   Observable<List<Message>> loadMessages(final String[] userIds, String date);
 
+  Observable<List<Message>> getMessagesImage(final String[] userIds);
+
   Observable<List<Message>> onMessageReceived();
 
   Observable<String> isTyping();

@@ -1,17 +1,23 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.util.Pair;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
+import com.tribe.app.domain.interactor.chat.GetMessageImageFromDisk;
 import com.tribe.app.domain.interactor.chat.ImTyping;
 import com.tribe.app.domain.interactor.chat.IsTypingFromDisk;
 import com.tribe.app.domain.interactor.chat.OnMessageReceivedFromDisk;
 import com.tribe.app.domain.interactor.chat.UserMessageInfos;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.GetDiskShortcut;
+import com.tribe.app.domain.interactor.user.UpdateShortcut;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.app.presentation.mvp.view.PictureMVPView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import timber.log.Timber;
@@ -23,19 +29,27 @@ import timber.log.Timber;
 public class MessagePresenter implements Presenter {
   // VIEW ATTACHED
   private ChatMVPView chatMVPView;
+  private PictureMVPView pictureMVPView;
 
+  // USECASES
   protected UserMessageInfos userMessageInfos;
   protected CreateMessage createMessage;
   protected GetMessageFromDisk getMessageFromDisk;
+  protected GetMessageImageFromDisk getMessageImageFromDisk;
   protected GetDiskShortcut getDiskShortcut;
   protected IsTypingFromDisk isTypingFromDisk;
   protected OnMessageReceivedFromDisk onMessageReceivedFromDisk;
   protected ImTyping imTyping;
+  private UpdateShortcut updateShortcut;
+
+  // SUBSCRIBERS
+  private UpdateShortcutSubscriber updateShortcutSubscriber;
 
   @Inject public MessagePresenter(UserMessageInfos userMessageInfos, CreateMessage createMessage,
       GetMessageFromDisk getMessageFromDisk, GetDiskShortcut getDiskShortcut,
       IsTypingFromDisk isTypingFromDisk, ImTyping imTyping,
-      OnMessageReceivedFromDisk onMessageReceivedFromDisk) {
+      OnMessageReceivedFromDisk onMessageReceivedFromDisk, UpdateShortcut updateShortcut,
+      GetMessageImageFromDisk getMessageImageFromDisk) {
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
     this.getMessageFromDisk = getMessageFromDisk;
@@ -43,6 +57,13 @@ public class MessagePresenter implements Presenter {
     this.isTypingFromDisk = isTypingFromDisk;
     this.imTyping = imTyping;
     this.onMessageReceivedFromDisk = onMessageReceivedFromDisk;
+    this.updateShortcut = updateShortcut;
+    this.getMessageImageFromDisk = getMessageImageFromDisk;
+  }
+
+  public void getMessageImage(String[] userIds) {
+    getMessageImageFromDisk.setUserIds(userIds);
+    getMessageImageFromDisk.execute(new GetDiskMessageImageSubscriber());
   }
 
   public void onMessageReceivedFromDisk() {
@@ -78,13 +99,53 @@ public class MessagePresenter implements Presenter {
     createMessage.execute(new CreateMessageSubscriber(positon));
   }
 
+  public void updateShortcutName(String shortcutId, String name) {
+    List<Pair<String, String>> values = new ArrayList<>();
+    values.add(new Pair<>(ShortcutRealm.NAME, name));
+    updateShortcut(shortcutId, values);
+  }
+
+  private void updateShortcut(String shortcutId, List<Pair<String, String>> values) {
+    if (updateShortcutSubscriber != null) updateShortcutSubscriber.unsubscribe();
+    updateShortcutSubscriber = new UpdateShortcutSubscriber();
+    updateShortcut.setup(shortcutId, values);
+    updateShortcut.execute(updateShortcutSubscriber);
+  }
+
+  private class UpdateShortcutSubscriber extends DefaultSubscriber<Shortcut> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(Shortcut shortcut) {
+
+    }
+  }
+
   @Override public void onViewAttached(MVPView view) {
-    chatMVPView = (ChatMVPView) view;
+    if (view instanceof ChatMVPView) {
+      chatMVPView = (ChatMVPView) view;
+    } else if (view instanceof PictureMVPView) {
+      pictureMVPView = (PictureMVPView) view;
+    }
   }
 
   @Override public void onViewDetached() {
     userMessageInfos.unsubscribe();
+    createMessage.unsubscribe();
+    getMessageFromDisk.unsubscribe();
+    updateShortcut.unsubscribe();
+    getDiskShortcut.unsubscribe();
+    isTypingFromDisk.unsubscribe();
+    onMessageReceivedFromDisk.unsubscribe();
+    imTyping.unsubscribe();
+
     chatMVPView = null;
+    pictureMVPView = null;
   }
 
   private class LoadMessageSubscriber extends DefaultSubscriber<List<Message>> {
@@ -99,6 +160,21 @@ public class MessagePresenter implements Presenter {
 
     @Override public void onNext(List<Message> messages) {
       if (chatMVPView != null) chatMVPView.successLoadingMessage(messages);
+    }
+  }
+
+  private class GetDiskMessageImageSubscriber extends DefaultSubscriber<List<Message>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
+      if (pictureMVPView != null) pictureMVPView.errorGetMessageImageFromDisk();
+    }
+
+    @Override public void onNext(List<Message> messages) {
+      if (pictureMVPView != null) pictureMVPView.successGetMessageImageFromDisk(messages);
     }
   }
 

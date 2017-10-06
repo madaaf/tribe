@@ -403,10 +403,11 @@
 	<string name="live_members_ringing">Appel en cours</string>
 	<string name="live_members_waiting">En attente</string>
 	<string name="live_members_add_friends">Ajouter des amis</string>
-	<string name="live_other_user_hung_up">Nous avons ré-invité votre ami automatiquement</string>
+	<string name="live_other_user_hung_up">Nous avons ré-invité ton ami automatiquement</string>
 	<string name="live_members_menu_more">Plus</string>
 	<string name="live_members_menu_less">Moins</string>
 	<string name="live_members_menu_added">Invité</string>
+	<string name="live_members_drop_zone">RELACHE ICI</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>

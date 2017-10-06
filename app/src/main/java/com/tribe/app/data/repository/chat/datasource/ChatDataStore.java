@@ -18,6 +18,8 @@ public interface ChatDataStore {
 
   Observable<List<MessageRealm>> getMessages(String[] userIds);
 
+  Observable<List<MessageRealm>> getMessagesImage(String[] userIds);
+
   Observable<String> isTyping();
 
   Observable<List<MessageRealm>> onMessageReceived();
