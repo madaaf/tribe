@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtLabel"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_centerVertical="true"
+      android:layout_gravity="end|center_vertical"
+      android:layout_marginEnd="40dp"
+      android:text="@string/action_more"
+      style="@style/Body.Two.Black"
+      />
+
+  <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="16dp"
+      android:layout_gravity="right|center_vertical"
+      android:layout_marginEnd="15dp"
+      android:src="@drawable/picto_expand_invite"
+      />
+</merge>

@@ -778,6 +778,17 @@ public class LiveView extends FrameLayout {
     return live;
   }
 
+  public int getViewInviteWidth() {
+    return viewLiveInvite.getWidth();
+  }
+
+  public void applyTranslateX(float value) {
+    viewControlsLive.setTranslationX(value);
+    viewRoom.setTranslationX(value);
+    viewRinging.setTranslationX(value);
+    viewDarkOverlay.setTranslationX(value);
+  }
+
   public boolean hasJoined() {
     return hasJoined;
   }

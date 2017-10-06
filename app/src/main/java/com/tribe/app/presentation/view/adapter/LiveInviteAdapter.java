@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import com.tribe.app.presentation.view.adapter.delegate.EmptyHeaderInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
@@ -25,6 +26,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
   private UserRoomAdapterDelegate userRoomAdapterDelegate;
   private RoomLinkAdapterDelegate roomLinkAdapterDelegate;
   private ShortcutInviteAdapterDelegate shortcutInviteAdapterDelegate;
+  private ShortcutEmptyInviteAdapterDelegate shortcutEmptyInviteAdapterDelegate;
 
   // VARIABLES
   private List<LiveInviteAdapterSectionInterface> items;
@@ -46,6 +48,9 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
 
     shortcutInviteAdapterDelegate = new ShortcutInviteAdapterDelegate(context);
     delegatesManager.addDelegate(shortcutInviteAdapterDelegate);
+
+    shortcutEmptyInviteAdapterDelegate = new ShortcutEmptyInviteAdapterDelegate(context);
+    delegatesManager.addDelegate(shortcutEmptyInviteAdapterDelegate);
 
     items = new ArrayList<>();
 

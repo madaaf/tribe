@@ -14,7 +14,7 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:animateLayoutChanges="true"
-      android:visibility="gone"
+      android:visibility="visible"
       >
 
   </com.tribe.app.presentation.view.component.live.LiveRoomView>
@@ -65,6 +65,7 @@
       android:id="@+id/viewControlsLive"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:visibility="gone"
       />
 
 

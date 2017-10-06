@@ -81,6 +81,7 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDe
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
@@ -91,6 +92,7 @@ import com.tribe.app.presentation.view.component.home.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.TopBarLogoView;
 import com.tribe.app.presentation.view.component.home.TopBarView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
+import com.tribe.app.presentation.view.component.live.LiveInviteBottomView;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
 import com.tribe.app.presentation.view.component.live.LiveView;
@@ -231,7 +233,11 @@ public interface ApplicationComponent {
 
   void inject(ShortcutInviteAdapterDelegate shortcutInviteAdapterDelegate);
 
+  void inject(ShortcutEmptyInviteAdapterDelegate shortcutEmptyInviteAdapterDelegate);
+
   void inject(TileInviteView tileInviteView);
+
+  void inject(LiveInviteBottomView liveInviteBottomView);
 
   // JOBS
   void inject(BaseJob baseJob);

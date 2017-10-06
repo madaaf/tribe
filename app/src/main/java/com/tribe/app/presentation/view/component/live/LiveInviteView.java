@@ -12,6 +12,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Live;
@@ -32,6 +33,7 @@ import com.tribe.app.presentation.view.adapter.decorator.LiveInviteSectionItemDe
 import com.tribe.app.presentation.view.adapter.diff.LiveInviteDiffCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
+import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.RecyclerViewInvite;
 import java.util.ArrayList;
@@ -202,7 +204,8 @@ public class LiveInviteView extends FrameLayout
 
         return position == 0 ||
             (position > 0 &&
-                list.get(position).getLiveInviteSectionType() != list.get(position - 1).getLiveInviteSectionType());
+                list.get(position).getLiveInviteSectionType() !=
+                    list.get(position - 1).getLiveInviteSectionType());
       }
 
       @Override public int getSectionType(int position) {
@@ -273,7 +276,7 @@ public class LiveInviteView extends FrameLayout
       DiffUtil.DiffResult diffResult = null;
       List<LiveInviteAdapterSectionInterface> temp = new ArrayList<>(newListItems);
 
-      //ListUtils.addEmptyItemsInvite(temp);
+      ListUtils.addEmptyItemsInvite(temp);
 
       if (itemsList.size() != 0) {
         diffResult = DiffUtil.calculateDiff(new LiveInviteDiffCallback(itemsList, temp));
@@ -375,6 +378,14 @@ public class LiveInviteView extends FrameLayout
   }
 
   @Override public void randomRoomAssignedSubscriber(String roomId) {
+
+  }
+
+  //////////////////////
+  //     ON CLICK     //
+  //////////////////////
+
+  @OnClick(R.id.btnMore) void onClickMore() {
 
   }
 
