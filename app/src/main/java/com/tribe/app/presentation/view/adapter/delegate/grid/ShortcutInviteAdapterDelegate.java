@@ -9,19 +9,23 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
+import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.TileInviteView;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
+import javax.inject.Inject;
 
 /**
  * Created by tiago on 09/04/2017
  */
 public class ShortcutInviteAdapterDelegate
     extends RxAdapterDelegate<List<LiveInviteAdapterSectionInterface>> {
+
+  @Inject ScreenUtils screenUtils;
 
   protected LayoutInflater layoutInflater;
   protected Context context;

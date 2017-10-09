@@ -64,6 +64,25 @@ public class TileInviteView extends SquareFrameLayout {
     super.onDetachedFromWindow();
   }
 
+  @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    int boundedWidth = screenUtils.dpToPx(LiveInviteView.WIDTH_PARTIAL);
+    int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
+
+    if (boundedWidth > 0 && boundedWidth < measuredWidth) {
+      int measureMode = MeasureSpec.getMode(widthMeasureSpec);
+      widthMeasureSpec = MeasureSpec.makeMeasureSpec(boundedWidth, measureMode);
+    }
+    
+    // Adjust height as necessary
+    int measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
+    if (boundedWidth > 0 && boundedWidth < measuredHeight) {
+      int measureMode = MeasureSpec.getMode(heightMeasureSpec);
+      heightMeasureSpec = MeasureSpec.makeMeasureSpec(boundedWidth, measureMode);
+    }
+
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+  }
+
   public void updateWidth(int width) {
     int tempMarginBG = (int) (width * 0.15f);
     int tempMarginAvatar = (int) (width * 0.25f);

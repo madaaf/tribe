@@ -1,13 +1,13 @@
 package com.tribe.app.presentation.view.component.live;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
+import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.animation.DecelerateInterpolator;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,6 +22,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -41,13 +42,14 @@ public class LiveStatusNameView extends FrameLayout {
 
   @Inject User user;
 
-  @BindView(R.id.txtNameActive) TextViewFont txtNameActive;
+  @BindView(R.id.layoutBG) ViewGroup layoutBG;
 
-  @BindView(R.id.txtNameInactive) TextViewFont txtNameInactive;
+  @BindView(R.id.txtName) TextViewFont txtName;
 
   // VARIABLES
   private Unbinder unbinder;
   private Live live;
+  private boolean active = false;
 
   // RESOURCES
 
@@ -88,6 +90,8 @@ public class LiveStatusNameView extends FrameLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_status_name, this);
     unbinder = ButterKnife.bind(this);
 
+    setLayoutTransition(new LayoutTransition());
+
     setBackground(null);
   }
 
@@ -110,58 +114,62 @@ public class LiveStatusNameView extends FrameLayout {
         .inject(this);
   }
 
-  @OnClick(R.id.txtNameActive) void openView() {
-    onCloseView.onNext(true);
-    showView(txtNameInactive);
-    hideView(txtNameActive);
-  }
-
-  @OnClick(R.id.txtNameInactive) void closeView() {
-    onOpenView.onNext(true);
-    showView(txtNameActive);
-    hideView(txtNameInactive);
+  @OnClick(R.id.txtName) void clickOpenView() {
+    if (active) {
+      closeView(true);
+    } else {
+      openView(true);
+    }
   }
 
   private void setAddFriendsTitle() {
     int str = R.string.action_add_friend;
-    txtNameInactive.setText(str);
+    txtName.setText(str);
   }
 
   private void setShortcutTitle() {
-    txtNameInactive.setText(live.getShortcut().getName());
+    txtName.setText(live.getShortcut().getName());
   }
 
   private void setPeopleCountTitle(int total) {
     String str = getContext().getString(R.string.shortcut_members_count, total);
-    txtNameInactive.setText(str);
-  }
-
-  private void showView(View v) {
-    v.animate()
-        .setInterpolator(new DecelerateInterpolator())
-        .alpha(1)
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            v.animate().setListener(null).start();
-            v.setClickable(true);
-          }
-        })
-        .setDuration(DURATION)
-        .start();
-  }
-
-  private void hideView(View v) {
-    v.setClickable(false);
-    v.animate()
-        .setInterpolator(new DecelerateInterpolator())
-        .alpha(0)
-        .setDuration(DURATION)
-        .start();
+    txtName.setText(str);
   }
 
   //////////////
   //  PUBLIC  //
   //////////////
+
+  public void openView(boolean shouldNotify) {
+    if (active) return;
+
+    active = true;
+    layoutBG.setBackgroundResource(R.drawable.bg_live_name_active);
+    txtName.setText(R.string.action_back);
+    txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_drawer_active, 0);
+    txtName.setShadowLayer(0, 0, 0, 0);
+    TextViewCompat.setTextAppearance(txtName, R.style.Body_Two_Black);
+
+    txtName.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
+
+    onOpenView.onNext(active);
+  }
+
+  public void closeView(boolean shouldNotify) {
+    if (!active) return;
+
+    active = false;
+    layoutBG.setBackgroundResource(R.drawable.bg_live_name);
+    refactorTitle();
+    txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_drawer_inactive, 0);
+    txtName.setShadowLayer(10, 3, 3,
+        ContextCompat.getColor(getContext(), R.color.black_opacity_50));
+    TextViewCompat.setTextAppearance(txtName, R.style.Body_Two_White);
+
+    txtName.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
+
+    onCloseView.onNext(active);
+  }
 
   public void dispose() {
   }

@@ -157,6 +157,14 @@ public class LiveContainer extends FrameLayout {
         openFullInviteView();
       } else if (isOpenedFully) closeFullInviteView();
     }));
+
+    subscriptions.add(viewLive.onOpenInvite().subscribe(aVoid -> {
+      if (!isOpenedPartially) {
+        openPartialInviteView();
+      } else if (isOpenedPartially) {
+        closePartialInviteView();
+      }
+    }));
   }
 
   public void setStatusBarHeight(int height) {

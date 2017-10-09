@@ -41,7 +41,6 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
@@ -164,7 +163,6 @@ public class LiveView extends FrameLayout {
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
   private Subscription callDurationSubscription;
 
-  private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<String> onBuzzPopup = PublishSubject.create();
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
   private PublishSubject<Void> onNotify = PublishSubject.create();
@@ -189,6 +187,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<String> onDismissInvite = PublishSubject.create();
   private PublishSubject<Boolean> onOpenChat = PublishSubject.create();
+  private PublishSubject<Boolean> onOpenInvite = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -355,7 +354,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void updateInviteViewWidth(int width) {
-
+    viewLiveInvite.updateWidth(width);
   }
 
   //////////////////////
@@ -404,50 +403,35 @@ public class LiveView extends FrameLayout {
       setAlphaOnGuestWhenHideControls(hiddenControls);
     }).subscribe());
 
-    //persistentSubscriptions.add(viewLocalLive.onClick().doOnNext(aVoid -> {
-    //  if (stateContainer == LiveContainer.EVENT_OPENED) {
-    //    onShouldCloseInvites.onNext(null);
-    //  }
-    //}).filter(aVoid -> stateContainer == LiveContainer.EVENT_CLOSED).subscribe(aVoid -> {
-    //  viewControlsLive.clickExpandParam();
-    //  onHiddenControls.onNext(isParamExpended);
-    //}));
+    persistentSubscriptions.add(
+        viewControlsLive.onOpenInvite().subscribe(aBoolean -> onOpenInvite.onNext(true)));
 
     persistentSubscriptions.add(
-        Observable.merge(viewControlsLive.onOpenInvite(), viewControlsLive.onOpenChat())
-            .subscribe(aBool -> {
-              viewDarkOverlay.animate()
-                  .setInterpolator(new DecelerateInterpolator())
-                  .alpha(1)
-                  .setDuration(DURATION)
-                  .start();
+        viewControlsLive.onCloseInvite().subscribe(aBoolean -> onOpenInvite.onNext(false)));
 
-              viewRinging.hide();
-            }));
+    persistentSubscriptions.add(viewControlsLive.onOpenChat().subscribe(aBoolean -> {
+      viewDarkOverlay.animate()
+          .setInterpolator(new DecelerateInterpolator())
+          .alpha(1)
+          .setDuration(DURATION)
+          .start();
 
-    persistentSubscriptions.add(
-        viewControlsLive.onOpenChat().subscribe(aBoolean -> onOpenChat.onNext(true)));
+      viewRinging.hide();
 
-    //persistentSubscriptions.add(
-    //    viewControlsLive.onOpenInvite().subscribe(aBoolean -> viewLiveInvite.openInvite()));
+      onOpenChat.onNext(true);
+    }));
 
-    persistentSubscriptions.add(
-        Observable.merge(viewControlsLive.onCloseChat(), viewControlsLive.onCloseInvite())
-            .subscribe(aBool -> {
-              viewDarkOverlay.animate()
-                  .setInterpolator(new DecelerateInterpolator())
-                  .alpha(0)
-                  .setDuration(DURATION)
-                  .start();
+    persistentSubscriptions.add(viewControlsLive.onCloseChat().subscribe(aBoolean -> {
+      viewDarkOverlay.animate()
+          .setInterpolator(new DecelerateInterpolator())
+          .alpha(0)
+          .setDuration(DURATION)
+          .start();
 
-              viewRinging.show();
-            }));
+      viewRinging.show();
 
-    //persistentSubscriptions.add(
-    //    viewControlsLive.onCloseInvite().subscribe(aBoolean -> viewLiveInvite.closeInvite()));
-
-    persistentSubscriptions.add(
-        viewControlsLive.onCloseChat().subscribe(aBoolean -> onOpenChat.onNext(false)));
+      onOpenChat.onNext(false);
+    }));
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraOrientation().subscribe(aVoid -> {
       viewLocalLive.switchCamera();
@@ -544,7 +528,6 @@ public class LiveView extends FrameLayout {
   ///////////////////
 
   @OnClick(R.id.viewRoom) void onClickRoom() {
-    //if (stateContainer == LiveContainer.EVENT_OPENED) onShouldCloseInvites.onNext(null);
     if (hiddenControls) {
       onHiddenControls.onNext(false);
     }
@@ -758,6 +741,7 @@ public class LiveView extends FrameLayout {
 
   public void initDrawerEventChangeObservable(Observable<Integer> obs) {
     viewLiveInvite.initDrawerEventChangeObservable(obs);
+    viewControlsLive.initDrawerEventChangeObservable(obs);
   }
 
   public void initAnonymousSubscription(Observable<List<User>> obs) {
@@ -791,8 +775,9 @@ public class LiveView extends FrameLayout {
     viewRinging.setTranslationX(value);
     viewDarkOverlay.setTranslationX(value);
     viewShadow.setTranslationX(value);
+
     if (Math.abs(value) >= getLiveInviteViewPartialWidth()) {
-      UIUtils.changeWidthOfView(viewLiveInvite, (int) Math.abs(value));
+      updateInviteViewWidth((int) Math.abs(value));
     }
   }
 
@@ -1441,7 +1426,7 @@ public class LiveView extends FrameLayout {
   //   OBSERVABLES    //
   //////////////////////
 
-  public Observable<Void> onOpenInvite() {
+  public Observable<Boolean> onOpenInvite() {
     return onOpenInvite;
   }
 
@@ -1574,7 +1559,8 @@ public class LiveView extends FrameLayout {
   }
 
   public Observable<Void> onEdit() {
-    return viewControlsLive.onEdit();
+    //return viewControlsLive.onEdit();
+    return Observable.empty();
   }
 
   public Observable<Boolean> onOpenChat() {

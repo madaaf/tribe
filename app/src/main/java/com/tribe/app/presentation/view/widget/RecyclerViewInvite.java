@@ -25,6 +25,7 @@ public class RecyclerViewInvite extends RecyclerView {
   private int positionToBlock = 0;
   private LiveInviteLayoutManager liveInviteLayoutManager;
   private @ScrollDirection int scrollDirection = 0;
+  private boolean isDrawerOpen = false;
 
   public RecyclerViewInvite(Context context) {
     super(context);
@@ -46,17 +47,28 @@ public class RecyclerViewInvite extends RecyclerView {
     return scrollDirection;
   }
 
+  public void setDrawerOpen(boolean drawerOpen) {
+    isDrawerOpen = drawerOpen;
+  }
+
+  public boolean isDrawerOpen() {
+    return isDrawerOpen;
+  }
+
   @Override public boolean onTouchEvent(MotionEvent e) {
+    if (isDrawerOpen) return super.onTouchEvent(e);
+
     int action = e.getAction();
     float y = e.getY();
-    int topOfView = 0;
+    int topOfView = getChildAt(0).getTop();
     boolean shouldCare = false;
 
     if (liveInviteLayoutManager == null) {
       liveInviteLayoutManager = (LiveInviteLayoutManager) getLayoutManager();
     }
 
-    if (liveInviteLayoutManager.findFirstVisibleItemPosition() == positionToBlock && getChildAt(0).getTop() == 0) {
+    if (liveInviteLayoutManager.findFirstVisibleItemPosition() == positionToBlock &&
+        topOfView == 0) {
       Timber.d("Should care true");
       shouldCare = true;
     }

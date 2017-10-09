@@ -784,4 +784,6 @@
 	<string name="chat_placeholder_message">Message</string>
 	<string name="chat_placeholder_tap_and_hold">Appui long!</string>
 	<string name="chat_placeholder_slide_to_cancel">Slide pour annuler</string>
+	<string name="chat_seen_by">Vu par %1$s</string>
+	<string name="chat_not_seen">Pas encore vu</string>
 </resources>

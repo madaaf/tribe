@@ -1,11 +1,13 @@
 package com.tribe.app.presentation.view.component.live;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,7 +28,6 @@ import com.tribe.app.presentation.view.adapter.LiveInviteAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.InviteListDividerDecoration;
-import com.tribe.app.presentation.view.adapter.decorator.LiveInviteSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.diff.LiveInviteDiffCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
@@ -58,6 +59,7 @@ public class LiveInviteView extends FrameLayout
   private static final int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
   private static final int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
   private static final int DURATION = 500;
+  private static final int DURATION_FAST = 100;
   private static final float OVERSHOOT = 0.75f;
 
   @Inject TagManager tagManager;
@@ -81,9 +83,10 @@ public class LiveInviteView extends FrameLayout
   private Live live;
   private Scheduler singleThreadExecutor;
   private int positionOfFirstShortcut;
+  private @LiveContainer.Event int drawerState = LiveContainer.CLOSED;
 
   // RESOURCES
-  private int translationY;
+  private int translationX;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -142,7 +145,8 @@ public class LiveInviteView extends FrameLayout
   }
 
   private void initUI() {
-
+    recyclerViewInvite.setTranslationX(translationX);
+    setBackgroundColor(Color.WHITE);
   }
 
   private void initSubscriptions() {
@@ -150,7 +154,7 @@ public class LiveInviteView extends FrameLayout
   }
 
   private void initResources() {
-    translationY = -screenUtils.getHeightPx();
+    translationX = screenUtils.dpToPx(15);
   }
 
   private void initRecyclerView() {
@@ -170,18 +174,15 @@ public class LiveInviteView extends FrameLayout
     recyclerViewInvite.getRecycledViewPool().setMaxRecycledViews(2, 50);
     recyclerViewInvite.getRecycledViewPool().setMaxRecycledViews(3, 50);
 
-    LiveInviteSectionItemDecoration sectionItemDecoration = new LiveInviteSectionItemDecoration(
-        getResources().getDimensionPixelSize(R.dimen.list_live_invite_header_height), false,
-        getSectionCallback(adapter.getItems()), screenUtils);
-    recyclerViewInvite.addItemDecoration(sectionItemDecoration);
     recyclerViewInvite.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
       @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
 
+        if (recyclerViewInvite.isDrawerOpen()) return;
+
         int currentFirstVisible = layoutManager.findFirstVisibleItemPosition();
-        //Timber.d(
-        //    "Visible : " + currentFirstVisible + " blocking position : " + positionOfFirstShortcut);
+
         if (currentFirstVisible < positionOfFirstShortcut &&
             recyclerViewInvite.getScrollDirection() == RecyclerViewInvite.UP) {
           recyclerViewInvite.post(
@@ -232,7 +233,7 @@ public class LiveInviteView extends FrameLayout
     FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) getLayoutParams();
     params.width = width;
     requestLayout();
-    onInviteViewWidthChanged.onNext(width);
+    onInviteViewWidthChanged.onNext(Math.min(width, screenUtils.dpToPx(WIDTH_PARTIAL)));
   }
 
   public void setLive(Live live) {
@@ -302,11 +303,31 @@ public class LiveInviteView extends FrameLayout
 
   public void initDrawerEventChangeObservable(Observable<Integer> onEventChange) {
     subscriptions.add(onEventChange.subscribe(event -> {
-      if (event == LiveContainer.OPEN_FULL) {
-        viewInviteBottom.showLess();
-      } else {
-        viewInviteBottom.showMore();
+      if (drawerState == LiveContainer.CLOSED && event != LiveContainer.CLOSED) {
+        recyclerViewInvite.animate()
+            .translationX(0)
+            .setDuration(DURATION_FAST)
+            .setInterpolator(new DecelerateInterpolator())
+            .start();
       }
+
+      if (event == LiveContainer.OPEN_FULL) {
+        recyclerViewInvite.setDrawerOpen(true);
+        recyclerViewInvite.post(() -> recyclerViewInvite.smoothScrollToPosition(0));
+        viewInviteBottom.showLess();
+      } else if (event == LiveContainer.OPEN_PARTIAL && drawerState != LiveContainer.CLOSED) {
+        recyclerViewInvite.setDrawerOpen(false);
+        recyclerViewInvite.smoothScrollToPosition(positionOfFirstShortcut);
+        viewInviteBottom.showMore();
+      } else if (event == LiveContainer.CLOSED) {
+        recyclerViewInvite.animate()
+            .translationX(translationX)
+            .setDuration(DURATION_FAST)
+            .setInterpolator(new DecelerateInterpolator())
+            .start();
+      }
+
+      drawerState = event;
     }));
   }
 
