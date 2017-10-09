@@ -117,9 +117,9 @@ public class LiveInviteAdapter extends RecyclerView.Adapter implements RecyclerV
   public void setItems(List<Recipient> items, @LiveActivity.Source String source) {
     this.items.clear();
     this.items.add(new Friendship(Recipient.ID_HEADER));
-    if (!diceDragued && source != null && !source.equals(SOURCE_CALL_ROULETTE)) {
-      this.items.add(getDiceItem());
-    }
+    //if (!diceDragued && source != null && !source.equals(SOURCE_CALL_ROULETTE)) {
+    //  this.items.add(getDiceItem());
+    //}
     this.items.addAll(items);
     ListUtils.addEmptyItems(screenUtils, this.items);
     notifyDataSetChanged();

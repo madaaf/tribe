@@ -11,6 +11,10 @@
 	<string name="action_next">Suivant</string>
 	<string name="action_enter">Entrer</string>
 	<string name="action_start">Commencer</string>
+	<string name="action_unsend">Dés-envoyer</string>
+	<string name="action_resend">Ré-envoyer</string>
+	<string name="action_hide">Masquer</string>
+	<string name="action_copy">Copier</string>
 	
 	<!-- User Actions -->
 	<string name="action_add_friend">Ajouter en ami</string>
@@ -42,6 +46,7 @@
 	
 	<!-- Image Picker -->
 	<string name="image_picker_title">Ajouter un avatar</string>
+	<string name="image_picker_chat_title">Envoyer une image</string>
 	<string name="image_picker_camera">Utiliser l\'appareil photo</string>
 	<string name="image_picker_library">Ouvrir ma bibliothèque</string>
 	
@@ -115,6 +120,7 @@
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	<string name="live_notification_action_see_thread">Voir la conversation</string>
 	<string name="live_notification_action_reply">Répondre</string>
+	<string name="live_notification_online">est en ligne</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>
@@ -299,7 +305,7 @@
 	<string name="topbar_new_live">+ Groupe</string>
 	<string name="topbar_new_call">Appeler</string>
 	<string name="topbar_invite">Inviter</string>
-	<string name="topbar_search">Amis</string>
+	<string name="topbar_search">Rechercher</string>
 	<string name="topbar_invite_friend_toast">Quels amis souhaitez-vous inviter à discuter :tada:</string>
 	<string name="topbar_invite_search_action">:mag: Trouver des amis sur Tribe</string>
 	<string name="topbar_invite_sms_action_ios">:link: Inviter des amis via iMessage</string>
@@ -387,6 +393,21 @@
 	<string name="live_share_new_call_button_title">Partager l\'appel</string>
 	<string name="live_share_screenshot_description">Partagez ce screenshot !</string>
 	<string name="live_share_screenshot_caption">Merci @heytribe! :metal: #tribegoals</string>
+	<string name="live_ringing">Appel en cours...</string>
+	<string name="live_invite_section_chat_members">Members du chat</string>
+	<string name="live_invite_section_invite_link">Lien d\'nvitation</string>
+	<string name="live_invite_section_add_friends">Ajouter des amis dans cette conversation</string>
+	<string name="live_members_chat_section_title">MEMBRES DU CHAT</string>
+	<string name="live_members_invite_link_section_title">LIEN D\'INVITATION</string>
+	<string name="live_members_invite_friends_section_title">AJOUTER</string>
+	<string name="live_members_ringing">Appel en cours</string>
+	<string name="live_members_waiting">En attente</string>
+	<string name="live_members_add_friends">Ajouter des amis</string>
+	<string name="live_other_user_hung_up">Nous avons ré-invité %1$s automatiquement</string>
+	<string name="live_members_menu_more">Plus</string>
+	<string name="live_members_menu_less">Moins</string>
+	<string name="live_members_menu_added">Invité</string>
+	<string name="live_members_drop_zone">RELACHE ICI</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>
@@ -403,7 +424,7 @@
 	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'ami. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
 	<string name="profile_blocked_friends">Amis supprimés et bloqués</string>
-	<string name="profile_manage_friendships">Gérer vos amis :busts_in_silhouette:</string>
+	<string name="profile_manage_friendships">Amis &amp; Notifications :bell:</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
 	<string name="profile_contact_us">Contactez-nous :envelope:</string>
@@ -431,6 +452,7 @@
 	<string name="manage_friendships_mute_alert_description">Vous ne recevrez plus de notification \'est en ligne\' de la part de cet ami</string>
 	<string name="manage_friendships_mute_alert_mute">Supprimer la notification</string>
 	<string name="manage_friendships_mute_alert_cancel">Oops! Conserver la notification</string>
+	<string name="manage_friendships_mute_all_title">Supprimer la notification \'est en ligne\' pour tous</string>
 	
 	<!-- Carousel -->
 	<string name="carousel_friend_title">Donner accès à %1$s ?</string>
@@ -639,6 +661,15 @@
 	<string name="game_draw_timer_instructions">Prochain dans :hourglass:</string>
 	<string name="game_draw_clear">Effacer</string>
 	<string name="game_draw_instructions_my_turn">A ton tour de dessiner</string>
+	<string name="game_invaders">Invaders</string>
+	<string name="game_drop_it">Drop it!</string>
+	<string name="game_sing_along">Sing along</string>
+	<string name="game_faceswap">Faceswap</string>
+	<string name="game_hand_fight">Hand Fight</string>
+	<string name="game_lava_floor">Lava floor</string>
+	<string name="game_taboo">Taboo</string>
+	<string name="game_backgam">Backgam\'</string>
+	<string name="game_beats">Beats</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -697,17 +728,62 @@
 	<string name="linked_friends_loading">Chargement...</string>
 	
 	<!-- Home -->
-	<string name="home_section_ongoing">En cours</string>
-	<string name="home_section_online">En ligne</string>
-	<string name="home_section_recent">Récents</string>
-	<string name="home_action_join_live">Swipe gauche pour rejoindre</string>
-	<string name="home_action_read_chat">Swipe droite pour lire</string>
+	<string name="home_section_ongoing">Nouveau</string>
+	<string name="home_section_online">Amis en ligne</string>
+	<string name="home_section_recent">Chat récents</string>
+	<string name="home_section_suggested_friends">Amis déjà sur Tribe</string>
+	<string name="home_section_invites_to_send">Amis à inviter</string>
+	<string name="home_section_results">Résultats</string>
+	<string name="home_action_join_live">Glissez vers la gauche pour rejoindre</string>
+	<string name="home_action_read_chat">Glissez vers la droite pour ouvrir</string>
+	<string name="home_action_tap_to_chat">Tapez pour discuter</string>
+	<string name="home_action_chat_preview">%1$s : %2$s</string>
 	<string name="home_action_new_chat">Nouveau chat</string>
 	<string name="home_anonymous_user">personne</string>
 	<string name="home_anonymous_users">personnes</string>
+	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Épingler en haut</string>
+	<string name="home_menu_shortcut_unpin">:broken_heart: Retirer l\'épingle</string>
+	<string name="home_menu_shortcut_mute">:no_bell: notification \'est en ligne\'</string>
+	<string name="home_menu_shortcut_unmute">:bell: notification est en ligne</string>
+	<string name="home_menu_shortcut_hide">:speak_no_evil: Masquer</string>
+	<string name="home_menu_shortcut_block">:no_entry: Bloquer</string>
+	<string name="home_menu_shortcut_update_name">:pencil2: Modifier le nom</string>
+	<string name="home_menu_shortcut_mark_as_read">:eyes: Marquer comme lu</string>
+	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Marquer comme non-lu</string>
+	<string name="home_menu_invite_decline">:phone: Rejeter l\'appel</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">Nouveau chat</string>
 	<string name="newchat_to">À</string>
 	<string name="newchat_create_error_noone_selected">Vous devez sélectionner des gens pour créer un chat</string>
+	
+	<!-- Shortcut -->
+	<string name="shortcut_name_regular_separator">,</string>
+	<string name="shortcut_name_last_separator">et</string>
+	<string name="shortcut_members_count">%1$d personnes</string>
+	
+	<!-- Shortcut Update Name -->
+	<string name="shortcut_update_name_title">Modifier le nom</string>
+	<string name="shortcut_update_name_description">Le nom sera visible par chacun des membres.</string>
+	<string name="shortcut_update_name_placeholder">Nom</string>
+	<string name="shortcut_update_name_validate">Enregistrer</string>
+	
+	<!-- Chat -->
+	<string name="date_today">Aujourd\'hui</string>
+	<string name="date_yesterday">Hier</string>
+	<string name="shortcut_action_from">Depuis un chat</string>
+	<string name="shortcut_action_to">Vers un chat</string>
+	<string name="shortcut_action_with">avec</string>
+	<string name="chat_event_join">a rejoint le live</string>
+	<string name="chat_event_leave">a quitté le live</string>
+	<string name="chat_live_status_none">Chat</string>
+	<string name="chat_live_status_new">Nouveau</string>
+	<string name="chat_live_status_hide">Masquer</string>
+	<string name="chat_live_status_switching">Changement</string>
+	<string name="chat_quickchat_back_to_group">Groupe</string>
+	<string name="chat_placeholder_message">Message</string>
+	<string name="chat_placeholder_tap_and_hold">Appui long!</string>
+	<string name="chat_placeholder_slide_to_cancel">Slide pour annuler</string>
+	<string name="chat_seen_by">Vu par %1$s</string>
+	<string name="chat_not_seen">Pas encore vu</string>
 </resources>

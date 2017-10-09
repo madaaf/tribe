@@ -604,7 +604,7 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    tempSubscriptions.add(room.unlockRollTheDice().subscribe(unlockRollTheDice));
+    //tempSubscriptions.add(room.unlockRollTheDice().subscribe(unlockRollTheDice));
 
     tempSubscriptions.add(room.onPointsDrawReceived().subscribe(onPointsDrawReceived));
 
@@ -614,7 +614,7 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(room.onClearDrawReceived().subscribe(onClearDrawReceived));
 
-    tempSubscriptions.add(room.unlockedRollTheDice().subscribe(unlockedRollTheDice));
+    //tempSubscriptions.add(room.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
     tempSubscriptions.add(room.onJoined().subscribe(onJoined));
 
@@ -718,17 +718,17 @@ public class LiveView extends FrameLayout {
           }
         }));
 
-    tempSubscriptions.add(
-        room.onRollTheDiceReceived().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
-          Timber.d("rollTheDice received");
-          if (FacebookUtils.isLoggedIn()) {
-            viewRoom.onRollTheDiceReceived();
-            live.setDiceDragedInRoom(true);
-            onRollTheDice.onNext(null);
-          } else {
-            Timber.d("user not connected to fb");
-          }
-        }));
+    //tempSubscriptions.add(
+    //    room.onRollTheDiceReceived().observeOn(AndroidSchedulers.mainThread()).subscribe(s -> {
+    //      Timber.d("rollTheDice received");
+    //      if (FacebookUtils.isLoggedIn()) {
+    //        viewRoom.onRollTheDiceReceived();
+    //        live.setDiceDragedInRoom(true);
+    //        onRollTheDice.onNext(null);
+    //      } else {
+    //        Timber.d("user not connected to fb");
+    //      }
+    //    }));
 
     tempSubscriptions.add(room.onInvitedTribeGuestList()
         .observeOn(AndroidSchedulers.mainThread())
