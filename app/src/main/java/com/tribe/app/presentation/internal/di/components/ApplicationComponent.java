@@ -85,6 +85,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.LiveInviteSubHeader
 import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteFullAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.VisualizerView;
@@ -244,6 +245,8 @@ public interface ApplicationComponent {
   void inject(LiveInviteHeaderAdapterDelegate shortcutInviteHeaderAdapterDelegate);
 
   void inject(LiveInviteSubHeaderAdapterDelegate shortcutInviteSubHeaderAdapterDelegate);
+
+  void inject(ShortcutInviteFullAdapterDelegate shortcutInviteFullAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);

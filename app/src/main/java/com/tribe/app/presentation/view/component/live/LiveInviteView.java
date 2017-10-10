@@ -328,10 +328,14 @@ public class LiveInviteView extends FrameLayout
         recyclerViewInvite.setDrawerOpen(true);
         recyclerViewInvite.post(() -> recyclerViewInvite.smoothScrollToPosition(0));
         viewInviteBottom.showLess();
+        adapter.setFullMode();
+        adapter.notifyDataSetChanged();
       } else if (event == LiveContainer.OPEN_PARTIAL && drawerState != LiveContainer.CLOSED) {
         recyclerViewInvite.setDrawerOpen(false);
         recyclerViewInvite.smoothScrollToPosition(positionOfFirstShortcut);
         viewInviteBottom.showMore();
+        adapter.setPartialMode();
+        adapter.notifyDataSetChanged();
       } else if (event == LiveContainer.CLOSED) {
         recyclerViewInvite.animate()
             .translationX(translationX)

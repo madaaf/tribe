@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="80dp"
     android:background="@null"
+    android:orientation="horizontal"
     >
 
   <com.tribe.app.presentation.view.component.live.TileInviteView
@@ -14,4 +15,11 @@
       android:background="@null"
       />
 
-</FrameLayout>
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      style="@style/Title.Regular.Black"
+      />
+</LinearLayout>
