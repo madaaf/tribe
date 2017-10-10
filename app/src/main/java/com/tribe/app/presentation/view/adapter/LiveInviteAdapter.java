@@ -9,6 +9,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.LiveInviteSubHeader
 import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteFullAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import java.util.ArrayList;
@@ -24,11 +25,14 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
 
   public static final int EMPTY_HEADER_VIEW_TYPE = 99;
   public static final int HEADER_VIEW_TYPE = 98;
+  public static final int SHORTCUT_FULL = 97;
+  public static final int SHORTCUT_PARTIAL = 96;
 
   protected RxAdapterDelegatesManager delegatesManager;
   private UserRoomAdapterDelegate userRoomAdapterDelegate;
   private RoomLinkAdapterDelegate roomLinkAdapterDelegate;
   private ShortcutInviteAdapterDelegate shortcutInviteAdapterDelegate;
+  private ShortcutInviteFullAdapterDelegate shortcutInviteFullAdapterDelegate;
   private ShortcutEmptyInviteAdapterDelegate shortcutEmptyInviteAdapterDelegate;
   private LiveInviteHeaderAdapterDelegate liveInviteHeaderAdapterDelegate;
   private LiveInviteSubHeaderAdapterDelegate liveInviteSubHeaderAdapterDelegate;
@@ -51,8 +55,9 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
     roomLinkAdapterDelegate = new RoomLinkAdapterDelegate(context);
     delegatesManager.addDelegate(roomLinkAdapterDelegate);
 
+    shortcutInviteFullAdapterDelegate = new ShortcutInviteFullAdapterDelegate(context);
     shortcutInviteAdapterDelegate = new ShortcutInviteAdapterDelegate(context);
-    delegatesManager.addDelegate(shortcutInviteAdapterDelegate);
+    delegatesManager.addDelegate(SHORTCUT_PARTIAL, shortcutInviteAdapterDelegate);
 
     shortcutEmptyInviteAdapterDelegate = new ShortcutEmptyInviteAdapterDelegate(context);
     delegatesManager.addDelegate(shortcutEmptyInviteAdapterDelegate);
@@ -113,11 +118,23 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
   }
 
   public void initInviteViewWidthChange(Observable<Integer> obs) {
-    subscriptions.add(obs.subscribe(width -> shortcutInviteAdapterDelegate.updateWidth(width)));
+    subscriptions.add(obs.subscribe(width -> {
+      shortcutInviteAdapterDelegate.updateWidth(width);
+      shortcutInviteFullAdapterDelegate.updateWidth(width);
+    }));
+  }
+
+  public void setFullMode() {
+    delegatesManager.removeDelegate(shortcutInviteAdapterDelegate);
+    delegatesManager.addDelegate(SHORTCUT_FULL, shortcutInviteFullAdapterDelegate);
+  }
+
+  public void setPartialMode() {
+    delegatesManager.removeDelegate(shortcutInviteFullAdapterDelegate);
+    delegatesManager.addDelegate(SHORTCUT_PARTIAL, shortcutInviteAdapterDelegate);
   }
 
   // OBSERVABLES
-
   public Observable<Void> onShareLink() {
     return roomLinkAdapterDelegate.onShareLink();
   }
