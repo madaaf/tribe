@@ -240,7 +240,7 @@ public class ChatView extends ChatMVPView {
             pictoVoiceNote.getHeight()
                 / 2) + screenUtils.dpToPx(3));
         //+ (pictoVoiceNote.getHeight() / 2)
-        voiceNoteBtn.setOnClickListener(view -> onClickVoiceNote());
+        //voiceNoteBtn.setOnClickListener(view -> onClickVoiceNote()); // TODO SOEF
 
         float transX =
             voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (recordingView.getWidth() / 2) - (
