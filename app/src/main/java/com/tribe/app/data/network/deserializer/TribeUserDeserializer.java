@@ -152,7 +152,10 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
         if (!(obj instanceof JsonNull)) {
           ShortcutRealm shortcut = gson.fromJson(obj, ShortcutRealm.class);
           if (category.equals("online")) shortcut.setOnline(true);
-          if (shortcut != null && !shortcutSet.contains(shortcut.getId())) {
+          if (shortcut != null &&
+              !shortcutSet.contains(shortcut.getId()) &&
+              shortcut.getMembers() != null &&
+              shortcut.getMembers().size() > 0) {
             listShortcuts.add(shortcut);
             shortcutSet.add(shortcut.getId());
           }

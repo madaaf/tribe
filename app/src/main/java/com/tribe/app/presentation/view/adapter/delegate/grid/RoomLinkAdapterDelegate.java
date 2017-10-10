@@ -14,7 +14,6 @@ import com.tribe.app.domain.entity.Room;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -53,9 +52,6 @@ public class RoomLinkAdapterDelegate
   @Override
   public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
-    RoomLinkViewHolder vh = (RoomLinkViewHolder) holder;
-    Room room = (Room) items.get(position);
-    vh.txtLink.setText(room.getLink());
   }
 
   @Override public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items,
@@ -65,7 +61,6 @@ public class RoomLinkAdapterDelegate
 
   static class RoomLinkViewHolder extends RecyclerView.ViewHolder {
 
-    @BindView(R.id.txtLink) TextViewFont txtLink;
     @BindView(R.id.btnShare) ImageView btnShare;
 
     public RoomLinkViewHolder(View itemView) {

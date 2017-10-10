@@ -43,6 +43,8 @@ import rx.Observable;
 
   Observable<ShortcutRealm> shortcutForUserIds(String... userIds);
 
+  ShortcutRealm shortcutForUserIdsNoObs(String... userIds);
+
   void removeShortcut(String shortcutId);
 
   void updateShortcut(ShortcutRealm shortcutRealm);

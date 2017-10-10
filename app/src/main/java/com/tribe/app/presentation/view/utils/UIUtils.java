@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.FrameLayout;
 import com.tribe.app.R;
 
 /**
@@ -117,6 +118,12 @@ public class UIUtils {
     ViewGroup.LayoutParams params = v.getLayoutParams();
     params.width = width;
     params.height = height;
+    v.setLayoutParams(params);
+  }
+
+  public static void changeMarginOfView(View v, int margin) {
+    FrameLayout.MarginLayoutParams params = (FrameLayout.MarginLayoutParams) v.getLayoutParams();
+    params.setMargins(margin, margin, margin, margin);
     v.setLayoutParams(params);
   }
 

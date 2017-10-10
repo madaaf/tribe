@@ -228,6 +228,17 @@ public class UserCacheImpl implements UserCache {
         .unsubscribeOn(AndroidSchedulers.mainThread());
   }
 
+  @Override public ShortcutRealm shortcutForUserIdsNoObs(String... userIds) {
+    Realm otherRealm = Realm.getDefaultInstance();
+    ShortcutRealm shortcutRealm =
+        otherRealm.where(ShortcutRealm.class).in("members.id", userIds).findFirst();
+    if (shortcutRealm != null) {
+      return otherRealm.copyFromRealm(shortcutRealm);
+    } else {
+      return null;
+    }
+  }
+
   @Override public void removeShortcut(String shortcutId) {
     Realm otherRealm = Realm.getDefaultInstance();
     try {

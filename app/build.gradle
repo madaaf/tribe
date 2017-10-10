@@ -244,6 +244,7 @@ dependencies {
   compile presentationDependencies.instacapture
   compile presentationDependencies.jodatime
   compile "me.leolin:ShortcutBadger:1.1.18@aar"
+  compile presentationDependencies.constraintLayout
 
   //androidTestCompile presentationTestDependencies.mockito
   //androidTestCompile presentationTestDependencies.dexmaker

@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.View;
-import com.tribe.app.presentation.view.adapter.LiveInviteAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 
 public class InviteListDividerDecoration extends RecyclerView.ItemDecoration {
@@ -37,9 +36,7 @@ public class InviteListDividerDecoration extends RecyclerView.ItemDecoration {
 
   private boolean hasDividerOnBottom(View view, RecyclerView parent, RecyclerView.State state) {
     int position = ((RecyclerView.LayoutParams) view.getLayoutParams()).getViewAdapterPosition();
-    return position < state.getItemCount() - 1 &&
-        sectionCallback.isSection(position + 1) &&
-        parent.getAdapter().getItemViewType(position) != LiveInviteAdapter.EMPTY_HEADER_VIEW_TYPE;
+    return position < state.getItemCount() - 1 && sectionCallback.isSection(position);
   }
 
   @Override public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {

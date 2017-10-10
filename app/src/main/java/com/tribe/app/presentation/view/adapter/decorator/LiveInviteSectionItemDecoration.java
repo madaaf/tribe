@@ -28,10 +28,6 @@ public class LiveInviteSectionItemDecoration extends BaseSectionItemDecoration {
         txtLabel.setText(R.string.live_invite_section_chat_members);
         break;
 
-      case LIVE_INVITE_LINK:
-        txtLabel.setText(R.string.live_invite_section_invite_link);
-        break;
-
       case LIVE_ADD_FRIENDS_IN_CALL:
         txtLabel.setText(R.string.live_invite_section_add_friends);
         break;

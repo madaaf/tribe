@@ -89,6 +89,10 @@
     <item name="android:textColor">@android:color/black</item>
   </style>
 
+  <style name="Body.Two.BlackRecent" parent="@style/Body.Two">
+    <item name="android:textColor">@color/black.dark.blue</item>
+  </style>
+
   <style name="Body.Two.Black40" parent="@style/Body.Two">
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>

@@ -80,7 +80,11 @@ import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdap
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.LiveInviteHeaderAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.LiveInviteSubHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyInviteAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.VisualizerView;
@@ -90,10 +94,12 @@ import com.tribe.app.presentation.view.component.home.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.TopBarLogoView;
 import com.tribe.app.presentation.view.component.home.TopBarView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
+import com.tribe.app.presentation.view.component.live.LiveInviteBottomView;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.LiveViewFake;
+import com.tribe.app.presentation.view.component.live.TileInviteView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
 import com.tribe.app.presentation.view.utils.ImageUtils;
@@ -226,6 +232,18 @@ public interface ApplicationComponent {
   void inject(ContactToInviteAdapterDelegate contactToInviteAdapterDelegate);
 
   void inject(EmptyContactAdapterDelegate emptyContactAdapterDelegate);
+
+  void inject(ShortcutInviteAdapterDelegate shortcutInviteAdapterDelegate);
+
+  void inject(ShortcutEmptyInviteAdapterDelegate shortcutEmptyInviteAdapterDelegate);
+
+  void inject(TileInviteView tileInviteView);
+
+  void inject(LiveInviteBottomView liveInviteBottomView);
+
+  void inject(LiveInviteHeaderAdapterDelegate shortcutInviteHeaderAdapterDelegate);
+
+  void inject(LiveInviteSubHeaderAdapterDelegate shortcutInviteSubHeaderAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);

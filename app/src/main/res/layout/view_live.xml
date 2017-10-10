@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
+  <com.tribe.app.presentation.view.component.live.LiveInviteView
+      android:id="@+id/viewLiveInvite"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="end"
+      android:visibility="visible"
+      />
+
+  <View
+      android:id="@+id/viewShadow"
+      android:layout_width="10dp"
+      android:layout_height="match_parent"
+      android:layout_gravity="end"
+      android:layout_marginEnd="-10dp"
+      android:background="@drawable/shadow_right"
+      />
+
   <com.tribe.app.presentation.view.component.live.LiveRoomView
       android:id="@+id/viewRoom"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:animateLayoutChanges="true"
+      android:visibility="visible"
       >
 
   </com.tribe.app.presentation.view.component.live.LiveRoomView>
@@ -23,14 +41,6 @@
       android:layout_height="match_parent"
       android:alpha="0"
       android:background="@color/black.opacity.70"
-      />
-
-  <com.tribe.app.presentation.view.component.live.LiveInviteView
-      android:id="@+id/viewLiveInvite"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_marginTop="60dp"
-      android:visibility="gone"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
@@ -65,7 +75,6 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       />
-
 
 
 </merge>

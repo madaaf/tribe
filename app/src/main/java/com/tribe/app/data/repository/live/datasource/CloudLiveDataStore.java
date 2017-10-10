@@ -4,23 +4,29 @@ import android.content.Context;
 import android.util.Pair;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.LiveCache;
+import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.util.List;
+import java.util.Map;
 import rx.Observable;
 
 public class CloudLiveDataStore implements LiveDataStore {
 
   private final TribeApi tribeApi;
   private final Context context;
-  private final LiveCache liveCache;
+  private LiveCache liveCache;
+  private UserCache userCache;
 
-  public CloudLiveDataStore(Context context, TribeApi tribeApi, LiveCache liveCache) {
+  public CloudLiveDataStore(Context context, TribeApi tribeApi, LiveCache liveCache,
+      UserCache userCache) {
     this.context = context;
     this.tribeApi = tribeApi;
     this.liveCache = liveCache;
+    this.userCache = userCache;
   }
 
   @Override public Observable<Room> getRoom(Live live) {
@@ -38,7 +44,7 @@ public class CloudLiveDataStore implements LiveDataStore {
         "\n" +
         context.getString(R.string.userfragment_infos_light);
 
-    return this.tribeApi.room(request);
+    return this.tribeApi.room(request).compose(onlineLiveTransformer);
   }
 
   @Override public Observable<Room> createRoom(String name, String[] userIds) {
@@ -62,7 +68,7 @@ public class CloudLiveDataStore implements LiveDataStore {
         "\n" +
         context.getString(R.string.userfragment_infos_light);
 
-    return this.tribeApi.createRoom(request);
+    return this.tribeApi.createRoom(request).compose(onlineLiveTransformer);
   }
 
   @Override public Observable<Room> updateRoom(String roomId, List<Pair<String, String>> values) {
@@ -89,7 +95,7 @@ public class CloudLiveDataStore implements LiveDataStore {
         "\n" +
         context.getString(R.string.userfragment_infos_light);
 
-    return this.tribeApi.updateRoom(request);
+    return this.tribeApi.updateRoom(request).compose(onlineLiveTransformer);
   }
 
   @Override public Observable<Void> deleteRoom(String roomId) {
@@ -130,4 +136,23 @@ public class CloudLiveDataStore implements LiveDataStore {
   @Override public Observable<String> randomRoomAssigned() {
     return null;
   }
+
+  private Observable.Transformer<Room, Room> onlineLiveTransformer =
+      roomObservable -> roomObservable.map(room -> {
+        Map<String, Boolean> onlineMap = liveCache.getOnlineMap();
+
+        if (room.getLiveUsers() != null) {
+          for (User user : room.getLiveUsers()) {
+            user.setIsOnline(onlineMap.containsKey(user.getId()));
+          }
+        }
+
+        if (room.getInvitedUsers() != null) {
+          for (User user : room.getInvitedUsers()) {
+            user.setIsOnline(onlineMap.containsKey(user.getId()));
+          }
+        }
+
+        return room;
+      });
 }

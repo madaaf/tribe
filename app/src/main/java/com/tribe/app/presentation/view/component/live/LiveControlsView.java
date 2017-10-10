@@ -58,6 +58,7 @@ public class LiveControlsView extends FrameLayout {
   private static final int MAX_DURATION_LAYOUT_CONTROLS = 5;
   private static final int DURATION_GAMES_FILTERS = 300;
   private static final int DURATION_PARAM = 450;
+  private static final int DURATION_NAME = 200;
   private static final float OVERSHOOT_LIGHT = 0.45f;
 
   @Inject ScreenUtils screenUtils;
@@ -99,8 +100,6 @@ public class LiveControlsView extends FrameLayout {
   @BindView(R.id.btnChat) LiveChatButton btnChat;
 
   @BindView(R.id.viewStatusName) LiveStatusNameView viewStatusName;
-
-  @BindView(R.id.btnEdit) ImageView btnEdit;
 
   @BindViews({
       R.id.btnExpand, R.id.layoutGame
@@ -147,6 +146,7 @@ public class LiveControlsView extends FrameLayout {
   private GamesFiltersAdapter gamesAdapter;
   private int[] btnFilterLocation;
   private ImageView currentGameView;
+  private @LiveContainer.Event int drawerState = LiveContainer.CLOSED;
 
   // RESOURCES
   private int sizeGameFilter;
@@ -164,7 +164,6 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
   private PublishSubject<Game> onGameOptions = PublishSubject.create();
   private PublishSubject<View> onGameUIActive = PublishSubject.create();
-  private PublishSubject<Void> onEdit = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -215,6 +214,7 @@ public class LiveControlsView extends FrameLayout {
     setBackground(null);
     initResources();
     initUI();
+    initSubscriptions();
     initFilters();
     initGames();
   }
@@ -234,8 +234,10 @@ public class LiveControlsView extends FrameLayout {
             btnFilterOff.getLocationInWindow(btnFilterLocation);
           }
         });
+  }
 
-    btnEdit.setTranslationY(-screenUtils.getHeightPx() >> 1);
+  private void initSubscriptions() {
+
   }
 
   private void initFilters() {
@@ -664,10 +666,6 @@ public class LiveControlsView extends FrameLayout {
   //  ONCLICK  //
   ///////////////
 
-  @OnClick(R.id.btnEdit) void clickEdit() {
-    onEdit.onNext(null);
-  }
-
   @OnClick(R.id.btnLeave) void clickLeave() {
     onLeave.onNext(null);
   }
@@ -756,6 +754,19 @@ public class LiveControlsView extends FrameLayout {
   //////////////
   //  PUBLIC  //
   //////////////
+
+  public void initDrawerEventChangeObservable(Observable<Integer> onEventChange) {
+    subscriptions.add(onEventChange.subscribe(event -> {
+      if (drawerState == LiveContainer.CLOSED && event != LiveContainer.CLOSED) {
+        drawerState = event;
+        viewStatusName.openView();
+      } else if (drawerState == LiveContainer.OPEN_PARTIAL && event == LiveContainer.CLOSED) {
+        drawerState = event;
+        viewStatusName.closeView();
+      }
+    }));
+  }
+
   public ImageView getCurrentGameView() {
     return currentGameView;
   }
@@ -845,6 +856,34 @@ public class LiveControlsView extends FrameLayout {
     return onGameUIActive;
   }
 
+  public Observable<Boolean> onOpenInvite() {
+    return viewStatusName.onOpenView().doOnNext(aBoolean -> {
+      invitesMenuOn = true;
+      showMenuTop(viewToHideTopInvites);
+
+      int width = viewStatusName.getNewWidth();
+
+      viewStatusName.animate()
+          .translationX((screenUtils.getWidthPx() >> 1) - (width >> 1) - screenUtils.dpToPx(15))
+          .setDuration(DURATION_NAME)
+          .setInterpolator(new DecelerateInterpolator())
+          .start();
+    }).filter(aBoolean -> drawerState == LiveContainer.CLOSED);
+  }
+
+  public Observable<Boolean> onCloseInvite() {
+    return viewStatusName.onCloseView().doOnNext(aBoolean -> {
+      invitesMenuOn = false;
+      closeMenuTop(viewToHideTopInvites);
+
+      viewStatusName.animate()
+          .translationX(0)
+          .setDuration(DURATION_NAME)
+          .setInterpolator(new DecelerateInterpolator())
+          .start();
+    }).filter(aBoolean -> drawerState == LiveContainer.OPEN_PARTIAL);
+  }
+
   public Observable<Boolean> onOpenChat() {
     return btnChat.onOpenChat().doOnNext(aBoolean -> {
       chatMenuOn = true;
@@ -857,25 +896,5 @@ public class LiveControlsView extends FrameLayout {
       chatMenuOn = false;
       closeMenuTop(viewToHideTopChat);
     });
-  }
-
-  public Observable<Boolean> onOpenInvite() {
-    return viewStatusName.onOpenView().doOnNext(aBoolean -> {
-      invitesMenuOn = true;
-      showView(btnEdit);
-      showMenuTop(viewToHideTopInvites);
-    });
-  }
-
-  public Observable<Boolean> onCloseInvite() {
-    return viewStatusName.onCloseView().doOnNext(aBoolean -> {
-      invitesMenuOn = false;
-      hideView(btnEdit, true);
-      closeMenuTop(viewToHideTopInvites);
-    });
-  }
-
-  public Observable<Void> onEdit() {
-    return onEdit;
   }
 }

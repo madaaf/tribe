@@ -7,9 +7,9 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
@@ -22,7 +22,7 @@ import javax.inject.Inject;
 /**
  * Created by tiago on 17/02/2016.
  */
-public class NewAvatarView extends RelativeLayout implements Avatar {
+public class NewAvatarView extends LinearLayout implements Avatar {
 
   @IntDef({ LIVE, ONLINE, NORMAL }) public @interface AvatarType {
   }
@@ -34,14 +34,16 @@ public class NewAvatarView extends RelativeLayout implements Avatar {
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.viewAvatar) AvatarView avatar;
-  @BindView(R.id.viewRing) View viewRing;
 
   // VARIABLES
   private int type;
   private GradientDrawable gradientDrawable;
+  private int strokeColor = 0;
+  private boolean wasWidthUpdated = false;
 
   // RESOURCES
-  private int strokeWidth;
+  private int strokeWidth, maxStrokeWidth;
+  private int padding;
 
   public NewAvatarView(Context context) {
     this(context, null);
@@ -71,12 +73,45 @@ public class NewAvatarView extends RelativeLayout implements Avatar {
     setWillNotDraw(false);
     a.recycle();
 
-    setBackground(null);
+    setGravity(Gravity.CENTER);
+    updateGraphicConstraints(strokeWidth);
   }
 
   private void initResources() {
     strokeWidth = screenUtils.dpToPx(3);
+    maxStrokeWidth = screenUtils.dpToPx(4);
+    padding = screenUtils.dpToPx(5);
   }
+
+  private void updateStrokeWidth(int width) {
+    int tempStrokeWidth = Math.min((int) (width * 0.1f), maxStrokeWidth);
+    padding = (int) (2f * tempStrokeWidth);
+    updateGraphicConstraints(tempStrokeWidth);
+  }
+
+  private void updateGraphicConstraints(int strokeWidth) {
+    if (this.strokeWidth == strokeWidth) return;
+    this.strokeWidth = strokeWidth;
+    gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(getContext(), strokeColor));
+    setBackground(gradientDrawable);
+    setPadding(padding, padding, padding, padding);
+    post(() -> requestLayout());
+  }
+
+  @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    if (wasWidthUpdated) return;
+    int widthSize = getMeasuredWidth();
+    int heightSize = getMeasuredHeight();
+
+    if (widthSize == 0 || heightSize == 0) return;
+
+    updateStrokeWidth(widthSize);
+  }
+
+  /**
+   * PUBLIC
+   */
 
   @Override public void load(Recipient recipient) {
     avatar.load(recipient);
@@ -107,15 +142,21 @@ public class NewAvatarView extends RelativeLayout implements Avatar {
     }
 
     if (type == LIVE) {
-      gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(getContext(), R.color.red));
+      strokeColor = R.color.red;
+      gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(getContext(), strokeColor));
     } else if (type == ONLINE) {
-      gradientDrawable.setStroke(strokeWidth,
-          ContextCompat.getColor(getContext(), R.color.blue_new));
+      strokeColor = R.color.blue_new;
+      gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(getContext(), strokeColor));
     } else {
-      gradientDrawable.setStroke(strokeWidth,
-          ContextCompat.getColor(getContext(), R.color.grey_offline));
+      strokeColor = R.color.grey_offline;
+      gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(getContext(), strokeColor));
     }
 
-    viewRing.setBackground(gradientDrawable);
+    setBackground(gradientDrawable);
+  }
+
+  public void updateWidth(int width) {
+    wasWidthUpdated = true;
+    updateStrokeWidth(width);
   }
 }

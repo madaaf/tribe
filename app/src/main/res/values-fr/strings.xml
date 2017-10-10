@@ -661,6 +661,8 @@
 	<string name="game_draw_timer_instructions">Prochain dans :hourglass:</string>
 	<string name="game_draw_clear">Effacer</string>
 	<string name="game_draw_instructions_my_turn">A ton tour de dessiner</string>
+	<string name="game_aliens_attack">Aliens Attack</string>
+	<string name="game_aliens_attack_lets_go">Let\'s go!</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>
@@ -784,4 +786,6 @@
 	<string name="chat_placeholder_message">Message</string>
 	<string name="chat_placeholder_tap_and_hold">Appui long!</string>
 	<string name="chat_placeholder_slide_to_cancel">Slide pour annuler</string>
+	<string name="chat_seen_by">Vu par %1$s</string>
+	<string name="chat_not_seen">Pas encore vu</string>
 </resources>

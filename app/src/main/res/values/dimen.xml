@@ -71,6 +71,8 @@
   <!-- WIDTHS -->
   <dimen name="live_invite_view_width">106dp</dimen>
   <dimen name="live_room_view_dropped_bar_height">30dp</dimen>
+  <dimen name="live_invite_bottom_arrow_width_small">16dp</dimen>
+  <dimen name="live_invite_bottom_arrow_width_large">26dp</dimen>
 
   <!-- SIZES -->
   <dimen name="avatar_size_big">80dp</dimen>

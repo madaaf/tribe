@@ -142,9 +142,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     }
 
     @Override public void onNext(List<Shortcut> contactList) {
-      if (contactList != null && contactList.size() > 0) {
-        searchView.renderContactList(contactList);
-      }
+      searchView.renderContactList(contactList);
     }
   }
 

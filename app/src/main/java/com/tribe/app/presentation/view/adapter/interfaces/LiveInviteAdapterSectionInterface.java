@@ -14,5 +14,5 @@ public interface LiveInviteAdapterSectionInterface {
 
   String getCurrentRoomId();
 
-  @BaseSectionItemDecoration.HeaderType int getSectionType();
+  @BaseSectionItemDecoration.HeaderType int getLiveInviteSectionType();
 }

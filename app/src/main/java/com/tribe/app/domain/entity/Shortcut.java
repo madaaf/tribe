@@ -2,6 +2,8 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
+import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.io.Serializable;
@@ -13,7 +15,7 @@ import java.util.Map;
 /**
  * Created by tiago on 09/10/2017.
  */
-public class Shortcut extends Recipient implements Serializable {
+public class Shortcut extends Recipient implements Serializable, LiveInviteAdapterSectionInterface {
 
   private static final int NB_MAX_USERS_STRING = 3;
 
@@ -76,6 +78,22 @@ public class Shortcut extends Recipient implements Serializable {
 
   public boolean isOnline() {
     return online;
+  }
+
+  @Override public boolean isRinging() {
+    return false;
+  }
+
+  @Override public boolean isWaiting() {
+    return false;
+  }
+
+  @Override public String getCurrentRoomId() {
+    return null;
+  }
+
+  @Override public int getLiveInviteSectionType() {
+    return BaseSectionItemDecoration.LIVE_ADD_FRIENDS_IN_CALL;
   }
 
   @Override public Date getLastSeenAt() {
