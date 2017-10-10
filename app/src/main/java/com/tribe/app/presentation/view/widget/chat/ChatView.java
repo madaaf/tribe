@@ -236,12 +236,16 @@ public class ChatView extends ChatMVPView {
         pictoVoiceNote.setTranslationX(
             voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
 
-        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (pictoVoiceNote.getHeight()/2));
+        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (
+            pictoVoiceNote.getHeight()
+                / 2) + screenUtils.dpToPx(3));
         //+ (pictoVoiceNote.getHeight() / 2)
         voiceNoteBtn.setOnClickListener(view -> onClickVoiceNote());
 
         float transX =
-            voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (recordingView.getWidth() / 2);
+            voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (recordingView.getWidth() / 2) - (
+                screenUtils.getWidthPx()
+                    / 2);
 
         recordingView.setTranslationX(transX);
         recordingView.setTranslationY(recordingView.getHeight());
@@ -577,6 +581,19 @@ public class ChatView extends ChatMVPView {
             a.setParams(editText.getWidth(), LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT);
             editText.startAnimation(a);
+          }
+        });
+
+    recordingView.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            recordingView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            ResizeAnimation a = new ResizeAnimation(recordingView);
+            a.setDuration(5000);
+            a.setInterpolator(new LinearInterpolator());
+            a.setParams(recordingView.getWidth(), screenUtils.getWidthPx() - 100,
+                recordingView.getHeight(), recordingView.getHeight());
+            recordingView.startAnimation(a);
           }
         });
   }
