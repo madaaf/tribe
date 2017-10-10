@@ -58,7 +58,7 @@ public class LiveControlsView extends FrameLayout {
   private static final int MAX_DURATION_LAYOUT_CONTROLS = 5;
   private static final int DURATION_GAMES_FILTERS = 300;
   private static final int DURATION_PARAM = 450;
-  private static final int DURATION_NAME = 150;
+  private static final int DURATION_NAME = 200;
   private static final float OVERSHOOT_LIGHT = 0.45f;
 
   @Inject ScreenUtils screenUtils;
@@ -758,12 +758,12 @@ public class LiveControlsView extends FrameLayout {
   public void initDrawerEventChangeObservable(Observable<Integer> onEventChange) {
     subscriptions.add(onEventChange.subscribe(event -> {
       if (drawerState == LiveContainer.CLOSED && event != LiveContainer.CLOSED) {
-        viewStatusName.openView(false);
+        drawerState = event;
+        viewStatusName.openView();
       } else if (drawerState == LiveContainer.OPEN_PARTIAL && event == LiveContainer.CLOSED) {
-        viewStatusName.closeView(false);
+        drawerState = event;
+        viewStatusName.closeView();
       }
-
-      drawerState = event;
     }));
   }
 
@@ -861,11 +861,10 @@ public class LiveControlsView extends FrameLayout {
       invitesMenuOn = true;
       showMenuTop(viewToHideTopInvites);
 
-      int[] location = new int[2];
-      viewStatusName.getLocationInWindow(location);
+      int width = viewStatusName.getNewWidth();
 
       viewStatusName.animate()
-          .translationX(screenUtils.getWidthPx() - location[0] - viewStatusName.getWidth())
+          .translationX((screenUtils.getWidthPx() >> 1) - (width >> 1) - screenUtils.dpToPx(15))
           .setDuration(DURATION_NAME)
           .setInterpolator(new DecelerateInterpolator())
           .start();

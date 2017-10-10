@@ -661,6 +661,8 @@
 	<string name="game_draw_timer_instructions">Next in :hourglass:</string>
 	<string name="game_draw_clear">Clear</string>
 	<string name="game_draw_instructions_my_turn">Your turn to draw!</string>
+	<string name="game_aliens_attack">Aliens Attack</string>
+	<string name="game_aliens_attack_lets_go">Let\'s go!</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>

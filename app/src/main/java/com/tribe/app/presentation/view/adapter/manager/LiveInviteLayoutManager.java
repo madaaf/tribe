@@ -50,7 +50,7 @@ public class LiveInviteLayoutManager extends LinearLayoutManager {
     }
 
     @Override protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
-      return 65f / displayMetrics.densityDpi;
+      return 50f / displayMetrics.densityDpi;
     }
   }
 }

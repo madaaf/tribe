@@ -38,6 +38,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   private transient ObservableRxHashMap<String, User> liveUsersMap;
   private transient ObservableRxHashMap<String, User> invitedUsersMap;
   private Set<String> waitingIds;
+  private Shortcut shortcut;
 
   private transient CompositeSubscription subscriptions = new CompositeSubscription();
   private transient PublishSubject<User> onAddedInvitedUser = PublishSubject.create();
@@ -177,6 +178,14 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
 
   public void setUpdated_at(Date updatedAt) {
     this.updated_at = updatedAt;
+  }
+
+  public void setShortcut(Shortcut shortcut) {
+    this.shortcut = shortcut;
+  }
+
+  public Shortcut getShortcut() {
+    return shortcut;
   }
 
   public String getUserNames() {

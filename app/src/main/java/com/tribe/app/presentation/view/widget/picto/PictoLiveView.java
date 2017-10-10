@@ -80,7 +80,7 @@ public class PictoLiveView extends FrameLayout {
       layoutPulse.stop();
     } else {
       imgLive.setImageResource(R.drawable.picto_live_active);
-      //layoutPulse.start();
+      layoutPulse.start();
     }
   }
 }

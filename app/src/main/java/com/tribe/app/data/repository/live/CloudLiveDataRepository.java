@@ -1,8 +1,10 @@
 package com.tribe.app.data.repository.live;
 
 import android.util.Pair;
+import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.live.datasource.CloudLiveDataStore;
 import com.tribe.app.data.repository.live.datasource.LiveDataStoreFactory;
+import com.tribe.app.data.repository.user.datasource.DiskUserDataStore;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.interactor.live.LiveRepository;
@@ -14,27 +16,32 @@ import rx.Observable;
 @Singleton public class CloudLiveDataRepository implements LiveRepository {
 
   private final LiveDataStoreFactory dataStoreFactory;
+  private UserRealmDataMapper userRealmDataMapper;
+  private DiskUserDataStore diskUserDataStore = null;
 
-  @Inject public CloudLiveDataRepository(LiveDataStoreFactory dataStoreFactory) {
+  @Inject public CloudLiveDataRepository(LiveDataStoreFactory dataStoreFactory,
+      UserRealmDataMapper userRealmDataMapper) {
     this.dataStoreFactory = dataStoreFactory;
+    this.diskUserDataStore = dataStoreFactory.createDiskUserDataStore();
+    this.userRealmDataMapper = userRealmDataMapper;
   }
 
   @Override public Observable<Room> getRoom(Live live) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.getRoom(live);
+    return cloudDataStore.getRoom(live).compose(roomWithShortcutTransformer);
   }
 
   @Override public Observable<Room> createRoom(String name, String... userIds) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.createRoom(name, userIds);
+    return cloudDataStore.createRoom(name, userIds).compose(roomWithShortcutTransformer);
   }
 
   @Override public Observable<Room> updateRoom(String roomId, List<Pair<String, String>> pairList) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.updateRoom(roomId, pairList);
+    return cloudDataStore.updateRoom(roomId, pairList).compose(roomWithShortcutTransformer);
   }
 
   @Override public Observable<Void> deleteRoom(String roomId) {
@@ -74,4 +81,14 @@ import rx.Observable;
   @Override public Observable<Room> getRoomUpdated() {
     return null;
   }
+
+  private Observable.Transformer<Room, Room> roomWithShortcutTransformer =
+      roomObservable -> roomObservable.flatMap(room -> {
+        List<String> userIds = room.getUserIds();
+        return diskUserDataStore.shortcutForUserIdsNoObs(
+            userIds.toArray(new String[userIds.size()]));
+      }, (room, shortcutRealm) -> {
+        room.setShortcut(userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealm));
+        return room;
+      });
 }

@@ -397,10 +397,6 @@ public class LiveActivity extends BaseActivity
 
         initSubscriptions();
 
-        if (live.getUserIds() != null && live.getUserIds().size() > 0) {
-          livePresenter.shortcutForUserIds(live.getUserIds());
-        }
-
         if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) launchCallRoulette();
 
         viewLive.start(live);
@@ -880,8 +876,8 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
-        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE &&
+        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -985,8 +981,8 @@ public class LiveActivity extends BaseActivity
       }
     }
 
-    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty())
-        && peopleInLive.size() > 1) {
+    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty()) &&
+        peopleInLive.size() > 1) {
       liveIsInvite = false;
       usersIdsInvitedInLiveRoom.clear();
       activeUersIdsInvitedInLiveRoom.clear();
@@ -1170,9 +1166,9 @@ public class LiveActivity extends BaseActivity
     live.setRoom(room);
     viewLive.joinRoom(this.room);
 
-    if (!StringUtils.isEmpty(live.getRoomId())
-        && !StringUtils.isEmpty(room.getName())
-        && !room.getInitiator().getId().equals(getCurrentUser().getId())) {
+    if (!StringUtils.isEmpty(live.getRoomId()) &&
+        !StringUtils.isEmpty(room.getName()) &&
+        !room.getInitiator().getId().equals(getCurrentUser().getId())) {
       NotificationPayload notificationPayload = new NotificationPayload();
       notificationPayload.setBody(EmojiParser.demojizedText(
           getString(R.string.live_notification_initiator_has_been_notified,

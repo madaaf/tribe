@@ -82,6 +82,8 @@ public class Live implements Serializable {
       this.room.onRoomUpdated().subscribe(onRoomUpdated);
     }
 
+    if (room.getShortcut() != null) setShortcut(room.getShortcut());
+
     setUsers(room.getLiveUsers());
   }
 

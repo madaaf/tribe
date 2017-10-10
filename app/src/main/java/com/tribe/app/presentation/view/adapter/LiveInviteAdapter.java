@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 import com.tribe.app.presentation.view.adapter.delegate.EmptyHeaderInviteAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.LiveInviteHeaderAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.LiveInviteSubHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteAdapterDelegate;
@@ -21,12 +23,15 @@ import rx.subscriptions.CompositeSubscription;
 public class LiveInviteAdapter extends RecyclerView.Adapter {
 
   public static final int EMPTY_HEADER_VIEW_TYPE = 99;
+  public static final int HEADER_VIEW_TYPE = 98;
 
   protected RxAdapterDelegatesManager delegatesManager;
   private UserRoomAdapterDelegate userRoomAdapterDelegate;
   private RoomLinkAdapterDelegate roomLinkAdapterDelegate;
   private ShortcutInviteAdapterDelegate shortcutInviteAdapterDelegate;
   private ShortcutEmptyInviteAdapterDelegate shortcutEmptyInviteAdapterDelegate;
+  private LiveInviteHeaderAdapterDelegate liveInviteHeaderAdapterDelegate;
+  private LiveInviteSubHeaderAdapterDelegate liveInviteSubHeaderAdapterDelegate;
 
   // VARIABLES
   private List<LiveInviteAdapterSectionInterface> items;
@@ -51,6 +56,12 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
 
     shortcutEmptyInviteAdapterDelegate = new ShortcutEmptyInviteAdapterDelegate(context);
     delegatesManager.addDelegate(shortcutEmptyInviteAdapterDelegate);
+
+    liveInviteHeaderAdapterDelegate = new LiveInviteHeaderAdapterDelegate(context);
+    delegatesManager.addDelegate(HEADER_VIEW_TYPE, liveInviteHeaderAdapterDelegate);
+
+    liveInviteSubHeaderAdapterDelegate = new LiveInviteSubHeaderAdapterDelegate(context);
+    delegatesManager.addDelegate(liveInviteSubHeaderAdapterDelegate);
 
     items = new ArrayList<>();
 

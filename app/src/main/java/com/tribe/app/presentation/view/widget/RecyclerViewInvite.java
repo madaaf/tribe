@@ -69,7 +69,6 @@ public class RecyclerViewInvite extends RecyclerView {
 
     if (liveInviteLayoutManager.findFirstVisibleItemPosition() == positionToBlock &&
         topOfView == 0) {
-      Timber.d("Should care true");
       shouldCare = true;
     }
 
@@ -80,12 +79,11 @@ public class RecyclerViewInvite extends RecyclerView {
         scrollDirection = UP;
 
         if (shouldCare) {
-          Timber.d("Scroll enabled false");
           liveInviteLayoutManager.setScrollEnabled(false);
+          stopScroll();
           return true;
         }
       } else if (this.y > y) {
-        Timber.d("Scroll enabled true");
         scrollDirection = DOWN;
         liveInviteLayoutManager.setScrollEnabled(true);
       }

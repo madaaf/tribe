@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.component.live;
 
+import android.animation.Animator;
 import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.Context;
@@ -24,6 +25,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
@@ -116,9 +118,9 @@ public class LiveStatusNameView extends FrameLayout {
 
   @OnClick(R.id.txtName) void clickOpenView() {
     if (active) {
-      closeView(true);
+      closeView();
     } else {
-      openView(true);
+      openView();
     }
   }
 
@@ -140,7 +142,12 @@ public class LiveStatusNameView extends FrameLayout {
   //  PUBLIC  //
   //////////////
 
-  public void openView(boolean shouldNotify) {
+  public int getNewWidth() {
+    txtName.measure(0, 0);
+    return txtName.getMeasuredWidth() + screenUtils.dpToPx(15 * 2);
+  }
+
+  public void openView() {
     if (active) return;
 
     active = true;
@@ -155,7 +162,7 @@ public class LiveStatusNameView extends FrameLayout {
     onOpenView.onNext(active);
   }
 
-  public void closeView(boolean shouldNotify) {
+  public void closeView() {
     if (!active) return;
 
     active = false;
