@@ -9,6 +9,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -106,7 +107,9 @@ public class PulseLayout extends RelativeLayout {
       return;
     }
 
-    animatorSet.start();
+    if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
+      animatorSet.start();
+    }
   }
 
   /**
