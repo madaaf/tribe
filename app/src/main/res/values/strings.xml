@@ -403,7 +403,7 @@
 	<string name="live_members_ringing">Ringing</string>
 	<string name="live_members_waiting">Waiting</string>
 	<string name="live_members_add_friends">Add friends</string>
-	<string name="live_other_user_hung_up">We re-invited %1$s automatically</string>
+	<string name="live_other_user_hung_up">%1$s\'s been notified to come back</string>
 	<string name="live_members_menu_more">More</string>
 	<string name="live_members_menu_less">Less</string>
 	<string name="live_members_menu_added">Added</string>
@@ -787,5 +787,5 @@
 	<string name="chat_placeholder_tap_and_hold">Tap and Hold!</string>
 	<string name="chat_placeholder_slide_to_cancel">Slide to cancel</string>
 	<string name="chat_seen_by">Seen by %1$s</string>
-	<string name="chat_not_seen">Not seen yet</string>
+	<string name="chat_not_seen">Unseen</string>
 </resources>

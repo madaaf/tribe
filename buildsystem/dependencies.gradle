@@ -73,6 +73,7 @@ ext {
   jodatimeVersion = '2.9.9'
   shortcutBadgerVersion = '1.1.18@aar'
   constraintLayoutVersion = '1.0.2'
+  loadingIndicatorVersion = '2.1.3'
 
   //Testing
   robolectricVersion = '3.0'
@@ -149,7 +150,9 @@ ext {
                               googleVision            : "com.google.android.gms:play-services-vision:${googlePlayVisionVersion}",
                               jodatime                : "net.danlew:android.joda:${jodatimeVersion}",
                               shortcutBadget          : "me.leolin:shortcutbadger:${shortcutBadgerVersion}",
-                              constraintLayout        : "com.android.support.constraint:constraint-layout:${constraintLayoutVersion}"]
+                              constraintLayout        : "com.android.support.constraint:constraint-layout:${constraintLayoutVersion}",
+                              AVLoadingIndicatorView  : "com.wang.avi:library:${loadingIndicatorVersion}"
+  ]
 
 
   presentationTestDependencies = [mockito           : "org.mockito:mockito-core:${mockitoVersion}",

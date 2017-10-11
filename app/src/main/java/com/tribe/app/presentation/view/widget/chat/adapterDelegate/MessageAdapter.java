@@ -25,6 +25,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
   private MessageTextAdapterDelegate messageTextAdapterDelegate;
   private MessageImageAdapterDelegate messageImageAdapterDelegate;
   private MessageEventAdapterDelegate messageEventAdapterDelegate;
+  private MessageAudioAdapterDelegate messageAudioAdapterDelegate;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -42,6 +43,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     messageImageAdapterDelegate = new MessageImageAdapterDelegate(context, type);
     delegatesManager.addDelegate(messageImageAdapterDelegate);
+
+    messageAudioAdapterDelegate = new MessageAudioAdapterDelegate(context, type);
+    delegatesManager.addDelegate(messageAudioAdapterDelegate);
 
     items = new ArrayList<>();
   }

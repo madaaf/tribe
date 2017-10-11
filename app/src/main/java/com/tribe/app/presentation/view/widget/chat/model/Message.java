@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 public class Message implements Serializable {
 
-  @StringDef({ MESSAGE_TEXT, MESSAGE_EMOJI, MESSAGE_IMAGE, MESSAGE_EVENT }) public @interface Type {
+  @StringDef({ MESSAGE_TEXT, MESSAGE_EMOJI, MESSAGE_IMAGE, MESSAGE_EVENT, MESSAGE_AUDIO }) public @interface Type {
   }
 
   public static final String PENDING = "PENDING";
@@ -19,6 +19,7 @@ public class Message implements Serializable {
   public static final String MESSAGE_EMOJI = "EmojiMessage";
   public static final String MESSAGE_IMAGE = "ImageMessage";
   public static final String MESSAGE_EVENT = "EventMessage";
+  public static final String MESSAGE_AUDIO = "AudioMessage";
 
   private User author;
   private String id;
