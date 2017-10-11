@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.component.live;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +26,7 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.adapter.LiveInviteAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.InviteListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.diff.LiveInviteDiffCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
@@ -94,6 +94,7 @@ public class LiveInviteView extends FrameLayout
   private PublishSubject<List<Shortcut>> onShortcutUpdate = PublishSubject.create();
   private PublishSubject<Integer> onInviteViewWidthChanged = PublishSubject.create();
   private PublishSubject<Void> onClickBottom = PublishSubject.create();
+  private PublishSubject<Boolean> onDisplayDropZone = PublishSubject.create();
 
   public LiveInviteView(Context context) {
     super(context);
@@ -147,7 +148,7 @@ public class LiveInviteView extends FrameLayout
 
   private void initUI() {
     recyclerViewInvite.setTranslationX(translationX);
-    setBackgroundColor(Color.WHITE);
+    setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white_off));
   }
 
   private void initSubscriptions() {
@@ -163,6 +164,8 @@ public class LiveInviteView extends FrameLayout
     recyclerViewInvite.setLayoutManager(layoutManager);
     recyclerViewInvite.setHasFixedSize(true);
     recyclerViewInvite.setItemAnimator(null);
+    recyclerViewInvite.addItemDecoration(
+        new DividerFirstLastItemDecoration(screenUtils.dpToPx(10), 0, 0));
     recyclerViewInvite.addItemDecoration(new InviteListDividerDecoration(getContext(),
         ContextCompat.getColor(getContext(), R.color.grey_divider), screenUtils.dpToPx(0.5f),
         getSectionCallback(itemsList)));
@@ -193,20 +196,19 @@ public class LiveInviteView extends FrameLayout
       }
     });
 
-    //subscriptions.add(adapter.onInvite()
-    //    .map(view -> adapter.getItemAtPosition(recyclerViewInvite.getChildLayoutPosition(view)))
-    //    .subscribe(item -> {
-    //      User user = (User) item;
-    //      liveInvitePresenter.createInvite(live.getRoomId(), user.getId());
-    //    }));
+    subscriptions.add(adapter.onClick()
+        .map(view -> adapter.getItemAtPosition(recyclerViewInvite.getChildLayoutPosition(view)))
+        .subscribe(item -> {
+          Shortcut shortcut = (Shortcut) item;
+          onDisplayDropZone.onNext(shortcut.getSingleFriend().isSelected());
+        }));
   }
 
   private SectionCallback getSectionCallback(final List<LiveInviteAdapterSectionInterface> list) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
         return list.get(position) instanceof Header &&
-            (list.get(position).getId().equals(Header.HEADER_DRAG_IN) ||
-                list.get(position).getId().equals(Header.HEADER_NAME));
+            (list.get(position).getId().equals(Header.HEADER_NAME));
       }
 
       @Override public int getSectionType(int position) {
@@ -275,10 +277,6 @@ public class LiveInviteView extends FrameLayout
 
           temp.add(new Header(Header.HEADER_DRAG_IN,
               getResources().getString(R.string.live_members_invite_friends_section_title), 0));
-          temp.add(new Header(Header.HEADER_RECENT,
-              getResources().getString(R.string.home_section_recent),
-              R.drawable.picto_live_invite_header_recent));
-
           for (Shortcut shortcut : listShortcut) {
             User user = shortcut.getSingleFriend();
             if (!alreadyPresent.contains(user.getId())) {
@@ -418,6 +416,10 @@ public class LiveInviteView extends FrameLayout
 
   public Observable<Void> onClickBottom() {
     return onClickBottom;
+  }
+
+  public Observable<Boolean> onDisplayDropZone() {
+    return onDisplayDropZone;
   }
 }
 

@@ -772,7 +772,7 @@ public class LiveView extends FrameLayout {
   public void applyTranslateX(float value) {
     viewControlsLive.setTranslationX(value);
     viewRoom.setTranslationX(value);
-    viewRinging.setTranslationX(value);
+    viewRinging.applyTranslationX(value);
     viewDarkOverlay.setTranslationX(value);
     viewShadow.setTranslationX(value);
 

@@ -191,6 +191,11 @@ public class LiveRingingView extends RelativeLayout {
   //  PUBLIC  //
   //////////////
 
+  public void applyTranslationX(float x) {
+    setTranslationX(x);
+    //layoutCameras.setTranslationX(-x / 2);
+  }
+
   public void startRinging() {
     subscriptions.add(Observable.interval(2, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())

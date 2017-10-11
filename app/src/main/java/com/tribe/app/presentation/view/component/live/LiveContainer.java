@@ -57,6 +57,12 @@ public class LiveContainer extends FrameLayout {
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
+  @BindView(R.id.viewLiveInvite) LiveInviteView viewLiveInvite;
+
+  @BindView(R.id.viewLiveDropZone) LiveDropZoneView viewLiveDropZone;
+
+  @BindView(R.id.viewRinging) LiveRingingView viewRinging;
+
   // SPRINGS
   private SpringSystem springSystem = null;
   private Spring springRight;
@@ -163,6 +169,16 @@ public class LiveContainer extends FrameLayout {
         openPartialInviteView();
       } else if (isOpenedPartially) {
         closePartialInviteView();
+      }
+    }));
+
+    subscriptions.add(viewLiveInvite.onDisplayDropZone().subscribe(display -> {
+      if (display) {
+        viewLiveDropZone.show();
+        viewRinging.hide();
+      } else {
+        viewLiveDropZone.hide();
+        viewRinging.show();
       }
     }));
   }
@@ -307,7 +323,7 @@ public class LiveContainer extends FrameLayout {
               } else {
                 springRight.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
               }
-            } else {
+            } else if (!isOpenedFully) {
               springRight.setCurrentValue(-viewLive.getLiveInviteViewPartialWidth()).setAtRest();
               openFullInviteView();
               clearTouch();
@@ -371,6 +387,7 @@ public class LiveContainer extends FrameLayout {
 
   private void applyRight(float value) {
     viewLive.applyTranslateX(value);
+    viewLiveDropZone.applyTranslationX(value);
   }
 
   private boolean applyOffsetRightWithTension(float offsetX) {

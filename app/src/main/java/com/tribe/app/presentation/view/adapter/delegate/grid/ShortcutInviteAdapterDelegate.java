@@ -13,11 +13,12 @@ import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
-import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.TileInviteView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 09/04/2017
@@ -27,9 +28,13 @@ public class ShortcutInviteAdapterDelegate
 
   @Inject ScreenUtils screenUtils;
 
+  // VARIABLES
   protected LayoutInflater layoutInflater;
   protected Context context;
   private int width = 0;
+
+  // OBSERVABLES
+  private PublishSubject<View> onClick = PublishSubject.create();
 
   public ShortcutInviteAdapterDelegate(Context context) {
     this.context = context;
@@ -57,6 +62,8 @@ public class ShortcutInviteAdapterDelegate
     Shortcut shortcut = (Shortcut) items.get(position);
     vh.viewTile.updateWidth(width);
     vh.viewTile.setUser(shortcut.getSingleFriend());
+
+    subscriptions.add(vh.viewTile.onClick().map(v -> vh.itemView).subscribe(onClick));
   }
 
   @Override public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items,
@@ -84,4 +91,8 @@ public class ShortcutInviteAdapterDelegate
   /////////////////
   // OBSERVABLES //
   /////////////////
+
+  public Observable<View> onClick() {
+    return onClick;
+  }
 }

@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.presentation.view.adapter.delegate.EmptyHeaderInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.LiveInviteHeaderAdapterDelegate;
@@ -135,6 +136,11 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
   }
 
   // OBSERVABLES
+
+  public Observable<View> onClick() {
+    return shortcutInviteAdapterDelegate.onClick();
+  }
+
   public Observable<Void> onShareLink() {
     return roomLinkAdapterDelegate.onShareLink();
   }

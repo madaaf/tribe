@@ -54,6 +54,7 @@ public class User
   private boolean isNewFriend = false;
   private boolean isFriend = false;
   private boolean animateAdd = false;
+  private boolean isSelected = false;
 
   private AvatarModel avatarModel = null;
 
@@ -254,6 +255,14 @@ public class User
 
   public void setNewFriend(boolean newFriend) {
     isNewFriend = newFriend;
+  }
+
+  public boolean isSelected() {
+    return isSelected;
+  }
+
+  public void setSelected(boolean selected) {
+    isSelected = selected;
   }
 
   public void setInviteList(Collection<Invite> inviteList) {
