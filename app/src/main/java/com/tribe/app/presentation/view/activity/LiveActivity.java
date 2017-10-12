@@ -59,6 +59,7 @@ import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
@@ -164,6 +165,7 @@ public class LiveActivity extends BaseActivity
   @BindView(R.id.gameDrawView) GameDrawView gameDrawView;
   @BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
   @BindView(R.id.chatview) ChatView chatView;
+  @BindView(R.id.viewLiveContainer) LiveContainer viewLiveContainer;
 
   // VARIABLES
   private TribeAudioManager audioManager;
@@ -455,6 +457,8 @@ public class LiveActivity extends BaseActivity
     if (resourceId > 0) {
       result = getResources().getDimensionPixelSize(resourceId);
     }
+
+    viewLiveContainer.setStatusBarHeight(result);
   }
 
   private void initAppState() {

@@ -101,6 +101,12 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
     return items.size();
   }
 
+  public void removeItem(int position) {
+    items.remove(position);
+    notifyItemRemoved(position);
+    notifyItemRangeChanged(position, items.size());
+  }
+
   public void setItems(List<LiveInviteAdapterSectionInterface> items) {
     this.items.clear();
     this.items.addAll(items);

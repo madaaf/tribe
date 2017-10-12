@@ -44,6 +44,7 @@ public class LiveDropZoneView extends RelativeLayout {
   // VARIABLES
   private AnimatorSet animatorFloating;
   private AnimatorSet animatorScale;
+  private int[] locationOfRing;
 
   // DIMENS
 
@@ -74,7 +75,7 @@ public class LiveDropZoneView extends RelativeLayout {
     applicationComponent.inject(this);
     screenUtils = applicationComponent.screenUtils();
 
-    initRessource();
+    initResources();
     initUI();
     initSubscriptions();
   }
@@ -89,8 +90,8 @@ public class LiveDropZoneView extends RelativeLayout {
     setBackgroundColor(ContextCompat.getColor(getContext(), R.color.black_opacity_50));
   }
 
-  private void initRessource() {
-
+  private void initResources() {
+    locationOfRing = new int[2];
   }
 
   private void initSubscriptions() {
@@ -109,6 +110,9 @@ public class LiveDropZoneView extends RelativeLayout {
   }
 
   public void show() {
+    if (getVisibility() == View.VISIBLE) return;
+
+    imgArrow.setTranslationY(0);
     viewRing.setScaleX(0);
     viewRing.setScaleY(0);
     setVisibility(VISIBLE);
@@ -116,7 +120,7 @@ public class LiveDropZoneView extends RelativeLayout {
     animate().alpha(1).setInterpolator(new DecelerateInterpolator()).setDuration(DURATION).start();
 
     animatorScale = new AnimatorSet();
-    ValueAnimator animatorScaleUp = ValueAnimator.ofFloat(0, 1.4f);
+    ValueAnimator animatorScaleUp = ValueAnimator.ofFloat(0, 2f);
     animatorScaleUp.setDuration(DURATION >> 1);
     animatorScaleUp.setInterpolator(new DecelerateInterpolator());
     animatorScaleUp.addUpdateListener(valueAnimator -> {
@@ -125,7 +129,7 @@ public class LiveDropZoneView extends RelativeLayout {
       viewRing.setScaleY(value);
     });
 
-    ValueAnimator animatorScaleDown = ValueAnimator.ofFloat(1.4f, 1);
+    ValueAnimator animatorScaleDown = ValueAnimator.ofFloat(2f, 1);
     animatorScaleDown.setDuration(DURATION).setInterpolator(new DecelerateInterpolator());
     animatorScaleDown.addUpdateListener(valueAnimator -> {
       float value = (float) valueAnimator.getAnimatedValue();
@@ -136,12 +140,14 @@ public class LiveDropZoneView extends RelativeLayout {
     animatorScale.playSequentially(animatorScaleUp, animatorScaleDown);
     animatorScale.start();
 
-    subscriptions.add(Observable.timer((DURATION * 2) + (DURATION >> 1) + 50, TimeUnit.MILLISECONDS)
+    subscriptions.add(Observable.timer((DURATION >> 1) + 50, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> startAnimations()));
   }
 
   public void hide() {
+    if (getVisibility() == View.GONE) return;
+
     animatorScale.cancel();
 
     animate().alpha(0)
@@ -156,6 +162,15 @@ public class LiveDropZoneView extends RelativeLayout {
         .start();
 
     stopAnimations();
+  }
+
+  public int[] getLocationOfRing() {
+    viewRing.getLocationOnScreen(locationOfRing);
+    return locationOfRing;
+  }
+
+  public int getWidthOfRing() {
+    return viewRing.getWidth();
   }
 
   ///////////////////////

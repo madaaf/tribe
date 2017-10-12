@@ -62,6 +62,7 @@ public class ShortcutInviteAdapterDelegate
     Shortcut shortcut = (Shortcut) items.get(position);
     vh.viewTile.updateWidth(width);
     vh.viewTile.setUser(shortcut.getSingleFriend());
+    vh.viewTile.setPosition(position);
 
     subscriptions.add(vh.viewTile.onClick().map(v -> vh.itemView).subscribe(onClick));
   }

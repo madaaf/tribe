@@ -6,6 +6,7 @@ import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
@@ -34,6 +35,7 @@ import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
 import com.tribe.app.presentation.view.adapter.model.Header;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.RecyclerViewInvite;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -81,10 +83,12 @@ public class LiveInviteView extends FrameLayout
   private Unbinder unbinder;
   private LiveInviteLayoutManager layoutManager;
   private List<LiveInviteAdapterSectionInterface> itemsList;
+  private Shortcut selected = null;
   private Live live;
   private Scheduler singleThreadExecutor;
   private int positionOfFirstShortcut;
   private @LiveContainer.Event int drawerState = LiveContainer.CLOSED;
+  private boolean dragging = false;
 
   // RESOURCES
   private int translationX;
@@ -95,6 +99,8 @@ public class LiveInviteView extends FrameLayout
   private PublishSubject<Integer> onInviteViewWidthChanged = PublishSubject.create();
   private PublishSubject<Void> onClickBottom = PublishSubject.create();
   private PublishSubject<Boolean> onDisplayDropZone = PublishSubject.create();
+  private PublishSubject<Integer> onScrollStateChanged = PublishSubject.create();
+  private PublishSubject<Integer> onScroll = PublishSubject.create();
 
   public LiveInviteView(Context context) {
     super(context);
@@ -180,8 +186,14 @@ public class LiveInviteView extends FrameLayout
 
     recyclerViewInvite.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
+      @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        onScrollStateChanged.onNext(newState);
+      }
+
       @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
+
+        onScroll.onNext(dy);
 
         if (recyclerViewInvite.isDrawerOpen()) return;
 
@@ -200,7 +212,21 @@ public class LiveInviteView extends FrameLayout
         .map(view -> adapter.getItemAtPosition(recyclerViewInvite.getChildLayoutPosition(view)))
         .subscribe(item -> {
           Shortcut shortcut = (Shortcut) item;
-          onDisplayDropZone.onNext(shortcut.getSingleFriend().isSelected());
+          User user = shortcut.getSingleFriend();
+
+          if (selected != null && !shortcut.getId().equals(selected.getId())) {
+            int position = itemsList.indexOf(selected);
+            selected.getSingleFriend().setSelected(false);
+            adapter.notifyItemChanged(position);
+          }
+
+          if (user.isSelected()) {
+            selected = shortcut;
+          } else {
+            selected = null;
+          }
+
+          onDisplayDropZone.onNext(user.isSelected());
         }));
   }
 
@@ -279,6 +305,7 @@ public class LiveInviteView extends FrameLayout
               getResources().getString(R.string.live_members_invite_friends_section_title), 0));
           for (Shortcut shortcut : listShortcut) {
             User user = shortcut.getSingleFriend();
+            user.setSelected(selected != null && selected.getId().equals(shortcut.getId()));
             if (!alreadyPresent.contains(user.getId())) {
               temp.add(shortcut);
             }
@@ -344,6 +371,35 @@ public class LiveInviteView extends FrameLayout
 
       drawerState = event;
     }));
+  }
+
+  public void initOnInviteDropped(Observable<TileInviteView> obs) {
+    subscriptions.add(obs.subscribe(tile -> {
+      liveInvitePresenter.createInvite(live.getRoom().getId(), tile.getUser().getId());
+      adapter.removeItem(tile.getPosition());
+      viewInviteBottom.showAdded();
+    }));
+  }
+
+  public TileInviteView findViewByCoords(float rawX, float rawY) {
+    // Find the child view that was touched (perform a hit test)
+    int[] recyclerViewCoords = new int[2];
+    recyclerViewInvite.getLocationOnScreen(recyclerViewCoords);
+
+    View view =
+        ViewUtils.findViewAt(recyclerViewInvite, TileInviteView.class, (int) rawX, (int) rawY);
+
+    if (view instanceof TileInviteView) {
+      return (TileInviteView) view;
+    }
+
+    return null;
+  }
+
+  public void setDragging(boolean dragging) {
+    if (!dragging && this.dragging) recyclerViewInvite.getRecycledViewPool().clear();
+
+    this.dragging = dragging;
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
@@ -420,6 +476,14 @@ public class LiveInviteView extends FrameLayout
 
   public Observable<Boolean> onDisplayDropZone() {
     return onDisplayDropZone;
+  }
+
+  public Observable<Integer> onScroll() {
+    return onScroll;
+  }
+
+  public Observable<Integer> onScrollStateChanged() {
+    return onScrollStateChanged;
   }
 }
 

@@ -149,7 +149,7 @@
 	<string name="grid_status_more_friends">Partager votre nom d\'utilisateur !</string>
 	<string name="grid_name_video_demo">Démo vidéo</string>
 	<string name="grid_status_video_demo">Apprenez tout en 30 sec !</string>
-	<string name="grid_menu_friendship_hide">Supprimer %1$s</string>
+	<string name="grid_menu_friendship_hide">Masquer %1$s</string>
 	<string name="grid_menu_friendship_unhide">Ajouter %1$s</string>
 	<string name="grid_menu_friendship_block">Bloquer %1$s</string>
 	<string name="grid_menu_friendship_unblock"></string>
@@ -736,8 +736,8 @@
 	<string name="home_section_suggested_friends">Amis déjà sur Tribe</string>
 	<string name="home_section_invites_to_send">Amis à inviter</string>
 	<string name="home_section_results">Résultats</string>
-	<string name="home_action_join_live">Glissez vers la gauche pour rejoindre</string>
-	<string name="home_action_read_chat">Glissez vers la droite pour ouvrir</string>
+	<string name="home_action_join_live">Glissez à gauche pour rejoindre</string>
+	<string name="home_action_read_chat">Glissez à droite pour ouvrir</string>
 	<string name="home_action_tap_to_chat">Tapez pour discuter</string>
 	<string name="home_action_chat_preview">%1$s : %2$s</string>
 	<string name="home_action_new_chat">Nouveau chat</string>

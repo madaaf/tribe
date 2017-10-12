@@ -872,13 +872,7 @@ public class LiveView extends FrameLayout {
   }
 
   public int nbInRoom() {
-    // TODO CHANGE WITH NEW SYSTEM
-    int count = 0;
-
-    count += liveRowViewMap.getMap().size();
-    //count += liveInviteMap.getMap().size();
-
-    return count + 1;
+    return live.getRoom().nbUsersTotal();
   }
 
   public int nbOtherUsersInRoom() {

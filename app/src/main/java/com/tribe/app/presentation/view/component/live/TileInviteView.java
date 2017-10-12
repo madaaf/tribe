@@ -1,9 +1,12 @@
 package com.tribe.app.presentation.view.component.live;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -29,6 +32,10 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TileInviteView extends SquareFrameLayout implements View.OnClickListener {
 
+  public static final float SCALE_MAX = 1.8f;
+  public static final float SCALE_MIN = 1.4f;
+
+  private static final int DURATION = 450;
   private static final float BOUNCINESS_UP = 1f;
   private static final float SPEED_UP = 20f;
   private static final SpringConfig SPRING_NO_BOUNCE =
@@ -46,6 +53,8 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
   // VARIABLES
   private Unbinder unbinder;
   private User user;
+  private int realWidth;
+  private int position;
 
   // SPRINGS
   private SpringSystem springSystem = null;
@@ -101,6 +110,7 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
   }
 
   public void updateWidth(int width) {
+    this.realWidth = width;
     int tempMarginBG = (int) (width * 0.15f);
     int tempMarginAvatar = (int) (width * 0.25f);
     updateGraphicConstraints(width, tempMarginBG, tempMarginAvatar);
@@ -177,9 +187,30 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
   //  PUBLIC  //
   //////////////
 
+  public int getRealWidth() {
+    return realWidth;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setPosition(int position) {
+    this.position = position;
+  }
+
+  public int getPosition() {
+    return position;
+  }
+
   public void setUser(User user) {
-    if (this.user != null && this.user.equals(user)) return;
     this.user = user;
+
+    if (user.isSelected()) {
+      springTile.setEndValue(1).setAtRest();
+    } else {
+      springTile.setEndValue(0).setAtRest();
+    }
 
     if (!StringUtils.isEmpty(user.getCurrentRoomId())) {
       viewNewAvatar.setType(NewAvatarView.LIVE);
@@ -190,6 +221,46 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
     }
 
     viewNewAvatar.load(user.getProfilePicture());
+  }
+
+  public void scaleAvatar(float scale) {
+    viewNewAvatar.setScaleY(scale);
+    viewNewAvatar.setScaleX(scale);
+  }
+
+  public void startDrag() {
+    springTile.setEndValue(1);
+  }
+
+  public void endDrag() {
+    springTile.setEndValue(0);
+  }
+
+  public int animateOnDrop(int toX, int toY) {
+    int durationTotal = DURATION * 2 + (DURATION >> 1);
+
+    animate().translationX(toX)
+        .translationY(toY)
+        .rotation(0)
+        .scaleX(0.8f)
+        .scaleY(0.8f)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            animate().scaleX(0)
+                .scaleY(0)
+                .translationX(getTranslationX() + screenUtils.dpToPx(50))
+                .setDuration(DURATION >> 1)
+                .setStartDelay(DURATION >> 1)
+                .setInterpolator(new DecelerateInterpolator())
+                .setListener(null)
+                .start();
+          }
+        })
+        .start();
+
+    return durationTotal;
   }
 
   /////////////////

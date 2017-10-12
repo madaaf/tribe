@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -14,7 +15,10 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -29,6 +33,8 @@ public class LiveInviteBottomView extends FrameLayout {
   @BindView(R.id.txtLabel) TextViewFont txtLabel;
 
   @BindView(R.id.imgExpand) ImageView imgExpand;
+
+  @BindView(R.id.txtAdded) TextViewFont txtAdded;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -84,6 +90,12 @@ public class LiveInviteBottomView extends FrameLayout {
   }
 
   private void initUI() {
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override public void onGlobalLayout() {
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        txtAdded.setTranslationX(-getMeasuredWidth());
+      }
+    });
   }
 
   private void initSubscriptions() {
@@ -124,6 +136,50 @@ public class LiveInviteBottomView extends FrameLayout {
 
     AnimationUtils.animateWidth(imgExpand, widthArrowSmall, widthArrowLarge, DURATION,
         new DecelerateInterpolator());
+  }
+
+  public void showAdded() {
+    txtAdded.animate()
+        .translationX(0)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    txtLabel.animate()
+        .translationX(getMeasuredWidth())
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    imgExpand.animate()
+        .translationX(getMeasuredWidth())
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    subscriptions.add(Observable.timer(DURATION + 500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> hideAdded()));
+  }
+
+  public void hideAdded() {
+    txtAdded.animate()
+        .translationX(-getMeasuredWidth())
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    txtLabel.animate()
+        .translationX(0)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    imgExpand.animate()
+        .translationX(0)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
   }
 
   //////////////////////
