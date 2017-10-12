@@ -150,4 +150,8 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
   public Observable<Void> onShareLink() {
     return roomLinkAdapterDelegate.onShareLink();
   }
+
+  public Observable<View> onClickEdit() {
+    return liveInviteHeaderAdapterDelegate.onClickEdit();
+  }
 }

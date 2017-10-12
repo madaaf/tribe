@@ -93,7 +93,7 @@ public class LiveInviteBottomView extends FrameLayout {
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        txtAdded.setTranslationX(-getMeasuredWidth());
+        txtAdded.setTranslationX(-screenUtils.dpToPx(LiveInviteView.WIDTH_FULL));
       }
     });
   }
@@ -146,13 +146,13 @@ public class LiveInviteBottomView extends FrameLayout {
         .start();
 
     txtLabel.animate()
-        .translationX(getMeasuredWidth())
+        .translationX(screenUtils.dpToPx(LiveInviteView.WIDTH_FULL))
         .setDuration(DURATION)
         .setInterpolator(new DecelerateInterpolator())
         .start();
 
     imgExpand.animate()
-        .translationX(getMeasuredWidth())
+        .translationX(screenUtils.dpToPx(LiveInviteView.WIDTH_FULL))
         .setDuration(DURATION)
         .setInterpolator(new DecelerateInterpolator())
         .start();
@@ -164,7 +164,7 @@ public class LiveInviteBottomView extends FrameLayout {
 
   public void hideAdded() {
     txtAdded.animate()
-        .translationX(-getMeasuredWidth())
+        .translationX(-screenUtils.dpToPx(LiveInviteView.WIDTH_FULL))
         .setDuration(DURATION)
         .setInterpolator(new DecelerateInterpolator())
         .start();

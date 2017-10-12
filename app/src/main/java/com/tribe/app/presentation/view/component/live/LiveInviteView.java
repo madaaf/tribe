@@ -101,6 +101,7 @@ public class LiveInviteView extends FrameLayout
   private PublishSubject<Boolean> onDisplayDropZone = PublishSubject.create();
   private PublishSubject<Integer> onScrollStateChanged = PublishSubject.create();
   private PublishSubject<Integer> onScroll = PublishSubject.create();
+  private PublishSubject<View> onClickEdit = PublishSubject.create();
 
   public LiveInviteView(Context context) {
     super(context);
@@ -228,6 +229,8 @@ public class LiveInviteView extends FrameLayout
 
           onDisplayDropZone.onNext(user.isSelected());
         }));
+
+    subscriptions.add(adapter.onClickEdit().subscribe(onClickEdit));
   }
 
   private SectionCallback getSectionCallback(final List<LiveInviteAdapterSectionInterface> list) {
@@ -484,6 +487,10 @@ public class LiveInviteView extends FrameLayout
 
   public Observable<Integer> onScrollStateChanged() {
     return onScrollStateChanged;
+  }
+
+  public Observable<View> onClickEdit() {
+    return onClickEdit;
   }
 }
 

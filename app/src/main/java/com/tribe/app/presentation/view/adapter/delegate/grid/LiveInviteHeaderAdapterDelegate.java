@@ -16,6 +16,8 @@ import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSecti
 import com.tribe.app.presentation.view.adapter.model.Header;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 10/05/2017
@@ -25,6 +27,9 @@ public class LiveInviteHeaderAdapterDelegate
 
   protected LayoutInflater layoutInflater;
   protected Context context;
+
+  // OBSERVABLES
+  protected PublishSubject<View> onClickEdit = PublishSubject.create();
 
   public LiveInviteHeaderAdapterDelegate(Context context) {
     this.context = context;
@@ -56,6 +61,9 @@ public class LiveInviteHeaderAdapterDelegate
     LiveInviteHeaderViewHolder vh = (LiveInviteHeaderViewHolder) holder;
     vh.imgPicto.setImageResource(header.getResourceDrawableId());
     vh.txtLabel.setText(header.getResourceTxtId());
+    if (header.getId().equals(Header.HEADER_NAME)) {
+      vh.imgPicto.setOnClickListener(v -> onClickEdit.onNext(vh.itemView));
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items,
@@ -81,4 +89,8 @@ public class LiveInviteHeaderAdapterDelegate
   /////////////////
   // OBSERVABLES //
   /////////////////
+
+  public Observable<View> onClickEdit() {
+    return onClickEdit;
+  }
 }

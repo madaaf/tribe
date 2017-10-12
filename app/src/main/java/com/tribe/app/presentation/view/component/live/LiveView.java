@@ -1552,9 +1552,8 @@ public class LiveView extends FrameLayout {
     return onDismissInvite;
   }
 
-  public Observable<Void> onEdit() {
-    //return viewControlsLive.onEdit();
-    return Observable.empty();
+  public Observable<View> onEdit() {
+    return viewLiveInvite.onClickEdit();
   }
 
   public Observable<Boolean> onOpenChat() {
