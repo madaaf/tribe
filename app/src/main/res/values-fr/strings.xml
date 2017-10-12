@@ -47,8 +47,8 @@
 	<!-- Image Picker -->
 	<string name="image_picker_title">Ajouter un avatar</string>
 	<string name="image_picker_chat_title">Envoyer une image</string>
-	<string name="image_picker_camera">Utiliser l\'appareil photo</string>
-	<string name="image_picker_library">Ouvrir ma bibliothèque</string>
+	<string name="image_picker_camera">Prendre un selfie :camera_with_flash:</string>
+	<string name="image_picker_library">Ouvrir ma bibliothèque :arrow_up:</string>
 	
 	<!-- Contacts -->
 	<string name="contacts_search_new">NEW</string>
@@ -149,7 +149,7 @@
 	<string name="grid_status_more_friends">Partager votre nom d\'utilisateur !</string>
 	<string name="grid_name_video_demo">Démo vidéo</string>
 	<string name="grid_status_video_demo">Apprenez tout en 30 sec !</string>
-	<string name="grid_menu_friendship_hide">Supprimer %1$s</string>
+	<string name="grid_menu_friendship_hide">Masquer %1$s</string>
 	<string name="grid_menu_friendship_unhide">Ajouter %1$s</string>
 	<string name="grid_menu_friendship_block">Bloquer %1$s</string>
 	<string name="grid_menu_friendship_unblock"></string>
@@ -393,7 +393,8 @@
 	<string name="live_share_new_call_button_title">Partager l\'appel</string>
 	<string name="live_share_screenshot_description">Partagez ce screenshot !</string>
 	<string name="live_share_screenshot_caption">Merci @heytribe! :metal: #tribegoals</string>
-	<string name="live_ringing">Appel en cours...</string>
+	<string name="live_ringing">Appel en cours de %@</string>
+	<string name="live_joining">Connexion...</string>
 	<string name="live_invite_section_chat_members">Members du chat</string>
 	<string name="live_invite_section_invite_link">Lien d\'nvitation</string>
 	<string name="live_invite_section_add_friends">Ajouter des amis dans cette conversation</string>
@@ -663,6 +664,10 @@
 	<string name="game_draw_instructions_my_turn">A ton tour de dessiner</string>
 	<string name="game_aliens_attack">Aliens Attack</string>
 	<string name="game_aliens_attack_lets_go">Let\'s go!</string>
+	<string name="game_aliens_attack_you_won">Tu as gagné!</string>
+	<string name="game_aliens_attack_someone_won">%@ a gagné!</string>
+	<string name="game_aliens_attack_you_lost">Tu as perdu!</string>
+	<string name="game_aliens_attack_someone_lost">%@ a perdu!</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>
@@ -736,8 +741,8 @@
 	<string name="home_section_suggested_friends">Amis déjà sur Tribe</string>
 	<string name="home_section_invites_to_send">Amis à inviter</string>
 	<string name="home_section_results">Résultats</string>
-	<string name="home_action_join_live">Glissez vers la gauche pour rejoindre</string>
-	<string name="home_action_read_chat">Glissez vers la droite pour ouvrir</string>
+	<string name="home_action_join_live">Glissez à gauche pour rejoindre</string>
+	<string name="home_action_read_chat">Glissez à droite pour ouvrir</string>
 	<string name="home_action_tap_to_chat">Tapez pour discuter</string>
 	<string name="home_action_chat_preview">%1$s : %2$s</string>
 	<string name="home_action_new_chat">Nouveau chat</string>
@@ -750,6 +755,8 @@
 	<string name="home_menu_shortcut_hide">:speak_no_evil: Masquer</string>
 	<string name="home_menu_shortcut_block">:no_entry: Bloquer</string>
 	<string name="home_menu_shortcut_update_name">:pencil2: Modifier le nom</string>
+	<string name="home_menu_shortcut_customize">:art: Personnaliser</string>
+	<string name="home_menu_shortcut_update_avatar">:framed_picture: Modifier l\'avatar</string>
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Marquer comme lu</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Marquer comme non-lu</string>
 	<string name="home_menu_invite_decline">:phone: Rejeter l\'appel</string>

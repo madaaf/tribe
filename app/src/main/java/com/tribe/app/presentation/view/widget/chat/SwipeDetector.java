@@ -1,7 +1,9 @@
 package com.tribe.app.presentation.view.widget.chat;
 
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import timber.log.Timber;
 
 /**
@@ -10,89 +12,88 @@ import timber.log.Timber;
 
 public class SwipeDetector implements View.OnTouchListener {
 
-  private ChatView activity;
-  static final int MIN_DISTANCE = 100;
-  private float downX, downY, upX, upY;
+  private static final int SWIPE_MIN_DISTANCE = 1;
 
-  public SwipeDetector(ChatView activity) {
-    this.activity = activity;
+  private GestureDetector mGestureDetector;
+  private View mView;
+  private View recordingView;
+  private ChatView context;
+  private float initialPosition, initPos, ratio, ok;
+  private ScreenUtils screenUtils;
+
+  public SwipeDetector(ChatView context, View view, View recordingView, float initPos,
+      ScreenUtils screenUtils, float ok) {
+    mGestureDetector = new GestureDetector(view.getContext(), mGestureListener);
+    this.mView = view;
+    this.context = context;
+    this.initPos = initPos;
+    this.recordingView = recordingView;
+    this.initialPosition = view.getX();
+    this.screenUtils = screenUtils;
+    this.ok = ok;
   }
 
-  public void onRightToLeftSwipe(View v) {
-    activity.right2left(v);
-  }
-
-  public void onLeftToRightSwipe(View v) {
-    activity.left2right(v);
-  }
-
-  public void onTopToBottomSwipe(View v) {
-    activity.top2bottom(v);
-  }
-
-  public void onBottomToTopSwipe(View v) {
-    activity.bottom2top(v);
-  }
-
-  public void onActionUp(View v) {
-    activity.onActionUp(v);
-  }
-
-  public void onActionDown(View v) {
-    activity.onActionDown(v);
-  }
-
-  public boolean onTouch(View v, MotionEvent event) {
-    switch (event.getAction()) {
-      case MotionEvent.ACTION_DOWN: {
-
-        this.onActionDown(v);
-        downX = event.getX();
-        downY = event.getY();
-        Timber.e("onActionDown");
-        return true;
-      }
-      case MotionEvent.ACTION_UP: {
-        this.onActionUp(v);
-        Timber.e("onActionUp");
-        upX = event.getX();
-        upY = event.getY();
-
-        float deltaX = downX - upX;
-        float deltaY = downY - upY;
-
-        // swipe horizontal?
-        if (Math.abs(deltaX) > MIN_DISTANCE) {
-          // left or right
-          if (deltaX < 0) {
-            this.onLeftToRightSwipe(v);
-            return true;
-          }
-          if (deltaX > 0) {
-            this.onRightToLeftSwipe(v);
-            return true;
-          }
-        } else {
-          Timber.i("Swipe was only " + Math.abs(deltaX) + " long, need at least " + MIN_DISTANCE);
-        }
-
-        // swipe vertical?
-        if (Math.abs(deltaY) > MIN_DISTANCE) {
-          // top or down
-          if (deltaY < 0) {
-            this.onTopToBottomSwipe(v);
-            return true;
-          }
-          if (deltaY > 0) {
-            this.onBottomToTopSwipe(v);
-            return true;
-          }
-        } else {
-          Timber.i("Swipe was only " + Math.abs(deltaX) + " long, need at least " + MIN_DISTANCE);
-          v.performClick();
-        }
-      }
+  @Override public boolean onTouch(View v, MotionEvent event) {
+    if (event.getAction() == MotionEvent.ACTION_UP) {
+      context.onActionUp(mView, getRatio());
+    } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+      context.onActionDown(mView);
     }
-    return false;
+    return mGestureDetector.onTouchEvent(event);
   }
+
+  private float getRatio() {
+    float dist = initialPosition - initPos;
+    float r = mView.getX() - initPos;
+    return (r / dist) + 1;
+  }
+
+  private GestureDetector.OnGestureListener mGestureListener =
+      new GestureDetector.SimpleOnGestureListener() {
+        private float mMotionDownX, mMotionDownY;
+
+        @Override public boolean onDown(MotionEvent e) {
+          mMotionDownX = e.getRawX() - mView.getTranslationX();
+          mMotionDownY = e.getRawY() - mView.getTranslationY();
+
+          return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+          float x = recordingView.getX() + (recordingView.getWidth() / 2);
+          float x2 = mView.getX() + (mView.getWidth() / 2);
+          ratio = getRatio();
+
+          try {
+
+            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && mView.getX() > initPos) {
+              Timber.e("SOEF 1");
+              mView.setTranslationX(e2.getRawX() - mMotionDownX);
+            } else if (mView.getX() < initPos) { // TRASH POSTITION
+              Timber.e("SOEF 2");
+              mView.setX(initPos);
+            } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
+                && mView.getX() < initialPosition) {
+              Timber.e("SOEF 3");
+              mView.setTranslationX(e2.getRawX() - mMotionDownX);
+            } else if (mView.getX() > initialPosition) {
+              Timber.e("SOEF 4");
+              mView.setX(initialPosition);
+            }
+
+            if (x2 < (screenUtils.getWidthPx() / 2) || x2 > initialPosition) {
+              recordingView.setX(screenUtils.getWidthPx() / 2 - (recordingView.getWidth() / 2));
+            } else {
+              recordingView.setTranslationX(
+                  e2.getRawX() - mMotionDownX - (screenUtils.getWidthPx() / 2));
+            }
+
+            context.right2left(mView, ratio);
+          } catch (Exception e) {
+            // nothing
+          }
+          return true;
+        }
+      };
 }

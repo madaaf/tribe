@@ -12,11 +12,11 @@ public interface SwipeInterface {
 
   public void left2right(View v);
 
-  public void right2left(View v);
+  public void right2left(View v, float ratio);
 
   public void top2bottom(View v);
 
-  public void onActionUp(View v);
+  public void onActionUp(View v, float ratio);
 
   public void onActionDown(View v);
 }

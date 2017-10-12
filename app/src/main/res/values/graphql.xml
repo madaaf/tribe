@@ -306,6 +306,24 @@
                   user{id picture display_name}
                   created_at
             }
+          ... on AudioMessage {
+                author {
+                  display_name
+                  id
+                  picture
+                }
+                original {
+                  url
+                  duration
+                  filesize
+                }
+                alts {
+                  url
+                  duration
+                  filesize
+                }
+                created_at
+            }
             created_at
           }
   </string>

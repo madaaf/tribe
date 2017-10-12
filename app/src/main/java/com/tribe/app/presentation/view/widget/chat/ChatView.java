@@ -1,9 +1,12 @@
 package com.tribe.app.presentation.view.widget.chat;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -68,7 +72,9 @@ import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import com.wang.avi.AVLoadingIndicatorView;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -111,7 +117,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   private String editTextString;
   private int type, widthRefExpended, widthRefInit, containerUsersHeight, refMaxExpendedWidth,
-      recordingViewInitWidth;
+      voiceNoteBtnX, recordingViewX, recordingViewInitWidth;
   private boolean editTextChange = false, isHeart = false;
   private String[] arrIds = null;
   private Shortcut shortcut;
@@ -137,10 +143,12 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   @BindView(R.id.container) FrameLayout container;
   @BindView(R.id.containerEditText) RelativeLayout containerEditText;
   @BindView(R.id.separator) View separator;
-  @BindView(R.id.voiceNoteBtn) View voiceNoteBtn;
+  @BindView(R.id.voiceNoteBtn) ImageView voiceNoteBtn;
   @BindView(R.id.recordingView) FrameLayout recordingView;
   @BindView(R.id.pictoVoiceNote) ImageView pictoVoiceNote;
   @BindView(R.id.trashBtn) ImageView trashBtn;
+  @BindView(R.id.playerBtn) ImageView playerBtn;
+  @BindView(R.id.loadingRecordView) AVLoadingIndicatorView loadingRecordView;
 
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
@@ -222,14 +230,10 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     }
   }
 
-  private void initParams() {
-    SwipeDetector swipe = new SwipeDetector(this);
-      /*  voiceNoteBtn.setOnTouchListener((view, motionEvent) -> {
-          onTouchVoiceNote(motionEvent);
-          return true;
-        });*/
-    voiceNoteBtn.setOnTouchListener(swipe);
+  private ChatView chatView;
 
+  private void initParams() {
+    chatView = this;
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -255,30 +259,36 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
             pictoVoiceNote.getHeight()
                 / 2) + screenUtils.dpToPx(3));
 
+        voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
             voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (screenUtils.getWidthPx() / 2);
 
         recordingView.setTranslationX(transX);
-        recordingView.setTranslationY(recordingView.getHeight()); // TODO
+        recordingViewX = (int) recordingView.getX();
+        recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight()); // TODO
 
         if (members.size() < 2) {
           containerUsers.setVisibility(GONE);
         }
+        float ok = recordingViewX + (recordingView.getWidth() / 2);
+        SwipeDetector moveListener = new SwipeDetector(chatView, voiceNoteBtn, recordingView,
+            trashBtn.getX() - (trashBtn.getWidth() / 2), screenUtils, ok);
+        voiceNoteBtn.setOnTouchListener(moveListener);
       }
     });
   }
 
   Subscription timerVoiceSub;
 
-  private void stopVoiceNote() {
+  private void stopVoiceNote(boolean sendMessage) {
     String time = String.valueOf(timerVoiceNote.getText());
     timerVoiceNote.setText("0:01");
     timerVoiceSub.unsubscribe();
     timerVoiceSub = null;
-    recordingView.clearAnimation();
+    //recordingView.clearAnimation();
 
-    sendMessageToAdapter(Message.MESSAGE_AUDIO, time, null);
-    recordingView.setVisibility(GONE);
+    if (sendMessage) sendMessageToAdapter(Message.MESSAGE_AUDIO, time, null);
+    // recordingView.setVisibility(GONE);
     trashBtn.setAlpha(0f);
     hintEditText.setAlpha(0f);
     editText.clearAnimation();
@@ -295,18 +305,38 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
           sendBtn.setVisibility(VISIBLE);
           uploadImageBtn.setVisibility(VISIBLE);
           pulseLayout.setVisibility(VISIBLE);
-          voiceNoteBtn.setBackground(
-              ContextCompat.getDrawable(context, R.drawable.shape_circle_grey));
+
           editText.setCursorVisible(true);
+        })
+        .withEndAction(() -> {
+          recordingView.clearAnimation();
+          voiceNoteBtn.clearAnimation();
+
           ViewGroup.LayoutParams lp = recordingView.getLayoutParams();
           lp.width = recordingViewInitWidth;
           recordingView.setLayoutParams(lp);
+
+          recordingView.setX(recordingViewX);
+          recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight()); // TODO
+          playerBtn.setScaleX(1);
+          playerBtn.setScaleY(1);
+          loadingRecordView.setVisibility(VISIBLE);
+          timerVoiceNote.setVisibility(VISIBLE);
+          recordingView.setBackground(
+              ContextCompat.getDrawable(context, R.drawable.shape_rect_voice_note));
+          voiceNoteBtn.setX(voiceNoteBtnX);
+          voiceNoteBtn.setAlpha(1f);
+          playerBtn.setAlpha(1f);
+          playerBtn.setImageDrawable(
+              ContextCompat.getDrawable(context, R.drawable.picto_play_recording));
+          playerBtn.setBackground(null);
+        /*  voiceNoteBtn.setBackground(
+              ContextCompat.getDrawable(context, R.drawable.shape_circle_grey));*/
         })
         .start();
   }
 
   private void startVoiceNote() {
-    recordingView.setVisibility(VISIBLE);
     timerVoiceSub = Observable.interval(1, TimeUnit.SECONDS)
         .timeInterval()
         .observeOn(AndroidSchedulers.mainThread())
@@ -330,7 +360,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
           return formatTime;
         })
         .subscribe(formatTime -> {
-          Timber.w("CLOCK ==> : " + formatTime);
+          // Timber.w("CLOCK ==> : " + formatTime);
           timerVoiceNote.setText(formatTime);
         });
 
@@ -348,7 +378,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
           uploadImageBtn.setVisibility(GONE);
           pulseLayout.setVisibility(GONE);
           recordingView.animate()
-              .translationY(-(recordingView.getHeight() * 2))
+              .translationY(-(recordingView.getHeight() * 2.5f))
               .setInterpolator(new OvershootInterpolator())
               .setDuration(300)
               .start();
@@ -796,9 +826,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
               .observeOn(AndroidSchedulers.mainThread())
               .onBackpressureDrop()
               .subscribe(avoid -> {
-                Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
+                // Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
                 if (u.isTyping()) {
-                  Timber.i("STOP TYPING");
                   u.setTyping(false);
                   if (members.size() < 2) {
                     shrankRecyclerViewGrp();
@@ -850,21 +879,125 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     Timber.i("left2right!");
   }
 
-  @Override public void right2left(View v) {
-    Timber.i("right2left!");
+  @Override public void right2left(View v, float ratio) {
+    Timber.i("right2left! " + editText.getWidth() + "  " + v.getX());
+    voiceNoteBtn.setScaleX(ratio);
+    voiceNoteBtn.setScaleY(ratio);
+
+    if (ratio == 1) {
+      voiceNoteBtn.setImageDrawable(
+          ContextCompat.getDrawable(context, R.drawable.picto_cancel_voice_note));
+    } else {
+      voiceNoteBtn.setImageDrawable(null);
+    }
+
+    float ok = (float) (ratio - 0.5);
+    voiceNoteBtn.setAlpha(ratio);
   }
 
   @Override public void top2bottom(View v) {
     Timber.i("top2bottom!");
   }
 
-  @Override public void onActionUp(View v) {
-    Timber.i("onActionUp!");
-    stopVoiceNote();
+  @Override public void onActionUp(View v, float ratio) {
+    Timber.i("onActionUp! " + ratio);
+    stopRecording();
+    if (ratio == 1) {
+
+      Timber.i("ACTION UP RATIO 1! " + ratio);
+      ResizeAnimation a = new ResizeAnimation(recordingView);
+      a.setDuration(300);
+      a.setInterpolator(new OvershootInterpolator(3.0f));
+      a.setAnimationListener(new AnimationListenerAdapter() {
+        @Override public void onAnimationStart(Animation animation) {
+          super.onAnimationStart(animation);
+          loadingRecordView.setVisibility(GONE);
+          timerVoiceNote.setVisibility(GONE);
+
+          ObjectAnimator animator =
+              ObjectAnimator.ofPropertyValuesHolder(recordingView.getBackground(),
+                  PropertyValuesHolder.ofInt("alpha", 0));
+          animator.setTarget(recordingView.getBackground());
+          animator.setDuration(300);
+          animator.start();
+
+          voiceNoteBtn.setBackground(
+              ContextCompat.getDrawable(context, R.drawable.shape_circle_orange));
+          voiceNoteBtn.setImageDrawable(
+              ContextCompat.getDrawable(context, R.drawable.picto_trash_white));
+          playerBtn.setImageDrawable(
+              ContextCompat.getDrawable(context, R.drawable.picto_trash_white));
+          playerBtn.setBackground(
+              ContextCompat.getDrawable(context, R.drawable.shape_circle_orange));
+
+          voiceNoteBtn.postDelayed(() -> {
+            voiceNoteBtn.setImageDrawable(null);
+
+            voiceNoteBtn.animate()
+                .translationX(widthRefInit)
+                .setDuration(200)
+                .setInterpolator(new AccelerateInterpolator())
+                .withStartAction(() -> {
+                  playerBtn.animate()
+                      .scaleX(0)
+                      .scaleY(0)
+                      .setDuration(200)
+                      .setInterpolator(new OvershootInterpolator(2.5f))
+                      .start();
+                  voiceNoteBtn.setBackground(
+                      ContextCompat.getDrawable(context, R.drawable.shape_circle_grey));
+                })
+                .start();
+            stopVoiceNote(false);
+          }, 2000);
+        }
+
+        @Override public void onAnimationEnd(Animation animation) {
+
+        }
+      });
+      int size = playerBtn.getWidth() + screenUtils.dpToPx(10);
+      a.setParams(recordingView.getWidth(), size, recordingView.getHeight(), size);
+      recordingView.startAnimation(a);
+    } else {
+      Timber.i("ACTION UP RATIO 0! " + ratio);
+      stopVoiceNote(true);
+    }
   }
 
   @Override public void onActionDown(View v) {
     Timber.i("onActionDown!");
     startVoiceNote();
+    startRecording();
+  }
+
+  private MediaRecorder mRecorder = null;
+  private static String mFileName = null;
+
+  private void stopRecording() {
+    mRecorder.stop();
+    mRecorder.release();
+    mRecorder = null;
+  }
+
+
+  private void startRecording() {
+    // Record to the external cache directory for visibility
+    mFileName = context.getExternalCacheDir().getAbsolutePath();
+    mFileName += "/audiorecordtest.3gp";
+
+    mRecorder = new MediaRecorder();
+    mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+    mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+    mRecorder.setOutputFile(mFileName);
+    mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+    try {
+      mRecorder.prepare();
+    } catch (IOException e) {
+      Timber.e("prepare() failed");
+    }
+
+    mRecorder.start();
   }
 }
