@@ -37,6 +37,7 @@ import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -64,6 +65,10 @@ public class TopBarView extends FrameLayout {
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.btnSearch) ViewGroup btnSearch;
+
+  @BindView(R.id.imgSearch) ImageView imgSearch;
+
+  @BindView(R.id.txtSearch) TextViewFont txtSearch;
 
   @BindView(R.id.editTextSearch) EditTextFont editTextSearch;
 
@@ -282,10 +287,7 @@ public class TopBarView extends FrameLayout {
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
-    if (searchMode) {
-      screenUtils.showKeyboard(editTextSearch, 0);
-      return;
-    }
+    screenUtils.showKeyboard(editTextSearch, 0);
 
     onOpenCloseSearch.onNext(true);
 
@@ -308,6 +310,16 @@ public class TopBarView extends FrameLayout {
 
     AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
     AnimationUtils.animateRightMargin(btnSearch, imgClose.getWidth() + 2 * marginSmall, DURATION);
+
+    int[] locationSearch = new int[2];
+    imgSearch.getLocationOnScreen(locationSearch);
+    imgSearch.animate()
+        .setDuration(DURATION)
+        .translationX(-locationSearch[0] + screenUtils.dpToPx(60))
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    txtSearch.setVisibility(View.INVISIBLE);
   }
 
   @OnClick(R.id.imgClose) public void closeSearch() {
@@ -332,6 +344,16 @@ public class TopBarView extends FrameLayout {
 
     AnimationUtils.animateLeftMargin(btnSearch, getMarginLeftSearch(), DURATION, null);
     AnimationUtils.animateRightMargin(btnSearch, getMarginRightSearch(), DURATION);
+
+    imgSearch.animate()
+        .setDuration(DURATION)
+        .translationX(0)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> txtSearch.setVisibility(View.VISIBLE)));
   }
 
   private int getMarginRightSearch() {

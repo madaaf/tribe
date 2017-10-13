@@ -329,9 +329,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
         Object item = itemList.get(position);
         Object itemPrevious = itemList.get(position - 1);
 
-        return position > 0 &&
-            !item.getClass().equals(itemPrevious.getClass()) &&
-            !(item instanceof Shortcut && itemPrevious instanceof SearchResult);
+        return position > 0 && !item.getClass().equals(itemPrevious.getClass());
       }
 
       @Override public int getSectionType(int position) {
@@ -342,6 +340,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
             if (shortcut.getId().equals(Shortcut.ID_EMPTY)) {
               return BaseSectionItemDecoration.SEARCH_EMPTY;
             }
+
+            return BaseSectionItemDecoration.SEARCH_RECENT;
           }
 
           return BaseSectionItemDecoration.SEARCH_RESULTS;

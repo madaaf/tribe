@@ -69,6 +69,7 @@ import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.HomeListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.RecyclerSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
@@ -1000,10 +1001,9 @@ public class HomeActivity extends BaseActivity
   private SectionCallback getSectionCallback(final List<Recipient> recipientList) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
-        return position == 1 ||
-            (position > 0 &&
-                recipientList.get(position).getSectionType() !=
-                    recipientList.get(position - 1).getSectionType());
+        return recipientList.get(position).getSectionType() != BaseSectionItemDecoration.NONE &&
+            recipientList.get(position).getSectionType() !=
+                recipientList.get(position - 1).getSectionType();
       }
 
       @Override public int getSectionType(int position) {

@@ -19,8 +19,8 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 public abstract class BaseSectionItemDecoration extends RecyclerView.ItemDecoration {
 
   @IntDef({
-      LIVE_CHAT_MEMBERS, LIVE_ADD_FRIENDS_IN_CALL, HOME_ONGOING, HOME_ONLINE,
-      HOME_RECENT
+      LIVE_CHAT_MEMBERS, LIVE_ADD_FRIENDS_IN_CALL, HOME_ONGOING, HOME_ONLINE, HOME_RECENT,
+      SEARCH_RESULTS, SEARCH_SUGGESTED_CONTACTS, SEARCH_INVITES_TO_SEND, SEARCH_EMPTY, SEARCH_RECENT, NONE
   }) public @interface HeaderType {
   }
 
@@ -33,6 +33,8 @@ public abstract class BaseSectionItemDecoration extends RecyclerView.ItemDecorat
   public static final int SEARCH_SUGGESTED_CONTACTS = 7;
   public static final int SEARCH_INVITES_TO_SEND = 8;
   public static final int SEARCH_EMPTY = 9;
+  public static final int SEARCH_RECENT = 10;
+  public static final int NONE = 11;
 
   protected final int headerOffset;
   protected final boolean sticky;

@@ -8,6 +8,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import java.util.List;
 import javax.inject.Inject;
@@ -76,10 +77,14 @@ public class UserCacheImpl implements UserCache {
     to.setPicture(from.getPicture());
     to.setSingle(from.isSingle());
     to.setLastActivityAt(from.getLastActivityAt());
+
+    RealmList<UserRealm> userRealmList = new RealmList<>();
     for (UserRealm member : from.getMembers()) {
       tempRealm.insertOrUpdate(member);
+      userRealmList.add(tempRealm.where(UserRealm.class).equalTo("id", member.getId()).findFirst());
     }
-    to.setMembers(from.getMembers());
+
+    to.setMembers(userRealmList);
     to.setPinned(from.isPinned());
   }
 

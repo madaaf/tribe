@@ -58,6 +58,11 @@ public class SearchSectionItemDecoration extends BaseSectionItemDecoration {
         txtLabel.setVisibility(View.GONE);
         imgPicto.setImageResource(R.drawable.picto_empty_header);
         break;
+
+      case SEARCH_RECENT:
+        txtLabel.setText(R.string.home_section_recent);
+        imgPicto.setImageResource(R.drawable.picto_recent);
+        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
     }
   }
 
