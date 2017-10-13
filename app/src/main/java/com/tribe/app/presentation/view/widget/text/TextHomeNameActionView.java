@@ -6,7 +6,6 @@ import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -16,6 +15,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FontUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 
 /**
@@ -32,7 +32,6 @@ public class TextHomeNameActionView extends LinearLayout {
 
   @BindView(R.id.txtName) TextViewFont txtName;
   @BindView(R.id.txtAction) TextViewFont txtAction;
-  @BindView(R.id.viewShortcutName) TextShortcutNameView txtShortcutName;
 
   private int textType = NORMAL;
   private Unbinder unbinder;
@@ -81,10 +80,12 @@ public class TextHomeNameActionView extends LinearLayout {
     this.textType = textType;
 
     if (textType == NORMAL) {
-      txtAction.setVisibility(View.GONE);
       TextViewCompat.setTextAppearance(txtName, R.style.Title_1_Black);
+      txtName.setCustomFont(getContext(), FontUtils.PROXIMA_REGULAR);
+
+      TextViewCompat.setTextAppearance(txtAction, R.style.Body_One_Grey);
+      txtAction.setCustomFont(getContext(), FontUtils.PROXIMA_REGULAR);
     } else {
-      txtAction.setVisibility(View.VISIBLE);
       TextViewCompat.setTextAppearance(txtName, R.style.Title_2_Black);
       txtName.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
 
@@ -96,18 +97,24 @@ public class TextHomeNameActionView extends LinearLayout {
         txtAction.setText(R.string.home_action_join_live);
       }
     }
-
-    txtShortcutName.setTextType(textType);
   }
 
   public void setRecipient(Recipient recipient) {
     if (recipient instanceof Shortcut) {
       Shortcut shortcut = (Shortcut) recipient;
-      txtName.setText(shortcut.getUserDisplayNames());
+      if (!StringUtils.isEmpty(shortcut.getName())) {
+        txtName.setText(shortcut.getName());
+      } else {
+        txtName.setText(shortcut.getUserDisplayNames());
+      }
+
+      if (!StringUtils.isEmpty(shortcut.getLastMessage())) {
+        txtAction.setText(shortcut.getLastMessage());
+      } else {
+        txtAction.setText(R.string.home_action_tap_to_chat);
+      }
     } else {
       txtName.setText(recipient.getDisplayName());
     }
-
-    txtShortcutName.setRecipient(recipient);
   }
 }

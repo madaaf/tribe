@@ -41,7 +41,6 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     SearchResultGridViewHolder vh = new SearchResultGridViewHolder(
         layoutInflater.inflate(R.layout.item_search_result, parent, false));
-    vh.btnAdd.setOnClickListener(view -> onClick.onNext(vh.itemView));
     return vh;
   }
 
@@ -64,11 +63,15 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
         picture = searchResult.getPicture();
 
     if (StringUtils.isEmpty(displayName)) {
+      vh.btnAdd.setVisibility(View.GONE);
+
       if (searchResult.isSearchDone()) {
         displayName = "No user found";
       } else {
         displayName = context.getString(R.string.search_searching);
       }
+    } else {
+      vh.btnAdd.setVisibility(View.VISIBLE);
     }
 
     vh.txtName.setText(displayName);
@@ -77,8 +80,10 @@ public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Obje
 
     if (searchResult.getShortcut() != null) {
       vh.btnAdd.setImageResource(R.drawable.picto_added);
+      vh.btnAdd.setOnClickListener(null);
     } else {
       vh.btnAdd.setImageResource(R.drawable.picto_add);
+      vh.btnAdd.setOnClickListener(view -> onClick.onNext(vh.itemView));
     }
   }
 

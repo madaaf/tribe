@@ -9,6 +9,7 @@ import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -170,6 +171,30 @@ public class ChatCacheImpl implements ChatCache {
         .filter(RealmResults::isLoaded)
         .map(singleShortcutList -> realm.copyFromRealm(singleShortcutList))
         .unsubscribeOn(AndroidSchedulers.mainThread());
+  }
+
+  @Override public MessageRealm getLastTextMessage(String[] userIds) {
+    Realm obsRealm = Realm.getDefaultInstance();
+    try {
+      MessageRealm messageRealm = obsRealm.where(MessageRealm.class)
+          .equalTo("localId", JsonUtils.arrayToJson(userIds))
+          .equalTo("__typename", Message.MESSAGE_TEXT)
+          .findAllSorted("created_at", Sort.DESCENDING)
+          .first();
+
+      if (messageRealm != null) {
+        MessageRealm copy = obsRealm.copyFromRealm(messageRealm);
+        obsRealm.close();
+        return copy;
+      }
+    } catch (IllegalStateException ex) {
+      if (!obsRealm.isClosed() && obsRealm.isInTransaction()) obsRealm.cancelTransaction();
+      ex.printStackTrace();
+    } finally {
+      if (!obsRealm.isClosed()) obsRealm.close();
+    }
+
+    return null;
   }
 
   @Override public Observable<List<MessageRealm>> getMessagesImage(String[] userIds) {

@@ -38,7 +38,7 @@ public class SearchSectionItemDecoration extends BaseSectionItemDecoration {
       case SEARCH_RESULTS:
         txtLabel.setText(R.string.home_section_results);
         txtLabel.setVisibility(View.VISIBLE);
-        imgPicto.setImageResource(R.drawable.picto_header_ongoing);
+        imgPicto.setImageResource(R.drawable.picto_header_results);
         break;
 
       case SEARCH_SUGGESTED_CONTACTS:

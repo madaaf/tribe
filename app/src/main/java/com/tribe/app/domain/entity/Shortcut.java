@@ -31,6 +31,7 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   private @ShortcutRealm.ShortcutStatus String status;
   private Date last_activity_at;
   private List<User> members;
+  private String lastMessage;
 
   public Shortcut(String id) {
     this.id = id;
@@ -184,6 +185,14 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
     this.members = members;
   }
 
+  public String getLastMessage() {
+    return lastMessage;
+  }
+
+  public void setLastMessage(String lastMessage) {
+    this.lastMessage = lastMessage;
+  }
+
   public void addMember(User user) {
     if (members == null) members = new ArrayList<>();
     members.add(user);
@@ -241,7 +250,7 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
     }
 
     if (members.size() > NB_MAX_USERS_STRING) {
-      buffer.append(", " + (members.size() - NB_MAX_USERS_STRING) + " persons");
+      buffer.append("... " + (members.size() - NB_MAX_USERS_STRING));
     }
 
     return buffer.toString();

@@ -78,19 +78,12 @@ public class NewAvatarView extends LinearLayout implements Avatar {
   }
 
   private void initResources() {
-    strokeWidth = screenUtils.dpToPx(3);
-    maxStrokeWidth = screenUtils.dpToPx(4);
-    padding = screenUtils.dpToPx(5);
-  }
-
-  private void updateStrokeWidth(int width) {
-    int tempStrokeWidth = Math.min((int) (width * 0.1f), maxStrokeWidth);
-    padding = (int) (2f * tempStrokeWidth);
-    updateGraphicConstraints(tempStrokeWidth);
+    strokeWidth = screenUtils.dpToPx(2);
+    maxStrokeWidth = screenUtils.dpToPx(2);
+    padding = screenUtils.dpToPx(4);
   }
 
   private void updateGraphicConstraints(int strokeWidth) {
-    if (this.strokeWidth == strokeWidth) return;
     this.strokeWidth = strokeWidth;
     gradientDrawable.setStroke(strokeWidth, ContextCompat.getColor(getContext(), strokeColor));
     setBackground(gradientDrawable);
@@ -105,8 +98,6 @@ public class NewAvatarView extends LinearLayout implements Avatar {
     int heightSize = getMeasuredHeight();
 
     if (widthSize == 0 || heightSize == 0) return;
-
-    updateStrokeWidth(widthSize);
   }
 
   /**
@@ -157,6 +148,5 @@ public class NewAvatarView extends LinearLayout implements Avatar {
 
   public void updateWidth(int width) {
     wasWidthUpdated = true;
-    updateStrokeWidth(width);
   }
 }

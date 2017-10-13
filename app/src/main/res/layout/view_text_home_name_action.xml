@@ -5,13 +5,6 @@
     android:orientation="vertical"
     >
 
-  <com.tribe.app.presentation.view.widget.text.TextShortcutNameView
-      android:id="@+id/viewShortcutName"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:visibility="visible"
-      />
-
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtName"
       android:layout_width="wrap_content"
@@ -25,10 +18,10 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="2.5dp"
+      android:ellipsize="end"
       android:maxLines="1"
       android:text="@string/home_action_read_chat"
-      android:visibility="gone"
-      style="@style/Body.One.Blue"
+      style="@style/Body.One.Grey"
       />
 
 </LinearLayout>
