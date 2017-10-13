@@ -1,6 +1,5 @@
 package com.tribe.app.data.realm;
 
-import com.tribe.app.presentation.view.widget.chat.model.Message;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -11,11 +10,20 @@ import io.realm.annotations.PrimaryKey;
 public class ImageRealm extends RealmObject {
 
   @PrimaryKey private String url;
-  private String filesize;
+  private Integer filesize;
   private String width;
   private String height;
+  private float duration;
 
   public ImageRealm() {
+  }
+
+  public float getDuration() {
+    return duration;
+  }
+
+  public void setDuration(float duration) {
+    this.duration = duration;
   }
 
   public String getUrl() {
@@ -26,11 +34,11 @@ public class ImageRealm extends RealmObject {
     this.url = url;
   }
 
-  public String getFilesize() {
+  public Integer getFilesize() {
     return filesize;
   }
 
-  public void setFilesize(String filesize) {
+  public void setFilesize(Integer filesize) {
     this.filesize = filesize;
   }
 
@@ -49,6 +57,4 @@ public class ImageRealm extends RealmObject {
   public void setHeight(String height) {
     this.height = height;
   }
-
-
 }

@@ -7,11 +7,26 @@ package com.tribe.app.presentation.view.widget.chat.model;
 public class Image {
 
   private String url;
-  private String filesize;
+  private Integer filesize;
   private String width;
   private String height;
+  private float duration;
 
   public Image() {
+  }
+
+  public float getDuration() {
+    return duration;
+  }
+
+  public String getDurationFormatted() {
+    String value =
+        String.valueOf(Float.parseFloat(Float.toString(duration / 1000).substring(0, 5)));
+    return value.replace(".", ":");
+  }
+
+  public void setDuration(float duration) {
+    this.duration = duration;
   }
 
   public String getUrl() {
@@ -22,11 +37,11 @@ public class Image {
     this.url = url;
   }
 
-  public String getFilesize() {
+  public Integer getFilesize() {
     return filesize;
   }
 
-  public void setFilesize(String filesize) {
+  public void setFilesize(Integer filesize) {
     this.filesize = filesize;
   }
 

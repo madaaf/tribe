@@ -1,7 +1,8 @@
 package com.tribe.app.presentation.view.widget.chat.adapterDelegate;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -25,11 +26,16 @@ import timber.log.Timber;
 
 public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
 
+  private int currentPlayingPosition;
+  private MediaPlayer mediaPlayer;
+  private MessageAudioViewHolder playingHolder;
+
   public MessageAudioAdapterDelegate(Context context, int type) {
     super(context, type);
     this.context = context;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    currentPlayingPosition = -1;
   }
 
   @Override public boolean isForViewType(@NonNull List<Message> items, int position) {
@@ -49,22 +55,68 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     MessageAudio m = (MessageAudio) items.get(position);
     MessageAudioViewHolder vh = (MessageAudioViewHolder) holder;
 
-    vh.timerVoiceNote.setText(m.getTime());
+    vh.timerVoiceNote.setText(m.getOriginal().getDurationFormatted());
 
     vh.playBtn.setOnClickListener(view -> {
-      Drawable d = vh.playBtn.getDrawable();
-      Timber.e("DRAWABLE " + d + " " + ContextCompat.getDrawable(context,
-          R.drawable.picto_play_recording) + " " + ContextCompat.getDrawable(context,
-          R.drawable.picto_play_recording));
-      if (d == ContextCompat.getDrawable(context, R.drawable.picto_play_recording)) {
-        vh.playBtn.setImageDrawable(
-            ContextCompat.getDrawable(context, R.drawable.picto_pause_recording));
+
+      if (position == currentPlayingPosition) {
+        if (mediaPlayer.isPlaying()) {
+          mediaPlayer.pause();
+        } else {
+          mediaPlayer.start();
+        }
       } else {
-        vh.playBtn.setImageDrawable(
-            ContextCompat.getDrawable(context, R.drawable.picto_play_recording));
+        currentPlayingPosition = position;
+        if (mediaPlayer != null) {
+          if (null != playingHolder) {
+            updateNonPlayingView(playingHolder);
+          }
+          mediaPlayer.release();
+        }
+        playingHolder = vh;
+        startMediaPlayer(Uri.parse(m.getOriginal().getUrl()));
       }
+      updatePlayingView();
     });
     setPendingBehavior(m, vh.container);
+  }
+
+  private void startMediaPlayer(Uri audioResId) {
+    mediaPlayer = MediaPlayer.create(context.getApplicationContext(), audioResId);
+    mediaPlayer.setOnCompletionListener(mp -> releaseMediaPlayer());
+    mediaPlayer.start();
+  }
+
+  private void releaseMediaPlayer() {
+    if (null != playingHolder) {
+      updateNonPlayingView(playingHolder);
+    }
+    mediaPlayer.release();
+    mediaPlayer = null;
+    currentPlayingPosition = -1;
+  }
+
+  private void updateNonPlayingView(MessageAudioViewHolder holder) {
+    holder.playBtn.setImageDrawable(
+        ContextCompat.getDrawable(context, R.drawable.picto_play_recording));
+  }
+
+  void stopPlayer() {
+    if (null != mediaPlayer) {
+      releaseMediaPlayer();
+    }
+  }
+
+  private void updatePlayingView() {
+    if (mediaPlayer.isPlaying()) {
+      playingHolder.playBtn.setImageDrawable(
+          ContextCompat.getDrawable(context, R.drawable.picto_pause_recording));
+      Timber.e("OK 1 ");
+    } else {
+      playingHolder.playBtn.setImageDrawable(
+          ContextCompat.getDrawable(context, R.drawable.picto_play_recording));
+      Timber.e("OK 2 ");
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,
