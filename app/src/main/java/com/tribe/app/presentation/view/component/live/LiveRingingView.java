@@ -16,7 +16,9 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Live;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -48,6 +50,7 @@ public class LiveRingingView extends RelativeLayout {
   };
 
   @Inject ScreenUtils screenUtils;
+  @Inject User currentUser;
 
   @BindView(R.id.layoutCameras) FrameLayout layoutCameras;
   @BindView(R.id.txtRinging) TextViewFont txtRinging;
@@ -191,17 +194,20 @@ public class LiveRingingView extends RelativeLayout {
     }
   }
 
-  private void setShortcut(Shortcut shortcut) {
+  private void setRoom(Room room) {
     String name = "";
+    Shortcut shortcut = room.getShortcut();
 
-    if (shortcut.isSingle()) {
+    int nbUsersWithoutMe = room.nbUsersTotalWithoutMe(currentUser.getId());
+
+    if (shortcut != null && shortcut.isSingle() && nbUsersWithoutMe <= 1) {
       name = shortcut.getSingleFriend().getDisplayName();
-    } else if (!StringUtils.isEmpty(shortcut.getName())) {
+    } else if (shortcut != null && !StringUtils.isEmpty(shortcut.getName())) {
       name = shortcut.getName();
-    } else {
-      name =
-          getResources().getString(R.string.shortcut_members_count, shortcut.getMembers().size());
+    } else if (room != null) {
+      name = getResources().getString(R.string.shortcut_members_count, nbUsersWithoutMe);
     }
+
     txtRinging.setText(getResources().getString(R.string.live_members_ringing) + " " + name);
   }
 
@@ -212,7 +218,7 @@ public class LiveRingingView extends RelativeLayout {
   public void setLive(Live live) {
     this.live = live;
 
-    subscriptions.add(live.onShortcutUpdated().subscribe(shortcut -> setShortcut(shortcut)));
+    subscriptions.add(live.onRoomUpdated().subscribe(room -> setRoom(room)));
   }
 
   public void applyTranslationX(float x) {

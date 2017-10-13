@@ -795,7 +795,7 @@ public class LiveView extends FrameLayout {
 
   public void start(Live live) {
     this.live = live;
-    this.fbId = live.hasUsers() ? live.getUsers().get(0).getFbid() : "";
+    this.fbId = live.hasUsers() ? live.getUsersOfShortcut().get(0).getFbid() : "";
 
     webRTCRoom = tribeLiveSDK.newRoom();
     webRTCRoom.initLocalStream(viewLocalLive.getLocalPeerView());
@@ -809,27 +809,8 @@ public class LiveView extends FrameLayout {
     viewRinging.startRinging();
   }
 
-  public void update(Live live) {
-    if (live != null && live.hasUsers()) {
-      // TODO handle better
-      User user = live.getUsers().get(0);
-      LiveRowView liveRowView = liveRowViewMap.get(live.getUsers().get(0).getId());
-      if (liveRowView != null) {
-        liveRowView.setGuest(
-            new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(),
-                live.fromRoom(), false, user.getUsername()));
-      }
-    }
-  }
-
   public com.tribe.tribelivesdk.core.Room getWebRTCRoom() {
     return webRTCRoom;
-  }
-
-  public void displayWaitLivePopupTutorial(String displayName) {
-    if (!joinLive) {
-      onBuzzPopup.onNext(displayName);
-    }
   }
 
   public void addTribeGuest(TribeGuest trg) {

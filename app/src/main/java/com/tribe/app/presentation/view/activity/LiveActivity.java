@@ -562,7 +562,6 @@ public class LiveActivity extends BaseActivity
     }));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
-      if (StringUtils.isEmpty(live.getRoomId())) displayBuzzPopupTutorial();
       if (!live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
         if (live.fromRoom() || !StringUtils.isEmpty(live.getLinkId())) {
           getRoomInfos();
@@ -918,12 +917,6 @@ public class LiveActivity extends BaseActivity
     }
   }
 
-  public void displayBuzzPopupTutorial() {
-    subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial(live.getName())));
-  }
-
   private void leave() {
     if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
       subscriptions.add(DialogFactory.dialog(this,
@@ -1168,12 +1161,14 @@ public class LiveActivity extends BaseActivity
     this.room = room;
 
     if (!live.fromRoom()) {
-      for (String userId : live.getUserIds()) {
+      for (String userId : live.getUserIdsOfShortcut()) {
         livePresenter.createInvite(this.room.getId(), userId);
       }
     }
 
-    if (this.room.getShortcut() == null) livePresenter.shortcutForUserIds(live.getUserIds());
+    if (this.room.getShortcut() == null) {
+      livePresenter.shortcutForUserIds(live.getUserIdsOfShortcut());
+    }
 
     live.setRoom(room);
     viewLive.joinRoom(this.room);

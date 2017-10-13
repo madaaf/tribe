@@ -22,9 +22,9 @@ public class CreateRoom extends UseCase {
     this.liveRepository = liveRepository;
   }
 
-  public void setup(String name, String... userIds) {
+  public void setup(String name) {
     this.name = name;
-    this.userIds = userIds;
+    this.userIds = new String[0];
   }
 
   @Override protected Observable buildUseCaseObservable() {

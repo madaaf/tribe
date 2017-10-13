@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.component.live;
 
-import android.animation.Animator;
 import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.Context;
@@ -25,7 +24,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
@@ -184,12 +182,12 @@ public class LiveStatusNameView extends FrameLayout {
   public void setLive(Live live) {
     this.live = live;
 
-    if (!live.hasUsers() || live.getUserIds().size() <= 1) {
+    if (!live.hasUsers() || live.getUserIdsOfShortcut().size() <= 1) {
       setAddFriendsTitle();
     } else if (live.getShortcut() != null && !StringUtils.isEmpty(live.getShortcut().getName())) {
       setShortcutTitle();
     } else {
-      setPeopleCountTitle(live.getUserIds().size());
+      setPeopleCountTitle(live.getUserIdsOfShortcut().size());
     }
 
     if (live.onShortcutUpdated() == null) return;
@@ -206,10 +204,10 @@ public class LiveStatusNameView extends FrameLayout {
     if (shortcut != null && !StringUtils.isEmpty(shortcut.getName())) {
       setShortcutTitle();
     } else if (room != null) {
-      if (room.nbUsersTotal() <= 1) {
+      if (room.nbUsersTotalWithoutMe(user.getId()) <= 1) {
         setAddFriendsTitle();
       } else {
-        setPeopleCountTitle(room.nbUsersTotal());
+        setPeopleCountTitle(room.nbUsersTotalWithoutMe(user.getId()));
       }
     } else {
       setAddFriendsTitle();
