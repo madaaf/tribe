@@ -1167,6 +1167,14 @@ public class LiveActivity extends BaseActivity
   @Override public void onRoomInfos(Room room) {
     this.room = room;
 
+    if (!live.fromRoom()) {
+      for (String userId : live.getUserIds()) {
+        livePresenter.createInvite(this.room.getId(), userId);
+      }
+    }
+
+    if (this.room.getShortcut() == null) livePresenter.shortcutForUserIds(live.getUserIds());
+
     live.setRoom(room);
     viewLive.joinRoom(this.room);
 

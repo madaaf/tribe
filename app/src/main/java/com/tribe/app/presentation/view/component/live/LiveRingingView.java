@@ -15,10 +15,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Live;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.ArrayList;
@@ -53,6 +56,7 @@ public class LiveRingingView extends RelativeLayout {
   private Unbinder unbinder;
   private List<View> views;
   private boolean ringing;
+  private Live live;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -187,9 +191,29 @@ public class LiveRingingView extends RelativeLayout {
     }
   }
 
+  private void setShortcut(Shortcut shortcut) {
+    String name = "";
+
+    if (shortcut.isSingle()) {
+      name = shortcut.getSingleFriend().getDisplayName();
+    } else if (!StringUtils.isEmpty(shortcut.getName())) {
+      name = shortcut.getName();
+    } else {
+      name =
+          getResources().getString(R.string.shortcut_members_count, shortcut.getMembers().size());
+    }
+    txtRinging.setText(getResources().getString(R.string.live_members_ringing) + " " + name);
+  }
+
   //////////////
   //  PUBLIC  //
   //////////////
+
+  public void setLive(Live live) {
+    this.live = live;
+
+    subscriptions.add(live.onShortcutUpdated().subscribe(shortcut -> setShortcut(shortcut)));
+  }
 
   public void applyTranslationX(float x) {
     setTranslationX(x);

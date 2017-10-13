@@ -47,8 +47,8 @@
 	<!-- Image Picker -->
 	<string name="image_picker_title">Add an avatar</string>
 	<string name="image_picker_chat_title">Send an image</string>
-	<string name="image_picker_camera">Take a selfie</string>
-	<string name="image_picker_library">Open camera roll</string>
+	<string name="image_picker_camera">Take a selfie :camera_with_flash:</string>
+	<string name="image_picker_library">Open camera roll :arrow_up:</string>
 	
 	<!-- Contacts -->
 	<string name="contacts_search_new">NEW</string>
@@ -393,7 +393,8 @@
 	<string name="live_share_new_call_button_title">Call link</string>
 	<string name="live_share_screenshot_description">Share this screenshot!</string>
 	<string name="live_share_screenshot_caption">Thanks @heytribe! :metal: #tribegoals</string>
-	<string name="live_ringing">Ringing...</string>
+	<string name="live_ringing">Ringing %@</string>
+	<string name="live_joining">Joining...</string>
 	<string name="live_invite_section_chat_members">Chat members</string>
 	<string name="live_invite_section_invite_link">Invite link</string>
 	<string name="live_invite_section_add_friends">Add friends in call</string>
@@ -663,6 +664,10 @@
 	<string name="game_draw_instructions_my_turn">Your turn to draw!</string>
 	<string name="game_aliens_attack">Aliens Attack</string>
 	<string name="game_aliens_attack_lets_go">Let\'s go!</string>
+	<string name="game_aliens_attack_you_won">You Won!</string>
+	<string name="game_aliens_attack_someone_won">%@ Won!</string>
+	<string name="game_aliens_attack_you_lost">You Lost!</string>
+	<string name="game_aliens_attack_someone_lost">%@ Lost!</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>
@@ -750,6 +755,8 @@
 	<string name="home_menu_shortcut_hide">:speak_no_evil: Hide</string>
 	<string name="home_menu_shortcut_block">:no_entry: Block</string>
 	<string name="home_menu_shortcut_update_name">:pencil2: Edit name</string>
+	<string name="home_menu_shortcut_customize">:art: Customize</string>
+	<string name="home_menu_shortcut_update_avatar">:framed_picture: Edit avatar</string>
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Mark as read</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Mark as unread</string>
 	<string name="home_menu_invite_decline">:phone: Decline call</string>

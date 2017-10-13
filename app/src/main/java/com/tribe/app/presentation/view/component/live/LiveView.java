@@ -802,6 +802,7 @@ public class LiveView extends FrameLayout {
 
     viewControlsLive.setLive(live);
     viewLiveInvite.setLive(live);
+    viewRinging.setLive(live);
 
     onShouldJoinRoom.onNext(null);
 

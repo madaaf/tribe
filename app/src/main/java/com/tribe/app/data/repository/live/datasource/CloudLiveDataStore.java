@@ -53,11 +53,6 @@ public class CloudLiveDataStore implements LiveDataStore {
     if (!StringUtils.isEmpty(name)) {
       params += "( " + context.getString(R.string.createRoom_name, name);
     }
-    if (params.length() > 0) params += ", ";
-    if (userIds != null && userIds.length > 0) {
-      params += params.length() == 0 ? "( " : "";
-      params += context.getString(R.string.createRoom_usersIds, StringUtils.arrayToJson(userIds));
-    }
     if (params.length() > 0) params += " )";
 
     String body = context.getString(R.string.createRoom, params);
@@ -105,9 +100,9 @@ public class CloudLiveDataStore implements LiveDataStore {
     return this.tribeApi.removeRoom(request).map(aBoolean -> null);
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String[] userIds) {
+  @Override public Observable<Boolean> createInvite(String roomId, String userId) {
     final String request = context.getString(R.string.mutation,
-        context.getString(R.string.createInvite, roomId, StringUtils.arrayToJson(userIds)));
+        context.getString(R.string.createInvite, roomId, userId));
 
     return this.tribeApi.createInvite(request);
   }

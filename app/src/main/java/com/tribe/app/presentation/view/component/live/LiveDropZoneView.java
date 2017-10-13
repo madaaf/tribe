@@ -205,8 +205,10 @@ public class LiveDropZoneView extends RelativeLayout {
   }
 
   private void stopFloatingArrowAnimation() {
-    animatorFloating.cancel();
-    animatorFloating.removeAllListeners();
+    if (animatorFloating != null) {
+      animatorFloating.cancel();
+      animatorFloating.removeAllListeners();
+    }
   }
 
   ///////////////////////
