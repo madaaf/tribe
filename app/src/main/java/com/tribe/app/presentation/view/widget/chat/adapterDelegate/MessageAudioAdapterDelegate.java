@@ -34,6 +34,8 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
   private int currentPlayingPosition;
   private MediaPlayer mediaPlayer;
   private MessageAudioViewHolder playingHolder;
+  private ValueAnimator anim;
+  private long currentPlayTime;
 
   public MessageAudioAdapterDelegate(Context context, int type) {
     super(context, type);
@@ -67,8 +69,10 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
       if (position == currentPlayingPosition) {
         if (mediaPlayer.isPlaying()) {
           mediaPlayer.pause();
+          stopAnimation();
         } else {
           mediaPlayer.start();
+          startAnimation();
           mediaPlayer.setOnCompletionListener(mediaPlayer1 -> Timber.e("onCompletion"));
         }
       } else {
@@ -106,6 +110,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
   private void updateNonPlayingView(MessageAudioViewHolder holder) {
     holder.playBtn.setImageDrawable(
         ContextCompat.getDrawable(context, R.drawable.picto_play_recording));
+    holder.playerIndicator.setVisibility(View.INVISIBLE);
   }
 
   void stopPlayer() {
@@ -171,7 +176,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
   private void animePlayerIndicator(MessageAudioViewHolder vh, int duration) {
     vh.playerIndicator.setVisibility(View.VISIBLE);
 
-    ValueAnimator anim = ValueAnimator.ofInt(0, vh.recordingView.getWidth());
+    anim = ValueAnimator.ofInt(0, vh.recordingView.getWidth());
     anim.addUpdateListener(valueAnimator -> {
       int val = (Integer) valueAnimator.getAnimatedValue();
       ViewGroup.LayoutParams layoutParams = vh.playerIndicator.getLayoutParams();
@@ -180,6 +185,18 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     });
     anim.setDuration(duration);
     anim.start();
+
+    anim.getCurrentPlayTime();
+  }
+
+  private void stopAnimation() {
+    currentPlayTime = anim.getCurrentPlayTime();
+    anim.cancel();
+  }
+
+  private void startAnimation() {
+    anim.start();
+    anim.setCurrentPlayTime(currentPlayTime);
   }
 
   static class MessageAudioViewHolder extends BaseTextViewHolder {

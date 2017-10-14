@@ -271,9 +271,9 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
           containerUsers.setVisibility(GONE);
         }
         float ok = recordingViewX + (recordingView.getWidth() / 2);
-        SwipeDetector moveListener = new SwipeDetector(chatView, voiceNoteBtn, recordingView,
+       /* SwipeDetector moveListener = new SwipeDetector(chatView, voiceNoteBtn, recordingView,
             trashBtn.getX() - (trashBtn.getWidth() / 2), screenUtils, ok);
-        voiceNoteBtn.setOnTouchListener(moveListener);
+        voiceNoteBtn.setOnTouchListener(moveListener);*/ //TODO DECOMMENT
       }
     });
   }
