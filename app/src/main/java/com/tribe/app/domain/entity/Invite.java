@@ -81,7 +81,7 @@ public class Invite extends Recipient {
   }
 
   @Override public boolean isRead() {
-    return true;
+    return shortcut != null ? shortcut.isRead() : true;
   }
 
   @Override public boolean isFriend() {

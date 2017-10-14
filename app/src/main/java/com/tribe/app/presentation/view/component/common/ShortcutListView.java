@@ -33,6 +33,7 @@ public class ShortcutListView extends RelativeLayout {
   public static final int NORMAL = 0;
   public static final int LIVE = 1;
   public static final int CHAT = 2;
+  public static final int LIVE_CHAT = 3;
 
   @BindView(R.id.viewPictoChat) PictoChatView viewPictoChat;
   @BindView(R.id.viewPictoLive) PictoLiveView viewPictoLive;
@@ -123,6 +124,7 @@ public class ShortcutListView extends RelativeLayout {
     });
 
     viewPictoChat.setOnClickListener(v -> onChat.onNext(v));
+    viewPictoLive.setOnClickListener(v -> onLive.onNext(v));
   }
 
   public void setRecipient(Recipient recipient) {
@@ -130,6 +132,12 @@ public class ShortcutListView extends RelativeLayout {
 
     if (!(recipient instanceof Invite)) {
       viewAvatar.setType(recipient.isOnline() ? NewAvatarView.ONLINE : NewAvatarView.NORMAL);
+    }
+
+    if (!recipient.isRead()) {
+      viewPictoChat.setStatus(PictoChatView.ACTIVE);
+    } else {
+      viewPictoChat.setStatus(PictoChatView.INACTIVE);
     }
 
     viewAvatar.load(recipient);

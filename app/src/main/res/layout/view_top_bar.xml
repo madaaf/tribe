@@ -11,9 +11,9 @@
       >
     <com.tribe.app.presentation.view.widget.avatar.AvatarView
         android:id="@+id/viewAvatar"
-        android:layout_width="@dimen/avatar_size_smaller"
-        android:layout_height="@dimen/avatar_size_smaller"
-        android:layout_gravity="left"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="left|center_vertical"
         android:layout_marginLeft="@dimen/horizontal_margin_small"
         android:clickable="true"
         android:foreground="@drawable/selectable_button_oval_light"

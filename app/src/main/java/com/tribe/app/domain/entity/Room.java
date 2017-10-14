@@ -20,7 +20,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public class Room implements Serializable, LiveInviteAdapterSectionInterface {
 
-  private static final int NB_MAX_USERS_STRING = 3;
+  private static final int NB_MAX_USERS_STRING = 2;
 
   public static final String NAME = "name";
   public static final String ACCEPT_RANDOM = "accept_random";
@@ -33,6 +33,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   private User initiator;
   private List<User> live_users;
   private List<User> invited_users;
+  private List<User> all_users;
   private Date created_at;
   private Date updated_at;
   private transient ObservableRxHashMap<String, User> liveUsersMap;
@@ -62,6 +63,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     invited_users = new ArrayList<>();
     live_users = new ArrayList<>();
     waitingIds = new HashSet<>();
+    all_users = new ArrayList<>();
 
     subscriptions.add(liveUsersMap.getObservable().doOnNext(rxLiveUserMap -> {
       if (rxLiveUserMap.changeType == ObservableRxHashMap.ADD) {
@@ -191,16 +193,17 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
 
   public String getUserNames() {
     StringBuffer buffer = new StringBuffer();
-    int min = Math.min(NB_MAX_USERS_STRING, live_users.size());
+    List<User> users = getAllUsers();
+    int min = Math.min(NB_MAX_USERS_STRING, users.size());
     for (int i = 0; i < min; i++) {
-      User user = live_users.get(i);
+      User user = users.get(i);
       buffer.append(user.getDisplayName());
 
       if (i < min - 1) buffer.append(", ");
     }
 
-    if (live_users.size() > NB_MAX_USERS_STRING) {
-      buffer.append(", " + (live_users.size() - NB_MAX_USERS_STRING) + " persons");
+    if (users.size() > NB_MAX_USERS_STRING) {
+      buffer.append("... +" + (users.size() - NB_MAX_USERS_STRING));
     }
 
     return buffer.toString();
@@ -233,6 +236,12 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     if (shouldOverwrite) {
       invited_users.clear();
       invited_users.addAll(newInvitedUsers);
+    }
+
+    if (shouldOverwrite) {
+      all_users.clear();
+      all_users.addAll(newLiveUsers);
+      all_users.addAll(newInvitedUsers);
     }
 
     onRoomUpdated.onNext(this);
@@ -301,6 +310,15 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     }
 
     return memberIds;
+  }
+
+  public List<User> getAllUsers() {
+    if (all_users.size() == 0) {
+      all_users.addAll(live_users);
+      all_users.addAll(invited_users);
+    }
+
+    return all_users;
   }
 
   public int nbUsersLive() {

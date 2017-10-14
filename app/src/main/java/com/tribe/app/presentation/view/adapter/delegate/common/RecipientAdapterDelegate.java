@@ -32,6 +32,7 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
   protected final PublishSubject<View> click = PublishSubject.create();
   protected final PublishSubject<View> longClick = PublishSubject.create();
   protected final PublishSubject<View> onChatClick = PublishSubject.create();
+  protected final PublishSubject<View> onLiveClick = PublishSubject.create();
 
   public RecipientAdapterDelegate(Context context) {
     this.context = context;
@@ -49,6 +50,9 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
     recipientGridViewHolder.viewListItem.onChatClick()
         .map(view -> recipientGridViewHolder.itemView)
         .subscribe(onChatClick);
+    recipientGridViewHolder.viewListItem.onLiveClick()
+        .map(view -> recipientGridViewHolder.itemView)
+        .subscribe(onLiveClick);
     return recipientGridViewHolder;
   }
 
@@ -59,9 +63,8 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
     vh.viewListItem.setRecipient(recipient);
   }
 
-  @Override
-  public void onBindViewHolder(@NonNull List<Recipient> items, @NonNull RecyclerView.ViewHolder holder,
-      int position, List<Object> payloads) {
+  @Override public void onBindViewHolder(@NonNull List<Recipient> items,
+      @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     RecipientHomeViewHolder vh = (RecipientHomeViewHolder) holder;
     Recipient recipient = items.get(position);
 
@@ -82,6 +85,10 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
 
   public Observable<View> onLongClick() {
     return longClick;
+  }
+
+  public Observable<View> onLiveClick() {
+    return onLiveClick;
   }
 
   protected abstract int getLayoutId();

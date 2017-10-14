@@ -63,6 +63,10 @@ public class GridDiffCallback extends DiffUtil.Callback {
       diffBundle.putBoolean(Recipient.IS_ONLINE, newRecipient.isOnline());
     }
 
+    if (newRecipient.isRead() != oldRecipient.isRead()) {
+      diffBundle.putBoolean(Recipient.IS_ONLINE, newRecipient.isOnline());
+    }
+
     if (diffBundle.size() == 0) return null;
     return diffBundle;
   }

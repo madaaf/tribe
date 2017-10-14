@@ -5,10 +5,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.common.ShortcutAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutChatActiveHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyListAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.common.ShortcutAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutLiveHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.helper.ItemTouchHelperAdapter;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
@@ -43,8 +42,6 @@ public class HomeListAdapter extends RecyclerView.Adapter
 
   @Inject public HomeListAdapter(Context context) {
     delegatesManager = new RxAdapterDelegatesManager<>();
-    delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE,
-        new EmptyHeaderGridAdapterDelegate(context));
     delegatesManager.addDelegate(EMPTY_VIEW_TYPE, new ShortcutEmptyListAdapterDelegate(context));
 
     shortcutHomeAdapterDelegate = new ShortcutAdapterDelegate(context);
@@ -112,9 +109,16 @@ public class HomeListAdapter extends RecyclerView.Adapter
         shortcutChatActiveHomeAdapterDelegate.onChatClick());
   }
 
+  public Observable<View> onLiveClick() {
+    return Observable.merge(shortcutHomeAdapterDelegate.onLiveClick(),
+        shortcutLiveHomeAdapterDelegate.onLiveClick(),
+        shortcutChatActiveHomeAdapterDelegate.onLiveClick());
+  }
+
   public Observable<View> onLongClick() {
     return Observable.merge(shortcutHomeAdapterDelegate.onLongClick(),
-        shortcutLiveHomeAdapterDelegate.onLongClick(), shortcutChatActiveHomeAdapterDelegate.onLongClick());//, userConnectedGridAdapterDelegate.onLongClick());
+        shortcutLiveHomeAdapterDelegate.onLongClick(),
+        shortcutChatActiveHomeAdapterDelegate.onLongClick());//, userConnectedGridAdapterDelegate.onLongClick());
   }
 
   public void setItems(List<Recipient> items) {

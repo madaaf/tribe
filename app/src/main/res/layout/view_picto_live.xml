@@ -11,7 +11,7 @@
       android:layout_height="match_parent"
       android:layout_gravity="center"
       app:pulseColor="@color/red"
-      app:pulseCount="2"
+      app:pulseCount="3"
       app:pulseDuration="3000"
       >
 

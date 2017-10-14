@@ -110,17 +110,6 @@ public class PulseLayout extends RelativeLayout {
 
     if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       animatorSet.start();
-
-      if (!startFromScratch) {
-        ArrayList<Animator> animators = animatorSet.getChildAnimations();
-        for (Animator animator : animators) {
-          ObjectAnimator objectAnimator = (ObjectAnimator) animator;
-
-          long delay = objectAnimator.getStartDelay();
-          objectAnimator.setStartDelay(0);
-          objectAnimator.setCurrentPlayTime(duration - delay);
-        }
-      }
     }
   }
 

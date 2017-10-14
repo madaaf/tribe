@@ -449,15 +449,9 @@ public class HomeActivity extends BaseActivity
   }
 
   private void onClickItem(Recipient recipient) {
-    if (recipient.getId().equals(Recipient.ID_MORE)) {
-      homeGridPresenter.createRoom(TagManagerUtils.INVITE, null, false);
-    } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
-      navigator.navigateToVideo(this);
-    } else {
-      navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()),
-          recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-              : LiveActivity.SOURCE_GRID);
-    }
+    navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()),
+        recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+            : LiveActivity.SOURCE_GRID);
   }
 
   private void initRecyclerView() {
@@ -469,6 +463,13 @@ public class HomeActivity extends BaseActivity
           if (!recipient.isRead()) homeGridPresenter.readShortcut(recipient.getId());
           navigator.navigateToChat(this, recipient);
         }));
+
+    subscriptions.add(homeGridAdapter.onLiveClick()
+        .debounce(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .map(view -> homeGridAdapter.getItemAtPosition(
+            recyclerViewFriends.getChildLayoutPosition(view)))
+        .subscribe(recipient -> onClickItem(recipient)));
 
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
@@ -539,7 +540,6 @@ public class HomeActivity extends BaseActivity
         map(recipientList -> {
           DiffUtil.DiffResult diffResult = null;
           List<Recipient> temp = new ArrayList<>();
-          temp.add(new Shortcut(Recipient.ID_HEADER));
           temp.addAll(recipientList);
           ListUtils.addEmptyItemsHome(temp);
 
@@ -1001,9 +1001,10 @@ public class HomeActivity extends BaseActivity
   private SectionCallback getSectionCallback(final List<Recipient> recipientList) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
-        return recipientList.get(position).getSectionType() != BaseSectionItemDecoration.NONE &&
-            recipientList.get(position).getSectionType() !=
-                recipientList.get(position - 1).getSectionType();
+        return position == 0 ||
+            recipientList.get(position).getSectionType() != BaseSectionItemDecoration.NONE &&
+                recipientList.get(position).getSectionType() !=
+                    recipientList.get(position - 1).getSectionType();
       }
 
       @Override public int getSectionType(int position) {
