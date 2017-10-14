@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.widget.chat.adapterDelegate;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -9,8 +10,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
@@ -25,6 +28,8 @@ import timber.log.Timber;
  */
 
 public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
+
+  private static int DURATION = 200;
 
   private int currentPlayingPosition;
   private MediaPlayer mediaPlayer;
@@ -64,6 +69,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
           mediaPlayer.pause();
         } else {
           mediaPlayer.start();
+          mediaPlayer.setOnCompletionListener(mediaPlayer1 -> Timber.e("onCompletion"));
         }
       } else {
         currentPlayingPosition = position;
@@ -75,6 +81,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
         }
         playingHolder = vh;
         startMediaPlayer(Uri.parse(m.getOriginal().getUrl()));
+        animePlayerIndicator(vh, m.getOriginal().getDurationMs());
       }
       updatePlayingView();
     });
@@ -109,12 +116,42 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
 
   private void updatePlayingView() {
     if (mediaPlayer.isPlaying()) {
-      playingHolder.playBtn.setImageDrawable(
-          ContextCompat.getDrawable(context, R.drawable.picto_pause_recording));
+      playingHolder.playBtn.animate()
+          .scaleX(0)
+          .scaleY(0)
+          .setDuration(DURATION)
+          .setInterpolator(new OvershootInterpolator(3))
+          .withEndAction(() -> {
+            playingHolder.playBtn.setImageDrawable(
+                ContextCompat.getDrawable(context, R.drawable.picto_pause_recording));
+            playingHolder.playBtn.animate()
+                .scaleX(1)
+                .scaleY(1)
+                .setDuration(DURATION)
+                .setInterpolator(new OvershootInterpolator(3))
+                .start();
+          })
+          .start();
+
       Timber.e("OK 1 ");
     } else {
-      playingHolder.playBtn.setImageDrawable(
-          ContextCompat.getDrawable(context, R.drawable.picto_play_recording));
+
+      playingHolder.playBtn.animate()
+          .scaleX(0)
+          .scaleY(0)
+          .setDuration(DURATION)
+          .setInterpolator(new OvershootInterpolator(3))
+          .withEndAction(() -> {
+            playingHolder.playBtn.setImageDrawable(
+                ContextCompat.getDrawable(context, R.drawable.picto_play_recording));
+            playingHolder.playBtn.animate()
+                .scaleX(1)
+                .scaleY(1)
+                .setDuration(DURATION)
+                .setInterpolator(new OvershootInterpolator(3))
+                .start();
+          })
+          .start();
       Timber.e("OK 2 ");
     }
   }
@@ -131,11 +168,27 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     }
   }
 
+  private void animePlayerIndicator(MessageAudioViewHolder vh, int duration) {
+    vh.playerIndicator.setVisibility(View.VISIBLE);
+
+    ValueAnimator anim = ValueAnimator.ofInt(0, vh.recordingView.getWidth());
+    anim.addUpdateListener(valueAnimator -> {
+      int val = (Integer) valueAnimator.getAnimatedValue();
+      ViewGroup.LayoutParams layoutParams = vh.playerIndicator.getLayoutParams();
+      layoutParams.width = val;
+      vh.playerIndicator.setLayoutParams(layoutParams);
+    });
+    anim.setDuration(duration);
+    anim.start();
+  }
+
   static class MessageAudioViewHolder extends BaseTextViewHolder {
 
-    @BindView(R.id.container) public LinearLayout container;
+    @BindView(R.id.container) public RelativeLayout container;
     @BindView(R.id.timerVoiceNote) public TextViewFont timerVoiceNote;
     @BindView(R.id.playBtn) public ImageView playBtn;
+    @BindView(R.id.playerIndicator) public FrameLayout playerIndicator;
+    @BindView(R.id.recordingView) public FrameLayout recordingView;
 
     MessageAudioViewHolder(View itemView) {
       super(itemView);

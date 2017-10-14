@@ -20,9 +20,12 @@ public class Image {
   }
 
   public String getDurationFormatted() {
-    String value =
-        String.valueOf(Float.parseFloat(Float.toString(duration / 1000).substring(0, 5)));
+    String value = String.valueOf(Float.parseFloat(Float.toString(duration / 100).substring(0, 4)));
     return value.replace(".", ":");
+  }
+
+  public int getDurationMs() {
+    return (int) (duration * 1000);
   }
 
   public void setDuration(float duration) {

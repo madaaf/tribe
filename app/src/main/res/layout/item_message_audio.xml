@@ -1,20 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     >
 
+  <include
+      layout="@layout/item_message_base"
+      android:id="@+id/item_message_base"
+      />
 
-  <include layout="@layout/item_message_base" />
+
+  <FrameLayout
+      android:id="@+id/playerIndicator"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignBottom="@+id/recordingView"
+      android:layout_alignTop="@+id/recordingView"
+      android:background="@color/blue.voice.bck.opacity40"
+      android:visibility="invisible"
+
+      />
+
+  <View
+      android:layout_width="150dp"
+      android:layout_height="wrap_content"
+      android:layout_alignBottom="@+id/recordingView"
+      android:layout_alignTop="@+id/recordingView"
+      android:background="@drawable/shape_rect_voice_note_back"
+      android:visibility="visible"
+      />
+
 
   <FrameLayout
       android:id="@+id/recordingView"
       android:layout_width="150dp"
       android:layout_height="wrap_content"
-      android:layout_alignParentBottom="true"
-      android:layout_centerHorizontal="true"
+      android:layout_below="@+id/item_message_base"
       android:layout_marginBottom="10dp"
       android:background="@drawable/shape_rect_voice_note"
       android:paddingBottom="5dp"
@@ -31,18 +53,8 @@
         android:src="@drawable/picto_play_recording"
         android:visibility="visible"
         />
-
-    <!--    <com.wang.avi.AVLoadingIndicatorView
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_gravity="center"
-            android:gravity="center"
-            app:indicatorColor="@color/blue.voice.bck"
-            app:indicatorName="LineScalePulseOutIndicator"
-            />-->
-
     <ImageView
-        android:layout_width="30dp"
+        android:layout_width="40dp"
         android:layout_height="25dp"
         android:layout_gravity="center"
         android:gravity="center"
@@ -62,4 +74,6 @@
         />
 
   </FrameLayout>
-</LinearLayout>
+
+
+</RelativeLayout>

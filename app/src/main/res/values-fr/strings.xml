@@ -668,6 +668,7 @@
 	<string name="game_aliens_attack_someone_won">%@ a gagné!</string>
 	<string name="game_aliens_attack_you_lost">Tu as perdu!</string>
 	<string name="game_aliens_attack_someone_lost">%@ a perdu!</string>
+	<string name="game_aliens_attack_pending_instructions">Le jeu redémarera quand\nun joueur gagne!</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>

@@ -668,6 +668,7 @@
 	<string name="game_aliens_attack_someone_won">%@ Won!</string>
 	<string name="game_aliens_attack_you_lost">You Lost!</string>
 	<string name="game_aliens_attack_someone_lost">%@ Lost!</string>
+	<string name="game_aliens_attack_pending_instructions">It will restart when\nsomeone wins!</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>

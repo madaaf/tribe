@@ -980,7 +980,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     mRecorder = null;
   }
 
-
   private void startRecording() {
     // Record to the external cache directory for visibility
     mFileName = context.getExternalCacheDir().getAbsolutePath();
