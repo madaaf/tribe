@@ -10,7 +10,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="5dp"
-      style="@style/Title.1.Black"
+      style="@style/BiggerTitle.1.Black"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
@@ -21,7 +21,7 @@
       android:ellipsize="end"
       android:maxLines="1"
       android:text="@string/home_action_read_chat"
-      style="@style/Body.One.Grey"
+      style="@style/BiggerBody.One.Grey"
       />
 
 </LinearLayout>

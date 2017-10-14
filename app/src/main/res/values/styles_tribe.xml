@@ -5,6 +5,34 @@
     <item name="android:textSize">13sp</item>
   </style>
 
+  <style name="BiggerBody">
+    <item name="android:textSize">14sp</item>
+  </style>
+
+  <style name="BiggerBody.One" parent="BiggerBody">
+    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
+  </style>
+
+  <style name="BiggerBody.Two" parent="BiggerBody">
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
+  </style>
+
+  <style name="BiggerBody.One.Grey" parent="BiggerBody">
+    <item name="android:textColor">@color/grey.text.profile_info</item>
+  </style>
+
+  <style name="BiggerBody.One.Blue" parent="BiggerBody.One">
+    <item name="android:textColor">@color/blue.text</item>
+  </style>
+
+  <style name="BiggerBody.One.Red" parent="BiggerBody.One">
+    <item name="android:textColor">@color/red</item>
+  </style>
+
+  <style name="BiggerBody.Two.Grey" parent="BiggerBody.Two">
+    <item name="android:textColor">@color/grey.text.profile_info</item>
+  </style>
+
   <style name="Content">
     <item name="android:textSize">16sp</item>
   </style>
@@ -288,6 +316,26 @@
 
   <style name="Title.Regular.Black" parent="@style/Title.1.Black">
     <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
+  </style>
+
+  <style name="BiggerTitle">
+    <item name="android:textSize">17sp</item>
+  </style>
+
+  <style name="BiggerTitle.1" parent="@style/BiggerTitle">
+    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
+  </style>
+
+  <style name="BiggerTitle.2" parent="@style/BiggerTitle">
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
+  </style>
+
+  <style name="BiggerTitle.1.Black" parent="@style/BiggerTitle.1">
+    <item name="android:textColor">@android:color/black</item>
+  </style>
+
+  <style name="BiggerTitle.2.Black" parent="@style/BiggerTitle.2">
+    <item name="android:textColor">@android:color/black</item>
   </style>
 
   <style name="Headline">

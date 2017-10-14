@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class Shortcut extends Recipient implements Serializable, LiveInviteAdapterSectionInterface {
 
-  private static final int NB_MAX_USERS_STRING = 3;
+  private static final int NB_MAX_USERS_STRING = 2;
 
   private String id;
   private String name;
@@ -250,7 +250,7 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
     }
 
     if (members.size() > NB_MAX_USERS_STRING) {
-      buffer.append("... " + (members.size() - NB_MAX_USERS_STRING));
+      buffer.append("... +" + (members.size() - NB_MAX_USERS_STRING));
     }
 
     return buffer.toString();

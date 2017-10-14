@@ -80,20 +80,20 @@ public class TextHomeNameActionView extends LinearLayout {
     this.textType = textType;
 
     if (textType == NORMAL) {
-      TextViewCompat.setTextAppearance(txtName, R.style.Title_1_Black);
+      TextViewCompat.setTextAppearance(txtName, R.style.BiggerTitle_1_Black);
       txtName.setCustomFont(getContext(), FontUtils.PROXIMA_REGULAR);
 
-      TextViewCompat.setTextAppearance(txtAction, R.style.Body_One_Grey);
+      TextViewCompat.setTextAppearance(txtAction, R.style.BiggerBody_One_Grey);
       txtAction.setCustomFont(getContext(), FontUtils.PROXIMA_REGULAR);
     } else {
-      TextViewCompat.setTextAppearance(txtName, R.style.Title_2_Black);
+      TextViewCompat.setTextAppearance(txtName, R.style.BiggerTitle_2_Black);
       txtName.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
 
       if (textType == CHAT) {
-        TextViewCompat.setTextAppearance(txtAction, R.style.Body_One_Blue);
+        TextViewCompat.setTextAppearance(txtAction, R.style.BiggerBody_One_Blue);
         txtAction.setText(R.string.home_action_read_chat);
       } else {
-        TextViewCompat.setTextAppearance(txtAction, R.style.Body_One_Red);
+        TextViewCompat.setTextAppearance(txtAction, R.style.BiggerBody_One_Red);
         txtAction.setText(R.string.home_action_join_live);
       }
     }
