@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.adapter.decorator;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -48,6 +49,11 @@ public class RecyclerSectionItemDecoration extends BaseSectionItemDecoration {
         imgPicto.setImageResource(R.drawable.picto_recent);
         gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
         break;
+
+      case NONE:
+        txtLabel.setText("");
+        imgPicto.setImageDrawable(null);
+        gradientDrawable.setColor(Color.TRANSPARENT);
     }
   }
 

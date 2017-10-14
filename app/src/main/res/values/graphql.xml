@@ -408,10 +408,6 @@
     name : \"%1$s\"
   </string>
 
-  <string name="createRoom.usersIds" translatable="false">
-    usersIds : [%1$s]
-  </string>
-
   <string name="updateRoom" translatable="false">
     updateRoom ( roomId : \"%1$s\", room : { %2$s } ) {
       ...RoomInfos
@@ -451,7 +447,7 @@
   </string>
 
   <string name="createInvite" translatable="false">
-    createInvite(roomId : \"%1$s\", usersIds : [%2$s])
+    createInvite(roomId : \"%1$s\", userId : \"%2$s\")
   </string>
 
   <string name="removeInvite" translatable="false">

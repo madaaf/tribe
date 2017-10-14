@@ -95,6 +95,7 @@ import com.tribe.app.presentation.view.component.home.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.TopBarLogoView;
 import com.tribe.app.presentation.view.component.home.TopBarView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
+import com.tribe.app.presentation.view.component.live.LiveDropZoneView;
 import com.tribe.app.presentation.view.component.live.LiveInviteBottomView;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
@@ -247,6 +248,8 @@ public interface ApplicationComponent {
   void inject(LiveInviteSubHeaderAdapterDelegate shortcutInviteSubHeaderAdapterDelegate);
 
   void inject(ShortcutInviteFullAdapterDelegate shortcutInviteFullAdapterDelegate);
+
+  void inject(LiveDropZoneView liveDropZone);
 
   // JOBS
   void inject(BaseJob baseJob);

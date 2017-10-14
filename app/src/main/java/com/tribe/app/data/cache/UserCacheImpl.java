@@ -8,6 +8,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import java.util.List;
 import javax.inject.Inject;
@@ -42,9 +43,7 @@ public class UserCacheImpl implements UserCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
-      obsRealm.executeTransaction(realm1 -> {
-        realm1.insertOrUpdate(userRealm);
-      });
+      obsRealm.executeTransaction(realm1 -> realm1.insertOrUpdate(userRealm));
     } finally {
       obsRealm.close();
     }
@@ -54,10 +53,39 @@ public class UserCacheImpl implements UserCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
-      obsRealm.executeTransaction(realm1 -> realm1.insertOrUpdate(shortcutRealmList));
+      obsRealm.executeTransaction(realm1 -> {
+        for (ShortcutRealm shortcutRealm : shortcutRealmList) {
+          ShortcutRealm shortcutRealmDB =
+              realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
+          if (shortcutRealmDB == null) {
+            realm1.insertOrUpdate(shortcutRealm);
+          } else {
+            updateShortcutPartially(realm1, shortcutRealm, shortcutRealmDB);
+          }
+        }
+      });
     } finally {
       obsRealm.close();
     }
+  }
+
+  private void updateShortcutPartially(Realm tempRealm, ShortcutRealm from, ShortcutRealm to) {
+    to.setMute(from.isMute());
+    to.setStatus(from.getStatus().toUpperCase());
+    to.setRead(from.isRead());
+    to.setName(from.getName());
+    to.setPicture(from.getPicture());
+    to.setSingle(from.isSingle());
+    to.setLastActivityAt(from.getLastActivityAt());
+
+    RealmList<UserRealm> userRealmList = new RealmList<>();
+    for (UserRealm member : from.getMembers()) {
+      tempRealm.insertOrUpdate(member);
+      userRealmList.add(tempRealm.where(UserRealm.class).equalTo("id", member.getId()).findFirst());
+    }
+
+    to.setMembers(userRealmList);
+    to.setPinned(from.isPinned());
   }
 
   @Override public void updateCurrentUser(UserRealm userRealm) {
@@ -262,12 +290,21 @@ public class UserCacheImpl implements UserCache {
       realm.executeTransaction(realm1 -> {
         ShortcutRealm shortcutRealmDB =
             realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
-        shortcutRealmDB.setMute(shortcutRealm.isMute());
-        shortcutRealmDB.setStatus(shortcutRealm.getStatus().toUpperCase());
-        shortcutRealmDB.setRead(shortcutRealm.isRead());
-        shortcutRealmDB.setName(shortcutRealm.getName());
-        shortcutRealmDB.setPicture(shortcutRealm.getPicture());
-        shortcutRealmDB.setSingle(shortcutRealm.isSingle());
+        updateShortcutPartially(realm1, shortcutRealm, shortcutRealmDB);
+      });
+    } finally {
+      realm.close();
+    }
+  }
+
+  @Override public void updateShortcutLastText(String shortcutId, String lastMessage) {
+    Realm realm = Realm.getDefaultInstance();
+
+    try {
+      realm.executeTransaction(realm1 -> {
+        ShortcutRealm shortcutRealmDB =
+            realm1.where(ShortcutRealm.class).equalTo("id", shortcutId).findFirst();
+        shortcutRealmDB.setLastMessage(lastMessage);
       });
     } finally {
       realm.close();

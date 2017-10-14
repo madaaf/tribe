@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+  <View
+      android:id="@+id/viewRing"
+      android:layout_width="60dp"
+      android:layout_height="60dp"
+      android:layout_centerInParent="true"
+      android:background="@drawable/shape_oval_drop_zone"
+      />
+
+  <ImageView
+      android:id="@+id/imgArrow"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_centerInParent="true"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_arrow_down"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtLabelDrop"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/viewRing"
+      android:layout_centerHorizontal="true"
+      android:layout_margin="@dimen/vertical_margin_small"
+      android:gravity="center"
+      android:maxLines="1"
+      android:text="@string/live_members_drop_zone"
+      style="@style/Body.Two.White"
+      />
+
+</merge>

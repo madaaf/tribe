@@ -12,7 +12,7 @@ import rx.Observable;
  */
 public class CreateInvite extends UseCase {
 
-  private String[] userIds;
+  private String userId;
   private String roomId;
   private LiveRepository liveRepository;
 
@@ -22,12 +22,12 @@ public class CreateInvite extends UseCase {
     this.liveRepository = liveRepository;
   }
 
-  public void setup(String roomId, String... userIds) {
+  public void setup(String roomId, String userId) {
     this.roomId = roomId;
-    this.userIds = userIds;
+    this.userId = userId;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.liveRepository.createInvite(roomId, userIds);
+    return this.liveRepository.createInvite(roomId, userId);
   }
 }

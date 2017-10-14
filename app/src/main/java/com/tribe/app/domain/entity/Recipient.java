@@ -114,8 +114,10 @@ public abstract class Recipient implements Serializable, BaseListInterface {
       return BaseSectionItemDecoration.HOME_ONGOING;
     } else if (isOnline()) {
       return BaseSectionItemDecoration.HOME_ONLINE;
-    } else {
+    } else if (!getId().equals(ID_EMPTY) && !getId().equals(ID_HEADER)) {
       return BaseSectionItemDecoration.HOME_RECENT;
+    } else {
+      return BaseSectionItemDecoration.NONE;
     }
   }
 

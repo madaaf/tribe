@@ -361,7 +361,7 @@ import timber.log.Timber;
     persistentSubscriptions.add(jsonToModel.onInviteRemoved()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
         .subscribe(invite -> {
-          if (invite.getRoom() != null) unsubscribeRoomUpdate(invite.getRoom().getId());
+          //if (invite.getRoom() != null) unsubscribeRoomUpdate(invite.getRoom().getId());
           liveCache.removeInvite(invite);
         }));
 

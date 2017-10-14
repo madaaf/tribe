@@ -50,10 +50,10 @@ import rx.Observable;
     return cloudDataStore.deleteRoom(roomId);
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {
+  @Override public Observable<Boolean> createInvite(String roomId, String userId) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.createInvite(roomId, userIds);
+    return cloudDataStore.createInvite(roomId, userId);
   }
 
   @Override public Observable<Boolean> removeInvite(String roomId, String userId) {
@@ -85,10 +85,18 @@ import rx.Observable;
   private Observable.Transformer<Room, Room> roomWithShortcutTransformer =
       roomObservable -> roomObservable.flatMap(room -> {
         List<String> userIds = room.getUserIds();
-        return diskUserDataStore.shortcutForUserIdsNoObs(
-            userIds.toArray(new String[userIds.size()]));
+        if (userIds.size() == 0) {
+          return Observable.just(null);
+        } else {
+          return diskUserDataStore.shortcutForUserIdsNoObs(
+              userIds.toArray(new String[userIds.size()]));
+        }
       }, (room, shortcutRealm) -> {
-        room.setShortcut(userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealm));
+        if (shortcutRealm != null) {
+          room.setShortcut(
+              userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealm));
+        }
+
         return room;
       });
 }

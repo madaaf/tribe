@@ -182,6 +182,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
 
   public void setShortcut(Shortcut shortcut) {
     this.shortcut = shortcut;
+    onRoomUpdated.onNext(this);
   }
 
   public Shortcut getShortcut() {
@@ -316,6 +317,24 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     int total = 0;
     if (invited_users != null) total += invited_users.size();
     if (live_users != null) total += live_users.size();
+    return total;
+  }
+
+  public int nbUsersTotalWithoutMe(String currentUserId) {
+    int total = 0;
+
+    if (invited_users != null) {
+      for (User user : invited_users) {
+        if (!currentUserId.equals(user.getId())) total++;
+      }
+    }
+
+    if (live_users != null) {
+      for (User user : live_users) {
+        if (!currentUserId.equals(user.getId())) total++;
+      }
+    }
+
     return total;
   }
 

@@ -22,4 +22,15 @@
       android:scaleType="fitXY"
       android:src="@drawable/picto_expand_invite"
       />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtAdded"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@color/blue.new"
+      android:gravity="center"
+      android:text="@string/live_members_menu_added"
+      android:textAllCaps="true"
+      style="@style/Body.Two.White"
+      />
 </merge>

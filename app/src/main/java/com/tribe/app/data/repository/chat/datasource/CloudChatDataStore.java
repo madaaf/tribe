@@ -3,8 +3,10 @@ package com.tribe.app.data.repository.chat.datasource;
 import android.content.Context;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.RealmList;
@@ -20,11 +22,14 @@ public class CloudChatDataStore implements ChatDataStore {
   private final Context context;
   private final TribeApi tribeApi;
   private ChatCache chatCache;
+  private UserCache userCache;
 
-  public CloudChatDataStore(Context context, TribeApi tribeApi, ChatCache chatCache) {
+  public CloudChatDataStore(Context context, TribeApi tribeApi, ChatCache chatCache,
+      UserCache userCache) {
     this.context = context;
     this.tribeApi = tribeApi;
     this.chatCache = chatCache;
+    this.userCache = userCache;
   }
 
   @Override
@@ -36,6 +41,19 @@ public class CloudChatDataStore implements ChatDataStore {
       RealmList<MessageRealm> list = new RealmList<>();
       list.add(messageRealm);
       chatCache.putMessages(list, JsonUtils.arrayToJson(userIds));
+    }).doOnNext(messageRealm -> {
+      MessageRealm latestMessage = chatCache.getLastTextMessage(userIds);
+      ShortcutRealm shortcutRealm = userCache.shortcutForUserIdsNoObs(userIds);
+
+      if (shortcutRealm != null && latestMessage != null) {
+        String txt = "";
+        if (shortcutRealm.isSingle()) {
+          txt = latestMessage.getData();
+        } else {
+          txt = latestMessage.getAuthor().getDisplayName() + " : " + latestMessage.getData();
+        }
+        userCache.updateShortcutLastText(shortcutRealm.getId(), txt);
+      }
     });
   }
 

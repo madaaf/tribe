@@ -772,7 +772,7 @@ public class LiveView extends FrameLayout {
   public void applyTranslateX(float value) {
     viewControlsLive.setTranslationX(value);
     viewRoom.setTranslationX(value);
-    viewRinging.setTranslationX(value);
+    viewRinging.applyTranslationX(value);
     viewDarkOverlay.setTranslationX(value);
     viewShadow.setTranslationX(value);
 
@@ -795,40 +795,22 @@ public class LiveView extends FrameLayout {
 
   public void start(Live live) {
     this.live = live;
-    this.fbId = live.hasUsers() ? live.getUsers().get(0).getFbid() : "";
+    this.fbId = live.hasUsers() ? live.getUsersOfShortcut().get(0).getFbid() : "";
 
     webRTCRoom = tribeLiveSDK.newRoom();
     webRTCRoom.initLocalStream(viewLocalLive.getLocalPeerView());
 
     viewControlsLive.setLive(live);
     viewLiveInvite.setLive(live);
+    viewRinging.setLive(live);
 
     onShouldJoinRoom.onNext(null);
 
     viewRinging.startRinging();
   }
 
-  public void update(Live live) {
-    if (live != null && live.hasUsers()) {
-      // TODO handle better
-      User user = live.getUsers().get(0);
-      LiveRowView liveRowView = liveRowViewMap.get(live.getUsers().get(0).getId());
-      if (liveRowView != null) {
-        liveRowView.setGuest(
-            new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(),
-                live.fromRoom(), false, user.getUsername()));
-      }
-    }
-  }
-
   public com.tribe.tribelivesdk.core.Room getWebRTCRoom() {
     return webRTCRoom;
-  }
-
-  public void displayWaitLivePopupTutorial(String displayName) {
-    if (!joinLive) {
-      onBuzzPopup.onNext(displayName);
-    }
   }
 
   public void addTribeGuest(TribeGuest trg) {
@@ -872,13 +854,7 @@ public class LiveView extends FrameLayout {
   }
 
   public int nbInRoom() {
-    // TODO CHANGE WITH NEW SYSTEM
-    int count = 0;
-
-    count += liveRowViewMap.getMap().size();
-    //count += liveInviteMap.getMap().size();
-
-    return count + 1;
+    return live.getRoom().nbUsersTotal();
   }
 
   public int nbOtherUsersInRoom() {
@@ -1558,9 +1534,8 @@ public class LiveView extends FrameLayout {
     return onDismissInvite;
   }
 
-  public Observable<Void> onEdit() {
-    //return viewControlsLive.onEdit();
-    return Observable.empty();
+  public Observable<View> onEdit() {
+    return viewLiveInvite.onClickEdit();
   }
 
   public Observable<Boolean> onOpenChat() {

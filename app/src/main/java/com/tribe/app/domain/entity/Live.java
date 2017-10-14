@@ -1,7 +1,6 @@
 package com.tribe.app.domain.entity;
 
 import android.support.annotation.StringDef;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,9 +28,10 @@ public class Live implements Serializable {
   private String linkId;
   private String shortcutId;
   private boolean fromRoom = false;
-  private List<User> users;
-  private List<String> userIds;
-  private List<String> userPics;
+  private List<User> usersOfShortcut;
+  private List<User> usersOfRoom;
+  private List<String> userIdsOfShortcut;
+  private List<String> userIdsOfRoom;
   private String url;
   private int color = 0;
   private boolean countdown = true;
@@ -48,7 +48,7 @@ public class Live implements Serializable {
     this.room = builder.room;
     this.fromRoom = room != null;
     this.linkId = builder.linkId;
-    setUsers(builder.users);
+    setUsersOfShortcut(builder.users);
     this.type = builder.type;
     this.color = builder.color;
     this.countdown = builder.countdown;
@@ -83,8 +83,12 @@ public class Live implements Serializable {
     }
 
     if (room.getShortcut() != null) setShortcut(room.getShortcut());
+    else if (shortcut != null) room.setShortcut(shortcut);
 
-    setUsers(room.getLiveUsers());
+    List<User> temp = new ArrayList<>();
+    temp.addAll(room.getLiveUsers());
+    temp.addAll(room.getInvitedUsers());
+    setUsersOfRoom(temp);
   }
 
   public Shortcut getShortcut() {
@@ -93,6 +97,7 @@ public class Live implements Serializable {
 
   public void setShortcut(Shortcut shortcut) {
     this.shortcut = shortcut;
+    if (room != null) this.room.setShortcut(shortcut);
     if (onShortcutUpdated != null) onShortcutUpdated.onNext(this.shortcut);
   }
 
@@ -116,54 +121,52 @@ public class Live implements Serializable {
     return room != null ? room.getId() : null;
   }
 
-  public void setUsers(List<User> users) {
-    this.users = users;
+  public void setUsersOfShortcut(List<User> users) {
+    this.usersOfShortcut = users;
 
-    userIds = new ArrayList<>();
-    userPics = new ArrayList<>();
+    userIdsOfShortcut = new ArrayList<>();
 
     if (users != null) {
       for (User user : users) {
-        userIds.add(user.getId());
-      }
-
-      userPics = new ArrayList<>();
-
-      List<User> subUsers = users.subList(Math.max(users.size() - 4, 0), users.size());
-
-      if (subUsers != null) {
-        for (User user : users) {
-          String url = user.getProfilePicture();
-          if (!StringUtils.isEmpty(url)) userPics.add(url);
-        }
+        userIdsOfShortcut.add(user.getId());
       }
     }
   }
 
-  public List<User> getUsers() {
-    return users;
+  public void setUsersOfRoom(List<User> users) {
+    this.usersOfRoom = users;
+
+    userIdsOfRoom = new ArrayList<>();
+
+    if (users != null) {
+      for (User user : users) {
+        userIdsOfShortcut.add(user.getId());
+      }
+    }
   }
 
-  public List<String> getUserIds() {
-    return userIds;
+  public List<User> getUsersOfShortcut() {
+    return usersOfShortcut;
+  }
+
+  public List<User> getUsersOfRoom() {
+    return usersOfRoom;
+  }
+
+  public List<String> getUserIdsOfShortcut() {
+    return userIdsOfShortcut;
+  }
+
+  public List<String> getUserIdsOfRoom() {
+    return userIdsOfRoom;
   }
 
   public boolean hasUsers() {
-    return users != null && users.size() > 0;
-  }
-
-  public String getName() {
-    if (fromRoom() && room.getInitiator() != null) {
-      return room.getInitiator().getDisplayName();
-    } else if (hasUsers()) {
-      return users.get(0).getDisplayName();
-    } else {
-      return type;
-    }
+    return usersOfShortcut != null && usersOfShortcut.size() > 0;
   }
 
   public boolean hasUser(String userId) {
-    return userIds != null && userIds.contains(userId);
+    return usersOfShortcut != null && usersOfShortcut.contains(userId);
   }
 
   public void setCallRouletteSessionId(String sessionId) {
@@ -189,10 +192,6 @@ public class Live implements Serializable {
 
   public boolean isIntent() {
     return intent;
-  }
-
-  public List<String> getUsersPics() {
-    return userPics;
   }
 
   public boolean hasRoom() {

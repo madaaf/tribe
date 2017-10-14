@@ -103,7 +103,7 @@ public class RoomPresenter implements Presenter {
   }
 
   public void createRoom(Live live) {
-    createRoom.setup(null, live.getUserIds().toArray(new String[live.getUserIds().size()]));
+    createRoom.setup(null);
     createRoom.execute(new CreateRoomSubscriber());
   }
 

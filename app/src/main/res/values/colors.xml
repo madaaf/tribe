@@ -29,6 +29,7 @@
   <color name="white.opacity.40">#66FFFFFF</color>
   <color name="white.opacity.50">#80FFFFFF</color>
   <color name="white.opacity.70">#B3FFFFFF</color>
+  <color name="white.off">#FAFFFE</color>
 
   <!-- VIOLETS -->
   <color name="violet">#6643C1</color>

@@ -24,6 +24,12 @@
           android:layout_height="match_parent"
           android:background="@null"
           />
+
+      <com.tribe.app.presentation.view.component.live.LiveDropZoneView
+          android:id="@+id/viewLiveDropZone"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          />
     </com.tribe.app.presentation.view.component.live.LiveContainer>
 
     <com.tribe.app.presentation.view.widget.PopupContainerView

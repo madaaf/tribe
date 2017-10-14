@@ -44,6 +44,7 @@ public class ShortcutRealm extends RealmObject {
   private Date created_at;
   private Date last_activity_at;
   private RealmList<UserRealm> members;
+  private String lastMessage;
 
   @Ignore private boolean online;
   @Ignore private boolean live;
@@ -186,6 +187,14 @@ public class ShortcutRealm extends RealmObject {
     if (members == null || members.size() == 0) return null;
 
     return members.get(0);
+  }
+
+  public String getLastMessage() {
+    return lastMessage;
+  }
+
+  public void setLastMessage(String lastMessage) {
+    this.lastMessage = lastMessage;
   }
 
   public static boolean isKeyABool(String key) {

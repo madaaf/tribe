@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 05/10/2017.
@@ -74,6 +73,7 @@ public class RecyclerViewInvite extends RecyclerView {
 
     if (action == MotionEvent.ACTION_DOWN) {
       this.y = y;
+      liveInviteLayoutManager.setScrollEnabled(true);
     } else if (action == MotionEvent.ACTION_MOVE) {
       if (this.y < y) {
         scrollDirection = UP;
@@ -87,6 +87,8 @@ public class RecyclerViewInvite extends RecyclerView {
         scrollDirection = DOWN;
         liveInviteLayoutManager.setScrollEnabled(true);
       }
+    } else if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
+      liveInviteLayoutManager.setScrollEnabled(true);
     }
 
     return super.onTouchEvent(e);

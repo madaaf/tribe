@@ -1,12 +1,12 @@
 package com.tribe.app.presentation.view.component.live;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
@@ -27,6 +27,7 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.adapter.LiveInviteAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.InviteListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.diff.LiveInviteDiffCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
@@ -34,6 +35,7 @@ import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
 import com.tribe.app.presentation.view.adapter.model.Header;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.RecyclerViewInvite;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,6 +49,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 01/18/2017.
@@ -81,10 +84,12 @@ public class LiveInviteView extends FrameLayout
   private Unbinder unbinder;
   private LiveInviteLayoutManager layoutManager;
   private List<LiveInviteAdapterSectionInterface> itemsList;
+  private Shortcut selected = null;
   private Live live;
   private Scheduler singleThreadExecutor;
   private int positionOfFirstShortcut;
   private @LiveContainer.Event int drawerState = LiveContainer.CLOSED;
+  private boolean dragging = false;
 
   // RESOURCES
   private int translationX;
@@ -94,6 +99,10 @@ public class LiveInviteView extends FrameLayout
   private PublishSubject<List<Shortcut>> onShortcutUpdate = PublishSubject.create();
   private PublishSubject<Integer> onInviteViewWidthChanged = PublishSubject.create();
   private PublishSubject<Void> onClickBottom = PublishSubject.create();
+  private PublishSubject<Boolean> onDisplayDropZone = PublishSubject.create();
+  private PublishSubject<Integer> onScrollStateChanged = PublishSubject.create();
+  private PublishSubject<Integer> onScroll = PublishSubject.create();
+  private PublishSubject<View> onClickEdit = PublishSubject.create();
 
   public LiveInviteView(Context context) {
     super(context);
@@ -147,7 +156,7 @@ public class LiveInviteView extends FrameLayout
 
   private void initUI() {
     recyclerViewInvite.setTranslationX(translationX);
-    setBackgroundColor(Color.WHITE);
+    setBackgroundColor(ContextCompat.getColor(getContext(), R.color.white_off));
   }
 
   private void initSubscriptions() {
@@ -163,6 +172,8 @@ public class LiveInviteView extends FrameLayout
     recyclerViewInvite.setLayoutManager(layoutManager);
     recyclerViewInvite.setHasFixedSize(true);
     recyclerViewInvite.setItemAnimator(null);
+    recyclerViewInvite.addItemDecoration(
+        new DividerFirstLastItemDecoration(screenUtils.dpToPx(10), 0, 0));
     recyclerViewInvite.addItemDecoration(new InviteListDividerDecoration(getContext(),
         ContextCompat.getColor(getContext(), R.color.grey_divider), screenUtils.dpToPx(0.5f),
         getSectionCallback(itemsList)));
@@ -177,8 +188,14 @@ public class LiveInviteView extends FrameLayout
 
     recyclerViewInvite.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
+      @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        onScrollStateChanged.onNext(newState);
+      }
+
       @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
+
+        onScroll.onNext(dy);
 
         if (recyclerViewInvite.isDrawerOpen()) return;
 
@@ -193,20 +210,35 @@ public class LiveInviteView extends FrameLayout
       }
     });
 
-    //subscriptions.add(adapter.onInvite()
-    //    .map(view -> adapter.getItemAtPosition(recyclerViewInvite.getChildLayoutPosition(view)))
-    //    .subscribe(item -> {
-    //      User user = (User) item;
-    //      liveInvitePresenter.createInvite(live.getRoomId(), user.getId());
-    //    }));
+    subscriptions.add(adapter.onClick()
+        .map(view -> adapter.getItemAtPosition(recyclerViewInvite.getChildLayoutPosition(view)))
+        .subscribe(item -> {
+          Shortcut shortcut = (Shortcut) item;
+          User user = shortcut.getSingleFriend();
+
+          if (selected != null && !shortcut.getId().equals(selected.getId())) {
+            int position = itemsList.indexOf(selected);
+            selected.getSingleFriend().setSelected(false);
+            adapter.notifyItemChanged(position);
+          }
+
+          if (user.isSelected()) {
+            selected = shortcut;
+          } else {
+            selected = null;
+          }
+
+          onDisplayDropZone.onNext(user.isSelected());
+        }));
+
+    subscriptions.add(adapter.onClickEdit().subscribe(onClickEdit));
   }
 
   private SectionCallback getSectionCallback(final List<LiveInviteAdapterSectionInterface> list) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
         return list.get(position) instanceof Header &&
-            (list.get(position).getId().equals(Header.HEADER_DRAG_IN) ||
-                list.get(position).getId().equals(Header.HEADER_NAME));
+            (list.get(position).getId().equals(Header.HEADER_NAME));
       }
 
       @Override public int getSectionType(int position) {
@@ -242,8 +274,16 @@ public class LiveInviteView extends FrameLayout
         onShortcutUpdate.onBackpressureBuffer(), (room, listShortcut) -> {
           Set<String> alreadyPresent = new HashSet<>();
           List<LiveInviteAdapterSectionInterface> temp = new ArrayList<>();
+          List<String> usersAtBeginningOfCall = null;
 
-          // TODO find a better way to get the shortcut associated with the room
+          if (live.fromRoom()) {
+            Timber.d("From room");
+            usersAtBeginningOfCall = new ArrayList<>();
+          } else {
+            Timber.d("Not from room");
+            usersAtBeginningOfCall = live.getUserIdsOfShortcut();
+          }
+
           temp.add(new Header(Header.HEADER_NAME,
               live.getShortcut() != null ? live.getShortcut().getName() : "",
               R.drawable.picto_live_invite_header_edit));
@@ -275,13 +315,14 @@ public class LiveInviteView extends FrameLayout
 
           temp.add(new Header(Header.HEADER_DRAG_IN,
               getResources().getString(R.string.live_members_invite_friends_section_title), 0));
-          temp.add(new Header(Header.HEADER_RECENT,
-              getResources().getString(R.string.home_section_recent),
-              R.drawable.picto_live_invite_header_recent));
-
           for (Shortcut shortcut : listShortcut) {
             User user = shortcut.getSingleFriend();
-            if (!alreadyPresent.contains(user.getId())) {
+            user.setSelected(selected != null && selected.getId().equals(shortcut.getId()));
+            Timber.d("User id : " + user.getId() + " / display : " + user.getDisplayName());
+            Timber.d("UsersAtBeginningOfCall : " + usersAtBeginningOfCall);
+            if (!alreadyPresent.contains(user.getId()) &&
+                !usersAtBeginningOfCall.contains(user.getId())) {
+              Timber.d("User added");
               temp.add(shortcut);
             }
           }
@@ -346,6 +387,35 @@ public class LiveInviteView extends FrameLayout
 
       drawerState = event;
     }));
+  }
+
+  public void initOnInviteDropped(Observable<TileInviteView> obs) {
+    subscriptions.add(obs.subscribe(tile -> {
+      liveInvitePresenter.createInvite(live.getRoom().getId(), tile.getUser().getId());
+      adapter.removeItem(tile.getPosition());
+      viewInviteBottom.showAdded();
+    }));
+  }
+
+  public TileInviteView findViewByCoords(float rawX, float rawY) {
+    // Find the child view that was touched (perform a hit test)
+    int[] recyclerViewCoords = new int[2];
+    recyclerViewInvite.getLocationOnScreen(recyclerViewCoords);
+
+    View view =
+        ViewUtils.findViewAt(recyclerViewInvite, TileInviteView.class, (int) rawX, (int) rawY);
+
+    if (view instanceof TileInviteView) {
+      return (TileInviteView) view;
+    }
+
+    return null;
+  }
+
+  public void setDragging(boolean dragging) {
+    if (!dragging && this.dragging) recyclerViewInvite.getRecycledViewPool().clear();
+
+    this.dragging = dragging;
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
@@ -418,6 +488,22 @@ public class LiveInviteView extends FrameLayout
 
   public Observable<Void> onClickBottom() {
     return onClickBottom;
+  }
+
+  public Observable<Boolean> onDisplayDropZone() {
+    return onDisplayDropZone;
+  }
+
+  public Observable<Integer> onScroll() {
+    return onScroll;
+  }
+
+  public Observable<Integer> onScrollStateChanged() {
+    return onScrollStateChanged;
+  }
+
+  public Observable<View> onClickEdit() {
+    return onClickEdit;
   }
 }
 

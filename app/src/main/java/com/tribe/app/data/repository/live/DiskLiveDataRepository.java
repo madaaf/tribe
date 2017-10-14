@@ -57,7 +57,7 @@ public class DiskLiveDataRepository implements LiveRepository {
     return null;
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {
+  @Override public Observable<Boolean> createInvite(String roomId, String userId) {
     return null;
   }
 
@@ -76,7 +76,8 @@ public class DiskLiveDataRepository implements LiveRepository {
   private Observable.Transformer<Room, Room> roomWithShortcutTransformer =
       roomObservable -> roomObservable.flatMap(room -> {
         List<String> userIds = room.getUserIds();
-        return diskUserDataStore.shortcutForUserIdsNoObs(userIds.toArray(new String[userIds.size()]));
+        return diskUserDataStore.shortcutForUserIdsNoObs(
+            userIds.toArray(new String[userIds.size()]));
       }, (room, shortcutRealm) -> {
         room.setShortcut(userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealm));
         return room;

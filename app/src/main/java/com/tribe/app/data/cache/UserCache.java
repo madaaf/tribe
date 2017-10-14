@@ -49,6 +49,8 @@ import rx.Observable;
 
   void updateShortcut(ShortcutRealm shortcutRealm);
 
+  void updateShortcutLastText(String shortcutId, String lastMessage);
+
   ShortcutRealm updateShortcutNoObs(String shortcutId, @ShortcutRealm.ShortcutStatus String status);
 
   void updateUserRealmList(List<UserRealm> userRealm);

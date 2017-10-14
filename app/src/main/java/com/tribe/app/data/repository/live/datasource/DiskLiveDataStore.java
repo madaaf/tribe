@@ -35,7 +35,7 @@ public class DiskLiveDataStore
     return null;
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String[] userIds) {
+  @Override public Observable<Boolean> createInvite(String roomId, String userId) {
     return null;
   }
 

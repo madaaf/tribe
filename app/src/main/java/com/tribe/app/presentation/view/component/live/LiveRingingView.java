@@ -15,10 +15,15 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Live;
+import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.ArrayList;
@@ -45,6 +50,7 @@ public class LiveRingingView extends RelativeLayout {
   };
 
   @Inject ScreenUtils screenUtils;
+  @Inject User currentUser;
 
   @BindView(R.id.layoutCameras) FrameLayout layoutCameras;
   @BindView(R.id.txtRinging) TextViewFont txtRinging;
@@ -53,6 +59,7 @@ public class LiveRingingView extends RelativeLayout {
   private Unbinder unbinder;
   private List<View> views;
   private boolean ringing;
+  private Live live;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -187,9 +194,37 @@ public class LiveRingingView extends RelativeLayout {
     }
   }
 
+  private void setRoom(Room room) {
+    String name = "";
+    Shortcut shortcut = room.getShortcut();
+
+    int nbUsersWithoutMe = room.nbUsersTotalWithoutMe(currentUser.getId());
+
+    if (shortcut != null && shortcut.isSingle() && nbUsersWithoutMe <= 1) {
+      name = shortcut.getSingleFriend().getDisplayName();
+    } else if (shortcut != null && !StringUtils.isEmpty(shortcut.getName())) {
+      name = shortcut.getName();
+    } else if (room != null) {
+      name = getResources().getString(R.string.shortcut_members_count, nbUsersWithoutMe);
+    }
+
+    txtRinging.setText(getResources().getString(R.string.live_members_ringing) + " " + name);
+  }
+
   //////////////
   //  PUBLIC  //
   //////////////
+
+  public void setLive(Live live) {
+    this.live = live;
+
+    subscriptions.add(live.onRoomUpdated().subscribe(room -> setRoom(room)));
+  }
+
+  public void applyTranslationX(float x) {
+    setTranslationX(x);
+    //layoutCameras.setTranslationX(-x / 2);
+  }
 
   public void startRinging() {
     subscriptions.add(Observable.interval(2, TimeUnit.SECONDS)

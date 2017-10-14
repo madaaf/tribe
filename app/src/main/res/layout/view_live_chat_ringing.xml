@@ -18,6 +18,10 @@
       android:alpha="0"
       android:gravity="center"
       android:maxLines="1"
+      android:shadowColor="@color/black.opacity.50"
+      android:shadowDx="3"
+      android:shadowDy="3"
+      android:shadowRadius="10"
       android:text="@string/live_ringing"
       style="@style/Title.2.White"
       />

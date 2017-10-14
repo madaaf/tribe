@@ -59,6 +59,7 @@ import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
@@ -164,6 +165,7 @@ public class LiveActivity extends BaseActivity
   @BindView(R.id.gameDrawView) GameDrawView gameDrawView;
   @BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
   @BindView(R.id.chatview) ChatView chatView;
+  @BindView(R.id.viewLiveContainer) LiveContainer viewLiveContainer;
 
   // VARIABLES
   private TribeAudioManager audioManager;
@@ -455,6 +457,8 @@ public class LiveActivity extends BaseActivity
     if (resourceId > 0) {
       result = getResources().getDimensionPixelSize(resourceId);
     }
+
+    viewLiveContainer.setStatusBarHeight(result);
   }
 
   private void initAppState() {
@@ -558,7 +562,6 @@ public class LiveActivity extends BaseActivity
     }));
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
-      if (StringUtils.isEmpty(live.getRoomId())) displayBuzzPopupTutorial();
       if (!live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {
         if (live.fromRoom() || !StringUtils.isEmpty(live.getLinkId())) {
           getRoomInfos();
@@ -914,12 +917,6 @@ public class LiveActivity extends BaseActivity
     }
   }
 
-  public void displayBuzzPopupTutorial() {
-    subscriptions.add(Observable.timer(MAX_DURATION_WAITING_LIVE, TimeUnit.SECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> viewLive.displayWaitLivePopupTutorial(live.getName())));
-  }
-
   private void leave() {
     if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
       subscriptions.add(DialogFactory.dialog(this,
@@ -1162,6 +1159,16 @@ public class LiveActivity extends BaseActivity
 
   @Override public void onRoomInfos(Room room) {
     this.room = room;
+
+    if (!live.fromRoom()) {
+      for (String userId : live.getUserIdsOfShortcut()) {
+        livePresenter.createInvite(this.room.getId(), userId);
+      }
+    }
+
+    if (this.room.getShortcut() == null) {
+      livePresenter.shortcutForUserIds(live.getUserIdsOfShortcut());
+    }
 
     live.setRoom(room);
     viewLive.joinRoom(this.room);
