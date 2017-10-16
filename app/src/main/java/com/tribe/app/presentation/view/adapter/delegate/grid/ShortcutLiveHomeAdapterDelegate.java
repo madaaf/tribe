@@ -18,8 +18,12 @@ public class ShortcutLiveHomeAdapterDelegate extends RecipientAdapterDelegate {
   }
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-    Recipient recipient = items.get(position);
-    return recipient instanceof Invite;
+    if (items.get(position) instanceof Recipient) {
+      Recipient recipient = items.get(position);
+      return recipient instanceof Invite;
+    }
+
+    return false;
   }
 
   @Override protected int getLayoutId() {

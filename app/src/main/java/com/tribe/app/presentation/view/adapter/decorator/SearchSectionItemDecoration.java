@@ -44,13 +44,13 @@ public class SearchSectionItemDecoration extends BaseSectionItemDecoration {
       case SEARCH_SUGGESTED_CONTACTS:
         txtLabel.setText(R.string.home_section_suggested_friends);
         txtLabel.setVisibility(View.VISIBLE);
-        imgPicto.setImageResource(R.drawable.picto_header_online);
+        imgPicto.setImageResource(R.drawable.picto_header_suggested);
         break;
 
       case SEARCH_INVITES_TO_SEND:
         txtLabel.setText(R.string.home_section_invites_to_send);
         txtLabel.setVisibility(View.VISIBLE);
-        imgPicto.setImageResource(R.drawable.picto_recent);
+        imgPicto.setImageResource(R.drawable.picto_header_invites_to_send);
         break;
 
       case SEARCH_EMPTY:

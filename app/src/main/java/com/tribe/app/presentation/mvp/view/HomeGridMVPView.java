@@ -23,6 +23,8 @@ public interface HomeGridMVPView extends LoadDataMVPView {
 
   void renderContactsOnApp(List<Contact> contactList);
 
+  void renderContactsInvite(List<Contact> contactList);
+
   void onCreateRoom(Room room, String feature, String phone, boolean shouldOpenSMS);
 
   void onSyncError();

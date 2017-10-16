@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Pair;
+import com.tribe.app.presentation.view.adapter.viewholder.RecipientHomeViewHolder;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -51,7 +52,10 @@ public class HomeListTouchHelperCallback extends ItemTouchHelper.Callback {
   @Override
   public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
       float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
     onDxChange.onNext(Pair.create(viewHolder.getAdapterPosition(), dX));
+
+    if (dX > 0 || !(viewHolder instanceof RecipientHomeViewHolder)) return;
 
     if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
       // Fade out the view as it is swiped out of the parent's bounds

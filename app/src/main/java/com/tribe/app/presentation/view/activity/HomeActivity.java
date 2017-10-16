@@ -74,6 +74,7 @@ import com.tribe.app.presentation.view.adapter.decorator.HomeListDividerDecorati
 import com.tribe.app.presentation.view.adapter.decorator.RecyclerSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.helper.HomeListTouchHelperCallback;
+import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.component.home.NewChatView;
 import com.tribe.app.presentation.view.component.home.SearchView;
@@ -186,25 +187,21 @@ public class HomeActivity extends BaseActivity
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Scheduler singleThreadExecutor;
   private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
-  private PublishSubject<List<Contact>> onNewContacts = PublishSubject.create();
+  private PublishSubject<List<Contact>> onNewContactsOnApp = PublishSubject.create();
+  private PublishSubject<List<Contact>> onNewContactsInvite = PublishSubject.create();
   private PublishSubject<Pair<Integer, Boolean>> onNewContactsInfos = PublishSubject.create();
 
   // VARIABLES
   private HomeLayoutManager layoutManager;
   private ItemTouchHelper itemTouchHelper;
-  private List<Recipient> latestRecipientList;
-  private boolean shouldOverridePendingTransactions = false;
+  private List<HomeAdapterInterface> latestRecipientList;
   private TribeBroadcastReceiver notificationReceiver;
-  private boolean receiverRegistered = false;
-  private boolean hasSynced = false;
-  private boolean canEndRefresh = false;
-  private boolean finish = false;
+  private boolean shouldOverridePendingTransactions = false, receiverRegistered = false, hasSynced =
+      false, canEndRefresh = false, finish = false, searchViewDisplayed = false, isSwipingChat =
+      false;
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
-  private boolean searchViewDisplayed = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
-
-  // DIMEN
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     getWindow().setBackgroundDrawableResource(android.R.color.black);
@@ -288,6 +285,7 @@ public class HomeActivity extends BaseActivity
     if (finish) return;
 
     homeGridPresenter.loadContactsOnApp();
+    homeGridPresenter.loadContactsInvite();
 
     startService(WSService.
         getCallingIntent(this, null, null));
@@ -370,7 +368,7 @@ public class HomeActivity extends BaseActivity
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     latestRecipientList = new ArrayList<>();
 
-    subscriptions.add(onNewContacts.observeOn(Schedulers.computation()).map(contactList -> {
+    subscriptions.add(onNewContactsOnApp.observeOn(Schedulers.computation()).map(contactList -> {
       List<Contact> result = new ArrayList<>();
       Map<String, Contact> mapContact = new HashMap<>();
 
@@ -456,26 +454,22 @@ public class HomeActivity extends BaseActivity
 
   private void initRecyclerView() {
     initUIRecyclerView();
-    subscriptions.add(homeGridAdapter.onChatClick()
+    subscriptions.add(Observable.merge(homeGridAdapter.onChatClick(), homeGridAdapter.onMainClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
-        .subscribe(recipient -> {
-          if (!recipient.isRead()) homeGridPresenter.readShortcut(recipient.getId());
-          navigator.navigateToChat(this, recipient);
-        }));
+        .subscribe(item -> navigateToChat((Recipient) item)));
 
     subscriptions.add(homeGridAdapter.onLiveClick()
         .debounce(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
-        .subscribe(recipient -> onClickItem(recipient)));
+        .subscribe(item -> onClickItem((Recipient) item)));
 
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
-
-        .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
+        .flatMap(item -> DialogFactory.showBottomSheetForRecipient(this, (Recipient) item),
             ((recipient, labelType) -> {
               if (labelType != null) {
                 if (labelType.getTypeDef().equals(LabelType.HIDE) ||
@@ -513,7 +507,8 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(homeGridAdapter.onClick()
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
-        .subscribe(recipient -> {
+        .subscribe(item -> {
+          Recipient recipient = (Recipient) item;
           boolean displayPermissionNotif = notificationContainerView.
               showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);
           if (displayPermissionNotif) {
@@ -527,38 +522,44 @@ public class HomeActivity extends BaseActivity
           }
         }));
 
-    subscriptions.add(onRecipientUpdates.onBackpressureBuffer().map(recipients -> {
-      List<Recipient> recipientFinalList = new ArrayList<>();
-      for (Recipient recipient : recipients) {
-        if (recipient instanceof Invite || !recipient.isLive()) {
-          recipientFinalList.add(recipient);
-        }
-      }
+    subscriptions.add(
+        Observable.combineLatest(onRecipientUpdates.onBackpressureBuffer(), onNewContactsOnApp,
+            onNewContactsInvite, (recipientList, contactsOnApp, contactsInvite) -> {
+              List<HomeAdapterInterface> finalList = new ArrayList<>();
+              for (Recipient recipient : recipientList) {
+                if (recipient instanceof Invite || !recipient.isLive()) {
+                  finalList.add(recipient);
+                }
+              }
 
-      return recipientFinalList;
-    }).subscribeOn(singleThreadExecutor).
-        map(recipientList -> {
-          DiffUtil.DiffResult diffResult = null;
-          List<Recipient> temp = new ArrayList<>();
-          temp.addAll(recipientList);
-          ListUtils.addEmptyItemsHome(temp);
+              //finalList.addAll(contactsOnApp);
+              finalList.addAll(contactsInvite);
 
-          if (latestRecipientList.size() != 0) {
-            diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
-            homeGridAdapter.setItems(temp);
+              return finalList;
+            }).subscribeOn(singleThreadExecutor).
+            map(recipientList -> {
+              DiffUtil.DiffResult diffResult = null;
+              List<HomeAdapterInterface> temp = new ArrayList<>();
+              temp.addAll(recipientList);
+              ListUtils.addEmptyItemsHome(temp);
+
+              if (latestRecipientList.size() != 0) {
+                diffResult =
+                    DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
+                homeGridAdapter.setItems(temp);
+              }
+
+              latestRecipientList.clear();
+              latestRecipientList.addAll(temp);
+              return diffResult;
+            }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
+          if (diffResult != null) {
+            diffResult.dispatchUpdatesTo(homeGridAdapter);
+          } else {
+            homeGridAdapter.setItems(latestRecipientList);
+            homeGridAdapter.notifyDataSetChanged();
           }
-
-          latestRecipientList.clear();
-          latestRecipientList.addAll(temp);
-          return diffResult;
-        }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
-      if (diffResult != null) {
-        diffResult.dispatchUpdatesTo(homeGridAdapter);
-      } else {
-        homeGridAdapter.setItems(latestRecipientList);
-        homeGridAdapter.notifyDataSetChanged();
-      }
-    }));
+        }));
   }
 
   private void initNewCall() {
@@ -818,7 +819,11 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void renderContactsOnApp(List<Contact> contactList) {
-    onNewContacts.onNext(contactList);
+    onNewContactsOnApp.onNext(contactList);
+  }
+
+  @Override public void renderContactsInvite(List<Contact> contactList) {
+    onNewContactsInvite.onNext(contactList);
   }
 
   @Override
@@ -843,6 +848,11 @@ public class HomeActivity extends BaseActivity
 
   private void navigateToNewChat() {
     HomeActivity.this.navigator.navigateToNewChat(this);
+  }
+
+  private void navigateToChat(Recipient recipient) {
+    if (!recipient.isRead()) homeGridPresenter.readShortcut(recipient.getId());
+    navigator.navigateToChat(this, recipient);
   }
 
   private void syncContacts() {
@@ -969,46 +979,60 @@ public class HomeActivity extends BaseActivity
     itemTouchHelper.attachToRecyclerView(recyclerViewFriends);
 
     subscriptions.add(callback.onDxChange().subscribe(pairPosDx -> {
+      Timber.d("translationX : " + pairPosDx);
       if (pairPosDx.second == 0) {
         viewFadeInSwipe.setVisibility(View.GONE);
         viewFadeInSwipe.setAlpha(0);
-      } else {
-        Recipient recipient = homeGridAdapter.getItemAtPosition(pairPosDx.first);
-        Live live = LiveActivity.getLive(recipient, PaletteGrid.get(pairPosDx.first),
-            recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-                : LiveActivity.SOURCE_GRID);
-        if (recipient instanceof Shortcut) {
-          Shortcut shortcut = (Shortcut) recipient;
-          live.setShortcut(shortcut);
+      } else if (homeGridAdapter.getItemAtPosition(pairPosDx.first) instanceof Recipient) {
+        Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(pairPosDx.first);
+
+        if (pairPosDx.second < 0) {
+          isSwipingChat = false;
+          Live live = LiveActivity.getLive(recipient, PaletteGrid.get(pairPosDx.first),
+              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+                  : LiveActivity.SOURCE_GRID);
+          if (recipient instanceof Shortcut) {
+            Shortcut shortcut = (Shortcut) recipient;
+            live.setShortcut(shortcut);
+          }
+
+          viewLiveFake.setLive(live, recipient);
+          viewLiveFake.setTranslationX(screenUtils.getWidthPx() + pairPosDx.second);
+          viewFadeInSwipe.setVisibility(View.VISIBLE);
+          viewFadeInSwipe.setTranslationX(pairPosDx.second);
+          viewFadeInSwipe.setAlpha(Math.abs(pairPosDx.second) / (float) screenUtils.getWidthPx());
+        } else {
+          isSwipingChat = true;
         }
-        viewLiveFake.setLive(live, recipient);
-        viewFadeInSwipe.setVisibility(View.VISIBLE);
-        viewFadeInSwipe.setTranslationX(pairPosDx.second);
-        viewFadeInSwipe.setAlpha(Math.abs(pairPosDx.second) / (float) screenUtils.getWidthPx());
-        viewLiveFake.setTranslationX(screenUtils.getWidthPx() + pairPosDx.second);
       }
     }));
 
     subscriptions.add(callback.onSwipedItem().subscribe(position -> {
-      Recipient recipient = homeGridAdapter.getItemAtPosition(position);
-      navigator.navigateToLiveFromSwipe(this, homeGridAdapter.getItemAtPosition(position),
-          PaletteGrid.get(position),
-          recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-              : LiveActivity.SOURCE_GRID);
+      if (homeGridAdapter.getItemAtPosition(position) instanceof Recipient) {
+        Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(position);
+
+        if (!isSwipingChat) {
+          navigator.navigateToLiveFromSwipe(this, recipient, PaletteGrid.get(position),
+              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+                  : LiveActivity.SOURCE_GRID);
+        } else {
+          navigateToChat(recipient);
+        }
+      }
     }));
   }
 
-  private SectionCallback getSectionCallback(final List<Recipient> recipientList) {
+  private SectionCallback getSectionCallback(final List<HomeAdapterInterface> recipientList) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
         return position == 0 ||
-            recipientList.get(position).getSectionType() != BaseSectionItemDecoration.NONE &&
-                recipientList.get(position).getSectionType() !=
-                    recipientList.get(position - 1).getSectionType();
+            recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE &&
+                recipientList.get(position).getHomeSectionType() !=
+                    recipientList.get(position - 1).getHomeSectionType();
       }
 
       @Override public int getSectionType(int position) {
-        return recipientList.get(position).getSectionType();
+        return recipientList.get(position).getHomeSectionType();
       }
     };
   }

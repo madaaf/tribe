@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Patterns;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -134,5 +135,34 @@ public class StringUtils {
     }
     if (array.length == 0) json += "\"";
     return json;
+  }
+
+  public static String constrainUsersStr(List<User> users, int maxLength, boolean isDisplayName) {
+    StringBuffer buffer = new StringBuffer();
+    int count = 0;
+    for (int i = 0; i < users.size() && buffer.length() <= maxLength; i++) {
+      User user = users.get(i);
+      String label = isDisplayName ? user.getDisplayName() : user.getUsername();
+
+      if (buffer.length() + label.length() <= maxLength) {
+        buffer.append(label);
+        count++;
+        if (i < users.size() - 1 && buffer.length() <= maxLength) buffer.append(", ");
+      } else {
+        buffer.replace(buffer.length() - 2, buffer.length() - 1, "");
+        break;
+      }
+    }
+
+    if (buffer.length() >= maxLength) {
+      String str = buffer.subSequence(0, maxLength).toString();
+      buffer = new StringBuffer();
+      buffer.append(str);
+      buffer.append("... +" + (users.size() - count));
+    } else if (count < users.size()) {
+      buffer.append("... +" + (users.size() - count));
+    }
+
+    return buffer.toString();
   }
 }

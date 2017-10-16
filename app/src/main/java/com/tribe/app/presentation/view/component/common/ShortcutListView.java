@@ -13,6 +13,7 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
@@ -43,6 +44,7 @@ public class ShortcutListView extends RelativeLayout {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<View> onLongClick = PublishSubject.create();
+  private PublishSubject<View> onMainClick = PublishSubject.create();
   private PublishSubject<View> onLive = PublishSubject.create();
   private PublishSubject<View> onChat = PublishSubject.create();
 
@@ -79,6 +81,12 @@ public class ShortcutListView extends RelativeLayout {
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+
+    subscriptions.clear();
   }
 
   private void initResources() {
@@ -118,6 +126,10 @@ public class ShortcutListView extends RelativeLayout {
   }
 
   public void initClicks() {
+    setOnClickListener(v -> {
+      onMainClick.onNext(v);
+    });
+
     setOnLongClickListener(v -> {
       onLongClick.onNext(v);
       return true;
@@ -128,11 +140,29 @@ public class ShortcutListView extends RelativeLayout {
   }
 
   public void setRecipient(Recipient recipient) {
+    subscriptions.clear();
+
     this.recipient = recipient;
 
     if (!(recipient instanceof Invite)) {
+      Shortcut shortcut = (Shortcut) recipient;
       viewAvatar.setType(recipient.isOnline() ? NewAvatarView.ONLINE : NewAvatarView.NORMAL);
+
+      //if (!shortcut.isSingle()) {
+      //  subscriptions.add(Observable.interval(1000, TimeUnit.MILLISECONDS)
+      //      .observeOn(AndroidSchedulers.mainThread())
+      //      .subscribe(interval -> {
+      //        User user =
+      //            shortcut.getMembers().get((int) (interval % shortcut.getMembers().size()));
+      //        viewAvatar.load(user.getProfilePicture());
+      //      }));
+      //} else {
+      //  viewAvatar.load(recipient);
+      //}
     }
+    //else {
+    viewAvatar.load(recipient);
+    //}
 
     if (!recipient.isRead()) {
       viewPictoChat.setStatus(PictoChatView.ACTIVE);
@@ -140,7 +170,6 @@ public class ShortcutListView extends RelativeLayout {
       viewPictoChat.setStatus(PictoChatView.INACTIVE);
     }
 
-    viewAvatar.load(recipient);
     viewHomeNameAction.setRecipient(recipient);
   }
 
@@ -158,5 +187,9 @@ public class ShortcutListView extends RelativeLayout {
 
   public Observable<View> onChatClick() {
     return onChat;
+  }
+
+  public Observable<View> onMainClick() {
+    return onMainClick;
   }
 }

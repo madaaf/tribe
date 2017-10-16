@@ -1,5 +1,6 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
@@ -20,7 +21,7 @@ import rx.subscriptions.CompositeSubscription;
 
 public class Room implements Serializable, LiveInviteAdapterSectionInterface {
 
-  private static final int NB_MAX_USERS_STRING = 2;
+  private static final int NB_MAX_CHARS = 17;
 
   public static final String NAME = "name";
   public static final String ACCEPT_RANDOM = "accept_random";
@@ -192,21 +193,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   }
 
   public String getUserNames() {
-    StringBuffer buffer = new StringBuffer();
-    List<User> users = getAllUsers();
-    int min = Math.min(NB_MAX_USERS_STRING, users.size());
-    for (int i = 0; i < min; i++) {
-      User user = users.get(i);
-      buffer.append(user.getDisplayName());
-
-      if (i < min - 1) buffer.append(", ");
-    }
-
-    if (users.size() > NB_MAX_USERS_STRING) {
-      buffer.append("... +" + (users.size() - NB_MAX_USERS_STRING));
-    }
-
-    return buffer.toString();
+    return StringUtils.constrainUsersStr(getAllUsers(), NB_MAX_CHARS, true);
   }
 
   public synchronized void onJoinSuccess(User currentUser) {

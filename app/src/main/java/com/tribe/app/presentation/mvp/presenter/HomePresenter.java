@@ -14,6 +14,7 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.live.CreateRoom;
 import com.tribe.app.domain.interactor.live.DeclineInvite;
+import com.tribe.app.domain.interactor.user.GetDiskContactInviteList;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.SendInvitations;
@@ -49,6 +50,8 @@ public class HomePresenter implements Presenter {
   private RxFacebook rxFacebook;
   private UseCase synchroContactList;
   private GetDiskContactOnAppList getDiskContactOnAppList;
+  private GetDiskContactInviteList getDiskContactInviteList;
+
   private DeclineInvite declineInvite;
   private SendInvitations sendInvitations;
   private CreateRoom createRoom;
@@ -58,13 +61,15 @@ public class HomePresenter implements Presenter {
   private RecipientListSubscriber cloudRecipientListSubscriber;
   private LookupContactsSubscriber lookupContactsSubscriber;
   private ContactsOnAppSubscriber contactsOnAppSubscriber;
+  private ContactListInviteSubscriber contactListInviteSubscriber;
 
   @Inject public HomePresenter(ShortcutPresenter shortcutPresenter, JobManager jobManager,
       @Named("diskUserInfos") GetDiskUserInfos diskUserInfos,
       @Named("sendToken") SendToken sendToken, @Named("cloudUserInfos") UseCase cloudUserInfos,
       UpdateUserFacebook updateUserFacebook, RxFacebook rxFacebook,
       @Named("synchroContactList") UseCase synchroContactList,
-      GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite,
+      GetDiskContactOnAppList getDiskContactOnAppList,
+      GetDiskContactInviteList getDiskContactInviteList, DeclineInvite declineInvite,
       SendInvitations sendInvitations, CreateRoom createRoom) {
     this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
@@ -75,6 +80,7 @@ public class HomePresenter implements Presenter {
     this.rxFacebook = rxFacebook;
     this.synchroContactList = synchroContactList;
     this.getDiskContactOnAppList = getDiskContactOnAppList;
+    this.getDiskContactInviteList = getDiskContactInviteList;
     this.declineInvite = declineInvite;
     this.sendInvitations = sendInvitations;
     this.createRoom = createRoom;
@@ -87,6 +93,7 @@ public class HomePresenter implements Presenter {
     diskUserInfosUsecase.unsubscribe();
     synchroContactList.unsubscribe();
     getDiskContactOnAppList.unsubscribe();
+    getDiskContactInviteList.unsubscribe();
     declineInvite.unsubscribe();
     sendInvitations.unsubscribe();
     createRoom.unsubscribe();
@@ -267,6 +274,29 @@ public class HomePresenter implements Presenter {
 
     @Override public void onNext(List<Contact> contactList) {
       homeGridView.renderContactsOnApp(contactList);
+    }
+  }
+
+  public void loadContactsInvite() {
+    if (contactListInviteSubscriber != null) {
+      contactListInviteSubscriber.unsubscribe();
+    }
+
+    contactListInviteSubscriber = new ContactListInviteSubscriber();
+    getDiskContactInviteList.execute(contactListInviteSubscriber);
+  }
+
+  private final class ContactListInviteSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(List<Contact> contactList) {
+      homeGridView.renderContactsInvite(contactList);
     }
   }
 

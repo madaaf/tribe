@@ -221,7 +221,7 @@
 	<string name="onboarding_baseline">Have fun, together.</string>
 	<string name="onboarding_enter_options">Entrer avec</string>
 	<string name="onboarding_option_facebook">Facebook</string>
-	<string name="onboarding_option_phone_number">Numéro de téléphone</string>
+	<string name="onboarding_option_phone_number">Téléphone</string>
 	<string name="onboarding_step_phone">Entrez votre numéro de téléphone pour démarrer.</string>
 	<string name="onboarding_phone_disclaimer">En vous enregistrant, vous acceptez les CGU et la Politique de confidentialité</string>
 	<string name="onboarding_step_code">Entrez le code de vérification envoyé par SMS.</string>

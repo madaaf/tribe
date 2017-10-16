@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class Shortcut extends Recipient implements Serializable, LiveInviteAdapterSectionInterface {
 
-  private static final int NB_MAX_USERS_STRING = 2;
+  private static final int NB_MAX_CHARS = 17;
 
   private String id;
   private String name;
@@ -240,35 +240,13 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   public String getUserDisplayNames() {
     if (members == null || members.size() == 0) return "";
 
-    StringBuffer buffer = new StringBuffer();
-    int min = Math.min(NB_MAX_USERS_STRING, members.size());
-    for (int i = 0; i < min; i++) {
-      User user = members.get(i);
-      buffer.append(user.getDisplayName());
-
-      if (i < min - 1) buffer.append(", ");
-    }
-
-    if (members.size() > NB_MAX_USERS_STRING) {
-      buffer.append("... +" + (members.size() - NB_MAX_USERS_STRING));
-    }
-
-    return buffer.toString();
+    return StringUtils.constrainUsersStr(members, NB_MAX_CHARS, true);
   }
 
   private String getUserNames() {
     if (members == null || members.size() == 0) return "";
 
-    StringBuffer buffer = new StringBuffer();
-    int min = Math.min(NB_MAX_USERS_STRING, members.size());
-    for (int i = 0; i < min; i++) {
-      User user = members.get(i);
-      buffer.append(user.getUsername());
-
-      if (i < min - 1) buffer.append(", ");
-    }
-
-    return buffer.toString();
+    return StringUtils.constrainUsersStr(members, NB_MAX_CHARS, false);
   }
 
   public boolean isUniqueMemberOnline(Map<String, Boolean> onlineMap) {
