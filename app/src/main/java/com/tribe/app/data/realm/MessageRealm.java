@@ -14,6 +14,7 @@ public class MessageRealm extends RealmObject {
   public static final String EMOJI = "EMOJI";
   public static final String IMAGE = "IMAGE";
   public static final String EVENT = "EVENT";
+  public static final String AUDIO = "AUDIO";
 
   private String localId;
   @PrimaryKey private String id;

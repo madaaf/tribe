@@ -268,7 +268,7 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void errorLoadingMessage() {
     Timber.w("errorLoadingMessage");
-    errorLoadingMessages = true;
+  //  errorLoadingMessages = true; //TODO DECOMMENT
   }
 
   public void successMessageReceived(List<Message> messages) {

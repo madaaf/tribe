@@ -75,11 +75,12 @@ import javax.inject.Singleton;
       original.setWidth(o.getWidth());
       original.setHeight(o.getHeight());
       original.setFilesize(o.getFilesize());
+      original.setDuration(o.getDuration());
     }
     return original;
   }
 
-  public Image transformOriginalRealmList(List<ImageRealm> collection) {
+  public Image transformOriginalRealmList(List<ImageRealm> collection, boolean isAudio) {
     List<Image> originalList = new ArrayList<>();
     Image original = new Image();
 
@@ -89,15 +90,20 @@ import javax.inject.Singleton;
       stamp.setWidth(String.valueOf(screenUtils.getWidthPx()));
       collection.add(stamp);
 
-      Collections.sort(collection, (o1, o2) -> {
-        Integer w1 = Integer.parseInt(o1.getWidth());
-        Integer w2 = Integer.parseInt(o2.getWidth());
-        return w1.compareTo(w2);
-      });
+      if (!isAudio) {
+        Collections.sort(collection, (o1, o2) -> {
+          Integer w1 = Integer.parseInt(o1.getWidth());
+          Integer w2 = Integer.parseInt(o2.getWidth());
+          return w1.compareTo(w2);
+        });
 
-      int position = collection.indexOf(stamp);
-      ImageRealm imageSelected = collection.get(position - 1);
-      original = transform(imageSelected);
+        int position = collection.indexOf(stamp);
+        ImageRealm imageSelected = collection.get(position - 1);
+        original = transform(imageSelected);
+      } else {
+        ImageRealm imageSelected = collection.get(0);
+        original = transform(imageSelected);
+      }
       // originalList.add(original);
       return original;
     }
@@ -184,6 +190,7 @@ import javax.inject.Singleton;
       originalRealm.setHeight(o.getHeight());
       originalRealm.setWidth(o.getWidth());
       originalRealm.setUrl(o.getUrl());
+      originalRealm.setDuration(o.getDuration());
     }
     return null;
   }

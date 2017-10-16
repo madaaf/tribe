@@ -108,6 +108,54 @@
       android:background="@color/grey.chat.grey"
       />
 
+  <FrameLayout
+      android:id="@+id/recordingView"
+      android:layout_width="130dp"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_centerHorizontal="true"
+      android:background="@drawable/shape_rect_voice_note"
+      android:paddingBottom="5dp"
+      android:paddingStart="8dp"
+      android:paddingTop="5dp"
+      android:visibility="gone"
+      >
+
+
+    <ImageView
+        android:id="@+id/playerBtn"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
+        android:layout_gravity="start"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_play_recording"
+        android:visibility="visible"
+        />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/loadingRecordView"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        app:indicatorColor="@color/blue.voice.bck"
+        app:indicatorName="LineScalePulseOutIndicator"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/timerVoiceNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:paddingEnd="10dp"
+        android:text="0:01"
+        android:textColor="@color/blue.voice.bck"
+        android:textSize="11sp"
+        />
+
+  </FrameLayout>
+
+
   <RelativeLayout
       android:id="@+id/containerEditText"
       android:layout_width="match_parent"
@@ -119,6 +167,7 @@
       android:paddingBottom="10dp"
       android:paddingEnd="5dp"
       android:paddingStart="5dp"
+
       >
 
 
@@ -163,6 +212,30 @@
         android:src="@drawable/picto_chat_upload"
         />
 
+    <ImageView
+        android:id="@+id/trashBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editText"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="25dp"
+        android:alpha="0"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_cancel_voice_note"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/hintEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editText"
+        android:layout_alignStart="@+id/editText"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="50dp"
+        android:textColor="@color/grey.chat.grey.hint"
+        />
+
     <com.tribe.app.presentation.view.widget.EditTextFont
         android:id="@+id/editText"
         android:layout_width="match_parent"
@@ -188,7 +261,6 @@
         android:textSize="15sp"
         style="@style/Content.Three.Black"
         />
-
     <ImageView
         android:id="@+id/sendBtn"
         android:layout_width="wrap_content"
@@ -234,48 +306,15 @@
 
   </RelativeLayout>
 
-  <!--
 
-  -->
-  <FrameLayout
-      android:id="@+id/recordingView"
-      android:layout_width="150dp"
-      android:layout_height="wrap_content"
-      android:layout_alignParentBottom="true"
-      android:background="@drawable/shape_rect_voice_note"
-      android:paddingBottom="5dp"
-      android:layout_centerHorizontal="true"
-      android:paddingStart="8dp"
-      android:paddingTop="5dp"
-      android:visibility="gone"
-      >
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:src="@drawable/picto_play_recording"
-        android:visibility="visible"
-        />
-
-    <com.tribe.app.presentation.view.widget.EditTextFont
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:paddingEnd="10dp"
-        android:text="0:28"
-        android:textColor="@color/blue.voice.bck"
-        android:textSize="11sp"
-        />
-
-  </FrameLayout>
-
-  <View
+  <ImageView
       android:id="@+id/voiceNoteBtn"
       android:layout_width="33dp"
       android:layout_height="33dp"
       android:layout_alignParentBottom="true"
       android:layout_alignParentStart="true"
       android:background="@drawable/shape_circle_grey"
+      android:scaleType="centerInside"
       android:visibility="gone"
       />
 

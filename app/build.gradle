@@ -245,6 +245,7 @@ dependencies {
   compile presentationDependencies.jodatime
   compile "me.leolin:ShortcutBadger:1.1.18@aar"
   compile presentationDependencies.constraintLayout
+  compile presentationDependencies.AVLoadingIndicatorView
 
   //androidTestCompile presentationTestDependencies.mockito
   //androidTestCompile presentationTestDependencies.dexmaker

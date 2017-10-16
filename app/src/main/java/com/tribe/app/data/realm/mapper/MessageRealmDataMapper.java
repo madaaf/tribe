@@ -4,6 +4,7 @@ import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
+import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
@@ -47,9 +48,8 @@ import javax.inject.Singleton;
         case Message.MESSAGE_IMAGE:
           message = new MessageImage(messageRealm.getId());
           // ImageRealm o = messageRealm.getOriginal();
-
           List<ImageRealm> ressources = messageRealm.getAlts();
-          Image o = userRealmDataMapper.transformOriginalRealmList(ressources);
+          Image o = userRealmDataMapper.transformOriginalRealmList(ressources, false);
           ((MessageImage) message).setOriginal(o);
 
             /*((MessageImage) message).setRessources(
@@ -60,6 +60,14 @@ import javax.inject.Singleton;
           message = new MessageEvent(messageRealm.getId());
           ((MessageEvent) message).setAction(messageRealm.getAction());
           ((MessageEvent) message).setUser(userRealmDataMapper.transform(messageRealm.getUser()));
+          break;
+        case Message.MESSAGE_AUDIO:
+          message = new MessageAudio(messageRealm.getId());
+          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
+          List<ImageRealm> r = messageRealm.getAlts();
+          Image i = userRealmDataMapper.transformOriginalRealmList(r, true);
+          ((MessageAudio) message).setOriginal(i);
+          //((MessageAudio) message).setDuration();
           break;
       }
 
@@ -108,6 +116,12 @@ import javax.inject.Singleton;
         case Message.MESSAGE_EVENT:
           messageRealm.setAction(((MessageEvent) message).getAction());
           messageRealm.setUser(userRealmDataMapper.transform(((MessageEvent) message).getUser()));
+          break;
+
+        case Message.MESSAGE_AUDIO:
+          Image o2 = ((MessageImage) message).getOriginal();
+          messageRealm.setOriginal(userRealmDataMapper.transform(o2));
+          // messageRealm.setData(((MessageAudio) message).getEmoji());
           break;
       }
     }
