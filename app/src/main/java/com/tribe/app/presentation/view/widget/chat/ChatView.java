@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -102,6 +103,8 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
 public class ChatView extends ChatMVPView implements SwipeInterface {
 
   private final static int INTERVAL_IM_TYPING = 2;
+  private static int ANIM_DURATION = 300;
+
   public final static int FROM_CHAT = 0;
   public final static int FROM_LIVE = 1;
   private final static String TYPE_NORMAL = "TYPE_NORMAL";
@@ -148,6 +151,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   @BindView(R.id.pictoVoiceNote) ImageView pictoVoiceNote;
   @BindView(R.id.trashBtn) ImageView trashBtn;
   @BindView(R.id.playerBtn) ImageView playerBtn;
+  @BindView(R.id.likeBtn) ImageView likeBtn;
   @BindView(R.id.loadingRecordView) AVLoadingIndicatorView loadingRecordView;
 
   @Inject User user;
@@ -516,31 +520,97 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
             editText.setHint("Aa");
             isHeart = true;
             editTextChange = false;
-            sendBtn.animate().setDuration(200).alpha(0f).withEndAction(() -> {
-              if (type == FROM_LIVE) {
-                sendBtn.setImageDrawable(
-                    ContextCompat.getDrawable(context, R.drawable.picto_like_heart_white));
-              } else {
-                sendBtn.setImageDrawable(
-                    ContextCompat.getDrawable(context, R.drawable.picto_like_heart));
-              }
-              sendBtn.animate().setDuration(200).alpha(1f).start();
-            }).start();
-
-            shrankEditText();
+            if (type == FROM_LIVE) {
+              likeBtn.setImageDrawable(
+                  ContextCompat.getDrawable(context, R.drawable.picto_like_heart_white));
+            } else {
+              likeBtn.setImageDrawable(
+                  ContextCompat.getDrawable(context, R.drawable.picto_like_heart));
+            }
+            switchLikeToSendBtn(false);
           } else if (!text.isEmpty() && !editTextChange) {
             Timber.e("OOK " + text);
             editTextChange = true;
             isHeart = false;
-            sendBtn.animate().setDuration(200).alpha(0f).withEndAction(() -> {
-              sendBtn.setImageDrawable(
-                  ContextCompat.getDrawable(context, R.drawable.picto_chat_send));
-              sendBtn.animate().setDuration(200).alpha(1f).start();
 
-              expendEditText();
-            }).start();
+            switchLikeToSendBtn(true);
           }
         }));
+  }
+
+  private void switchLikeToSendBtn(boolean fromLikeToSend) {
+    if (!fromLikeToSend) {
+      sendBtn.animate()
+          .scaleX(0f)
+          .scaleY(0f)
+          .rotation(45)
+          .setDuration(ANIM_DURATION)
+          .alpha(0f)
+          .withStartAction(() -> {
+            shrankEditText();
+            sendBtn.setRotation(0);
+            sendBtn.setScaleX(1);
+            sendBtn.setScaleY(1);
+            sendBtn.setAlpha(1f);
+            sendBtn.setVisibility(VISIBLE);
+
+            likeBtn.setRotation(90);
+            likeBtn.setScaleX(0);
+            likeBtn.setScaleY(0);
+            likeBtn.setAlpha(0f);
+            likeBtn.setVisibility(VISIBLE);
+
+            likeBtn.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .rotation(0)
+                .setDuration(ANIM_DURATION)
+                .setInterpolator(new AccelerateInterpolator())
+                .alpha(1f)
+                .withEndAction(() -> {
+                  sendBtn.setVisibility(GONE);
+                })
+                .start();
+          })
+          .start();
+    } else {
+      likeBtn.animate()
+          .scaleX(0f)
+          .scaleY(0f)
+          .rotation(0)
+          .setDuration(ANIM_DURATION)
+          .alpha(0f)
+          .withStartAction(() -> {
+            likeBtn.setRotation(90);
+            likeBtn.setScaleX(1);
+            likeBtn.setScaleY(1);
+            likeBtn.setAlpha(1f);
+            likeBtn.setVisibility(VISIBLE);
+
+            sendBtn.setRotation(45);
+            sendBtn.setScaleX(0);
+            sendBtn.setScaleY(0);
+            sendBtn.setAlpha(0f);
+            sendBtn.setVisibility(VISIBLE);
+
+            sendBtn.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .rotation(0)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .setDuration(ANIM_DURATION)
+                .alpha(1f)
+                .withStartAction(() -> {
+
+                })
+                .withEndAction(() -> {
+                  likeBtn.setVisibility(GONE);
+                })
+                .start();
+          })
+          .withEndAction(() -> expendEditText())
+          .start();
+    }
   }
 
   private void expendEditText() {
@@ -692,21 +762,21 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     super.onDetachedFromWindow();
   }
 
+  @OnClick(R.id.likeBtn) void onClickLike() {
+    sendMessage();
+  }
+
   @OnClick(R.id.sendBtn) void onClickSend() {
-    if (!isHeart) {
-      String m = editText.getText().toString();
-      String editedMessage = m.replaceAll("\n", "\"n");
-      if (!editedMessage.isEmpty()) {
-        if (StringUtils.isOnlyEmoji(editedMessage)) {
-          sendMessageToAdapter(MESSAGE_EMOJI, editedMessage, null);
-        } else {
-          sendMessageToAdapter(MESSAGE_TEXT, editedMessage, null);
-        }
+    String m = editText.getText().toString();
+    String editedMessage = m.replaceAll("\n", "\"n");
+    if (!editedMessage.isEmpty()) {
+      if (StringUtils.isOnlyEmoji(editedMessage)) {
+        sendMessageToAdapter(MESSAGE_EMOJI, editedMessage, null);
+      } else {
+        sendMessageToAdapter(MESSAGE_TEXT, editedMessage, null);
       }
-      editText.setText("");
-    } else {
-      sendMessage();
     }
+    editText.setText("");
   }
 
   @OnClick(R.id.txtTitle) void onClickTitle() {
