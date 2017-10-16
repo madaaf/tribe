@@ -102,15 +102,13 @@ public class HomeListAdapter extends RecyclerView.Adapter
   }
 
   public Observable<View> onClickMore() {
-    return shortcutHomeAdapterDelegate.onClickMore();
-    //return Observable.merge(userGridAdapterDelegate.onClickMore(),
-    //    userConnectedGridAdapterDelegate.onClickMore(), userLiveGridAdapterDelegate.onClickMore());
+    return Observable.merge(shortcutChatActiveHomeAdapterDelegate.onClickMore(),
+        shortcutHomeAdapterDelegate.onClickMore(), shortcutLiveHomeAdapterDelegate.onClickMore());
   }
 
   public Observable<View> onClick() {
-    return shortcutHomeAdapterDelegate.onClick();
-    //return Observable.merge(userGridAdapterDelegate.onClick(),
-    //    userLiveGridAdapterDelegate.onClick(), userConnectedGridAdapterDelegate.onClick());
+    return Observable.merge(shortcutChatActiveHomeAdapterDelegate.onClick(),
+        shortcutLiveHomeAdapterDelegate.onClick(), shortcutHomeAdapterDelegate.onClick());
   }
 
   public Observable<View> onChatClick() {
@@ -128,13 +126,21 @@ public class HomeListAdapter extends RecyclerView.Adapter
   public Observable<View> onLongClick() {
     return Observable.merge(shortcutHomeAdapterDelegate.onLongClick(),
         shortcutLiveHomeAdapterDelegate.onLongClick(),
-        shortcutChatActiveHomeAdapterDelegate.onLongClick());//, userConnectedGridAdapterDelegate.onLongClick());
+        shortcutChatActiveHomeAdapterDelegate.onLongClick());
   }
 
   public Observable<View> onMainClick() {
     return Observable.merge(shortcutHomeAdapterDelegate.onMainClick(),
         shortcutLiveHomeAdapterDelegate.onMainClick(),
         shortcutChatActiveHomeAdapterDelegate.onMainClick());
+  }
+
+  public Observable<View> onAddUser() {
+    return userToAddAdapterDelegate.onClick();
+  }
+
+  public Observable<View> onInvite() {
+    return contactToInviteAdapterDelegate.onInvite();
   }
 
   public void setItems(List<HomeAdapterInterface> items) {

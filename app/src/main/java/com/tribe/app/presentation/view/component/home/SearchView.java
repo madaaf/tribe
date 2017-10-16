@@ -627,102 +627,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
     onSyncContacts.onNext(null);
   }
 
-  ///////////////////
-  //    PUBLIC     //
-  ///////////////////
-
-  public void initSearchTextSubscription(Observable<String> obs) {
-    subscriptions.add(obs.map(CharSequence::toString).doOnNext(s -> {
-      search = s;
-      if (StringUtils.isEmpty(s)) {
-        isSearchMode = false;
-        filter();
-        showContactList();
-      }
-    }).filter(s -> !StringUtils.isEmpty(s)).doOnNext(s -> {
-      isSearchMode = true;
-      searchResult = new SearchResult();
-      searchResult.setUsername(s);
-      updateSearch();
-    }).debounce(500, TimeUnit.MILLISECONDS).subscribe(s -> searchPresenter.findByUsername(s)));
-  }
-
-  public void show() {
-    if (recyclerViewContacts.getVisibility() == View.VISIBLE) return;
-
-    onShow.onNext(null);
-    ValueAnimator colorAnimation =
-        ValueAnimator.ofObject(new ArgbEvaluator(), Color.TRANSPARENT, Color.WHITE);
-    colorAnimation.addUpdateListener(
-        animator -> background.setColor((Integer) animator.getAnimatedValue()));
-    colorAnimation.setDuration(DURATION_FAST);
-    colorAnimation.setInterpolator(new DecelerateInterpolator());
-    colorAnimation.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationStart(Animator animation) {
-      }
-
-      @Override public void onAnimationEnd(Animator animation) {
-        recyclerViewContacts.setVisibility(View.VISIBLE);
-      }
-    });
-    colorAnimation.start();
-  }
-
-  public void hide() {
-    search = "";
-    contactList.clear();
-
-    recyclerViewContacts.setVisibility(View.GONE);
-
-    ValueAnimator colorAnimation =
-        ValueAnimator.ofObject(new ArgbEvaluator(), Color.WHITE, Color.TRANSPARENT);
-    colorAnimation.addUpdateListener(
-        animator -> background.setColor((Integer) animator.getAnimatedValue()));
-    colorAnimation.setDuration(DURATION_FAST);
-    colorAnimation.setInterpolator(new DecelerateInterpolator());
-    colorAnimation.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationEnd(Animator animation) {
-        onGone.onNext(null);
-      }
-    });
-    colorAnimation.start();
-  }
-
-  ///////////////
-  //   TOUCH   //
-  ///////////////
-
-  /////////////////////
-  //   OBSERVABLES   //
-  /////////////////////
-  public Observable<Void> onNavigateToSmsForInvites() {
-    return onNavigateToSmsForInvites;
-  }
-
-  public Observable<Void> onShow() {
-    return onShow;
-  }
-
-  public Observable<Void> onSyncContacts() {
-    return onSyncContacts;
-  }
-
-  public Observable<Void> onGone() {
-    return onGone;
-  }
-
-  public Observable<Recipient> onHangLive() {
-    return onHangLive;
-  }
-
-  public Observable<ContactAB> onInvite() {
-    return onInvite;
-  }
-
-  public Observable<Recipient> onUnblock() {
-    return onUnblock;
-  }
-
   @Override public void successFacebookLogin() {
     sync();
     viewFriendsFBLoad.showLoading();
@@ -838,5 +742,119 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   @Override public void onShortcut(Shortcut shortcut) {
 
+  }
+
+  ///////////////////
+  //    PUBLIC     //
+  ///////////////////
+
+  public void initSearchTextSubscription(Observable<String> obs) {
+    subscriptions.add(obs.map(CharSequence::toString).doOnNext(s -> {
+      search = s;
+      if (StringUtils.isEmpty(s)) {
+        isSearchMode = false;
+        filter();
+        showContactList();
+      }
+    }).filter(s -> !StringUtils.isEmpty(s)).doOnNext(s -> {
+      isSearchMode = true;
+      searchResult = new SearchResult();
+      searchResult.setUsername(s);
+      updateSearch();
+    }).debounce(500, TimeUnit.MILLISECONDS).subscribe(s -> searchPresenter.findByUsername(s)));
+  }
+
+  public void show() {
+    if (recyclerViewContacts.getVisibility() == View.VISIBLE) return;
+
+    onShow.onNext(null);
+    ValueAnimator colorAnimation =
+        ValueAnimator.ofObject(new ArgbEvaluator(), Color.TRANSPARENT, Color.WHITE);
+    colorAnimation.addUpdateListener(
+        animator -> background.setColor((Integer) animator.getAnimatedValue()));
+    colorAnimation.setDuration(DURATION_FAST);
+    colorAnimation.setInterpolator(new DecelerateInterpolator());
+    colorAnimation.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationStart(Animator animation) {
+      }
+
+      @Override public void onAnimationEnd(Animator animation) {
+        recyclerViewContacts.setVisibility(View.VISIBLE);
+      }
+    });
+    colorAnimation.start();
+  }
+
+  public void hide() {
+    search = "";
+    contactList.clear();
+
+    recyclerViewContacts.setVisibility(View.GONE);
+
+    ValueAnimator colorAnimation =
+        ValueAnimator.ofObject(new ArgbEvaluator(), Color.WHITE, Color.TRANSPARENT);
+    colorAnimation.addUpdateListener(
+        animator -> background.setColor((Integer) animator.getAnimatedValue()));
+    colorAnimation.setDuration(DURATION_FAST);
+    colorAnimation.setInterpolator(new DecelerateInterpolator());
+    colorAnimation.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        onGone.onNext(null);
+      }
+    });
+    colorAnimation.start();
+  }
+
+  ///////////////
+  //   TOUCH   //
+  ///////////////
+
+  /////////////////////
+  //   OBSERVABLES   //
+  /////////////////////
+  public Observable<Void> onNavigateToSmsForInvites() {
+    return onNavigateToSmsForInvites;
+  }
+
+  public Observable<Void> onShow() {
+    return onShow;
+  }
+
+  public Observable<Void> onSyncContacts() {
+    return onSyncContacts;
+  }
+
+  public Observable<Void> onGone() {
+    return onGone;
+  }
+
+  public Observable<Recipient> onHangLive() {
+    return onHangLive;
+  }
+
+  public Observable<ContactAB> onInvite() {
+    return onInvite;
+  }
+
+  public Observable<Recipient> onUnblock() {
+    return onUnblock;
+  }
+
+  public Observable<Recipient> onClickLive() {
+    return searchAdapter.onClickLive()
+        .map(view -> (Recipient) searchAdapter.getItemAtPosition(
+            recyclerViewContacts.getChildLayoutPosition(view)));
+  }
+
+  public Observable<Recipient> onClickChat() {
+    return searchAdapter.onClickChat()
+        .map(view -> (Recipient) searchAdapter.getItemAtPosition(
+            recyclerViewContacts.getChildLayoutPosition(view)));
+  }
+
+  public Observable<Recipient> onMainClick() {
+    return searchAdapter.onMainClick()
+        .map(view -> (Recipient) searchAdapter.getItemAtPosition(
+            recyclerViewContacts.getChildLayoutPosition(view)));
   }
 }

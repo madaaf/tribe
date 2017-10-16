@@ -37,6 +37,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
@@ -454,17 +455,19 @@ public class HomeActivity extends BaseActivity
 
   private void initRecyclerView() {
     initUIRecyclerView();
-    subscriptions.add(Observable.merge(homeGridAdapter.onChatClick(), homeGridAdapter.onMainClick())
-        .map(view -> homeGridAdapter.getItemAtPosition(
-            recyclerViewFriends.getChildLayoutPosition(view)))
-        .subscribe(item -> navigateToChat((Recipient) item)));
+    subscriptions.add(Observable.merge(homeGridAdapter.onChatClick()
+            .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
+                recyclerViewFriends.getChildLayoutPosition(view))), homeGridAdapter.onMainClick()
+            .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
+                recyclerViewFriends.getChildLayoutPosition(view))), searchView.onClickChat(),
+        searchView.onMainClick()).subscribe(item -> navigateToChat(item)));
 
-    subscriptions.add(homeGridAdapter.onLiveClick()
+    subscriptions.add(Observable.merge(homeGridAdapter.onLiveClick()
+        .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
+            recyclerViewFriends.getChildLayoutPosition(view))), searchView.onClickLive())
         .debounce(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .map(view -> homeGridAdapter.getItemAtPosition(
-            recyclerViewFriends.getChildLayoutPosition(view)))
-        .subscribe(item -> onClickItem((Recipient) item)));
+        .subscribe(item -> onClickItem(item)));
 
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
@@ -522,17 +525,43 @@ public class HomeActivity extends BaseActivity
           }
         }));
 
+    subscriptions.add(homeGridAdapter.onInvite()
+        .map(view -> homeGridAdapter.getItemAtPosition(
+            recyclerViewFriends.getChildLayoutPosition(view)))
+        .doOnError(throwable -> throwable.printStackTrace())
+        .subscribe(o -> {
+          if (o instanceof ContactAB) {
+            ContactAB contact = (ContactAB) o;
+            invite(contact);
+          }
+        }));
+
     subscriptions.add(
         Observable.combineLatest(onRecipientUpdates.onBackpressureBuffer(), onNewContactsOnApp,
             onNewContactsInvite, (recipientList, contactsOnApp, contactsInvite) -> {
               List<HomeAdapterInterface> finalList = new ArrayList<>();
+              Set<String> addedUsers = new HashSet<>();
+
               for (Recipient recipient : recipientList) {
                 if (recipient instanceof Invite || !recipient.isLive()) {
                   finalList.add(recipient);
                 }
+
+                if (recipient instanceof Shortcut) {
+                  Shortcut shortcut = (Shortcut) recipient;
+                  if (shortcut.isSingle()) {
+                    addedUsers.add(shortcut.getSingleFriend().getId());
+                  }
+                }
               }
 
-              //finalList.addAll(contactsOnApp);
+              for (Contact contact : contactsOnApp) {
+                if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+                  User user = contact.getUserList().get(0);
+                  if (!addedUsers.contains(user.getId())) finalList.add(user);
+                }
+              }
+
               finalList.addAll(contactsInvite);
 
               return finalList;
@@ -603,14 +632,6 @@ public class HomeActivity extends BaseActivity
       navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE);
     }));
 
-    // subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
-    //   Bundle bundle = new Bundle();
-    //   bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
-    //   bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
-    //   tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-    //   homeGridPresenter.createRoom(TagManagerUtils.INVITE, null, false);
-    // }));
-
     subscriptions.add(topBarContainer.onOpenCloseSearch()
         .doOnNext(open -> {
           if (open) {
@@ -648,14 +669,7 @@ public class HomeActivity extends BaseActivity
         .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0),
             LiveActivity.SOURCE_SEARCH)));
 
-    subscriptions.add(searchView.onInvite().subscribe(contact -> {
-      Bundle bundle = new Bundle();
-      bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.SEARCH);
-      bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
-      tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      shouldOverridePendingTransactions = true;
-      homeGridPresenter.createRoom(TagManagerUtils.SEARCH, contact.getPhone(), false);
-    }));
+    subscriptions.add(searchView.onInvite().subscribe(contact -> invite(contact)));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {
       if (recipient instanceof Shortcut) {
@@ -686,6 +700,15 @@ public class HomeActivity extends BaseActivity
 
   private void declineInvitation(String sessionId) {
     homeGridPresenter.declineInvite(sessionId);
+  }
+
+  private void invite(ContactAB contact) {
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.SEARCH);
+    bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
+    tagManager.trackEvent(TagManagerUtils.Invites, bundle);
+    shouldOverridePendingTransactions = true;
+    homeGridPresenter.createRoom(TagManagerUtils.SEARCH, contact.getPhone(), false);
   }
 
   @Override public void onDeepLink(String url) {

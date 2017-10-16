@@ -57,6 +57,13 @@ public class RecyclerSectionItemDecoration extends BaseSectionItemDecoration {
         gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
         break;
 
+      case SEARCH_SUGGESTED_CONTACTS:
+        txtLabel.setText(R.string.home_section_suggested_friends);
+        txtLabel.setVisibility(View.VISIBLE);
+        imgPicto.setImageResource(R.drawable.picto_header_suggested);
+        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
+        break;
+
       case NONE:
         txtLabel.setText("");
         imgPicto.setImageDrawable(null);

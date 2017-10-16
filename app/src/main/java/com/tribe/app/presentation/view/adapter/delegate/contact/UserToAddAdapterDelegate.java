@@ -51,17 +51,19 @@ public class UserToAddAdapterDelegate extends RxAdapterDelegate<List<Object>> {
   @Override
   public void onBindViewHolder(@NonNull List<Object> items, @NonNull RecyclerView.ViewHolder holder,
       int position, List<Object> payloads) {
+    bind((UserToAddViewHolder) holder, (User) items.get(position));
   }
 
   @Override public void onBindViewHolder(@NonNull List<Object> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
-    UserToAddViewHolder vh = (UserToAddViewHolder) holder;
-    User user = (User) items.get(position);
+    bind((UserToAddViewHolder) holder, (User) items.get(position));
+  }
 
+  private void bind(UserToAddViewHolder vh, User user) {
     vh.txtName.setText(user.getDisplayName());
     vh.txtUsername.setText(user.getUsername());
     vh.viewNewAvatar.load(user.getProfilePicture());
-    //vh.viewNew.setVisibility(user.isNew() ? View.VISIBLE : View.GONE);
+    vh.viewNew.setVisibility(user.isNew() ? View.VISIBLE : View.GONE);
 
     vh.btnAdd.setImageResource(user.isFriend() ? R.drawable.picto_added : R.drawable.picto_add);
   }

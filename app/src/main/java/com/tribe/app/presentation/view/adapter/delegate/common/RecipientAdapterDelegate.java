@@ -6,19 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.helper.ItemTouchHelperViewHolder;
 import com.tribe.app.presentation.view.adapter.viewholder.RecipientHomeViewHolder;
-import com.tribe.app.presentation.view.component.common.ShortcutListView;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 09/04/2017
@@ -63,16 +57,15 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
 
   @Override public void onBindViewHolder(@NonNull List<Recipient> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
-    RecipientHomeViewHolder vh = (RecipientHomeViewHolder) holder;
-    Recipient recipient = items.get(position);
-    vh.viewListItem.setRecipient(recipient);
+    bind((RecipientHomeViewHolder) holder, items.get(position));
   }
 
   @Override public void onBindViewHolder(@NonNull List<Recipient> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
-    RecipientHomeViewHolder vh = (RecipientHomeViewHolder) holder;
-    Recipient recipient = items.get(position);
+    bind((RecipientHomeViewHolder) holder, items.get(position));
+  }
 
+  private void bind(RecipientHomeViewHolder vh, Recipient recipient) {
     vh.viewListItem.setRecipient(recipient);
   }
 

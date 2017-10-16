@@ -9,7 +9,7 @@ import java.util.List;
 public class ListUtils {
 
   public static void addEmptyItemsHome(List<HomeAdapterInterface> items) {
-    double minItems = 20;
+    double minItems = 10;
 
     if (items.size() < minItems) {
       for (int i = items.size(); i < minItems; i++) {

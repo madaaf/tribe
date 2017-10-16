@@ -166,4 +166,16 @@ public class SearchAdapter extends RecyclerView.Adapter {
   public Observable<View> onInvite() {
     return contactToInviteAdapterDelegate.onInvite();
   }
+
+  public Observable<View> onClickChat() {
+    return shortcutAdapterDelegate.onChatClick();
+  }
+
+  public Observable<View> onClickLive() {
+    return shortcutAdapterDelegate.onLiveClick();
+  }
+
+  public Observable<View> onMainClick() {
+    return shortcutAdapterDelegate.onMainClick();
+  }
 }

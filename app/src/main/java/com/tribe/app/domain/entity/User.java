@@ -4,6 +4,7 @@ import com.tribe.app.domain.entity.helpers.Changeable;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
+import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -21,7 +22,8 @@ import java.util.List;
  */
 
 public class User
-    implements Serializable, BaseListInterface, Changeable, LiveInviteAdapterSectionInterface {
+    implements Serializable, BaseListInterface, Changeable, LiveInviteAdapterSectionInterface,
+    HomeAdapterInterface {
 
   public static final String ID = "id";
   public static final String FBID = "fbid";
@@ -110,6 +112,10 @@ public class User
     return display_name;
   }
 
+  @Override public boolean isRead() {
+    return false;
+  }
+
   public void setDisplayName(String displayName) {
     this.display_name = displayName;
   }
@@ -195,6 +201,10 @@ public class User
     return System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES;
   }
 
+  @Override public boolean isLive() {
+    return false;
+  }
+
   @Override public boolean isRinging() {
     return ringing;
   }
@@ -209,6 +219,10 @@ public class User
 
   public Date getLastSeenAt() {
     return last_seen_at;
+  }
+
+  @Override public int getHomeSectionType() {
+    return BaseSectionItemDecoration.SEARCH_SUGGESTED_CONTACTS;
   }
 
   public void setLastSeenAt(Date lastSeenAt) {

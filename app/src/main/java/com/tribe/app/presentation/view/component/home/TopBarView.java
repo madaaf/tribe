@@ -52,7 +52,7 @@ public class TopBarView extends FrameLayout {
   private static final int MIN_NUMBER_CALL = 3;
   private static final int DURATION_FADE = 100;
   private static final float OVERSHOOT_LIGHT = 0.5f;
-  private static final int DURATION = 300;
+  private static final int DURATION = 200;
   private static final int DURATION_MEDIUM = 450;
   private static final int CLICK_ACTION_THRESHOLD = 5;
 
@@ -287,6 +287,8 @@ public class TopBarView extends FrameLayout {
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
+    if (searchMode) return;
+
     screenUtils.showKeyboard(editTextSearch, 0);
 
     onOpenCloseSearch.onNext(true);
@@ -375,7 +377,7 @@ public class TopBarView extends FrameLayout {
         .alpha(0)
         .translationX(left ? -translateX : translateX)
         .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
-        .setDuration(DURATION_MEDIUM)
+        .setDuration(DURATION)
         .start();
   }
 
@@ -385,7 +387,7 @@ public class TopBarView extends FrameLayout {
         .translationX(0)
         .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
         .setListener(listener)
-        .setDuration(DURATION_MEDIUM)
+        .setDuration(DURATION)
         .start();
   }
 
