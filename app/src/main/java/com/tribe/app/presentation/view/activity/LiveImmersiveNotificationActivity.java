@@ -382,8 +382,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
       }
 
       LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
-              missedCallManager);
+          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
       if (liveNotificationView != null) {
         subscriptions.add(liveNotificationView.onClickAction()

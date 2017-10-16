@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.widget;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -12,7 +11,6 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,6 +27,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -40,8 +39,6 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
-import java.util.ArrayList;
-import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -66,7 +63,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   private Animation slideOutAnimation;
   private boolean marginSet;
   private int sound = -1;
-  private String actionType;
+  private String actionType, action;
   private long duration = DISPLAY_TIME_IN_SECONDS;
   private GestureDetectorCompat gestureScanner;
 
@@ -75,7 +72,6 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
   //UI
   @BindView(R.id.view_live_notification_container) LinearLayout notificationContainer;
-  @BindView(R.id.view_live_notification_action_container) LinearLayout actionContainer;
   @BindView(R.id.view_notification_container) LinearLayout screen;
   @BindView(R.id.tvTitle) TextViewFont txtTitle;
   @BindView(R.id.tvBody) TextViewFont txtBody;
@@ -95,10 +91,11 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   private PublishSubject<LiveNotificationActionView.Action> onClickAction = PublishSubject.create();
 
   public LiveNotificationView(@NonNull final Context context,
-      @LiveNotificationView.LiveNotificationType int type, String actionType) {
+      @LiveNotificationView.LiveNotificationType int type, String actionType, String action) {
     super(context, null, R.attr.alertStyle);
     this.type = type;
     this.actionType = actionType;
+    this.action = action;
     initView();
   }
 
@@ -135,19 +132,22 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
         notificationContainer.getPaddingTop() + (getScreenHeight() / SCREEN_SCALE_FACTOR),
         notificationContainer.getPaddingRight(), 0);
 
-    if (type == LIVE || actionType.equals(NotificationPayload.CLICK_ACTION_JOINED)) {
+    if (type == LIVE ||
+        (!StringUtils.isEmpty(action) && action.equals(NotificationPayload.ACTION_JOINED))) {
       layoutDetails.setVisibility(View.VISIBLE);
       viewPictoLive.setVisibility(View.VISIBLE);
       viewPictoLive.setStatus(PictoLiveView.ACTIVE);
     } else if (actionType.equals(NotificationPayload.CLICK_ACTION_MESSAGE) &&
-        !actionType.equals(NotificationPayload.CLICK_ACTION_LEFT) &&
-        !actionType.equals(NotificationPayload.CLICK_ACTION_JOINED)) {
+        (StringUtils.isEmpty(action) ||
+            (!action.equals(NotificationPayload.ACTION_LEFT) &&
+                !actionType.equals(NotificationPayload.ACTION_JOINED)))) {
       layoutDetails.setVisibility(View.VISIBLE);
       viewPictoChat.setVisibility(View.VISIBLE);
       viewPictoChat.setStatus(PictoChatView.ACTIVE);
-    } else if (actionType.equals(NotificationPayload.CLICK_ACTION_LEFT)) {
+    } else if (!StringUtils.isEmpty(action) && action.equals(NotificationPayload.ACTION_LEFT)) {
       layoutDetails.setVisibility(View.VISIBLE);
       viewPictoLive.setVisibility(View.VISIBLE);
+      viewPictoChat.setVisibility(View.GONE);
     }
   }
 
@@ -192,7 +192,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   }
 
   @Override public void onAnimationEnd(final Animation animation) {
-    postDelayed(() -> hide(), duration);
+    //postDelayed(() -> hide(), duration);
   }
 
   @Override public void onAnimationRepeat(final Animation animation) {
@@ -246,23 +246,6 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     }, CLEAN_UP_DELAY_MILLIS);
   }
 
-  private void addAction(LiveNotificationActionView.Action action, int count, boolean isLast) {
-    LiveNotificationActionView actionView =
-        new LiveNotificationActionView.Builder(getContext(), action).isLast(isLast)
-            .count(count)
-            .build();
-
-    LinearLayout.LayoutParams params =
-        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT);
-    params.gravity = Gravity.CENTER_VERTICAL;
-    params.topMargin = margin;
-    if (isLast) params.bottomMargin = margin;
-
-    actionContainer.addView(actionView, params);
-    subscriptions.add(actionView.onClick().doOnNext(action1 -> hide()).subscribe(onClickAction));
-  }
-
   private void setTitle(@NonNull final String title) {
     if (!TextUtils.isEmpty(title)) {
       txtTitle.setVisibility(VISIBLE);
@@ -302,8 +285,8 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     Glide.with(getContext().getApplicationContext())
         .load(url)
         .thumbnail(0.25f)
-        .centerCrop()
-        .bitmapTransform(new RoundedCornersTransformation(getContext(), screenUtils.dpToPx(15), 0))
+        .bitmapTransform(new CenterCrop(getContext()),
+            new RoundedCornersTransformation(getContext(), screenUtils.dpToPx(4), 0))
         .crossFade()
         .diskCacheStrategy(DiskCacheStrategy.RESULT)
         .into(imgMessage);
@@ -329,20 +312,24 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     private String userImgUrl;
     private String title;
     private String body;
-    private List<LiveNotificationActionView.Action> actionList;
     private @LiveNotificationView.LiveNotificationType int type;
     private int sound = -1;
+    private String action;
     private String actionClick;
     private String messagePictureUrl;
 
     public Builder(Context context, @LiveNotificationView.LiveNotificationType int type) {
       this.context = context;
       this.type = type;
-      this.actionList = new ArrayList<>();
     }
 
     public Builder actionClick(String actionClick) {
       this.actionClick = actionClick;
+      return this;
+    }
+
+    public Builder action(String action) {
+      this.action = action;
       return this;
     }
 
@@ -366,35 +353,13 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
       return this;
     }
 
-    public Builder addAction(String id, String title) {
-      this.actionList.add(new LiveNotificationActionView.Action(id, title));
-      return this;
-    }
-
-    public Builder addAction(String id, String title, Intent intent) {
-      this.actionList.add(new LiveNotificationActionView.Action(id, title, intent));
-      return this;
-    }
-
-    public Builder addAction(String id, String title, String sessionId) {
-      this.actionList.add(new LiveNotificationActionView.Action(id, title, sessionId));
-      return this;
-    }
-
-    public Builder addActionAddUser(String id, String title, String userId) {
-      LiveNotificationActionView.Action action = new LiveNotificationActionView.Action(id, title);
-      action.setUserId(userId);
-      this.actionList.add(action);
-      return this;
-    }
-
     public Builder sound(int sound) {
       this.sound = sound;
       return this;
     }
 
     public LiveNotificationView build() {
-      LiveNotificationView view = new LiveNotificationView(context, type, actionClick);
+      LiveNotificationView view = new LiveNotificationView(context, type, actionClick, action);
       view.setUserImgUrl(userImgUrl);
       view.setTitle(title);
       view.setBody(body);
@@ -402,15 +367,6 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
       if (sound != -1) view.setSound(sound);
 
-      if (type != ERROR) {
-        int count = 0;
-        for (LiveNotificationActionView.Action action : actionList) {
-          view.addAction(action, actionList.size(), (count == (actionList.size() - 1)));
-          count++;
-        }
-      } else {
-        Timber.w("Error type");
-      }
       return view;
     }
   }

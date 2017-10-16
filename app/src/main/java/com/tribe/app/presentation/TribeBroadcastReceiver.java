@@ -55,8 +55,7 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
         (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
     LiveNotificationView liveNotificationView =
-        NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
-            missedCallManager);
+        NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
     if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
       onDisplayNotification.onNext(EmojiParser.demojizedText(

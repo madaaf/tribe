@@ -55,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            style="@style/Caption.One.Black"
+            style="@style/Body.One.Black"
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:visibility="gone"
-            style="@style/Body.One.Black"
+            style="@style/Title.1.Black"
             />
       </LinearLayout>
 
@@ -74,14 +74,16 @@
           android:layout_height="@dimen/avatar_size_small"
           android:layout_alignParentEnd="true"
           android:layout_gravity="center_vertical|end"
-          android:layout_marginEnd="@dimen/horizontal_margin_small"
           android:visibility="visible"
           >
 
         <ImageView
             android:id="@+id/imgMessage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="37dp"
+            android:layout_height="37dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            android:scaleType="centerCrop"
             android:visibility="gone"
             />
 
@@ -104,21 +106,5 @@
             />
       </FrameLayout>
     </RelativeLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:background="@color/white.opacity.10"
-        />
-
-    <LinearLayout
-        android:id="@+id/view_live_notification_action_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|center_vertical"
-        android:orientation="vertical"
-        >
-
-    </LinearLayout>
   </LinearLayout>
 </LinearLayout>

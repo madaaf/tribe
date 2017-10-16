@@ -123,18 +123,7 @@ import javax.inject.Singleton;
     NotificationCompat.Builder builder = new NotificationCompat.Builder(application);
 
     if (!StringUtils.isEmpty(payload.getTitle())) {
-      //String body = payload.getTitle();
-      //int firstOccurenceOfTwoPoints = body.indexOf("\\:");
-      //
-      //if (firstOccurenceOfTwoPoints > 0) {
-      //  Spannable sb = new SpannableString(body);
-      //  sb.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, firstOccurenceOfTwoPoints,
-      //      Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-      //  builder.setContentText(sb);
-      //} else {
       builder.setContentText(payload.getBody());
-      //}
-
       builder.setContentTitle(payload.getTitle());
     } else {
       builder.setContentText(payload.getBody());
@@ -261,8 +250,9 @@ import javax.inject.Singleton;
   }
 
   private int getNotificationId(NotificationPayload payload) {
-    return !StringUtils.isEmpty(payload.getThread()) ? payload.getThread().hashCode()
-        : (int) System.currentTimeMillis();
+    return !StringUtils.isEmpty(payload.getSessionId()) ? payload.getSessionId().hashCode()
+        : (!StringUtils.isEmpty(payload.getThread()) ? payload.getThread().hashCode()
+            : (int) System.currentTimeMillis());
   }
 
   private void sendFullScreenNotification(RemoteMessage remoteMessage) {

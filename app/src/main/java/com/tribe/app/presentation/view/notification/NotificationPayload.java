@@ -27,14 +27,15 @@ public class NotificationPayload implements Serializable {
   public static final String CLICK_ACTION_JOIN_CALL = "join_live";
   public static final String CLICK_ACTION_USER_REGISTERED = "user_registered";
   public static final String CLICK_ACTION_MESSAGE = "message";
-  public static final String CLICK_ACTION_JOINED = "joined";
-  public static final String CLICK_ACTION_LEFT = "left";
+  public static final String ACTION_JOINED = "joined";
+  public static final String ACTION_LEFT = "left";
 
   private String user_id;
   private String body;
   private int badge;
   private String title;
   private String click_action;
+  private String action;
   private String user_display_name;
   private String sound;
   private String session_id;
@@ -173,6 +174,14 @@ public class NotificationPayload implements Serializable {
 
   public String getMessagePicture() {
     return message_picture;
+  }
+
+  public void setAction(String action) {
+    this.action = action;
+  }
+
+  public String getAction() {
+    return action;
   }
 
   public boolean isLive() {

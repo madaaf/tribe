@@ -1181,8 +1181,7 @@ public class LiveActivity extends BaseActivity
           getString(R.string.live_notification_initiator_has_been_notified,
               room.getInitiator().getDisplayName())));
       LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(this, notificationPayload,
-              missedCallManager);
+          NotificationUtils.getNotificationViewFromPayload(this, notificationPayload);
 
       if (liveNotificationView != null) {
         Alerter.create(LiveActivity.this, liveNotificationView).show();

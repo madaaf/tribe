@@ -10,8 +10,6 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -175,35 +173,6 @@ public class TopBarContainer extends FrameLayout {
     topBarView.initNewContactsObs(onNewContactsInfos);
   }
 
-  private void initTooltip() {
-    if (tooltipView == null && stateManager.shouldDisplay(StateManager.FRIENDS_POPUP)) {
-      txtNewContacts.getViewTreeObserver()
-          .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override public void onGlobalLayout() {
-              txtNewContacts.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-              tooltipView = new TooltipView(getContext());
-              tooltipView.setText(R.string.contacts_search_new_tooltip);
-              tooltipView.setBackgroundResource(R.drawable.bg_tooltip_new_contacts);
-              tooltipView.setMaxLines(2);
-
-              int[] locationNewContacts = new int[2];
-              txtNewContacts.getLocationOnScreen(locationNewContacts);
-
-              tooltipView.setMaxWidth(screenUtils.getWidthPx() >> 1);
-              tooltipView.measure(0, 0);
-
-              tooltipView.setTranslationY(locationNewContacts[1] + screenUtils.dpToPx(10));
-              tooltipView.setTranslationX(
-                  locationNewContacts[0] + (txtNewContacts.getMeasuredWidth() >> 1) -
-                      (tooltipView.getMeasuredWidth() >> 1));
-
-              tooltipView.setOnClickListener(v -> topBarView.animateSearch());
-            }
-          });
-    }
-  }
-
   public boolean isSearchMode() {
     return topBarView.isSearchMode();
   }
@@ -214,18 +183,8 @@ public class TopBarContainer extends FrameLayout {
 
   public void initNewContactsObs(Observable<Pair<Integer, Boolean>> obsContactList) {
     obsContactList.observeOn(AndroidSchedulers.mainThread()).subscribe(integerBooleanPair -> {
-      initTooltip();
-
       onNewContactsInfos.onNext(integerBooleanPair);
     });
-  }
-
-  public void displayTooltip() {
-    if (stateManager.shouldDisplay(StateManager.FRIENDS_POPUP) && tooltipView != null) {
-      stateManager.addTutorialKey(StateManager.FRIENDS_POPUP);
-      addView(tooltipView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-          ViewGroup.LayoutParams.WRAP_CONTENT));
-    }
   }
 
   public void reloadUserUI() {

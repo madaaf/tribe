@@ -87,7 +87,6 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
-import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -142,8 +141,6 @@ public class HomeActivity extends BaseActivity
   @Inject StateManager stateManager;
 
   @Inject SoundManager soundManager;
-
-  @Inject MissedCallManager missedCallManager;
 
   @Inject DateUtils dateUtils;
 
@@ -311,17 +308,6 @@ public class HomeActivity extends BaseActivity
       receiverRegistered = true;
     }
 
-    if (stateManager.shouldDisplay(StateManager.NEW_CALL_POPUP)) {
-      stateManager.addTutorialKey(StateManager.NEW_CALL_POPUP);
-      popupContainerView.displayPopup(btnNewChat, PopupContainerView.DISPLAY_NEW_CALL_POPUP,
-          getResources().getString(R.string.grid_tutorial_new_call));
-    } else if (stateManager.shouldDisplay(StateManager.PROFILE_POPUP)) {
-      stateManager.addTutorialKey(StateManager.PROFILE_POPUP);
-      popupContainerView.displayPopup(viewAvatar, PopupContainerView.DISPLAY_PROFILE_POPUP,
-          getString(R.string.grid_tutorial_profile));
-    }
-
-    initMissedCall();
     initRecyclerViewCallback();
   }
 
@@ -408,17 +394,6 @@ public class HomeActivity extends BaseActivity
 
       return new Pair<>(nbContacts, hasNewContacts);
     }).subscribe(onNewContactsInfos));
-  }
-
-  private void initMissedCall() {
-    if (missedCallManager != null &&
-        missedCallManager.getNotificationPayloadList() != null &&
-        missedCallManager.getNbrOfMissedCall() > 0) {
-      Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
-      intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD,
-          missedCallManager.buildNotificationBuilderFromMissedCallList());
-      sendBroadcast(intentUnique);
-    }
   }
 
   private void initUi() {
@@ -779,10 +754,7 @@ public class HomeActivity extends BaseActivity
 
   private void openSmsApp(Intent intent) {
     if (intent != null && intent.hasExtra(Extras.ROOM_LINK_ID)) {
-      if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
-        stateManager.addTutorialKey(StateManager.OPEN_SMS);
-        homeGridPresenter.createRoom(TagManagerUtils.ONBOARDING, null, true);
-      }
+      homeGridPresenter.createRoom(TagManagerUtils.ONBOARDING, null, true);
     }
   }
 
@@ -929,9 +901,6 @@ public class HomeActivity extends BaseActivity
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if (requestCode == Navigator.FROM_LIVE) {
-      topBarContainer.displayTooltip();
-    }
     if (requestCode == Navigator.FROM_PROFILE) topBarContainer.reloadUserUI();
 
     if (data != null) {
@@ -957,9 +926,6 @@ public class HomeActivity extends BaseActivity
     }
   }
 
-  /////////////////
-  //  BROADCAST  //
-  /////////////////
   private void initUIRecyclerView() {
     layoutManager = new HomeLayoutManager(context());
     layoutManager.setAutoMeasureEnabled(false);
@@ -1062,8 +1028,7 @@ public class HomeActivity extends BaseActivity
 
   private void displayDeclinedCallNotification(NotificationPayload notificationPayload) {
     LiveNotificationView liveNotificationView =
-        NotificationUtils.getNotificationViewFromPayload(this, notificationPayload,
-            missedCallManager);
+        NotificationUtils.getNotificationViewFromPayload(this, notificationPayload);
     Alerter.create(HomeActivity.this, liveNotificationView).show();
   }
 

@@ -134,8 +134,6 @@ public class TopBarView extends FrameLayout {
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
 
-    shouldForceRed = stateManager.shouldDisplay(StateManager.FRIENDS_POPUP);
-
     initResources();
     initUI();
 

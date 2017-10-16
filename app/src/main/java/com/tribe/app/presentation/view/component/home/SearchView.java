@@ -505,7 +505,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   private void openCloseContactsView(boolean open, boolean animate) {
-
     int rotation = open ? 180 : 0;
     int translation = open ? 0 : (viewFriendsFBLoad.getHeight() +
         viewFriendsAddressBookLoad.getHeight() +
@@ -597,7 +596,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   private void lookupContacts() {
-
     rxPermissions.requestEach(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(permission -> {
       Bundle bundle = new Bundle();
       bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, permission.granted);
