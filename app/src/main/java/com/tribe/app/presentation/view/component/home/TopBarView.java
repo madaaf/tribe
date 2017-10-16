@@ -36,7 +36,7 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -62,7 +62,7 @@ public class TopBarView extends FrameLayout {
 
   @Inject StateManager stateManager;
 
-  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
+  @BindView(R.id.viewNewAvatar) NewAvatarView viewAvatar;
 
   @BindView(R.id.btnSearch) ViewGroup btnSearch;
 
@@ -206,21 +206,21 @@ public class TopBarView extends FrameLayout {
         if (isAClick(startX, event.getRawX(), startY, event.getRawY())) {
           if (isAClickInView(viewAvatar, (int) startX, (int) startY)) {
             viewAvatar.onTouchEvent(event);
-            viewAvatar.performClick();
+            //viewAvatar.performClick();
           } else if (isAClickInView(diceView, (int) startX, (int) startY)) {
             diceView.onTouchEvent(event);
-            diceView.performClick();
+            //diceView.performClick();
           } else if (isAClickInView(btnSyncContacts, (int) startX, (int) startY)) {
             if (btnSyncContacts.isClickable()) {
               btnSyncContacts.onTouchEvent(event);
-              btnSyncContacts.performClick();
+              //btnSyncContacts.performClick();
             }
           } else if (isAClickInView(btnSearch, (int) startX, (int) startY)) {
             btnSearch.onTouchEvent(event);
-            btnSearch.performClick();
+            //btnSearch.performClick();
           } else if (isAClickInView(imgClose, (int) startX, (int) startY)) {
             imgClose.onTouchEvent(event);
-            imgClose.performClick();
+            //imgClose.performClick();
           }
         }
 
@@ -230,6 +230,7 @@ public class TopBarView extends FrameLayout {
       case MotionEvent.ACTION_DOWN: {
         startX = event.getRawX();
         startY = event.getRawY();
+        break;
       }
 
       default:

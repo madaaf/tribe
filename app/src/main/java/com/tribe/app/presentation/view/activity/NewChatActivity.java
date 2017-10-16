@@ -84,6 +84,7 @@ public class NewChatActivity extends BaseActivity
   }
 
   @Override protected void onPause() {
+    screenUtils.hideKeyboard(viewShortcutCompletion);
     super.onPause();
   }
 
@@ -93,7 +94,6 @@ public class NewChatActivity extends BaseActivity
   }
 
   @Override protected void onDestroy() {
-    screenUtils.hideKeyboard(viewShortcutCompletion);
 
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();

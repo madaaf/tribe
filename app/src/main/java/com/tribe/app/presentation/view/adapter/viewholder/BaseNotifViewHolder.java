@@ -9,6 +9,7 @@ import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 
 /**
  * Created by madaaflak on 29/06/2017.
@@ -22,7 +23,7 @@ public class BaseNotifViewHolder extends RecyclerView.ViewHolder {
 
   @BindView(R.id.btnAdd) public View btnAdd;
 
-  @BindView(R.id.viewAvatar) public AvatarView viewAvatar;
+  @BindView(R.id.viewNewAvatar) public NewAvatarView viewAvatar;
 
   @BindView(R.id.btnMore) public ImageView btnMore;
 

@@ -30,6 +30,7 @@ import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -45,7 +46,7 @@ public class ProfileView extends ScrollView {
 
   @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
 
-  @BindView(R.id.avatar) AvatarView viewAvatar;
+  @BindView(R.id.avatar) NewAvatarView viewAvatar;
 
   @BindView(R.id.txtName) TextViewFont txtName;
 
