@@ -18,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import java.util.List;
@@ -61,8 +62,10 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
 
     MessageAudio m = (MessageAudio) items.get(position);
     MessageAudioViewHolder vh = (MessageAudioViewHolder) holder;
-
-    vh.timerVoiceNote.setText(m.getOriginal().getDurationFormatted());
+    Image o = m.getOriginal();
+    String time =
+        (m.getTime() != null && !m.getTime().isEmpty()) ? m.getTime() : o.getDurationFormatted();
+    vh.timerVoiceNote.setText(time);
 
     vh.playBtn.setOnClickListener(view -> {
 
@@ -84,8 +87,8 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
           mediaPlayer.release();
         }
         playingHolder = vh;
-        startMediaPlayer(Uri.parse(m.getOriginal().getUrl()));
-        animePlayerIndicator(vh, m.getOriginal().getDurationMs());
+        startMediaPlayer(Uri.parse(o.getUrl()));
+        animePlayerIndicator(vh, o.getDurationMs());
       }
       updatePlayingView();
     });

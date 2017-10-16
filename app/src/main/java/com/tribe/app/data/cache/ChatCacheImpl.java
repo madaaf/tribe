@@ -165,7 +165,6 @@ public class ChatCacheImpl implements ChatCache {
         .equalTo("localId", JsonUtils.arrayToJson(userIds))
         .findAll();
 
-    Timber.e("GET MESSAGE " + ok.size());
 
     return ok.asObservable()
         .filter(RealmResults::isLoaded)

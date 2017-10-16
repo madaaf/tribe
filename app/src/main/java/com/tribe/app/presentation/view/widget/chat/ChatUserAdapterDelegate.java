@@ -25,6 +25,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.ArrayList;
 import java.util.List;
+import timber.log.Timber;
 
 import static android.view.View.GONE;
 
@@ -62,6 +63,13 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
       @NonNull RecyclerView.ViewHolder holder) {
     ChatUserViewHolder vh = (ChatUserViewHolder) holder;
     User i = items.get(position);
+
+    vh.itemView.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+        Timber.e("ok");
+      }
+    });
+
     vh.name.setText(i.getDisplayName());
     vh.avatarView.load(i.getProfilePicture());
     // Timber.i("SOEF onBindViewHolder " + position + " " + i.toString());

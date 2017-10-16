@@ -20,7 +20,9 @@ public class Image {
   }
 
   public String getDurationFormatted() {
-    String value = String.valueOf(Float.parseFloat(Float.toString(duration / 100).substring(0, 4)));
+    int size = (String.valueOf(duration).length() > 4) ? 4 : String.valueOf(duration).length();
+    String value =
+        String.valueOf(Float.parseFloat(Float.toString(duration / 100).substring(0, size)));
     return value.replace(".", ":");
   }
 

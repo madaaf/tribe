@@ -393,7 +393,8 @@
 	<string name="live_share_new_call_button_title">Call link</string>
 	<string name="live_share_screenshot_description">Share this screenshot!</string>
 	<string name="live_share_screenshot_caption">Thanks @heytribe! :metal: #tribegoals</string>
-	<string name="live_ringing">Ringing %@</string>
+	<string name="live_ringing_in">Ringing in %1$d</string>
+	<string name="live_ringing">Ringing %1$s</string>
 	<string name="live_joining">Joining...</string>
 	<string name="live_invite_section_chat_members">Chat members</string>
 	<string name="live_invite_section_invite_link">Invite link</string>
@@ -663,12 +664,12 @@
 	<string name="game_draw_clear">Clear</string>
 	<string name="game_draw_instructions_my_turn">Your turn to draw!</string>
 	<string name="game_aliens_attack">Aliens Attack</string>
-	<string name="game_aliens_attack_lets_go">Let\'s go!</string>
-	<string name="game_aliens_attack_you_won">You Won!</string>
-	<string name="game_aliens_attack_someone_won">%@ Won!</string>
-	<string name="game_aliens_attack_you_lost">You Lost!</string>
-	<string name="game_aliens_attack_someone_lost">%@ Lost!</string>
-	<string name="game_aliens_attack_pending_instructions">It will restart when\nsomeone wins!</string>
+	<string name="game_aliens_attack_lets_go">LET\'S GO!</string>
+	<string name="game_aliens_attack_you_won">YOU WON!</string>
+	<string name="game_aliens_attack_someone_won">%@ WON!</string>
+	<string name="game_aliens_attack_you_lost">YOU LOST</string>
+	<string name="game_aliens_attack_someone_lost">%@ LOST!</string>
+	<string name="game_aliens_attack_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>
@@ -796,4 +797,16 @@
 	<string name="chat_placeholder_slide_to_cancel">Slide to cancel</string>
 	<string name="chat_seen_by">Seen by %1$s</string>
 	<string name="chat_not_seen">Unseen</string>
+	
+	<!-- Walkthrough -->
+	<string name="walkthrough_action_step1">Quick tour</string>
+	<string name="walkthrough_action_step2">Got it!</string>
+	<string name="walkthrough_action_step3">Let\'s go!</string>
+	<string name="walkthrough_message_step1">Welcome home! :house:</string>
+	<string name="walkthrough_message_step2">Slide left to chat! :arrow_right:</string>
+	<string name="walkthrough_message_step3">Slide right to video call! :arrow_left:</string>
+	<string name="walkthrough_message_step4">Have fun with live games!</string>
+	<string name="walkthrough_message_highlight_step2">Slide left</string>
+	<string name="walkthrough_message_highlight_step3">Slide right</string>
+	<string name="walkthrough_message_highlight_step4">live games</string>
 </resources>
