@@ -131,7 +131,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   private Recipient recipient;
   private MediaRecorder mRecorder = null;
   private String mFileName = null;
-  private Float audioDuration = null;
+  private Float audioDuration = 0f;
 
   @BindView(R.id.editText) EditTextFont editText;
   @BindView(R.id.recyclerViewChat) RecyclerMessageView recyclerView;
@@ -766,7 +766,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     if (type.equals(MESSAGE_IMAGE) || type.equals(MESSAGE_AUDIO)) {
       sendMedia(uri, mFileName, 0, type);
       mFileName = null;
-      audioDuration = null;
+      audioDuration = 0f;
     } else {
       recyclerView.sendMessageToNetwork(arrIds, content, realmType, 0);
     }

@@ -66,6 +66,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     Image o = m.getOriginal();
     String time =
         (m.getTime() != null && !m.getTime().isEmpty()) ? m.getTime() : o.getDurationFormatted();
+    // String time = o.getDurationFormatted();
     vh.timerVoiceNote.setText(time);
 
     vh.playBtn.setOnClickListener(view -> {
