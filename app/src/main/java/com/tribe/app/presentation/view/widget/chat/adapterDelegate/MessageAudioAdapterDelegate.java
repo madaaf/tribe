@@ -21,6 +21,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
+import com.wang.avi.AVLoadingIndicatorView;
 import java.util.List;
 import timber.log.Timber;
 
@@ -72,10 +73,12 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
       if (position == currentPlayingPosition) {
         if (mediaPlayer.isPlaying()) {
           mediaPlayer.pause();
-          stopAnimation();
+          stopAnimation(vh);
+          setEqualizerAnim(vh, false);
         } else {
           mediaPlayer.start();
-          startAnimation();
+          startAnimation(vh);
+          setEqualizerAnim(vh, true);
           mediaPlayer.setOnCompletionListener(mediaPlayer1 -> Timber.e("onCompletion"));
         }
       } else {
@@ -87,6 +90,8 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
           mediaPlayer.release();
         }
         playingHolder = vh;
+
+        setEqualizerAnim(vh, true);
         startMediaPlayer(Uri.parse(o.getUrl()));
         animePlayerIndicator(vh, o.getDurationMs());
       }
@@ -113,7 +118,10 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
   private void updateNonPlayingView(MessageAudioViewHolder holder) {
     holder.playBtn.setImageDrawable(
         ContextCompat.getDrawable(context, R.drawable.picto_play_recording));
+
     holder.playerIndicator.setVisibility(View.INVISIBLE);
+    holder.equalizer.setVisibility(View.VISIBLE);
+    holder.loadingRecordView.setVisibility(View.INVISIBLE);
   }
 
   void stopPlayer() {
@@ -192,12 +200,24 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     anim.getCurrentPlayTime();
   }
 
-  private void stopAnimation() {
+  private void stopAnimation(MessageAudioViewHolder vh) {
+    setEqualizerAnim(vh, false);
     currentPlayTime = anim.getCurrentPlayTime();
     anim.cancel();
   }
 
-  private void startAnimation() {
+  private void setEqualizerAnim(MessageAudioViewHolder vh, boolean isPlaying) {
+    if (isPlaying) {
+      vh.equalizer.setVisibility(View.INVISIBLE);
+      vh.loadingRecordView.setVisibility(View.VISIBLE);
+    } else {
+      vh.equalizer.setVisibility(View.VISIBLE);
+      vh.loadingRecordView.setVisibility(View.INVISIBLE);
+    }
+  }
+
+  private void startAnimation(MessageAudioViewHolder vh) {
+    setEqualizerAnim(vh, true);
     anim.start();
     anim.setCurrentPlayTime(currentPlayTime);
   }
@@ -209,6 +229,8 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     @BindView(R.id.playBtn) public ImageView playBtn;
     @BindView(R.id.playerIndicator) public FrameLayout playerIndicator;
     @BindView(R.id.recordingView) public FrameLayout recordingView;
+    @BindView(R.id.loadingRecordView) public AVLoadingIndicatorView loadingRecordView;
+    @BindView(R.id.equalizer) ImageView equalizer;
 
     MessageAudioViewHolder(View itemView) {
       super(itemView);

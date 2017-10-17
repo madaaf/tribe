@@ -54,6 +54,7 @@ import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
@@ -287,12 +288,38 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         if (members.size() < 2) {
           containerUsers.setVisibility(GONE);
         }
-        float ok = recordingViewX + (recordingView.getWidth() / 2);
+        //  float ok = recordingViewX + (recordingView.getWidth() / 2);
         SwipeDetector moveListener = new SwipeDetector(chatView, voiceNoteBtn, recordingView,
-            trashBtn.getX() - (trashBtn.getWidth() / 2), screenUtils, ok);
-        voiceNoteBtn.setOnTouchListener(moveListener);
+            trashBtn.getX() - (trashBtn.getWidth() / 2), screenUtils);
+
+        Boolean microEnabledState = PermissionUtils.hasPermissionsMicroOnly(rxPermissions);
+        if (microEnabledState) {
+          voiceNoteBtn.setOnTouchListener(moveListener);
+        } else {
+          voiceNoteBtn.setOnTouchListener((view, motionEvent) -> {
+            initVoiceCallPerm(moveListener);
+            return false;
+          });
+        }
       }
     });
+  }
+
+  private void initVoiceCallPerm(SwipeDetector moveListener) {
+    subscriptions.add(
+        rxPermissions.requestEach(PermissionUtils.RECORD_AUDIO).subscribe(permission -> {
+          if (permission.granted) {
+            voiceNoteBtn.setOnTouchListener(moveListener);
+          } else if (permission.shouldShowRequestPermissionRationale) {
+            Timber.d("Denied micro permission without ask never again");
+          } else {
+            Timber.d("Denied micro permission and ask never again");
+            if (!stateManager.shouldDisplay(StateManager.NEVER_ASK_AGAIN_MICRO_PERMISSION)) {
+
+            }
+            stateManager.addTutorialKey(StateManager.NEVER_ASK_AGAIN_MICRO_PERMISSION);
+          }
+        }));
   }
 
   private void stopVoiceNote(boolean sendMessage) {
@@ -1080,8 +1107,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   @Override public void onActionDown(View v) {
     Timber.i("onActionDown!");
-    startVoiceNote();
     startRecording();
+    startVoiceNote();
   }
 
   private void stopRecording() {
@@ -1111,22 +1138,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     } catch (IOException e) {
       Timber.e("prepare() failed");
     }
-
     mRecorder.start();
-
-  /*  subscriptions.add(
-        rxPermissions.requestEach(PermissionUtils.RECORD_AUDIO).subscribe(permission -> {
-          if (permission.granted) {
-
-          } else if (permission.shouldShowRequestPermissionRationale) {
-            Timber.d("Denied micro permission without ask never again");
-          } else {
-            Timber.d("Denied micro permission and ask never again");
-            if (!stateManager.shouldDisplay(StateManager.NEVER_ASK_AGAIN_MICRO_PERMISSION)) {
-
-            }
-            stateManager.addTutorialKey(StateManager.NEVER_ASK_AGAIN_MICRO_PERMISSION);
-          }
-        }));*/
   }
 }

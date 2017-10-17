@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -53,14 +54,29 @@
         android:src="@drawable/picto_play_recording"
         android:visibility="visible"
         />
+
     <ImageView
+        android:id="@+id/equalizer"
         android:layout_width="40dp"
         android:layout_height="25dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:scaleType="centerInside"
         android:src="@drawable/picto_equalizer"
+        android:visibility="visible"
         />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/loadingRecordView"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="invisible"
+        app:indicatorColor="@color/blue.voice.bck"
+        app:indicatorName="LineScalePulseOutIndicator"
+        />
+
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/timerVoiceNote"

@@ -18,11 +18,11 @@ public class SwipeDetector implements View.OnTouchListener {
   private View mView;
   private View recordingView;
   private ChatView context;
-  private float initialPosition, initPos, ratio, ok;
+  private float initialPosition, initPos, ratio;
   private ScreenUtils screenUtils;
 
   public SwipeDetector(ChatView context, View view, View recordingView, float initPos,
-      ScreenUtils screenUtils, float ok) {
+      ScreenUtils screenUtils) {
     mGestureDetector = new GestureDetector(view.getContext(), mGestureListener);
     this.mView = view;
     this.context = context;
@@ -30,7 +30,6 @@ public class SwipeDetector implements View.OnTouchListener {
     this.recordingView = recordingView;
     this.initialPosition = view.getX();
     this.screenUtils = screenUtils;
-    this.ok = ok;
   }
 
   @Override public boolean onTouch(View v, MotionEvent event) {
