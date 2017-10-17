@@ -35,10 +35,10 @@ public class DiskLiveDataRepository implements LiveRepository {
     return liveDataStore.randomRoomAssigned();
   }
 
-  @Override public Observable<Room> getRoomUpdated() {
+  @Override public Observable<Room> getRoomUpdated(String roomId) {
     final DiskLiveDataStore liveDataStore =
         (DiskLiveDataStore) this.dataStoreFactory.createDiskDataStore();
-    return liveDataStore.getRoomUpdated().compose(roomWithShortcutTransformer);
+    return liveDataStore.getRoomUpdated(roomId).compose(roomWithShortcutTransformer);
   }
 
   @Override public Observable<Room> getRoom(Live live) {

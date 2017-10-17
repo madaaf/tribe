@@ -904,9 +904,15 @@ public class HomeActivity extends BaseActivity
 
     if (requestCode == Navigator.FROM_PROFILE) {
       topBarContainer.reloadUserUI();
-    } else if (requestCode == Navigator.FROM_CHAT && data.hasExtra(ChatActivity.EXTRA_SHORTCUT_ID)) {
+    } else if (requestCode == Navigator.FROM_CHAT &&
+        data.hasExtra(ChatActivity.EXTRA_SHORTCUT_ID)) {
       homeGridPresenter.updateShortcutLeaveOnlineUntil(
           data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
+    } else if (requestCode == Navigator.FROM_LIVE &&
+        data.hasExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
+      HashSet<String> userIds =
+          (HashSet<String>) data.getSerializableExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT);
+      homeGridPresenter.createShortcut(userIds.toArray(new String[userIds.size()]));
     } else if (data != null) {
       if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {
         NotificationPayload notificationPayload = (NotificationPayload) data.getSerializableExtra(

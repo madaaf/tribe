@@ -179,12 +179,13 @@ public class RoomPresenter implements Presenter {
     }
   }
 
-  public void subscribeToRoomUpdates() {
+  public void subscribeToRoomUpdates(String roomId) {
     if (roomUpdatedSubscriber != null) {
       roomUpdatedSubscriber.unsubscribe();
     }
 
     roomUpdatedSubscriber = new RoomUpdatedSubscriber();
+    roomUpdated.setup(roomId);
     roomUpdated.execute(roomUpdatedSubscriber);
   }
 

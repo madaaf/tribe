@@ -154,7 +154,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return liveCache.getFbIdUpdated();
   }
 
-  @Override public Observable<Room> getRoomUpdated() {
+  @Override public Observable<Room> getRoomUpdated(String roomId) {
     return null;
   }
 

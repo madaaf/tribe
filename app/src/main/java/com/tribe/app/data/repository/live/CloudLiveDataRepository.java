@@ -78,7 +78,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Room> getRoomUpdated() {
+  @Override public Observable<Room> getRoomUpdated(String roomId) {
     return null;
   }
 

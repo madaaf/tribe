@@ -33,5 +33,5 @@ public interface LiveRepository {
 
   Observable<String> randomRoomAssigned();
 
-  Observable<Room> getRoomUpdated();
+  Observable<Room> getRoomUpdated(String roomId);
 }

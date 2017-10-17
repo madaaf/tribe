@@ -1,11 +1,9 @@
 package com.tribe.app.domain.interactor.live;
 
 import com.tribe.app.data.repository.live.DiskLiveDataRepository;
-import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.user.UserRepository;
 import javax.inject.Inject;
 import rx.Observable;
 
@@ -15,6 +13,7 @@ import rx.Observable;
 public class RoomUpdated extends UseCase {
 
   private LiveRepository liveRepository;
+  private String roomId;
 
   @Inject public RoomUpdated(DiskLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
@@ -22,7 +21,11 @@ public class RoomUpdated extends UseCase {
     this.liveRepository = liveRepository;
   }
 
+  public void setup(String roomId) {
+    this.roomId = roomId;
+  }
+
   @Override protected Observable buildUseCaseObservable() {
-    return this.liveRepository.getRoomUpdated();
+    return this.liveRepository.getRoomUpdated(roomId);
   }
 }

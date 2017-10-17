@@ -201,8 +201,8 @@ public class LivePresenter implements Presenter {
     roomPresenter.randomRoomAssigned();
   }
 
-  public void subscribeToRoomUpdates() {
-    roomPresenter.subscribeToRoomUpdates();
+  public void subscribeToRoomUpdates(String roomId) {
+    roomPresenter.subscribeToRoomUpdates(roomId);
   }
 
   public void buzzRoom(String roomId) {

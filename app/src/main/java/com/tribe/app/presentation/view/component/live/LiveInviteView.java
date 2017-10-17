@@ -277,10 +277,8 @@ public class LiveInviteView extends FrameLayout
           List<String> usersAtBeginningOfCall = null;
 
           if (live.fromRoom()) {
-            Timber.d("From room");
             usersAtBeginningOfCall = new ArrayList<>();
           } else {
-            Timber.d("Not from room");
             usersAtBeginningOfCall = live.getUserIdsOfShortcut();
           }
 
@@ -318,11 +316,8 @@ public class LiveInviteView extends FrameLayout
           for (Shortcut shortcut : listShortcut) {
             User user = shortcut.getSingleFriend();
             user.setSelected(selected != null && selected.getId().equals(shortcut.getId()));
-            Timber.d("User id : " + user.getId() + " / display : " + user.getDisplayName());
-            Timber.d("UsersAtBeginningOfCall : " + usersAtBeginningOfCall);
             if (!alreadyPresent.contains(user.getId()) &&
                 !usersAtBeginningOfCall.contains(user.getId())) {
-              Timber.d("User added");
               temp.add(shortcut);
             }
           }
