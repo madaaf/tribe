@@ -393,7 +393,8 @@
 	<string name="live_share_new_call_button_title">Partager l\'appel</string>
 	<string name="live_share_screenshot_description">Partagez ce screenshot !</string>
 	<string name="live_share_screenshot_caption">Merci @heytribe! :metal: #tribegoals</string>
-	<string name="live_ringing">Appel en cours de %@</string>
+	<string name="live_ringing_in">Appel dans %1$d</string>
+	<string name="live_ringing">Appel en cours de %1$s</string>
 	<string name="live_joining">Connexion...</string>
 	<string name="live_invite_section_chat_members">Members du chat</string>
 	<string name="live_invite_section_invite_link">Lien d\'nvitation</string>
@@ -663,12 +664,12 @@
 	<string name="game_draw_clear">Effacer</string>
 	<string name="game_draw_instructions_my_turn">A ton tour de dessiner</string>
 	<string name="game_aliens_attack">Aliens Attack</string>
-	<string name="game_aliens_attack_lets_go">Let\'s go!</string>
-	<string name="game_aliens_attack_you_won">Tu as gagné!</string>
-	<string name="game_aliens_attack_someone_won">%@ a gagné!</string>
-	<string name="game_aliens_attack_you_lost">Tu as perdu!</string>
-	<string name="game_aliens_attack_someone_lost">%@ a perdu!</string>
-	<string name="game_aliens_attack_pending_instructions">Le jeu redémarera quand\nun joueur gagne!</string>
+	<string name="game_aliens_attack_lets_go">C\'EST PARTI !</string>
+	<string name="game_aliens_attack_you_won">TU AS GAGNÉ !</string>
+	<string name="game_aliens_attack_someone_won">%@ A GAGNÉ !</string>
+	<string name="game_aliens_attack_you_lost">TU AS PERDU</string>
+	<string name="game_aliens_attack_someone_lost">%@ A PERDU !</string>
+	<string name="game_aliens_attack_pending_instructions">LE JEU VA REDEMARRE QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>
@@ -796,4 +797,16 @@
 	<string name="chat_placeholder_slide_to_cancel">Slide pour annuler</string>
 	<string name="chat_seen_by">Lu par %1$s</string>
 	<string name="chat_not_seen">Non lu</string>
+	
+	<!-- Walkthrough -->
+	<string name="walkthrough_action_step1">Petit tour</string>
+	<string name="walkthrough_action_step2">Compris !</string>
+	<string name="walkthrough_action_step3">Allons-y !</string>
+	<string name="walkthrough_message_step1">Bienvenue ! :house:</string>
+	<string name="walkthrough_message_step2">Glissez à gauche pour chatter :arrow_right:</string>
+	<string name="walkthrough_message_step3">Glissez à droite pour appeler :arrow_left:</string>
+	<string name="walkthrough_message_step4">Amusez-vous avec des jeux live!</string>
+	<string name="walkthrough_message_highlight_step2">Glissez à gauche</string>
+	<string name="walkthrough_message_highlight_step3">Glissez à droite</string>
+	<string name="walkthrough_message_highlight_step4">jeux live</string>
 </resources>

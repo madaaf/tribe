@@ -209,18 +209,18 @@ public class TopBarView extends FrameLayout {
             //viewAvatar.performClick();
           } else if (isAClickInView(diceView, (int) startX, (int) startY)) {
             diceView.onTouchEvent(event);
-            //diceView.performClick();
+            diceView.performClick();
           } else if (isAClickInView(btnSyncContacts, (int) startX, (int) startY)) {
             if (btnSyncContacts.isClickable()) {
               btnSyncContacts.onTouchEvent(event);
-              //btnSyncContacts.performClick();
+              btnSyncContacts.performClick();
             }
           } else if (isAClickInView(btnSearch, (int) startX, (int) startY)) {
             btnSearch.onTouchEvent(event);
-            //btnSearch.performClick();
+            btnSearch.performClick();
           } else if (isAClickInView(imgClose, (int) startX, (int) startY)) {
             imgClose.onTouchEvent(event);
-            //imgClose.performClick();
+            imgClose.performClick();
           }
         }
 
