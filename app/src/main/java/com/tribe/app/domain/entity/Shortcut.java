@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class Shortcut extends Recipient implements Serializable, LiveInviteAdapterSectionInterface {
 
-  private static final int NB_MAX_CHARS = 17;
+  private static final int ONE_MINUTE = 60 * 1000;
 
   private String id;
   private String name;
@@ -32,6 +32,7 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   private Date last_activity_at;
   private List<User> members;
   private String lastMessage;
+  private Date leaveOnlineUntil;
 
   public Shortcut(String id) {
     this.id = id;
@@ -78,7 +79,10 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   }
 
   public boolean isOnline() {
-    return online;
+    return online ||
+        (leaveOnlineUntil != null &&
+            !single &&
+            System.currentTimeMillis() - leaveOnlineUntil.getTime() <= ONE_MINUTE);
   }
 
   @Override public boolean isRinging() {
@@ -191,6 +195,14 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
 
   public void setLastMessage(String lastMessage) {
     this.lastMessage = lastMessage;
+  }
+
+  public void setLeaveOnlineUntil(Date leaveOnlineUntil) {
+    this.leaveOnlineUntil = leaveOnlineUntil;
+  }
+
+  public Date getLeaveOnlineUntil() {
+    return leaveOnlineUntil;
   }
 
   public void addMember(User user) {

@@ -26,6 +26,8 @@ import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -179,8 +181,12 @@ public class HomePresenter implements Presenter {
 
     @Override public void onNext(User user) {
       if (!cloud) {
-        List<Recipient> recipientList = user.getRecipientList();
-        showRecipients(recipientList);
+        try {
+          List<Recipient> recipientList = user.getRecipientList();
+          showRecipients(recipientList);
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
       }
     }
   }
@@ -337,6 +343,13 @@ public class HomePresenter implements Presenter {
 
   public void updateShortcutName(String shortcutId, String name) {
     shortcutPresenter.updateShortcutName(shortcutId, name);
+  }
+
+  public void updateShortcutLeaveOnlineUntil(String shortcutId) {
+    Calendar date = Calendar.getInstance();
+    long t = date.getTimeInMillis();
+    Date finalDate = new Date(t + 60 * 1000);
+    shortcutPresenter.leaveOnline(shortcutId, finalDate.getTime());
   }
 
   public void readShortcut(String shortcutId) {

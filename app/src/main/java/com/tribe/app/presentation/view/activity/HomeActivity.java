@@ -95,6 +95,7 @@ import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
@@ -901,9 +902,12 @@ public class HomeActivity extends BaseActivity
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if (requestCode == Navigator.FROM_PROFILE) topBarContainer.reloadUserUI();
-
-    if (data != null) {
+    if (requestCode == Navigator.FROM_PROFILE) {
+      topBarContainer.reloadUserUI();
+    } else if (requestCode == Navigator.FROM_CHAT && data.hasExtra(ChatActivity.EXTRA_SHORTCUT_ID)) {
+      homeGridPresenter.updateShortcutLeaveOnlineUntil(
+          data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
+    } else if (data != null) {
       if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {
         NotificationPayload notificationPayload = (NotificationPayload) data.getSerializableExtra(
             NotificationPayload.CLICK_ACTION_DECLINE);

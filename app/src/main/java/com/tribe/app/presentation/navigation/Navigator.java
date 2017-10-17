@@ -49,6 +49,7 @@ public class Navigator {
   public static int REQUEST_COUNTRY = 1000;
   public static int FROM_LIVE = 1001;
   public static int FROM_PROFILE = 1002;
+  public static int FROM_CHAT = 1003;
   public static String SNAPCHAT = "com.snapchat.android";
   public static String INSTAGRAM = "com.instagram.android";
   public static String TWITTER = "com.twitter.android";
@@ -220,12 +221,8 @@ public class Navigator {
     if (activity != null) {
       Intent intent = ChatActivity.getCallingIntent(activity, recipient);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      if (activity instanceof ChatActivity) {
-        activity.startActivity(intent);
-      } else {
-        activity.startActivityForResult(intent, FROM_LIVE);
-        activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
-      }
+      activity.startActivityForResult(intent, FROM_CHAT);
+      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
     }
   }
 

@@ -10,6 +10,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -305,6 +306,20 @@ public class UserCacheImpl implements UserCache {
         ShortcutRealm shortcutRealmDB =
             realm1.where(ShortcutRealm.class).equalTo("id", shortcutId).findFirst();
         shortcutRealmDB.setLastMessage(lastMessage);
+      });
+    } finally {
+      realm.close();
+    }
+  }
+
+  @Override public void updateShortcutLeaveOnlineUntil(String shortcutId, Date leaveOnlineUntil) {
+    Realm realm = Realm.getDefaultInstance();
+
+    try {
+      realm.executeTransaction(realm1 -> {
+        ShortcutRealm shortcutRealmDB =
+            realm1.where(ShortcutRealm.class).equalTo("id", shortcutId).findFirst();
+        shortcutRealmDB.setLeaveOnlineUntil(leaveOnlineUntil);
       });
     } finally {
       realm.close();

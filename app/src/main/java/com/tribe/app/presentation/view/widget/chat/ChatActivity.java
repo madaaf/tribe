@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.widget.chat;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import timber.log.Timber;
 public class ChatActivity extends BaseActivity {
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
+  public static final String EXTRA_SHORTCUT_ID = "EXTRA_SHORTCUT_ID";
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -95,6 +97,11 @@ public class ChatActivity extends BaseActivity {
   }
 
   @Override public void finish() {
+    if (shortcut != null) {
+      Intent resultIntent = new Intent();
+      resultIntent.putExtra(EXTRA_SHORTCUT_ID, shortcut.getId());
+      setResult(Activity.RESULT_OK, resultIntent);
+    }
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_left);
   }
