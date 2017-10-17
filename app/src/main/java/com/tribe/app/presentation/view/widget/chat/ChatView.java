@@ -327,13 +327,12 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     timerVoiceNote.setText("0:01");
     timerVoiceSub.unsubscribe();
     timerVoiceSub = null;
-    //recordingView.clearAnimation();
+    stopRecording();
 
     if (sendMessage) {
-      stopRecording();
       sendMessageToAdapter(Message.MESSAGE_AUDIO, time, null);
     }
-    // recordingView.setVisibility(GONE);
+
     trashBtn.setAlpha(0f);
     hintEditText.setAlpha(0f);
     editText.clearAnimation();
@@ -1113,7 +1112,11 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   private void stopRecording() {
     if (mRecorder == null) return;
-    mRecorder.stop();
+    try {
+      mRecorder.stop();
+    } catch (RuntimeException ex) {
+      //Ignore
+    }
     mRecorder.release();
     mRecorder = null;
   }
