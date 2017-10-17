@@ -341,24 +341,24 @@ public class TopBarContainer extends FrameLayout {
         if (pointerIndex != INVALID_POINTER && velocityTracker != null) {
           velocityTracker.addMovement(event);
           velocityTracker.computeCurrentVelocity(1000);
-        }
 
-        float y = event.getY(pointerIndex) - location[1];
-        float offsetY = y - lastDownY + lastDownYTr;
-        final float overScrollTop = (y - lastDownY + lastDownYTr) * DRAG_RATE;
+          float y = event.getY(pointerIndex) - location[1];
+          float offsetY = y - lastDownY + lastDownYTr;
+          final float overScrollTop = (y - lastDownY + lastDownYTr) * DRAG_RATE;
 
-        springTop.setCurrentValue(currentOffsetTop);
+          springTop.setCurrentValue(currentOffsetTop);
 
-        if (overScrollTop >= getTotalDragDistance()) {
-          springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(currentOffsetTop);
+          if (overScrollTop >= getTotalDragDistance()) {
+            springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(currentOffsetTop);
 
-          if (!isRefreshing) {
-            onRefresh.onNext(true);
-            isRefreshing = true;
-            viewTopBarLogo.startRefresh(getTotalDragDistance());
+            if (!isRefreshing) {
+              onRefresh.onNext(true);
+              isRefreshing = true;
+              viewTopBarLogo.startRefresh(getTotalDragDistance());
+            }
+          } else {
+            springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
           }
-        } else {
-          springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
         }
 
         break;

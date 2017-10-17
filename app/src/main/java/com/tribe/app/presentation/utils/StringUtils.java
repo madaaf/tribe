@@ -137,25 +137,26 @@ public class StringUtils {
     return json;
   }
 
-  public static String constrainUsersStr(List<User> users, int maxLength, boolean isDisplayName) {
+  public static String constrainUsersStr(List<User> users, int availableWidth,
+      boolean isDisplayName) {
     StringBuffer buffer = new StringBuffer();
     int count = 0;
-    for (int i = 0; i < users.size() && buffer.length() <= maxLength; i++) {
+    for (int i = 0; i < users.size() && buffer.length() <= availableWidth; i++) {
       User user = users.get(i);
       String label = isDisplayName ? user.getDisplayName() : user.getUsername();
 
-      if (buffer.length() + label.length() <= maxLength) {
+      if (buffer.length() + label.length() <= availableWidth) {
         buffer.append(label);
         count++;
-        if (i < users.size() - 1 && buffer.length() <= maxLength) buffer.append(", ");
+        if (i < users.size() - 1 && buffer.length() <= availableWidth) buffer.append(", ");
       } else {
         buffer.replace(buffer.length() - 2, buffer.length() - 1, "");
         break;
       }
     }
 
-    if (buffer.length() >= maxLength) {
-      String str = buffer.subSequence(0, maxLength).toString();
+    if (buffer.length() >= availableWidth) {
+      String str = buffer.subSequence(0, availableWidth).toString();
       buffer = new StringBuffer();
       buffer.append(str);
       buffer.append("... +" + (users.size() - count));

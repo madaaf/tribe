@@ -116,6 +116,10 @@ public class Invite extends Recipient {
     return userList;
   }
 
+  public List<User> getAllUsers() {
+    return room.getAllUsers();
+  }
+
   public boolean isShortcut(List<String> shortcutMemberIds) {
     if (room == null) return false;
 

@@ -126,9 +126,7 @@ public class ShortcutListView extends RelativeLayout {
   }
 
   public void initClicks() {
-    setOnClickListener(v -> {
-      onMainClick.onNext(v);
-    });
+    setOnClickListener(v -> onMainClick.onNext(v));
 
     setOnLongClickListener(v -> {
       onLongClick.onNext(v);

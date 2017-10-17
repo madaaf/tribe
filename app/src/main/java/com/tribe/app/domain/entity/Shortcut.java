@@ -240,13 +240,29 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   public String getUserDisplayNames() {
     if (members == null || members.size() == 0) return "";
 
-    return StringUtils.constrainUsersStr(members, NB_MAX_CHARS, true);
+    StringBuffer buffer = new StringBuffer();
+    for (int i = 0; i < members.size(); i++) {
+      User user = members.get(i);
+      String label = user.getDisplayName();
+      buffer.append(label);
+      if (i < members.size() - 1) buffer.append(", ");
+    }
+
+    return buffer.toString();
   }
 
   private String getUserNames() {
     if (members == null || members.size() == 0) return "";
 
-    return StringUtils.constrainUsersStr(members, NB_MAX_CHARS, false);
+    StringBuffer buffer = new StringBuffer();
+    for (int i = 0; i < members.size(); i++) {
+      User user = members.get(i);
+      String label = user.getUsername();
+      buffer.append(label);
+      if (i < members.size() - 1) buffer.append(", ");
+    }
+
+    return buffer.toString();
   }
 
   public boolean isUniqueMemberOnline(Map<String, Boolean> onlineMap) {

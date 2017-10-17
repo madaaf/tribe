@@ -11,12 +11,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.TextViewUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import java.util.List;
+import javax.inject.Inject;
 
 /**
  * Created by tiago on 09/05/17.
@@ -30,11 +35,14 @@ public class TextHomeNameActionView extends LinearLayout {
   public static final int CHAT = 1;
   public static final int LIVE = 2;
 
+  @Inject User currentUser;
+
   @BindView(R.id.txtName) TextViewFont txtName;
   @BindView(R.id.txtAction) TextViewFont txtAction;
 
   private int textType = NORMAL;
   private Unbinder unbinder;
+  private Recipient recipient;
 
   public TextHomeNameActionView(Context context) {
     super(context);
@@ -75,8 +83,6 @@ public class TextHomeNameActionView extends LinearLayout {
   }
 
   public void setTextType(@TextType int textType) {
-    if (this.textType == textType) return;
-
     this.textType = textType;
 
     if (textType == NORMAL) {
@@ -84,7 +90,6 @@ public class TextHomeNameActionView extends LinearLayout {
       txtName.setCustomFont(getContext(), FontUtils.PROXIMA_REGULAR);
 
       TextViewCompat.setTextAppearance(txtAction, R.style.BiggerBody_One_Grey);
-      txtAction.setCustomFont(getContext(), FontUtils.PROXIMA_REGULAR);
     } else {
       TextViewCompat.setTextAppearance(txtName, R.style.BiggerTitle_2_Black);
       txtName.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
@@ -97,21 +102,39 @@ public class TextHomeNameActionView extends LinearLayout {
         txtAction.setText(R.string.home_action_join_live);
       }
     }
+
+    txtAction.setCustomFont(getContext(), FontUtils.PROXIMA_REGULAR);
   }
 
   public void setRecipient(Recipient recipient) {
+    if (this.recipient != null && this.recipient.equals(recipient)) return;
+    this.recipient = recipient;
+
     if (recipient instanceof Shortcut) {
       Shortcut shortcut = (Shortcut) recipient;
       if (!StringUtils.isEmpty(shortcut.getName())) {
         txtName.setText(shortcut.getName());
-      } else {
+      } else if (shortcut.isSingle()) {
         txtName.setText(shortcut.getUserDisplayNames());
+      } else {
+        List<User> userList = shortcut.getMembers();
+        TextViewUtils.constraintTextInto(txtName, userList);
       }
 
       if (!StringUtils.isEmpty(shortcut.getLastMessage())) {
         txtAction.setText(shortcut.getLastMessage());
       } else {
         txtAction.setText(R.string.home_action_tap_to_chat);
+      }
+    } else if (recipient instanceof Invite) {
+      Invite invite = (Invite) recipient;
+
+      if (invite.getShortcut() == null || StringUtils.isEmpty(invite.getShortcut().getName())) {
+        List<User> userList = invite.getAllUsers();
+        userList.remove(currentUser);
+        TextViewUtils.constraintTextInto(txtName, userList);
+      } else {
+        txtName.setText(recipient.getDisplayName());
       }
     } else {
       txtName.setText(recipient.getDisplayName());
