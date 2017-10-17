@@ -313,6 +313,25 @@ public class LiveActivity extends BaseActivity
       registerReceiver(notificationReceiver,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
       receiverRegistered = true;
+
+      subscriptions.add(notificationReceiver.onShowNotificationLive().subscribe(pair -> {
+        NotificationPayload payload = pair.first;
+
+        if (room == null) return;
+
+        boolean shouldDisplay = true;
+
+        if (room.getId().equals(payload.getSessionId())) {
+          String action = payload.getAction();
+          if (action != null &&
+              (action.equals(NotificationPayload.ACTION_LEFT) ||
+                  action.equals(NotificationPayload.ACTION_JOINED))) {
+            shouldDisplay = false;
+          }
+        }
+
+        if (shouldDisplay) Alerter.create(this, pair.second).show();
+      }));
     }
 
     if (shouldOverridePendingTransactions) {

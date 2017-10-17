@@ -15,7 +15,6 @@
       android:id="@+id/view_live_notification_container"
       android:background="@null"
       android:clickable="true"
-      android:elevation="10dp"
       android:orientation="vertical"
       tools:visibility="visible"
       style="@style/AlertStyle"
@@ -23,7 +22,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="67dp"
         android:layout_gravity="top"
         android:layout_marginBottom="@dimen/horizontal_margin"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
@@ -31,20 +30,22 @@
         android:layout_marginTop="@dimen/vertical_margin"
         android:background="@drawable/shape_rect_rounded_5_white"
         android:elevation="10dp"
-        android:padding="@dimen/horizontal_margin_small"
+        android:paddingLeft="@dimen/horizontal_margin_small"
+        android:paddingRight="@dimen/horizontal_margin_small"
         >
 
       <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
           android:id="@+id/avatar"
           android:layout_width="@dimen/avatar_size_small"
           android:layout_height="@dimen/avatar_size_small"
+          android:layout_centerVertical="true"
           android:layout_marginEnd="@dimen/horizontal_margin_small"
           />
 
       <LinearLayout
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical"
+          android:layout_centerVertical="true"
           android:layout_marginEnd="65dp"
           android:layout_toRightOf="@id/avatar"
           android:orientation="vertical"
@@ -62,7 +63,7 @@
             android:id="@+id/tvBody"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="2.5dp"
             android:visibility="gone"
             style="@style/Title.1.Black"
             />
@@ -73,7 +74,7 @@
           android:layout_width="@dimen/avatar_size_small"
           android:layout_height="@dimen/avatar_size_small"
           android:layout_alignParentEnd="true"
-          android:layout_gravity="center_vertical|end"
+          android:layout_centerVertical="true"
           android:visibility="visible"
           >
 
@@ -81,8 +82,7 @@
             android:id="@+id/imgMessage"
             android:layout_width="37dp"
             android:layout_height="37dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            android:layout_gravity="center_vertical|end"
             android:scaleType="centerCrop"
             android:visibility="gone"
             />

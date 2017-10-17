@@ -30,8 +30,8 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TopBarLogoView extends FrameLayout {
 
-  public static final int DURATION = 300;
-  private static final float OVERSHOOT = 1.25f;
+  public static final int DURATION = 400;
+  private static final float OVERSHOOT = 0.75f;
 
   @Inject ScreenUtils screenUtils;
 

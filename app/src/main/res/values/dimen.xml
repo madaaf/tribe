@@ -145,6 +145,6 @@
 
   <dimen name="alerter_padding_small">4dp</dimen>
   <dimen name="alerter_padding_default">16dp</dimen>
-  <dimen name="alerter_alert_padding">26dp</dimen>
+  <dimen name="alerter_alert_padding">10dp</dimen>
 
 </resources>

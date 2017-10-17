@@ -192,7 +192,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   }
 
   @Override public void onAnimationEnd(final Animation animation) {
-    postDelayed(() -> hide(), duration);
+    //postDelayed(() -> hide(), duration);
   }
 
   @Override public void onAnimationRepeat(final Animation animation) {

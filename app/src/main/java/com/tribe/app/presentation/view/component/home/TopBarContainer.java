@@ -39,7 +39,7 @@ public class TopBarContainer extends FrameLayout {
   private static final float DRAG_RATE = 0.5f;
   private static final int DRAG_THRESHOLD = 20;
   private static final int INVALID_POINTER = -1;
-  public static final int MIN_LENGTH = 1500; // ms
+  public static final int MIN_LENGTH = 1800; // ms
 
   @Inject SoundManager soundManager;
 
@@ -354,7 +354,7 @@ public class TopBarContainer extends FrameLayout {
             if (!isRefreshing) {
               onRefresh.onNext(true);
               isRefreshing = true;
-              viewTopBarLogo.startRefresh(getTotalDragDistance());
+              viewTopBarLogo.startRefresh(getTotalDragDistance() - topBarView.getHeight());
             }
           } else {
             springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
@@ -369,7 +369,7 @@ public class TopBarContainer extends FrameLayout {
   }
 
   private float getTotalDragDistance() {
-    return getHeight() / 8;
+    return getHeight() / 10;
   }
 
   private int computeOffsetWithTension(float scrollDist, float totalDragDistance) {
