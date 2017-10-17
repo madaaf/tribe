@@ -36,7 +36,7 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -52,7 +52,7 @@ public class TopBarView extends FrameLayout {
   private static final int MIN_NUMBER_CALL = 3;
   private static final int DURATION_FADE = 100;
   private static final float OVERSHOOT_LIGHT = 0.5f;
-  private static final int DURATION = 300;
+  private static final int DURATION = 200;
   private static final int DURATION_MEDIUM = 450;
   private static final int CLICK_ACTION_THRESHOLD = 5;
 
@@ -62,7 +62,7 @@ public class TopBarView extends FrameLayout {
 
   @Inject StateManager stateManager;
 
-  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
+  @BindView(R.id.viewNewAvatar) NewAvatarView viewAvatar;
 
   @BindView(R.id.btnSearch) ViewGroup btnSearch;
 
@@ -133,8 +133,6 @@ public class TopBarView extends FrameLayout {
     unbinder = ButterKnife.bind(this);
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
-
-    shouldForceRed = stateManager.shouldDisplay(StateManager.FRIENDS_POPUP);
 
     initResources();
     initUI();
@@ -208,7 +206,7 @@ public class TopBarView extends FrameLayout {
         if (isAClick(startX, event.getRawX(), startY, event.getRawY())) {
           if (isAClickInView(viewAvatar, (int) startX, (int) startY)) {
             viewAvatar.onTouchEvent(event);
-            viewAvatar.performClick();
+            //viewAvatar.performClick();
           } else if (isAClickInView(diceView, (int) startX, (int) startY)) {
             diceView.onTouchEvent(event);
             diceView.performClick();
@@ -232,6 +230,7 @@ public class TopBarView extends FrameLayout {
       case MotionEvent.ACTION_DOWN: {
         startX = event.getRawX();
         startY = event.getRawY();
+        break;
       }
 
       default:
@@ -287,6 +286,8 @@ public class TopBarView extends FrameLayout {
   }
 
   @OnClick(R.id.btnSearch) void animateSearch() {
+    if (searchMode) return;
+
     screenUtils.showKeyboard(editTextSearch, 0);
 
     onOpenCloseSearch.onNext(true);
@@ -375,7 +376,7 @@ public class TopBarView extends FrameLayout {
         .alpha(0)
         .translationX(left ? -translateX : translateX)
         .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
-        .setDuration(DURATION_MEDIUM)
+        .setDuration(DURATION)
         .start();
   }
 
@@ -385,7 +386,7 @@ public class TopBarView extends FrameLayout {
         .translationX(0)
         .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
         .setListener(listener)
-        .setDuration(DURATION_MEDIUM)
+        .setDuration(DURATION)
         .start();
   }
 

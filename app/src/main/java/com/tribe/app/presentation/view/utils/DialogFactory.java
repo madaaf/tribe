@@ -108,7 +108,7 @@ public final class DialogFactory {
       }
 
       View parent = LayoutInflater.from(context).inflate(R.layout.view_edit_shortcut_name, null);
-      EditTextFont et = (EditTextFont) parent.findViewById(R.id.editTxtName);
+      EditTextFont et = parent.findViewById(R.id.editTxtName);
       et.setInputType(inputType);
 
       final AlertDialog ad = new AlertDialog.Builder(themedContext).setTitle(title)
@@ -137,7 +137,7 @@ public final class DialogFactory {
     return Observable.create((Subscriber<? super LabelType> subscriber) -> {
 
       View view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_base, null);
-      RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewBottomSheet);
+      RecyclerView recyclerView = view.findViewById(R.id.recyclerViewBottomSheet);
       recyclerView.setHasFixedSize(true);
       recyclerView.setLayoutManager(new LinearLayoutManager(context));
       LabelSheetAdapter labelSheetAdapter = new LabelSheetAdapter(context, genericTypeList);
@@ -176,9 +176,11 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForCamera(Context context) {
     List<LabelType> cameraTypeList = new ArrayList<>();
     cameraTypeList.add(
-        new LabelType(context.getString(R.string.image_picker_camera), LabelType.OPEN_CAMERA));
+        new LabelType(EmojiParser.demojizedText(context.getString(R.string.image_picker_camera)),
+            LabelType.OPEN_CAMERA));
     cameraTypeList.add(
-        new LabelType(context.getString(R.string.image_picker_library), LabelType.OPEN_PHOTOS));
+        new LabelType(EmojiParser.demojizedText(context.getString(R.string.image_picker_library)),
+            LabelType.OPEN_PHOTOS));
     return cameraTypeList;
   }
 
@@ -200,9 +202,12 @@ public final class DialogFactory {
 
     if (recipient instanceof Shortcut) {
       Shortcut shortcut = (Shortcut) recipient;
-      moreTypeList.add(new LabelType(
-          EmojiParser.demojizedText(context.getString(R.string.shortcut_update_name_title)),
-          LabelType.CHANGE_NAME));
+
+      if (!shortcut.isSingle()) {
+        moreTypeList.add(new LabelType(
+            EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_customize)),
+            LabelType.CUSTOMIZE));
+      }
 
       if (!shortcut.isMute()) {
         moreTypeList.add(new LabelType(
@@ -312,5 +317,25 @@ public final class DialogFactory {
         new LabelType(context.getString(R.string.game_post_it_menu_stop), LabelType.GAME_STOP));
 
     return gameLabels;
+  }
+
+  public static Observable<LabelType> showBottomSheetForCustomizeShortcut(Context context,
+      Shortcut shortcut) {
+    return createBottomSheet(context, generateLabelsForCustomizeShortcut(context, shortcut));
+  }
+
+  private static List<LabelType> generateLabelsForCustomizeShortcut(Context context,
+      Shortcut shortcut) {
+    List<LabelType> moreTypeList = new ArrayList<>();
+
+    moreTypeList.add(new LabelType(
+        EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_update_name)),
+        LabelType.CHANGE_NAME));
+
+    moreTypeList.add(new LabelType(
+        EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_update_avatar)),
+        LabelType.CHANGE_PICTURE));
+
+    return moreTypeList;
   }
 }

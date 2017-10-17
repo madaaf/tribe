@@ -16,10 +16,10 @@
 
   <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
       android:id="@+id/viewNewAvatar"
-      android:layout_width="43dp"
-      android:layout_height="43dp"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
       android:layout_alignParentTop="true"
-      android:layout_marginTop="12.5dp"
+      android:layout_marginTop="20dp"
       android:layout_toRightOf="@id/viewPictoChat"
       />
 
@@ -42,9 +42,9 @@
       android:layout_height="wrap_content"
       android:layout_centerVertical="true"
       android:layout_marginBottom="@dimen/horizontal_margin_smaller"
+      android:layout_marginEnd="60dp"
       android:layout_marginStart="@dimen/horizontal_margin"
       android:layout_marginTop="@dimen/horizontal_margin_smaller"
-      android:layout_toLeftOf="@id/viewPictoLive"
       android:layout_toRightOf="@id/viewNewAvatar"
       />
 

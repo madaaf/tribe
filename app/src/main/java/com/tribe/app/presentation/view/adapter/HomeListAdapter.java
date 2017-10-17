@@ -4,13 +4,14 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.presentation.view.adapter.delegate.grid.EmptyHeaderGridAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.common.ShortcutAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutChatActiveHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyListAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.common.ShortcutAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutLiveHomeAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.helper.ItemTouchHelperAdapter;
+import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.adapter.interfaces.RecyclerViewItemEnabler;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +34,11 @@ public class HomeListAdapter extends RecyclerView.Adapter
   private ShortcutAdapterDelegate shortcutHomeAdapterDelegate;
   private ShortcutLiveHomeAdapterDelegate shortcutLiveHomeAdapterDelegate;
   private ShortcutChatActiveHomeAdapterDelegate shortcutChatActiveHomeAdapterDelegate;
+  private UserToAddAdapterDelegate userToAddAdapterDelegate;
+  private ContactToInviteAdapterDelegate contactToInviteAdapterDelegate;
 
   // VARIABLES
-  private List<Recipient> items;
+  private List<HomeAdapterInterface> items;
   private boolean allEnabled = true;
 
   // OBSERVABLES
@@ -43,8 +46,6 @@ public class HomeListAdapter extends RecyclerView.Adapter
 
   @Inject public HomeListAdapter(Context context) {
     delegatesManager = new RxAdapterDelegatesManager<>();
-    delegatesManager.addDelegate(EMPTY_HEADER_VIEW_TYPE,
-        new EmptyHeaderGridAdapterDelegate(context));
     delegatesManager.addDelegate(EMPTY_VIEW_TYPE, new ShortcutEmptyListAdapterDelegate(context));
 
     shortcutHomeAdapterDelegate = new ShortcutAdapterDelegate(context);
@@ -56,13 +57,19 @@ public class HomeListAdapter extends RecyclerView.Adapter
     shortcutChatActiveHomeAdapterDelegate = new ShortcutChatActiveHomeAdapterDelegate(context);
     delegatesManager.addDelegate(shortcutChatActiveHomeAdapterDelegate);
 
+    userToAddAdapterDelegate = new UserToAddAdapterDelegate(context);
+    delegatesManager.addDelegate(userToAddAdapterDelegate);
+
+    contactToInviteAdapterDelegate = new ContactToInviteAdapterDelegate(context);
+    delegatesManager.addDelegate(contactToInviteAdapterDelegate);
+
     items = new ArrayList<>();
 
     setHasStableIds(true);
   }
 
   @Override public long getItemId(int position) {
-    Recipient recipient = getItemAtPosition(position);
+    HomeAdapterInterface recipient = getItemAtPosition(position);
     return recipient.hashCode();
   }
 
@@ -95,15 +102,13 @@ public class HomeListAdapter extends RecyclerView.Adapter
   }
 
   public Observable<View> onClickMore() {
-    return shortcutHomeAdapterDelegate.onClickMore();
-    //return Observable.merge(userGridAdapterDelegate.onClickMore(),
-    //    userConnectedGridAdapterDelegate.onClickMore(), userLiveGridAdapterDelegate.onClickMore());
+    return Observable.merge(shortcutChatActiveHomeAdapterDelegate.onClickMore(),
+        shortcutHomeAdapterDelegate.onClickMore(), shortcutLiveHomeAdapterDelegate.onClickMore());
   }
 
   public Observable<View> onClick() {
-    return shortcutHomeAdapterDelegate.onClick();
-    //return Observable.merge(userGridAdapterDelegate.onClick(),
-    //    userLiveGridAdapterDelegate.onClick(), userConnectedGridAdapterDelegate.onClick());
+    return Observable.merge(shortcutChatActiveHomeAdapterDelegate.onClick(),
+        shortcutLiveHomeAdapterDelegate.onClick(), shortcutHomeAdapterDelegate.onClick());
   }
 
   public Observable<View> onChatClick() {
@@ -112,17 +117,38 @@ public class HomeListAdapter extends RecyclerView.Adapter
         shortcutChatActiveHomeAdapterDelegate.onChatClick());
   }
 
-  public Observable<View> onLongClick() {
-    return Observable.merge(shortcutHomeAdapterDelegate.onLongClick(),
-        shortcutLiveHomeAdapterDelegate.onLongClick(), shortcutChatActiveHomeAdapterDelegate.onLongClick());//, userConnectedGridAdapterDelegate.onLongClick());
+  public Observable<View> onLiveClick() {
+    return Observable.merge(shortcutHomeAdapterDelegate.onLiveClick(),
+        shortcutLiveHomeAdapterDelegate.onLiveClick(),
+        shortcutChatActiveHomeAdapterDelegate.onLiveClick());
   }
 
-  public void setItems(List<Recipient> items) {
+  public Observable<View> onLongClick() {
+    return Observable.merge(shortcutHomeAdapterDelegate.onLongClick(),
+        shortcutLiveHomeAdapterDelegate.onLongClick(),
+        shortcutChatActiveHomeAdapterDelegate.onLongClick());
+  }
+
+  public Observable<View> onMainClick() {
+    return Observable.merge(shortcutHomeAdapterDelegate.onMainClick(),
+        shortcutLiveHomeAdapterDelegate.onMainClick(),
+        shortcutChatActiveHomeAdapterDelegate.onMainClick());
+  }
+
+  public Observable<View> onAddUser() {
+    return userToAddAdapterDelegate.onClick();
+  }
+
+  public Observable<View> onInvite() {
+    return contactToInviteAdapterDelegate.onInvite();
+  }
+
+  public void setItems(List<HomeAdapterInterface> items) {
     this.items.clear();
     this.items.addAll(items);
   }
 
-  public Recipient getItemAtPosition(int position) {
+  public HomeAdapterInterface getItemAtPosition(int position) {
     if (items.size() > 0 && position < items.size()) {
       return items.get(position);
     } else {
@@ -130,7 +156,7 @@ public class HomeListAdapter extends RecyclerView.Adapter
     }
   }
 
-  public List<Recipient> getItems() {
+  public List<HomeAdapterInterface> getItems() {
     return items;
   }
 

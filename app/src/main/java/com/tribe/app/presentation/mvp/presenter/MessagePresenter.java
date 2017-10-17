@@ -105,6 +105,12 @@ public class MessagePresenter implements Presenter {
     updateShortcut(shortcutId, values);
   }
 
+  public void updateShortcutPicture(String shortcutId, String pictureUri) {
+    List<Pair<String, String>> values = new ArrayList<>();
+    values.add(new Pair<>(ShortcutRealm.PICTURE, pictureUri));
+    updateShortcut(shortcutId, values);
+  }
+
   private void updateShortcut(String shortcutId, List<Pair<String, String>> values) {
     if (updateShortcutSubscriber != null) updateShortcutSubscriber.unsubscribe();
     updateShortcutSubscriber = new UpdateShortcutSubscriber();

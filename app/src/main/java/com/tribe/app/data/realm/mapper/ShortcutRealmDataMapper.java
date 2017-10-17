@@ -45,6 +45,7 @@ import javax.inject.Singleton;
       shortcut.setMembers(userRealmDataMapper.transform(shortcutRealm.getMembers()));
       shortcut.setLastActivityAt(shortcutRealm.getLastActivityAt());
       shortcut.setCreatedAt(shortcutRealm.getCreatedAt());
+      shortcut.setLeaveOnlineUntil(shortcutRealm.getLeaveOnlineUntil());
     }
 
     return shortcut;
@@ -75,6 +76,7 @@ import javax.inject.Singleton;
       shortcutRealm.setMembers(userRealmDataMapper.transformList(shortcut.getMembers()));
       shortcutRealm.setLastActivityAt(shortcut.getLastActivityAt());
       shortcutRealm.setCreatedAt(shortcut.getCreatedAt());
+      shortcutRealm.setLeaveOnlineUntil(shortcut.getLeaveOnlineUntil());
     }
 
     return shortcutRealm;

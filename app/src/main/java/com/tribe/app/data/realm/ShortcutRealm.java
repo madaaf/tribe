@@ -32,6 +32,7 @@ public class ShortcutRealm extends RealmObject {
   public static final String READ = "read";
   public static final String MUTE = "mute";
   public static final String SINGLE = "single";
+  public static final String LEAVE_ONLINE_UNTIL = "leaveOnlineUntil";
 
   @PrimaryKey @Index private String id;
   private String name;
@@ -45,6 +46,7 @@ public class ShortcutRealm extends RealmObject {
   private Date last_activity_at;
   private RealmList<UserRealm> members;
   private String lastMessage;
+  private Date leaveOnlineUntil;
 
   @Ignore private boolean online;
   @Ignore private boolean live;
@@ -147,6 +149,14 @@ public class ShortcutRealm extends RealmObject {
 
   public void setMute(boolean mute) {
     this.mute = mute;
+  }
+
+  public void setLeaveOnlineUntil(Date leaveOnlineUntil) {
+    this.leaveOnlineUntil = leaveOnlineUntil;
+  }
+
+  public Date getLeaveOnlineUntil() {
+    return leaveOnlineUntil;
   }
 
   public void computeMembersOnline(Map<String, Boolean> onlineMap) {

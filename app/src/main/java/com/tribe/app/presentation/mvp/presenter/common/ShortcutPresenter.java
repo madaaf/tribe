@@ -108,6 +108,12 @@ public class ShortcutPresenter implements Presenter {
     updateShortcut(shortcutId, values);
   }
 
+  public void updateShortcutPicture(String shortcutId, String imageUri) {
+    List<Pair<String, String>> values = new ArrayList<>();
+    values.add(new Pair<>(ShortcutRealm.PICTURE, imageUri));
+    updateShortcut(shortcutId, values);
+  }
+
   public void readShortcut(String shortcutId) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(ShortcutRealm.READ, String.valueOf(true)));
@@ -117,6 +123,12 @@ public class ShortcutPresenter implements Presenter {
   public void pinShortcut(String shortcutId, boolean pinned) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(ShortcutRealm.PINNED, String.valueOf(pinned)));
+    updateShortcut(shortcutId, values);
+  }
+
+  public void leaveOnline(String shortcutId, long leaveOnlineDate) {
+    List<Pair<String, String>> values = new ArrayList<>();
+    values.add(new Pair<>(ShortcutRealm.LEAVE_ONLINE_UNTIL, String.valueOf(leaveOnlineDate)));
     updateShortcut(shortcutId, values);
   }
 

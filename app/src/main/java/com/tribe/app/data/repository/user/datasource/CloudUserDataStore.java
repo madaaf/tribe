@@ -48,6 +48,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import okhttp3.MediaType;
@@ -741,6 +742,12 @@ public class CloudUserDataStore implements UserDataStore {
     String pictureUri = "";
     StringBuilder shortcutInputBuilder = new StringBuilder();
 
+    if (values.size() == 1 && values.get(0).first.equals(ShortcutRealm.LEAVE_ONLINE_UNTIL)) {
+      Date date = new Date(Long.parseLong(values.get(0).second));
+      userCache.updateShortcutLeaveOnlineUntil(shortcutId, date);
+      return Observable.empty();
+    }
+
     for (Pair<String, String> value : values) {
       if (value.first.equals(ShortcutRealm.READ)) userCache.decrementBadge();
       if (ShortcutRealm.isKeyABool(value.first)) {
@@ -807,7 +814,7 @@ public class CloudUserDataStore implements UserDataStore {
       MultipartBody.Part body = null;
 
       requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
-      body = MultipartBody.Part.createFormData("picture", "picture.jpg", requestFile);
+      body = MultipartBody.Part.createFormData("shortcut_pic", "picture.jpg", requestFile);
 
       return tribeApi.updateShortcutMedia(query, body)
           .doOnNext(shortcutRealm -> userCache.updateShortcut(shortcutRealm));

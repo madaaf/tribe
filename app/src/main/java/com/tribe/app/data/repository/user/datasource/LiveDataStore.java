@@ -20,5 +20,5 @@ public interface LiveDataStore {
 
   Observable<User> getFbIdUpdated();
 
-  Observable<Room> getRoomUpdated();
+  Observable<Room> getRoomUpdated(String roomId);
 }

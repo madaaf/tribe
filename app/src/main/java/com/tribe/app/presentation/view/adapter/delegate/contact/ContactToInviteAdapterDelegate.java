@@ -6,15 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
-import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.adapter.viewholder.ContactToInviteViewHolder;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -51,13 +48,15 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
   @Override
   public void onBindViewHolder(@NonNull List<Object> items, @NonNull RecyclerView.ViewHolder holder,
       int position, List<Object> payloads) {
+    bind((ContactToInviteViewHolder) holder, (Contact) items.get(position));
   }
 
   @Override public void onBindViewHolder(@NonNull List<Object> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
-    ContactToInviteViewHolder vh = (ContactToInviteViewHolder) holder;
-    Contact contact = (Contact) items.get(position);
+    bind((ContactToInviteViewHolder) holder, (Contact) items.get(position));
+  }
 
+  public void bind(ContactToInviteViewHolder vh, Contact contact) {
     vh.txtName.setText(contact.getName());
     vh.txtDetails.setText(context.getString(R.string.contacts_section_addressbook_friends_in_app,
         contact.getHowManyFriends()));
@@ -67,20 +66,6 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
     } else {
       vh.btnInvite.setImageResource(R.drawable.picto_messenger);
     }
-  }
-
-  class ContactToInviteViewHolder extends RecyclerView.ViewHolder {
-
-    public ContactToInviteViewHolder(View itemView) {
-      super(itemView);
-      ButterKnife.bind(this, itemView);
-    }
-
-    @BindView(R.id.txtName) public TextViewFont txtName;
-
-    @BindView(R.id.txtDetails) public TextViewFont txtDetails;
-
-    @BindView(R.id.btnInvite) public ImageView btnInvite;
   }
 
   /**

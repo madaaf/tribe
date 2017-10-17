@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_base_list_height"
+    android:background="@android:color/white"
     >
 
   <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
@@ -52,7 +53,7 @@
             android:layout_marginStart="@dimen/horizontal_margin_xsmall"
             android:layout_toRightOf="@id/txtName"
             android:background="@drawable/shape_oval_green"
-            android:visibility="visible"
+            android:visibility="gone"
             />
       </RelativeLayout>
     </LinearLayout>

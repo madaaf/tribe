@@ -6,18 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.helper.ItemTouchHelperViewHolder;
-import com.tribe.app.presentation.view.component.common.ShortcutListView;
+import com.tribe.app.presentation.view.adapter.viewholder.RecipientHomeViewHolder;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 09/04/2017
@@ -32,6 +27,8 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
   protected final PublishSubject<View> click = PublishSubject.create();
   protected final PublishSubject<View> longClick = PublishSubject.create();
   protected final PublishSubject<View> onChatClick = PublishSubject.create();
+  protected final PublishSubject<View> onLiveClick = PublishSubject.create();
+  protected final PublishSubject<View> onMainClick = PublishSubject.create();
 
   public RecipientAdapterDelegate(Context context) {
     this.context = context;
@@ -49,22 +46,26 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
     recipientGridViewHolder.viewListItem.onChatClick()
         .map(view -> recipientGridViewHolder.itemView)
         .subscribe(onChatClick);
+    recipientGridViewHolder.viewListItem.onLiveClick()
+        .map(view -> recipientGridViewHolder.itemView)
+        .subscribe(onLiveClick);
+    recipientGridViewHolder.viewListItem.onMainClick()
+        .map(view -> recipientGridViewHolder.itemView)
+        .subscribe(onMainClick);
     return recipientGridViewHolder;
   }
 
   @Override public void onBindViewHolder(@NonNull List<Recipient> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
-    RecipientHomeViewHolder vh = (RecipientHomeViewHolder) holder;
-    Recipient recipient = items.get(position);
-    vh.viewListItem.setRecipient(recipient);
+    bind((RecipientHomeViewHolder) holder, items.get(position));
   }
 
-  @Override
-  public void onBindViewHolder(@NonNull List<Recipient> items, @NonNull RecyclerView.ViewHolder holder,
-      int position, List<Object> payloads) {
-    RecipientHomeViewHolder vh = (RecipientHomeViewHolder) holder;
-    Recipient recipient = items.get(position);
+  @Override public void onBindViewHolder(@NonNull List<Recipient> items,
+      @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+    bind((RecipientHomeViewHolder) holder, items.get(position));
+  }
 
+  private void bind(RecipientHomeViewHolder vh, Recipient recipient) {
     vh.viewListItem.setRecipient(recipient);
   }
 
@@ -84,24 +85,13 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
     return longClick;
   }
 
-  protected abstract int getLayoutId();
-
-  static class RecipientHomeViewHolder extends RecyclerView.ViewHolder
-      implements ItemTouchHelperViewHolder {
-
-    @BindView(R.id.viewListItem) ShortcutListView viewListItem;
-
-    public RecipientHomeViewHolder(View itemView) {
-      super(itemView);
-      ButterKnife.bind(this, itemView);
-    }
-
-    @Override public void onItemSelected() {
-      Timber.d("onItemSelected");
-    }
-
-    @Override public void onItemClear() {
-      Timber.d("onItemClear");
-    }
+  public Observable<View> onLiveClick() {
+    return onLiveClick;
   }
+
+  public Observable<View> onMainClick() {
+    return onMainClick;
+  }
+
+  protected abstract int getLayoutId();
 }

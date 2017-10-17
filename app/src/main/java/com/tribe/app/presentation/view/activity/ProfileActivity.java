@@ -12,6 +12,7 @@ import android.support.v4.view.ViewCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -92,6 +93,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   @Inject ProfilePresenter profilePresenter;
 
   @Inject MissedCallManager missedCallManager;
+
+  @BindView(R.id.imgBack) ImageView imgBack;
 
   @BindView(R.id.txtTitle) TextViewFont txtTitle;
 
@@ -244,7 +247,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
 
   @Override public void finish() {
     super.finish();
-    overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
+    overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
   }
 
   @Override public boolean dispatchTouchEvent(@NonNull MotionEvent ev) {
@@ -515,6 +518,12 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   }
 
   private void computeTitle(boolean forward, View to) {
+    if (to instanceof ProfileView) {
+      imgBack.setImageResource(R.drawable.picto_close);
+    } else {
+      imgBack.setImageResource(R.drawable.picto_back);
+    }
+
     if (to instanceof ProfileView) {
       setupTitle(getString(R.string.profile_title), forward);
       txtAction.setVisibility(GONE);

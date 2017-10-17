@@ -82,7 +82,7 @@
   <dimen name="avatar_size_with_shadow">82dp</dimen>
   <dimen name="avatar_size_scaled">110dp</dimen>
   <!-- CHANGE AVATAR_SIZE_INTERMEDIATE_HALF ACCORDINGLY -->
-  <dimen name="avatar_size_small">41dp</dimen>
+  <dimen name="avatar_size_small">43dp</dimen>
   <dimen name="avatar_size_small_margin_start">55dp</dimen>
   <dimen name="avatar_size_smaller">35dp</dimen>
   <dimen name="avatar_size_chat">25dp</dimen>
@@ -100,7 +100,7 @@
   <dimen name="nav_icon_little_size">33dp</dimen>
   <dimen name="nav_icon_size_with_shadow">60dp</dimen>
   <dimen name="nav_icon_size_with_margin_end">55dp</dimen>
-  <dimen name="nav_icon_size_with_margin_start">80dp</dimen>
+  <dimen name="nav_icon_size_with_margin_start">70dp</dimen>
   <dimen name="filter_letter_size">35dp</dimen>
   <dimen name="filter_letter_container_size">50dp</dimen>
   <dimen name="cards_icon_size">15dp</dimen>
@@ -117,7 +117,7 @@
   <dimen name="filter_game_size_with_border">55dp</dimen>
   <dimen name="filter_game_size_container">60dp</dimen>
   <dimen name="picto_chat_size">50dp</dimen>
-  <dimen name="picto_live_size">55dp</dimen>
+  <dimen name="picto_live_size">70dp</dimen>
   <dimen name="avatar_size_shortcut_completion">16dp</dimen>
 
   <!-- THRESHOLDS -->
@@ -145,6 +145,6 @@
 
   <dimen name="alerter_padding_small">4dp</dimen>
   <dimen name="alerter_padding_default">16dp</dimen>
-  <dimen name="alerter_alert_padding">26dp</dimen>
+  <dimen name="alerter_alert_padding">10dp</dimen>
 
 </resources>

@@ -12,6 +12,7 @@
       android:layout_marginEnd="@dimen/horizontal_margin_small"
       android:layout_marginStart="@dimen/horizontal_margin_small"
       android:backgroundTint="@android:color/black"
+      android:capitalize="sentences"
       android:hint="@string/shortcut_update_name_placeholder"
       android:imeOptions="actionDone"
       android:inputType="textNoSuggestions"

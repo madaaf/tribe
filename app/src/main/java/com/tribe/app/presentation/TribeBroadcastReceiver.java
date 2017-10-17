@@ -4,15 +4,16 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Pair;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
-import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.lang.ref.WeakReference;
 import javax.inject.Inject;
@@ -26,7 +27,6 @@ import rx.subscriptions.CompositeSubscription;
 
 public class TribeBroadcastReceiver extends BroadcastReceiver {
 
-  @Inject MissedCallManager missedCallManager;
   @Inject Navigator navigator;
 
   private WeakReference<Activity> weakReferenceActivity;
@@ -37,6 +37,8 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
   private PublishSubject<String> onCreateShortcut = PublishSubject.create();
   private PublishSubject<String> onDisplayNotification = PublishSubject.create();
   private PublishSubject<Void> onCallDeclined = PublishSubject.create();
+  private PublishSubject<Pair<NotificationPayload, LiveNotificationView>> onShowNotificationLive =
+      PublishSubject.create();
 
   public TribeBroadcastReceiver(Activity activity) {
     weakReferenceActivity = new WeakReference<>(activity);
@@ -55,8 +57,7 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
         (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
     LiveNotificationView liveNotificationView =
-        NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
-            missedCallManager);
+        NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
     if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
       onDisplayNotification.onNext(EmojiParser.demojizedText(
@@ -65,8 +66,12 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
       onDisplayNotification.onNext(null);
     }
 
-    if (liveNotificationView != null) {
+    if (liveNotificationView != null &&
+        (weakReferenceActivity.get() != null &&
+            !(weakReferenceActivity.get() instanceof LiveActivity))) {
       Alerter.create(weakReferenceActivity.get(), liveNotificationView).show();
+    } else if (liveNotificationView != null) {
+      onShowNotificationLive.onNext(Pair.create(notificationPayload, liveNotificationView));
     }
   }
 
@@ -80,5 +85,9 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
 
   public Observable<String> onCreateShortcut() {
     return onCreateShortcut;
+  }
+
+  public Observable<Pair<NotificationPayload, LiveNotificationView>> onShowNotificationLive() {
+    return onShowNotificationLive;
   }
 }

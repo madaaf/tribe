@@ -4,6 +4,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import java.util.Date;
 import java.util.List;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -50,6 +51,8 @@ import rx.Observable;
   void updateShortcut(ShortcutRealm shortcutRealm);
 
   void updateShortcutLastText(String shortcutId, String lastMessage);
+
+  void updateShortcutLeaveOnlineUntil(String shortcutId, Date leaveOnlineUntil);
 
   ShortcutRealm updateShortcutNoObs(String shortcutId, @ShortcutRealm.ShortcutStatus String status);
 

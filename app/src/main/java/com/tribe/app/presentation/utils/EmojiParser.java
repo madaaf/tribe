@@ -113,6 +113,10 @@ public class EmojiParser {
     IEmojiMap.put(":poop:", "\uD83D\uDCA9");
     IEmojiMap.put(":crown:", "\uD83D\uDC51");
     IEmojiMap.put(":sports_medal:", "\uD83C\uDFC5");
+    IEmojiMap.put(":art:", "\uD83C\uDFA8");
+    IEmojiMap.put(":framed_picture:", "\uD83D\uDDBC");
+    IEmojiMap.put(":camera_with_flash:", "\uD83D\uDCF8");
+    IEmojiMap.put(":arrow_up:", "\u2B06");
   }
 
   /**

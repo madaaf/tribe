@@ -38,7 +38,6 @@ import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
-import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.TribeBroadcastReceiver;
@@ -54,10 +53,11 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
-import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveView;
@@ -83,7 +83,6 @@ import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
-import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
@@ -98,7 +97,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -122,6 +120,8 @@ public class LiveActivity extends BaseActivity
   }) public @interface Source {
   }
 
+  private static final String EXTRA_LIVE = "EXTRA_LIVE";
+
   public static final String SOURCE_GRID = "Grid";
   public static final String SOURCE_DEEPLINK = "DeepLink";
   public static final String SOURCE_SEARCH = "Search";
@@ -138,11 +138,13 @@ public class LiveActivity extends BaseActivity
 
   public static final String ROOM_ID = "ROOM_ID";
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
-  private static final String EXTRA_LIVE = "EXTRA_LIVE";
   public static String UNKNOWN_USER_FROM_DEEPLINK = "UNKNOWN_USER_FROM_DEEPLINK";
+  public static String USER_IDS_FOR_NEW_SHORTCUT = "USER_IDS_FOR_NEW_SHORTCUT";
+
   private final int MAX_DURATION_WAITING_LIVE = 8;
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
   private final int MIN_DURATION_BEFORE_DISPLAY_TUTORIAL_DRAG_GUEST = 3;
+
   @Inject NotificationManagerCompat notificationManager;
   @Inject SoundManager soundManager;
   @Inject ScreenUtils screenUtils;
@@ -154,6 +156,7 @@ public class LiveActivity extends BaseActivity
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
   @Inject @DataChallengesGame Preference<Set<String>> dataChallengesGames;
   @Inject MissedCallManager missedCallManager;
+  @Inject RxImagePicker rxImagePicker;
 
   @BindView(R.id.viewLive) LiveView viewLive;
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
@@ -180,15 +183,14 @@ public class LiveActivity extends BaseActivity
   private boolean liveDurationIsMoreThan30sec = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private RxPermissions rxPermissions;
-  private List<String> usersIdsInvitedInLiveRoom = new ArrayList<>();
-  private List<String> activeUersIdsInvitedInLiveRoom = new ArrayList<>();
   private Intent returnIntent = new Intent();
   private List anonymousIdList = new ArrayList();
   private boolean finished = false;
   private boolean shouldOverridePendingTransactions = false;
-  private List<String> userUnder13List = new ArrayList<>();
   private float initialBrightness = -1;
   private int createRoomErrorCount = 0;
+  private HashSet<String> usersThatWereLive = new HashSet<>();
+
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
@@ -313,6 +315,25 @@ public class LiveActivity extends BaseActivity
       registerReceiver(notificationReceiver,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
       receiverRegistered = true;
+
+      subscriptions.add(notificationReceiver.onShowNotificationLive().subscribe(pair -> {
+        NotificationPayload payload = pair.first;
+
+        if (room == null) return;
+
+        boolean shouldDisplay = true;
+
+        if (room.getId().equals(payload.getSessionId())) {
+          String action = payload.getAction();
+          if (action != null &&
+              (action.equals(NotificationPayload.ACTION_LEFT) ||
+                  action.equals(NotificationPayload.ACTION_JOINED))) {
+            shouldDisplay = false;
+          }
+        }
+
+        if (shouldDisplay) Alerter.create(this, pair.second).show();
+      }));
     }
 
     if (shouldOverridePendingTransactions) {
@@ -439,7 +460,7 @@ public class LiveActivity extends BaseActivity
 
   private void initRoomSubscription() {
     startService(WSService.getCallingIntentSubscribeRoom(this, room.getId()));
-    livePresenter.subscribeToRoomUpdates();
+    livePresenter.subscribeToRoomUpdates(room.getId());
   }
 
   private void removeRoomSubscription() {
@@ -493,7 +514,7 @@ public class LiveActivity extends BaseActivity
   }
 
   private void disposeCall(boolean isJump) {
-    removeRoomSubscription();
+    if (room != null) removeRoomSubscription();
     live.dispose();
     livePresenter.onViewDetached();
     viewLive.endCall(isJump);
@@ -637,13 +658,37 @@ public class LiveActivity extends BaseActivity
 
     subscriptions.add(viewLive.onEdit()
         .filter(aVoid -> !StringUtils.isEmpty(live.getShortcutId()))
-        .subscribe(aVoid -> subscriptions.add(
-            DialogFactory.inputDialog(this, getString(R.string.shortcut_update_name_title),
-                getString(R.string.shortcut_update_name_description),
-                getString(R.string.shortcut_update_name_validate),
-                getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT).subscribe(s -> {
-              livePresenter.updateShortcutName(live.getShortcutId(), s);
-            }))));
+        .flatMap(
+            view -> DialogFactory.showBottomSheetForCustomizeShortcut(this, live.getShortcut()),
+            (pair, labelType) -> {
+              if (labelType != null) {
+                if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
+                  subscriptions.add(DialogFactory.inputDialog(this,
+                      getString(R.string.shortcut_update_name_title),
+                      getString(R.string.shortcut_update_name_description),
+                      getString(R.string.shortcut_update_name_validate),
+                      getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT)
+                      .subscribe(s -> livePresenter.updateShortcutName(live.getShortcutId(), s)));
+                }
+              }
+
+              return labelType;
+            })
+        .filter(labelType -> labelType.getTypeDef().equals(LabelType.CHANGE_PICTURE))
+        .flatMap(pair -> DialogFactory.showBottomSheetForCamera(this), (pair, labelType) -> {
+          if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+                .subscribe(uri -> livePresenter.updateShortcutPicture(live.getShortcutId(),
+                    uri.toString())));
+          } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+                .subscribe(uri -> livePresenter.updateShortcutPicture(live.getShortcutId(),
+                    uri.toString())));
+          }
+
+          return null;
+        })
+        .subscribe());
 
     subscriptions.add(viewLive.onShareLink().subscribe(aVoid -> share()));
 
@@ -656,18 +701,6 @@ public class LiveActivity extends BaseActivity
             notificationContainerView.setUnlockRollTheDiceSenderId(s);
             notificationContainerView.
                 showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
-          }
-        }));
-
-    subscriptions.add(viewLive.unlockedRollTheDice().
-        subscribeOn(Schedulers.newThread()).
-        observeOn(AndroidSchedulers.mainThread()).
-        subscribe(s -> {
-          userUnder13List.remove(s);
-          if (userUnder13List.isEmpty()) {
-            livePresenter.roomAcceptRandom(live.getRoomId());
-            diceView.setVisibility(VISIBLE);
-            diceView.startDiceAnimation();
           }
         }));
 
@@ -932,58 +965,8 @@ public class LiveActivity extends BaseActivity
     }
   }
 
-  private void putExtraRatingNotif() {
-    boolean willDisplayPopup = false;
-    if (liveDurationIsMoreThan30sec && displayRatingNotifDependingFirebaseTrigger()) {
-      if (room != null && !StringUtils.isEmpty(room.getId())) {
-        returnIntent.putExtra(ROOM_ID, room.getId());
-      }
-      returnIntent.putExtra(RatingNotificationView.DISPLAY_RATING_NOTIF, true);
-      returnIntent.putExtra(TIMEOUT_RATING_NOTIFICATON, getFirebaseTimeoutConfig());
-      willDisplayPopup = true;
-      liveDurationIsMoreThan30sec = false;
-    }
-
-    Map<String, Object> tagMap = PreferencesUtils.getMapFromJson(callTagsMap);
-    if (!willDisplayPopup && tagMap != null) {
-      TagManagerUtils.manageTags(tagManager, tagMap);
-      callTagsMap.set("");
-    }
-  }
-
   private void putExtraErrorNotif() {
     returnIntent.putExtra(ErrorNotificationView.DISPLAY_ERROR_NOTIF, true);
-  }
-
-  private void putExtraDisplayGrpNotif() {
-    RoomMember roomMember = viewLive.getUsersInLiveRoom();
-    List<TribeGuest> friendInLive = roomMember.getPeopleInRoom();
-    List<TribeGuest> anonymousInLive = roomMember.getAnonymousInRoom();
-    List<String> guestsIdsInLive = new ArrayList<>();
-
-    for (TribeGuest guest : friendInLive) {
-      guestsIdsInLive.add(guest.getId());
-    }
-
-    List<TribeGuest> peopleInLive = new ArrayList<>();
-    peopleInLive.addAll(friendInLive);
-
-    for (TribeGuest anonymous : anonymousInLive) {
-      if (!guestsIdsInLive.contains(anonymous.getId())) peopleInLive.add(anonymous);
-    }
-
-    for (TribeGuest guest : peopleInLive) {
-      if (usersIdsInvitedInLiveRoom.contains(guest.getId())) {
-        activeUersIdsInvitedInLiveRoom.add(guest.getId());
-      }
-    }
-
-    if ((liveIsInvite || !activeUersIdsInvitedInLiveRoom.isEmpty() || !anonymousInLive.isEmpty()) &&
-        peopleInLive.size() > 1) {
-      liveIsInvite = false;
-      usersIdsInvitedInLiveRoom.clear();
-      activeUersIdsInvitedInLiveRoom.clear();
-    }
   }
 
   @Override public void onReceivedAnonymousMemberInRoom(List<User> users) {
@@ -1061,6 +1044,12 @@ public class LiveActivity extends BaseActivity
 
   @Override public void onRoomUpdate(Room room) {
     this.room.update(room, true);
+
+    if (this.room.getLiveUsers() != null) {
+      for (User user : this.room.getLiveUsers()) {
+        if (!user.equals(getCurrentUser())) usersThatWereLive.add(user.getId());
+      }
+    }
   }
 
   private void displayNotification(String txt) {
@@ -1096,8 +1085,6 @@ public class LiveActivity extends BaseActivity
   }
 
   private void putExtraHomeIntent() {
-    // putExtraRatingNotif();
-    putExtraDisplayGrpNotif();
     setResult(Activity.RESULT_OK, returnIntent);
   }
 
@@ -1114,10 +1101,15 @@ public class LiveActivity extends BaseActivity
     }
   }
 
+  private void setExtraForShortcut() {
+    returnIntent.putExtra(USER_IDS_FOR_NEW_SHORTCUT, usersThatWereLive);
+    setResult(Activity.RESULT_OK, returnIntent);
+  }
+
   @Override public void finish() {
     if (finished) return;
 
-    if (!viewLive.hasJoined()) livePresenter.deleteRoom(room.getId());
+    if (!viewLive.hasJoined() && room != null) livePresenter.deleteRoom(room.getId());
 
     finished = true;
 
@@ -1130,6 +1122,7 @@ public class LiveActivity extends BaseActivity
 
     putExtraHomeIntent();
     setExtraForCallFromUnknownUser();
+    setExtraForShortcut();
 
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
@@ -1181,8 +1174,7 @@ public class LiveActivity extends BaseActivity
           getString(R.string.live_notification_initiator_has_been_notified,
               room.getInitiator().getDisplayName())));
       LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(this, notificationPayload,
-              missedCallManager);
+          NotificationUtils.getNotificationViewFromPayload(this, notificationPayload);
 
       if (liveNotificationView != null) {
         Alerter.create(LiveActivity.this, liveNotificationView).show();

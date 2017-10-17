@@ -36,7 +36,6 @@ import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.PictureActivity;
-import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -50,6 +49,7 @@ public class Navigator {
   public static int REQUEST_COUNTRY = 1000;
   public static int FROM_LIVE = 1001;
   public static int FROM_PROFILE = 1002;
+  public static int FROM_CHAT = 1003;
   public static String SNAPCHAT = "com.snapchat.android";
   public static String INSTAGRAM = "com.instagram.android";
   public static String TWITTER = "com.twitter.android";
@@ -132,9 +132,9 @@ public class Navigator {
         intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
       }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-          | Intent.FLAG_ACTIVITY_CLEAR_TASK
-          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+          Intent.FLAG_ACTIVITY_CLEAR_TASK |
+          Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
       if (linkRoomId != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -146,7 +146,7 @@ public class Navigator {
     if (activity != null) {
       Intent intent = ProfileActivity.getCallingIntent(activity);
       activity.startActivityForResult(intent, FROM_PROFILE);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
   }
 
@@ -221,12 +221,8 @@ public class Navigator {
     if (activity != null) {
       Intent intent = ChatActivity.getCallingIntent(activity, recipient);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      if (activity instanceof ChatActivity) {
-        activity.startActivity(intent);
-      } else {
-        activity.startActivityForResult(intent, FROM_LIVE);
-        activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
-      }
+      activity.startActivityForResult(intent, FROM_CHAT);
+      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
     }
   }
 
@@ -385,8 +381,8 @@ public class Navigator {
 
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
-    } else if (activity.getIntent() != null && activity.getIntent()
-        .hasExtra(Extras.IS_FROM_FACEBOOK)) {
+    } else if (activity.getIntent() != null &&
+        activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
       openFacebookAppInvites(activity, url);
     } else {
       openDefaultMessagingApp(activity, text);

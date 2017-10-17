@@ -10,8 +10,6 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,7 +39,7 @@ public class TopBarContainer extends FrameLayout {
   private static final float DRAG_RATE = 0.5f;
   private static final int DRAG_THRESHOLD = 20;
   private static final int INVALID_POINTER = -1;
-  public static final int MIN_LENGTH = 1500; // ms
+  public static final int MIN_LENGTH = 1800; // ms
 
   @Inject SoundManager soundManager;
 
@@ -175,35 +173,6 @@ public class TopBarContainer extends FrameLayout {
     topBarView.initNewContactsObs(onNewContactsInfos);
   }
 
-  private void initTooltip() {
-    if (tooltipView == null && stateManager.shouldDisplay(StateManager.FRIENDS_POPUP)) {
-      txtNewContacts.getViewTreeObserver()
-          .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override public void onGlobalLayout() {
-              txtNewContacts.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-              tooltipView = new TooltipView(getContext());
-              tooltipView.setText(R.string.contacts_search_new_tooltip);
-              tooltipView.setBackgroundResource(R.drawable.bg_tooltip_new_contacts);
-              tooltipView.setMaxLines(2);
-
-              int[] locationNewContacts = new int[2];
-              txtNewContacts.getLocationOnScreen(locationNewContacts);
-
-              tooltipView.setMaxWidth(screenUtils.getWidthPx() >> 1);
-              tooltipView.measure(0, 0);
-
-              tooltipView.setTranslationY(locationNewContacts[1] + screenUtils.dpToPx(10));
-              tooltipView.setTranslationX(
-                  locationNewContacts[0] + (txtNewContacts.getMeasuredWidth() >> 1) -
-                      (tooltipView.getMeasuredWidth() >> 1));
-
-              tooltipView.setOnClickListener(v -> topBarView.animateSearch());
-            }
-          });
-    }
-  }
-
   public boolean isSearchMode() {
     return topBarView.isSearchMode();
   }
@@ -214,18 +183,8 @@ public class TopBarContainer extends FrameLayout {
 
   public void initNewContactsObs(Observable<Pair<Integer, Boolean>> obsContactList) {
     obsContactList.observeOn(AndroidSchedulers.mainThread()).subscribe(integerBooleanPair -> {
-      initTooltip();
-
       onNewContactsInfos.onNext(integerBooleanPair);
     });
-  }
-
-  public void displayTooltip() {
-    if (stateManager.shouldDisplay(StateManager.FRIENDS_POPUP) && tooltipView != null) {
-      stateManager.addTutorialKey(StateManager.FRIENDS_POPUP);
-      addView(tooltipView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-          ViewGroup.LayoutParams.WRAP_CONTENT));
-    }
   }
 
   public void reloadUserUI() {
@@ -382,24 +341,24 @@ public class TopBarContainer extends FrameLayout {
         if (pointerIndex != INVALID_POINTER && velocityTracker != null) {
           velocityTracker.addMovement(event);
           velocityTracker.computeCurrentVelocity(1000);
-        }
 
-        float y = event.getY(pointerIndex) - location[1];
-        float offsetY = y - lastDownY + lastDownYTr;
-        final float overScrollTop = (y - lastDownY + lastDownYTr) * DRAG_RATE;
+          float y = event.getY(pointerIndex) - location[1];
+          float offsetY = y - lastDownY + lastDownYTr;
+          final float overScrollTop = (y - lastDownY + lastDownYTr) * DRAG_RATE;
 
-        springTop.setCurrentValue(currentOffsetTop);
+          springTop.setCurrentValue(currentOffsetTop);
 
-        if (overScrollTop >= getTotalDragDistance()) {
-          springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(currentOffsetTop);
+          if (overScrollTop >= getTotalDragDistance()) {
+            springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(currentOffsetTop);
 
-          if (!isRefreshing) {
-            onRefresh.onNext(true);
-            isRefreshing = true;
-            viewTopBarLogo.startRefresh(getTotalDragDistance());
+            if (!isRefreshing) {
+              onRefresh.onNext(true);
+              isRefreshing = true;
+              viewTopBarLogo.startRefresh(getTotalDragDistance() - topBarView.getHeight());
+            }
+          } else {
+            springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
           }
-        } else {
-          springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);
         }
 
         break;
@@ -410,7 +369,7 @@ public class TopBarContainer extends FrameLayout {
   }
 
   private float getTotalDragDistance() {
-    return getHeight() / 8;
+    return getHeight() / 10;
   }
 
   private int computeOffsetWithTension(float scrollDist, float totalDragDistance) {

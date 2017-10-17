@@ -201,8 +201,8 @@ public class LivePresenter implements Presenter {
     roomPresenter.randomRoomAssigned();
   }
 
-  public void subscribeToRoomUpdates() {
-    roomPresenter.subscribeToRoomUpdates();
+  public void subscribeToRoomUpdates(String roomId) {
+    roomPresenter.subscribeToRoomUpdates(roomId);
   }
 
   public void buzzRoom(String roomId) {
@@ -251,6 +251,10 @@ public class LivePresenter implements Presenter {
 
   public void updateShortcutName(String shortcutId, String name) {
     shortcutPresenter.updateShortcutName(shortcutId, name);
+  }
+
+  public void updateShortcutPicture(String shortcutId, String imgUri) {
+    shortcutPresenter.updateShortcutPicture(shortcutId, imgUri);
   }
 
   public void readShortcut(String shortcutId) {

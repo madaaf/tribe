@@ -9,13 +9,9 @@ import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
-import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
-import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.utils.Constants;
-import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
-import java.util.List;
 
 /**
  * Created by madaaflak on 20/02/2017.
@@ -32,17 +28,16 @@ public class NotificationUtils {
   public static final String ACTION_ADD_FRIEND = "add_friend";
 
   public static LiveNotificationView getNotificationViewFromPayload(Context context,
-      NotificationPayload notificationPayload, MissedCallManager missedCallManager) {
-    boolean isContextNotLive =
-        context instanceof HomeActivity || context instanceof ProfileActivity;
+      NotificationPayload notificationPayload) {
 
     if (notificationPayload == null) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       return builder.build();
     }
 
-    if (notificationPayload.getClickAction() == null &&
-        StringUtils.isEmpty(notificationPayload.getBody())) {
+    if ((notificationPayload.getClickAction() == null &&
+        StringUtils.isEmpty(notificationPayload.getBody())) ||
+        notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       return null;
     } else if (notificationPayload.getClickAction() == null &&
         !StringUtils.isEmpty(notificationPayload.getBody())) {
@@ -52,15 +47,7 @@ public class NotificationUtils {
 
     LiveNotificationView liveNotificationView = null;
 
-    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
-      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
-      builder = addMissedCallActions(context, builder, notificationPayload);
-      liveNotificationView = builder.build();
-      missedCallManager.reset();
-    }
-
-    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE) &&
-        !isContextNotLive) {
+    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)) {
       // A friend opened the app and is online
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       builder.sound(SoundManager.FRIEND_ONLINE);
@@ -114,16 +101,8 @@ public class NotificationUtils {
         .title(notificationPayload.getTitle())
         .body(notificationPayload.getBody())
         .messagePictureUrl(notificationPayload.getMessagePicture())
-        .actionClick(notificationPayload.getClickAction());
-  }
-
-  private static LiveNotificationView.Builder addDeclineCallActions(Context context,
-      LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
-
-    builder.addAction(ACTION_DECLINE, context.getString(R.string.live_notification_action_decline),
-        notificationPayload.getSessionId());
-
-    return builder;
+        .actionClick(notificationPayload.getClickAction())
+        .action(notificationPayload.getAction());
   }
 
   private static LiveNotificationView buildDeclinedCallNotification(Context context,
@@ -136,23 +115,6 @@ public class NotificationUtils {
     builder.sound(SoundManager.NO_SOUND);
     liveNotifView = builder.build();
     return liveNotifView;
-  }
-
-  private static LiveNotificationView.Builder addMissedCallActions(Context context,
-      LiveNotificationView.Builder builder, NotificationPayload notificationPayload) {
-    List<MissedCallAction> missedCallAction = notificationPayload.getMissedCallList();
-    if (missedCallAction.size() < MissedCallManager.MAX_NBR_MISSED_USER_CALL) {
-      for (MissedCallAction missedCall : missedCallAction) {
-        builder.addAction(ACTION_HANG_LIVE, missedCall.getNotificationPayload().getBody(),
-            getIntentForLive(context, missedCall.getNotificationPayload(), false));
-      }
-    } else {
-      builder.addAction(ACTION_MISSED_CALL_DETAIL,
-          context.getString(R.string.callback_notification_default_action),
-          MissedCallDetailActivity.getIntentForMissedCallDetail(context, missedCallAction));
-    }
-    builder.actionClick(notificationPayload.getClickAction()).sound(SoundManager.NO_SOUND);
-    return builder;
   }
 
   public static Intent getIntentForLive(Context context, NotificationPayload payload,

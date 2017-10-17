@@ -10,14 +10,14 @@
   </style>
 
   <style name="BiggerBody.One" parent="BiggerBody">
-    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Regular.otf</item>
   </style>
 
   <style name="BiggerBody.Two" parent="BiggerBody">
     <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 
-  <style name="BiggerBody.One.Grey" parent="BiggerBody">
+  <style name="BiggerBody.One.Grey" parent="BiggerBody.One">
     <item name="android:textColor">@color/grey.text.profile_info</item>
   </style>
 
@@ -46,7 +46,7 @@
   </style>
 
   <style name="Content.Three" parent="Content">
-    <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Regular.otf</item>
   </style>
 
   <style name="Content.Three.Black" parent="@style/Content.Three">
@@ -151,7 +151,7 @@
   </style>
 
   <style name="Caption.One">
-    <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Regular.otf</item>
     <item name="android:textSize">11dp</item>
   </style>
 
@@ -211,6 +211,12 @@
 
   <style name="Circular.2.White40" parent="@style/Circular.2">
     <item name="android:textColor">@color/white.opacity.70</item>
+  </style>
+
+  <style name="Title.Regular">
+    <item name="android:textColor">@android:color/black</item>
+    <item name="android:textSize">15sp</item>
+    <item name="customFont">ProximaNovaSoft-Regular.otf</item>
   </style>
 
   <style name="Title">
@@ -311,11 +317,11 @@
   </style>
 
   <style name="Title.Regular.White" parent="@style/Title.1.White">
-    <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Regular.otf</item>
   </style>
 
   <style name="Title.Regular.Black" parent="@style/Title.1.Black">
-    <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Regular.otf</item>
   </style>
 
   <style name="BiggerTitle">
@@ -323,7 +329,7 @@
   </style>
 
   <style name="BiggerTitle.1" parent="@style/BiggerTitle">
-    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Regular.otf</item>
   </style>
 
   <style name="BiggerTitle.2" parent="@style/BiggerTitle">
@@ -393,7 +399,7 @@
   </style>
 
   <style name="Headline.Black.Regular" parent="Headline.Black">
-    <item name="customFont">ProximaNovaSoft-Regular.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Regular.otf</item>
   </style>
 
   <style name="Headline.Blue.2" parent="Headline.White.2">

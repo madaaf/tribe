@@ -14,6 +14,7 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.live.CreateRoom;
 import com.tribe.app.domain.interactor.live.DeclineInvite;
+import com.tribe.app.domain.interactor.user.GetDiskContactInviteList;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.SendInvitations;
@@ -25,6 +26,8 @@ import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,6 +52,8 @@ public class HomePresenter implements Presenter {
   private RxFacebook rxFacebook;
   private UseCase synchroContactList;
   private GetDiskContactOnAppList getDiskContactOnAppList;
+  private GetDiskContactInviteList getDiskContactInviteList;
+
   private DeclineInvite declineInvite;
   private SendInvitations sendInvitations;
   private CreateRoom createRoom;
@@ -58,13 +63,15 @@ public class HomePresenter implements Presenter {
   private RecipientListSubscriber cloudRecipientListSubscriber;
   private LookupContactsSubscriber lookupContactsSubscriber;
   private ContactsOnAppSubscriber contactsOnAppSubscriber;
+  private ContactListInviteSubscriber contactListInviteSubscriber;
 
   @Inject public HomePresenter(ShortcutPresenter shortcutPresenter, JobManager jobManager,
       @Named("diskUserInfos") GetDiskUserInfos diskUserInfos,
       @Named("sendToken") SendToken sendToken, @Named("cloudUserInfos") UseCase cloudUserInfos,
       UpdateUserFacebook updateUserFacebook, RxFacebook rxFacebook,
       @Named("synchroContactList") UseCase synchroContactList,
-      GetDiskContactOnAppList getDiskContactOnAppList, DeclineInvite declineInvite,
+      GetDiskContactOnAppList getDiskContactOnAppList,
+      GetDiskContactInviteList getDiskContactInviteList, DeclineInvite declineInvite,
       SendInvitations sendInvitations, CreateRoom createRoom) {
     this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
@@ -75,6 +82,7 @@ public class HomePresenter implements Presenter {
     this.rxFacebook = rxFacebook;
     this.synchroContactList = synchroContactList;
     this.getDiskContactOnAppList = getDiskContactOnAppList;
+    this.getDiskContactInviteList = getDiskContactInviteList;
     this.declineInvite = declineInvite;
     this.sendInvitations = sendInvitations;
     this.createRoom = createRoom;
@@ -87,6 +95,7 @@ public class HomePresenter implements Presenter {
     diskUserInfosUsecase.unsubscribe();
     synchroContactList.unsubscribe();
     getDiskContactOnAppList.unsubscribe();
+    getDiskContactInviteList.unsubscribe();
     declineInvite.unsubscribe();
     sendInvitations.unsubscribe();
     createRoom.unsubscribe();
@@ -172,8 +181,12 @@ public class HomePresenter implements Presenter {
 
     @Override public void onNext(User user) {
       if (!cloud) {
-        List<Recipient> recipientList = user.getRecipientList();
-        showRecipients(recipientList);
+        try {
+          List<Recipient> recipientList = user.getRecipientList();
+          showRecipients(recipientList);
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
       }
     }
   }
@@ -270,6 +283,29 @@ public class HomePresenter implements Presenter {
     }
   }
 
+  public void loadContactsInvite() {
+    if (contactListInviteSubscriber != null) {
+      contactListInviteSubscriber.unsubscribe();
+    }
+
+    contactListInviteSubscriber = new ContactListInviteSubscriber();
+    getDiskContactInviteList.execute(contactListInviteSubscriber);
+  }
+
+  private final class ContactListInviteSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(List<Contact> contactList) {
+      homeGridView.renderContactsInvite(contactList);
+    }
+  }
+
   public void declineInvite(String roomId) {
     declineInvite.setup(roomId);
     declineInvite.execute(new DefaultSubscriber());
@@ -307,6 +343,17 @@ public class HomePresenter implements Presenter {
 
   public void updateShortcutName(String shortcutId, String name) {
     shortcutPresenter.updateShortcutName(shortcutId, name);
+  }
+
+  public void updateShortcutPicture(String shortcutId, String imageUri) {
+    shortcutPresenter.updateShortcutPicture(shortcutId, imageUri);
+  }
+
+  public void updateShortcutLeaveOnlineUntil(String shortcutId) {
+    Calendar date = Calendar.getInstance();
+    long t = date.getTimeInMillis();
+    Date finalDate = new Date(t + 60 * 1000);
+    shortcutPresenter.leaveOnline(shortcutId, finalDate.getTime());
   }
 
   public void readShortcut(String shortcutId) {

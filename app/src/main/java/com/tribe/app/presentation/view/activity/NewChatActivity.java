@@ -80,9 +80,11 @@ public class NewChatActivity extends BaseActivity
 
   @Override protected void onResume() {
     super.onResume();
+    screenUtils.showKeyboard(viewShortcutCompletion, 500);
   }
 
   @Override protected void onPause() {
+    screenUtils.hideKeyboard(viewShortcutCompletion);
     super.onPause();
   }
 
@@ -92,8 +94,10 @@ public class NewChatActivity extends BaseActivity
   }
 
   @Override protected void onDestroy() {
+
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+
     super.onDestroy();
   }
 
@@ -119,7 +123,6 @@ public class NewChatActivity extends BaseActivity
     adapter = new FilteredArrayAdapter<Shortcut>(this, R.layout.item_shortcut, items) {
       @Override public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-
           LayoutInflater l =
               (LayoutInflater) getContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
           convertView = l.inflate(R.layout.item_shortcut, parent, false);
@@ -148,6 +151,7 @@ public class NewChatActivity extends BaseActivity
     ViewCompat.setElevation(viewShortcutCompletion, 0);
     viewShortcutCompletion.setDropDownVerticalOffset(screenUtils.dpToPx(17.5f));
     viewShortcutCompletion.setDropDownBackgroundDrawable(null);
+    viewShortcutCompletion.setThreshold(0);
     viewShortcutCompletion.setPrefix(getString(R.string.newchat_to).toUpperCase() + "   ",
         ContextCompat.getColor(this, R.color.black_opacity_40),
         FontCache.getTypeface(FontUtils.PROXIMA_BOLD, this));

@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class Shortcut extends Recipient implements Serializable, LiveInviteAdapterSectionInterface {
 
-  private static final int NB_MAX_USERS_STRING = 2;
+  private static final int ONE_MINUTE = 60 * 1000;
 
   private String id;
   private String name;
@@ -32,6 +32,7 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   private Date last_activity_at;
   private List<User> members;
   private String lastMessage;
+  private Date leaveOnlineUntil;
 
   public Shortcut(String id) {
     this.id = id;
@@ -78,7 +79,10 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   }
 
   public boolean isOnline() {
-    return online;
+    return online ||
+        (leaveOnlineUntil != null &&
+            !single &&
+            System.currentTimeMillis() - leaveOnlineUntil.getTime() <= ONE_MINUTE);
   }
 
   @Override public boolean isRinging() {
@@ -193,6 +197,14 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
     this.lastMessage = lastMessage;
   }
 
+  public void setLeaveOnlineUntil(Date leaveOnlineUntil) {
+    this.leaveOnlineUntil = leaveOnlineUntil;
+  }
+
+  public Date getLeaveOnlineUntil() {
+    return leaveOnlineUntil;
+  }
+
   public void addMember(User user) {
     if (members == null) members = new ArrayList<>();
     members.add(user);
@@ -241,16 +253,11 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
     if (members == null || members.size() == 0) return "";
 
     StringBuffer buffer = new StringBuffer();
-    int min = Math.min(NB_MAX_USERS_STRING, members.size());
-    for (int i = 0; i < min; i++) {
+    for (int i = 0; i < members.size(); i++) {
       User user = members.get(i);
-      buffer.append(user.getDisplayName());
-
-      if (i < min - 1) buffer.append(", ");
-    }
-
-    if (members.size() > NB_MAX_USERS_STRING) {
-      buffer.append("... +" + (members.size() - NB_MAX_USERS_STRING));
+      String label = user.getDisplayName();
+      buffer.append(label);
+      if (i < members.size() - 1) buffer.append(", ");
     }
 
     return buffer.toString();
@@ -260,12 +267,11 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
     if (members == null || members.size() == 0) return "";
 
     StringBuffer buffer = new StringBuffer();
-    int min = Math.min(NB_MAX_USERS_STRING, members.size());
-    for (int i = 0; i < min; i++) {
+    for (int i = 0; i < members.size(); i++) {
       User user = members.get(i);
-      buffer.append(user.getUsername());
-
-      if (i < min - 1) buffer.append(", ");
+      String label = user.getUsername();
+      buffer.append(label);
+      if (i < members.size() - 1) buffer.append(", ");
     }
 
     return buffer.toString();

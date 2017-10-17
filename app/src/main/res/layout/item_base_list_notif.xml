@@ -18,8 +18,7 @@
       android:paddingRight="@dimen/horizontal_margin_small"
       >
 
-    <include layout="@layout/item_user_base" />
-
+    <include layout="@layout/item_user_base"/>
 
     <ImageView
         android:id="@+id/btnMore"

@@ -81,7 +81,7 @@ public class Invite extends Recipient {
   }
 
   @Override public boolean isRead() {
-    return true;
+    return shortcut != null ? shortcut.isRead() : true;
   }
 
   @Override public boolean isFriend() {
@@ -114,6 +114,10 @@ public class Invite extends Recipient {
     }
 
     return userList;
+  }
+
+  public List<User> getAllUsers() {
+    return room.getAllUsers();
   }
 
   public boolean isShortcut(List<String> shortcutMemberIds) {

@@ -71,9 +71,10 @@ public class DiskLiveDataStore
     return null;
   }
 
-  @Override public Observable<Room> getRoomUpdated() {
+  @Override public Observable<Room> getRoomUpdated(String roomId) {
     return Observable.combineLatest(liveCache.getRoomUpdated().startWith(Observable.empty()),
         liveCache.liveMap(), liveCache.onlineMap(), (room, liveMap, onlineMap) -> room)
+        .filter(room -> room.getId().equals(roomId))
         .compose(onlineLiveTransformer);
   }
 

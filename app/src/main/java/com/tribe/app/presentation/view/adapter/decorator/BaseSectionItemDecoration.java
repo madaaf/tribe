@@ -20,7 +20,8 @@ public abstract class BaseSectionItemDecoration extends RecyclerView.ItemDecorat
 
   @IntDef({
       LIVE_CHAT_MEMBERS, LIVE_ADD_FRIENDS_IN_CALL, HOME_ONGOING, HOME_ONLINE, HOME_RECENT,
-      SEARCH_RESULTS, SEARCH_SUGGESTED_CONTACTS, SEARCH_INVITES_TO_SEND, SEARCH_EMPTY, SEARCH_RECENT, NONE
+      SEARCH_RESULTS, SEARCH_SUGGESTED_CONTACTS, SEARCH_INVITES_TO_SEND, SEARCH_EMPTY,
+      SEARCH_RECENT, NONE
   }) public @interface HeaderType {
   }
 
@@ -96,7 +97,7 @@ public abstract class BaseSectionItemDecoration extends RecyclerView.ItemDecorat
       gradientDrawable = (GradientDrawable) headerView.getBackground();
     }
 
-    if (position <= 1) {
+    if (position == 0) {
       gradientDrawable.setCornerRadii(radiusMatrix);
     } else {
       gradientDrawable.setCornerRadius(0);
