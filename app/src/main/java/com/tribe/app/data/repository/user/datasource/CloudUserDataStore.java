@@ -814,7 +814,7 @@ public class CloudUserDataStore implements UserDataStore {
       MultipartBody.Part body = null;
 
       requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file);
-      body = MultipartBody.Part.createFormData("picture", "picture.jpg", requestFile);
+      body = MultipartBody.Part.createFormData("shortcut_pic", "picture.jpg", requestFile);
 
       return tribeApi.updateShortcutMedia(query, body)
           .doOnNext(shortcutRealm -> userCache.updateShortcut(shortcutRealm));

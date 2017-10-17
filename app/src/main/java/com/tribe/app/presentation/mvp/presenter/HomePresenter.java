@@ -345,6 +345,10 @@ public class HomePresenter implements Presenter {
     shortcutPresenter.updateShortcutName(shortcutId, name);
   }
 
+  public void updateShortcutPicture(String shortcutId, String imageUri) {
+    shortcutPresenter.updateShortcutPicture(shortcutId, imageUri);
+  }
+
   public void updateShortcutLeaveOnlineUntil(String shortcutId) {
     Calendar date = Calendar.getInstance();
     long t = date.getTimeInMillis();

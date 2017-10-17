@@ -53,6 +53,8 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
@@ -154,6 +156,7 @@ public class LiveActivity extends BaseActivity
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
   @Inject @DataChallengesGame Preference<Set<String>> dataChallengesGames;
   @Inject MissedCallManager missedCallManager;
+  @Inject RxImagePicker rxImagePicker;
 
   @BindView(R.id.viewLive) LiveView viewLive;
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
@@ -511,7 +514,7 @@ public class LiveActivity extends BaseActivity
   }
 
   private void disposeCall(boolean isJump) {
-    removeRoomSubscription();
+    if (room != null) removeRoomSubscription();
     live.dispose();
     livePresenter.onViewDetached();
     viewLive.endCall(isJump);
@@ -655,13 +658,37 @@ public class LiveActivity extends BaseActivity
 
     subscriptions.add(viewLive.onEdit()
         .filter(aVoid -> !StringUtils.isEmpty(live.getShortcutId()))
-        .subscribe(aVoid -> subscriptions.add(
-            DialogFactory.inputDialog(this, getString(R.string.shortcut_update_name_title),
-                getString(R.string.shortcut_update_name_description),
-                getString(R.string.shortcut_update_name_validate),
-                getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT).subscribe(s -> {
-              livePresenter.updateShortcutName(live.getShortcutId(), s);
-            }))));
+        .flatMap(
+            view -> DialogFactory.showBottomSheetForCustomizeShortcut(this, live.getShortcut()),
+            (pair, labelType) -> {
+              if (labelType != null) {
+                if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
+                  subscriptions.add(DialogFactory.inputDialog(this,
+                      getString(R.string.shortcut_update_name_title),
+                      getString(R.string.shortcut_update_name_description),
+                      getString(R.string.shortcut_update_name_validate),
+                      getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT)
+                      .subscribe(s -> livePresenter.updateShortcutName(live.getShortcutId(), s)));
+                }
+              }
+
+              return labelType;
+            })
+        .filter(labelType -> labelType.getTypeDef().equals(LabelType.CHANGE_PICTURE))
+        .flatMap(pair -> DialogFactory.showBottomSheetForCamera(this), (pair, labelType) -> {
+          if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+                .subscribe(uri -> livePresenter.updateShortcutPicture(live.getShortcutId(),
+                    uri.toString())));
+          } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+                .subscribe(uri -> livePresenter.updateShortcutPicture(live.getShortcutId(),
+                    uri.toString())));
+          }
+
+          return null;
+        })
+        .subscribe());
 
     subscriptions.add(viewLive.onShareLink().subscribe(aVoid -> share()));
 
@@ -1082,7 +1109,7 @@ public class LiveActivity extends BaseActivity
   @Override public void finish() {
     if (finished) return;
 
-    if (!viewLive.hasJoined()) livePresenter.deleteRoom(room.getId());
+    if (!viewLive.hasJoined() && room != null) livePresenter.deleteRoom(room.getId());
 
     finished = true;
 

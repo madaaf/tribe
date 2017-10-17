@@ -108,6 +108,12 @@ public class ShortcutPresenter implements Presenter {
     updateShortcut(shortcutId, values);
   }
 
+  public void updateShortcutPicture(String shortcutId, String imageUri) {
+    List<Pair<String, String>> values = new ArrayList<>();
+    values.add(new Pair<>(ShortcutRealm.PICTURE, imageUri));
+    updateShortcut(shortcutId, values);
+  }
+
   public void readShortcut(String shortcutId) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(ShortcutRealm.READ, String.valueOf(true)));

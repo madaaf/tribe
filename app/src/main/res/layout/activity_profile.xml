@@ -10,7 +10,6 @@
       android:layout_width="match_parent"
       android:layout_height="@dimen/top_bar_height_small"
       >
-
     <com.github.rahatarmanahmed.cpv.CircularProgressView
         android:id="@+id/progressView"
         android:layout_width="20dp"
@@ -25,7 +24,6 @@
         />
 
   </FrameLayout>
-
 
   <com.solera.defrag.ViewStack
       android:id="@+id/viewNavigatorStack"
@@ -54,7 +52,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:textAllCaps="true"
-        style="@style/Title.Regular.Black"
+        style="@style/Title.2.Black"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -64,7 +62,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:textAllCaps="true"
-        style="@style/Title.Regular.Black"
+        style="@style/Title.2.Black"
         />
 
     <ImageView

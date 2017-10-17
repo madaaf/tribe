@@ -49,7 +49,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 01/18/2017.
@@ -344,8 +343,10 @@ public class LiveInviteView extends FrameLayout
       adapter.setItems(itemsList);
       adapter.notifyDataSetChanged();
 
-      recyclerViewInvite.post(
-          () -> layoutManager.scrollToPositionWithOffset(positionOfFirstShortcut, 0));
+      if (drawerState == LiveContainer.CLOSED) {
+        recyclerViewInvite.post(
+            () -> layoutManager.scrollToPositionWithOffset(positionOfFirstShortcut, 0));
+      }
       //}
     }));
   }

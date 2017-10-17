@@ -253,6 +253,10 @@ public class LivePresenter implements Presenter {
     shortcutPresenter.updateShortcutName(shortcutId, name);
   }
 
+  public void updateShortcutPicture(String shortcutId, String imgUri) {
+    shortcutPresenter.updateShortcutPicture(shortcutId, imgUri);
+  }
+
   public void readShortcut(String shortcutId) {
     shortcutPresenter.readShortcut(shortcutId);
   }

@@ -62,6 +62,8 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
@@ -154,6 +156,8 @@ public class HomeActivity extends BaseActivity
   @Inject @CallTagsMap Preference<String> callTagsMap;
 
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
+
+  @Inject RxImagePicker rxImagePicker;
 
   @BindView(R.id.recyclerViewFriends) RecyclerView recyclerViewFriends;
 
@@ -468,8 +472,19 @@ public class HomeActivity extends BaseActivity
                 } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
                   Invite invite = (Invite) recipient;
                   homeGridPresenter.declineInvite(invite.getId());
-                } else if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
-                  Shortcut shortcut = (Shortcut) recipient;
+                }
+              }
+
+              return Pair.create(labelType, recipient);
+            }))
+        .filter(pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE))
+        .flatMap(
+            pair -> DialogFactory.showBottomSheetForCustomizeShortcut(this, (Shortcut) pair.second),
+            (pair, labelType) -> {
+              Shortcut shortcut = (Shortcut) pair.second;
+
+              if (labelType != null) {
+                if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
                   subscriptions.add(DialogFactory.inputDialog(this,
                       getString(R.string.shortcut_update_name_title),
                       getString(R.string.shortcut_update_name_description),
@@ -479,8 +494,22 @@ public class HomeActivity extends BaseActivity
                 }
               }
 
-              return recipient;
-            }))
+              return Pair.create(labelType, shortcut);
+            })
+        .filter(pair -> pair.first.getTypeDef().equals(LabelType.CHANGE_PICTURE))
+        .flatMap(pair -> DialogFactory.showBottomSheetForCamera(this), (pair, labelType) -> {
+          if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+                .subscribe(uri -> homeGridPresenter.updateShortcutPicture(pair.second.getId(),
+                    uri.toString())));
+          } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+                .subscribe(uri -> homeGridPresenter.updateShortcutPicture(pair.second.getId(),
+                    uri.toString())));
+          }
+
+          return null;
+        })
         .subscribe());
 
     subscriptions.add(homeGridAdapter.onClick()
