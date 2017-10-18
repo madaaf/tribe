@@ -329,7 +329,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     timerVoiceSub = null;
     stopRecording();
 
-    if (sendMessage) {
+    if (sendMessage && audioDuration > 0) {
       sendMessageToAdapter(Message.MESSAGE_AUDIO, time, null);
     }
 
