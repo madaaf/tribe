@@ -1,5 +1,6 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +48,8 @@ public class Invite extends Recipient {
   @Override public String getDisplayName() {
     if (room.getLiveUsers().size() <= 1 && room.getInvitedUsers().size() == 1) {
       return room.getInitiator().getDisplayName();
+    } else if (shortcut != null && !StringUtils.isEmpty(shortcut.getName())) {
+      return shortcut.getName();
     } else {
       return room.getUserNames();
     }
