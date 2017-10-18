@@ -289,7 +289,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
 
         if (members.size() < 2) {
-          //containerUsers.setVisibility(GONE); // TODO DECOMMENT
+          containerUsers.setVisibility(GONE);
         }
         //  float ok = recordingViewX + (recordingView.getWidth() / 2);
         SwipeDetector moveListener = new SwipeDetector(chatView, voiceNoteBtn, recordingView,
@@ -965,7 +965,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
                 if (u.isTyping()) {
                   u.setTyping(false);
                   if (members.size() < 2) {
-                    //shrankRecyclerViewGrp(); // TODO DECOMMENT
+                    shrankRecyclerViewGrp();
                   }
                   int i = chatUserAdapter.getIndexOfUser(u);
                   chatUserAdapter.notifyItemChanged(i, u);
