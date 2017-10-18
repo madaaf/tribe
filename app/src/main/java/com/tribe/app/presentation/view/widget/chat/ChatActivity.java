@@ -26,6 +26,7 @@ import timber.log.Timber;
 public class ChatActivity extends BaseActivity {
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
+  private static final String FROM_SHORTCUT = "FROM_SHORTCUT";
   public static final String EXTRA_SHORTCUT_ID = "EXTRA_SHORTCUT_ID";
 
   // OBSERVABLES
@@ -38,9 +39,10 @@ public class ChatActivity extends BaseActivity {
 
   @BindView(R.id.chatview) ChatView chatView;
 
-  public static Intent getCallingIntent(Context context, Recipient recipient) {
+  public static Intent getCallingIntent(Context context, Recipient recipient, Shortcut shortcut) {
     Intent intent = new Intent(context, ChatActivity.class);
     intent.putExtra(EXTRA_LIVE, recipient);
+    intent.putExtra(FROM_SHORTCUT, shortcut);
     return intent;
   }
 
@@ -50,6 +52,10 @@ public class ChatActivity extends BaseActivity {
     ButterKnife.bind(this);
     initDependencyInjector();
 
+    if (getIntent().hasExtra(FROM_SHORTCUT)) {
+      Shortcut fromShortcut = (Shortcut) getIntent().getSerializableExtra(FROM_SHORTCUT);
+      chatView.setFromShortcut(fromShortcut);
+    }
     if (getIntent().hasExtra(EXTRA_LIVE)) {
 
       Recipient recipient = (Recipient) getIntent().getSerializableExtra(EXTRA_LIVE);

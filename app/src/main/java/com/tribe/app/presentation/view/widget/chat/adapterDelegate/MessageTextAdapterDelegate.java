@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.util.Linkify;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
@@ -50,10 +52,20 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
 
     vh.message.setText(m.getMessage());
 
+    linkifyMessage(m, vh);
+
     if (type == ChatView.FROM_LIVE) {
       vh.message.setTextColor(ContextCompat.getColor(context, R.color.white));
     }
     setPendingBehavior(m, vh.container);
+  }
+
+  private void linkifyMessage(MessageText m, MessageTextViewHolder vh) {
+    if (m.getMessage().contains("www.")) {
+      Linkify.addLinks(vh.message, Linkify.WEB_URLS);
+      vh.message.setCustomFont(context, FontUtils.PROXIMA_BOLD);
+      vh.message.setLinkTextColor(ContextCompat.getColor(context, R.color.blue_facebook));
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,
@@ -68,6 +80,8 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
       vh.container.setAlpha(1f);
       vh.message.setText(vh.message.getText().toString());
     }
+
+    linkifyMessage(m, vh);
   }
 
   static class MessageTextViewHolder extends BaseTextViewHolder {

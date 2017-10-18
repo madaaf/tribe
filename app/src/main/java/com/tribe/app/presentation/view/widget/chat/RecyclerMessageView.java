@@ -23,6 +23,7 @@ import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class RecyclerMessageView extends ChatMVPView {
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
   @Inject DateUtils dateUtils;
+  @Inject ScreenUtils screenUtils;
 
   public RecyclerMessageView(@NonNull Context context) {
     super(context);
@@ -130,9 +132,11 @@ public class RecyclerMessageView extends ChatMVPView {
 
     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
       @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        if (dy != 0) {
+          screenUtils.hideKeyboard((Activity) context);
+        }
         if (dy < 0) {
           if (layoutManager.findFirstVisibleItemPosition() < 5 && !load) {
-            Timber.w("SCROOL OK " + messageAdapter.getMessage(0).getContent());
             String lasteDate = messageAdapter.getMessage(0).getCreationDate();
             messagePresenter.loadMessage(arrIds, lasteDate);
             load = true;
@@ -268,7 +272,7 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void errorLoadingMessage() {
     Timber.w("errorLoadingMessage");
-  //  errorLoadingMessages = true; //TODO DECOMMENT
+    //  errorLoadingMessages = true; //TODO DECOMMENT
   }
 
   public void successMessageReceived(List<Message> messages) {

@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
@@ -25,6 +26,8 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.ArrayList;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 import static android.view.View.GONE;
@@ -34,6 +37,7 @@ import static android.view.View.GONE;
  */
 
 public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
+
   private static int COUNTER_SECONDE = 10;
 
   protected LayoutInflater layoutInflater;
@@ -42,8 +46,12 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
   private int counter = 0;
   private int width = 0;
   private int height = 0;
+  private User user;
 
-  public ChatUserAdapterDelegate(Context context) {
+  private PublishSubject<String> onQuickChat = PublishSubject.create();
+
+  public ChatUserAdapterDelegate(Context context, User user) {
+    this.user = user;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     this.context = context;
@@ -64,10 +72,9 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     ChatUserViewHolder vh = (ChatUserViewHolder) holder;
     User i = items.get(position);
 
-    vh.itemView.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-        Timber.e("ok");
-      }
+
+    vh.itemView.setOnClickListener(view -> {
+      onQuickChat.onNext(i.getId());
     });
 
     vh.name.setText(i.getDisplayName());
@@ -193,5 +200,9 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
       super(itemView);
       ButterKnife.bind(this, itemView);
     }
+  }
+
+  public Observable<String> onQuickChat() {
+    return onQuickChat;
   }
 }

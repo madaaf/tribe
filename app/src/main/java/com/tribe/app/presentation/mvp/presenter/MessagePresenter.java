@@ -11,7 +11,9 @@ import com.tribe.app.domain.interactor.chat.IsTypingFromDisk;
 import com.tribe.app.domain.interactor.chat.OnMessageReceivedFromDisk;
 import com.tribe.app.domain.interactor.chat.UserMessageInfos;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.user.CreateShortcut;
 import com.tribe.app.domain.interactor.user.GetDiskShortcut;
+import com.tribe.app.domain.interactor.user.GetShortcutForUserIds;
 import com.tribe.app.domain.interactor.user.UpdateShortcut;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -40,16 +42,20 @@ public class MessagePresenter implements Presenter {
   protected IsTypingFromDisk isTypingFromDisk;
   protected OnMessageReceivedFromDisk onMessageReceivedFromDisk;
   protected ImTyping imTyping;
-  private UpdateShortcut updateShortcut;
+  private CreateShortcut createShortcut;
+  protected UpdateShortcut updateShortcut;
+  protected GetShortcutForUserIds getShortcutForUserIds;
 
   // SUBSCRIBERS
   private UpdateShortcutSubscriber updateShortcutSubscriber;
+  private ShortcutForUserIdsSubscriber shortcutForUserIdsSubscriber;
 
   @Inject public MessagePresenter(UserMessageInfos userMessageInfos, CreateMessage createMessage,
       GetMessageFromDisk getMessageFromDisk, GetDiskShortcut getDiskShortcut,
       IsTypingFromDisk isTypingFromDisk, ImTyping imTyping,
       OnMessageReceivedFromDisk onMessageReceivedFromDisk, UpdateShortcut updateShortcut,
-      GetMessageImageFromDisk getMessageImageFromDisk) {
+      GetMessageImageFromDisk getMessageImageFromDisk, GetShortcutForUserIds getShortcutForUserIds,
+      CreateShortcut createShortcut) {
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
     this.getMessageFromDisk = getMessageFromDisk;
@@ -59,6 +65,8 @@ public class MessagePresenter implements Presenter {
     this.onMessageReceivedFromDisk = onMessageReceivedFromDisk;
     this.updateShortcut = updateShortcut;
     this.getMessageImageFromDisk = getMessageImageFromDisk;
+    this.getShortcutForUserIds = getShortcutForUserIds;
+    this.createShortcut = createShortcut;
   }
 
   public void getMessageImage(String[] userIds) {
@@ -68,6 +76,13 @@ public class MessagePresenter implements Presenter {
 
   public void onMessageReceivedFromDisk() {
     onMessageReceivedFromDisk.execute(new GetDiskMessageReceivedSubscriber());
+  }
+
+  public void shortcutForUserIds(String userIds) {
+    if (shortcutForUserIdsSubscriber != null) shortcutForUserIdsSubscriber.unsubscribe();
+    shortcutForUserIdsSubscriber = new ShortcutForUserIdsSubscriber(userIds);
+    getShortcutForUserIds.setup(userIds);
+    getShortcutForUserIds.execute(shortcutForUserIdsSubscriber);
   }
 
   public void getDiskShortcut(String shortcutId) {
@@ -148,8 +163,9 @@ public class MessagePresenter implements Presenter {
     getDiskShortcut.unsubscribe();
     isTypingFromDisk.unsubscribe();
     onMessageReceivedFromDisk.unsubscribe();
+    getShortcutForUserIds.unsubscribe();
     imTyping.unsubscribe();
-
+    createShortcut.unsubscribe();
     chatMVPView = null;
     pictureMVPView = null;
   }
@@ -274,6 +290,36 @@ public class MessagePresenter implements Presenter {
 
     @Override public void onNext(Message message) {
       if (chatMVPView != null) chatMVPView.successMessageCreated(message, positon);
+    }
+  }
+
+  public void createShortcut(String userIds) {
+    if (shortcutForUserIdsSubscriber != null) shortcutForUserIdsSubscriber.unsubscribe();
+    shortcutForUserIdsSubscriber = new ShortcutForUserIdsSubscriber(userIds);
+    createShortcut.setup(userIds);
+    createShortcut.execute(shortcutForUserIdsSubscriber);
+  }
+
+  private class ShortcutForUserIdsSubscriber extends DefaultSubscriber<Shortcut> {
+    String userIds;
+
+    public ShortcutForUserIdsSubscriber(String userIds) {
+      this.userIds = userIds;
+    }
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(Shortcut shortcut) {
+      if (shortcut == null) {
+        createShortcut(userIds);
+      } else {
+        chatMVPView.onShortcut(shortcut);
+      }
     }
   }
 }

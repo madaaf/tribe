@@ -3,11 +3,15 @@ package com.tribe.app.presentation.view.widget.chat;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.RxAdapterDelegatesManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -19,14 +23,17 @@ public class ChatUserAdapter extends RecyclerView.Adapter {
   protected RxAdapterDelegatesManager<List<User>> delegatesManager;
   private List<User> items;
   private ChatUserAdapterDelegate chatUserAdapterDelegate;
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<String> onQuickChat = PublishSubject.create();
 
-  public ChatUserAdapter(Context context) {
+  public ChatUserAdapter(Context context, User user) {
     items = new ArrayList<>();
-
     delegatesManager = new RxAdapterDelegatesManager<>();
 
-    chatUserAdapterDelegate = new ChatUserAdapterDelegate(context);
+    chatUserAdapterDelegate = new ChatUserAdapterDelegate(context, user);
     delegatesManager.addDelegate(chatUserAdapterDelegate);
+
+    subscriptions.add(chatUserAdapterDelegate.onQuickChat().subscribe(onQuickChat));
   }
 
   @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -87,4 +94,9 @@ public class ChatUserAdapter extends RecyclerView.Adapter {
     this.items.addAll(list);
     notifyDataSetChanged();
   }
+
+  public Observable<String> onQuickChat() {
+    return onQuickChat;
+  }
+
 }
