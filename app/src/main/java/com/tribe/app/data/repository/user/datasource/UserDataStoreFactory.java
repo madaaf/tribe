@@ -11,6 +11,8 @@ import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.preferences.LastSync;
@@ -42,13 +44,14 @@ import javax.inject.Singleton;
   private final @LastSync Preference<Long> lastSync;
   private final PhoneUtils phoneUtils;
   private final @LookupResult Preference<String> lookupResult;
+  private final UserRealmDataMapper userRealmDataMapper;
 
   @Inject public UserDataStoreFactory(Context context, UserCache userCache, LiveCache liveCache,
       ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi,
       LoginApi loginApi, LookupApi lookupApi, GrowthApi growthApi, AccessToken accessToken,
       Installation installation,
       @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate, @LastSync Preference<Long> lastSync,
-      PhoneUtils phoneUtils, @LookupResult Preference<String> lookupResult) {
+      PhoneUtils phoneUtils, @LookupResult Preference<String> lookupResult, UserRealmDataMapper userRealmDataMapper) {
 
     if (context == null || userCache == null) {
       throw new IllegalArgumentException("Constructor parameters cannot be null!");
@@ -70,6 +73,7 @@ import javax.inject.Singleton;
     this.lastSync = lastSync;
     this.phoneUtils = phoneUtils;
     this.lookupResult = lookupResult;
+    this.userRealmDataMapper = userRealmDataMapper;
   }
 
   /**
@@ -86,6 +90,6 @@ import javax.inject.Singleton;
     return new CloudUserDataStore(this.userCache, this.contactCache, this.liveCache,
         this.rxContacts, this.rxFacebook, this.tribeApi, this.loginApi, this.lookupApi,
         this.growthApi, this.accessToken, this.installation, this.context, this.lastSync,
-        this.phoneUtils, this.lookupResult);
+        this.phoneUtils, this.lookupResult, this.userRealmDataMapper);
   }
 }

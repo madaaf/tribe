@@ -32,8 +32,10 @@ import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -81,6 +83,7 @@ public class CloudUserDataStore implements UserDataStore {
   private @LastSync Preference<Long> lastSync;
   private PhoneUtils phoneUtils;
   private @LookupResult Preference<String> lookupResult;
+  private UserRealmDataMapper userRealmDataMapper;
 
   /**
    * Construct a {@link UserDataStore} based on connections to the api (Cloud).
@@ -95,7 +98,7 @@ public class CloudUserDataStore implements UserDataStore {
       RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi, LoginApi loginApi,
       LookupApi lookupApi, GrowthApi growthApi, AccessToken accessToken, Installation installation,
       Context context, @LastSync Preference<Long> lastSync, PhoneUtils phoneUtils,
-      @LookupResult Preference<String> lookupResult) {
+      @LookupResult Preference<String> lookupResult, UserRealmDataMapper userRealmDataMapper) {
     this.userCache = userCache;
     this.contactCache = contactCache;
     this.rxContacts = rxContacts;
@@ -111,6 +114,7 @@ public class CloudUserDataStore implements UserDataStore {
     this.lastSync = lastSync;
     this.phoneUtils = phoneUtils;
     this.lookupResult = lookupResult;
+    this.userRealmDataMapper = userRealmDataMapper;
   }
 
   @Override public Observable<PinRealm> requestCode(String phoneNumber, boolean shouldCall) {
@@ -589,9 +593,19 @@ public class CloudUserDataStore implements UserDataStore {
         for (Invite newInvite : userRealm.getInvites()) {
           boolean shouldAdd = true;
 
+          if (newInvite.getRoom() == null) shouldAdd = false;
+
           if (shouldAdd) {
-            if (!StringUtils.isEmpty(newInvite.getRoomName())) {
-              newInvite.setRoomName(context.getString(R.string.grid_menu_call_placeholder));
+            List<String> roomUserIds = newInvite.getRoom().getUserIds();
+            roomUserIds.remove(accessToken.getUserId());
+            Shortcut shortcut = null;
+
+            ShortcutRealm shortcutRealm = userCache.shortcutForUserIdsNoObs(
+                roomUserIds.toArray(new String[roomUserIds.size()]));
+
+            if (shortcutRealm != null) {
+              shortcut = userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealm);
+              newInvite.setShortcut(shortcut);
             }
 
             liveCache.putInvite(newInvite);

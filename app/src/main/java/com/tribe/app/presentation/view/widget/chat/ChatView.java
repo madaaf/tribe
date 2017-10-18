@@ -264,18 +264,17 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         voiceNoteBtn.getLayoutParams().height = size;
         voiceNoteBtn.getLayoutParams().width = size;
 
-        voiceNoteBtn.setTranslationX(
-            editText.getX() + editText.getWidth() - voiceNoteBtn.getWidth() - screenUtils.dpToPx(
-                5));
+        voiceNoteBtn.setTranslationX(editText.getX() + editText.getWidth() -
+            voiceNoteBtn.getWidth() -
+            screenUtils.dpToPx(5));
         voiceNoteBtn.setTranslationY(
             -editText.getHeight() + voiceNoteBtn.getHeight() - screenUtils.dpToPx(7));
 
         pictoVoiceNote.setTranslationX(
             voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
 
-        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (
-            pictoVoiceNote.getHeight()
-                / 2) + screenUtils.dpToPx(12));
+        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) -
+            (pictoVoiceNote.getHeight() / 2) + screenUtils.dpToPx(12));
 
         voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
@@ -508,11 +507,11 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         uploadTask = riversRef.putStream(inputStream);
       } else if (type.equals(MESSAGE_AUDIO)) {
         Uri file = Uri.fromFile(new File(audioFile));
-        StorageReference riversRef = storageRef.child("app/uploads/"
-            + user.getId()
-            + "/"
-            + dateUtils.getUTCDateAsString()
-            + file.getLastPathSegment());
+        StorageReference riversRef = storageRef.child("app/uploads/" +
+            user.getId() +
+            "/" +
+            dateUtils.getUTCDateAsString() +
+            file.getLastPathSegment());
         uploadTask = riversRef.putFile(file);
       }
 
@@ -837,16 +836,38 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   @OnClick(R.id.txtTitle) void onClickTitle() {
     if (members.size() < 2) return;
-    subscriptions.add(
-        DialogFactory.inputDialog(context, context.getString(R.string.shortcut_update_name_title),
-            context.getString(R.string.shortcut_update_name_description),
-            context.getString(R.string.shortcut_update_name_validate),
-            context.getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT).subscribe(s -> {
-          Timber.e("SOU SUH " + s);
-          messagePresenter.updateShortcutName(shortcut.getId(), s);
-          title.setText(s + " ");
-          title.setTextColor(Color.BLACK);
-        }));
+
+    subscriptions.add(DialogFactory.showBottomSheetForCustomizeShortcut(getContext(), shortcut)
+        .flatMap(labelType -> {
+          if (labelType != null) {
+            if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
+              subscriptions.add(DialogFactory.inputDialog(getContext(),
+                  getContext().getString(R.string.shortcut_update_name_title),
+                  getContext().getString(R.string.shortcut_update_name_description),
+                  getContext().getString(R.string.shortcut_update_name_validate),
+                  getContext().getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT)
+                  .subscribe(s -> messagePresenter.updateShortcutName(shortcut.getId(), s)));
+            }
+          }
+
+          return Observable.just(labelType);
+        })
+        .filter(labelType -> labelType.getTypeDef().equals(LabelType.CHANGE_PICTURE))
+        .flatMap(pair -> DialogFactory.showBottomSheetForCamera(getContext()),
+            (pair, labelType) -> {
+              if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+                subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+                    .subscribe(uri -> messagePresenter.updateShortcutPicture(shortcut.getId(),
+                        uri.toString())));
+              } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+                subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+                    .subscribe(uri -> messagePresenter.updateShortcutPicture(shortcut.getId(),
+                        uri.toString())));
+              }
+
+              return null;
+            })
+        .subscribe());
   }
 
   @OnClick(R.id.videoCallBtn) void onClickVideoCall() {
@@ -1122,11 +1143,11 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void startRecording() {
-    mFileName = context.getExternalCacheDir().getAbsolutePath()
-        + File.separator
-        + dateUtils.getUTCDateAsString()
-        + user.getId()
-        + "audiorecord.mp4";
+    mFileName = context.getExternalCacheDir().getAbsolutePath() +
+        File.separator +
+        dateUtils.getUTCDateAsString() +
+        user.getId() +
+        "audiorecord.mp4";
     mFileName = mFileName.replaceAll(" ", "_").replaceAll(":", "-");
 
     Timber.w("SOEF " + mFileName);

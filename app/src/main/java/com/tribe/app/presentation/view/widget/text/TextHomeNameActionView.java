@@ -132,7 +132,11 @@ public class TextHomeNameActionView extends LinearLayout {
       if (invite.getShortcut() == null || StringUtils.isEmpty(invite.getShortcut().getName())) {
         List<User> userList = invite.getAllUsers();
         userList.remove(currentUser);
-        TextViewUtils.constraintTextInto(txtName, userList);
+        if (userList.size() == 0) {
+          txtName.setText(invite.getDisplayName());
+        } else {
+          TextViewUtils.constraintTextInto(txtName, userList);
+        }
       } else {
         txtName.setText(recipient.getDisplayName());
       }

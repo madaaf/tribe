@@ -144,5 +144,6 @@ public class Invite extends Recipient {
 
   public void setShortcut(Shortcut shortcut) {
     this.shortcut = shortcut;
+    if (this.room != null) room.setShortcut(shortcut);
   }
 }

@@ -42,7 +42,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   private Set<String> waitingIds;
   private Shortcut shortcut;
 
-  private transient CompositeSubscription subscriptions = new CompositeSubscription();
+  private transient CompositeSubscription subscriptions;
   private transient PublishSubject<User> onAddedInvitedUser = PublishSubject.create();
   private transient PublishSubject<User> onRemovedInvitedUser = PublishSubject.create();
   private transient PublishSubject<User> onAddedLiveUser = PublishSubject.create();
@@ -65,6 +65,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     live_users = new ArrayList<>();
     waitingIds = new HashSet<>();
     all_users = new ArrayList<>();
+    subscriptions = new CompositeSubscription();
 
     subscriptions.add(liveUsersMap.getObservable().doOnNext(rxLiveUserMap -> {
       if (rxLiveUserMap.changeType == ObservableRxHashMap.ADD) {
@@ -84,7 +85,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   }
 
   public void dispose() {
-    subscriptions.clear();
+    if (subscriptions != null) subscriptions.clear();
   }
 
   public String getId() {
@@ -295,6 +296,8 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     for (User user : invited_users) {
       memberIds.add(user.getId());
     }
+
+    if (!memberIds.contains(initiator.getId())) memberIds.add(initiator.getId());
 
     return memberIds;
   }

@@ -35,7 +35,7 @@ import rx.Observable;
   @Override public Observable<Room> createRoom(String name, String... userIds) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.createRoom(name, userIds).compose(roomWithShortcutTransformer);
+    return cloudDataStore.createRoom(name, userIds);
   }
 
   @Override public Observable<Room> updateRoom(String roomId, List<Pair<String, String>> pairList) {
@@ -98,5 +98,5 @@ import rx.Observable;
         }
 
         return room;
-      });
+      }).doOnError(Throwable::printStackTrace);
 }

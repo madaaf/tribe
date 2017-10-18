@@ -47,6 +47,7 @@ public class ShortcutRealm extends RealmObject {
   private RealmList<UserRealm> members;
   private String lastMessage;
   private Date leaveOnlineUntil;
+  private String membersHash;
 
   @Ignore private boolean online;
   @Ignore private boolean live;
@@ -183,6 +184,14 @@ public class ShortcutRealm extends RealmObject {
     return live;
   }
 
+  public void setMembersHash(String hash) {
+    this.membersHash = hash;
+  }
+
+  public String getMembersHash() {
+    return membersHash;
+  }
+
   public List<String> getMembersIds() {
     List<String> memberIds = new ArrayList<>();
 
@@ -191,6 +200,12 @@ public class ShortcutRealm extends RealmObject {
     }
 
     return memberIds;
+  }
+
+  public String[] getMembersIdsArray() {
+    List<String> memberIds = getMembersIds();
+
+    return memberIds.toArray(new String[memberIds.size()]);
   }
 
   public UserRealm getSingleFriend() {

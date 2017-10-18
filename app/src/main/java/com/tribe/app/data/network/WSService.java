@@ -16,7 +16,9 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -24,6 +26,7 @@ import com.tribe.tribelivesdk.back.WebSocketConnection;
 import io.realm.RealmList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -111,6 +114,8 @@ import timber.log.Timber;
 
   @Inject JsonToModel jsonToModel;
 
+  @Inject UserRealmDataMapper userRealmDataMapper;
+
   @Inject @Named("webSocketApi") WebSocketConnection webSocketConnection;
 
   // VARIABLES
@@ -159,8 +164,8 @@ import timber.log.Timber;
   }
 
   public void subscribeChat(String userIds) {
-    if (chatSubscriptions.get(userIds + MESSAGE_CREATED_SUFFIX) != null
-        && chatSubscriptions.get(userIds + MESSAGE_IS_TYPING_SUFFIX) != null) {
+    if (chatSubscriptions.get(userIds + MESSAGE_CREATED_SUFFIX) != null &&
+        chatSubscriptions.get(userIds + MESSAGE_IS_TYPING_SUFFIX) != null) {
       Timber.i("SOEF already subscribe");
       return;
     }
@@ -249,8 +254,9 @@ import timber.log.Timber;
       }
     }
 
-    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
-        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null &&
+        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
+            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -275,9 +281,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous()
-        || StringUtils.isEmpty(accessToken.getTokenType())
-        || StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous() ||
+        StringUtils.isEmpty(accessToken.getTokenType()) ||
+        StringUtils.isEmpty(accessToken.getAccessToken())) {
 
       webSocketConnection.setShouldReconnect(false);
     } else {
@@ -342,9 +348,17 @@ import timber.log.Timber;
                   if (newInvite.getRoom() == null) shouldAdd = false;
 
                   if (shouldAdd) {
-                    if (!StringUtils.isEmpty(invite.getRoomName())) {
-                      newInvite.setRoomName(
-                          getApplicationContext().getString(R.string.grid_menu_call_placeholder));
+                    List<String> roomUserIds = newInvite.getRoom().getUserIds();
+                    roomUserIds.remove(user.getId());
+                    Shortcut shortcut = null;
+
+                    ShortcutRealm shortcutRealm = userCache.shortcutForUserIdsNoObs(
+                        roomUserIds.toArray(new String[roomUserIds.size()]));
+
+                    if (shortcutRealm != null) {
+                      shortcut =
+                          userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealm);
+                      newInvite.setShortcut(shortcut);
                     }
 
                     subscribeRoomUpdate(newInvite.getRoom().getId());
@@ -462,9 +476,8 @@ import timber.log.Timber;
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment =
-        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
-            R.string.userfragment_infos) : "");
+    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
+        getApplicationContext().getString(R.string.userfragment_infos) : "");
 
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 

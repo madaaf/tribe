@@ -18,15 +18,12 @@ import javax.inject.Singleton;
  */
 @Singleton public class UserRealmDataMapper {
 
-  LocationRealmDataMapper locationRealmDataMapper;
   ShortcutRealmDataMapper shortcutRealmDataMapper;
   MessageRealmDataMapper messageRealmDataMapper;
 
   @Inject ScreenUtils screenUtils;
 
-  @Inject public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper,
-      ShortcutRealmDataMapper shortcutRealmDataMapper) {
-    this.locationRealmDataMapper = locationRealmDataMapper;
+  @Inject public UserRealmDataMapper(ShortcutRealmDataMapper shortcutRealmDataMapper) {
     this.shortcutRealmDataMapper = shortcutRealmDataMapper;
     this.shortcutRealmDataMapper.setUserRealmDataMapper(this);
     this.messageRealmDataMapper = new MessageRealmDataMapper(this);

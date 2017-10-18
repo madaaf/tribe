@@ -76,12 +76,8 @@ import rx.Observable;
             if (inviteMap != null && inviteMap.size() > 0) {
               for (Shortcut shortcut : user.getShortcutList()) {
                 for (Invite invite : inviteMap.values()) {
-                  List<String> shortcutMembersIds = shortcut.getMembersIds();
-                  // we add the current user id because he's not included in the shortcut
-                  shortcutMembersIds.add(userRealm.getId());
-                  if (invite.isShortcut(shortcutMembersIds)) {
+                  if (invite.getShortcut() != null && invite.getShortcut().getId().equals(shortcut.getId())) {
                     shortcut.setLive(true);
-                    invite.setShortcut(shortcut);
                   }
                 }
               }

@@ -105,12 +105,15 @@ public class LiveCacheImpl implements LiveCache {
   }
 
   @Override public void onRoomUpdated(Room roomUpdated) {
+    Room room = null;
     for (Invite invite : inviteMap.getMap().values()) {
       if (invite.getRoom() != null && invite.getRoom().getId().equals(roomUpdated)) {
         invite.getRoom().update(roomUpdated, true);
+        room = invite.getRoom();
       }
     }
-    onRoomUpdated.onNext(roomUpdated);
+
+    if (room != null) onRoomUpdated.onNext(room);
   }
 
   @Override public Observable<Room> getRoomUpdated() {

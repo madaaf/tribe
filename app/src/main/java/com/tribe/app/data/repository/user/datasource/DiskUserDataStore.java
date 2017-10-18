@@ -197,7 +197,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   public Observable<ShortcutRealm> shortcutForUserIdsNoObs(String... userIds) {
     return Observable.combineLatest(Observable.just(userCache.shortcutForUserIdsNoObs(userIds)),
         onlineMap(), (shortcutRealmList, onlineMap) -> shortcutRealmList)
-        .compose(shortcutOnlineTransformer);
+        .compose(shortcutOnlineTransformer).doOnError(Throwable::printStackTrace);
   }
 
   @Override public Observable<List<ShortcutRealm>> blockedShortcuts() {

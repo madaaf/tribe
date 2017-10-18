@@ -639,9 +639,13 @@ public class LiveActivity extends BaseActivity
           gameDrawView.onClearDrawReceived();
         }));
 
-    subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> {
-      initRoomSubscription();
-    }));
+    subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
+      if (live.fromRoom() &&
+          (tribeJoinRoom.getSessionList() == null || tribeJoinRoom.getSessionList().size() == 0)) {
+        Toast.makeText(this, R.string.live_other_user_hung_up, Toast.LENGTH_SHORT).show();
+        livePresenter.createInvite(room.getId(), room.getInitiator().getId());
+      }
+    }).subscribe(tribeJoinRoom -> initRoomSubscription()));
 
     subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
       if (viewLive.getWebRTCRoom() != null && viewLive.getWebRTCRoom().getOptions() != null) {
@@ -1102,8 +1106,10 @@ public class LiveActivity extends BaseActivity
   }
 
   private void setExtraForShortcut() {
-    returnIntent.putExtra(USER_IDS_FOR_NEW_SHORTCUT, usersThatWereLive);
-    setResult(Activity.RESULT_OK, returnIntent);
+    if (usersThatWereLive.size() > 0) {
+      returnIntent.putExtra(USER_IDS_FOR_NEW_SHORTCUT, usersThatWereLive);
+      setResult(Activity.RESULT_OK, returnIntent);
+    }
   }
 
   @Override public void finish() {

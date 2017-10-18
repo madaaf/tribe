@@ -733,10 +733,17 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(viewRoom.onChangeCallRouletteRoom().subscribe(onChangeCallRouletteRoom));
     Timber.d("Initiating Room");
-    webRTCRoom.connect(options);
 
     // We just want to trigger the updates to update the UI
     live.getRoom().update(room, false);
+
+    if (live.fromRoom()) {
+      webRTCRoom.connect(options);
+    } else {
+      tempSubscriptions.add(Observable.timer(3000, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> webRTCRoom.connect(options)));
+    }
   }
 
   public void initDrawerEventChangeObservable(Observable<Integer> obs) {

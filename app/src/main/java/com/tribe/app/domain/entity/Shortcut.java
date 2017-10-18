@@ -33,6 +33,7 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   private List<User> members;
   private String lastMessage;
   private Date leaveOnlineUntil;
+  private String membersHash;
 
   public Shortcut(String id) {
     this.id = id;
@@ -203,6 +204,14 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
 
   public Date getLeaveOnlineUntil() {
     return leaveOnlineUntil;
+  }
+
+  public void setMembersHash(String membersHash) {
+    this.membersHash = membersHash;
+  }
+
+  public String getMembersHash() {
+    return membersHash;
   }
 
   public void addMember(User user) {

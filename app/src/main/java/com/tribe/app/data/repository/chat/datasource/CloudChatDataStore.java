@@ -52,6 +52,7 @@ public class CloudChatDataStore implements ChatDataStore {
         } else {
           txt = latestMessage.getAuthor().getDisplayName() + " : " + latestMessage.getData();
         }
+
         userCache.updateShortcutLastText(shortcutRealm.getId(), txt);
       }
     });

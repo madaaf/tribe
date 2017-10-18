@@ -6,6 +6,7 @@ import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.utils.ShortcutUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -59,6 +60,8 @@ public class UserCacheImpl implements UserCache {
           ShortcutRealm shortcutRealmDB =
               realm1.where(ShortcutRealm.class).equalTo("id", shortcutRealm.getId()).findFirst();
           if (shortcutRealmDB == null) {
+            shortcutRealm.setMembersHash(ShortcutUtils.hashShortcut(accessToken.getUserId(),
+                shortcutRealm.getMembersIdsArray()));
             realm1.insertOrUpdate(shortcutRealm);
           } else {
             updateShortcutPartially(realm1, shortcutRealm, shortcutRealmDB);
@@ -241,7 +244,7 @@ public class UserCacheImpl implements UserCache {
 
   @Override public Observable<ShortcutRealm> shortcutForUserIds(String... userIds) {
     return realm.where(ShortcutRealm.class)
-        .in("members.id", userIds)
+        .equalTo("membersHash", ShortcutUtils.hashShortcut(accessToken.getUserId(), userIds))
         .findAll()
         .asObservable()
         .filter(shortcutList -> shortcutList.isLoaded())
@@ -259,8 +262,9 @@ public class UserCacheImpl implements UserCache {
 
   @Override public ShortcutRealm shortcutForUserIdsNoObs(String... userIds) {
     Realm otherRealm = Realm.getDefaultInstance();
-    ShortcutRealm shortcutRealm =
-        otherRealm.where(ShortcutRealm.class).in("members.id", userIds).findFirst();
+    ShortcutRealm shortcutRealm = otherRealm.where(ShortcutRealm.class)
+        .equalTo("membersHash", ShortcutUtils.hashShortcut(accessToken.getUserId(), userIds))
+        .findFirst();
     if (shortcutRealm != null) {
       return otherRealm.copyFromRealm(shortcutRealm);
     } else {
