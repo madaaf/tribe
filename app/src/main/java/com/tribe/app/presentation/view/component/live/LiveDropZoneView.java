@@ -120,7 +120,7 @@ public class LiveDropZoneView extends RelativeLayout {
     animate().alpha(1).setInterpolator(new DecelerateInterpolator()).setDuration(DURATION).start();
 
     animatorScale = new AnimatorSet();
-    ValueAnimator animatorScaleUp = ValueAnimator.ofFloat(0, 2f);
+    ValueAnimator animatorScaleUp = ValueAnimator.ofFloat(0, 1.25f);
     animatorScaleUp.setDuration(DURATION >> 1);
     animatorScaleUp.setInterpolator(new DecelerateInterpolator());
     animatorScaleUp.addUpdateListener(valueAnimator -> {
@@ -129,7 +129,7 @@ public class LiveDropZoneView extends RelativeLayout {
       viewRing.setScaleY(value);
     });
 
-    ValueAnimator animatorScaleDown = ValueAnimator.ofFloat(2f, 1);
+    ValueAnimator animatorScaleDown = ValueAnimator.ofFloat(1.25f, 1);
     animatorScaleDown.setDuration(DURATION).setInterpolator(new DecelerateInterpolator());
     animatorScaleDown.addUpdateListener(valueAnimator -> {
       float value = (float) valueAnimator.getAnimatedValue();

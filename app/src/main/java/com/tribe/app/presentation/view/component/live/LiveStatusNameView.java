@@ -198,6 +198,8 @@ public class LiveStatusNameView extends FrameLayout {
   }
 
   private void refactorTitle() {
+    if (active) return;
+
     Room room = live.getRoom();
     Shortcut shortcut = live.getShortcut();
 

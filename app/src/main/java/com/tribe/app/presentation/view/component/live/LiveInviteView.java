@@ -281,9 +281,11 @@ public class LiveInviteView extends FrameLayout
             usersAtBeginningOfCall = live.getUserIdsOfShortcut();
           }
 
-          temp.add(new Header(Header.HEADER_NAME,
-              live.getShortcut() != null ? live.getShortcut().getName() : "",
-              R.drawable.picto_live_invite_header_edit));
+          if (room.getShortcut() != null && !room.getShortcut().isSingle()) {
+            temp.add(new Header(Header.HEADER_NAME,
+                live.getShortcut() != null ? live.getShortcut().getName() : "",
+                R.drawable.picto_live_invite_header_edit));
+          }
 
           temp.add(new Header(Header.HEADER_CHAT_MEMBERS,
               getResources().getString(R.string.live_invite_section_chat_members), 0));
