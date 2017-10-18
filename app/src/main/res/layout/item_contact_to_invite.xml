@@ -19,7 +19,7 @@
         android:layout_centerVertical="true"
         android:ellipsize="end"
         android:lines="1"
-        style="@style/Title.2.Black"
+        style="@style/BiggerTitle.1.Black"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:maxLines="1"
-        style="@style/Caption.One.Black40"
+        style="@style/BiggerBody.One.Black40"
         />
   </LinearLayout>
 

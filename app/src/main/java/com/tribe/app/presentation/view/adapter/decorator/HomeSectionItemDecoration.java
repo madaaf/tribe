@@ -19,12 +19,12 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
  * https://github.com/paetztm/recycler_view_headers
  */
 
-public class RecyclerSectionItemDecoration extends BaseSectionItemDecoration {
+public class HomeSectionItemDecoration extends BaseSectionItemDecoration {
 
   private TextViewFont txtLabel;
   private ImageView imgPicto;
 
-  public RecyclerSectionItemDecoration(int headerHeight, boolean sticky,
+  public HomeSectionItemDecoration(int headerHeight, boolean sticky,
       @NonNull SectionCallback sectionCallback, ScreenUtils screenUtils) {
     super(headerHeight, sticky, sectionCallback, screenUtils);
   }
@@ -54,14 +54,14 @@ public class RecyclerSectionItemDecoration extends BaseSectionItemDecoration {
         txtLabel.setText(R.string.home_section_invites_to_send);
         txtLabel.setVisibility(View.VISIBLE);
         imgPicto.setImageResource(R.drawable.picto_header_invites_to_send);
-        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
+        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.grey_offline));
         break;
 
       case SEARCH_SUGGESTED_CONTACTS:
         txtLabel.setText(R.string.home_section_suggested_friends);
         txtLabel.setVisibility(View.VISIBLE);
         imgPicto.setImageResource(R.drawable.picto_header_suggested);
-        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.black_dark_blue));
+        gradientDrawable.setColor(ContextCompat.getColor(context, R.color.grey_offline));
         break;
 
       case NONE:

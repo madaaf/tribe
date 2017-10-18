@@ -74,7 +74,7 @@ import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.HomeListDividerDecoration;
-import com.tribe.app.presentation.view.adapter.decorator.RecyclerSectionItemDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.HomeSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.helper.HomeListTouchHelperCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
@@ -986,7 +986,7 @@ public class HomeActivity extends BaseActivity
     recyclerViewFriends.setDrawingCacheEnabled(true);
     recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-    RecyclerSectionItemDecoration sectionItemDecoration = new RecyclerSectionItemDecoration(
+    HomeSectionItemDecoration sectionItemDecoration = new HomeSectionItemDecoration(
         getResources().getDimensionPixelSize(R.dimen.list_home_header_height), true,
         getSectionCallback(homeGridAdapter.getItems()), screenUtils);
     recyclerViewFriends.addItemDecoration(sectionItemDecoration);

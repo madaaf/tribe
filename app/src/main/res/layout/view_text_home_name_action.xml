@@ -9,7 +9,6 @@
       android:id="@+id/txtName"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginTop="5dp"
       android:maxLines="1"
       style="@style/BiggerTitle.1.Black"
       />
@@ -18,7 +17,7 @@
       android:id="@+id/txtAction"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="2.5dp"
+      android:layout_marginTop="5dp"
       android:ellipsize="end"
       android:maxLines="1"
       android:text="@string/home_action_read_chat"
