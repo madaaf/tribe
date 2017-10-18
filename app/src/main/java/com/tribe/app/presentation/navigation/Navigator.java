@@ -16,6 +16,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
@@ -132,9 +133,9 @@ public class Navigator {
         intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
       }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-          Intent.FLAG_ACTIVITY_CLEAR_TASK |
-          Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+          | Intent.FLAG_ACTIVITY_CLEAR_TASK
+          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
       if (linkRoomId != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -217,10 +218,10 @@ public class Navigator {
     }
   }
 
-  public void navigateToChat(Activity activity, Recipient recipient) {
+  public void navigateToChat(Activity activity, Recipient recipient, Shortcut shortcut) {
     if (activity != null) {
-      Intent intent = ChatActivity.getCallingIntent(activity, recipient);
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      Intent intent = ChatActivity.getCallingIntent(activity, recipient, shortcut);
+      //  intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivityForResult(intent, FROM_CHAT);
       activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
     }
@@ -381,8 +382,8 @@ public class Navigator {
 
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
-    } else if (activity.getIntent() != null &&
-        activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
+    } else if (activity.getIntent() != null && activity.getIntent()
+        .hasExtra(Extras.IS_FROM_FACEBOOK)) {
       openFacebookAppInvites(activity, url);
     } else {
       openDefaultMessagingApp(activity, text);

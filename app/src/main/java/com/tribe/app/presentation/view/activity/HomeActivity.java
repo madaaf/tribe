@@ -877,7 +877,7 @@ public class HomeActivity extends BaseActivity
 
   private void navigateToChat(Recipient recipient) {
     if (!recipient.isRead()) homeGridPresenter.readShortcut(recipient.getId());
-    navigator.navigateToChat(this, recipient);
+    navigator.navigateToChat(this, recipient, null);
   }
 
   private void syncContacts() {

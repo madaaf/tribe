@@ -27,6 +27,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -132,6 +133,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   private MediaRecorder mRecorder = null;
   private String mFileName = null;
   private Float audioDuration = 0f;
+  private Shortcut fromShortcut = null;
 
   @BindView(R.id.editText) EditTextFont editText;
   @BindView(R.id.recyclerViewChat) RecyclerMessageView recyclerView;
@@ -150,6 +152,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   @BindView(R.id.topbar) FrameLayout topbar;
   @BindView(R.id.containerUsers) FrameLayout containerUsers;
+  @BindView(R.id.containerQuickChat) FrameLayout containerQuickChat;
   @BindView(R.id.container) FrameLayout container;
   @BindView(R.id.containerEditText) RelativeLayout containerEditText;
   @BindView(R.id.separator) View separator;
@@ -193,8 +196,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     inflater.inflate(R.layout.view_chat, this, true);
     unbinder = ButterKnife.bind(this);
     Timber.w("SOEF  INIT VIEW");
-    initRecyclerView();
     initDependencyInjector();
+    initRecyclerView();
     initSubscriptions();
     initParams();
   }
@@ -286,7 +289,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
 
         if (members.size() < 2) {
-          containerUsers.setVisibility(GONE);
+          //containerUsers.setVisibility(GONE); // TODO DECOMMENT
         }
         //  float ok = recordingViewX + (recordingView.getWidth() / 2);
         SwipeDetector moveListener = new SwipeDetector(chatView, voiceNoteBtn, recordingView,
@@ -530,6 +533,11 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void initSubscriptions() {
+
+    subscriptions.add(chatUserAdapter.onQuickChat().subscribe(id -> {
+      messagePresenter.shortcutForUserIds(id);
+    }));
+
     subscriptions.add(RxView.clicks(uploadImageBtn)
         .delay(200, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -711,7 +719,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   private void initRecyclerView() {
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-    chatUserAdapter = new ChatUserAdapter(getContext());
+    chatUserAdapter = new ChatUserAdapter(getContext(), user);
     recyclerViewGrp.setLayoutManager(layoutManagerGrp);
     recyclerViewGrp.setItemAnimator(new DefaultItemAnimator());
     recyclerViewGrp.setAdapter(chatUserAdapter);
@@ -957,7 +965,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
                 if (u.isTyping()) {
                   u.setTyping(false);
                   if (members.size() < 2) {
-                    shrankRecyclerViewGrp();
+                    //shrankRecyclerViewGrp(); // TODO DECOMMENT
                   }
                   int i = chatUserAdapter.getIndexOfUser(u);
                   chatUserAdapter.notifyItemChanged(i, u);
@@ -1142,5 +1150,32 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       Timber.e("prepare() failed");
     }
     mRecorder.start();
+  }
+
+  @Override public void onShortcut(Shortcut shortcutQuickChat) {
+    navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut);
+  }
+
+  public void setFromShortcut(Shortcut fromShortcut) {
+    this.fromShortcut = fromShortcut;
+    if (fromShortcut != null) {
+      containerQuickChat.setVisibility(VISIBLE);
+      LayoutInflater inflater = LayoutInflater.from(context);
+      LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.item_user_chat, null, false);
+
+      TextViewFont name = layout.findViewById(R.id.name);
+      AvatarView viewAvatar = layout.findViewById(R.id.viewAvatar);
+      viewAvatar.setVisibility(GONE);
+      String nameGrp =
+          (fromShortcut.getName() == null || fromShortcut.getName().isEmpty()) ? context.getString(
+              R.string.chat_quickchat_back_to_group) : fromShortcut.getName();
+      nameGrp += "  ";
+      name.setText(nameGrp);
+      name.setPadding(0, 15, 0, 15);
+      containerQuickChat.addView(layout);
+      name.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow, 0);
+
+      layout.setOnClickListener(view -> ((Activity) context).finish());
+    }
   }
 }

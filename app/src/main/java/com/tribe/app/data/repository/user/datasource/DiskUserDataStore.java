@@ -227,9 +227,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
   private void transformOnlineShortcut(ShortcutRealm shortcutRealm) {
     Map<String, Boolean> onlineMap = liveCache.getOnlineMap();
-    shortcutRealm.computeMembersOnline(onlineMap);
-
-    shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId()) ||
-        shortcutRealm.isUniqueMemberOnline());
+    if (shortcutRealm != null) {
+      shortcutRealm.computeMembersOnline(onlineMap);
+      shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId())
+          || shortcutRealm.isUniqueMemberOnline());
+    }
   }
 }
