@@ -18,11 +18,13 @@ public class Header implements Serializable, LiveInviteAdapterSectionInterface {
   private String id;
   private String resourceTxtId;
   private int resourceDrawableId;
+  private int gravity;
 
-  public Header(String id, String resourceTxtId, int resourceDrawableId) {
+  public Header(String id, String resourceTxtId, int resourceDrawableId, int gravity) {
     this.id = id;
     this.resourceTxtId = resourceTxtId;
     this.resourceDrawableId = resourceDrawableId;
+    this.gravity = gravity;
   }
 
   public int getResourceDrawableId() {
@@ -55,5 +57,13 @@ public class Header implements Serializable, LiveInviteAdapterSectionInterface {
 
   @Override public int getLiveInviteSectionType() {
     return 0;
+  }
+
+  public int getGravity() {
+    return gravity;
+  }
+
+  public void setGravity(int gravity) {
+    this.gravity = gravity;
   }
 }

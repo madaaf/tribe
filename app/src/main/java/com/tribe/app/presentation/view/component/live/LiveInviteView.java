@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -284,11 +285,12 @@ public class LiveInviteView extends FrameLayout
           if (room.getShortcut() != null && !room.getShortcut().isSingle()) {
             temp.add(new Header(Header.HEADER_NAME,
                 live.getShortcut() != null ? live.getShortcut().getName() : "",
-                R.drawable.picto_live_invite_header_edit));
+                R.drawable.picto_live_invite_header_edit, Gravity.START | Gravity.CENTER_VERTICAL));
           }
 
           temp.add(new Header(Header.HEADER_CHAT_MEMBERS,
-              getResources().getString(R.string.live_invite_section_chat_members), 0));
+              getResources().getString(R.string.live_invite_section_chat_members), 0,
+              Gravity.START | Gravity.CENTER_VERTICAL));
 
           if (room.getLiveUsers() != null) {
             for (User user : room.getLiveUsers()) {
@@ -313,7 +315,8 @@ public class LiveInviteView extends FrameLayout
           recyclerViewInvite.setPositionToBlock(positionOfFirstShortcut);
 
           temp.add(new Header(Header.HEADER_DRAG_IN,
-              getResources().getString(R.string.live_members_invite_friends_section_title), 0));
+              getResources().getString(R.string.live_members_invite_friends_section_title), 0,
+              Gravity.CENTER));
           for (Shortcut shortcut : listShortcut) {
             User user = shortcut.getSingleFriend();
             user.setSelected(selected != null && selected.getId().equals(shortcut.getId()));

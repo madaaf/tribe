@@ -13,6 +13,15 @@
       android:background="@drawable/bg_invite_tile"
       />
 
+  <ImageView
+      android:id="@+id/viewShadow"
+      android:layout_width="65dp"
+      android:layout_height="65dp"
+      android:layout_gravity="center"
+      android:scaleType="fitXY"
+      android:src="@drawable/bg_avatar_shadow"
+      />
+
   <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
       android:id="@+id/viewNewAvatar"
       android:layout_width="match_parent"

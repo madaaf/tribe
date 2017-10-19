@@ -358,7 +358,13 @@ public class LiveContainer extends FrameLayout {
                       ((TileInviteView.SCALE_MAX - TileInviteView.SCALE_MIN) *
                           (1 - (distance / initDistance)))), TileInviteView.SCALE_MIN),
                   TileInviteView.SCALE_MAX);
+
+              float scaleDrop = Math.min(Math.max(
+                  (float) (1 + ((TileInviteView.SCALE_MAX - 1) * (1 - (distance / initDistance)))),
+                  1), TileInviteView.SCALE_MAX);
+
               draggedTileView.scaleAvatar(scale);
+              viewLiveDropZone.scaleRing(scaleDrop);
             } else if (!isIn && dropEnabled) {
               endTileDrop();
             }
@@ -529,6 +535,8 @@ public class LiveContainer extends FrameLayout {
   private void clearCurrentTile() {
     if (currentTileView != null) {
       currentTileView.setVisibility(View.VISIBLE);
+      currentTileView.getUser().setSelected(false);
+      currentTileView.endDrag();
       currentTileView = null;
     }
   }

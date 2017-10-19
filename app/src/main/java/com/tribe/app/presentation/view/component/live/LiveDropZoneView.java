@@ -24,6 +24,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -51,6 +52,7 @@ public class LiveDropZoneView extends RelativeLayout {
   // BINDERS / SUBSCRIPTIONS
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Subscription animationSubscription;
 
   public LiveDropZoneView(Context context) {
     super(context);
@@ -112,6 +114,10 @@ public class LiveDropZoneView extends RelativeLayout {
   public void show() {
     if (getVisibility() == View.VISIBLE) return;
 
+    clearAnimation();
+    animate().setDuration(0).setListener(null).start();
+    if (animationSubscription != null) animationSubscription.unsubscribe();
+
     imgArrow.setTranslationY(0);
     viewRing.setScaleX(0);
     viewRing.setScaleY(0);
@@ -140,15 +146,17 @@ public class LiveDropZoneView extends RelativeLayout {
     animatorScale.playSequentially(animatorScaleUp, animatorScaleDown);
     animatorScale.start();
 
-    subscriptions.add(Observable.timer((DURATION >> 1) + 50, TimeUnit.MILLISECONDS)
+    animationSubscription = Observable.timer((DURATION >> 1) + 50, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> startAnimations()));
+        .subscribe(aLong -> startAnimations());
   }
 
   public void hide() {
     if (getVisibility() == View.GONE) return;
 
     animatorScale.cancel();
+    animatorScale.end();
+    animatorScale.removeAllListeners();
 
     animate().alpha(0)
         .setInterpolator(new DecelerateInterpolator())
@@ -171,6 +179,11 @@ public class LiveDropZoneView extends RelativeLayout {
 
   public int getWidthOfRing() {
     return viewRing.getWidth();
+  }
+
+  public void scaleRing(float scale) {
+    viewRing.setScaleY(scale);
+    viewRing.setScaleX(scale);
   }
 
   ///////////////////////
@@ -201,12 +214,13 @@ public class LiveDropZoneView extends RelativeLayout {
 
   private void stopAnimations() {
     stopFloatingArrowAnimation();
-    clearAnimation();
+    if (animationSubscription != null) animationSubscription.unsubscribe();
   }
 
   private void stopFloatingArrowAnimation() {
     if (animatorFloating != null) {
       animatorFloating.cancel();
+      animatorFloating.end();
       animatorFloating.removeAllListeners();
     }
   }

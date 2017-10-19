@@ -664,7 +664,7 @@
 	<string name="game_draw_clear">Effacer</string>
 	<string name="game_draw_instructions_my_turn">A ton tour de dessiner</string>
 	<string name="game_aliens_attack">Aliens Attack</string>
-	<string name="game_aliens_attack_lets_go">C\'EST PARTI !</string>
+	<string name="game_aliens_attack_lets_go">TAP UN ALIEN POUR LE TUER !</string>
 	<string name="game_aliens_attack_you_won">TU AS GAGNÉ !</string>
 	<string name="game_aliens_attack_someone_won">%@ A GAGNÉ !</string>
 	<string name="game_aliens_attack_you_lost">TU AS PERDU</string>
@@ -797,6 +797,8 @@
 	<string name="chat_placeholder_slide_to_cancel">Slide pour annuler</string>
 	<string name="chat_seen_by">Lu par %1$s</string>
 	<string name="chat_not_seen">Non lu</string>
+	<string name="chat_attachment_more_save">Sauvegarder</string>
+	<string name="chat_attachment_more_save_success">Sauvegardé !</string>
 	
 	<!-- Walkthrough -->
 	<string name="walkthrough_action_step1">Petit tour</string>
@@ -809,4 +811,11 @@
 	<string name="walkthrough_message_highlight_step2">Glissez à gauche</string>
 	<string name="walkthrough_message_highlight_step3">Glissez à droite</string>
 	<string name="walkthrough_message_highlight_step4">jeux live</string>
+	
+	<!-- Report -->
+	<string name="error_invited_user_random_banned">Désolé, il est impossible d\'inviter %1$s car il lui est interdit d\'utiliser cette fonctionnalité.</string>
+	<string name="error_room_user_random_banned">Désolé, il est impossible d\'inviter %1$s car il lui est interdit d\'utiliser cette fonctionnalité.</string>
+	<string name="error_just_banned_kicked">Vous avez été éjecté pour comportement inaproprié. Veuillez stopper cela.</string>
+	<string name="error_just_banned_temporary">Vous avez été éjecté et temporairement banni pour comportement inaproprié. Veuillez stopper cela.</string>
+	<string name="error_just_banned_permanently">Vous avez été éjecté et banni de call roulette pour comportement inaproprié.</string>
 </resources>

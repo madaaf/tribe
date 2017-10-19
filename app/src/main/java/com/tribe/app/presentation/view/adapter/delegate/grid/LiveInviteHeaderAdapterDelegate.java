@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.adapter.delegate.grid;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ public class LiveInviteHeaderAdapterDelegate
 
   protected LayoutInflater layoutInflater;
   protected Context context;
+  private int margin;
 
   // OBSERVABLES
   protected PublishSubject<View> onClickEdit = PublishSubject.create();
@@ -36,6 +38,7 @@ public class LiveInviteHeaderAdapterDelegate
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+    this.margin = context.getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
   }
 
   @Override public boolean isForViewType(@NonNull List<LiveInviteAdapterSectionInterface> items,
@@ -61,6 +64,14 @@ public class LiveInviteHeaderAdapterDelegate
     LiveInviteHeaderViewHolder vh = (LiveInviteHeaderViewHolder) holder;
     vh.imgPicto.setImageResource(header.getResourceDrawableId());
     vh.txtLabel.setText(header.getResourceTxtId());
+    vh.txtLabel.setGravity(header.getGravity());
+
+    if (header.getGravity() != Gravity.CENTER) {
+      ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) vh.txtLabel.getLayoutParams();
+      params.setMarginStart(margin);
+      vh.txtLabel.setLayoutParams(params);
+    }
+
     if (header.getId().equals(Header.HEADER_NAME)) {
       vh.imgPicto.setOnClickListener(v -> onClickEdit.onNext(vh.itemView));
     }

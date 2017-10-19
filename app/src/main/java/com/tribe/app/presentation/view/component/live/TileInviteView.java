@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -30,10 +31,11 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 01/22/17.
  */
-public class TileInviteView extends SquareFrameLayout implements View.OnClickListener {
+public class TileInviteView extends SquareFrameLayout {
 
   public static final float SCALE_MAX = 1.8f;
   public static final float SCALE_MIN = 1.4f;
+  public static final float ROTATION = 10;
 
   private static final int DURATION = 450;
   private static final float BOUNCINESS_UP = 1f;
@@ -45,6 +47,7 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
 
   @BindView(R.id.viewNewAvatar) NewAvatarView viewNewAvatar;
   @BindView(R.id.viewBG) View viewBG;
+  @BindView(R.id.viewShadow) View viewShadow;
 
   // RESOURCES
   private int marginBG;
@@ -130,16 +133,14 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
   private void init(Context context, AttributeSet attrs) {
     initDependencyInjector();
     initResources();
-    initSprings();
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_tile_invite, this);
     unbinder = ButterKnife.bind(this);
 
+    initSprings();
+
     setBackground(null);
     setWillNotDraw(false);
-
-    viewNewAvatar.setClickable(true);
-    viewNewAvatar.setOnClickListener(this);
   }
 
   private void initResources() {
@@ -157,17 +158,23 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
     springTile = springSystem.createSpring();
     springTile.setSpringConfig(SPRING_NO_BOUNCE);
     springTile.addListener(springTileListener);
-    springTile.setEndValue(0f).setAtRest();
-  }
-
-  @Override public void onClick(View view) {
-    springTile.setEndValue(user.isSelected() ? 0 : 1);
-    user.setSelected(!user.isSelected());
-    onClick.onNext(this);
+    springTile.setCurrentValue(0f, true);
   }
 
   private class SpringTileListener extends SimpleSpringListener {
     @Override public void onSpringUpdate(Spring spring) {
+      updateSpringValue(spring);
+    }
+
+    @Override public void onSpringAtRest(Spring spring) {
+      updateSpringValue(spring);
+    }
+
+    @Override public void onSpringEndStateChange(Spring spring) {
+      super.onSpringEndStateChange(spring);
+    }
+
+    private void updateSpringValue(Spring spring) {
       float value = (float) spring.getCurrentValue();
 
       float alpha = 1 - value;
@@ -177,8 +184,10 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
 
       viewNewAvatar.setScaleX(scale);
       viewNewAvatar.setScaleY(scale);
+      viewShadow.setScaleX(scale);
+      viewShadow.setScaleY(scale);
 
-      int rotation = Math.max((int) (0 + (10 * value)), 0);
+      int rotation = Math.max((int) (0 + (ROTATION * value)), 0);
       setRotation(rotation);
     }
   }
@@ -186,6 +195,15 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
   //////////////
   //  PUBLIC  //
   //////////////
+
+  public void initClicks() {
+    viewNewAvatar.setClickable(true);
+    viewNewAvatar.setOnClickListener(view -> {
+      springTile.setEndValue(user.isSelected() ? 0 : 1);
+      user.setSelected(!user.isSelected());
+      onClick.onNext(viewNewAvatar);
+    });
+  }
 
   public int getRealWidth() {
     return realWidth;
@@ -207,9 +225,9 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
     this.user = user;
 
     if (user.isSelected()) {
-      springTile.setEndValue(1).setAtRest();
+      springTile.setEndValue(1);
     } else {
-      springTile.setEndValue(0).setAtRest();
+      springTile.setEndValue(0);
     }
 
     if (!StringUtils.isEmpty(user.getCurrentRoomId())) {
@@ -226,14 +244,20 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
   public void scaleAvatar(float scale) {
     viewNewAvatar.setScaleY(scale);
     viewNewAvatar.setScaleX(scale);
+    viewShadow.setScaleX(scale);
+    viewShadow.setScaleY(scale);
   }
 
   public void startDrag() {
-    springTile.setEndValue(1);
+    if (user.isSelected()) {
+      springTile.setCurrentValue(1, true);
+    } else {
+      springTile.setEndValue(1);
+    }
   }
 
   public void endDrag() {
-    springTile.setEndValue(0);
+    if (!user.isSelected()) springTile.setEndValue(0);
   }
 
   public int animateOnDrop(int toX, int toY) {
@@ -241,11 +265,11 @@ public class TileInviteView extends SquareFrameLayout implements View.OnClickLis
 
     animate().translationX(toX)
         .translationY(toY)
-        .rotation(0)
+        .rotation(-360)
         .scaleX(0.8f)
         .scaleY(0.8f)
         .setDuration(DURATION)
-        .setInterpolator(new DecelerateInterpolator())
+        .setInterpolator(new OvershootInterpolator(1.2f))
         .setListener(new AnimatorListenerAdapter() {
           @Override public void onAnimationEnd(Animator animation) {
             animate().scaleX(0)

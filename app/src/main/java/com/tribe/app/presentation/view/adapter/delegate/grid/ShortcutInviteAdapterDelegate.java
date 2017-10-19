@@ -52,6 +52,7 @@ public class ShortcutInviteAdapterDelegate
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     ShortcutInviteViewHolder shortcutInviteViewHolder = new ShortcutInviteViewHolder(
         layoutInflater.inflate(R.layout.item_shortcut_invite, parent, false));
+    shortcutInviteViewHolder.viewTile.initClicks();
     return shortcutInviteViewHolder;
   }
 
@@ -69,6 +70,7 @@ public class ShortcutInviteAdapterDelegate
 
   @Override public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
+    onBindViewHolder(items, position, holder);
   }
 
   /**
