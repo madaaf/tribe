@@ -6,6 +6,7 @@ import android.support.annotation.IntDef;
 import android.util.Log;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.tribe.app.data.realm.ContactFBRealm;
@@ -34,6 +35,7 @@ import rx.subjects.PublishSubject;
   private Context context;
   private PublishSubject<LoginResult> loginSubject;
   private Observable<List<ContactFBRealm>> friendListObservable;
+  private Observable<List<ContactFBRealm>> friendInvitableListObservable;
   private Observable<FacebookEntity> facebookEntityObservable;
   private LoginResult loginResult;
   private int countHandle = 0;
@@ -71,47 +73,64 @@ import rx.subjects.PublishSubject;
   }
 
   public Observable<List<ContactFBRealm>> requestInvitableFriends() {
-    if (friendListObservable == null) {
-      friendListObservable =
+    if (friendInvitableListObservable == null) {
+      friendInvitableListObservable =
           Observable.create((Subscriber<? super List<ContactFBRealm>> subscriber) -> {
-            emitFriends(subscriber);
+            emitFriendsInvitable(subscriber);
           }).onBackpressureBuffer().serialize();
     }
 
-    return friendListObservable;
+    return friendInvitableListObservable;
   }
 
   public void emitFriends(Subscriber subscriber) {
     if (FacebookUtils.isLoggedIn()) {
       new GraphRequest(AccessToken.getCurrentAccessToken(),
           "/" + AccessToken.getCurrentAccessToken().getUserId() + "/friends", null, HttpMethod.GET,
-          response -> {
-            List<ContactFBRealm> contactFBRealmList = new ArrayList<>();
-
-            try {
-              if (response.getJSONObject() != null) {
-                JSONArray array = response.getJSONObject().getJSONArray("data");
-
-                for (int i = 0; i < array.length(); i++) {
-                  JSONObject object = array.getJSONObject(i);
-                  ContactFBRealm contactFBRealm = new ContactFBRealm();
-                  contactFBRealm.setId(object.getString("id"));
-                  contactFBRealm.setName(object.getString("name"));
-                  contactFBRealmList.add(contactFBRealm);
-                }
-              }
-            } catch (JSONException e) {
-              e.printStackTrace();
-            } finally {
-              if (!subscriber.isUnsubscribed()) {
-                subscriber.onNext(contactFBRealmList);
-                subscriber.onCompleted();
-              }
-            }
-          }).executeAsync();
+          response -> handleFriendList(response, subscriber, true)).executeAsync();
     } else {
       if (!subscriber.isUnsubscribed()) {
         subscriber.onNext(new ArrayList<>());
+        subscriber.onCompleted();
+      }
+    }
+  }
+
+  public void emitFriendsInvitable(Subscriber subscriber) {
+    if (FacebookUtils.isLoggedIn()) {
+      new GraphRequest(AccessToken.getCurrentAccessToken(), "/" +
+          AccessToken.getCurrentAccessToken().getUserId() +
+          "/invitable_friends?fields=id,name&limit=20", null, HttpMethod.GET,
+          response -> handleFriendList(response, subscriber, false)).executeAsync();
+    } else {
+      if (!subscriber.isUnsubscribed()) {
+        subscriber.onNext(new ArrayList<>());
+        subscriber.onCompleted();
+      }
+    }
+  }
+
+  private void handleFriendList(GraphResponse response, Subscriber subscriber, boolean hasApp) {
+    List<ContactFBRealm> contactFBRealmList = new ArrayList<>();
+
+    try {
+      if (response.getJSONObject() != null) {
+        JSONArray array = response.getJSONObject().getJSONArray("data");
+
+        for (int i = 0; i < array.length(); i++) {
+          JSONObject object = array.getJSONObject(i);
+          ContactFBRealm contactFBRealm = new ContactFBRealm();
+          contactFBRealm.setId(object.getString("id"));
+          contactFBRealm.setName(object.getString("name"));
+          contactFBRealm.setHasApp(hasApp);
+          contactFBRealmList.add(contactFBRealm);
+        }
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    } finally {
+      if (!subscriber.isUnsubscribed()) {
+        subscriber.onNext(contactFBRealmList);
         subscriber.onCompleted();
       }
     }

@@ -58,8 +58,12 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
 
   public void bind(ContactToInviteViewHolder vh, Contact contact) {
     vh.txtName.setText(contact.getName());
-    vh.txtDetails.setText(context.getString(R.string.contacts_section_addressbook_friends_in_app,
-        contact.getHowManyFriends()));
+    if (contact.getHowManyFriends() > 0) {
+      vh.txtDetails.setText(context.getString(R.string.contacts_section_addressbook_friends_in_app,
+          contact.getHowManyFriends()));
+    } else {
+      vh.txtDetails.setText("");
+    }
 
     if (contact instanceof ContactAB) {
       vh.btnInvite.setImageResource(R.drawable.picto_invite);

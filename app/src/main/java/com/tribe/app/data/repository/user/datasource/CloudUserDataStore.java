@@ -335,10 +335,11 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<List<ContactInterface>> contacts() {
     return Observable.zip(rxContacts.getContacts(), rxFacebook.requestFriends(),
-        this.tribeApi.getUserInfos(context.getString(R.string.user_infos_sync,
-            context.getString(R.string.userfragment_infos),
-            context.getString(R.string.shortcutFragment_infos))).doOnNext(saveToCacheUser),
-        (contactABRealmList, contactFBRealmList, userRealm) -> {
+        rxFacebook.requestInvitableFriends(), this.tribeApi.getUserInfos(
+            context.getString(R.string.user_infos_sync,
+                context.getString(R.string.userfragment_infos),
+                context.getString(R.string.shortcutFragment_infos))).doOnNext(saveToCacheUser),
+        (contactABRealmList, contactFBRealmList, contactFBInvitableRealmList, userRealm) -> {
           List<ContactInterface> contactList = new ArrayList<>();
 
           for (ContactABRealm contactABRealm : contactABRealmList) {
@@ -346,6 +347,10 @@ public class CloudUserDataStore implements UserDataStore {
           }
 
           for (ContactFBRealm contactFBRealm : contactFBRealmList) {
+            contactList.add(contactFBRealm);
+          }
+
+          for (ContactFBRealm contactFBRealm : contactFBInvitableRealmList) {
             contactList.add(contactFBRealm);
           }
 
@@ -501,6 +506,10 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<List<ContactInterface>> contactsFB() {
+    return null;
+  }
+
+  @Override public Observable<List<ContactInterface>> contactsFBInvite() {
     return null;
   }
 

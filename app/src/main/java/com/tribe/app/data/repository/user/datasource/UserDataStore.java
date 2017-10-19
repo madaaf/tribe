@@ -89,6 +89,8 @@ public interface UserDataStore {
    */
   Observable<List<ContactInterface>> contactsFB();
 
+  Observable<List<ContactInterface>> contactsFBInvite();
+
   Observable<List<ContactInterface>> contactsOnApp();
 
   Observable<List<ContactInterface>> contactsToInvite();

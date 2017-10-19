@@ -163,6 +163,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<List<Contact>> contactsFBInvite() {
+    return null;
+  }
+
   @Override public Observable<List<Contact>> contactsOnApp() {
     return null;
   }

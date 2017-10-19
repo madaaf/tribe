@@ -76,7 +76,8 @@ import rx.Observable;
             if (inviteMap != null && inviteMap.size() > 0) {
               for (Shortcut shortcut : user.getShortcutList()) {
                 for (Invite invite : inviteMap.values()) {
-                  if (invite.getShortcut() != null && invite.getShortcut().getId().equals(shortcut.getId())) {
+                  if (invite.getShortcut() != null &&
+                      invite.getShortcut().getId().equals(shortcut.getId())) {
                     shortcut.setLive(true);
                   }
                 }
@@ -204,6 +205,13 @@ import rx.Observable;
   @Override public Observable<List<Contact>> contactsFB() {
     final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
     return userDataStore.contactsFB()
+        .map(collection -> contactRealmDataMapper.transform(
+            new ArrayList<ContactInterface>(collection)));
+  }
+
+  @Override public Observable<List<Contact>> contactsFBInvite() {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.contactsFBInvite()
         .map(collection -> contactRealmDataMapper.transform(
             new ArrayList<ContactInterface>(collection)));
   }

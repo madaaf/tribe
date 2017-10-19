@@ -18,5 +18,7 @@ public interface SearchMVPView extends UpdateUserMVPView {
 
   void renderContactListInvite(List<Contact> contactListInvite);
 
+  void renderContactListInviteFB(List<Contact> contactListInviteFB);
+
   void syncDone();
 }

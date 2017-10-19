@@ -109,6 +109,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return contactCache.contactsFB().map(contactFBRealms -> new ArrayList<>(contactFBRealms));
   }
 
+  @Override public Observable<List<ContactInterface>> contactsFBInvite() {
+    return contactCache.contactsFBInvite().map(contactFBRealms -> new ArrayList<>(contactFBRealms));
+  }
+
   @Override public Observable<List<ContactInterface>> contactsOnApp() {
     return contactCache.contactsOnApp();
   }
@@ -197,7 +201,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   public Observable<ShortcutRealm> shortcutForUserIdsNoObs(String... userIds) {
     return Observable.combineLatest(Observable.just(userCache.shortcutForUserIdsNoObs(userIds)),
         onlineMap(), (shortcutRealmList, onlineMap) -> shortcutRealmList)
-        .compose(shortcutOnlineTransformer).doOnError(Throwable::printStackTrace);
+        .compose(shortcutOnlineTransformer)
+        .doOnError(Throwable::printStackTrace);
   }
 
   @Override public Observable<List<ShortcutRealm>> blockedShortcuts() {
@@ -229,8 +234,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     Map<String, Boolean> onlineMap = liveCache.getOnlineMap();
     if (shortcutRealm != null) {
       shortcutRealm.computeMembersOnline(onlineMap);
-      shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId())
-          || shortcutRealm.isUniqueMemberOnline());
+      shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId()) ||
+          shortcutRealm.isUniqueMemberOnline());
     }
   }
 }

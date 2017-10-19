@@ -130,6 +130,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   private PublishSubject<SearchResult> onSearchResult = PublishSubject.create();
   private PublishSubject<List<Contact>> onContactsInApp = PublishSubject.create();
   private PublishSubject<List<Contact>> onContactsInvite = PublishSubject.create();
+  private PublishSubject<List<Contact>> onFBContactsInvite = PublishSubject.create();
   private PublishSubject<List<Shortcut>> onShortcuts = PublishSubject.create();
   private PublishSubject<Void> onGone = PublishSubject.create();
   private PublishSubject<Void> onShow = PublishSubject.create();
@@ -278,8 +279,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   private void initSubscriptions() {
     subscriptions.add(
         Observable.combineLatest(onSearchResult.startWith(new SearchResult()), onShortcuts,
-            onContactsInApp, onContactsInvite,
-            (searchResult, shortcutList, contactInAppList, contactInviteList) -> {
+            onContactsInApp, onContactsInvite, onFBContactsInvite,
+            (searchResult, shortcutList, contactInAppList, contactInviteList, fbContactInviteList) -> {
               Set<String> setUserAdded = new HashSet<>();
 
               if (isSearchMode) {
@@ -311,6 +312,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
               originalContactList.addAll(contactList);
               originalContactList.addAll(contactInviteList);
+              originalContactList.addAll(fbContactInviteList);
 
               refactorContacts(contactList);
 
@@ -655,6 +657,10 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   @Override public void renderContactListInvite(List<Contact> contactListInvite) {
     onContactsInvite.onNext(contactListInvite);
+  }
+
+  @Override public void renderContactListInviteFB(List<Contact> contactListInviteFB) {
+    onFBContactsInvite.onNext(contactListInviteFB);
   }
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {

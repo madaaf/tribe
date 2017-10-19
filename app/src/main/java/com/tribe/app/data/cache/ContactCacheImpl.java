@@ -34,9 +34,7 @@ public class ContactCacheImpl implements ContactCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
-      obsRealm.executeTransaction(realm1 -> {
-        realm1.insertOrUpdate(contactList);
-      });
+      obsRealm.executeTransaction(realm1 -> realm1.insertOrUpdate(contactList));
     } finally {
       obsRealm.close();
     }
@@ -46,7 +44,10 @@ public class ContactCacheImpl implements ContactCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
-      obsRealm.executeTransaction(realm1 -> realm1.insertOrUpdate(contactList));
+      obsRealm.executeTransaction(realm1 -> {
+        realm1.delete(ContactFBRealm.class);
+        realm1.insertOrUpdate(contactList);
+      });
     } finally {
       obsRealm.close();
     }
@@ -120,6 +121,16 @@ public class ContactCacheImpl implements ContactCache {
 
   @Override public Observable<List<ContactFBRealm>> contactsFB() {
     return realm.where(ContactFBRealm.class)
+        .equalTo("hasApp", true)
+        .findAllSorted(new String[] { "name" }, new Sort[] { Sort.ASCENDING })
+        .asObservable()
+        .filter(contactFBRealms -> contactFBRealms.isLoaded())
+        .map(contactFBRealms -> realm.copyFromRealm(contactFBRealms));
+  }
+
+  @Override public Observable<List<ContactFBRealm>> contactsFBInvite() {
+    return realm.where(ContactFBRealm.class)
+        .equalTo("hasApp", false)
         .findAllSorted(new String[] { "name" }, new Sort[] { Sort.ASCENDING })
         .asObservable()
         .filter(contactFBRealms -> contactFBRealms.isLoaded())
@@ -133,6 +144,7 @@ public class ContactCacheImpl implements ContactCache {
         .asObservable()
         .map(contactABRealms -> realm.copyFromRealm(contactABRealms))
         .defaultIfEmpty(new ArrayList<>()), realm.where(ContactFBRealm.class)
+        .equalTo("hasApp", true)
         .isNotEmpty("userList")
         .findAllSorted(new String[] { "name" }, new Sort[] { Sort.ASCENDING })
         .asObservable()

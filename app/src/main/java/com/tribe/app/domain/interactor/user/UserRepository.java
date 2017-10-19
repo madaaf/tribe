@@ -93,6 +93,8 @@ public interface UserRepository {
    */
   Observable<List<Contact>> contactsFB();
 
+  Observable<List<Contact>> contactsFBInvite();
+
   Observable<List<Contact>> contactsOnApp();
 
   Observable<List<Contact>> contactsInvite();

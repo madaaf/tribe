@@ -11,6 +11,7 @@ import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.FindByUsername;
 import com.tribe.app.domain.interactor.user.GetDiskContactInviteList;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
+import com.tribe.app.domain.interactor.user.GetDiskFBContactInviteList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.SearchLocally;
 import com.tribe.app.domain.interactor.user.UpdateUser;
@@ -45,12 +46,14 @@ public class SearchPresenter extends UpdateUserPresenter {
   private UseCase synchroContactList;
   private GetDiskContactOnAppList getDiskContactOnAppList;
   private GetDiskContactInviteList getDiskContactInviteList;
+  private GetDiskFBContactInviteList getDiskFBContactInviteList;
 
   // SUBSCRIBERS
   private DefaultSubscriber findByUsernameSubscriber;
   private ContactListSubscriber contactListSubscriber;
   private ContactListOnAppSubscriber contactListOnAppSubscriber;
   private ContactListInviteSubscriber contactListInviteSubscriber;
+  private FBContactListInviteSubscriber fbContactListInviteSubscriber;
   private LookupContactsSubscriber lookupContactsSubscriber;
 
   @Inject public SearchPresenter(ShortcutPresenter shortcutPresenter, JobManager jobManager,
@@ -60,7 +63,8 @@ public class SearchPresenter extends UpdateUserPresenter {
       UpdateUser updateUser, UpdateUserPhoneNumber updateUserPhoneNumber,
       UpdateUserFacebook updateUserFacebook, LookupUsername lookupUsername,
       GetDiskContactOnAppList getDiskContactOnAppList,
-      GetDiskContactInviteList getDiskContactInviteList) {
+      GetDiskContactInviteList getDiskContactInviteList,
+      GetDiskFBContactInviteList getDiskFBContactInviteList) {
     super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
     this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
@@ -70,6 +74,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     this.synchroContactList = synchroContactList;
     this.getDiskContactOnAppList = getDiskContactOnAppList;
     this.getDiskContactInviteList = getDiskContactInviteList;
+    this.getDiskFBContactInviteList = getDiskFBContactInviteList;
   }
 
   @Override protected UpdateUserMVPView getUpdateUserView() {
@@ -84,6 +89,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     synchroContactList.unsubscribe();
     getDiskContactOnAppList.unsubscribe();
     getDiskContactInviteList.unsubscribe();
+    getDiskFBContactInviteList.unsubscribe();
     searchView = null;
   }
 
@@ -94,6 +100,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     searchLocally("");
     contactsInApp();
     contactsInvite();
+    contactsFBInvite();
   }
 
   public void findByUsername(String username) {
@@ -210,6 +217,29 @@ public class SearchPresenter extends UpdateUserPresenter {
 
     @Override public void onNext(List<Contact> contactList) {
       searchView.renderContactListInvite(contactList);
+    }
+  }
+
+  public void contactsFBInvite() {
+    if (fbContactListInviteSubscriber != null) {
+      fbContactListInviteSubscriber.unsubscribe();
+    }
+
+    fbContactListInviteSubscriber = new FBContactListInviteSubscriber();
+    getDiskFBContactInviteList.execute(fbContactListInviteSubscriber);
+  }
+
+  private final class FBContactListInviteSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(List<Contact> contactList) {
+      searchView.renderContactListInviteFB(contactList);
     }
   }
 
