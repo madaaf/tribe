@@ -49,7 +49,6 @@ public class ChatUserAdapter extends RecyclerView.Adapter {
     if (payloads.isEmpty()) {
       delegatesManager.onBindViewHolder(items, position, holder);
     } else {
-      //Timber.e("ON BOND HOLDER PLAYLOAD " + position + " " + payloads.size());
       delegatesManager.onBindViewHolder(items, holder, position, payloads);
     }
   }

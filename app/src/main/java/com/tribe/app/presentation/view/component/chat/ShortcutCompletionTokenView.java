@@ -68,7 +68,7 @@ public class ShortcutCompletionTokenView extends FrameLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_shortcut_completion_token, this);
     unbinder = ButterKnife.bind(this);
 
-    setBackgroundResource(R.drawable.bg_shortcut_completion_badge);
+    setBackgroundResource(R.drawable.shape_rect_chat);
     initResources();
     initUI();
   }

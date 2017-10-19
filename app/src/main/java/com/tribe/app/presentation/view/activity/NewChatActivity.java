@@ -23,11 +23,12 @@ import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
 import com.tribe.app.presentation.mvp.view.NewChatMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.utils.FontUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionView;
+import com.tribe.app.presentation.view.utils.FontCache;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
-import com.tribe.tribelivesdk.util.FontCache;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -139,7 +140,8 @@ public class NewChatActivity extends BaseActivity
 
       @Override protected boolean keepObject(Shortcut shortcut, String mask) {
         mask = mask.toLowerCase();
-        return shortcut.getDisplayName().toLowerCase().startsWith(mask);
+        return !selectedIds.contains(shortcut.getSingleFriend().getId()) &&
+            (StringUtils.isEmpty(mask) || shortcut.getDisplayName().toLowerCase().startsWith(mask));
       }
     };
 
@@ -214,6 +216,7 @@ public class NewChatActivity extends BaseActivity
   }
 
   @Override public void onTokenAdded(Shortcut token) {
+    if (token == null) return;
     count++;
     selectedIds.add(token.getSingleFriend().getId());
     refactorAction();
