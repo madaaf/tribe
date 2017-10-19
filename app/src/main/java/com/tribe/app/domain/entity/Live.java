@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -82,8 +83,9 @@ public class Live implements Serializable {
       this.room.onRoomUpdated().subscribe(onRoomUpdated);
     }
 
-    if (room.getShortcut() != null) setShortcut(room.getShortcut());
-    else if (shortcut != null) room.setShortcut(shortcut);
+    if (room.getShortcut() != null) {
+      setShortcut(room.getShortcut());
+    } else if (shortcut != null) room.setShortcut(shortcut);
 
     List<User> temp = new ArrayList<>();
     temp.addAll(room.getLiveUsers());
@@ -317,7 +319,7 @@ public class Live implements Serializable {
   /////////////////
 
   public Observable<Room> onRoomUpdated() {
-    return onRoomUpdated;
+    return onRoomUpdated.observeOn(AndroidSchedulers.mainThread());
   }
 
   public Observable<Shortcut> onShortcutUpdated() {

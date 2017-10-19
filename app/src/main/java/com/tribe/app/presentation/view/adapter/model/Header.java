@@ -47,10 +47,6 @@ public class Header implements Serializable, LiveInviteAdapterSectionInterface {
     return false;
   }
 
-  @Override public boolean isWaiting() {
-    return false;
-  }
-
   @Override public String getCurrentRoomId() {
     return null;
   }

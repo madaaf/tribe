@@ -64,7 +64,6 @@ public class User
 
   private String currentRoomId;
   private boolean ringing = false;
-  private boolean waiting = false;
 
   public User(String id) {
     this.id = id;
@@ -209,10 +208,6 @@ public class User
     return ringing;
   }
 
-  @Override public boolean isWaiting() {
-    return waiting;
-  }
-
   public void setIsOnline(boolean isOnline) {
     this.is_online = isOnline;
   }
@@ -322,16 +317,12 @@ public class User
     this.ringing = ringing;
   }
 
-  public void setWaiting(boolean waiting) {
-    this.waiting = waiting;
-  }
-
   @Override public String getCurrentRoomId() {
     return currentRoomId;
   }
 
   public boolean isUserInCall() {
-    return !StringUtils.isEmpty(currentRoomId) || waiting || ringing;
+    return !StringUtils.isEmpty(currentRoomId) || ringing;
   }
 
   public TribeGuest asTribeGuest() {

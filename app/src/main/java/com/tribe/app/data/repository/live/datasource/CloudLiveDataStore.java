@@ -63,7 +63,9 @@ public class CloudLiveDataStore implements LiveDataStore {
         "\n" +
         context.getString(R.string.userfragment_infos_light);
 
-    return this.tribeApi.createRoom(request).compose(onlineLiveTransformer);
+    return this.tribeApi.createRoom(request)
+        .doOnNext(room -> liveCache.putRoom(room))
+        .compose(onlineLiveTransformer);
   }
 
   @Override public Observable<Room> updateRoom(String roomId, List<Pair<String, String>> values) {
@@ -97,7 +99,9 @@ public class CloudLiveDataStore implements LiveDataStore {
     final String request =
         context.getString(R.string.mutation, context.getString(R.string.removeRoom, roomId));
 
-    return this.tribeApi.removeRoom(request).map(aBoolean -> null);
+    return this.tribeApi.removeRoom(request)
+        .doOnNext(aBoolean -> liveCache.removeRoom(roomId))
+        .map(aBoolean -> null);
   }
 
   @Override public Observable<Boolean> createInvite(String roomId, String userId) {

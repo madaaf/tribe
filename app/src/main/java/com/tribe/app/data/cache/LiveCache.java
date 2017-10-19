@@ -48,6 +48,10 @@ import rx.Observable;
 
   Observable<User> getFbIdUpdated();
 
+  void putRoom(Room room);
+
+  void removeRoom(String roomId);
+
   void onRoomUpdated(Room roomUpdated);
 
   Observable<Room> getRoomUpdated();

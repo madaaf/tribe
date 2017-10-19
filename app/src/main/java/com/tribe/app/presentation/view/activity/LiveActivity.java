@@ -460,7 +460,7 @@ public class LiveActivity extends BaseActivity
 
   private void initRoomSubscription() {
     startService(WSService.getCallingIntentSubscribeRoom(this, room.getId()));
-    livePresenter.subscribeToRoomUpdates(room.getId());
+    //livePresenter.subscribeToRoomUpdates(room.getId());
   }
 
   private void removeRoomSubscription() {
@@ -635,15 +635,17 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.onClearDrawReceived()
         .subscribeOn(Schedulers.newThread())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aVoid -> {
-          gameDrawView.onClearDrawReceived();
-        }));
+        .subscribe(aVoid -> gameDrawView.onClearDrawReceived()));
 
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
       if (live.fromRoom() &&
           (tribeJoinRoom.getSessionList() == null || tribeJoinRoom.getSessionList().size() == 0)) {
         Toast.makeText(this, R.string.live_other_user_hung_up, Toast.LENGTH_SHORT).show();
         livePresenter.createInvite(room.getId(), room.getInitiator().getId());
+      } else if (!live.fromRoom()) {
+        for (String userId : live.getUserIdsOfShortcut()) {
+          livePresenter.createInvite(this.room.getId(), userId);
+        }
       }
     }).subscribe(tribeJoinRoom -> initRoomSubscription()));
 
@@ -1158,12 +1160,6 @@ public class LiveActivity extends BaseActivity
 
   @Override public void onRoomInfos(Room room) {
     this.room = room;
-
-    if (!live.fromRoom()) {
-      for (String userId : live.getUserIdsOfShortcut()) {
-        livePresenter.createInvite(this.room.getId(), userId);
-      }
-    }
 
     if (this.room.getShortcut() == null) {
       livePresenter.shortcutForUserIds(live.getUserIdsOfShortcut());

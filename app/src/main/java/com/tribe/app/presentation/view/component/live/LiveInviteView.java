@@ -63,7 +63,7 @@ public class LiveInviteView extends FrameLayout
   private static final int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
   private static final int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
   private static final int DURATION = 500;
-  private static final int DURATION_FAST = 100;
+  private static final int DURATION_FAST = 200;
   private static final float OVERSHOOT = 0.75f;
 
   @Inject TagManager tagManager;
@@ -164,7 +164,7 @@ public class LiveInviteView extends FrameLayout
   }
 
   private void initResources() {
-    translationX = screenUtils.dpToPx(15);
+    translationX = screenUtils.dpToPx(WIDTH_PARTIAL);
   }
 
   private void initRecyclerView() {
@@ -194,6 +194,8 @@ public class LiveInviteView extends FrameLayout
 
       @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
+
+        if (dy == 0) return;
 
         onScroll.onNext(dy);
 
@@ -296,7 +298,6 @@ public class LiveInviteView extends FrameLayout
             for (User user : room.getLiveUsers()) {
               if (!user.equals(currentUser)) {
                 user.setCurrentRoomId(room.getId());
-                user.setWaiting(room.isUserWaiting(user.getId()));
                 computeUser(temp, user, alreadyPresent);
               }
             }
@@ -348,7 +349,8 @@ public class LiveInviteView extends FrameLayout
       adapter.setItems(itemsList);
       adapter.notifyDataSetChanged();
 
-      if (drawerState == LiveContainer.CLOSED) {
+      if (drawerState == LiveContainer.CLOSED &&
+          layoutManager.findFirstCompletelyVisibleItemPosition() != positionOfFirstShortcut) {
         recyclerViewInvite.post(
             () -> layoutManager.scrollToPositionWithOffset(positionOfFirstShortcut, 0));
       }

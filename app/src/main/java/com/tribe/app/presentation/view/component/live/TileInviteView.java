@@ -265,11 +265,8 @@ public class TileInviteView extends SquareFrameLayout {
 
     animate().translationX(toX)
         .translationY(toY)
-        .rotation(-360)
-        .scaleX(0.8f)
-        .scaleY(0.8f)
         .setDuration(DURATION)
-        .setInterpolator(new OvershootInterpolator(1.2f))
+        .setInterpolator(new DecelerateInterpolator())
         .setListener(new AnimatorListenerAdapter() {
           @Override public void onAnimationEnd(Animator animation) {
             animate().scaleX(0)
@@ -282,6 +279,13 @@ public class TileInviteView extends SquareFrameLayout {
                 .start();
           }
         })
+        .start();
+
+    animate().rotation(-360)
+        .scaleX(0.8f)
+        .scaleY(0.8f)
+        .setDuration(DURATION)
+        .setInterpolator(new OvershootInterpolator(0.75f))
         .start();
 
     return durationTotal;

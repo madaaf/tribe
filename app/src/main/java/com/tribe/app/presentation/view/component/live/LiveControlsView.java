@@ -767,6 +767,16 @@ public class LiveControlsView extends FrameLayout {
     }));
   }
 
+  public void initOnShouldOpenChat(Observable<Boolean> obs) {
+    subscriptions.add(obs.subscribe(aBoolean -> {
+      if (aBoolean) {
+        btnChat.open();
+      } else {
+        btnChat.close();
+      }
+    }));
+  }
+
   public ImageView getCurrentGameView() {
     return currentGameView;
   }

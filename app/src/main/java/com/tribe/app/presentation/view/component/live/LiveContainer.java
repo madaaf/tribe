@@ -82,7 +82,7 @@ public class LiveContainer extends FrameLayout {
   private float currentDragPercent, lastDownX, lastDownY, downX, downY, currentX, currentY,
       diffDown, scrollTolerance, initDistance = 0;
   private boolean beingDragged = false, isOpenedPartially = false, isOpenedFully = false, isDown =
-      false, hasNotifiedAtRest = false, dropEnabled = false;
+      false, hasNotifiedAtRest = false, dropEnabled = false, hasJoined = false, chatOpened;
   private int activePointerId, touchSlop, currentOffsetRight, overallScrollY = 0, statusBarHeight =
       0;
   private VelocityTracker velocityTracker;
@@ -102,6 +102,7 @@ public class LiveContainer extends FrameLayout {
   private PublishSubject<Void> onEndDrag = PublishSubject.create();
   private PublishSubject<Boolean> onDropZone = PublishSubject.create();
   private PublishSubject<TileInviteView> onDropped = PublishSubject.create();
+  private PublishSubject<Boolean> onChatOpen = PublishSubject.create();
 
   public LiveContainer(Context context) {
     super(context);
@@ -165,7 +166,10 @@ public class LiveContainer extends FrameLayout {
 
   private void initSubscriptions() {
     viewLive.initDrawerEventChangeObservable(onEventChange);
+    viewLive.initOnShouldOpenChat(onChatOpen);
     viewLiveInvite.initOnInviteDropped(onDropped);
+
+    subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> hasJoined = true));
 
     subscriptions.add(viewLiveInvite.onScroll().subscribe(dy -> {
       overallScrollY += dy;
@@ -192,6 +196,8 @@ public class LiveContainer extends FrameLayout {
         closePartialInviteView();
       }
     }));
+
+    subscriptions.add(viewLive.onOpenChat().subscribe(aBoolean -> chatOpened = aBoolean));
 
     subscriptions.add(viewLiveInvite.onDisplayDropZone().subscribe(display -> {
       if (display) {
@@ -232,7 +238,7 @@ public class LiveContainer extends FrameLayout {
     } else if (isOpenedPartially) widthOpen = viewLive.getLiveInviteViewPartialWidth();
 
     boolean isTouchInInviteView = ev.getRawX() >= screenUtils.getWidthPx() - widthOpen;
-    if (!isEnabled()) {
+    if (!isEnabled() || !hasJoined) {
       return false;
     }
 
@@ -331,13 +337,13 @@ public class LiveContainer extends FrameLayout {
           float y = event.getY(pointerIndex) + location[1];
           float offsetY = y - lastDownY;
 
-          if (currentTileView == null && velocityTracker != null) {
+          if (currentTileView == null && !chatOpened && velocityTracker != null) {
             if (offsetX <= 0 && !isOpenedPartially) {
               applyOffsetRightWithTension(offsetX);
             }
 
             velocityTracker.addMovement(event);
-          } else {
+          } else if (currentTileView != null) {
             draggedTileView.getLocationOnScreen(tileLocationLast);
             int futurX = (int) (tileLocationStart[0] + offsetX);
             int futurY = (int) (tileLocationStart[1] + offsetY) - statusBarHeight;
@@ -388,6 +394,10 @@ public class LiveContainer extends FrameLayout {
             closeFullInviteView();
             clearTouch();
             break;
+          } else if (chatOpened) {
+            onChatOpen.onNext(false);
+            clearTouch();
+            break;
           }
 
           float x = event.getX(pointerIndex) - location[0];
@@ -413,6 +423,8 @@ public class LiveContainer extends FrameLayout {
           } else if (isOpenedPartially) {
             springRight.setCurrentValue(-viewLive.getLiveInviteViewPartialWidth()).setAtRest();
             closePartialInviteView();
+          } else {
+            onChatOpen.onNext(true);
           }
         }
 
@@ -441,7 +453,8 @@ public class LiveContainer extends FrameLayout {
           int[] locationInviteView = new int[2];
           viewLiveInvite.getLocationOnScreen(locationInviteView);
 
-          int xEnd = locationInviteView[0] - tileLocationLast[0] - currentTileView.getWidth();
+          int xEnd = locationInviteView[0] - tileLocationLast[0] - currentTileView.getWidth() +
+              (int) (currentTileView.getWidth() * 0.10f);
           int yEnd = screenUtils.getHeightPx() - tileLocationLast[1] - currentTileView.getHeight();
           int duration = draggedTileView.animateOnDrop(xEnd, yEnd);
           prepareRemoveTileForDrag(duration);
@@ -471,6 +484,10 @@ public class LiveContainer extends FrameLayout {
     currentTileView.getLocationOnScreen(tileLocationStart);
     FrameLayout.LayoutParams params =
         new FrameLayout.LayoutParams(currentTileView.getWidth(), currentTileView.getHeight());
+    tileLocationStart[0] = tileLocationStart[0] +
+        (currentTileView.getUser().isSelected() ? -screenUtils.dpToPx(10) : 0);
+    tileLocationStart[1] = tileLocationStart[1] +
+        (currentTileView.getUser().isSelected() ? screenUtils.dpToPx(10) : 0);
     params.leftMargin = tileLocationStart[0];
     params.topMargin = tileLocationStart[1] - statusBarHeight;
     addView(draggedTileView, params);
@@ -652,8 +669,7 @@ public class LiveContainer extends FrameLayout {
   }
 
   private float getTotalDragDistance() {
-    return !isOpenedPartially ? viewLive.getLiveInviteViewPartialWidth()
-        : viewLive.getLiveInviteViewFullWidth();
+    return screenUtils.dpToPx(25);
   }
 
   private int computeOffsetWithTension(float scrollDist, float totalDragDistance) {
@@ -674,5 +690,9 @@ public class LiveContainer extends FrameLayout {
 
   public Observable<Integer> onEventChange() {
     return onEventChange;
+  }
+
+  public Observable<Boolean> onChatOpen() {
+    return onChatOpen;
   }
 }

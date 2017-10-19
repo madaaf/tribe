@@ -409,29 +409,11 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(
         viewControlsLive.onCloseInvite().subscribe(aBoolean -> onOpenInvite.onNext(false)));
 
-    persistentSubscriptions.add(viewControlsLive.onOpenChat().subscribe(aBoolean -> {
-      viewDarkOverlay.animate()
-          .setInterpolator(new DecelerateInterpolator())
-          .alpha(1)
-          .setDuration(DURATION)
-          .start();
+    persistentSubscriptions.add(
+        viewControlsLive.onOpenChat().subscribe(aBoolean -> openChat(true)));
 
-      viewRinging.hide();
-
-      onOpenChat.onNext(true);
-    }));
-
-    persistentSubscriptions.add(viewControlsLive.onCloseChat().subscribe(aBoolean -> {
-      viewDarkOverlay.animate()
-          .setInterpolator(new DecelerateInterpolator())
-          .alpha(0)
-          .setDuration(DURATION)
-          .start();
-
-      viewRinging.show();
-
-      onOpenChat.onNext(false);
-    }));
+    persistentSubscriptions.add(
+        viewControlsLive.onCloseChat().subscribe(aBoolean -> openChat(false)));
 
     persistentSubscriptions.add(viewControlsLive.onClickCameraOrientation().subscribe(aVoid -> {
       viewLocalLive.switchCamera();
@@ -521,6 +503,28 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(viewRoom.onShouldCloseInvites().subscribe(aVoid -> {
       onShouldCloseInvites.onNext(null);
     }));
+  }
+
+  private void openChat(boolean open) {
+    if (open) {
+      viewDarkOverlay.animate()
+          .setInterpolator(new DecelerateInterpolator())
+          .alpha(1)
+          .setDuration(DURATION)
+          .start();
+
+      viewRinging.hide();
+    } else {
+      viewDarkOverlay.animate()
+          .setInterpolator(new DecelerateInterpolator())
+          .alpha(0)
+          .setDuration(DURATION)
+          .start();
+
+      viewRinging.show();
+    }
+
+    onOpenChat.onNext(open);
   }
 
   ///////////////////
@@ -749,6 +753,10 @@ public class LiveView extends FrameLayout {
   public void initDrawerEventChangeObservable(Observable<Integer> obs) {
     viewLiveInvite.initDrawerEventChangeObservable(obs);
     viewControlsLive.initDrawerEventChangeObservable(obs);
+  }
+
+  public void initOnShouldOpenChat(Observable<Boolean> obs) {
+    viewControlsLive.initOnShouldOpenChat(obs);
   }
 
   public void initAnonymousSubscription(Observable<List<User>> obs) {

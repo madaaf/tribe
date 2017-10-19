@@ -10,8 +10,6 @@ public interface LiveInviteAdapterSectionInterface {
 
   boolean isRinging();
 
-  boolean isWaiting();
-
   String getCurrentRoomId();
 
   @BaseSectionItemDecoration.HeaderType int getLiveInviteSectionType();

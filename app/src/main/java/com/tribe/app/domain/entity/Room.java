@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -97,10 +98,6 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   }
 
   @Override public boolean isRinging() {
-    return false;
-  }
-
-  @Override public boolean isWaiting() {
     return false;
   }
 
@@ -373,7 +370,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   /////////////////
 
   public Observable<Room> onRoomUpdated() {
-    return onRoomUpdated;
+    return onRoomUpdated.observeOn(AndroidSchedulers.mainThread());
   }
 
   @Override public int getLiveInviteSectionType() {

@@ -67,8 +67,14 @@ public class LiveInviteHeaderAdapterDelegate
     vh.txtLabel.setGravity(header.getGravity());
 
     if (header.getGravity() != Gravity.CENTER) {
-      ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) vh.txtLabel.getLayoutParams();
+      ViewGroup.MarginLayoutParams params =
+          (ViewGroup.MarginLayoutParams) vh.txtLabel.getLayoutParams();
       params.setMarginStart(margin);
+      vh.txtLabel.setLayoutParams(params);
+    } else {
+      ViewGroup.MarginLayoutParams params =
+          (ViewGroup.MarginLayoutParams) vh.txtLabel.getLayoutParams();
+      params.setMarginStart(0);
       vh.txtLabel.setLayoutParams(params);
     }
 

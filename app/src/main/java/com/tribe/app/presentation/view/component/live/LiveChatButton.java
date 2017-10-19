@@ -102,15 +102,11 @@ public class LiveChatButton extends FrameLayout {
   }
 
   @OnClick(R.id.txtActive) void openChat() {
-    onCloseChat.onNext(true);
-    showView(txtInactive);
-    hideView(txtActive);
+    close();
   }
 
   @OnClick(R.id.txtInactive) void closeChat() {
-    onOpenChat.onNext(true);
-    showView(txtActive);
-    hideView(txtInactive);
+    open();
   }
 
   private void showView(View v) {
@@ -139,6 +135,18 @@ public class LiveChatButton extends FrameLayout {
   //////////////
   //  PUBLIC  //
   //////////////
+
+  public void open() {
+    onOpenChat.onNext(true);
+    showView(txtActive);
+    hideView(txtInactive);
+  }
+
+  public void close() {
+    onCloseChat.onNext(true);
+    showView(txtInactive);
+    hideView(txtActive);
+  }
 
   public void dispose() {
   }

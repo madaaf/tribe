@@ -20,6 +20,7 @@ public class LiveCacheImpl implements LiveCache {
   private ObservableRxHashMap<String, Boolean> onlineMap;
   private ObservableRxHashMap<String, Boolean> liveMap;
   private ObservableRxHashMap<String, Invite> inviteMap;
+  private ObservableRxHashMap<String, Room> roomMap;
   private PublishSubject<String> roomCallRouletteMap = PublishSubject.create();
   private PublishSubject<User> onFbIdUpdated = PublishSubject.create();
   private PublishSubject<Room> onRoomUpdated = PublishSubject.create();
@@ -29,6 +30,7 @@ public class LiveCacheImpl implements LiveCache {
     onlineMap = new ObservableRxHashMap<>();
     liveMap = new ObservableRxHashMap<>();
     inviteMap = new ObservableRxHashMap<>();
+    roomMap = new ObservableRxHashMap<>();
   }
 
   @Override public Observable<Map<String, Boolean>> onlineMap() {
@@ -104,12 +106,32 @@ public class LiveCacheImpl implements LiveCache {
     return onFbIdUpdated;
   }
 
+  @Override public void putRoom(Room room) {
+    roomMap.put(room.getId(), room);
+  }
+
+  @Override public void removeRoom(String roomId) {
+    roomMap.remove(roomId, false);
+  }
+
   @Override public void onRoomUpdated(Room roomUpdated) {
     Room room = null;
+    // If it's an invite
     for (Invite invite : inviteMap.getMap().values()) {
       if (invite.getRoom() != null && invite.getRoom().getId().equals(roomUpdated)) {
         invite.getRoom().update(roomUpdated, true);
         room = invite.getRoom();
+      }
+    }
+
+    // If room is null, it means it's an actual live room the user is in
+    if (room == null) {
+      if (roomMap.getMap().containsKey(roomUpdated.getId())) {
+        room = roomMap.get(roomUpdated.getId());
+        room.update(roomUpdated, true);
+      } else {
+        room = roomUpdated;
+        roomMap.put(roomUpdated.getId(), roomUpdated);
       }
     }
 

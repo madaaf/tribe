@@ -70,6 +70,17 @@ import rx.subjects.PublishSubject;
     return friendListObservable;
   }
 
+  public Observable<List<ContactFBRealm>> requestInvitableFriends() {
+    if (friendListObservable == null) {
+      friendListObservable =
+          Observable.create((Subscriber<? super List<ContactFBRealm>> subscriber) -> {
+            emitFriends(subscriber);
+          }).onBackpressureBuffer().serialize();
+    }
+
+    return friendListObservable;
+  }
+
   public void emitFriends(Subscriber subscriber) {
     if (FacebookUtils.isLoggedIn()) {
       new GraphRequest(AccessToken.getCurrentAccessToken(),

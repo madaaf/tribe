@@ -62,7 +62,7 @@ public class UserRoomAdapterDelegate
       vh.viewNewAvatar.setType(NewAvatarView.NORMAL);
     }
 
-    if (user.isRinging() || user.isWaiting()) {
+    if (user.isRinging()) {
       vh.txtStatus.setVisibility(View.VISIBLE);
       vh.txtStatus.setText(
           user.isRinging() ? R.string.live_members_ringing : R.string.live_members_waiting);
