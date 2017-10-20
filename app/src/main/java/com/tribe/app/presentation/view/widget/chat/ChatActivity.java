@@ -7,6 +7,7 @@ import android.os.Bundle;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.data.network.WSService;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
@@ -86,6 +87,8 @@ public class ChatActivity extends BaseActivity {
       }
       arrayIds = JsonUtils.arrayToJson(ids);
     }
+
+    startService(WSService.getCallingIntentCancelImOnline(this));
   }
 
   @Override protected void onPause() {

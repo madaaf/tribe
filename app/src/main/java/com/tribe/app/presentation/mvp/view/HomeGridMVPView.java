@@ -25,6 +25,8 @@ public interface HomeGridMVPView extends LoadDataMVPView {
 
   void renderContactsInvite(List<Contact> contactList);
 
+  void renderContactsFBInvite(List<Contact> contactList);
+
   void onCreateRoom(Room room, String feature, String phone, boolean shouldOpenSMS);
 
   void onSyncError();

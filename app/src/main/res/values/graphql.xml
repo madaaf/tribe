@@ -545,4 +545,8 @@
         %1$s
         %2$s
   </string>
+
+  <string name="imOnline" translatable="false">
+            imOnline
+  </string>
 </resources>

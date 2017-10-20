@@ -38,6 +38,7 @@ import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
@@ -62,6 +63,7 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
@@ -159,6 +161,8 @@ public class HomeActivity extends BaseActivity
 
   @Inject RxImagePicker rxImagePicker;
 
+  @Inject RxFacebook rxFacebook;
+
   @BindView(R.id.recyclerViewFriends) RecyclerView recyclerViewFriends;
 
   @BindView(android.R.id.content) ViewGroup rootView;
@@ -192,6 +196,7 @@ public class HomeActivity extends BaseActivity
   private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
   private PublishSubject<List<Contact>> onNewContactsOnApp = PublishSubject.create();
   private PublishSubject<List<Contact>> onNewContactsInvite = PublishSubject.create();
+  private PublishSubject<List<Contact>> onNewContactsFBInvite = PublishSubject.create();
   private PublishSubject<Pair<Integer, Boolean>> onNewContactsInfos = PublishSubject.create();
 
   // VARIABLES
@@ -286,9 +291,6 @@ public class HomeActivity extends BaseActivity
   @Override protected void onResume() {
     super.onResume();
     if (finish) return;
-
-    homeGridPresenter.loadContactsOnApp();
-    homeGridPresenter.loadContactsInvite();
 
     startService(WSService.
         getCallingIntent(this, null, null));
@@ -455,8 +457,8 @@ public class HomeActivity extends BaseActivity
         .flatMap(item -> DialogFactory.showBottomSheetForRecipient(this, (Recipient) item),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-                    .equals(LabelType.BLOCK_HIDE)) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
                   Shortcut shortcut = (Shortcut) recipient;
                   homeGridPresenter.updateShortcutStatus(shortcut.getId(),
                       labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? ShortcutRealm.BLOCKED
@@ -538,12 +540,16 @@ public class HomeActivity extends BaseActivity
           if (o instanceof ContactAB) {
             ContactAB contact = (ContactAB) o;
             invite(contact);
+          } else if (o instanceof ContactFB) {
+            ContactFB contactFB = (ContactFB) o;
+            subscriptions.add(rxFacebook.requestGameInvite(contactFB.getId()).subscribe());
           }
         }));
 
     subscriptions.add(
         Observable.combineLatest(onRecipientUpdates.onBackpressureBuffer(), onNewContactsOnApp,
-            onNewContactsInvite, (recipientList, contactsOnApp, contactsInvite) -> {
+            onNewContactsInvite, onNewContactsFBInvite,
+            (recipientList, contactsOnApp, contactsInvite, contactsFBInvite) -> {
               List<HomeAdapterInterface> finalList = new ArrayList<>();
               Set<String> addedUsers = new HashSet<>();
 
@@ -568,6 +574,7 @@ public class HomeActivity extends BaseActivity
               }
 
               finalList.addAll(contactsInvite);
+              finalList.addAll(contactsFBInvite);
 
               return finalList;
             }).subscribeOn(singleThreadExecutor).
@@ -851,6 +858,10 @@ public class HomeActivity extends BaseActivity
     onNewContactsInvite.onNext(contactList);
   }
 
+  @Override public void renderContactsFBInvite(List<Contact> contactList) {
+    onNewContactsFBInvite.onNext(contactList);
+  }
+
   @Override
   public void onCreateRoom(Room room, String feature, String phone, boolean shouldOpenSMS) {
     navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, room.getLink(),
@@ -900,8 +911,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
-        && !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) &&
+        !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(
@@ -933,12 +944,14 @@ public class HomeActivity extends BaseActivity
 
     if (requestCode == Navigator.FROM_PROFILE) {
       topBarContainer.reloadUserUI();
-    } else if (requestCode == Navigator.FROM_CHAT && data != null && data.hasExtra(
-        ChatActivity.EXTRA_SHORTCUT_ID)) {
+    } else if (requestCode == Navigator.FROM_CHAT &&
+        data != null &&
+        data.hasExtra(ChatActivity.EXTRA_SHORTCUT_ID)) {
       homeGridPresenter.updateShortcutLeaveOnlineUntil(
           data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
-    } else if (requestCode == Navigator.FROM_LIVE && data != null && data.hasExtra(
-        LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
+    } else if (requestCode == Navigator.FROM_LIVE &&
+        data != null &&
+        data.hasExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
       HashSet<String> userIds =
           (HashSet<String>) data.getSerializableExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT);
       homeGridPresenter.createShortcut(userIds.toArray(new String[userIds.size()]));
@@ -1053,10 +1066,10 @@ public class HomeActivity extends BaseActivity
   private SectionCallback getSectionCallback(final List<HomeAdapterInterface> recipientList) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
-        return position == 0
-            || recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE
-            && recipientList.get(position).getHomeSectionType() != recipientList.get(position - 1)
-            .getHomeSectionType();
+        return position == 0 ||
+            recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE &&
+                recipientList.get(position).getHomeSectionType() !=
+                    recipientList.get(position - 1).getHomeSectionType();
       }
 
       @Override public int getSectionType(int position) {

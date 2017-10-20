@@ -36,11 +36,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import rx.Observable;
+import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 @Singleton public class WSService extends Service {
+
+  private static final int TIMER_IM_ONLINE = 30000; // 30 SECS
 
   public static final String TYPE = "TYPE";
   public static final String ROOM_ID = "ROOM_ID";
@@ -53,6 +56,7 @@ import timber.log.Timber;
   public static final String CALL_ROOM_UPDATE_SUBSCRIBE_TYPE = "CALL_ROOM_UPDATE_TYPE";
   public static final String CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE =
       "CALL_ROOM_UPDATE_UNSUBSCRIBE_TYPE";
+  public static final String CALL_ROOM_CANCEL_IM_ONLINE_TYPE = "CALL_ROOM_CANCEL_IM_ONLINE_TYPE";
 
   public static final String USER_SUFFIX = "___u";
   public static final String INVITE_CREATED_SUFFIX = "___ic";
@@ -100,6 +104,12 @@ import timber.log.Timber;
     return intent;
   }
 
+  public static Intent getCallingIntentCancelImOnline(Context context) {
+    Intent intent = new Intent(context, WSService.class);
+    intent.putExtra(TYPE, CALL_ROOM_CANCEL_IM_ONLINE_TYPE);
+    return intent;
+  }
+
   @Inject User user;
 
   @Inject TribeApi tribeApi;
@@ -129,6 +139,7 @@ import timber.log.Timber;
   // OBSERVABLES
   private CompositeSubscription persistentSubscriptions = new CompositeSubscription();
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
+  private Subscription imOnlineSubscription;
 
   @Nullable @Override public IBinder onBind(Intent intent) {
     return null;
@@ -231,6 +242,13 @@ import timber.log.Timber;
     webSocketConnection.send(req2);
   }
 
+  public void cancelImOnline() {
+    if (imOnlineSubscription != null) {
+      imOnlineSubscription.unsubscribe();
+      imOnlineSubscription = null;
+    }
+  }
+
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
     if (intent != null) {
       String type = intent.getStringExtra(TYPE);
@@ -250,6 +268,8 @@ import timber.log.Timber;
         } else if (type.equals(CHAT_UNSUBSCRIBE)) {
           String usersFromatedIds = intent.getStringExtra(CHAT_IDS);
           unsubscribeChat(usersFromatedIds);
+        } else if (type.equals(CALL_ROOM_CANCEL_IM_ONLINE_TYPE)) {
+          cancelImOnline();
         }
       }
     }
@@ -309,9 +329,20 @@ import timber.log.Timber;
         if (!hasSubscribed) {
           hasSubscribed = true;
           initSubscriptions();
+
+          cancelImOnline();
+
+          imOnlineSubscription =
+              Observable.timer(TIMER_IM_ONLINE, TimeUnit.MILLISECONDS).subscribe(aLong -> {
+                String req = getApplicationContext().getString(R.string.mutation,
+                    getApplicationContext().getString(R.string.imOnline));
+                webSocketConnection.send(req);
+                cancelImOnline();
+              });
         }
       } else if (newState.equals(WebSocketConnection.STATE_DISCONNECTED)) {
         hasSubscribed = false;
+        cancelImOnline();
         if (tempSubscriptions != null) tempSubscriptions.clear();
       }
     }));
