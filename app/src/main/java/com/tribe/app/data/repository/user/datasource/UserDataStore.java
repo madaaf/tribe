@@ -12,6 +12,7 @@ import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
 import rx.Observable;
@@ -139,4 +140,6 @@ public interface UserDataStore {
   Observable<ShortcutRealm> shortcutForUserIds(String... userIds);
 
   Observable<List<ShortcutRealm>> blockedShortcuts();
+
+  List<Invite> invites();
 }

@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.DeleteRoomJob;
 import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -11,6 +12,7 @@ import com.tribe.app.domain.interactor.game.GetNamesDrawGame;
 import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
 import com.tribe.app.domain.interactor.user.FbIdUpdated;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
+import com.tribe.app.domain.interactor.user.GetInvites;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.domain.interactor.user.IncrUserTimeInCall;
 import com.tribe.app.domain.interactor.user.ReportUser;
@@ -40,6 +42,7 @@ public class LivePresenter implements Presenter {
   private FbIdUpdated fbIdUpdated;
   private ReportUser reportUser;
   private IncrUserTimeInCall incrUserTimeInCall;
+  private GetInvites getInvites;
 
   // SUBSCRIBERS
   private GetUserInfoListSubscriber getUserInfoListSubscriber;
@@ -49,7 +52,8 @@ public class LivePresenter implements Presenter {
       ShortcutPresenter shortcutPresenter, GetRecipientInfos getRecipientInfos,
       GetCloudUserInfosList cloudUserInfosList, GetNamesPostItGame getNamesPostItGame,
       ReportUser reportUser, FbIdUpdated fbIdUpdated, GetDataChallengesGame getDataChallengesGame,
-      IncrUserTimeInCall incrUserTimeInCall, GetNamesDrawGame getNamesDrawGame) {
+      IncrUserTimeInCall incrUserTimeInCall, GetNamesDrawGame getNamesDrawGame,
+      GetInvites getInvites) {
     this.jobManager = jobManager;
     this.shortcutPresenter = shortcutPresenter;
     this.roomPresenter = roomPresenter;
@@ -61,6 +65,7 @@ public class LivePresenter implements Presenter {
     this.fbIdUpdated = fbIdUpdated;
     this.getDataChallengesGame = getDataChallengesGame;
     this.getNamesDrawGame = getNamesDrawGame;
+    this.getInvites = getInvites;
   }
 
   @Override public void onViewDetached() {
@@ -74,6 +79,7 @@ public class LivePresenter implements Presenter {
     fbIdUpdated.unsubscribe();
     getDataChallengesGame.unsubscribe();
     getNamesDrawGame.unsubscribe();
+    getInvites.unsubscribe();
     liveMVPView = null;
   }
 
@@ -275,5 +281,22 @@ public class LivePresenter implements Presenter {
 
   public void shortcutForUserIds(List<String> userIds) {
     shortcutPresenter.shortcutForUserIds(userIds.toArray(new String[userIds.size()]));
+  }
+
+  private final class GetInvitesSubscriber extends DefaultSubscriber<List<Invite>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+    }
+
+    @Override public void onNext(List<Invite> invites) {
+      liveMVPView.onInvites(invites);
+    }
+  }
+
+  public void getInvites() {
+    getInvites.execute(new GetInvitesSubscriber());
   }
 }

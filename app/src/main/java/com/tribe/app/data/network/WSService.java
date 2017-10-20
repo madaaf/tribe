@@ -37,6 +37,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import rx.Observable;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -441,8 +442,9 @@ import timber.log.Timber;
     persistentSubscriptions.add(
         jsonToModel.onFbIdUpdated().subscribe(userUpdated -> liveCache.onFbIdUpdated(userUpdated)));
 
-    persistentSubscriptions.add(
-        jsonToModel.onRoomUpdated().subscribe(room -> liveCache.onRoomUpdated(room)));
+    persistentSubscriptions.add(jsonToModel.onRoomUpdated()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(room -> liveCache.onRoomUpdated(room)));
 
     persistentSubscriptions.add(jsonToModel.onUserListUpdated()
         .subscribe(userRealmList -> userCache.updateUserRealmList(userRealmList)));

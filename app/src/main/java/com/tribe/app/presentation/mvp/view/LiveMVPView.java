@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.view;
 
 import android.content.Context;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import java.util.List;
@@ -34,4 +35,6 @@ public interface LiveMVPView extends MVPView {
   void onDataChallengesGame(List<String> nameList);
 
   void onRoomUpdate(Room room);
+
+  void onInvites(List<Invite> invites);
 }

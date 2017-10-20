@@ -133,9 +133,9 @@ public class Navigator {
         intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
       }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-          | Intent.FLAG_ACTIVITY_CLEAR_TASK
-          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+          Intent.FLAG_ACTIVITY_CLEAR_TASK |
+          Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
       if (linkRoomId != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -202,12 +202,11 @@ public class Navigator {
    *
    * @param activity activity needed to open the destiny activity.
    * @param recipient recipient to go live with
-   * @param color the color of the tile
    */
-  public void navigateToLive(Activity activity, Recipient recipient, int color,
+  public void navigateToLive(Activity activity, Recipient recipient,
       @LiveActivity.Source String source) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, recipient, color, source);
+      Intent intent = LiveActivity.getCallingIntent(activity, recipient, source);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       if (activity instanceof LiveActivity) {
         activity.startActivity(intent);
@@ -236,7 +235,7 @@ public class Navigator {
   public void navigateToLiveFromSwipe(Activity activity, Recipient recipient, int color,
       @LiveActivity.Source String source) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, recipient, color, source);
+      Intent intent = LiveActivity.getCallingIntent(activity, recipient, source);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(0, 0);
@@ -382,8 +381,8 @@ public class Navigator {
 
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
-    } else if (activity.getIntent() != null && activity.getIntent()
-        .hasExtra(Extras.IS_FROM_FACEBOOK)) {
+    } else if (activity.getIntent() != null &&
+        activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
       openFacebookAppInvites(activity, url);
     } else {
       openDefaultMessagingApp(activity, text);

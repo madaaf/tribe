@@ -14,6 +14,7 @@ import com.tribe.app.data.repository.user.datasource.CloudUserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -247,5 +248,9 @@ import rx.Observable;
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
     return cloudDataStore.removeShortcut(shortcutId);
+  }
+
+  @Override public Observable<List<Invite>> invites() {
+    return null;
   }
 }

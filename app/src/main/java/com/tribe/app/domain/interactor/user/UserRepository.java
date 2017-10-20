@@ -9,6 +9,7 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -150,4 +151,6 @@ public interface UserRepository {
   Observable<Shortcut> updateShortcut(String shortcutId, List<Pair<String, String>> values);
 
   Observable<Void> removeShortcut(String shortcutId);
+
+  Observable<List<Invite>> invites();
 }

@@ -288,6 +288,7 @@ public class WebSocketConnection {
 
         @Override public void handleCallbackError(WebSocket websocket, Throwable cause)
             throws Exception {
+          cause.getStackTrace();
           Timber.d("WebSocket handleCallbackError : " + cause.getMessage());
           disconnect(false);
         }

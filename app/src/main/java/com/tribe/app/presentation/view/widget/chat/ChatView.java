@@ -880,7 +880,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   @OnClick(R.id.videoCallBtn) void onClickVideoCall() {
 
-    navigator.navigateToLive((Activity) context, recipient, PaletteGrid.get(0),
+    navigator.navigateToLive((Activity) context, recipient,
         LiveActivity.SOURCE_GRID);
   }
 

@@ -876,4 +876,8 @@ public class CloudUserDataStore implements UserDataStore {
       }
     }).doOnNext(saveToCacheShortcuts);
   }
+
+  @Override public List<Invite> invites() {
+    return null;
+  }
 }

@@ -123,18 +123,8 @@ public class Invite extends Recipient {
     return room.getAllUsers();
   }
 
-  public boolean isShortcut(List<String> shortcutMemberIds) {
-    if (room == null) return false;
-
-    List<String> roomUserIds = room.getUserIds();
-
-    if (roomUserIds.size() == shortcutMemberIds.size()) {
-      roomUserIds.removeAll(shortcutMemberIds);
-    }
-
-    if (roomUserIds.size() == 0) return true;
-
-    return false;
+  public List<String> getRoomUserIds() {
+    return room.getUserIds();
   }
 
   public boolean isSingle() {

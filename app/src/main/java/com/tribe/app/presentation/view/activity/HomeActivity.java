@@ -430,7 +430,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void onClickItem(Recipient recipient) {
-    navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()),
+    navigator.navigateToLive(this, recipient,
         recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
             : LiveActivity.SOURCE_GRID);
   }
@@ -678,8 +678,8 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(searchView.onGone().subscribe(aVoid -> searchView.setVisibility(View.GONE)));
 
     subscriptions.add(searchView.onHangLive()
-        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0),
-            LiveActivity.SOURCE_SEARCH)));
+        .subscribe(
+            recipient -> navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_SEARCH)));
 
     subscriptions.add(searchView.onInvite().subscribe(contact -> invite(contact)));
 
@@ -1029,7 +1029,7 @@ public class HomeActivity extends BaseActivity
 
         if (pairPosDx.second < 0) {
           isSwipingChat = false;
-          Live live = LiveActivity.getLive(recipient, PaletteGrid.get(pairPosDx.first),
+          Live live = LiveActivity.getLive(recipient,
               recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
                   : LiveActivity.SOURCE_GRID);
           if (recipient instanceof Shortcut) {

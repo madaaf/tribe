@@ -63,7 +63,6 @@ import com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberVie
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
-import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -477,8 +476,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
     }));
 
     subscriptions.add(viewSettingsBlockedFriends.onHangLive()
-        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0),
-            LiveActivity.SOURCE_FRIENDS)));
+        .subscribe(
+            recipient -> navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_FRIENDS)));
 
     profilePresenter.loadBlockedShortcuts();
   }

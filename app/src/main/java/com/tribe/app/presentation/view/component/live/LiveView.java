@@ -585,8 +585,10 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(webRTCRoom.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
-    tempSubscriptions.add(
-        webRTCRoom.onJoined().doOnNext(tribeJoinRoom -> hasJoined = true).subscribe(onJoined));
+    tempSubscriptions.add(webRTCRoom.onJoined()
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnNext(tribeJoinRoom -> hasJoined = true)
+        .subscribe(onJoined));
 
     tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().subscribe(onLeave));
 
@@ -741,13 +743,7 @@ public class LiveView extends FrameLayout {
     // We just want to trigger the updates to update the UI
     live.getRoom().update(room, false);
 
-    if (live.fromRoom()) {
-      webRTCRoom.connect(options);
-    } else {
-      tempSubscriptions.add(Observable.timer(3000, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> webRTCRoom.connect(options)));
-    }
+    webRTCRoom.connect(options);
   }
 
   public void initDrawerEventChangeObservable(Observable<Integer> obs) {
@@ -817,11 +813,13 @@ public class LiveView extends FrameLayout {
 
     viewControlsLive.setLive(live);
     viewLiveInvite.setLive(live);
+
     viewRinging.setLive(live);
-
-    onShouldJoinRoom.onNext(null);
-
     viewRinging.startRinging();
+
+    tempSubscriptions.add(Observable.timer(3000, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> onShouldJoinRoom.onNext(null)));
   }
 
   public com.tribe.tribelivesdk.core.Room getWebRTCRoom() {

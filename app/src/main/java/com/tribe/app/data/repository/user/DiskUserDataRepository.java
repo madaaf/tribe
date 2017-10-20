@@ -130,6 +130,13 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<List<Invite>> invites() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+
+    return Observable.just(userDataStore.invites());
+  }
+
   @Override public Observable<List<User>> getUsersInfosList(List<String> usersIds) {
     return null;
   }

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
@@ -33,6 +32,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.data.utils.ShortcutUtils;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
@@ -69,7 +69,6 @@ import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
-import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.RuntimePermissionUtil;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -99,7 +98,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -176,11 +174,9 @@ public class LiveActivity extends BaseActivity
   private Unbinder unbinder;
   private Live live;
   private Room room;
-  private boolean liveIsInvite = false;
   private TribeBroadcastReceiver notificationReceiver;
   private boolean receiverRegistered = false;
   private AppStateMonitor appStateMonitor;
-  private boolean liveDurationIsMoreThan30sec = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private RxPermissions rxPermissions;
   private Intent returnIntent = new Intent();
@@ -195,27 +191,25 @@ public class LiveActivity extends BaseActivity
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
 
-  public static Live getLive(Recipient recipient, int color, @Source String source) {
-    return computeLive(recipient, color, source);
+  public static Live getLive(Recipient recipient, @Source String source) {
+    return computeLive(recipient, source);
   }
 
-  public static Intent getCallingIntent(Context context, Recipient recipient, int color,
+  public static Intent getCallingIntent(Context context, Recipient recipient,
       @Source String source) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    intent.putExtra(EXTRA_LIVE, computeLive(recipient, color, source));
+    intent.putExtra(EXTRA_LIVE, computeLive(recipient, source));
     return intent;
   }
 
-  private static Live computeLive(Recipient recipient, int color, @Source String source) {
-    Live.Builder builder = new Live.Builder(Live.FRIEND_CALL).color(color)
-        .countdown(!recipient.isLive())
-        .source(source);
+  private static Live computeLive(Recipient recipient, @Source String source) {
+    Live.Builder builder =
+        new Live.Builder(Live.FRIEND_CALL).countdown(!recipient.isLive()).source(source);
 
     if (recipient instanceof Shortcut) {
       Shortcut shortcut = (Shortcut) recipient;
-      builder.shortcutId(shortcut.getId())
-          .users(shortcut.getMembers().toArray(new User[shortcut.getMembers().size()]));
+      builder.shortcut(shortcut);
     } else if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
       builder.room(invite.getRoom());
@@ -234,7 +228,7 @@ public class LiveActivity extends BaseActivity
 
     Live.Builder builder =
         new Live.Builder(StringUtils.isEmpty(recipientId) ? Live.WEB : Live.FRIEND_CALL).users(user)
-            .shortcutId(recipientId)
+            .shortcut(new Shortcut(recipientId))
             .countdown(StringUtils.isEmpty(roomId))
             .roomId(roomId)
             .intent(true)
@@ -379,10 +373,6 @@ public class LiveActivity extends BaseActivity
       live = (Live) intent.getSerializableExtra(EXTRA_LIVE);
       live.init();
     }
-
-    if (live.getColor() == 0 || live.getColor() == Color.BLACK) {
-      live.setColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
-    }
   }
 
   private void init() {
@@ -494,12 +484,6 @@ public class LiveActivity extends BaseActivity
     this.gameManager = GameManager.getInstance(this);
   }
 
-  private void ratingNotificationSubscribe() {
-    subscriptions.add(Observable.timer(MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF, TimeUnit.SECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aVoid -> liveDurationIsMoreThan30sec = true));
-  }
-
   private void initRemoteConfig() {
     firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
     FirebaseRemoteConfigSettings configSettings =
@@ -587,7 +571,7 @@ public class LiveActivity extends BaseActivity
         if (live.fromRoom() || !StringUtils.isEmpty(live.getLinkId())) {
           getRoomInfos();
         } else {
-          createRoom();
+          getAllInvites();
         }
       }
     }));
@@ -640,7 +624,9 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
       if (live.fromRoom() &&
           (tribeJoinRoom.getSessionList() == null || tribeJoinRoom.getSessionList().size() == 0)) {
-        Toast.makeText(this, R.string.live_other_user_hung_up, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,
+            getString(R.string.live_other_user_hung_up, room.getInitiator().getDisplayName()),
+            Toast.LENGTH_SHORT).show();
         livePresenter.createInvite(room.getId(), room.getInitiator().getId());
       } else if (!live.fromRoom()) {
         for (String userId : live.getUserIdsOfShortcut()) {
@@ -751,10 +737,8 @@ public class LiveActivity extends BaseActivity
             getString(R.string.live_notification_peer_joining, userName))));
 
     subscriptions.add(viewLive.onNotificationRemoteJoined().
-        subscribe(userName -> {
-          ratingNotificationSubscribe();
-          displayNotification(getString(R.string.live_notification_peer_joined, userName));
-        }));
+        subscribe(userName -> displayNotification(
+            getString(R.string.live_notification_peer_joined, userName))));
 
     subscriptions.add(viewLive.onNotificationonRemotePeerBuzzed().
         subscribe(aVoid -> displayNotification(getString(R.string.live_notification_buzzed))));
@@ -1058,6 +1042,27 @@ public class LiveActivity extends BaseActivity
     }
   }
 
+  @Override public void onInvites(List<Invite> invites) {
+    if (invites != null && invites.size() > 0) {
+      String hashMembersShortcut = ShortcutUtils.hashShortcut(getCurrentUser().getId(),
+          live.getUserIdsOfShortcut().toArray(new String[live.getUserIdsOfShortcut().size()]));
+
+      for (Invite invite : invites) {
+        List<String> usersInviteList = invite.getRoomUserIds();
+        String hashMembersInvite = ShortcutUtils.hashShortcut(getCurrentUser().getId(),
+            usersInviteList.toArray(new String[usersInviteList.size()]));
+
+        if (hashMembersShortcut.equals(hashMembersInvite)) {
+          Live.Builder builder = new Live.Builder(Live.FRIEND_CALL).source(live.getSource());
+          live = builder.room(invite.getRoom()).build();
+          getRoomInfos();
+        }
+      }
+    } else {
+      createRoom();
+    }
+  }
+
   private void displayNotification(String txt) {
     txtRemotePeerAdded.setText(txt);
     txtRemotePeerAdded.setVisibility(VISIBLE);
@@ -1072,6 +1077,10 @@ public class LiveActivity extends BaseActivity
 
   private void createRoom() {
     livePresenter.createRoom(live);
+  }
+
+  private void getAllInvites() {
+    livePresenter.getInvites();
   }
 
   private void roomFull() {

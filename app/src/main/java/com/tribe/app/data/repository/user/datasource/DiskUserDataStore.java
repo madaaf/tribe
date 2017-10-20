@@ -210,6 +210,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
         (shortcutRealmList, onlineMap) -> shortcutRealmList).compose(listShortcutOnlineTransformer);
   }
 
+  @Override public List<Invite> invites() {
+    return new ArrayList<>(liveCache.getInviteMap().values());
+  }
+
   @Override public Observable<Map<String, Invite>> inviteMap() {
     return liveCache.inviteMap();
   }

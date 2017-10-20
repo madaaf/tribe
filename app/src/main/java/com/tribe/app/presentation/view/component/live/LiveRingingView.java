@@ -194,6 +194,22 @@ public class LiveRingingView extends RelativeLayout {
     }
   }
 
+  private void setShortcut(Shortcut shortcut) {
+    if (shortcut != null) {
+      String name = "";
+
+      if (shortcut != null && shortcut.isSingle()) {
+        name = shortcut.getSingleFriend().getDisplayName();
+      } else if (shortcut != null && !StringUtils.isEmpty(shortcut.getName())) {
+        name = shortcut.getName();
+      } else {
+        name = getResources().getString(R.string.shortcut_members_count, shortcut.getMembersIds().size());
+      }
+
+      txtRinging.setText(getResources().getString(R.string.live_members_ringing) + " " + name);
+    }
+  }
+
   private void setRoom(Room room) {
     String name = "";
     Shortcut shortcut = room.getShortcut();
@@ -218,6 +234,7 @@ public class LiveRingingView extends RelativeLayout {
   public void setLive(Live live) {
     this.live = live;
 
+    setShortcut(live.getShortcut());
     subscriptions.add(live.onRoomUpdated().subscribe(room -> setRoom(room)));
   }
 

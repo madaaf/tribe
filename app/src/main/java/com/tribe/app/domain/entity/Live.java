@@ -34,7 +34,6 @@ public class Live implements Serializable {
   private List<String> userIdsOfShortcut;
   private List<String> userIdsOfRoom;
   private String url;
-  private int color = 0;
   private boolean countdown = true;
   private boolean intent = false;
   private @LiveActivity.Source String source;
@@ -51,13 +50,12 @@ public class Live implements Serializable {
     this.linkId = builder.linkId;
     setUsersOfShortcut(builder.users);
     this.type = builder.type;
-    this.color = builder.color;
     this.countdown = builder.countdown;
     this.intent = builder.intent;
     this.url = builder.url;
     this.source = builder.source;
     this.isDiceDragedInRoom = builder.isDiceDragedInRoom;
-    this.shortcutId = builder.shortcutId;
+    this.shortcut = builder.shortcut;
   }
 
   public void init() {
@@ -176,14 +174,6 @@ public class Live implements Serializable {
     setUrl(null);
   }
 
-  public int getColor() {
-    return color;
-  }
-
-  public void setColor(int color) {
-    this.color = color;
-  }
-
   public boolean isCountdown() {
     return countdown;
   }
@@ -248,7 +238,7 @@ public class Live implements Serializable {
     private boolean intent = false;
     private boolean isDiceDragedInRoom = false;
     private @LiveActivity.Source String source;
-    private String shortcutId;
+    private Shortcut shortcut;
 
     public Builder(@LiveType String type) {
       this.type = type;
@@ -264,8 +254,9 @@ public class Live implements Serializable {
       return this;
     }
 
-    public Builder shortcutId(String shortcutId) {
-      this.shortcutId = shortcutId;
+    public Builder shortcut(Shortcut shortcut) {
+      this.shortcut = shortcut;
+      this.users(shortcut.getMembers().toArray(new User[shortcut.getMembers().size()]));
       return this;
     }
 
@@ -286,11 +277,6 @@ public class Live implements Serializable {
 
     public Builder url(String url) {
       this.url = url;
-      return this;
-    }
-
-    public Builder color(int color) {
-      this.color = color;
       return this;
     }
 
