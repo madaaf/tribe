@@ -670,6 +670,13 @@
 	<string name="game_aliens_attack_you_lost">YOU LOST</string>
 	<string name="game_aliens_attack_someone_lost">%@ LOST!</string>
 	<string name="game_aliens_attack_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
+	<string name="game_bird_rush">Bird Rush!</string>
+	<string name="game_bird_rush_lets_go">Let\'s go!</string>
+	<string name="game_bird_rush_you_won">YOU WON!</string>
+	<string name="game_bird_rush_someone_won">%@ WON!</string>
+	<string name="game_bird_rush_you_lost">YOU LOST</string>
+	<string name="game_bird_rush_someone_lost">%@ LOST!</string>
+	<string name="game_bird_rush_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>

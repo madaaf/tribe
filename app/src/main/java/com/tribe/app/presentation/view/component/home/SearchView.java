@@ -27,6 +27,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
@@ -46,6 +47,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.adapter.SearchAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
@@ -94,6 +96,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   @Inject Navigator navigator;
 
   @Inject TagManager tagManager;
+
+  @Inject RxFacebook rxFacebook;
 
   @BindView(R.id.recyclerViewContacts) RecyclerView recyclerViewContacts;
 
@@ -259,6 +263,9 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
           if (o instanceof ContactAB) {
             ContactAB contact = (ContactAB) o;
             onInvite.onNext(contact);
+          } else if (o instanceof ContactFB) {
+            ContactFB contactFB = (ContactFB) o;
+            subscriptions.add(rxFacebook.requestGameInvite(contactFB.getId()).subscribe());
           }
         }));
 

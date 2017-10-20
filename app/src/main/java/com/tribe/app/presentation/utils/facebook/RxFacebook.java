@@ -28,12 +28,15 @@ import rx.subjects.PublishSubject;
 
   public static final int FACEBOOK_LOGIN = 0;
   public static final int FACEBOOK_GET_FRIENDS = 1;
+  public static final int FACEBOOK_GAME_REQUEST = 2;
 
-  @IntDef({ FACEBOOK_LOGIN, FACEBOOK_GET_FRIENDS }) public @interface FacebookAccessType {
+  @IntDef({ FACEBOOK_LOGIN, FACEBOOK_GET_FRIENDS, FACEBOOK_GAME_REQUEST })
+  public @interface FacebookAccessType {
   }
 
   private Context context;
   private PublishSubject<LoginResult> loginSubject;
+  private PublishSubject<String> gameRequestSubject;
   private Observable<List<ContactFBRealm>> friendListObservable;
   private Observable<List<ContactFBRealm>> friendInvitableListObservable;
   private Observable<FacebookEntity> facebookEntityObservable;
@@ -46,8 +49,14 @@ import rx.subjects.PublishSubject;
 
   public Observable<LoginResult> requestLogin() {
     loginSubject = PublishSubject.create();
-    startLoginHiddenActivity();
+    startLoginHiddenActivity(FACEBOOK_LOGIN);
     return loginSubject;
+  }
+
+  public Observable<String> requestGameInvite(String recipientId) {
+    gameRequestSubject = PublishSubject.create();
+    startGameInviteHiddenActivity(FACEBOOK_GAME_REQUEST, recipientId);
+    return gameRequestSubject;
   }
 
   void onLogin(LoginResult loginResult) {
@@ -56,6 +65,15 @@ import rx.subjects.PublishSubject;
     if (loginSubject != null && loginSubject.hasObservers()) {
       loginSubject.onNext(loginResult);
       loginSubject.onCompleted();
+    }
+
+    countHandle = 0;
+  }
+
+  void onGameRequestSuccess(String id) {
+    if (gameRequestSubject != null && gameRequestSubject.hasObservers()) {
+      gameRequestSubject.onNext(id);
+      gameRequestSubject.onCompleted();
     }
 
     countHandle = 0;
@@ -175,10 +193,18 @@ import rx.subjects.PublishSubject;
     }).executeAsync();
   }
 
-  private void startLoginHiddenActivity() {
+  private void startLoginHiddenActivity(int typeRequest) {
     Intent intent = new Intent(context, FacebookHiddenActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    intent.putExtra(FacebookHiddenActivity.FACEBOOK_REQUEST, FACEBOOK_LOGIN);
+    intent.putExtra(FacebookHiddenActivity.FACEBOOK_REQUEST, typeRequest);
+    context.startActivity(intent);
+  }
+
+  private void startGameInviteHiddenActivity(int typeRequest, String recipientId) {
+    Intent intent = new Intent(context, FacebookHiddenActivity.class);
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    intent.putExtra(FacebookHiddenActivity.FACEBOOK_REQUEST, typeRequest);
+    intent.putExtra(FacebookHiddenActivity.FACEBOOK_RECIPIENT_ID, recipientId);
     context.startActivity(intent);
   }
 

@@ -59,10 +59,11 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
   public void bind(ContactToInviteViewHolder vh, Contact contact) {
     vh.txtName.setText(contact.getName());
     if (contact.getHowManyFriends() > 0) {
+      vh.txtDetails.setVisibility(View.VISIBLE);
       vh.txtDetails.setText(context.getString(R.string.contacts_section_addressbook_friends_in_app,
           contact.getHowManyFriends()));
     } else {
-      vh.txtDetails.setText("");
+      vh.txtDetails.setVisibility(View.GONE);
     }
 
     if (contact instanceof ContactAB) {
