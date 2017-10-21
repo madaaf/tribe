@@ -256,7 +256,9 @@ public class Live implements Serializable {
 
     public Builder shortcut(Shortcut shortcut) {
       this.shortcut = shortcut;
-      this.users(shortcut.getMembers().toArray(new User[shortcut.getMembers().size()]));
+      if (shortcut != null && shortcut.getMembers() != null) {
+        this.users(shortcut.getMembers().toArray(new User[shortcut.getMembers().size()]));
+      }
       return this;
     }
 

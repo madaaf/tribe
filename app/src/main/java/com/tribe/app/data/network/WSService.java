@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ChatCache;
@@ -22,6 +23,7 @@ import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.preferences.LastImOnline;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import io.realm.RealmList;
 import java.util.HashMap;
@@ -45,6 +47,7 @@ import timber.log.Timber;
 @Singleton public class WSService extends Service {
 
   private static final int TIMER_IM_ONLINE = 30000; // 30 SECS
+  private static final long TWENTY_FOUR_HOURS = 86400000;
 
   public static final String TYPE = "TYPE";
   public static final String ROOM_ID = "ROOM_ID";
@@ -128,6 +131,8 @@ import timber.log.Timber;
   @Inject UserRealmDataMapper userRealmDataMapper;
 
   @Inject @Named("webSocketApi") WebSocketConnection webSocketConnection;
+
+  @Inject @LastImOnline Preference<Long> lastImOnline;
 
   // VARIABLES
   private Map<String, String> headers;
@@ -333,13 +338,16 @@ import timber.log.Timber;
 
           cancelImOnline();
 
-          imOnlineSubscription =
-              Observable.timer(TIMER_IM_ONLINE, TimeUnit.MILLISECONDS).subscribe(aLong -> {
-                String req = getApplicationContext().getString(R.string.mutation,
-                    getApplicationContext().getString(R.string.imOnline));
-                webSocketConnection.send(req);
-                cancelImOnline();
-              });
+          if (System.currentTimeMillis() - lastImOnline.get() > TWENTY_FOUR_HOURS) {
+            imOnlineSubscription =
+                Observable.timer(TIMER_IM_ONLINE, TimeUnit.MILLISECONDS).subscribe(aLong -> {
+                  String req = getApplicationContext().getString(R.string.mutation,
+                      getApplicationContext().getString(R.string.imOnline));
+                  lastImOnline.set(System.currentTimeMillis());
+                  webSocketConnection.send(req);
+                  cancelImOnline();
+                });
+          }
         }
       } else if (newState.equals(WebSocketConnection.STATE_DISCONNECTED)) {
         hasSubscribed = false;
