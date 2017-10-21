@@ -1,12 +1,12 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.view.LayoutInflater;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -22,13 +22,13 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
 import com.tribe.app.presentation.mvp.view.NewChatMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
-import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.adapter.NewChatAdapter;
+import com.tribe.app.presentation.view.adapter.decorator.DividerHeadersItemDecoration;
+import com.tribe.app.presentation.view.adapter.manager.NewChatLayoutManager;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionView;
-import com.tribe.app.presentation.view.utils.FontCache;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,12 +48,17 @@ public class NewChatActivity extends BaseActivity
 
   @Inject NewChatPresenter newChatPresenter;
 
+  @Inject NewChatAdapter newChatAdapter;
+
   @BindView(R.id.txtAction) TextViewFont txtAction;
 
   @BindView(R.id.viewShortcutCompletion) ShortcutCompletionView viewShortcutCompletion;
 
+  @BindView(R.id.recyclerViewShortcuts) RecyclerView recyclerViewShortcuts;
+
   // VARIABLES
   private Unbinder unbinder;
+  private NewChatLayoutManager layoutManager;
   private FilteredArrayAdapter<Shortcut> adapter;
   private List<Shortcut> items;
   private Set<String> selectedIds;
@@ -72,6 +77,7 @@ public class NewChatActivity extends BaseActivity
     init(savedInstanceState);
     initPresenter();
     initUI();
+    initRecyclerView();
   }
 
   @Override protected void onStart() {
@@ -124,16 +130,8 @@ public class NewChatActivity extends BaseActivity
     adapter = new FilteredArrayAdapter<Shortcut>(this, R.layout.item_shortcut, items) {
       @Override public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-          LayoutInflater l =
-              (LayoutInflater) getContext().getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-          convertView = l.inflate(R.layout.item_shortcut, parent, false);
+          convertView = new View(getContext());
         }
-
-        Shortcut shortcut = getItem(position);
-        TextViewFont textViewFont = ButterKnife.findById(convertView, R.id.txtName);
-        NewAvatarView viewNewAvatar = ButterKnife.findById(convertView, R.id.viewNewAvatar);
-        viewNewAvatar.load(shortcut);
-        textViewFont.setText(shortcut.getDisplayName());
 
         return convertView;
       }
@@ -146,18 +144,74 @@ public class NewChatActivity extends BaseActivity
     };
 
     viewShortcutCompletion.setAdapter(adapter);
+
     viewShortcutCompletion.setDropDownWidth(screenUtils.getWidthPx());
     viewShortcutCompletion.setTokenListener(this);
     viewShortcutCompletion.allowCollapse(false);
     viewShortcutCompletion.allowDuplicates(false);
     ViewCompat.setElevation(viewShortcutCompletion, 0);
     viewShortcutCompletion.setDropDownVerticalOffset(screenUtils.dpToPx(17.5f));
+    viewShortcutCompletion.setDropDownHeight(0);
     viewShortcutCompletion.setDropDownBackgroundDrawable(null);
     viewShortcutCompletion.setThreshold(0);
-    viewShortcutCompletion.setPrefix(getString(R.string.newchat_to).toUpperCase() + "   ",
-        ContextCompat.getColor(this, R.color.black_opacity_40),
-        FontCache.getTypeface(FontUtils.PROXIMA_BOLD, this));
     viewShortcutCompletion.setTokenClickStyle(TokenCompleteTextView.TokenClickStyle.Select);
+    viewShortcutCompletion.addTextChangedListener(new TextWatcher() {
+      @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+      }
+
+      @Override public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        if (StringUtils.isEmpty(charSequence.toString())) filter(charSequence.toString());
+      }
+
+      @Override public void afterTextChanged(Editable editable) {
+
+      }
+    });
+  }
+
+  private void initRecyclerView() {
+    layoutManager = new NewChatLayoutManager(this);
+    recyclerViewShortcuts.setLayoutManager(layoutManager);
+    recyclerViewShortcuts.setItemAnimator(null);
+    recyclerViewShortcuts.addItemDecoration(
+        new DividerHeadersItemDecoration(screenUtils.dpToPx(10), screenUtils.dpToPx(10)));
+    recyclerViewShortcuts.setAdapter(newChatAdapter);
+
+    newChatAdapter.setItems(items);
+
+    subscriptions.add(newChatAdapter.onClick()
+        .map(view -> newChatAdapter.getItemAtPosition(
+            recyclerViewShortcuts.getChildLayoutPosition(view)))
+        .subscribe(shortcut -> {
+          shortcut.setSelected(!shortcut.isSelected());
+          newChatAdapter.update(shortcut);
+
+          if (shortcut.isSelected()) {
+            selectedIds.add(shortcut.getSingleFriend().getId());
+            viewShortcutCompletion.addObject(shortcut, shortcut.getDisplayName());
+          } else {
+            selectedIds.remove(shortcut.getSingleFriend().getId());
+            viewShortcutCompletion.removeObject(shortcut);
+          }
+
+          refactorAction();
+        }));
+
+    subscriptions.add(viewShortcutCompletion.onFiltering().subscribe(s -> filter(s)));
+  }
+
+  private void filter(String text) {
+    if (StringUtils.isEmpty(text)) newChatAdapter.setItems(items);
+
+    List<Shortcut> temp = new ArrayList();
+    for (Shortcut shortcut : items) {
+      if (shortcut.getDisplayName().toLowerCase().startsWith(text)) {
+        temp.add(shortcut);
+      }
+    }
+
+    newChatAdapter.setItems(temp);
   }
 
   private void refactorAction() {
@@ -208,7 +262,8 @@ public class NewChatActivity extends BaseActivity
   @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
     this.items.clear();
     this.items.addAll(singleShortcutList);
-    adapter.notifyDataSetChanged();
+    newChatAdapter.setItems(items);
+    newChatAdapter.notifyDataSetChanged();
   }
 
   @Override public void onShortcut(Shortcut shortcut) {
@@ -219,12 +274,16 @@ public class NewChatActivity extends BaseActivity
     if (token == null) return;
     count++;
     selectedIds.add(token.getSingleFriend().getId());
+    token.setSelected(true);
+    newChatAdapter.update(token);
     refactorAction();
   }
 
   @Override public void onTokenRemoved(Shortcut token) {
     count--;
     selectedIds.remove(token.getSingleFriend().getId());
+    token.setSelected(false);
+    newChatAdapter.update(token);
     refactorAction();
   }
 }

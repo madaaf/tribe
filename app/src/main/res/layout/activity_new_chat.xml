@@ -79,4 +79,12 @@
       android:layout_height="@dimen/divider_size"
       android:background="@color/grey.light"
       />
+
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerViewShortcuts"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@null"
+      android:scrollbars="vertical"
+      />
 </LinearLayout>

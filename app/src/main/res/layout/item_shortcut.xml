@@ -5,12 +5,24 @@
     android:background="@android:color/white"
     >
 
+  <ImageView
+      android:id="@+id/imgSelected"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_centerVertical="true"
+      android:layout_marginStart="@dimen/horizontal_margin"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_shortcut_selected"
+      android:visibility="gone"
+      />
+
   <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
       android:id="@+id/viewNewAvatar"
       android:layout_width="@dimen/avatar_size_small"
       android:layout_height="@dimen/avatar_size_small"
       android:layout_centerVertical="true"
       android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:layout_toRightOf="@+id/imgSelected"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
@@ -18,9 +30,9 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_centerVertical="true"
-      android:layout_marginStart="@dimen/horizontal_margin_smaller"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
       android:layout_toRightOf="@id/viewNewAvatar"
-      style="@style/Title.Regular.Black"
+      style="@style/BiggerTitle.1.Black"
       />
 
   <View

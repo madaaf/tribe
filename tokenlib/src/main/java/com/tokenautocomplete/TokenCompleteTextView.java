@@ -46,6 +46,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * GMail style auto complete view with easy token customization
@@ -55,8 +57,10 @@ import java.util.List;
  *
  * @author mgod
  */
-public abstract class TokenCompleteTextView<T> extends MultiAutoCompleteTextView
+public abstract class TokenCompleteTextView<T>
+    extends android.support.v7.widget.AppCompatMultiAutoCompleteTextView
     implements TextView.OnEditorActionListener {
+
   //Logging
   public static final String TAG = "TokenAutoComplete";
 
@@ -108,6 +112,8 @@ public abstract class TokenCompleteTextView<T> extends MultiAutoCompleteTextView
   private boolean allowCollapse = true;
 
   private int tokenLimit = -1;
+
+  private PublishSubject<String> onFiltering = PublishSubject.create();
 
   /**
    * Add the TextChangedListeners
@@ -197,6 +203,8 @@ public abstract class TokenCompleteTextView<T> extends MultiAutoCompleteTextView
                 return prefix.subSequence(destinationStart, prefix.length());
               }
             }
+
+            onFiltering.onNext("");
             return null;
           }
         }
@@ -236,6 +244,8 @@ public abstract class TokenCompleteTextView<T> extends MultiAutoCompleteTextView
         filter.filter(text.subSequence(start, end), this);
       }
     }
+
+    onFiltering.onNext(text.subSequence(start, end).toString());
   }
 
   @Override public void setTokenizer(Tokenizer t) {
@@ -1640,5 +1650,13 @@ public abstract class TokenCompleteTextView<T> extends MultiAutoCompleteTextView
 
       return super.deleteSurroundingText(beforeLength, afterLength);
     }
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<String> onFiltering() {
+    return onFiltering;
   }
 }
