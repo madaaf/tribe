@@ -14,6 +14,7 @@ import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
+import com.tribe.app.presentation.utils.preferences.LastImOnline;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
@@ -65,6 +66,11 @@ import static android.content.Context.MODE_PRIVATE;
 
   @Provides @Singleton @LastSync Preference<Long> provideLastSync(RxSharedPreferences prefs) {
     return prefs.getLong(PreferencesUtils.LAST_SYNC, 0L);
+  }
+
+  @Provides @Singleton @LastImOnline Preference<Long> provideLastImOnline(
+      RxSharedPreferences prefs) {
+    return prefs.getLong(PreferencesUtils.LAST_IM_ONLINE, 0L);
   }
 
   @Provides @Singleton @NewContactsTooltip Preference<Boolean> provideNewContactsTooltip(

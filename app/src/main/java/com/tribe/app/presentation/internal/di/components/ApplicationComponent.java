@@ -54,6 +54,7 @@ import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
+import com.tribe.app.presentation.utils.preferences.LastImOnline;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
@@ -355,6 +356,8 @@ public interface ApplicationComponent {
   NotificationManagerCompat notificationManagerCompat();
 
   @LastSync Preference<Long> lastSync();
+
+  @LastImOnline Preference<Long> lastImOnline();
 
   @NewContactsTooltip Preference<Boolean> newContactsTooltip();
 

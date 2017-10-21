@@ -22,6 +22,7 @@ public class PreferencesUtils {
   public static String INVISIBLE_MODE = "INVISIBLE_MODE";
   public static String ADDRESS_BOOK = "ADDRESS_BOOK";
   public static String LAST_SYNC = "LAST_SYNC";
+  public static String LAST_IM_ONLINE = "LAST_IM_ONLINE";
   public static String PREVIOUS_VERSION_CODE = "PREVIOUS_VERSION_CODE";
   public static String DEBUG_MODE = "DEBUG_MODE";
   public static String UI_SOUNDS = "UI_SOUNDS";
