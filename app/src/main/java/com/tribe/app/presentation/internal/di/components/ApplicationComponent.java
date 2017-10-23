@@ -92,6 +92,8 @@ import com.tribe.app.presentation.view.adapter.delegate.newchat.ShortcutNewChatA
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.common.ShortcutListView;
+import com.tribe.app.presentation.view.component.home.HomeWalkthroughVideoView;
+import com.tribe.app.presentation.view.component.home.HomeWalkthroughView;
 import com.tribe.app.presentation.view.component.home.NewChatView;
 import com.tribe.app.presentation.view.component.home.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.TopBarLogoView;
@@ -254,6 +256,10 @@ public interface ApplicationComponent {
   void inject(LiveDropZoneView liveDropZone);
 
   void inject(ShortcutNewChatAdapterDelegate shortcutNewChatAdapterDelegate);
+
+  void inject(HomeWalkthroughView homeWalkthroughView);
+
+  void inject(HomeWalkthroughVideoView homeWalkthroughVideoView);
 
   // JOBS
   void inject(BaseJob baseJob);

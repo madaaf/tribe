@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+  <View
+      android:id="@+id/viewBG"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:alpha="0"
+      android:background="@drawable/bg_gradient_walkthrough"
+      />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:gravity="center"
+      android:orientation="vertical"
+      >
+
+    <FrameLayout
+        android:id="@+id/layoutVideo"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:background="@null"
+        android:elevation="10dp"
+        >
+
+      <com.tribe.app.presentation.view.component.home.HomeWalkthroughVideoView
+          android:id="@+id/viewVideo"
+          android:layout_width="250dp"
+          android:layout_height="250dp"
+          />
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtWalkthrough"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="@null"
+          android:layout_gravity="center"
+          android:text="@string/walkthrough_message_step1"
+          style="@style/Headline.White.2"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtWalkthrough2"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:background="@null"
+          android:layout_gravity="center"
+          android:text="@string/walkthrough_message_step1"
+          style="@style/Headline.White.2"
+          />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/layoutInd"
+        android:layout_width="90dp"
+        android:layout_height="5dp"
+        android:layout_marginTop="15dp"
+        >
+
+      <View
+          android:layout_width="90dp"
+          android:layout_height="match_parent"
+          android:background="@drawable/shape_rect_rounded_white_10"
+          />
+
+      <View
+          android:id="@+id/viewInd"
+          android:layout_width="30dp"
+          android:layout_height="match_parent"
+          android:layout_gravity="center"
+          />
+    </FrameLayout>
+  </LinearLayout>
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/btnNext"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|center_horizontal"
+      android:layout_marginBottom="@dimen/horizontal_margin"
+      android:background="@drawable/bg_walkthrough_btn_selector"
+      android:foreground="@drawable/selectable_button_all_rounded_100_white_10"
+      android:gravity="center"
+      android:paddingBottom="@dimen/vertical_margin"
+      android:paddingEnd="@dimen/horizontal_margin_xlarge"
+      android:paddingStart="@dimen/horizontal_margin_xlarge"
+      android:paddingTop="@dimen/vertical_margin"
+      android:text="@string/walkthrough_action_step1"
+      style="@style/Headline.White.2"
+      />
+</merge>

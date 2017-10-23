@@ -450,9 +450,17 @@ import timber.log.Timber;
     persistentSubscriptions.add(
         jsonToModel.onFbIdUpdated().subscribe(userUpdated -> liveCache.onFbIdUpdated(userUpdated)));
 
-    persistentSubscriptions.add(jsonToModel.onRoomUpdated()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(room -> liveCache.onRoomUpdated(room)));
+    persistentSubscriptions.add(
+        jsonToModel.onRoomUpdated().observeOn(AndroidSchedulers.mainThread()).subscribe(room -> {
+          //List<String> userIds = room.getUserIds();
+          //ShortcutRealm shortcutRealm =
+          //    userCache.shortcutForUserIdsNoObs(userIds.toArray(new String[userIds.size()]));
+          //if (shortcutRealm != null) {
+          //  room.setShortcut(
+          //      userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealm));
+          //}
+          liveCache.onRoomUpdated(room);
+        }));
 
     persistentSubscriptions.add(jsonToModel.onUserListUpdated()
         .subscribe(userRealmList -> userCache.updateUserRealmList(userRealmList)));

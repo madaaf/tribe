@@ -369,7 +369,7 @@
   </style>
 
   <style name="Headline.Red" parent="@style/Headline">
-    <item name="android:textColor">@android:color/holo_red_dark</item>
+    <item name="android:textColor">@color/red</item>
   </style>
 
   <style name="Headline.Black40" parent="@style/Headline">
@@ -408,6 +408,10 @@
 
   <style name="Headline.Blue.2" parent="Headline.White.2">
     <item name="android:textColor">@color/blue.new</item>
+  </style>
+
+  <style name="Headline.BlueText.2" parent="Headline.White.2">
+    <item name="android:textColor">@color/blue.text</item>
   </style>
 
   <style name="Giant">

@@ -1,20 +1,28 @@
-package com.tribe.app.presentation.view.component.live;
+package com.tribe.app.presentation.view.component.home;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.TextureView;
-import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.video.TribeMediaPlayer;
 import com.tribe.app.presentation.view.widget.video.ScalableVideoView;
+import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
-public class TooltipVideoView extends FrameLayout implements TextureView.SurfaceTextureListener {
+public class HomeWalkthroughVideoView extends CardView
+    implements TextureView.SurfaceTextureListener {
+
+  @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.viewVideoScalable) ScalableVideoView viewVideoScalable;
 
@@ -27,13 +35,15 @@ public class TooltipVideoView extends FrameLayout implements TextureView.Surface
   // OBSERVABLES
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Integer> onProgress = PublishSubject.create();
+  private PublishSubject<Boolean> onCompletion = PublishSubject.create();
 
-  public TooltipVideoView(Context context) {
+  public HomeWalkthroughVideoView(Context context) {
     this(context, null);
     init(context, null);
   }
 
-  public TooltipVideoView(Context context, AttributeSet attrs) {
+  public HomeWalkthroughVideoView(Context context, AttributeSet attrs) {
     super(context, attrs);
     init(context, attrs);
   }
@@ -43,6 +53,13 @@ public class TooltipVideoView extends FrameLayout implements TextureView.Surface
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_auth_video, this, true);
     unbinder = ButterKnife.bind(this);
+    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
+        .inject(this);
+
+    setRadius(screenUtils.dpToPx(5));
+    setPreventCornerOverlap(false);
+    setMaxCardElevation(0);
+    setCardElevation(0);
   }
 
   @Override protected void onAttachedToWindow() {
@@ -59,20 +76,21 @@ public class TooltipVideoView extends FrameLayout implements TextureView.Surface
     if (mediaPlayer != null && mediaPlayer.isPlaying()) {
       mediaPlayer.pause();
       isPaused = true;
-      shouldResume = true;
+      this.shouldResume = shouldResume;
     }
   }
 
   public void initPlayer() {
     viewVideoScalable.setSurfaceTextureListener(this);
 
-    mediaPlayer = new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(),
-        "asset:///video/tooltip.mp4").autoStart(true)
-        .looping(true)
-        .isLocal(true)
-        .mute(true)
-        .forceLegacy(true)
-        .build();
+    mediaPlayer =
+        new TribeMediaPlayer.TribeMediaPlayerBuilder(getContext(), "asset:///video/walkthrough.mp4")
+            .autoStart(false)
+            .looping(false)
+            .isLocal(true)
+            .mute(true)
+            .forceLegacy(true)
+            .build();
 
     if (surfaceTexture != null) {
       mediaPlayer.setSurface(surfaceTexture);
@@ -84,6 +102,10 @@ public class TooltipVideoView extends FrameLayout implements TextureView.Surface
       videoHeight = videoSize.getHeight();
       viewVideoScalable.scaleVideoSize(videoWidth, videoHeight);
     }));
+
+    subscriptions.add(mediaPlayer.onProgress().subscribe(onProgress));
+
+    subscriptions.add(mediaPlayer.onCompletion().subscribe(onCompletion));
   }
 
   public void releasePlayer() {
@@ -136,5 +158,17 @@ public class TooltipVideoView extends FrameLayout implements TextureView.Surface
 
   @Override public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<Integer> onProgress() {
+    return onProgress;
+  }
+
+  public Observable<Boolean> onCompletion() {
+    return onCompletion;
   }
 }

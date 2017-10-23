@@ -117,6 +117,9 @@ public class EmojiParser {
     IEmojiMap.put(":framed_picture:", "\uD83D\uDDBC");
     IEmojiMap.put(":camera_with_flash:", "\uD83D\uDCF8");
     IEmojiMap.put(":arrow_up:", "\u2B06");
+    IEmojiMap.put(":house:", "\u2302");
+    IEmojiMap.put(":arrow_right:", "\u27A1");
+    IEmojiMap.put(":arrow_left:", "\u2B05");
   }
 
   /**

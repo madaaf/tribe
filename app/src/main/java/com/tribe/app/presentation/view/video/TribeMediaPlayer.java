@@ -3,9 +3,7 @@ package com.tribe.app.presentation.view.video;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
-import android.os.Build;
 import android.support.annotation.StringDef;
-import com.tribe.app.presentation.view.utils.DeviceUtils;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -36,6 +34,7 @@ public abstract class TribeMediaPlayer {
   PublishSubject<VideoSize> onVideoSizeChanged = PublishSubject.create();
   PublishSubject<Boolean> onVideoStarted = PublishSubject.create();
   PublishSubject<Boolean> onCompletion = PublishSubject.create();
+  PublishSubject<Integer> onProgress = PublishSubject.create();
 
   public Observable<String> onErrorPlayer() {
     return onErrorPlayer;
@@ -55,6 +54,10 @@ public abstract class TribeMediaPlayer {
 
   public Observable<Boolean> onCompletion() {
     return onCompletion;
+  }
+
+  public Observable<Integer> onProgress() {
+    return onProgress;
   }
 
   public int getAudioStreamType() {

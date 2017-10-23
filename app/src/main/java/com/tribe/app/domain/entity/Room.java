@@ -203,6 +203,8 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     this.name = room.name;
     this.accept_random = room.accept_random;
 
+    //if (room.getShortcut() != null) setShortcut(room.getShortcut());
+
     List<User> newLiveUsers = room.getLiveUsers();
     //if (newLiveUsers == null || newLiveUsers.size() != liveUsersMap.size()) {
     //  computeUsersChanges(currentUser, liveUsersMap, newLiveUsers);

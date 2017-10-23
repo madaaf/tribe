@@ -238,8 +238,10 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   public List<String> getMembersIds() {
     List<String> memberIds = new ArrayList<>();
 
-    for (User user : members) {
-      memberIds.add(user.getId());
+    if (members != null) {
+      for (User user : members) {
+        memberIds.add(user.getId());
+      }
     }
 
     return memberIds;

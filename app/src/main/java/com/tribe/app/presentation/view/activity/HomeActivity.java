@@ -81,6 +81,7 @@ import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.helper.HomeListTouchHelperCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
+import com.tribe.app.presentation.view.component.home.HomeWalkthroughView;
 import com.tribe.app.presentation.view.component.home.NewChatView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.home.TopBarContainer;
@@ -188,6 +189,8 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.viewFadeInSwipe) View viewFadeInSwipe;
 
   @BindView(R.id.viewLiveFake) LiveViewFake viewLiveFake;
+
+  @BindView(R.id.viewWalkthrough) HomeWalkthroughView viewWalkthrough;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -799,6 +802,10 @@ public class HomeActivity extends BaseActivity
     openSmsApp(intent);
 
     if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN)) {
+      subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> viewWalkthrough.show()));
+      
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
     }
   }

@@ -11,6 +11,7 @@ import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
+import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
@@ -56,6 +57,8 @@ import timber.log.Timber;
   private PublishSubject<String> onTyping = PublishSubject.create();
 
   @Inject MessageRealmDataMapper messageRealmDataMapper;
+
+  @Inject UserRealmDataMapper userRealmDataMapper;
 
   @Inject User user;
 
@@ -142,6 +145,17 @@ import timber.log.Timber;
 
               JsonArray live_users_json = roomJson.get("live_users").getAsJsonArray();
               JsonArray invited_users_json = roomJson.get("invited_users").getAsJsonArray();
+
+              if (roomJson.has("initiator")) {
+                try {
+                  UserRealm initiator = gson.fromJson(roomJson.get("initiator"), UserRealm.class);
+                  if (initiator != null) {
+                    room.setInitiator(userRealmDataMapper.transform(initiator));
+                  }
+                } catch (Exception ex) {
+                  ex.printStackTrace();
+                }
+              }
 
               if (live_users_json.size() > 0) {
                 List<User> live_users;

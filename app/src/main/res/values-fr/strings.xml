@@ -49,6 +49,7 @@
 	<string name="image_picker_chat_title">Envoyer une image</string>
 	<string name="image_picker_camera">Prendre un selfie :camera_with_flash:</string>
 	<string name="image_picker_library">Ouvrir ma bibliothèque :arrow_up:</string>
+	<string name="image_picker_documents">Documents :file_folder:</string>
 	
 	<!-- Contacts -->
 	<string name="contacts_search_new">NEW</string>

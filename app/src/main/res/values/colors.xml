@@ -14,6 +14,8 @@
   <color name="black.opacity.80">#CC000000</color>
   <color name="black.infos">#1A14181A</color>
   <color name="black.light">#1F2125</color>
+  <color name="black.walkthrough.gradient.start">#B32B3332</color>
+  <color name="black.walkthrough.gradient.end">#2B3332</color>
 
   <color name="black.dark.placeholder">#171717</color>
   <color name="black.light.placeholder">#1C1C1C</color>
