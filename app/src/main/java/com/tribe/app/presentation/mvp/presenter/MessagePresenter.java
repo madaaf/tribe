@@ -47,8 +47,8 @@ public class MessagePresenter implements Presenter {
   protected GetShortcutForUserIds getShortcutForUserIds;
 
   // SUBSCRIBERS
-/*  private UpdateShortcutSubscriber updateShortcutSubscriber;
-  private ShortcutForUserIdsSubscriber shortcutForUserIdsSubscriber;*/
+  private UpdateShortcutSubscriber updateShortcutSubscriber;
+  private ShortcutForUserIdsSubscriber shortcutForUserIdsSubscriber;
 
   @Inject public MessagePresenter(UserMessageInfos userMessageInfos, CreateMessage createMessage,
       GetMessageFromDisk getMessageFromDisk, GetDiskShortcut getDiskShortcut,
@@ -79,8 +79,13 @@ public class MessagePresenter implements Presenter {
   }
 
   public void shortcutForUserIds(String userIds) {
+    if (shortcutForUserIdsSubscriber != null) {
+      shortcutForUserIdsSubscriber.unsubscribe();
+      shortcutForUserIdsSubscriber = null;
+    }
+    shortcutForUserIdsSubscriber = new ShortcutForUserIdsSubscriber(userIds);
     getShortcutForUserIds.setup(userIds);
-    getShortcutForUserIds.execute(new ShortcutForUserIdsSubscriber(userIds));
+    getShortcutForUserIds.execute(shortcutForUserIdsSubscriber);
   }
 
   public void getDiskShortcut(String shortcutId) {
@@ -319,6 +324,7 @@ public class MessagePresenter implements Presenter {
           Timber.e("chatMVPView NULL " + shortcut);
         }
       }
+      shortcutForUserIdsSubscriber.unsubscribe();
     }
   }
 }

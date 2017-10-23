@@ -40,6 +40,7 @@ import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.PictureActivity;
 import java.util.List;
 import javax.inject.Inject;
+import timber.log.Timber;
 
 /**
  * Class used to navigate through the application.
@@ -225,6 +226,7 @@ public class Navigator {
     if (activity != null) {
       Intent intent = ChatActivity.getCallingIntent(activity, recipient, shortcut);
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      Timber.e("NAVIGATORE " + shortcut);
       activity.startActivityForResult(intent, FROM_CHAT);
       activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
     }
