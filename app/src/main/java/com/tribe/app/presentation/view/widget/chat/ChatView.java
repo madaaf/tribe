@@ -17,8 +17,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -73,6 +73,7 @@ import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
@@ -145,8 +146,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   @BindView(R.id.uploadBtn) ImageView uploadImageBtn;
   @BindView(R.id.sendBtn) ImageView sendBtn;
   @BindView(R.id.videoCallBtn) ImageView videoCallBtn;
-  @BindView(R.id.layoutPulse) PulseLayout pulseLayout;
-  @BindView(R.id.viewAvatar) AvatarView avatarView;
+  @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
+  @BindView(R.id.viewNewAvatar) NewAvatarView avatarView;
   @BindView(R.id.refExpended) FrameLayout refExpended;
   @BindView(R.id.refMaxExpended) FrameLayout refMaxExpended;
   @BindView(R.id.refInit) FrameLayout refInit;
@@ -159,6 +160,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   @BindView(R.id.containerQuickChat) FrameLayout containerQuickChat;
   @BindView(R.id.container) FrameLayout container;
   @BindView(R.id.containerEditText) RelativeLayout containerEditText;
+  @BindView(R.id.blurBackEditText) View blurBackEditText;
   @BindView(R.id.separator) View separator;
   @BindView(R.id.voiceNoteBtn) ImageView voiceNoteBtn;
   @BindView(R.id.recordingView) FrameLayout recordingView;
@@ -257,9 +259,18 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     chatView = this;
     rxPermissions = new RxPermissions((Activity) context);
 
+
+
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+        recyclerView.setOnTouchListener(new OnTouchListener() {
+          @Override public boolean onTouch(View view, MotionEvent motionEvent) {
+            screenUtils.hideKeyboard((Activity) context);
+            return false;
+          }
+        });
 
         widthRefExpended = refExpended.getWidth();
         widthRefInit = refInit.getWidth();
@@ -359,7 +370,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
           likeBtn.setVisibility(VISIBLE);
           btnSendLikeContainer.setVisibility(VISIBLE);
           uploadImageBtn.setVisibility(VISIBLE);
-          pulseLayout.setVisibility(VISIBLE);
+          layoutPulse.setVisibility(VISIBLE);
 
           editText.setCursorVisible(true);
         })
@@ -433,7 +444,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
           likeBtn.setVisibility(GONE);*/ // TODO
           btnSendLikeContainer.setVisibility(GONE);
           uploadImageBtn.setVisibility(GONE);
-          pulseLayout.setVisibility(GONE);
+          layoutPulse.setVisibility(GONE);
           recordingView.animate()
               .translationY(-(recordingView.getHeight() * 2.5f))
               .setInterpolator(new OvershootInterpolator())
@@ -478,20 +489,21 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     if (type == (FROM_LIVE)) {
       topbar.setVisibility(GONE);
       containerUsers.setVisibility(GONE);
-      pulseLayout.getLayoutParams().height = 0;
-      pulseLayout.getLayoutParams().width = 0;
+      layoutPulse.getLayoutParams().height = 0;
+      layoutPulse.getLayoutParams().width = 0;
       container.setBackground(null);
       uploadImageBtn.setImageDrawable(
           ContextCompat.getDrawable(context, R.drawable.picto_chat_upload_white));
       videoCallBtn.setVisibility(GONE);
-      sendBtn.setImageDrawable(
-          ContextCompat.getDrawable(context, R.drawable.picto_like_heart_white));
+      sendBtn.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_send_btn_white));
       separator.setVisibility(GONE);
+      voiceNoteBtn.setVisibility(GONE);
+      pictoVoiceNote.setVisibility(GONE);
 
     /*  editText.setBackground(
           ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_black10));*/
-    /*  containerEditText.setBackground(
-          ContextCompat.getDrawable(context, R.drawable.background_blur));*/
+      blurBackEditText.setBackground(
+          ContextCompat.getDrawable(context, R.drawable.background_blur));
       editText.setTextColor(ContextCompat.getColor(context, R.color.white));
     }
   }
@@ -539,6 +551,14 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void initSubscriptions() {
+    subscriptions.add(recyclerView.onScrollRecyclerView().subscribe(dy -> {
+      if (dy < 0 && blurBackEditText.getAlpha() != 1f) {
+        blurBackEditText.animate().alpha(1f).setDuration(ANIM_DURATION_FAST).start();
+      } else if (blurBackEditText.getAlpha() != 0f) {
+        blurBackEditText.animate().alpha(0f).setDuration(ANIM_DURATION_FAST).start();
+      }
+    }));
+
     subscriptions.add(chatUserAdapter.onQuickChat().subscribe(id -> {
       messagePresenter.shortcutForUserIds(id);
     }));
@@ -839,7 +859,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       subscriptions.unsubscribe();
       subscriptions.clear();
     }
-    pulseLayout.clearAnimation();
+    layoutPulse.clearAnimation();
     super.onDetachedFromWindow();
   }
 
@@ -939,19 +959,22 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       case TYPE_NORMAL:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video));
-        pulseLayout.stop();
+        layoutPulse.stop();
+        avatarView.setType(NewAvatarView.NORMAL);
         break;
       case TYPE_LIVE:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_red));
-        pulseLayout.setColor(ContextCompat.getColor(context, R.color.red_pulse));
-        pulseLayout.start();
+        layoutPulse.setColor(ContextCompat.getColor(context, R.color.red_pulse));
+        layoutPulse.start();
+        avatarView.setType(NewAvatarView.LIVE);
         break;
       case TYPE_ONLINE:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_live));
-        pulseLayout.setColor(ContextCompat.getColor(context, R.color.blue_new_opacity_40));
-        pulseLayout.start();
+        layoutPulse.setColor(ContextCompat.getColor(context, R.color.blue_new_opacity_40));
+        layoutPulse.start();
+        avatarView.setType(NewAvatarView.ONLINE);
         break;
     }
   }
@@ -1230,16 +1253,5 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         ((Activity) context).finish();
       });
     }
-  }
-
-  @Override public boolean dispatchKeyEventPreIme(KeyEvent event) {
-
-    if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-      Timber.e("SOEF KEYCODE_BACK " + fromShortcut);
-      if (fromShortcut == null) {
-
-      }
-    }
-    return super.dispatchKeyEventPreIme(event);
   }
 }

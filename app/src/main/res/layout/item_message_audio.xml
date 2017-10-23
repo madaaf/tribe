@@ -24,6 +24,7 @@
       />
 
   <View
+      android:id="@+id/backView"
       android:layout_width="150dp"
       android:layout_height="wrap_content"
       android:layout_alignBottom="@+id/recordingView"

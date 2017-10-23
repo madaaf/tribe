@@ -13,7 +13,7 @@ import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
@@ -321,9 +321,8 @@ public class LiveActivity extends BaseActivity
 
         if (room.getId().equals(payload.getSessionId())) {
           String action = payload.getAction();
-          if (action != null &&
-              (action.equals(NotificationPayload.ACTION_LEFT) ||
-                  action.equals(NotificationPayload.ACTION_JOINED))) {
+          if (action != null && (action.equals(NotificationPayload.ACTION_LEFT) || action.equals(
+              NotificationPayload.ACTION_JOINED))) {
             shouldDisplay = false;
           }
         }
@@ -553,15 +552,17 @@ public class LiveActivity extends BaseActivity
         chatView.setTranslationX(-screenUtils.getWidthPx());
         chatView.setVisibility(VISIBLE);
         chatView.animate()
-            .setInterpolator(new AccelerateInterpolator())
+            .setInterpolator(new AccelerateDecelerateInterpolator())
             .setDuration(300)
             .alpha(1f)
+            .withStartAction(() -> chatView.setAlpha(0f))
             .translationX(0)
             .setListener(null);
       } else {
         chatView.animate()
             .setDuration(300)
             .alpha(0f)
+            .withStartAction(() -> chatView.setAlpha(1f))
             .translationX(-screenUtils.getWidthPx())
             .withEndAction(() -> chatView.setVisibility(View.GONE))
             .setListener(null);
@@ -624,8 +625,8 @@ public class LiveActivity extends BaseActivity
         .subscribe(aVoid -> gameDrawView.onClearDrawReceived()));
 
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
-      if (live.fromRoom() &&
-          (tribeJoinRoom.getSessionList() == null || tribeJoinRoom.getSessionList().size() == 0)) {
+      if (live.fromRoom() && (tribeJoinRoom.getSessionList() == null
+          || tribeJoinRoom.getSessionList().size() == 0)) {
         Toast.makeText(this,
             getString(R.string.live_other_user_hung_up, room.getInitiator().getDisplayName()),
             Toast.LENGTH_SHORT).show();
@@ -904,8 +905,8 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE &&
-        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
+        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -1179,9 +1180,9 @@ public class LiveActivity extends BaseActivity
     live.setRoom(room);
     viewLive.joinRoom(this.room);
 
-    if (!StringUtils.isEmpty(live.getRoomId()) &&
-        !StringUtils.isEmpty(room.getName()) &&
-        !room.getInitiator().getId().equals(getCurrentUser().getId())) {
+    if (!StringUtils.isEmpty(live.getRoomId())
+        && !StringUtils.isEmpty(room.getName())
+        && !room.getInitiator().getId().equals(getCurrentUser().getId())) {
       NotificationPayload notificationPayload = new NotificationPayload();
       notificationPayload.setBody(EmojiParser.demojizedText(
           getString(R.string.live_notification_initiator_has_been_notified,

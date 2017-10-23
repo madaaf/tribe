@@ -19,6 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
@@ -67,6 +68,11 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
 
     MessageAudio m = (MessageAudio) items.get(position);
     MessageAudioViewHolder vh = (MessageAudioViewHolder) holder;
+
+    if (type == ChatView.FROM_LIVE) {
+      vh.backView.setVisibility(GONE);
+    }
+
     Image o = m.getOriginal();
     String time =
         (m.getTime() != null && !m.getTime().isEmpty()) ? m.getTime() : o.getDurationFormatted();
@@ -278,6 +284,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     @BindView(R.id.loadingRecordView) public AVLoadingIndicatorView loadingRecordView;
     @BindView(R.id.equalizer) ImageView equalizer;
     @BindView(R.id.pauseBtn) ImageView pauseBtn;
+    @BindView(R.id.backView) View backView;
 
     MessageAudioViewHolder(View itemView) {
       super(itemView);

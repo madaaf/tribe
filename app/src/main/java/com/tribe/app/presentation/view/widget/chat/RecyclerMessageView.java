@@ -33,6 +33,8 @@ import javax.inject.Inject;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 /**
@@ -58,6 +60,8 @@ public class RecyclerMessageView extends ChatMVPView {
   @Inject MessagePresenter messagePresenter;
   @Inject DateUtils dateUtils;
   @Inject ScreenUtils screenUtils;
+
+  private PublishSubject<Integer> onScrollRecyclerView = PublishSubject.create();
 
   public RecyclerMessageView(@NonNull Context context) {
     super(context);
@@ -132,6 +136,8 @@ public class RecyclerMessageView extends ChatMVPView {
 
     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
       @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        onScrollRecyclerView.onNext(dy);
+        Timber.e("DY / " + dy );
         if (dy != 0) {
           screenUtils.hideKeyboard((Activity) context);
         }
@@ -283,5 +289,9 @@ public class RecyclerMessageView extends ChatMVPView {
 
   public void errorMessageReveived() {
     Timber.i("SOOoOOOOOOOOOOOOEF errorMessageReveived ");
+  }
+
+  public Observable<Integer> onScrollRecyclerView() {
+    return onScrollRecyclerView;
   }
 }
