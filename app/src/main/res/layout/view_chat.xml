@@ -91,7 +91,7 @@
           android:layout_alignParentEnd="true"
           android:layout_centerVertical="true"
           android:visibility="gone"
-          ></FrameLayout>
+          />
 
       <android.support.v7.widget.RecyclerView
           android:id="@+id/recyclerViewGrp"
@@ -270,10 +270,9 @@
         android:layout_toStartOf="@+id/btnSendLikeContainer"
         android:background="@drawable/shape_rect_chat"
         android:ems="10"
-        android:gravity="bottom"
         android:hint="Aa"
         android:imeOptions="actionSend"
-        android:inputType="textMultiLine|textShortMessage"
+        android:inputType="textMultiLine|textShortMessage|textNoSuggestions"
         android:minHeight="40dp"
         android:padding="10dp"
         android:textColor="@android:color/black"

@@ -6,5 +6,9 @@
       android:color="@color/grey.chat.border"
       android:width="0.5dp"/>
 
+<<<<<<< HEAD
   <corners android:radius="18dp"/>
+=======
+  <corners android:radius="25dp" />
+>>>>>>> link behavior
 </shape>

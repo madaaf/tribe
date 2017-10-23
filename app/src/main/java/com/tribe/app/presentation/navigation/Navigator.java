@@ -225,6 +225,10 @@ public class Navigator {
     if (activity != null) {
       Intent intent = ChatActivity.getCallingIntent(activity, recipient, shortcut);
       //  intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      if (shortcut != null) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
+      }
+
       activity.startActivityForResult(intent, FROM_CHAT);
       activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
     }

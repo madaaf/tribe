@@ -17,6 +17,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -111,6 +112,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   private final static int INTERVAL_IM_TYPING = 2;
   private static int ANIM_DURATION = 300;
+  private static int ANIM_DURATION_FAST = 150;
 
   public final static int FROM_CHAT = 0;
   public final static int FROM_LIVE = 1;
@@ -124,7 +126,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   private ChatUserAdapter chatUserAdapter;
   private LinearLayoutManager layoutManagerGrp;
   private List<User> members = new ArrayList<>();
-
+  private ChatView chatView;
   private String editTextString;
   private int type, widthRefExpended, widthRefInit, containerUsersHeight, refMaxExpendedWidth,
       voiceNoteBtnX, recordingViewX, recordingViewInitWidth;
@@ -251,8 +253,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     }
   }
 
-  private ChatView chatView;
-
   private void initParams() {
     chatView = this;
     rxPermissions = new RxPermissions((Activity) context);
@@ -260,6 +260,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
         widthRefExpended = refExpended.getWidth();
         widthRefInit = refInit.getWidth();
         refMaxExpendedWidth = refMaxExpended.getWidth();
@@ -290,8 +291,10 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         recordingViewX = (int) recordingView.getX();
         recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
 
-        if (members.size() < 2) {
+        if (members.size() < 2 && fromShortcut == null) {
           containerUsers.setVisibility(GONE);
+        } else {
+          containerUsers.setVisibility(VISIBLE);
         }
         //  float ok = recordingViewX + (recordingView.getWidth() / 2);
         SwipeDetector moveListener = new SwipeDetector(chatView, voiceNoteBtn, recordingView,
@@ -576,6 +579,12 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
           if (text.isEmpty()) {
             editText.setHint("Aa");
+            voiceNoteBtn.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(ANIM_DURATION_FAST)
+                .withEndAction(() -> pictoVoiceNote.setVisibility(VISIBLE))
+                .start();
             isHeart = true;
             editTextChange = false;
             if (type == FROM_LIVE) {
@@ -588,6 +597,12 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
             switchLikeToSendBtn(false);
           } else if (!text.isEmpty() && !editTextChange) {
             Timber.e("OOK " + text);
+            voiceNoteBtn.animate()
+                .scaleX(0f)
+                .scaleY(0f)
+                .setDuration(ANIM_DURATION_FAST)
+                .withStartAction(() -> pictoVoiceNote.setVisibility(GONE))
+                .start();
             editTextChange = true;
             isHeart = false;
 
@@ -1210,8 +1225,22 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       name.setPadding(0, 15, 0, 15);
       containerQuickChat.addView(layout);
       name.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow, 0);
-
-      layout.setOnClickListener(view -> ((Activity) context).finish());
+      View v = this;
+      layout.setOnClickListener(view -> {
+        //  removeView(v);
+        ((Activity) context).finish();
+      });
     }
+  }
+
+  @Override public boolean dispatchKeyEventPreIme(KeyEvent event) {
+
+    if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+      Timber.e("SOEF KEYCODE_BACK " + fromShortcut);
+      if (fromShortcut == null) {
+
+      }
+    }
+    return super.dispatchKeyEventPreIme(event);
   }
 }
