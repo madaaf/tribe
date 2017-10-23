@@ -20,6 +20,7 @@ import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.RoomMember;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
@@ -645,8 +646,7 @@ public class LiveView extends FrameLayout {
           addView(remotePeer);
           onNotificationRemoteWaiting.onNext(getDisplayNameFromSession(remotePeer.getSession()));
 
-          // TODO CHANGE WITH NEW SYSTEM
-          //webRTCRoom.sendToPeer(remotePeer, getInvitedPayload(), true);
+          webRTCRoom.sendToPeer(remotePeer, getInvitedPayload(), true);
 
           live.getRoom().userJoinedWebRTC(remotePeer.getSession().getUserId());
 
@@ -705,36 +705,6 @@ public class LiveView extends FrameLayout {
           } else {
             Timber.d("user not connected to fb");
           }
-        }));
-
-    tempSubscriptions.add(webRTCRoom.onInvitedTribeGuestList()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(tribeGuests -> {
-          // TODO CHANGE WITH NEW SYSTEM
-          //if (tribeGuests != null && tribeGuests.size() > 0) {
-          //  for (TribeGuest trg : tribeGuests) {
-          //    if (!liveInviteMap.getMap().containsKey(trg.getId()) &&
-          //        !liveRowViewMap.getMap().containsKey(trg.getId())) {
-          //      if (!user.getId().equals(trg.getId())) {
-          //        addTribeGuest(trg);
-          //        onNotificationRemotePeerInvited.onNext(trg.getDisplayName());
-          //      }
-          //    }
-          //  }
-          //}
-        }));
-
-    tempSubscriptions.add(webRTCRoom.onRemovedTribeGuestList()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(tribeGuests -> {
-          // TODO CHANGE WITH NEW SYSTEM
-          //if (tribeGuests != null && tribeGuests.size() > 0) {
-          //  for (TribeGuest trg : tribeGuests) {
-          //    if (liveInviteMap.getMap().containsKey(trg.getId())) {
-          //      removeFromInvites(trg.getId());
-          //    }
-          //  }
-          //}
         }));
 
     tempSubscriptions.add(viewRoom.onChangeCallRouletteRoom().subscribe(onChangeCallRouletteRoom));
@@ -826,35 +796,6 @@ public class LiveView extends FrameLayout {
     return webRTCRoom;
   }
 
-  public void addTribeGuest(TribeGuest trg) {
-    //if (!liveInviteMap.getMap().containsKey(trg.getId()) &&
-    //    !liveRowViewMap.getMap().containsKey(trg.getId())) {
-    //  LiveRowView liveRowView = new LiveRowView(getContext());
-    //  liveRowView.getViewTreeObserver()
-    //      .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-    //        @Override public void onGlobalLayout() {
-    //          liveRowView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-    //          // TODO ADD HERE WITH NEW SYSTEM
-    //        }
-    //      });
-    //
-    //  addView(liveRowView, trg);
-    //  liveInviteMap.put(trg.getId(), liveRowView);
-    //
-    //  //subscribeOnRemovingGuestFromLive(liveRowView);
-    //}
-  }
-
-  // TODO ADD HERE WITH NEW SYSTEM
-  //private void subscribeOnRemovingGuestFromLive(LiveRowView liveRowView) {
-  //  tempSubscriptions.add(liveRowView.onShouldRemoveGuest().doOnNext(tribeGuest -> {
-  //    onDismissInvite.onNext(tribeGuest.getId());
-  //    removeFromInvites(tribeGuest.getId());
-  //    webRTCRoom.sendToPeers(getRemovedPayload(tribeGuest), true);
-  //    refactorShareOverlay();
-  //  }).subscribe());
-  //}
-
   public void setCameraEnabled(boolean enable,
       @TribePeerMediaConfiguration.MediaConfigurationType String type) {
     if (viewLocalLive == null) return;
@@ -870,12 +811,7 @@ public class LiveView extends FrameLayout {
     return live.getRoom().nbUsersTotal();
   }
 
-  public int nbOtherUsersInRoom() {
-    return liveRowViewMap.getMap().size();
-  }
-
   public boolean shouldLeave() {
-    // TODO CHANGE WITH NEW SYSTEM
     return liveRowViewMap.size() == 0 &&
         live != null &&
         !live.getSource().equals(SOURCE_CALL_ROULETTE);
@@ -972,7 +908,6 @@ public class LiveView extends FrameLayout {
     if (liveRowViewMap.getMap().containsKey(id)) {
       LiveRowView liveRowView = liveRowViewMap.remove(id, true);
       liveRowView.dispose();
-      //viewRoom.removeView(liveRowView);
 
       if (liveRowView.getParent() != null) {
         ((ViewGroup) liveRowView.getParent()).removeView(liveRowView);
@@ -980,30 +915,32 @@ public class LiveView extends FrameLayout {
     }
   }
 
-  private void removeFromInvites(String id) {
-    // TODO CHANGE WITH NEW SYSTEM
-    //if (liveInviteMap.getMap().containsKey(id)) {
-    //  LiveRowView liveRowView = liveInviteMap.remove(id, true);
-    //  liveRowView.dispose();
-    //  viewRoom.removeView(liveRowView);
-    //}
-  }
-
   private TribeGuest guestFromRemotePeer(RemotePeer remotePeer) {
     TribeGuest guest = null;
 
-    // TODO REPLACE WITH SHORTCUTS
-    //for (Friendship friendship : user.getFriendships()) {
-    //  if (user.getId().equals(friendship.getSubId())) {
-    //    guest = new TribeGuest(friendship.getSubId(), friendship.getDisplayName(),
-    //        friendship.getProfilePicture(), false, true, friendship.getUsername());
-    //    guest.setExternal(remotePeer.getSession().isExternal());
-    //  }
-    //}
+    for (User user : live.getRoom().getAllUsers()) {
+      if (remotePeer.getSession().getUserId().equals(user.getId())) {
+        guest = new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
+            true, user.getUsername());
+        guest.setExternal(remotePeer.getSession().isExternal());
+      }
+    }
+
+    for (Shortcut shortcut : user.getShortcutList()) {
+      if (shortcut.isSingle()) {
+        User friend = shortcut.getSingleFriend();
+        if (remotePeer.getSession().getUserId().equals(friend.getId())) {
+          guest =
+              new TribeGuest(friend.getId(), friend.getDisplayName(), friend.getProfilePicture(),
+                  false, true, friend.getUsername());
+          guest.setExternal(remotePeer.getSession().isExternal());
+        }
+      }
+    }
 
     if (guest == null) {
-      guest =
-          new TribeGuest(user.getId(), getDisplayNameFromId(user.getId()), null, false, false, "");
+      guest = new TribeGuest(remotePeer.getSession().getUserId(),
+          getDisplayNameFromId(remotePeer.getSession().getUserId()), null, false, false, "");
       guest.setExternal(remotePeer.getSession().isExternal());
     }
 
@@ -1091,21 +1028,22 @@ public class LiveView extends FrameLayout {
     return obj;
   }
 
-  //private JSONObject getInvitedPayload() {
-  // TODO CHANGE WITH NEW SYSTEM
-  //JSONObject jsonObject = new JSONObject();
-  //JSONArray array = new JSONArray();
-  //for (LiveRowView liveRowView : liveInviteMap.getMap().values()) {
-  //  JSONObject invitedGuest = new JSONObject();
-  //  jsonPut(invitedGuest, TribeGuest.ID, liveRowView.getGuest().getId());
-  //  jsonPut(invitedGuest, TribeGuest.DISPLAY_NAME, liveRowView.getGuest().getDisplayName());
-  //  jsonPut(invitedGuest, TribeGuest.PICTURE, liveRowView.getGuest().getPicture());
-  //  jsonPut(invitedGuest, TribeGuest.USERNAME, liveRowView.getGuest().getUserName());
-  //  array.put(invitedGuest);
-  //}
-  //jsonPut(jsonObject, com.tribe.tribelivesdk.core.Room.MESSAGE_INVITE_ADDED, array);
-  //return jsonObject;
-  //}
+  private JSONObject getInvitedPayload() {
+    JSONObject jsonObject = new JSONObject();
+    JSONArray array = new JSONArray();
+
+    for (User user : live.getRoom().getInvitedUsers()) {
+      JSONObject invitedGuest = new JSONObject();
+      jsonPut(invitedGuest, TribeGuest.ID, user.getId());
+      jsonPut(invitedGuest, TribeGuest.DISPLAY_NAME, user.getDisplayName());
+      jsonPut(invitedGuest, TribeGuest.PICTURE, user.getProfilePicture());
+      jsonPut(invitedGuest, TribeGuest.USERNAME, user.getUsername());
+      array.put(invitedGuest);
+    }
+
+    jsonPut(jsonObject, com.tribe.tribelivesdk.core.Room.MESSAGE_INVITE_ADDED, array);
+    return jsonObject;
+  }
 
   private JSONObject getUnlockRollTheDicePayload(User user) {
 
@@ -1164,28 +1102,8 @@ public class LiveView extends FrameLayout {
     }
   }
 
-  private boolean shouldEnableBuzz() {
-    boolean result = true;
-    int nbLiveInRoom = nbLiveInRoom() + 1;
-
-    if (live == null) return false;
-    if (nbLiveInRoom == LIVE_MAX) return false;
-
-    if (!isTherePeopleWaiting()) {
-      result = false;
-    }
-
-    return result;
-  }
-
   private int nbLiveInRoom() {
-    int count = 0;
-
-    for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
-      if (!liveRowView.isWaiting()) count++;
-    }
-
-    return count;
+    return live.getRoom().nbUsersLive();
   }
 
   public RoomMember getUsersInLiveRoom() {
@@ -1232,19 +1150,6 @@ public class LiveView extends FrameLayout {
     return new RoomMember(usersInLive, anonymousGuestInLive, externalInRoom);
   }
 
-  private boolean isTherePeopleWaiting() {
-    boolean waiting = false;
-
-    for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
-      if (liveRowView.isWaiting()) waiting = true;
-    }
-
-    // TODO CHANGE WITH NEW SYSTEM
-    //if (!waiting) waiting = liveInviteMap.size() > 0;
-
-    return waiting;
-  }
-
   private String getInviteWaiting() {
     String id = "";
 
@@ -1261,25 +1166,20 @@ public class LiveView extends FrameLayout {
   }
 
   private String getDisplayNameFromId(String id) {
-    for (User user : live.getRoom().getLiveUsers()) {
+    for (User user : live.getRoom().getAllUsers()) {
       if (id.equals(user.getId()) && !user.isEmpty()) {
         return user.getDisplayName();
       }
     }
 
-    for (User user : live.getRoom().getInvitedUsers()) {
-      if (id.equals(user.getId()) && !user.isEmpty()) {
-        return user.getDisplayName();
+    for (Shortcut shortcut : user.getShortcutList()) {
+      if (shortcut.isSingle()) {
+        User friend = shortcut.getSingleFriend();
+        if (friend.getId().equals(id)) {
+          return friend.getDisplayName();
+        }
       }
     }
-
-    // TODO REPLACE WITH SHORTCUTS
-    //for (Friendship friendship : user.getFriendships()) {
-    //  User friend = friendship.getFriend();
-    //  if (friend.getId().equals(id)) {
-    //    return friend.getDisplayName();
-    //  }
-    //}
 
     for (User anonymousUser : anonymousInLive) {
       if (anonymousUser.getId().equals(id)) {
@@ -1291,25 +1191,20 @@ public class LiveView extends FrameLayout {
   }
 
   private Object computeGuest(String id) {
-    for (User user : live.getRoom().getLiveUsers()) {
+    for (User user : live.getRoom().getAllUsers()) {
       if (id.equals(user.getId()) && !user.isEmpty()) {
         return user;
       }
     }
 
-    for (User user : live.getRoom().getInvitedUsers()) {
-      if (id.equals(user.getId()) && !user.isEmpty()) {
-        return user;
+    for (Shortcut shortcut : user.getShortcutList()) {
+      if (shortcut.isSingle()) {
+        User friend = shortcut.getSingleFriend();
+        if (friend.getId().equals(id)) {
+          return friend;
+        }
       }
     }
-
-    // TODO REPLACE WITH SHORTCUTS
-    //for (Friendship friendship : user.getFriendships()) {
-    //  User friend = friendship.getFriend();
-    //  if (friend.getId().equals(id)) {
-    //    return friendship;
-    //  }
-    //}
 
     for (User anonymousUser : anonymousInLive) {
       if (anonymousUser.getId().equals(id)) {

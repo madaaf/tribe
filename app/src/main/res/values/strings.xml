@@ -772,6 +772,9 @@
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Mark as read</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Mark as unread</string>
 	<string name="home_menu_invite_decline">:phone: Decline call</string>
+	<string name="home_block_shortcut_title">Block %1$s?</string>
+	<string name="home_block_shortcut_message">Hide permanently this person, related groups and associated notifications.</string>
+	<string name="home_block_shortcut_validate">Block</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">New Chat</string>

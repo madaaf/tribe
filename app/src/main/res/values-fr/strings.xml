@@ -772,6 +772,9 @@
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Marquer comme lu</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Marquer comme non-lu</string>
 	<string name="home_menu_invite_decline">:phone: Rejeter l\'appel</string>
+	<string name="home_block_shortcut_title">Bloquer %1$s ?</string>
+	<string name="home_block_shortcut_message">Masquer de manière permanente cette personne et les groupes et les notifications qui lui sont associés.</string>
+	<string name="home_block_shortcut_validate">Bloquer</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">Nouveau chat</string>
