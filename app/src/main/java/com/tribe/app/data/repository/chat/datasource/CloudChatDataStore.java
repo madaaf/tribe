@@ -12,6 +12,7 @@ import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.RealmList;
 import java.util.List;
 import rx.Observable;
+import rx.functions.Action1;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -41,21 +42,7 @@ public class CloudChatDataStore implements ChatDataStore {
       RealmList<MessageRealm> list = new RealmList<>();
       list.add(messageRealm);
       chatCache.putMessages(list, JsonUtils.arrayToJson(userIds));
-    }).doOnNext(messageRealm -> {
-      MessageRealm latestMessage = chatCache.getLastTextMessage(userIds);
-      ShortcutRealm shortcutRealm = userCache.shortcutForUserIdsNoObs(userIds);
-
-      if (shortcutRealm != null && latestMessage != null) {
-        String txt = "";
-        if (shortcutRealm.isSingle()) {
-          txt = latestMessage.getData();
-        } else {
-          txt = latestMessage.getAuthor().getDisplayName() + " : " + latestMessage.getData();
-        }
-
-        userCache.updateShortcutLastText(shortcutRealm.getId(), txt);
-      }
-    });
+    }).doOnNext(messageRealm -> refactorMessages.call(userIds));
   }
 
   @Override public Observable<UserRealm> loadMessages(String[] userIds, String dateBefore) {
@@ -63,7 +50,8 @@ public class CloudChatDataStore implements ChatDataStore {
         context.getString(R.string.messages_details, JsonUtils.arrayToJson(userIds), dateBefore,
             context.getString(R.string.messagefragment_info)))
         .doOnNext(userRealm -> chatCache.putMessages(userRealm.getMessages(),
-            JsonUtils.arrayToJson(userIds)));
+            JsonUtils.arrayToJson(userIds)))
+        .doOnNext(messageRealm -> refactorMessages.call(userIds));
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
@@ -87,4 +75,20 @@ public class CloudChatDataStore implements ChatDataStore {
         context.getString(R.string.imTyping, JsonUtils.arrayToJson(userIds)));
     return this.tribeApi.imTyping(request);
   }
+
+  private final Action1<String[]> refactorMessages = userIds -> {
+    MessageRealm latestMessage = chatCache.getLastTextMessage(userIds);
+    ShortcutRealm shortcutRealm = userCache.shortcutForUserIdsNoObs(userIds);
+
+    if (shortcutRealm != null && latestMessage != null) {
+      String txt = "";
+      if (shortcutRealm.isSingle()) {
+        txt = latestMessage.getData();
+      } else {
+        txt = latestMessage.getAuthor().getDisplayName() + " : " + latestMessage.getData();
+      }
+
+      userCache.updateShortcutLastText(shortcutRealm.getId(), txt);
+    }
+  };
 }

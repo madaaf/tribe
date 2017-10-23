@@ -318,6 +318,8 @@ public class HomeActivity extends BaseActivity
       receiverRegistered = true;
     }
 
+    homeGridPresenter.reload(hasSynced);
+
     initRecyclerViewCallback();
   }
 
@@ -805,7 +807,7 @@ public class HomeActivity extends BaseActivity
       subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> viewWalkthrough.show()));
-      
+
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
     }
   }

@@ -121,7 +121,9 @@ public class TextHomeNameActionView extends LinearLayout {
         TextViewUtils.constraintTextInto(txtName, userList);
       }
 
-      if (!StringUtils.isEmpty(shortcut.getLastMessage())) {
+      if (!shortcut.isRead()) {
+        txtAction.setText(R.string.home_action_read_chat);
+      } else if (!StringUtils.isEmpty(shortcut.getLastMessage())) {
         txtAction.setText(shortcut.getLastMessage());
       } else {
         txtAction.setText(R.string.home_action_tap_to_chat);
