@@ -271,6 +271,8 @@ public class LiveView extends FrameLayout {
 
       tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Calls);
       tagMap.put(TagManagerUtils.SOURCE, live.getSource());
+      tagMap.put(TagManagerUtils.SECTION, live.getSection());
+      tagMap.put(TagManagerUtils.GESTURE, live.getGesture());
       tagMap.put(TagManagerUtils.IS_CALL_ROULETTE, live.isDiceDragedInRoom());
       tagMap.put(TagManagerUtils.DURATION, duration);
       tagMap.put(TagManagerUtils.STATE, state);

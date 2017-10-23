@@ -721,6 +721,9 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.SEARCH);
+    tagManager.trackEvent(TagManagerUtils.AddFriend, bundle);
     searchAdapter.updateAdd(shortcut.getSingleFriend());
   }
 

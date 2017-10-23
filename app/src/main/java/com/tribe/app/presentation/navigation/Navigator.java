@@ -23,6 +23,7 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
@@ -204,9 +205,11 @@ public class Navigator {
    * @param recipient recipient to go live with
    */
   public void navigateToLive(Activity activity, Recipient recipient,
-      @LiveActivity.Source String source) {
+      @LiveActivity.Source String source, String section) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, recipient, source);
+      Intent intent =
+          LiveActivity.getCallingIntent(activity, recipient, source, TagManagerUtils.GESTURE_TAP,
+              section);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       if (activity instanceof LiveActivity) {
         activity.startActivity(intent);
@@ -217,7 +220,8 @@ public class Navigator {
     }
   }
 
-  public void navigateToChat(Activity activity, Recipient recipient, Shortcut shortcut) {
+  public void navigateToChat(Activity activity, Recipient recipient, Shortcut shortcut,
+      String gesture, String section) {
     if (activity != null) {
       Intent intent = ChatActivity.getCallingIntent(activity, recipient, shortcut);
       //  intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -232,10 +236,12 @@ public class Navigator {
     // activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
   }
 
-  public void navigateToLiveFromSwipe(Activity activity, Recipient recipient, int color,
-      @LiveActivity.Source String source) {
+  public void navigateToLiveFromSwipe(Activity activity, Recipient recipient,
+      @LiveActivity.Source String source, String section) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, recipient, source);
+      Intent intent =
+          LiveActivity.getCallingIntent(activity, recipient, source, TagManagerUtils.GESTURE_SWIPE,
+              section);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(0, 0);

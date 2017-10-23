@@ -29,6 +29,8 @@ public class ChatActivity extends BaseActivity {
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   private static final String FROM_SHORTCUT = "FROM_SHORTCUT";
   public static final String EXTRA_SHORTCUT_ID = "EXTRA_SHORTCUT_ID";
+  public static final String EXTRA_GESTURE = "EXTRA_GESTURE";
+  public static final String EXTRA_SECTION = "EXTRA_SECTION";
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();

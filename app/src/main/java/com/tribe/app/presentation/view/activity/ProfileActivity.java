@@ -477,7 +477,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
 
     subscriptions.add(viewSettingsBlockedFriends.onHangLive()
         .subscribe(
-            recipient -> navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_FRIENDS)));
+            recipient -> navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_FRIENDS, recipient.getSectionTag())));
 
     profilePresenter.loadBlockedShortcuts();
   }

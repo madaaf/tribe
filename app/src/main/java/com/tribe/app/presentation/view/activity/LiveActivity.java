@@ -119,6 +119,8 @@ public class LiveActivity extends BaseActivity
   }
 
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
+  private static final String EXTRA_SECTION = "EXTRA_SECTION";
+  private static final String EXTRA_GESTURE = "EXTRA_GESTURE";
 
   public static final String SOURCE_GRID = "Grid";
   public static final String SOURCE_DEEPLINK = "DeepLink";
@@ -195,8 +197,8 @@ public class LiveActivity extends BaseActivity
     return computeLive(recipient, source);
   }
 
-  public static Intent getCallingIntent(Context context, Recipient recipient,
-      @Source String source) {
+  public static Intent getCallingIntent(Context context, Recipient recipient, @Source String source,
+      String gesture, String section) {
     Intent intent = new Intent(context, LiveActivity.class);
 
     intent.putExtra(EXTRA_LIVE, computeLive(recipient, source));

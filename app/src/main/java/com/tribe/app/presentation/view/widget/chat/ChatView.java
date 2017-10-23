@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -57,12 +58,13 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.DialogFactory;
-import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ResizeAnimation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -172,6 +174,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   @Inject ScreenUtils screenUtils;
   @Inject Navigator navigator;
   @Inject StateManager stateManager;
+  @Inject TagManager tagManager;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Map<String, Subscription> subscriptionList = new HashMap<>();
@@ -854,7 +857,10 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
                   getContext().getString(R.string.shortcut_update_name_description),
                   getContext().getString(R.string.shortcut_update_name_validate),
                   getContext().getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT)
-                  .subscribe(s -> messagePresenter.updateShortcutName(shortcut.getId(), s)));
+                  .subscribe(s -> {
+                    sendEventEditGroupName();
+                    messagePresenter.updateShortcutName(shortcut.getId(), s);
+                  }));
             }
           }
 
@@ -864,13 +870,15 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         .flatMap(pair -> DialogFactory.showBottomSheetForCamera(getContext()),
             (pair, labelType) -> {
               if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-                subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
-                    .subscribe(uri -> messagePresenter.updateShortcutPicture(shortcut.getId(),
-                        uri.toString())));
+                subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+                  sendEventEditGroupName();
+                  messagePresenter.updateShortcutPicture(shortcut.getId(), uri.toString());
+                }));
               } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-                subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
-                    .subscribe(uri -> messagePresenter.updateShortcutPicture(shortcut.getId(),
-                        uri.toString())));
+                subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+                  sendEventEditGroupName();
+                  messagePresenter.updateShortcutPicture(shortcut.getId(), uri.toString());
+                }));
               }
 
               return null;
@@ -879,9 +887,14 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   @OnClick(R.id.videoCallBtn) void onClickVideoCall() {
+    navigator.navigateToLive((Activity) context, recipient, LiveActivity.SOURCE_GRID,
+        TagManagerUtils.SECTION_SHORTCUT);
+  }
 
-    navigator.navigateToLive((Activity) context, recipient,
-        LiveActivity.SOURCE_GRID);
+  private void sendEventEditGroupName() {
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.SAVE);
+    tagManager.trackEvent(TagManagerUtils.EditGroupName, bundle);
   }
 
   private void sendMessage() {
@@ -1174,7 +1187,9 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   @Override public void onShortcut(Shortcut shortcutQuickChat) {
-    navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut);
+    tagManager.trackEvent(TagManagerUtils.Shortcut);
+    navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut,
+        TagManagerUtils.GESTURE_TAP, TagManagerUtils.SECTION_SHORTCUT);
   }
 
   public void setFromShortcut(Shortcut fromShortcut) {

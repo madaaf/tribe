@@ -121,9 +121,7 @@ public final class DialogFactory {
 
             subscriber.onCompleted();
           })
-          .setNegativeButton(negativeMessage, (dialog, which) -> {
-            subscriber.onCompleted();
-          })
+          .setNegativeButton(negativeMessage, (dialog, which) -> subscriber.onCompleted())
           .setView(parent)
           .create();
 

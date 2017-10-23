@@ -437,7 +437,7 @@ public class HomeActivity extends BaseActivity
   private void onClickItem(Recipient recipient) {
     navigator.navigateToLive(this, recipient,
         recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-            : LiveActivity.SOURCE_GRID);
+            : LiveActivity.SOURCE_GRID, recipient.getSectionTag());
   }
 
   private void initRecyclerView() {
@@ -447,7 +447,8 @@ public class HomeActivity extends BaseActivity
                 recyclerViewFriends.getChildLayoutPosition(view))), homeGridAdapter.onMainClick()
             .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
                 recyclerViewFriends.getChildLayoutPosition(view))), searchView.onClickChat(),
-        searchView.onMainClick()).subscribe(item -> navigateToChat(item)));
+        searchView.onMainClick())
+        .subscribe(item -> navigateToChat(item, TagManagerUtils.GESTURE_TAP)));
 
     subscriptions.add(Observable.merge(homeGridAdapter.onLiveClick()
         .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
@@ -558,6 +559,8 @@ public class HomeActivity extends BaseActivity
               List<HomeAdapterInterface> finalList = new ArrayList<>();
               Set<String> addedUsers = new HashSet<>();
 
+              int realFriendsCount = 0;
+
               for (Recipient recipient : recipientList) {
                 if (recipient instanceof Invite || !recipient.isLive()) {
                   finalList.add(recipient);
@@ -566,10 +569,15 @@ public class HomeActivity extends BaseActivity
                 if (recipient instanceof Shortcut) {
                   Shortcut shortcut = (Shortcut) recipient;
                   if (shortcut.isSingle()) {
+                    realFriendsCount++;
                     addedUsers.add(shortcut.getSingleFriend().getId());
                   }
                 }
               }
+
+              Bundle bundle = new Bundle();
+              bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, realFriendsCount);
+              tagManager.setProperty(bundle);
 
               for (Contact contact : contactsOnApp) {
                 if (contact.getUserList() != null && contact.getUserList().size() > 0) {
@@ -684,7 +692,8 @@ public class HomeActivity extends BaseActivity
 
     subscriptions.add(searchView.onHangLive()
         .subscribe(
-            recipient -> navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_SEARCH)));
+            recipient -> navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_SEARCH,
+                recipient.getSectionTag())));
 
     subscriptions.add(searchView.onInvite().subscribe(contact -> invite(contact)));
 
@@ -742,10 +751,6 @@ public class HomeActivity extends BaseActivity
 
   @Override public void renderRecipientList(List<Recipient> recipientList) {
     if (recipientList != null) {
-      // TODO CHANGE
-      //Bundle bundle = new Bundle();
-      //bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, getCurrentUser().getShortcutList().size());
-      //tagManager.setProperty(bundle);
       onRecipientUpdates.onNext(recipientList);
       canEndRefresh = false;
     }
@@ -895,9 +900,9 @@ public class HomeActivity extends BaseActivity
     HomeActivity.this.navigator.navigateToNewChat(this);
   }
 
-  private void navigateToChat(Recipient recipient) {
+  private void navigateToChat(Recipient recipient, String gesture) {
     if (!recipient.isRead()) homeGridPresenter.readShortcut(recipient.getId());
-    navigator.navigateToChat(this, recipient, null);
+    navigator.navigateToChat(this, recipient, null, gesture, recipient.getSectionTag());
   }
 
   private void syncContacts() {
@@ -1062,11 +1067,11 @@ public class HomeActivity extends BaseActivity
         Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(position);
 
         if (!isSwipingChat) {
-          navigator.navigateToLiveFromSwipe(this, recipient, PaletteGrid.get(position),
+          navigator.navigateToLiveFromSwipe(this, recipient,
               recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-                  : LiveActivity.SOURCE_GRID);
+                  : LiveActivity.SOURCE_GRID, recipient.getSectionTag());
         } else {
-          navigateToChat(recipient);
+          navigateToChat(recipient, TagManagerUtils.GESTURE_SWIPE);
         }
       }
     }));

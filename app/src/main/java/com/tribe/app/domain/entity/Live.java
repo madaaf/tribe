@@ -39,6 +39,8 @@ public class Live implements Serializable {
   private @LiveActivity.Source String source;
   private boolean isDiceDragedInRoom = false;
   private Shortcut shortcut;
+  private String section;
+  private String gesture;
 
   private transient CompositeSubscription subscriptions;
   private transient PublishSubject<Room> onRoomUpdated;
@@ -56,6 +58,8 @@ public class Live implements Serializable {
     this.source = builder.source;
     this.isDiceDragedInRoom = builder.isDiceDragedInRoom;
     this.shortcut = builder.shortcut;
+    this.gesture = builder.gesture;
+    this.section = builder.section;
   }
 
   public void init() {
@@ -214,6 +218,22 @@ public class Live implements Serializable {
     this.source = source;
   }
 
+  public String getGesture() {
+    return gesture;
+  }
+
+  public void setGesture(String gesture) {
+    this.gesture = gesture;
+  }
+
+  public String getSection() {
+    return section;
+  }
+
+  public void setSection(String section) {
+    this.section = section;
+  }
+
   public String getLinkId() {
     return linkId;
   }
@@ -238,6 +258,8 @@ public class Live implements Serializable {
     private boolean intent = false;
     private boolean isDiceDragedInRoom = false;
     private @LiveActivity.Source String source;
+    private String gesture;
+    private String section;
     private Shortcut shortcut;
 
     public Builder(@LiveType String type) {
@@ -294,6 +316,16 @@ public class Live implements Serializable {
 
     public Builder source(@LiveActivity.Source String source) {
       this.source = source;
+      return this;
+    }
+
+    public Builder gesture(String gesture) {
+      this.gesture = gesture;
+      return this;
+    }
+
+    public Builder section(String section) {
+      this.section = section;
       return this;
     }
 

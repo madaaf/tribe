@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
@@ -120,6 +121,26 @@ public abstract class Recipient implements Serializable, BaseListInterface, Home
     } else {
       return BaseSectionItemDecoration.NONE;
     }
+  }
+
+  public String getSectionTag() {
+    String section = null;
+
+    switch (getHomeSectionType()) {
+      case BaseSectionItemDecoration.HOME_ONGOING:
+        section = TagManagerUtils.SECTION_ONGOING;
+        break;
+
+      case BaseSectionItemDecoration.HOME_ONLINE:
+        section = TagManagerUtils.SECTION_ONLINE;
+        break;
+
+      case BaseSectionItemDecoration.HOME_RECENT:
+        section = TagManagerUtils.SECTION_RECENT;
+        break;
+    }
+
+    return section;
   }
 
   @Override public void setAnimateAdd(boolean animateAdd) {

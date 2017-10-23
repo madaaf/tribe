@@ -23,6 +23,7 @@ import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
 import com.tribe.app.presentation.mvp.view.NewChatMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.adapter.NewChatAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerHeadersItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.NewChatLayoutManager;
@@ -231,11 +232,22 @@ public class NewChatActivity extends BaseActivity
   }
 
   @Override public void finish() {
+    if (selectedIds.size() == 0) {
+      Bundle bundle = new Bundle();
+      bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.CANCEL);
+      bundle.putInt(TagManagerUtils.MEMBERS, selectedIds.size());
+      tagManager.trackEvent(TagManagerUtils.NewChat, bundle);
+    }
+
     super.finish();
     overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.SAVE);
+    bundle.putInt(TagManagerUtils.MEMBERS, selectedIds.size());
+    tagManager.trackEvent(TagManagerUtils.NewChat, bundle);
     finish();
   }
 
