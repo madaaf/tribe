@@ -47,8 +47,8 @@ public class MessagePresenter implements Presenter {
   protected GetShortcutForUserIds getShortcutForUserIds;
 
   // SUBSCRIBERS
-  private UpdateShortcutSubscriber updateShortcutSubscriber;
-  private ShortcutForUserIdsSubscriber shortcutForUserIdsSubscriber;
+/*  private UpdateShortcutSubscriber updateShortcutSubscriber;
+  private ShortcutForUserIdsSubscriber shortcutForUserIdsSubscriber;*/
 
   @Inject public MessagePresenter(UserMessageInfos userMessageInfos, CreateMessage createMessage,
       GetMessageFromDisk getMessageFromDisk, GetDiskShortcut getDiskShortcut,
@@ -79,10 +79,8 @@ public class MessagePresenter implements Presenter {
   }
 
   public void shortcutForUserIds(String userIds) {
-    if (shortcutForUserIdsSubscriber != null) shortcutForUserIdsSubscriber.unsubscribe();
-    shortcutForUserIdsSubscriber = new ShortcutForUserIdsSubscriber(userIds);
     getShortcutForUserIds.setup(userIds);
-    getShortcutForUserIds.execute(shortcutForUserIdsSubscriber);
+    getShortcutForUserIds.execute(new ShortcutForUserIdsSubscriber(userIds));
   }
 
   public void getDiskShortcut(String shortcutId) {
@@ -127,10 +125,8 @@ public class MessagePresenter implements Presenter {
   }
 
   private void updateShortcut(String shortcutId, List<Pair<String, String>> values) {
-    if (updateShortcutSubscriber != null) updateShortcutSubscriber.unsubscribe();
-    updateShortcutSubscriber = new UpdateShortcutSubscriber();
     updateShortcut.setup(shortcutId, values);
-    updateShortcut.execute(updateShortcutSubscriber);
+    updateShortcut.execute(new UpdateShortcutSubscriber());
   }
 
   private class UpdateShortcutSubscriber extends DefaultSubscriber<Shortcut> {
@@ -166,6 +162,7 @@ public class MessagePresenter implements Presenter {
     getShortcutForUserIds.unsubscribe();
     imTyping.unsubscribe();
     createShortcut.unsubscribe();
+
     chatMVPView = null;
     pictureMVPView = null;
   }
@@ -293,15 +290,13 @@ public class MessagePresenter implements Presenter {
     }
   }
 
-  public void createShortcut(String userIds) {
-    if (shortcutForUserIdsSubscriber != null) shortcutForUserIdsSubscriber.unsubscribe();
-    shortcutForUserIdsSubscriber = new ShortcutForUserIdsSubscriber(userIds);
+  private void createShortcut(String userIds) {
     createShortcut.setup(userIds);
-    createShortcut.execute(shortcutForUserIdsSubscriber);
+    createShortcut.execute(new ShortcutForUserIdsSubscriber(userIds));
   }
 
   private class ShortcutForUserIdsSubscriber extends DefaultSubscriber<Shortcut> {
-    String userIds;
+    private String userIds;
 
     public ShortcutForUserIdsSubscriber(String userIds) {
       this.userIds = userIds;
@@ -318,7 +313,11 @@ public class MessagePresenter implements Presenter {
       if (shortcut == null) {
         createShortcut(userIds);
       } else {
-        chatMVPView.onShortcut(shortcut);
+        if (chatMVPView != null) {
+          chatMVPView.onShortcut(shortcut);
+        } else {
+          Timber.e("chatMVPView NULL " + shortcut);
+        }
       }
     }
   }

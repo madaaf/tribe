@@ -17,7 +17,6 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 import static android.view.View.GONE;
 
@@ -72,9 +70,8 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     ChatUserViewHolder vh = (ChatUserViewHolder) holder;
     User i = items.get(position);
 
-
     vh.itemView.setOnClickListener(view -> {
-      onQuickChat.onNext(i.getId());
+      if (items.size() > 1) onQuickChat.onNext(i.getId());
     });
 
     vh.name.setText(i.getDisplayName());

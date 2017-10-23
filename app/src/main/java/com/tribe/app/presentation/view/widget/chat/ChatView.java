@@ -538,7 +538,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void initSubscriptions() {
-
     subscriptions.add(chatUserAdapter.onQuickChat().subscribe(id -> {
       messagePresenter.shortcutForUserIds(id);
     }));
@@ -1225,9 +1224,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       name.setPadding(0, 15, 0, 15);
       containerQuickChat.addView(layout);
       name.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow, 0);
-      View v = this;
+
       layout.setOnClickListener(view -> {
-        //  removeView(v);
         ((Activity) context).finish();
       });
     }
