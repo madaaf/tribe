@@ -58,6 +58,7 @@ public class ChatActivity extends BaseActivity {
     if (getIntent().hasExtra(FROM_SHORTCUT)) {
       Shortcut fromShortcut = (Shortcut) getIntent().getSerializableExtra(FROM_SHORTCUT);
       chatView.setFromShortcut(fromShortcut);
+      getIntent().removeExtra(FROM_SHORTCUT);
     }
     if (getIntent().hasExtra(EXTRA_LIVE)) {
 
