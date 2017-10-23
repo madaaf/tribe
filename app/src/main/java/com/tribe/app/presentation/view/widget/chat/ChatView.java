@@ -271,17 +271,18 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         voiceNoteBtn.getLayoutParams().height = size;
         voiceNoteBtn.getLayoutParams().width = size;
 
-        voiceNoteBtn.setTranslationX(editText.getX() + editText.getWidth() -
-            voiceNoteBtn.getWidth() -
-            screenUtils.dpToPx(5));
+        voiceNoteBtn.setTranslationX(
+            editText.getX() + editText.getWidth() - voiceNoteBtn.getWidth() - screenUtils.dpToPx(
+                5));
         voiceNoteBtn.setTranslationY(
             -editText.getHeight() + voiceNoteBtn.getHeight() - screenUtils.dpToPx(7));
 
         pictoVoiceNote.setTranslationX(
             voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
 
-        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) -
-            (pictoVoiceNote.getHeight() / 2) + screenUtils.dpToPx(12));
+        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (
+            pictoVoiceNote.getHeight()
+                / 2) + screenUtils.dpToPx(12));
 
         voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
@@ -516,11 +517,11 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         uploadTask = riversRef.putStream(inputStream);
       } else if (type.equals(MESSAGE_AUDIO)) {
         Uri file = Uri.fromFile(new File(audioFile));
-        StorageReference riversRef = storageRef.child("app/uploads/" +
-            user.getId() +
-            "/" +
-            dateUtils.getUTCDateAsString() +
-            file.getLastPathSegment());
+        StorageReference riversRef = storageRef.child("app/uploads/"
+            + user.getId()
+            + "/"
+            + dateUtils.getUTCDateAsString()
+            + file.getLastPathSegment());
         uploadTask = riversRef.putFile(file);
       }
 
@@ -1178,11 +1179,11 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void startRecording() {
-    mFileName = context.getExternalCacheDir().getAbsolutePath() +
-        File.separator +
-        dateUtils.getUTCDateAsString() +
-        user.getId() +
-        "audiorecord.mp4";
+    mFileName = context.getExternalCacheDir().getAbsolutePath()
+        + File.separator
+        + dateUtils.getUTCDateAsString()
+        + user.getId()
+        + "audiorecord.mp4";
     mFileName = mFileName.replaceAll(" ", "_").replaceAll(":", "-");
 
     Timber.w("SOEF " + mFileName);
