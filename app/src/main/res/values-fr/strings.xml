@@ -775,6 +775,9 @@
 	<string name="home_block_shortcut_title">Bloquer %1$s ?</string>
 	<string name="home_block_shortcut_message">Masquer de manière permanente cette personne et les groupes et les notifications qui lui sont associés.</string>
 	<string name="home_block_shortcut_validate">Bloquer</string>
+	<string name="home_mute_shortcut_title">Mettre en sourdine ce groupe ?</string>
+	<string name="home_mute_shortcut_message">Mettre en sourdine les nouveaux messages, appels et toutes les autres notifications de ce groupe.</string>
+	<string name="home_mute_shortcut_validate">Mettre en sourdine</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">Nouveau chat</string>
