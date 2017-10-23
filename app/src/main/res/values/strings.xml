@@ -775,6 +775,9 @@
 	<string name="home_block_shortcut_title">Block %1$s?</string>
 	<string name="home_block_shortcut_message">Hide permanently this person, related groups and associated notifications.</string>
 	<string name="home_block_shortcut_validate">Block</string>
+	<string name="home_mute_shortcut_title">Mute this group?</string>
+	<string name="home_mute_shortcut_message">Mute new messages, calls and other associated notifications from this group.</string>
+	<string name="home_mute_shortcut_validate">Mute</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">New Chat</string>

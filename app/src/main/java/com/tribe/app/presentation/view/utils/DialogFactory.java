@@ -221,9 +221,11 @@ public final class DialogFactory {
           context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()),
           LabelType.HIDE));
 
-      moreTypeList.add(new LabelType(
-          context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()),
-          LabelType.BLOCK_HIDE));
+      if (shortcut.isSingle()) {
+        moreTypeList.add(new LabelType(
+            context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()),
+            LabelType.BLOCK_HIDE));
+      }
     } else if (recipient instanceof Invite) {
       moreTypeList.add(
           new LabelType(context.getString(R.string.grid_menu_invite_decline), LabelType.DECLINE));

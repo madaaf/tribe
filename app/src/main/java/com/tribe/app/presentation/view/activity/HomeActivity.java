@@ -463,12 +463,9 @@ public class HomeActivity extends BaseActivity
         .flatMap(item -> DialogFactory.showBottomSheetForRecipient(this, (Recipient) item),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
-                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE)) {
                   Shortcut shortcut = (Shortcut) recipient;
-                  homeGridPresenter.updateShortcutStatus(shortcut.getId(),
-                      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? ShortcutRealm.BLOCKED
-                          : ShortcutRealm.HIDDEN);
+                  homeGridPresenter.updateShortcutStatus(shortcut.getId(), ShortcutRealm.HIDDEN);
                 } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
                   Shortcut shortcut = (Shortcut) recipient;
                   shortcut.setMute(true);
@@ -485,25 +482,37 @@ public class HomeActivity extends BaseActivity
 
               return Pair.create(labelType, recipient);
             }))
-        .filter(pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE))
-        .flatMap(
-            pair -> DialogFactory.showBottomSheetForCustomizeShortcut(this, (Shortcut) pair.second),
-            (pair, labelType) -> {
-              Shortcut shortcut = (Shortcut) pair.second;
+        .filter(pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) ||
+            pair.first.getTypeDef().equals(LabelType.BLOCK_HIDE))
+        .flatMap(pair -> {
+          if (pair.first.getTypeDef().equals(LabelType.CUSTOMIZE)) {
+            return DialogFactory.showBottomSheetForCustomizeShortcut(this, (Shortcut) pair.second);
+          } else {
+            subscriptions.add(DialogFactory.dialog(this,
+                getString(R.string.home_block_shortcut_title, pair.second.getDisplayName()),
+                getString(R.string.home_block_shortcut_message),
+                getString(R.string.home_block_shortcut_validate), getString(R.string.action_cancel))
+                .filter(aBoolean -> aBoolean)
+                .subscribe(aBoolean -> homeGridPresenter.updateShortcutStatus(pair.second.getId(),
+                    ShortcutRealm.BLOCKED)));
+            return Observable.empty();
+          }
+        }, (pair, labelType) -> {
+          Shortcut shortcut = (Shortcut) pair.second;
 
-              if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
-                  subscriptions.add(DialogFactory.inputDialog(this,
-                      getString(R.string.shortcut_update_name_title),
+          if (labelType != null) {
+            if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
+              subscriptions.add(
+                  DialogFactory.inputDialog(this, getString(R.string.shortcut_update_name_title),
                       getString(R.string.shortcut_update_name_description),
                       getString(R.string.shortcut_update_name_validate),
                       getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT)
                       .subscribe(s -> homeGridPresenter.updateShortcutName(shortcut.getId(), s)));
-                }
-              }
+            }
+          }
 
-              return Pair.create(labelType, shortcut);
-            })
+          return Pair.create(labelType, shortcut);
+        })
         .filter(pair -> pair.first.getTypeDef().equals(LabelType.CHANGE_PICTURE))
         .flatMap(pair -> DialogFactory.showBottomSheetForCamera(this), (pair, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
