@@ -20,5 +20,7 @@ public interface ChatRepository {
 
   Observable<String> isTyping();
 
+  Observable<String> isTalking();
+
   Observable<Boolean> imTyping(String[] userIds);
 }

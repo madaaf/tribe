@@ -44,7 +44,10 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView {
   public void errorMessageCreation(int position) {
   }
 
-  public void isTypingEvent(String userId) {
+  public void isTypingEvent(String userId,  boolean typeEvent) {
+  }
+
+  public void isTalkingEvent(String userId) {
   }
 
   public void successShortcutUpdate(Shortcut shortcut) {
@@ -58,6 +61,4 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView {
 
   public void errorMessageReveived() {
   }
-
-
 }

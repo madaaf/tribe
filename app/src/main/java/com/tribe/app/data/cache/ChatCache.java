@@ -18,7 +18,11 @@ import rx.Observable;
 
   void onTyping(String userIds);
 
+  void onTalking(String userIds);
+
   Observable<String> isTyping();
+
+  Observable<String> isTalking();
 
   Observable<List<MessageRealm>> getMessages(String[] userIds);
 

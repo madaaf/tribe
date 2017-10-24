@@ -99,6 +99,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
+import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMTALKING;
 import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMTYPING;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_AUDIO;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_EMOJI;
@@ -245,6 +246,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         JsonUtils.arrayToJson(arrIds)));
     if (shortcut != null) messagePresenter.getDiskShortcut(shortcut.getId());
     messagePresenter.getIsTyping();
+    messagePresenter.getIsTalking();
     recyclerView.onResumeView();
   }
 
@@ -258,8 +260,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   private void initParams() {
     chatView = this;
     rxPermissions = new RxPermissions((Activity) context);
-
-
 
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
@@ -347,6 +347,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     timerVoiceNote.setText("0:01");
     timerVoiceSub.unsubscribe();
     timerVoiceSub = null;
+    onRecord = false;
     stopRecording();
 
     if (sendMessage && audioDuration > 0) {
@@ -587,9 +588,17 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         .onBackpressureDrop()
         .subscribe(avoid -> {
           if (!editTextString.isEmpty()) {
+            Timber.e("OK  I AM TYPING");
             //  messagePresenter.imTypingMessage(arrIds);// TODO SEE IF YOU SEND THE MESSAGE THREW SIGNALING OR API
             context.startService(WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMTYPING,
                 JsonUtils.arrayToJson(arrIds)));
+          }
+
+          if (onRecord) {
+            Timber.e("OK  I AM TALKING");
+            context.startService(
+                WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMTALKING,
+                    JsonUtils.arrayToJson(arrIds)));
           }
         }));
 
@@ -1010,14 +1019,19 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         });
   }
 
-  @Override public void isTypingEvent(String userId) {
+  @Override public void isTalkingEvent(String userId) {
+    Timber.i("START TALKING " + userId);
+  }
+
+  @Override public void isTypingEvent(String userId, boolean typeEvent) {
     if (userId.equals(user.getId())) {
       return;
     }
     for (User u : members) {
       if (u.getId().equals(userId)) {
-        if (!u.isTyping()) {
-          u.setTyping(true);
+        if (!u.isActive()) {
+          u.setActive(true);
+          u.setTyping(typeEvent);
           u.setIsOnline(true);
           if (members.size() < 2) {
             expendRecyclerViewGrp();
@@ -1034,8 +1048,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
               .onBackpressureDrop()
               .subscribe(avoid -> {
                 // Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
-                if (u.isTyping()) {
-                  u.setTyping(false);
+                if (u.isActive()) {
+                  u.setActive(false);
                   if (members.size() < 2) {
                     shrankRecyclerViewGrp();
                   }
@@ -1052,12 +1066,12 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   @Override public void successShortcutUpdate(Shortcut shortcut) {
-    Timber.e(
-        "SHORTCUT " + shortcut.isOnline() + " " + shortcut.isLive() + " " + shortcut.toString());
+  /*  Timber.e(
+        "SHORTCUT " + shortcut.isOnline() + " " + shortcut.isLive() + " " + shortcut.toString());*/
 
-    for (User ok : shortcut.getMembers()) {
+  /*  for (User ok : shortcut.getMembers()) {
       Timber.e("SHORTCUT MEM + " + ok.toString());
-    }
+    }*/
     boolean isOnline = false;
     boolean isLive = false;
     for (User u : shortcut.getMembers()) {
@@ -1184,8 +1198,11 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     }
   }
 
+  boolean onRecord = false;
+
   @Override public void onActionDown(View v) {
     Timber.i("onActionDown!");
+    onRecord = true;
     startRecording();
     startVoiceNote();
   }

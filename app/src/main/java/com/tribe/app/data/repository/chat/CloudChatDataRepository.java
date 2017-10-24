@@ -59,6 +59,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<String> isTalking() {
+    return null;
+  }
+
   @Override public Observable<Boolean> imTyping(String[] userIds) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
     return userDataStore.imTyping(userIds);

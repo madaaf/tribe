@@ -426,8 +426,8 @@
 	<string name="profile_invisible_mode_enable_alert_title">Downgrading Experience :warning:</string>
 	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you as a friend on Tribe. Only you will be able to add people as friends.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Disable</string>
-	<string name="profile_blocked_friends">Blocked and deleted friends</string>
-	<string name="profile_manage_friendships">Friends &amp; Notifications :bell:</string>
+	<string name="profile_blocked_friends">Blocked or hidden friends</string>
+	<string name="profile_manage_friendships">Is online notification :bell:</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_contact_us">Contact us :envelope:</string>
@@ -450,7 +450,7 @@
 	<string name="profile_facebook_account_already_in_use">This Facebook profile is already in use on another account.</string>
 	
 	<!-- Manage friendships -->
-	<string name="manage_friendships_title">Mute, delete or block</string>
+	<string name="manage_friendships_title">Is online notification :bell:</string>
 	<string name="manage_friendships_mute_alert_title">Mute \'is online\' notification</string>
 	<string name="manage_friendships_mute_alert_description">You won\'t receive any notification from this friend when he\'s on the app</string>
 	<string name="manage_friendships_mute_alert_mute">Mute it anyways</string>
@@ -766,6 +766,7 @@
 	<string name="home_menu_shortcut_unmute">:bell: is online notification</string>
 	<string name="home_menu_shortcut_hide">:speak_no_evil: Hide</string>
 	<string name="home_menu_shortcut_block">:no_entry: Block</string>
+	<string name="home_menu_shortcut_block_group">:no_entry: Mute</string>
 	<string name="home_menu_shortcut_update_name">:pencil2: Edit name</string>
 	<string name="home_menu_shortcut_customize">:art: Customize</string>
 	<string name="home_menu_shortcut_update_avatar">:framed_picture: Edit avatar</string>

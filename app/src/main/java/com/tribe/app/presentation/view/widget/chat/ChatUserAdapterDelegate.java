@@ -23,6 +23,7 @@ import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ResizeAnimation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.wang.avi.AVLoadingIndicatorView;
 import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
@@ -96,8 +97,8 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     ChatUserViewHolder vh = (ChatUserViewHolder) holder;
     counter++;
 
-    if (i.isTyping()) {
-      extendsDots(vh);
+    if (i.isActive()) {
+      extendsDots(vh, i.isTyping());
     } else {
       shrankContainer(vh);
     }
@@ -112,8 +113,14 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     }
   }
 
-  private void extendsDots(ChatUserViewHolder vh) {
-    vh.dotsContainer.setVisibility(View.VISIBLE);
+  private void extendsDots(ChatUserViewHolder vh, boolean isTyping) {
+    if (isTyping) {
+      vh.dotsContainer.setVisibility(View.VISIBLE);
+      vh.loadingRecordView.setVisibility(View.GONE);
+    } else {
+      vh.dotsContainer.setVisibility(View.GONE);
+    }
+
     vh.container.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_blue));
     vh.name.setTextColor(ContextCompat.getColor(context, R.color.blue_new));
     vh.container.getViewTreeObserver()
@@ -129,8 +136,12 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
             a.setInterpolator(new OvershootInterpolator());
             a.setAnimationListener(new AnimationListenerAdapter() {
               @Override public void onAnimationStart(Animation animation) {
-                initDots(vh.dotsContainer);
-                animateSpin();
+                if (isTyping) {
+                  initDots(vh.dotsContainer);
+                  animateSpin();
+                } else {
+                  vh.loadingRecordView.setVisibility(View.VISIBLE);
+                }
               }
             });
             a.setParams(width, width + 70, height, height);
@@ -141,6 +152,7 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
 
   private void shrankContainer(ChatUserViewHolder vh) {
     vh.dotsContainer.setVisibility(GONE);
+    vh.loadingRecordView.setVisibility(GONE);
     LinearLayout.LayoutParams params =
         new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, height);
 
@@ -192,6 +204,7 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     @BindView(R.id.viewAvatar) AvatarView avatarView;
     @BindView(R.id.container) LinearLayout container;
     @BindView(R.id.dotsContainer) LinearLayout dotsContainer;
+    @BindView(R.id.loadingRecordView) AVLoadingIndicatorView loadingRecordView;
 
     public ChatUserViewHolder(View itemView) {
       super(itemView);

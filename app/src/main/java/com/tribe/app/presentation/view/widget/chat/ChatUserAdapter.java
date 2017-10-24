@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.widget.chat;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
-import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.RxAdapterDelegatesManager;
 import java.util.ArrayList;
@@ -12,7 +11,6 @@ import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -64,9 +62,9 @@ public class ChatUserAdapter extends RecyclerView.Adapter {
   public void sorrList(List<User> list) {
     Collections.sort(list, (o1, o2) -> {
       int b1, b2;
-      if (o1.isOnline() && o1.isTyping()) {
+      if (o1.isOnline() && o1.isActive()) {
         b1 = 3;
-      } else if (o1.isTyping()) {
+      } else if (o1.isActive()) {
         b1 = 2;
       } else if (o1.isOnline()) {
         b1 = 1;
@@ -74,9 +72,9 @@ public class ChatUserAdapter extends RecyclerView.Adapter {
         b1 = 0;
       }
 
-      if (o2.isOnline() && o2.isTyping()) {
+      if (o2.isOnline() && o2.isActive()) {
         b2 = 3;
-      } else if (o2.isTyping()) {
+      } else if (o2.isActive()) {
         b2 = 2;
       } else if (o2.isOnline()) {
         b2 = 1;

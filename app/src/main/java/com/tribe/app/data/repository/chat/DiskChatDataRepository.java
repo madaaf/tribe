@@ -54,6 +54,12 @@ import rx.Observable;
     return chatDataStore.isTyping();
   }
 
+  @Override public Observable<String> isTalking() {
+    final DiskChatDataStore chatDataStore =
+        (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
+    return chatDataStore.isTalking();
+  }
+
   @Override public Observable<List<Message>> onMessageReceived() {
     final DiskChatDataStore chatDataStore =
         (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();

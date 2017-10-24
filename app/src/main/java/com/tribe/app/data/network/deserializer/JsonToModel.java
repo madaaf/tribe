@@ -55,6 +55,7 @@ import timber.log.Timber;
   private PublishSubject<ShortcutRealm> onShortcutUpdated = PublishSubject.create();
   private PublishSubject<String> onShortcutRemoved = PublishSubject.create();
   private PublishSubject<String> onTyping = PublishSubject.create();
+  private PublishSubject<String> onTalking = PublishSubject.create();
 
   @Inject MessageRealmDataMapper messageRealmDataMapper;
 
@@ -122,6 +123,10 @@ import timber.log.Timber;
             } else if (entry.getKey().contains(WSService.MESSAGE_IS_TYPING_SUFFIX)) {
               String user_id = jo.get("user_id").getAsString();
               onTyping.onNext(user_id);
+            } else if (entry.getKey().contains(WSService.MESSAGE_IS_TALKING_SUFFIX)) {
+              String user_id = jo.get("user_id").getAsString();
+              Timber.w("ON TALKING");
+              onTalking.onNext(user_id);
             } else if (entry.getKey().contains(WSService.MESSAGE_CREATED_SUFFIX)) {
               Timber.d("onMessageReceived : " + entry.getValue().toString());
               MessageRealm messageRealm =
@@ -304,5 +309,9 @@ import timber.log.Timber;
 
   public Observable<String> onTyping() {
     return onTyping;
+  }
+
+  public Observable<String> onTalking() {
+    return onTalking;
   }
 }

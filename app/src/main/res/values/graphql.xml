@@ -78,6 +78,10 @@
             imTyping(usersIds:[%1$s])
   </string>
 
+  <string name="imTalking" translatable="false">
+            imTalking(usersIds:[%1$s])
+  </string>
+
   <string name="user.infos.friendships" translatable="false">
         {
             user {
@@ -350,6 +354,10 @@
 
   <string name="subscription.isTyping" translatable="false">
         %1$s : isTyping ( usersIds : [%2$s] )
+  </string>
+
+  <string name="subscription.isTalking" translatable="false">
+        %1$s : isTalking ( usersIds : [%2$s] )
   </string>
 
   <string name="subscription.shortcutCreated" translatable="false">

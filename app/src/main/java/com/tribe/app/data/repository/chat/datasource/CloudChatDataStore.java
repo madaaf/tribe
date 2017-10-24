@@ -66,6 +66,10 @@ public class CloudChatDataStore implements ChatDataStore {
     return null;
   }
 
+  @Override public Observable<String> isTalking() {
+    return null;
+  }
+
   @Override public Observable<List<MessageRealm>> onMessageReceived() {
     return null;
   }
