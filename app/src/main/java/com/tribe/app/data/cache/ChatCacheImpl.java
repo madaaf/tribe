@@ -183,14 +183,13 @@ public class ChatCacheImpl implements ChatCache {
   @Override public MessageRealm getLastTextMessage(String[] userIds) {
     Realm obsRealm = Realm.getDefaultInstance();
     try {
-      MessageRealm messageRealm = obsRealm.where(MessageRealm.class)
+      RealmResults<MessageRealm> messageRealmResults = obsRealm.where(MessageRealm.class)
           .equalTo("localId", JsonUtils.arrayToJson(userIds))
           .equalTo("__typename", Message.MESSAGE_TEXT)
-          .findAllSorted("created_at", Sort.DESCENDING)
-          .first();
+          .findAllSorted("created_at", Sort.DESCENDING);
 
-      if (messageRealm != null) {
-        MessageRealm copy = obsRealm.copyFromRealm(messageRealm);
+      if (messageRealmResults != null && messageRealmResults.size() > 0) {
+        MessageRealm copy = obsRealm.copyFromRealm(messageRealmResults.first());
         obsRealm.close();
         return copy;
       }

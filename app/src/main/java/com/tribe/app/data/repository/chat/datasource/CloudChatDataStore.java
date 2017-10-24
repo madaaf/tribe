@@ -81,8 +81,7 @@ public class CloudChatDataStore implements ChatDataStore {
   }
 
   private final Action1<String[]> refactorMessages = userIds -> {
-    MessageRealm latestMessage = null;
-    //  MessageRealm latestMessage = chatCache.getLastTextMessage(userIds); // TODO TIAGO
+    MessageRealm latestMessage = chatCache.getLastTextMessage(userIds);
     ShortcutRealm shortcutRealm = userCache.shortcutForUserIdsNoObs(userIds);
 
     if (shortcutRealm != null && latestMessage != null) {
