@@ -42,10 +42,13 @@ public class ChatActivity extends BaseActivity {
 
   @BindView(R.id.chatview) ChatView chatView;
 
-  public static Intent getCallingIntent(Context context, Recipient recipient, Shortcut shortcut) {
+  public static Intent getCallingIntent(Context context, Recipient recipient, Shortcut shortcut,
+      String gesture, String section) {
     Intent intent = new Intent(context, ChatActivity.class);
     intent.putExtra(EXTRA_LIVE, recipient);
     intent.putExtra(FROM_SHORTCUT, shortcut);
+    intent.putExtra(EXTRA_SECTION, section);
+    intent.putExtra(EXTRA_GESTURE, gesture);
     return intent;
   }
 
@@ -55,14 +58,16 @@ public class ChatActivity extends BaseActivity {
     ButterKnife.bind(this);
     initDependencyInjector();
 
-    if (getIntent().hasExtra(FROM_SHORTCUT)) {
-      Shortcut fromShortcut = (Shortcut) getIntent().getSerializableExtra(FROM_SHORTCUT);
-      chatView.setFromShortcut(fromShortcut);
-      getIntent().removeExtra(FROM_SHORTCUT);
-    }
-    if (getIntent().hasExtra(EXTRA_LIVE)) {
+    Intent intent = getIntent();
 
-      Recipient recipient = (Recipient) getIntent().getSerializableExtra(EXTRA_LIVE);
+    if (intent.hasExtra(FROM_SHORTCUT)) {
+      Shortcut fromShortcut = (Shortcut) intent.getSerializableExtra(FROM_SHORTCUT);
+      chatView.setFromShortcut(fromShortcut);
+      intent.removeExtra(FROM_SHORTCUT);
+    }
+
+    if (intent.hasExtra(EXTRA_LIVE)) {
+      Recipient recipient = (Recipient) intent.getSerializableExtra(EXTRA_LIVE);
       List<User> friends = new ArrayList<>();
 
       if (recipient instanceof Shortcut) {
@@ -90,6 +95,9 @@ public class ChatActivity extends BaseActivity {
       }
       arrayIds = JsonUtils.arrayToJson(ids);
     }
+
+    chatView.setGestureAndSection(intent.getStringExtra(EXTRA_GESTURE),
+        intent.getStringExtra(EXTRA_SECTION));
 
     startService(WSService.getCallingIntentCancelImOnline(this));
   }

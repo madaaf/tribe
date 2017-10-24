@@ -141,6 +141,10 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   private Float audioDuration = 0f;
   private Shortcut fromShortcut = null;
 
+  private Map<String, Object> tagMap;
+  private String section, gesture;
+  private int heartCount = 0, textCount = 0, audioCount = 0, imageCount = 0;
+
   @BindView(R.id.editText) EditTextFont editText;
   @BindView(R.id.recyclerViewChat) RecyclerMessageView recyclerView;
   @BindView(R.id.recyclerViewGrp) RecyclerView recyclerViewGrp;
@@ -204,6 +208,9 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     inflater.inflate(R.layout.view_chat, this, true);
     unbinder = ButterKnife.bind(this);
     Timber.w("SOEF  INIT VIEW");
+
+    tagMap = new HashMap<>();
+
     initDependencyInjector();
     initRecyclerView();
     initSubscriptions();
@@ -212,6 +219,11 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   public int getType() {
     return type;
+  }
+
+  public void setGestureAndSection(String gesture, String section) {
+    this.gesture = gesture;
+    this.section = section;
   }
 
   public void setChatId(List<User> friends, Shortcut shortcut, Recipient recipient) {
@@ -282,18 +294,17 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         voiceNoteBtn.getLayoutParams().height = size;
         voiceNoteBtn.getLayoutParams().width = size;
 
-        voiceNoteBtn.setTranslationX(
-            editText.getX() + editText.getWidth() - voiceNoteBtn.getWidth() - screenUtils.dpToPx(
-                5));
+        voiceNoteBtn.setTranslationX(editText.getX() + editText.getWidth() -
+            voiceNoteBtn.getWidth() -
+            screenUtils.dpToPx(5));
         voiceNoteBtn.setTranslationY(
             -editText.getHeight() + voiceNoteBtn.getHeight() - screenUtils.dpToPx(7));
 
         pictoVoiceNote.setTranslationX(
             voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
 
-        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (
-            pictoVoiceNote.getHeight()
-                / 2) + screenUtils.dpToPx(12));
+        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) -
+            (pictoVoiceNote.getHeight() / 2) + screenUtils.dpToPx(12));
 
         voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
@@ -351,6 +362,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     stopRecording();
 
     if (sendMessage && audioDuration > 0) {
+      audioCount++;
       sendMessageToAdapter(Message.MESSAGE_AUDIO, time, null);
     }
 
@@ -530,11 +542,11 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         uploadTask = riversRef.putStream(inputStream);
       } else if (type.equals(MESSAGE_AUDIO)) {
         Uri file = Uri.fromFile(new File(audioFile));
-        StorageReference riversRef = storageRef.child("app/uploads/"
-            + user.getId()
-            + "/"
-            + dateUtils.getUTCDateAsString()
-            + file.getLastPathSegment());
+        StorageReference riversRef = storageRef.child("app/uploads/" +
+            user.getId() +
+            "/" +
+            dateUtils.getUTCDateAsString() +
+            file.getLastPathSegment());
         uploadTask = riversRef.putFile(file);
       }
 
@@ -571,10 +583,12 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
             subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
               sendMessageToAdapter(MESSAGE_IMAGE, null, uri);
+              imageCount++;
             }));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
             subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
               sendMessageToAdapter(MESSAGE_IMAGE, null, uri);
+              imageCount++;
             }));
           }
 
@@ -868,15 +882,30 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       subscriptions.unsubscribe();
       subscriptions.clear();
     }
+
+    layoutPulse.stop();
     layoutPulse.clearAnimation();
+
+    tagMap.put(TagManagerUtils.EVENT, TagManagerUtils.Chats);
+    if (!StringUtils.isEmpty(section)) tagMap.put(TagManagerUtils.SECTION, section);
+    if (!StringUtils.isEmpty(gesture)) tagMap.put(TagManagerUtils.GESTURE, gesture);
+    tagMap.put(TagManagerUtils.HEART_COUNT, heartCount);
+    tagMap.put(TagManagerUtils.AUDIO_COUNT, audioCount);
+    tagMap.put(TagManagerUtils.IMAGE_COUNT, imageCount);
+    tagMap.put(TagManagerUtils.TEXT_COUNT, textCount);
+    TagManagerUtils.manageTags(tagManager, tagMap);
+
     super.onDetachedFromWindow();
   }
 
   @OnClick(R.id.likeBtn) void onClickLike() {
+    heartCount++;
     sendMessage();
   }
 
   @OnClick(R.id.sendBtn) void onClickSend() {
+    textCount++;
+
     String m = editText.getText().toString();
     String editedMessage = m.replaceAll("\n", "\"n");
     if (!editedMessage.isEmpty()) {
@@ -1219,11 +1248,11 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void startRecording() {
-    mFileName = context.getExternalCacheDir().getAbsolutePath()
-        + File.separator
-        + dateUtils.getUTCDateAsString()
-        + user.getId()
-        + "audiorecord.mp4";
+    mFileName = context.getExternalCacheDir().getAbsolutePath() +
+        File.separator +
+        dateUtils.getUTCDateAsString() +
+        user.getId() +
+        "audiorecord.mp4";
     mFileName = mFileName.replaceAll(" ", "_").replaceAll(":", "-");
 
     Timber.w("SOEF " + mFileName);

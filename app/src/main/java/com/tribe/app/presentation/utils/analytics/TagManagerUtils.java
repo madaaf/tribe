@@ -41,6 +41,7 @@ public class TagManagerUtils {
   public static final String NewChat = "NewChat";
   public static final String EditGroupName = "EditGroupName";
   public static final String Shortcut = "Shortcut";
+  public static final String Chats = "Chats";
 
   /**
    * ERRORS
@@ -95,6 +96,10 @@ public class TagManagerUtils {
   public static final String SECTION_RECENT = "recent";
   public static final String SECTION_ONGOING = "ongoing";
   public static final String SECTION_SHORTCUT = "shortcut";
+  public static final String HEART_COUNT = "heart_count";
+  public static final String TEXT_COUNT = "text_count";
+  public static final String AUDIO_COUNT = "audio_count";
+  public static final String IMAGE_COUNT = "image_count";
 
   /**
    * USER PROPERTIES
