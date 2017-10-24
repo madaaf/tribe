@@ -27,7 +27,6 @@ import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 10/22/2017.
@@ -140,8 +139,6 @@ public class HomeWalkthroughView extends FrameLayout {
 
   private void initSubscriptions() {
     subscriptions.add(viewVideo.onProgress().subscribe(time -> {
-      Timber.d("Time : " + time);
-
       if ((time >= 4200 && step == STEP_SLIDE_TO_CHAT) ||
           (time >= 6495 && step == STEP_SLIDE_TO_VIDEO) ||
           (time >= 13000 && step == STEP_HAVE_FUN_GAMES)) {
@@ -306,7 +303,6 @@ public class HomeWalkthroughView extends FrameLayout {
         .setInterpolator(new OvershootInterpolator(OVERSHOOT))
         .start();
 
-    viewVideo.seekTo(3000);
     viewVideo.play();
     viewVideo.onPause(false);
     btnNext.setEnabled(true);

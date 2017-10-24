@@ -325,12 +325,12 @@ public class HomeActivity extends BaseActivity
 
     initRecyclerViewCallback();
 
-    //if (!walkthrough.get()) {
+    if (!walkthrough.get()) {
       walkthrough.set(true);
       subscriptions.add(Observable.timer(1500, TimeUnit.MILLISECONDS)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> viewWalkthrough.show()));
-    //}
+    }
   }
 
   @Override protected void onPause() {
