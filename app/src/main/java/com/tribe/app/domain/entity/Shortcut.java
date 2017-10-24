@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.domain.ShortcutLastSeen;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
@@ -30,6 +31,7 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   private boolean single;
   private @ShortcutRealm.ShortcutStatus String status;
   private Date last_activity_at;
+  private List<ShortcutLastSeen> shortcutLastSeen;
   private List<User> members;
   private String lastMessage;
   private Date leaveOnlineUntil;
@@ -39,6 +41,14 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
 
   public Shortcut(String id) {
     this.id = id;
+  }
+
+  public List<ShortcutLastSeen> getShortcutLastSeen() {
+    return shortcutLastSeen;
+  }
+
+  public void setShortcutLastSeen(List<ShortcutLastSeen> shortcutLastSeen) {
+    this.shortcutLastSeen = shortcutLastSeen;
   }
 
   @Override public String getId() {

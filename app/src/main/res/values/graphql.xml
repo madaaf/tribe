@@ -506,6 +506,10 @@
         status
         created_at
         last_activity_at
+        last_seen {
+          user_id
+          date
+        }
         members {
           ...UserInfos
         }

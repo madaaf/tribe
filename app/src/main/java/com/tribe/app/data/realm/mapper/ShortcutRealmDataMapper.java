@@ -1,6 +1,8 @@
 package com.tribe.app.data.realm.mapper;
 
+import com.tribe.app.data.realm.ShortcutLastSeenRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.domain.ShortcutLastSeen;
 import com.tribe.app.domain.entity.Shortcut;
 import io.realm.RealmList;
 import java.util.ArrayList;
@@ -79,9 +81,49 @@ import javax.inject.Singleton;
       shortcutRealm.setCreatedAt(shortcut.getCreatedAt());
       shortcutRealm.setLeaveOnlineUntil(shortcut.getLeaveOnlineUntil());
       shortcutRealm.setMembersHash(shortcut.getMembersHash());
+      shortcutRealm.setLastSeen(transformListShortcutLastSeen(shortcut.getShortcutLastSeen()));
     }
 
     return shortcutRealm;
+  }
+
+  public ShortcutLastSeenRealm transform(ShortcutLastSeen shortcutLastSeen) {
+    ShortcutLastSeenRealm shortcutLastSeenRealm = null;
+
+    if (shortcutLastSeen != null) {
+      shortcutLastSeenRealm = new ShortcutLastSeenRealm();
+      shortcutLastSeenRealm.setDate(shortcutLastSeen.getDate());
+      shortcutLastSeen.setUserId(shortcutLastSeen.getUserId());
+    }
+
+    return shortcutLastSeenRealm;
+  }
+
+  public RealmList<ShortcutLastSeenRealm> transformListShortcutLastSeen(
+      Collection<ShortcutLastSeen> shortcutCollection) {
+    RealmList<ShortcutLastSeenRealm> shortcutRealmList = new RealmList<>();
+    ShortcutLastSeenRealm shortcutRealm;
+    if (shortcutCollection != null) {
+      for (ShortcutLastSeen shortcut : shortcutCollection) {
+        shortcutRealm = transform(shortcut);
+        if (shortcutRealm != null) {
+          shortcutRealmList.add(shortcutRealm);
+        }
+      }
+    }
+
+    return shortcutRealmList;
+  }
+
+  public ShortcutLastSeen transform(ShortcutLastSeenRealm shortcutLastSeenRealm) {
+    ShortcutLastSeen shortcutLastSeen = null;
+
+    if (shortcutLastSeenRealm != null) {
+      shortcutLastSeen = new ShortcutLastSeen();
+      shortcutLastSeen.setUserId(shortcutLastSeenRealm.getUserId());
+      shortcutLastSeen.setDate(shortcutLastSeenRealm.getDate());
+    }
+    return shortcutLastSeen;
   }
 
   public List<Shortcut> transform(Collection<ShortcutRealm> shortcutRealmCollection) {

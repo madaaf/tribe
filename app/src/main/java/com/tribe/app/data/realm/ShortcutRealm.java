@@ -42,6 +42,7 @@ public class ShortcutRealm extends RealmObject {
   private boolean mute;
   @Index private boolean single;
   @Index private @ShortcutRealm.ShortcutStatus String status;
+  private RealmList<ShortcutLastSeenRealm> last_seen;
   private Date created_at;
   private Date last_activity_at;
   private RealmList<UserRealm> members;
@@ -58,6 +59,14 @@ public class ShortcutRealm extends RealmObject {
 
   public String getId() {
     return id;
+  }
+
+  public  RealmList<ShortcutLastSeenRealm> getLastSeen() {
+    return last_seen;
+  }
+
+  public void setLastSeen( RealmList<ShortcutLastSeenRealm> last_seen) {
+    this.last_seen = last_seen;
   }
 
   public void setId(String id) {
