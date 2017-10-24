@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component.home;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
@@ -60,6 +61,7 @@ public class HomeWalkthroughVideoView extends CardView
     setPreventCornerOverlap(false);
     setMaxCardElevation(0);
     setCardElevation(0);
+    setCardBackgroundColor(Color.TRANSPARENT);
   }
 
   @Override protected void onAttachedToWindow() {
@@ -119,6 +121,10 @@ public class HomeWalkthroughVideoView extends CardView
   public void play() {
     mediaPlayer.play();
     isPaused = false;
+  }
+
+  public void seekTo(long position) {
+    mediaPlayer.seekTo(position);
   }
 
   public boolean isPaused() {

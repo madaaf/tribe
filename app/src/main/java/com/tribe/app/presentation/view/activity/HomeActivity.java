@@ -72,6 +72,7 @@ import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
+import com.tribe.app.presentation.utils.preferences.Walkthrough;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
@@ -159,6 +160,8 @@ public class HomeActivity extends BaseActivity
   @Inject @CallTagsMap Preference<String> callTagsMap;
 
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
+
+  @Inject @Walkthrough Preference<Boolean> walkthrough;
 
   @Inject RxImagePicker rxImagePicker;
 
@@ -321,6 +324,13 @@ public class HomeActivity extends BaseActivity
     homeGridPresenter.reload(hasSynced);
 
     initRecyclerViewCallback();
+
+    //if (!walkthrough.get()) {
+      walkthrough.set(true);
+      subscriptions.add(Observable.timer(1500, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> viewWalkthrough.show()));
+    //}
   }
 
   @Override protected void onPause() {
@@ -818,10 +828,6 @@ public class HomeActivity extends BaseActivity
     openSmsApp(intent);
 
     if (intent != null && intent.hasExtra(Extras.IS_FROM_LOGIN)) {
-      subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> viewWalkthrough.show()));
-
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
     }
   }

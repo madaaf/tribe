@@ -12,27 +12,26 @@
 
   <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="match_parent"
       android:layout_gravity="center"
       android:gravity="center"
       android:orientation="vertical"
       >
 
-    <FrameLayout
+    <com.tribe.app.presentation.view.widget.SquareFrameLayout
         android:id="@+id/layoutVideo"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:background="@null"
-        android:elevation="10dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@drawable/shape_rect_rounded_5_white"
         >
 
       <com.tribe.app.presentation.view.component.home.HomeWalkthroughVideoView
           android:id="@+id/viewVideo"
-          android:layout_width="250dp"
-          android:layout_height="250dp"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
           />
 
-    </FrameLayout>
+    </com.tribe.app.presentation.view.widget.SquareFrameLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -44,8 +43,8 @@
           android:id="@+id/txtWalkthrough"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:background="@null"
           android:layout_gravity="center"
+          android:background="@null"
           android:text="@string/walkthrough_message_step1"
           style="@style/Headline.White.2"
           />
@@ -54,8 +53,8 @@
           android:id="@+id/txtWalkthrough2"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:background="@null"
           android:layout_gravity="center"
+          android:background="@null"
           android:text="@string/walkthrough_message_step1"
           style="@style/Headline.White.2"
           />
@@ -88,7 +87,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="bottom|center_horizontal"
-      android:layout_marginBottom="@dimen/horizontal_margin"
+      android:layout_marginBottom="@dimen/horizontal_margin_large"
       android:background="@drawable/bg_walkthrough_btn_selector"
       android:foreground="@drawable/selectable_button_all_rounded_100_white_10"
       android:gravity="center"

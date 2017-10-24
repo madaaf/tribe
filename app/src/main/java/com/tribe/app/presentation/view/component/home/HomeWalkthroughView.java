@@ -23,11 +23,9 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -37,7 +35,7 @@ import timber.log.Timber;
 public class HomeWalkthroughView extends FrameLayout {
 
   private static final int DURATION = 300;
-  private static final float OVERSHOOT = 0.75f;
+  private static final float OVERSHOOT = 0.65f;
 
   private static final int STEP_BEGIN = 0;
   private static final int STEP_SLIDE_TO_CHAT = 1;
@@ -129,8 +127,10 @@ public class HomeWalkthroughView extends FrameLayout {
     btnNext.setEnabled(false);
     btnNext.setTranslationY(screenUtils.dpToPx(100));
 
-    layoutVideo.setScaleX(0);
-    layoutVideo.setScaleY(0);
+    UIUtils.changeWidthOfView(layoutVideo, (int) (screenUtils.getWidthPx() * 0.7f));
+    layoutVideo.setTranslationY(screenUtils.dpToPx(10));
+    layoutVideo.setScaleX(1.2f);
+    layoutVideo.setScaleY(1.2f);
     layoutVideo.setAlpha(0);
   }
 
@@ -142,33 +142,45 @@ public class HomeWalkthroughView extends FrameLayout {
     subscriptions.add(viewVideo.onProgress().subscribe(time -> {
       Timber.d("Time : " + time);
 
-      if ((time >= 2995 && step == STEP_SLIDE_TO_CHAT) ||
+      if ((time >= 4200 && step == STEP_SLIDE_TO_CHAT) ||
           (time >= 6495 && step == STEP_SLIDE_TO_VIDEO) ||
           (time >= 13000 && step == STEP_HAVE_FUN_GAMES)) {
         btnNext.setEnabled(true);
         viewVideo.onPause(false);
+
+        if (step == STEP_HAVE_FUN_GAMES) hide();
       }
     }));
   }
 
-  private void translateIndToStep(int step) {
+  private void translateIndToStep(int step, int delay) {
     int translateX = 0;
+    final int color;
 
     if (step == STEP_SLIDE_TO_CHAT) {
-      gradientDrawable.setColor(ContextCompat.getColor(getContext(), R.color.blue_text));
+      color = ContextCompat.getColor(getContext(), R.color.blue_text);
       translateX = -((layoutInd.getWidth() >> 1) - (viewInd.getWidth() >> 1));
     } else if (step == STEP_SLIDE_TO_VIDEO) {
-      gradientDrawable.setColor(Color.WHITE);
+      color = Color.WHITE;
       translateX = 0;
     } else if (step == STEP_HAVE_FUN_GAMES) {
-      gradientDrawable.setColor(ContextCompat.getColor(getContext(), R.color.red));
+      color = ContextCompat.getColor(getContext(), R.color.red);
       translateX = (layoutInd.getWidth() >> 1) - (viewInd.getWidth() >> 1);
+    } else {
+      color = Color.WHITE;
     }
 
     viewInd.animate()
         .translationX(translateX)
         .setDuration(DURATION)
         .setInterpolator(new DecelerateInterpolator())
+        .setStartDelay(delay)
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationStart(Animator animation) {
+            gradientDrawable.setColor(color);
+            animation.removeAllListeners();
+          }
+        })
         .start();
   }
 
@@ -176,65 +188,70 @@ public class HomeWalkthroughView extends FrameLayout {
     viewVideo.play();
     btnNext.setEnabled(false);
 
+    int delay = 0;
+
     if (step == STEP_BEGIN) {
+      delay = 1500;
       step = STEP_SLIDE_TO_CHAT;
       btnNext.setText(R.string.walkthrough_action_step2);
       showTitle(highlightTextInText(
           EmojiParser.demojizedText(getResources().getString(R.string.walkthrough_message_step2)),
           getResources().getString(R.string.walkthrough_message_highlight_step2),
-          R.style.Headline_BlueText_2), false);
+          R.style.Headline_BlueText_2), false, delay);
     } else if (step == STEP_SLIDE_TO_CHAT) {
+      delay = 1050;
       step = STEP_SLIDE_TO_VIDEO;
       btnNext.setText(R.string.walkthrough_action_step3);
       showTitle(highlightTextInText(
           EmojiParser.demojizedText(getResources().getString(R.string.walkthrough_message_step3)),
           getResources().getString(R.string.walkthrough_message_highlight_step3),
-          R.style.Headline_Red_2), true);
+          R.style.Headline_Red_2), true, delay);
     } else if (step == STEP_SLIDE_TO_VIDEO) {
+      delay = 1550;
       step = STEP_HAVE_FUN_GAMES;
       showTitle(highlightTextInText(
           EmojiParser.demojizedText(getResources().getString(R.string.walkthrough_message_step4)),
           getResources().getString(R.string.walkthrough_message_highlight_step4),
-          R.style.Headline_Red_2), true);
+          R.style.Headline_Red_2), true, delay);
     } else {
       hide();
       return;
     }
 
-    translateIndToStep(step);
+    translateIndToStep(step, delay);
   }
 
-  private void showTitle(SpannableString title, boolean forward) {
+  private void showTitle(SpannableString title, boolean forward, int delay) {
     if (txtWalkthrough.getTranslationX() == 0) {
       txtWalkthrough2.setText(title);
-      showTitle(txtWalkthrough2, forward);
-      hideTitle(txtWalkthrough, forward);
+      showTitle(txtWalkthrough2, forward, delay);
+      hideTitle(txtWalkthrough, forward, delay);
     } else {
       txtWalkthrough.setText(title);
-      hideTitle(txtWalkthrough2, forward);
-      showTitle(txtWalkthrough, forward);
+      hideTitle(txtWalkthrough2, forward, delay);
+      showTitle(txtWalkthrough, forward, delay);
     }
   }
 
-  private void hideTitle(View view, boolean forward) {
+  private void hideTitle(View view, boolean forward, int delay) {
     if (forward) {
       view.animate()
           .translationX(-screenUtils.getWidthPx() >> 1)
           .alpha(0)
           .setDuration(DURATION)
-          .setStartDelay(0)
+          .setStartDelay(delay)
           .start();
     } else {
       view.animate()
           .alpha(0)
           .translationX(screenUtils.getWidthPx() >> 1)
           .setDuration(DURATION)
-          .setStartDelay(0)
+          .setStartDelay(delay)
           .start();
     }
   }
 
-  private void showTitle(View view, boolean forward) {
+  private void showTitle(View view, boolean forward, int delay) {
     if (forward) {
       view.setTranslationX(screenUtils.getWidthPx() >> 1);
       view.setAlpha(0);
@@ -243,7 +260,7 @@ public class HomeWalkthroughView extends FrameLayout {
       view.setAlpha(0);
     }
 
-    view.animate().translationX(0).alpha(1).setDuration(DURATION).setStartDelay(0).start();
+    view.animate().translationX(0).alpha(1).setDuration(DURATION).setStartDelay(delay).start();
   }
 
   private SpannableString highlightTextInText(String fullText, String highlightedText, int style) {
@@ -272,32 +289,27 @@ public class HomeWalkthroughView extends FrameLayout {
         .translationY(0)
         .setInterpolator(new OvershootInterpolator(OVERSHOOT))
         .setDuration(DURATION)
-        .setStartDelay(DURATION)
         .start();
 
     btnNext.animate()
         .translationY(0)
         .setInterpolator(new OvershootInterpolator(OVERSHOOT))
         .setDuration(DURATION)
-        .setStartDelay(DURATION)
         .start();
 
     layoutVideo.animate()
+        .translationY(0)
         .alpha(1)
         .scaleX(1)
         .scaleY(1)
         .setDuration(DURATION)
-        .setStartDelay(DURATION)
-        .setInterpolator(new DecelerateInterpolator())
+        .setInterpolator(new OvershootInterpolator(OVERSHOOT))
         .start();
 
-    subscriptions.add(Observable.timer(DURATION * 2, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          viewVideo.play();
-          viewVideo.onPause(false);
-          btnNext.setEnabled(true);
-        }));
+    viewVideo.seekTo(3000);
+    viewVideo.play();
+    viewVideo.onPause(false);
+    btnNext.setEnabled(true);
   }
 
   public void hide() {

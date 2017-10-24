@@ -28,6 +28,7 @@ import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
+import com.tribe.app.presentation.utils.preferences.Walkthrough;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import dagger.Module;
 import dagger.Provides;
@@ -116,6 +117,11 @@ import static android.content.Context.MODE_PRIVATE;
 
   @Provides @Singleton @DebugMode Preference<Boolean> provideDebugMode(RxSharedPreferences prefs) {
     return prefs.getBoolean(PreferencesUtils.DEBUG_MODE, false);
+  }
+
+  @Provides @Singleton @Walkthrough Preference<Boolean> provideWalkthrough(
+      RxSharedPreferences prefs) {
+    return prefs.getBoolean(PreferencesUtils.WALKTHROUGH, false);
   }
 
   @Provides @Singleton @UISounds Preference<Boolean> provideUISounds(RxSharedPreferences prefs) {
