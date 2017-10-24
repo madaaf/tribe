@@ -12,6 +12,8 @@
       android:layout_width="match_parent"
       android:layout_height="@dimen/top_bar_height_small"
       android:background="@drawable/shape_rect_white_rounded_corners_top"
+      android:layout_alignParentTop="true"
+      android:layout_alignParentStart="true"
       >
 
     <com.tribe.app.presentation.view.widget.avatar.NewAvatarView

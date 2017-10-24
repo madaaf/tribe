@@ -49,6 +49,7 @@ import javax.inject.Singleton;
       shortcut.setCreatedAt(shortcutRealm.getCreatedAt());
       shortcut.setLeaveOnlineUntil(shortcutRealm.getLeaveOnlineUntil());
       shortcut.setMembersHash(shortcutRealm.getMembersHash());
+      shortcut.setShortcutLastSeen(transformListShortcutLastSeenRealm(shortcutRealm.getLastSeen()));
     }
 
     return shortcut;
@@ -99,6 +100,24 @@ import javax.inject.Singleton;
     return shortcutLastSeenRealm;
   }
 
+  public List<ShortcutLastSeen> transformListShortcutLastSeenRealm(
+      Collection<ShortcutLastSeenRealm> shortcutCollection) {
+    List<ShortcutLastSeen> list = new ArrayList<>();
+
+    ShortcutLastSeen shortcut;
+    if (shortcutCollection != null) {
+      for (ShortcutLastSeenRealm shortcutRealm : shortcutCollection) {
+        shortcut = transform(shortcutRealm);
+        if (shortcut != null) {
+          list.add(shortcut);
+        }
+      }
+    }
+
+    return list;
+  }
+
+
   public RealmList<ShortcutLastSeenRealm> transformListShortcutLastSeen(
       Collection<ShortcutLastSeen> shortcutCollection) {
     RealmList<ShortcutLastSeenRealm> shortcutRealmList = new RealmList<>();
@@ -128,6 +147,7 @@ import javax.inject.Singleton;
 
   public List<Shortcut> transform(Collection<ShortcutRealm> shortcutRealmCollection) {
     List<Shortcut> shortcutList = new ArrayList<>();
+
     Shortcut shortcut;
     if (shortcutRealmCollection != null) {
       for (ShortcutRealm shortcutRealm : shortcutRealmCollection) {

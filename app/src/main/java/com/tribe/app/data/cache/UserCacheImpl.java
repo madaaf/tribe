@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.ShortcutLastSeenRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.utils.ShortcutUtils;
@@ -82,6 +83,15 @@ public class UserCacheImpl implements UserCache {
     to.setSingle(from.isSingle());
     to.setLastActivityAt(from.getLastActivityAt());
 
+    RealmList<ShortcutLastSeenRealm> lastSeenRealmList = new RealmList<>();
+    for (ShortcutLastSeenRealm ls : from.getLastSeen()) {
+      tempRealm.insertOrUpdate(ls);
+      lastSeenRealmList.add(tempRealm.where(ShortcutLastSeenRealm.class)
+          .equalTo("user_id", ls.getUserId())
+          .findFirst());
+    }
+    to.setLastSeen(lastSeenRealmList);
+
     RealmList<UserRealm> userRealmList = new RealmList<>();
     for (UserRealm member : from.getMembers()) {
       tempRealm.insertOrUpdate(member);
@@ -130,16 +140,16 @@ public class UserCacheImpl implements UserCache {
     if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.FBID)) {
       to.setFbid(from.getFbid());
     }
-    if (from.getJsonPayloadUpdate() == null ||
-        from.getJsonPayloadUpdate().has(UserRealm.TRIBE_SAVE)) {
+    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
+        .has(UserRealm.TRIBE_SAVE)) {
       to.setTribeSave(from.isTribeSave());
     }
-    if (from.getJsonPayloadUpdate() == null ||
-        from.getJsonPayloadUpdate().has(UserRealm.INVISIBLE_MODE)) {
+    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
+        .has(UserRealm.INVISIBLE_MODE)) {
       to.setInvisibleMode(from.isInvisibleMode());
     }
-    if (from.getJsonPayloadUpdate() == null ||
-        from.getJsonPayloadUpdate().has(UserRealm.PUSH_NOTIF)) {
+    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
+        .has(UserRealm.PUSH_NOTIF)) {
       to.setPushNotif(from.isPushNotif());
     }
     if (from.getLastSeenAt() != null) to.setLastSeenAt(from.getLastSeenAt());

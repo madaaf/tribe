@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
     android:orientation="vertical"
-    android:id="@+id/container"
     >
 
   <include layout="@layout/item_message_base" />
@@ -11,7 +12,6 @@
   <RelativeLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="10dp"
       android:orientation="horizontal"
       >
 
@@ -28,4 +28,8 @@
 
   </RelativeLayout>
 
+  <include
+      layout="@layout/item_message_footer"
+      android:id="@+id/item_message_footer"
+      />
 </LinearLayout>

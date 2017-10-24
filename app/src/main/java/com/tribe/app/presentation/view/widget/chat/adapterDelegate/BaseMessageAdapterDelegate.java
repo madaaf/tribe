@@ -21,7 +21,10 @@ import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
+import java.util.ArrayList;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 /**
@@ -38,6 +41,8 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
   protected Context context;
   protected int type;
   protected LayoutInflater layoutInflater;
+
+  private PublishSubject<List<Object>> onClickItem = PublishSubject.create();
 
   public BaseMessageAdapterDelegate(Context context, int type) {
     this.type = type;
@@ -76,6 +81,18 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
       @NonNull RecyclerView.ViewHolder holder) {
     BaseTextViewHolder vh = (BaseTextViewHolder) holder;
     Message m = items.get(position);
+
+    vh.itemView.setOnClickListener(view -> {
+      if (vh.shortcutLastSeen.getVisibility() == View.GONE) {
+        vh.shortcutLastSeen.setVisibility(View.VISIBLE);
+        List<Object> list = new ArrayList<>();
+        list.add(vh.shortcutLastSeen);
+        list.add(m);
+        onClickItem.onNext(list);
+      } else {
+        vh.shortcutLastSeen.setVisibility(View.GONE);
+      }
+    });
 
     if (type == ChatView.FROM_LIVE) {
       vh.name.setTextColor(ContextCompat.getColor(context, R.color.white));
@@ -133,6 +150,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     @BindView(R.id.daySeparatorContainer) public LinearLayout daySeparatorContainer;
     @BindView(R.id.daySeparator) public TextViewFont daySeparator;
     @BindView(R.id.time2) public TextViewFont time2;
+    @BindView(R.id.shortcutLastSeen) public TextViewFont shortcutLastSeen;
 
     public BaseTextViewHolder(View itemView) {
       super(itemView);
@@ -140,5 +158,9 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     }
 
     protected abstract ViewGroup getLayoutContent();
+  }
+
+  public Observable<List<Object>> onClickItem() {
+    return onClickItem;
   }
 }

@@ -8,6 +8,8 @@ import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -28,6 +30,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
   private MessageAudioAdapterDelegate messageAudioAdapterDelegate;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<List<Object>> onClickItem = PublishSubject.create();
 
   public MessageAdapter(Context context, int type) {
     delegatesManager = new RxAdapterDelegatesManager<>();
@@ -130,5 +133,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
       }
     }
     return (positionPendingMessage.size() - 1);
+  }
+
+  public Observable<List<Object>> onClickItem() {
+    return Observable.merge(messageTextAdapterDelegate.onClickItem(),
+        messageEventAdapterDelegate.onClickItem(), messageImageAdapterDelegate.onClickItem(),
+        messageEmojiAdapterDelegate.onClickItem(), messageAudioAdapterDelegate.onClickItem());
   }
 }

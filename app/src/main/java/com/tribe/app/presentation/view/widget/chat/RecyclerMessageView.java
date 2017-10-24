@@ -14,6 +14,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.ShortcutLastSeen;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -24,10 +26,12 @@ import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import org.joda.time.DateTime;
@@ -35,6 +39,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -49,6 +54,8 @@ public class RecyclerMessageView extends ChatMVPView {
   private LinearLayoutManager layoutManager;
   private MessageAdapter messageAdapter;
 
+  private Shortcut shortcut;
+
   private int counterMessageNotSend, type;
   private boolean load = false, errorLoadingMessages = false;
   private List<Message> unreadMessage = new ArrayList<>();
@@ -61,6 +68,7 @@ public class RecyclerMessageView extends ChatMVPView {
   @Inject DateUtils dateUtils;
   @Inject ScreenUtils screenUtils;
 
+  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Integer> onScrollRecyclerView = PublishSubject.create();
 
   public RecyclerMessageView(@NonNull Context context) {
@@ -102,9 +110,43 @@ public class RecyclerMessageView extends ChatMVPView {
     unbinder = ButterKnife.bind(this);
     initRecyclerView();
     initDependencyInjector();
+    initSubscriptions();
     if (type == ChatView.FROM_LIVE) {
       recyclerView.setVerticalScrollBarEnabled(false);
     }
+  }
+
+  private void initSubscriptions() {
+    subscriptions.add(messageAdapter.onClickItem().subscribe(obj -> {
+      TextViewFont view = ((TextViewFont) obj.get(0));
+      Message m = ((Message) obj.get(1));
+
+      Date creationDate = dateUtils.stringDateToDate(m.getCreationDate());
+
+      String lastSeenString = "Seen by ";
+      List<ShortcutLastSeen> list = shortcut.getShortcutLastSeen();
+      List<String> lastSeenListId = new ArrayList<>();
+
+      for (ShortcutLastSeen item : list) {
+        Date date = item.getDate();
+        if (date != null && dateUtils.isBefore(creationDate, date)) {
+          lastSeenListId.add(item.getUserId());
+        }
+      }
+
+      for (User user : shortcut.getMembers()) {
+        if (lastSeenListId.contains(user.getId())) {
+          lastSeenString +=
+              user.getDisplayName().substring(0, 1).toUpperCase() + user.getDisplayName()
+                  .substring(1) + ", ";
+        }
+      }
+
+      lastSeenString = (lastSeenListId.isEmpty()) ? context.getString(R.string.chat_not_seen)
+          : lastSeenString.substring(0, (lastSeenString.length() - 2));
+      view.setText(lastSeenString);
+      Timber.e("ON CLICK " + lastSeenString + " " + list.toString());
+    }));
   }
 
   @Override protected void onAttachedToWindow() {
@@ -137,7 +179,7 @@ public class RecyclerMessageView extends ChatMVPView {
     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
       @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         onScrollRecyclerView.onNext(dy);
-        Timber.e("DY / " + dy );
+        Timber.e("DY / " + dy);
         if (dy != 0) {
           screenUtils.hideKeyboard((Activity) context);
         }
@@ -293,5 +335,9 @@ public class RecyclerMessageView extends ChatMVPView {
 
   public Observable<Integer> onScrollRecyclerView() {
     return onScrollRecyclerView;
+  }
+
+  public void setShortcut(Shortcut shortcut) {
+    this.shortcut = shortcut;
   }
 }

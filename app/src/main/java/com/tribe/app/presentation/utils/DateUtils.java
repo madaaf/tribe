@@ -14,7 +14,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 17/08/2016.
@@ -50,6 +49,10 @@ public class DateUtils {
     }
 
     return dateToReturn;
+  }
+
+  public boolean isBefore(Date date1, Date date2) {
+    return date1.before(date2);
   }
 
   public int getDiffDate(String date1, String date2) {

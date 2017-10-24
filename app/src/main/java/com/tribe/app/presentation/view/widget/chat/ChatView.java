@@ -230,6 +230,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     this.recipient = recipient;
     this.shortcut = shortcut;
     setTypeChatUX();
+    recyclerView.setShortcut(shortcut);
     avatarView.load(friends.get(0).getProfilePicture());
     List<String> userIds = new ArrayList<>();
     for (User friend : friends) {
@@ -240,7 +241,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     recyclerView.setArrIds(arrIds);
 
     if (friends.size() > 1) {
-      String txt = context.getString(R.string.shortcut_members_count, friends.size()) + " ";
+      String txt = context.getString(R.string.shortcut_members_count, (friends.size() + 1)) + " ";
       title.setText(txt);
       title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_edit_chat, 0);
     } else {
@@ -564,6 +565,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void initSubscriptions() {
+
     subscriptions.add(recyclerView.onScrollRecyclerView().subscribe(dy -> {
       if (dy < 0 && blurBackEditText.getAlpha() != 1f) {
         blurBackEditText.animate().alpha(1f).setDuration(ANIM_DURATION_FAST).start();

@@ -92,10 +92,9 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   }
 
   public boolean isOnline() {
-    return online ||
-        (leaveOnlineUntil != null &&
-            !single &&
-            System.currentTimeMillis() - leaveOnlineUntil.getTime() <= ONE_MINUTE);
+    return online || (leaveOnlineUntil != null
+        && !single
+        && System.currentTimeMillis() - leaveOnlineUntil.getTime() <= ONE_MINUTE);
   }
 
   @Override public boolean isRinging() {
@@ -264,8 +263,8 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   }
 
   public boolean isBlockedOrHidden() {
-    return status.equalsIgnoreCase(ShortcutRealm.BLOCKED) ||
-        status.equalsIgnoreCase(ShortcutRealm.HIDDEN);
+    return status.equalsIgnoreCase(ShortcutRealm.BLOCKED) || status.equalsIgnoreCase(
+        ShortcutRealm.HIDDEN);
   }
 
   public boolean isBlocked() {
@@ -312,35 +311,16 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   }
 
   @Override public String toString() {
-    return "Shortcut{" +
-        "id='" +
-        id +
-        '\'' +
-        ", name='" +
-        name +
-        '\'' +
-        ", picture='" +
-        picture +
-        '\'' +
-        ", online=" +
-        online +
-        ", live=" +
-        live +
-        ", pinned=" +
-        pinned +
-        ", read=" +
-        read +
-        ", mute=" +
-        mute +
-        ", single=" +
-        single +
-        ", status='" +
-        status +
-        '\'' +
-        ", last_activity_at=" +
-        last_activity_at +
-        ", members=" +
-        members +
-        '}';
+    return "Shortcut{"
+        + "id='"
+        + id
+        + '\''
+        + ", name='"
+        + name
+
+        + ", last_activity_at="
+        + last_activity_at
+        + ", shortcutLastSeen="
+        + getShortcutLastSeen();
   }
 }
