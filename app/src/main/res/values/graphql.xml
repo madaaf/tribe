@@ -82,6 +82,10 @@
             imTalking(usersIds:[%1$s])
   </string>
 
+  <string name="imReading" translatable="false">
+            imReading(usersIds:[%1$s])
+  </string>
+
   <string name="user.infos.friendships" translatable="false">
         {
             user {

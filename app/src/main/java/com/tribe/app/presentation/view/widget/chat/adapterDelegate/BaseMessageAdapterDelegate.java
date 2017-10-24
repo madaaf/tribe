@@ -77,18 +77,25 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     }
   }
 
+  private void openShortcutLastSeen(BaseTextViewHolder vh, Message m) {
+    vh.shortcutLastSeen.setVisibility(View.VISIBLE);
+    List<Object> list = new ArrayList<>();
+    list.add(vh.shortcutLastSeen);
+    list.add(m);
+    onClickItem.onNext(list);
+  }
+
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     BaseTextViewHolder vh = (BaseTextViewHolder) holder;
     Message m = items.get(position);
-
+    if (position == items.size()) {
+      openShortcutLastSeen(vh, m);
+    }
     vh.itemView.setOnClickListener(view -> {
+      Timber.e("SOEF OK " + position + " " + items.size() + " " + m.toString());
       if (vh.shortcutLastSeen.getVisibility() == View.GONE) {
-        vh.shortcutLastSeen.setVisibility(View.VISIBLE);
-        List<Object> list = new ArrayList<>();
-        list.add(vh.shortcutLastSeen);
-        list.add(m);
-        onClickItem.onNext(list);
+        openShortcutLastSeen(vh, m);
       } else {
         vh.shortcutLastSeen.setVisibility(View.GONE);
       }

@@ -56,6 +56,7 @@ import timber.log.Timber;
   public static final String CHAT_SUBSCRIBE = "CHAT_SUBSCRIBE";
   public static final String CHAT_SUBSCRIBE_IMTYPING = "CHAT_SUBSCRIBE_IMTYPING";
   public static final String CHAT_SUBSCRIBE_IMTALKING = "CHAT_SUBSCRIBE_IMTALKING";
+  public static final String CHAT_SUBSCRIBE_IMREADING = "CHAT_SUBSCRIBE_IMREADING";
   public static final String CHAT_UNSUBSCRIBE = "CHAT_UNSUBSCRIBE";
   public static final String CALL_ROULETTE_TYPE = "CALL_ROULETTE_TYPE";
   public static final String CALL_ROOM_UPDATE_SUBSCRIBE_TYPE = "CALL_ROOM_UPDATE_TYPE";
@@ -229,6 +230,13 @@ import timber.log.Timber;
     webSocketConnection.send(req);
   }
 
+  public void subscribeImReading(String userIds) {
+    String req = getApplicationContext().getString(R.string.mutation,
+        getApplicationContext().getString(R.string.imReading, userIds));
+    Timber.i("SOEF " + req);
+    webSocketConnection.send(req);
+  }
+
   public void subscribeRoomUpdate(String roomId) {
     String subscriptionId = generateHash() + ROOM_UDPATED_SUFFIX;
     roomSubscriptions.put(roomId, subscriptionId);
@@ -300,6 +308,9 @@ import timber.log.Timber;
         } else if (type.equals(CHAT_SUBSCRIBE_IMTALKING)) {
           String usersFromatedIds = intent.getStringExtra(CHAT_IDS);
           subscribeImTalking(usersFromatedIds);
+        } else if (type.equals(CHAT_SUBSCRIBE_IMREADING)) {
+          String usersFromatedIds = intent.getStringExtra(CHAT_IDS);
+          subscribeImReading(usersFromatedIds);
         } else if (type.equals(CHAT_UNSUBSCRIBE)) {
           String usersFromatedIds = intent.getStringExtra(CHAT_IDS);
           unsubscribeChat(usersFromatedIds);
