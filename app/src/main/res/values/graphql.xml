@@ -364,6 +364,10 @@
         %1$s : isTalking ( usersIds : [%2$s] )
   </string>
 
+  <string name="subscription.isReading" translatable="false">
+        %1$s : isReading ( usersIds : [%2$s] )
+  </string>
+
   <string name="subscription.shortcutCreated" translatable="false">
         %1$s : shortcutCreated
   </string>

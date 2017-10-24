@@ -24,6 +24,8 @@ public interface ChatDataStore {
 
   Observable<String> isTalking();
 
+  Observable<String> isReading();
+
   Observable<List<MessageRealm>> onMessageReceived();
 
   Observable<Boolean> imTyping(String[] userIds);

@@ -10,7 +10,7 @@ import java.util.Date;
 public class ShortcutLastSeen implements Serializable {
 
   private String userId;
-  private Date date;
+  private String date;
 
   public ShortcutLastSeen() {
   }
@@ -23,11 +23,11 @@ public class ShortcutLastSeen implements Serializable {
     this.userId = userId;
   }
 
-  public Date getDate() {
+  public String getDate() {
     return date;
   }
 
-  public void setDate(Date date) {
+  public void setDate(String date) {
     this.date = date;
   }
 

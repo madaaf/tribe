@@ -17,6 +17,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -99,7 +100,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMREADING;
 import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMTALKING;
 import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMTYPING;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_AUDIO;
@@ -137,7 +137,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   private String[] arrIds = null;
   private Shortcut shortcut;
   private Recipient recipient;
-  private MediaRecorder mRecorder = null;
+  private MediaRecorder recorder = null;
   private String mFileName = null;
   private Float audioDuration = 0f;
   private Shortcut fromShortcut = null;
@@ -227,26 +227,27 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     this.section = section;
   }
 
-  public void setChatId(List<User> friends, Shortcut shortcut, Recipient recipient) {
+  public void setChatId(Shortcut shortcut, Recipient recipient) {
     this.recipient = recipient;
     this.shortcut = shortcut;
     setTypeChatUX();
+    this.members = shortcut.getMembers();
     recyclerView.setShortcut(shortcut);
-    avatarView.load(friends.get(0).getProfilePicture());
+    avatarView.load(members.get(0).getProfilePicture());
     List<String> userIds = new ArrayList<>();
-    for (User friend : friends) {
+    for (User friend : members) {
       userIds.add(friend.getId());
     }
-    this.members = friends;
+
     this.arrIds = userIds.toArray(new String[userIds.size()]);
     recyclerView.setArrIds(arrIds);
 
-    if (friends.size() > 1) {
-      String txt = context.getString(R.string.shortcut_members_count, (friends.size() + 1)) + " ";
+    if (members.size() > 1) {
+      String txt = context.getString(R.string.shortcut_members_count, (members.size() + 1)) + " ";
       title.setText(txt);
       title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_edit_chat, 0);
     } else {
-      title.setText(friends.get(0).getDisplayName());
+      title.setText(members.get(0).getDisplayName());
       title.setTextColor(Color.BLACK);
     }
   }
@@ -261,10 +262,12 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     if (shortcut != null) messagePresenter.getDiskShortcut(shortcut.getId());
     messagePresenter.getIsTyping();
     messagePresenter.getIsTalking();
+    messagePresenter.getIsReading();
     recyclerView.onResumeView();
   }
 
   public void dispose() {
+    Timber.e(" SOEF subscription REMOVE : " + arrIds);
     if (arrIds != null) {
       context.startService(
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
@@ -618,9 +621,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
                 WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMTALKING,
                     JsonUtils.arrayToJson(arrIds)));
           }
-
-          context.startService(WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMREADING,
-              JsonUtils.arrayToJson(arrIds)));
         }));
 
     subscriptions.add(
@@ -1244,14 +1244,14 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void stopRecording() {
-    if (mRecorder == null) return;
+    if (recorder == null) return;
     try {
-      mRecorder.stop();
+      recorder.stop();
     } catch (RuntimeException ex) {
       //Ignore
     }
-    mRecorder.release();
-    mRecorder = null;
+    recorder.release();
+    recorder = null;
   }
 
   private void startRecording() {
@@ -1263,24 +1263,24 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     mFileName = mFileName.replaceAll(" ", "_").replaceAll(":", "-");
 
     Timber.w("SOEF " + mFileName);
-    mRecorder = new MediaRecorder();
-    mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-    mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-    mRecorder.setOutputFile(mFileName);
-    mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+    recorder = new MediaRecorder();
+    recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+    recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+    recorder.setOutputFile(mFileName);
+    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC);
 
     try {
-      mRecorder.prepare();
+      recorder.prepare();
     } catch (IOException e) {
       Timber.e("prepare() failed");
     }
-    mRecorder.start();
+    recorder.start();
   }
 
   @Override public void onShortcut(Shortcut shortcutQuickChat) {
     tagManager.trackEvent(TagManagerUtils.Shortcut);
     navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut,
-        TagManagerUtils.GESTURE_TAP, TagManagerUtils.SECTION_SHORTCUT);
+        TagManagerUtils.GESTURE_TAP, TagManagerUtils.SECTION_SHORTCUT, false);
   }
 
   public void setFromShortcut(Shortcut fromShortcut) {
@@ -1303,8 +1303,22 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       name.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow, 0);
 
       layout.setOnClickListener(view -> {
-        ((Activity) context).finish();
+        navigator.navigateToChat((Activity) context, fromShortcut, null, gesture,
+            recipient.getSectionTag(), true);
+        this.fromShortcut = null;
       });
+
     }
+  }
+
+  @Override public boolean dispatchKeyEvent(KeyEvent event) {
+    if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+      if (fromShortcut != null) {
+        navigator.navigateToChat((Activity) context, fromShortcut, null, gesture,
+            recipient.getSectionTag(), true);
+        return true;
+      }
+    }
+    return super.dispatchKeyEvent(event);
   }
 }

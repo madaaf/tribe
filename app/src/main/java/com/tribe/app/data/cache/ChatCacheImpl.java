@@ -27,6 +27,7 @@ public class ChatCacheImpl implements ChatCache {
   private Realm realm;
   private PublishSubject<String> onTyping = PublishSubject.create();
   private PublishSubject<String> onTalking = PublishSubject.create();
+  private PublishSubject<String> onReading = PublishSubject.create();
   private PublishSubject<List<MessageRealm>> onMessageReceived = PublishSubject.create();
 
   @Inject public ChatCacheImpl(Context context, Realm realm) {
@@ -161,12 +162,20 @@ public class ChatCacheImpl implements ChatCache {
     onTalking.onNext(userId);
   }
 
+  @Override public void onReading(String userId) {
+    onReading.onNext(userId);
+  }
+
   @Override public Observable<String> isTyping() {
     return onTyping;
   }
 
   @Override public Observable<String> isTalking() {
     return onTalking;
+  }
+
+  @Override public Observable<String> isReading() {
+    return onReading;
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {

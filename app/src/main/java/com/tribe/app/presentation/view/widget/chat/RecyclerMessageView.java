@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.data.network.WSService;
 import com.tribe.app.domain.ShortcutLastSeen;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
@@ -29,6 +30,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
+import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -41,6 +43,8 @@ import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMREADING;
 
 /**
  * Created by madaaflak on 03/10/2017.
@@ -70,6 +74,7 @@ public class RecyclerMessageView extends ChatMVPView {
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Integer> onScrollRecyclerView = PublishSubject.create();
+  private PublishSubject<Boolean> shortcutLastSeenUpdated = PublishSubject.create();
 
   public RecyclerMessageView(@NonNull Context context) {
     super(context);
@@ -117,19 +122,18 @@ public class RecyclerMessageView extends ChatMVPView {
   }
 
   private void initSubscriptions() {
+
     subscriptions.add(messageAdapter.onClickItem().subscribe(obj -> {
       TextViewFont view = ((TextViewFont) obj.get(0));
       Message m = ((Message) obj.get(1));
-
-      Date creationDate = dateUtils.stringDateToDate(m.getCreationDate());
 
       String lastSeenString = "Seen by ";
       List<ShortcutLastSeen> list = shortcut.getShortcutLastSeen();
       List<String> lastSeenListId = new ArrayList<>();
 
       for (ShortcutLastSeen item : list) {
-        Date date = item.getDate();
-        if (date != null && dateUtils.isBefore(creationDate, date)) {
+        String date = item.getDate();
+        if (date != null && dateUtils.isBefore(m.getCreationDate(), date)) {
           lastSeenListId.add(item.getUserId());
         }
       }
@@ -145,8 +149,16 @@ public class RecyclerMessageView extends ChatMVPView {
       lastSeenString = (lastSeenListId.isEmpty()) ? context.getString(R.string.chat_not_seen)
           : lastSeenString.substring(0, (lastSeenString.length() - 2));
       view.setText(lastSeenString);
-      Timber.e("ON CLICK " + lastSeenString + " " + list.toString());
     }));
+  }
+
+  @Override public void isReadingUpdate(String userId) {
+    Timber.e("IS READING UPDATE " + userId);
+    for (ShortcutLastSeen shortcutLastSeen : shortcut.getShortcutLastSeen()) {
+      if (shortcutLastSeen.getUserId().equals(userId)) {
+        shortcutLastSeen.setDate(dateUtils.getUTCDateAsString());
+      }
+    }
   }
 
   @Override protected void onAttachedToWindow() {
@@ -325,6 +337,9 @@ public class RecyclerMessageView extends ChatMVPView {
 
   public void successMessageReceived(List<Message> messages) {
     messageAdapter.setItem(messages.get(0));
+    //TODO
+    context.startService(WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMREADING,
+        JsonUtils.arrayToJson(arrIds)));
     scrollListToBottom();
     Timber.i("SOOoOOOOOOOOOOOOEF successMessageReceived " + messages);
   }

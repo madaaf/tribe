@@ -89,11 +89,10 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
       @NonNull RecyclerView.ViewHolder holder) {
     BaseTextViewHolder vh = (BaseTextViewHolder) holder;
     Message m = items.get(position);
-    if (position == items.size()) {
+    if (position == (items.size()-1)) {
       openShortcutLastSeen(vh, m);
     }
     vh.itemView.setOnClickListener(view -> {
-      Timber.e("SOEF OK " + position + " " + items.size() + " " + m.toString());
       if (vh.shortcutLastSeen.getVisibility() == View.GONE) {
         openShortcutLastSeen(vh, m);
       } else {

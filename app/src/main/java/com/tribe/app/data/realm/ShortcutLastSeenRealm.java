@@ -1,7 +1,6 @@
 package com.tribe.app.data.realm;
 
 import io.realm.RealmObject;
-import java.util.Date;
 
 /**
  * Created by madaaflak on 23/10/2017.
@@ -10,7 +9,7 @@ import java.util.Date;
 public class ShortcutLastSeenRealm extends RealmObject {
 
   private String user_id;
-  private Date date;
+  private String date;
 
   public ShortcutLastSeenRealm() {
   }
@@ -23,11 +22,11 @@ public class ShortcutLastSeenRealm extends RealmObject {
     this.user_id = user_id;
   }
 
-  public Date getDate() {
+  public String getDate() {
     return date;
   }
 
-  public void setDate(Date date) {
+  public void setDate(String date) {
     this.date = date;
   }
 }

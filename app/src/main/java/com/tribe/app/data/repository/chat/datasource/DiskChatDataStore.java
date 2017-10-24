@@ -45,6 +45,10 @@ public class DiskChatDataStore implements ChatDataStore {
     return chatCache.isTalking();
   }
 
+  @Override public Observable<String> isReading() {
+    return chatCache.isReading();
+  }
+
   @Override public Observable<List<MessageRealm>> onMessageReceived() {
     return chatCache.onMessageReceived();
   }

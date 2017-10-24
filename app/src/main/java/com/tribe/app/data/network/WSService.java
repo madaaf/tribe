@@ -26,6 +26,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.LastImOnline;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import io.realm.RealmList;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,6 +76,7 @@ import timber.log.Timber;
   public static final String MESSAGE_CREATED_SUFFIX = "___mc";
   public static final String MESSAGE_IS_TYPING_SUFFIX = "___mit";
   public static final String MESSAGE_IS_TALKING_SUFFIX = "___mtalking";
+  public static final String MESSAGE_IS_READING_SUFFIX = "___mReading";
 
   public static Intent getCallingSubscribeChat(Context context, String type,
       String usersFromatedIds) {
@@ -184,12 +186,17 @@ import timber.log.Timber;
   }
 
   public void subscribeChat(String userIds) {
-    if (chatSubscriptions.get(userIds + MESSAGE_CREATED_SUFFIX) != null
+   /* if (chatSubscriptions.get(userIds + MESSAGE_CREATED_SUFFIX) != null
         && chatSubscriptions.get(userIds + MESSAGE_IS_TYPING_SUFFIX) != null
-        && chatSubscriptions.get(userIds + MESSAGE_IS_TALKING_SUFFIX) != null) {
+        && chatSubscriptions.get(userIds + MESSAGE_IS_TALKING_SUFFIX) != null
+        && chatSubscriptions.get(userIds + MESSAGE_IS_READING_SUFFIX) != null) {
       Timber.i("SOEF already subscribe");
       return;
+    }*/
+    if (!chatSubscriptions.isEmpty()) {
+      unsubscribeChat(userIds);
     }
+
     String suffix = generateHash() + MESSAGE_CREATED_SUFFIX;
     chatSubscriptions.put(userIds + MESSAGE_CREATED_SUFFIX, suffix);
 
@@ -211,9 +218,15 @@ import timber.log.Timber;
     chatSubscriptions.put(userIds + MESSAGE_IS_TALKING_SUFFIX, suffix3);
     String req3 = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_isTalking, suffix3, userIds));
-
     Timber.i("SOEF " + req3);
-    webSocketConnection.send(req3);
+
+    String suffix4 = generateHash() + MESSAGE_IS_READING_SUFFIX;
+    chatSubscriptions.put(userIds + MESSAGE_IS_READING_SUFFIX, suffix4);
+    String req4 = getApplicationContext().getString(R.string.subscription,
+        getApplicationContext().getString(R.string.subscription_isReading, suffix4, userIds));
+
+    Timber.i("SOEF " + req4);
+    webSocketConnection.send(req4);
   }
 
   public void subscribeImTyping(String userIds) {
@@ -259,27 +272,18 @@ import timber.log.Timber;
   }
 
   public void unsubscribeChat(String userIds) {
-    String req1 = getApplicationContext().getString(R.string.subscription,
-        getApplicationContext().getString(R.string.subscription_remove,
-            chatSubscriptions.get(userIds + MESSAGE_CREATED_SUFFIX)));
+    List<String> valueToRemove = new ArrayList<>();
+    for (String key : chatSubscriptions.keySet()) {
+      String req = getApplicationContext().getString(R.string.subscription,
+          getApplicationContext().getString(R.string.subscription_remove,
+              chatSubscriptions.get(key)));
+      valueToRemove.add(key);
+      webSocketConnection.send(req);
+    }
 
-    String req2 = getApplicationContext().getString(R.string.subscription,
-        getApplicationContext().getString(R.string.subscription_remove,
-            chatSubscriptions.get(userIds + MESSAGE_IS_TYPING_SUFFIX)));
-
-    String req3 = getApplicationContext().getString(R.string.subscription,
-        getApplicationContext().getString(R.string.subscription_remove,
-            chatSubscriptions.get(userIds + MESSAGE_IS_TALKING_SUFFIX)));
-
-    Timber.i("SOEF REMOVE " + req1);
-    Timber.i("SOEF REMOVE " + req2);
-    chatSubscriptions.remove(userIds + MESSAGE_CREATED_SUFFIX);
-    chatSubscriptions.remove(userIds + MESSAGE_IS_TYPING_SUFFIX);
-    chatSubscriptions.remove(userIds + MESSAGE_IS_TALKING_SUFFIX);
-
-    webSocketConnection.send(req1);
-    webSocketConnection.send(req2);
-    webSocketConnection.send(req3);
+    for (String key : valueToRemove) {
+      chatSubscriptions.remove(key);
+    }
   }
 
   public void cancelImOnline() {
@@ -488,6 +492,10 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(jsonToModel.onTalking().subscribe(userID -> {
       chatCache.onTalking(userID);
+    }));
+
+    persistentSubscriptions.add(jsonToModel.onReading().subscribe(userID -> {
+      chatCache.onReading(userID);
     }));
 
     persistentSubscriptions.add(

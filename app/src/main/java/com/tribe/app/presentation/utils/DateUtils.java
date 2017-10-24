@@ -55,6 +55,10 @@ public class DateUtils {
     return date1.before(date2);
   }
 
+  public boolean isBefore(String date1, String date2) {
+    return stringDateToDate(date1).before(stringDateToDate(date2));
+  }
+
   public int getDiffDate(String date1, String date2) {
     DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
     DateTime d1 = parser.parseDateTime(date1);

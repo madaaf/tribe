@@ -65,7 +65,7 @@ public class ShortcutRealm extends RealmObject {
     return last_seen;
   }
 
-  public void setLastSeen( RealmList<ShortcutLastSeenRealm> last_seen) {
+  public void setLastSeen(RealmList<ShortcutLastSeenRealm> last_seen) {
     this.last_seen = last_seen;
   }
 

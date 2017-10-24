@@ -44,7 +44,7 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView {
   public void errorMessageCreation(int position) {
   }
 
-  public void isTypingEvent(String userId,  boolean typeEvent) {
+  public void isTypingEvent(String userId, boolean typeEvent) {
   }
 
   public void isTalkingEvent(String userId) {
@@ -60,5 +60,8 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView {
   }
 
   public void errorMessageReveived() {
+  }
+
+  public void isReadingUpdate(String userId) {
   }
 }

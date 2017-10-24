@@ -549,7 +549,7 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
       Timber.e("ON CHAT OPEN");
       if (open) {
-        chatView.setChatId(live.getShortcut().getMembers(), live.getShortcut(), null);
+        chatView.setChatId(live.getShortcut(), null);
         chatView.onResumeView();
         chatView.setAlpha(0);
         chatView.setTranslationX(-screenUtils.getWidthPx());

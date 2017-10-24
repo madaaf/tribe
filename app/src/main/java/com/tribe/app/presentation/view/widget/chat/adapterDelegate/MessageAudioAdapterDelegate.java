@@ -96,7 +96,9 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
         mediaPlayer.start();
         startAnimation(vh);
         setEqualizerAnim(vh, true);
-        mediaPlayer.setOnCompletionListener(mediaPlayer1 -> Timber.e("onCompletion"));
+        mediaPlayer.setOnCompletionListener(mediaPlayer1 -> {
+          updateNonPlayingView(vh);
+        });
       }
     } else {
       currentPlayingPosition = position;

@@ -7,6 +7,7 @@ import com.tribe.app.domain.interactor.chat.CreateMessage;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
 import com.tribe.app.domain.interactor.chat.GetMessageImageFromDisk;
 import com.tribe.app.domain.interactor.chat.ImTyping;
+import com.tribe.app.domain.interactor.chat.IsReadingFromDisk;
 import com.tribe.app.domain.interactor.chat.IsTalkingFromDisk;
 import com.tribe.app.domain.interactor.chat.IsTypingFromDisk;
 import com.tribe.app.domain.interactor.chat.OnMessageReceivedFromDisk;
@@ -42,9 +43,10 @@ public class MessagePresenter implements Presenter {
   protected GetDiskShortcut getDiskShortcut;
   protected IsTypingFromDisk isTypingFromDisk;
   protected IsTalkingFromDisk isTalkingFromDisk;
+  protected IsReadingFromDisk isReadingFromDisk;
   protected OnMessageReceivedFromDisk onMessageReceivedFromDisk;
   protected ImTyping imTyping;
-  private CreateShortcut createShortcut;
+  protected CreateShortcut createShortcut;
   protected UpdateShortcut updateShortcut;
   protected GetShortcutForUserIds getShortcutForUserIds;
 
@@ -57,7 +59,8 @@ public class MessagePresenter implements Presenter {
       IsTypingFromDisk isTypingFromDisk, ImTyping imTyping,
       OnMessageReceivedFromDisk onMessageReceivedFromDisk, UpdateShortcut updateShortcut,
       GetMessageImageFromDisk getMessageImageFromDisk, GetShortcutForUserIds getShortcutForUserIds,
-      CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk) {
+      CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk,
+      IsReadingFromDisk isReadingFromDisk) {
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
     this.getMessageFromDisk = getMessageFromDisk;
@@ -70,6 +73,7 @@ public class MessagePresenter implements Presenter {
     this.getMessageImageFromDisk = getMessageImageFromDisk;
     this.getShortcutForUserIds = getShortcutForUserIds;
     this.createShortcut = createShortcut;
+    this.isReadingFromDisk = isReadingFromDisk;
   }
 
   public void getMessageImage(String[] userIds) {
@@ -107,6 +111,10 @@ public class MessagePresenter implements Presenter {
 
   public void getIsTalking() {
     isTalkingFromDisk.execute(new IsTypingDiskSubscriber(false));
+  }
+
+  public void getIsReading() {
+    isReadingFromDisk.execute(new isReadingSubscriber());
   }
 
   public void loadMessagesDisk(String[] userIds, String date) {
@@ -239,20 +247,22 @@ public class MessagePresenter implements Presenter {
     }
   }
 
-  /* private class IsTalkingDiskSubscriber extends DefaultSubscriber<String> {
+  private class isReadingSubscriber extends DefaultSubscriber<String> {
 
-     @Override public void onCompleted() {
-     }
+    @Override public void onCompleted() {
+    }
 
-     @Override public void onError(Throwable e) {
-       Timber.e(e.getMessage());
-     }
+    @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
+    }
 
-     @Override public void onNext(String userId) {
-       if (chatMVPView != null) chatMVPView.isTalkingEvent(userId);
-     }
-   }
- */
+    @Override public void onNext(String userId) {
+      if (chatMVPView != null) {
+        chatMVPView.isReadingUpdate(userId);
+      }
+    }
+  }
+
   private class IsTypingDiskSubscriber extends DefaultSubscriber<String> {
     boolean typeEvent;
 

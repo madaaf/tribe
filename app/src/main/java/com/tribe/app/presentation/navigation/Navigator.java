@@ -40,7 +40,6 @@ import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.PictureActivity;
 import java.util.List;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 /**
  * Class used to navigate through the application.
@@ -135,9 +134,9 @@ public class Navigator {
         intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
       }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-          Intent.FLAG_ACTIVITY_CLEAR_TASK |
-          Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+          | Intent.FLAG_ACTIVITY_CLEAR_TASK
+          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
       if (linkRoomId != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -221,15 +220,21 @@ public class Navigator {
     }
   }
 
-  public void navigateToChat(Activity activity, Recipient recipient, Shortcut shortcut,
-      String gesture, String section) {
+  public void navigateToChat(Activity activity, Recipient recipient, Shortcut fromShortcut,
+      String gesture, String section, boolean noHistory) {
     if (activity != null) {
       Intent intent =
-          ChatActivity.getCallingIntent(activity, recipient, shortcut, gesture, section);
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      Timber.e("NAVIGATORE " + shortcut);
-      activity.startActivityForResult(intent, FROM_CHAT);
-      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
+          ChatActivity.getCallingIntent(activity, recipient, fromShortcut, gesture, section);
+
+      if (noHistory) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivityForResult(intent, FROM_CHAT);
+        activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+      } else {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivityForResult(intent, FROM_CHAT);
+        activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
+      }
     }
   }
 
@@ -390,8 +395,8 @@ public class Navigator {
 
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
-    } else if (activity.getIntent() != null &&
-        activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
+    } else if (activity.getIntent() != null && activity.getIntent()
+        .hasExtra(Extras.IS_FROM_FACEBOOK)) {
       openFacebookAppInvites(activity, url);
     } else {
       openDefaultMessagingApp(activity, text);
