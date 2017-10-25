@@ -6,6 +6,8 @@ import com.tribe.app.R;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
@@ -64,6 +66,15 @@ public class CloudLiveDataStore implements LiveDataStore {
         context.getString(R.string.userfragment_infos_light);
 
     return this.tribeApi.createRoom(request)
+        //.doOnNext(room -> {
+        //  List<String> roomUserIds = room.getUserIds();
+        //  ShortcutRealm shortcutRealm =
+        //      userCache.shortcutForUserIdsNoObs(roomUserIds.toArray(new String[roomUserIds.size()]));
+        //
+        //  if (shortcutRealm != null) {
+        //    roo
+        //  }
+        //})
         .doOnNext(room -> liveCache.putRoom(room))
         .compose(onlineLiveTransformer);
   }

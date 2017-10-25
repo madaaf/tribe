@@ -36,6 +36,7 @@ import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -615,6 +616,11 @@ public class CloudUserDataStore implements UserDataStore {
             if (shortcutRealm != null) {
               shortcut = userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealm);
               newInvite.setShortcut(shortcut);
+              liveCache.putLive(shortcut.getId());
+            }
+
+            for (User user : newInvite.getRoom().getLiveUsers()) {
+              liveCache.putLive(user.getId());
             }
 
             liveCache.putInvite(newInvite);

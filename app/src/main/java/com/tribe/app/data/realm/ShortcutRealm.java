@@ -61,7 +61,7 @@ public class ShortcutRealm extends RealmObject {
     return id;
   }
 
-  public  RealmList<ShortcutLastSeenRealm> getLastSeen() {
+  public RealmList<ShortcutLastSeenRealm> getLastSeen() {
     return last_seen;
   }
 
@@ -172,6 +172,12 @@ public class ShortcutRealm extends RealmObject {
   public void computeMembersOnline(Map<String, Boolean> onlineMap) {
     for (UserRealm user : members) {
       user.setIsOnline(onlineMap.containsKey(user.getId()));
+    }
+  }
+
+  public void computeMembersLive(Map<String, Boolean> liveMap) {
+    for (UserRealm user : members) {
+      user.setIsLive(liveMap.containsKey(user.getId()));
     }
   }
 

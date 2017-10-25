@@ -49,6 +49,7 @@ public class User
   private boolean invisible_mode;
   private boolean push_notif;
   private boolean is_online = false;
+  private boolean is_live = false;
   private boolean isActive = false;
   private boolean isTyping = false;
   private long time_in_call = 0;
@@ -210,7 +211,11 @@ public class User
   }
 
   @Override public boolean isLive() {
-    return false;
+    return is_live;
+  }
+
+  public void setIsLive(boolean is_live) {
+    this.is_live = is_live;
   }
 
   @Override public boolean isRinging() {
@@ -406,17 +411,17 @@ public class User
   }
 
   @Override public String toString() {
-    return "User{"
-        + "id='"
-        + id
-        + '\''
-        + ", display_name='"
-        + display_name
-        + '\''
-        + ", is_online="
-        + isOnline()
-        + ", isActive="
-        + isActive()
-        + '}';
+    return "User{" +
+        "id='" +
+        id +
+        '\'' +
+        ", display_name='" +
+        display_name +
+        '\'' +
+        ", is_online=" +
+        isOnline() +
+        ", isActive=" +
+        isActive() +
+        '}';
   }
 }

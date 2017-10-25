@@ -52,6 +52,7 @@ public class UserRealm extends RealmObject {
   @Ignore private JsonObject jsonPayloadUpdate;
 
   @Ignore private boolean is_online = false;
+  @Ignore private boolean is_live = false;
 
   public UserRealm() {
 
@@ -183,6 +184,14 @@ public class UserRealm extends RealmObject {
 
   public void setIsOnline(boolean isOnline) {
     this.is_online = isOnline;
+  }
+
+  public boolean isLive() {
+    return is_live;
+  }
+
+  public void setIsLive(boolean isLive) {
+    this.is_live = isLive;
   }
 
   public Date getLastSeenAt() {

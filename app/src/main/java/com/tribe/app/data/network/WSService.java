@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ChatCache;
@@ -38,7 +37,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -241,6 +239,8 @@ import timber.log.Timber;
   }
 
   public void subscribeRoomUpdate(String roomId) {
+    if (roomSubscriptions.containsKey(roomId)) return;
+
     String subscriptionId = generateHash() + ROOM_UDPATED_SUFFIX;
     roomSubscriptions.put(roomId, subscriptionId);
 
@@ -305,8 +305,9 @@ import timber.log.Timber;
       }
     }
 
-    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
-        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null &&
+        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
+            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -331,9 +332,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous()
-        || StringUtils.isEmpty(accessToken.getTokenType())
-        || StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous() ||
+        StringUtils.isEmpty(accessToken.getTokenType()) ||
+        StringUtils.isEmpty(accessToken.getAccessToken())) {
 
       webSocketConnection.setShouldReconnect(false);
     } else {
@@ -409,9 +410,14 @@ import timber.log.Timber;
                       shortcut =
                           userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealm);
                       newInvite.setShortcut(shortcut);
+                      liveCache.putLive(shortcut.getId());
                     }
 
                     subscribeRoomUpdate(newInvite.getRoom().getId());
+
+                    for (User user : newInvite.getRoom().getLiveUsers()) {
+                      liveCache.putLive(user.getId());
+                    }
 
                     liveCache.putInvite(newInvite);
                   }
@@ -428,11 +434,6 @@ import timber.log.Timber;
           //if (invite.getRoom() != null) unsubscribeRoomUpdate(invite.getRoom().getId());
           liveCache.removeInvite(invite);
         }));
-
-    persistentSubscriptions.add(jsonToModel.onAddedLive().subscribe(s -> liveCache.putLive(s)));
-
-    persistentSubscriptions.add(
-        jsonToModel.onRemovedLive().subscribe(s -> liveCache.removeLive(s)));
 
     persistentSubscriptions.add(jsonToModel.onAddedOnline().subscribe(s -> liveCache.putOnline(s)));
 
@@ -473,10 +474,23 @@ import timber.log.Timber;
           //List<String> userIds = room.getUserIds();
           //ShortcutRealm shortcutRealm =
           //    userCache.shortcutForUserIdsNoObs(userIds.toArray(new String[userIds.size()]));
+          //
           //if (shortcutRealm != null) {
-          //  room.setShortcut(
-          //      userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealm));
+          //  for (UserRealm userRealm : shortcutRealm.getMembers()) {
+          //    boolean isLive = false;
+          //
+          //    for (User user : room.getLiveUsers()) {
+          //      if (userRealm.getId().equals(user.getId())) isLive = true;
+          //    }
+          //
+          //    if (isLive) {
+          //      liveCache.putLive(userRealm.getId());
+          //    } else {
+          //      liveCache.removeLive(userRealm.getId());
+          //    }
+          //  }
           //}
+
           liveCache.onRoomUpdated(room);
         }));
 
@@ -540,12 +554,17 @@ import timber.log.Timber;
         }
       }
     }).subscribe());
+
+    persistentSubscriptions.add(liveCache.inviteMap().subscribe(stringInviteMap -> {
+      for (Invite invite : stringInviteMap.values()) {
+        subscribeRoomUpdate(invite.getRoom().getId());
+      }
+    }));
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment =
-        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
-            R.string.userfragment_infos) : "");
+    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
+        getApplicationContext().getString(R.string.userfragment_infos) : "");
 
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 

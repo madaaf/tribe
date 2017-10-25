@@ -65,8 +65,9 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
   @Override public Observable<UserRealm> userInfos(String userId) {
     return Observable.combineLatest(this.userCache.userInfos(accessToken.getUserId()),
-        this.userCache.shortcuts().compose(listShortcutOnlineTransformer), liveCache.onlineMap(),
-        (userRealm, shortcutRealmList, onlineMap) -> {
+        this.userCache.shortcuts().compose(listShortcutOnlineLiveTransformer),
+        liveCache.onlineMap(), liveCache.liveMap(),
+        (userRealm, shortcutRealmList, onlineMap, liveMap) -> {
           userRealm.setShortcuts(shortcutRealmList);
           return userRealm;
         });
@@ -184,30 +185,34 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override public Observable<List<ShortcutRealm>> singleShortcuts() {
-    return Observable.combineLatest(userCache.singleShortcuts(), onlineMap(),
-        (shortcutRealmList, onlineMap) -> shortcutRealmList).compose(listShortcutOnlineTransformer);
+    return Observable.combineLatest(userCache.singleShortcuts(), onlineMap(), liveMap(),
+        (shortcutRealmList, onlineMap, liveMap) -> shortcutRealmList)
+        .compose(listShortcutOnlineLiveTransformer);
   }
 
   @Override public Observable<List<ShortcutRealm>> shortcuts() {
-    return Observable.combineLatest(userCache.shortcuts(), onlineMap(),
-        (shortcutRealmList, onlineMap) -> shortcutRealmList).compose(listShortcutOnlineTransformer);
+    return Observable.combineLatest(userCache.shortcuts(), onlineMap(), liveMap(),
+        (shortcutRealmList, onlineMap, liveMap) -> shortcutRealmList)
+        .compose(listShortcutOnlineLiveTransformer);
   }
 
   @Override public Observable<ShortcutRealm> shortcutForUserIds(String... userIds) {
-    return Observable.combineLatest(userCache.shortcutForUserIds(userIds), onlineMap(),
-        (shortcutRealmList, onlineMap) -> shortcutRealmList).compose(shortcutOnlineTransformer);
+    return Observable.combineLatest(userCache.shortcutForUserIds(userIds), onlineMap(), liveMap(),
+        (shortcutRealmList, onlineMap, liveMap) -> shortcutRealmList).
+        compose(shortcutOnlineLiveTransformer);
   }
 
   public Observable<ShortcutRealm> shortcutForUserIdsNoObs(String... userIds) {
     return Observable.combineLatest(Observable.just(userCache.shortcutForUserIdsNoObs(userIds)),
-        onlineMap(), (shortcutRealmList, onlineMap) -> shortcutRealmList)
-        .compose(shortcutOnlineTransformer)
+        onlineMap(), liveMap(), (shortcutRealmList, onlineMap, liveMap) -> shortcutRealmList)
+        .compose(shortcutOnlineLiveTransformer)
         .doOnError(Throwable::printStackTrace);
   }
 
   @Override public Observable<List<ShortcutRealm>> blockedShortcuts() {
     return Observable.combineLatest(userCache.blockedShortcuts(), onlineMap(),
-        (shortcutRealmList, onlineMap) -> shortcutRealmList).compose(listShortcutOnlineTransformer);
+        (shortcutRealmList, onlineMap) -> shortcutRealmList)
+        .compose(listShortcutOnlineLiveTransformer);
   }
 
   @Override public List<Invite> invites() {
@@ -219,18 +224,20 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   private Observable.Transformer<List<ShortcutRealm>, List<ShortcutRealm>>
-      listShortcutOnlineTransformer =
+      listShortcutOnlineLiveTransformer =
       shortcutRealmObservable -> shortcutRealmObservable.map(shortcutRealmList -> {
         for (ShortcutRealm shortcutRealm : shortcutRealmList) {
           transformOnlineShortcut(shortcutRealm);
+          transformLiveShortcut(shortcutRealm);
         }
 
         return shortcutRealmList;
       });
 
-  private Observable.Transformer<ShortcutRealm, ShortcutRealm> shortcutOnlineTransformer =
+  private Observable.Transformer<ShortcutRealm, ShortcutRealm> shortcutOnlineLiveTransformer =
       shortcutRealmObservable -> shortcutRealmObservable.map(shortcutRealm -> {
         transformOnlineShortcut(shortcutRealm);
+        transformLiveShortcut(shortcutRealm);
         return shortcutRealm;
       });
 
@@ -240,6 +247,14 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
       shortcutRealm.computeMembersOnline(onlineMap);
       shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId()) ||
           shortcutRealm.isUniqueMemberOnline());
+    }
+  }
+
+  private void transformLiveShortcut(ShortcutRealm shortcutRealm) {
+    Map<String, Boolean> liveMap = liveCache.getLiveMap();
+    if (shortcutRealm != null) {
+      shortcutRealm.computeMembersLive(liveMap);
+      shortcutRealm.setLive(liveMap.containsKey(shortcutRealm.getId()));
     }
   }
 }

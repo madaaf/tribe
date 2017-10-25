@@ -52,6 +52,7 @@ import javax.inject.Singleton;
       user.setTimeInCall(userRealm.getTimeInCall());
       user.setPushNotif(userRealm.isPushNotif());
       user.setIsOnline(userRealm.isOnline());
+      user.setIsLive(userRealm.isLive());
       user.setLastSeenAt(userRealm.getLastSeenAt());
       if (userRealm.getShortcuts() != null) {
         user.setShortcutList(shortcutRealmDataMapper.transform(userRealm.getShortcuts()));
@@ -167,6 +168,7 @@ import javax.inject.Singleton;
       userRealm.setPhone(user.getPhone());
       userRealm.setPushNotif(user.isPushNotif());
       userRealm.setIsOnline(user.isOnline());
+      userRealm.setIsLive(user.isLive());
       userRealm.setTimeInCall(user.getTimeInCall());
       userRealm.setLastSeenAt(user.getLastSeenAt());
       userRealm.setShortcuts(shortcutRealmDataMapper.transformList(user.getShortcutList()));
