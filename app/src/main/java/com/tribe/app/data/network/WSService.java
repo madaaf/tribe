@@ -23,7 +23,6 @@ import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.preferences.LastImOnline;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import io.realm.RealmList;
 import java.util.ArrayList;
@@ -113,12 +112,6 @@ import timber.log.Timber;
     return intent;
   }
 
-  public static Intent getCallingIntentCancelImOnline(Context context) {
-    Intent intent = new Intent(context, WSService.class);
-    intent.putExtra(TYPE, CALL_ROOM_CANCEL_IM_ONLINE_TYPE);
-    return intent;
-  }
-
   @Inject User user;
 
   @Inject TribeApi tribeApi;
@@ -137,8 +130,6 @@ import timber.log.Timber;
 
   @Inject @Named("webSocketApi") WebSocketConnection webSocketConnection;
 
-  @Inject @LastImOnline Preference<Long> lastImOnline;
-
   // VARIABLES
   private Map<String, String> headers;
   private @WebSocketConnection.WebSocketState String webSocketState = WebSocketConnection.STATE_NEW;
@@ -150,7 +141,6 @@ import timber.log.Timber;
   // OBSERVABLES
   private CompositeSubscription persistentSubscriptions = new CompositeSubscription();
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
-  private Subscription imOnlineSubscription;
 
   @Nullable @Override public IBinder onBind(Intent intent) {
     return null;
@@ -286,13 +276,6 @@ import timber.log.Timber;
     }
   }
 
-  public void cancelImOnline() {
-    if (imOnlineSubscription != null) {
-      imOnlineSubscription.unsubscribe();
-      imOnlineSubscription = null;
-    }
-  }
-
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
     if (intent != null) {
       String type = intent.getStringExtra(TYPE);
@@ -318,8 +301,6 @@ import timber.log.Timber;
         } else if (type.equals(CHAT_UNSUBSCRIBE)) {
           String usersFromatedIds = intent.getStringExtra(CHAT_IDS);
           unsubscribeChat(usersFromatedIds);
-        } else if (type.equals(CALL_ROOM_CANCEL_IM_ONLINE_TYPE)) {
-          cancelImOnline();
         }
       }
     }
@@ -378,23 +359,9 @@ import timber.log.Timber;
         if (!hasSubscribed) {
           hasSubscribed = true;
           initSubscriptions();
-
-          cancelImOnline();
-
-          if (System.currentTimeMillis() - lastImOnline.get() > TWENTY_FOUR_HOURS) {
-            imOnlineSubscription =
-                Observable.timer(TIMER_IM_ONLINE, TimeUnit.MILLISECONDS).subscribe(aLong -> {
-                  String req = getApplicationContext().getString(R.string.mutation,
-                      getApplicationContext().getString(R.string.imOnline));
-                  lastImOnline.set(System.currentTimeMillis());
-                  webSocketConnection.send(req);
-                  cancelImOnline();
-                });
-          }
         }
       } else if (newState.equals(WebSocketConnection.STATE_DISCONNECTED)) {
         hasSubscribed = false;
-        cancelImOnline();
         if (tempSubscriptions != null) tempSubscriptions.clear();
       }
     }));
