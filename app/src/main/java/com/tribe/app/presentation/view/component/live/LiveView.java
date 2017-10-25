@@ -214,14 +214,6 @@ public class LiveView extends FrameLayout {
     webRTCRoom.jump();
   }
 
-  public int getRowsInLive() {
-    return viewRoom.getRowsInLive();
-  }
-
-  public void removeUserFromGrid(String userId) {
-    viewRoom.removeGuest(userId);
-  }
-
   public double getDuration() {
     return duration;
   }

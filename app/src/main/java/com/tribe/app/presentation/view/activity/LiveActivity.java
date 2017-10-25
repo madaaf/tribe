@@ -162,7 +162,7 @@ public class LiveActivity extends BaseActivity
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
   @BindView(R.id.userInfosNotificationView) UserInfosNotificationView userInfosNotificationView;
   @BindView(R.id.screenShotView) ScreenshotView screenshotView;
-  @BindView(R.id.diceLayoutRoomView) DiceView diceView;
+  //@BindView(R.id.diceLayoutRoomView) DiceView diceView;
   @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
   @BindView(R.id.blockView) FrameLayout blockView;
   @BindView(R.id.gameDrawView) GameDrawView gameDrawView;
@@ -869,14 +869,14 @@ public class LiveActivity extends BaseActivity
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 
-    subscriptions.add(diceView.onNextDiceClick().
-        subscribe(aVoid -> {
-          if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-            reRollTheDiceFromCallRoulette(false);
-          } else {
-            reRollTheDiceFromLiveRoom();
-          }
-        }));
+    //subscriptions.add(diceView.onNextDiceClick().
+    //    subscribe(aVoid -> {
+    //      if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+    //        reRollTheDiceFromCallRoulette(false);
+    //      } else {
+    //        reRollTheDiceFromLiveRoom();
+    //      }
+    //    }));
 
     subscriptions.add(viewLive.onChangeCallRouletteRoom().
         subscribe(aVoid -> reRollTheDiceFromCallRoulette(true)));
