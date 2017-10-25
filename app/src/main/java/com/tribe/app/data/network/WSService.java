@@ -471,26 +471,6 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(
         jsonToModel.onRoomUpdated().observeOn(AndroidSchedulers.mainThread()).subscribe(room -> {
-          //List<String> userIds = room.getUserIds();
-          //ShortcutRealm shortcutRealm =
-          //    userCache.shortcutForUserIdsNoObs(userIds.toArray(new String[userIds.size()]));
-          //
-          //if (shortcutRealm != null) {
-          //  for (UserRealm userRealm : shortcutRealm.getMembers()) {
-          //    boolean isLive = false;
-          //
-          //    for (User user : room.getLiveUsers()) {
-          //      if (userRealm.getId().equals(user.getId())) isLive = true;
-          //    }
-          //
-          //    if (isLive) {
-          //      liveCache.putLive(userRealm.getId());
-          //    } else {
-          //      liveCache.removeLive(userRealm.getId());
-          //    }
-          //  }
-          //}
-
           liveCache.onRoomUpdated(room);
         }));
 

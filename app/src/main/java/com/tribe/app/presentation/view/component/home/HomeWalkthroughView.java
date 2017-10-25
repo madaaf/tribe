@@ -143,9 +143,14 @@ public class HomeWalkthroughView extends FrameLayout {
           (time >= 6495 && step == STEP_SLIDE_TO_VIDEO) ||
           (time >= 13000 && step == STEP_HAVE_FUN_GAMES)) {
         btnNext.setEnabled(true);
-        viewVideo.onPause(false);
 
-        if (step == STEP_HAVE_FUN_GAMES) hide();
+        if (step == STEP_SLIDE_TO_VIDEO) {
+          btnNext.performClick();
+        } else if (step == STEP_HAVE_FUN_GAMES) {
+          hide();
+        } else {
+          viewVideo.onPause(false);
+        }
       }
     }));
   }
