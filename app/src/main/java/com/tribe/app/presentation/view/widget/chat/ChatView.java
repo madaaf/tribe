@@ -1102,12 +1102,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   @Override public void successShortcutUpdate(Shortcut shortcut) {
-  /*  Timber.e(
-        "SHORTCUT " + shortcut.isOnline() + " " + shortcut.isLive() + " " + shortcut.toString());*/
-
-  /*  for (User ok : shortcut.getMembers()) {
-      Timber.e("SHORTCUT MEM + " + ok.toString());
-    }*/
     boolean isOnline = false;
     boolean isLive = false;
     for (User u : shortcut.getMembers()) {
@@ -1307,7 +1301,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
             recipient.getSectionTag(), true);
         this.fromShortcut = null;
       });
-
     }
   }
 
