@@ -86,10 +86,12 @@ public class UserCacheImpl implements UserCache {
     RealmList<ShortcutLastSeenRealm> lastSeenRealmList = new RealmList<>(); // TODO TIAGO
     for (ShortcutLastSeenRealm ls : from.getLastSeen()) {
       tempRealm.insertOrUpdate(ls);
-      ShortcutLastSeenRealm shortcutLastSeenRealm = tempRealm.where(ShortcutLastSeenRealm.class)
-          .equalTo("user_id", ls.getUserId())
-          .findFirst();
-      if (shortcutLastSeenRealm != null) shortcutLastSeenRealm.setDate(ls.getDate());
+      ShortcutLastSeenRealm shortcutLastSeenRealm =
+          tempRealm.where(ShortcutLastSeenRealm.class).equalTo("id", ls.getId()).findFirst();
+      if (shortcutLastSeenRealm != null) {
+        shortcutLastSeenRealm.setUserId(ls.getUserId());
+        shortcutLastSeenRealm.setDate(ls.getDate());
+      }
       lastSeenRealmList.add(shortcutLastSeenRealm);
     }
 

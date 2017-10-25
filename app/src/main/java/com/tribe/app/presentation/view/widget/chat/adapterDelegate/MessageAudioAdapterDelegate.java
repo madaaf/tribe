@@ -5,7 +5,6 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -133,12 +132,10 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
   }
 
   private void updateNonPlayingView(MessageAudioViewHolder holder) {
-    holder.playBtn.setImageDrawable(
-        ContextCompat.getDrawable(context, R.drawable.picto_play_recording));
-
     holder.playerIndicator.setVisibility(View.INVISIBLE);
     holder.equalizer.setVisibility(VISIBLE);
     holder.loadingRecordView.setVisibility(View.INVISIBLE);
+    switchPauseToPlayBtn(playingHolder, true);
   }
 
   void stopPlayer() {
@@ -155,8 +152,29 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     }
   }
 
+  private void resetPauseBtn(MessageAudioViewHolder vh, boolean hide) {
+    float i = 1f;
+    if (hide) {
+      i = 0f;
+    }
+    vh.pauseBtn.setScaleX(i);
+    vh.pauseBtn.setScaleY(i);
+    vh.pauseBtn.setAlpha(i);
+  }
+
+  private void resetPlayBtn(MessageAudioViewHolder vh, boolean hide) {
+    float i = 1f;
+    if (hide) {
+      i = 0f;
+    }
+    vh.playBtn.setScaleX(i);
+    vh.playBtn.setScaleY(i);
+    vh.playBtn.setAlpha(i);
+  }
+
   private void switchPauseToPlayBtn(MessageAudioViewHolder playingHolder, boolean fromPauseToPlay) {
     if (!fromPauseToPlay) {
+
       playingHolder.playBtn.animate()
           .scaleX(0f)
           .scaleY(0f)
@@ -166,16 +184,10 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
           .withStartAction(() -> {
 
             playingHolder.playBtn.setRotation(0);
-            playingHolder.playBtn.setScaleX(1);
-            playingHolder.playBtn.setScaleY(1);
-            playingHolder.playBtn.setAlpha(1f);
-            playingHolder.playBtn.setVisibility(VISIBLE);
+            resetPlayBtn(playingHolder, false);
 
             playingHolder.pauseBtn.setRotation(90);
-            playingHolder.pauseBtn.setScaleX(0);
-            playingHolder.pauseBtn.setScaleY(0);
-            playingHolder.pauseBtn.setAlpha(0f);
-            playingHolder.pauseBtn.setVisibility(VISIBLE);
+            resetPauseBtn(playingHolder, true);
 
             playingHolder.pauseBtn.animate()
                 .scaleX(1f)
@@ -185,7 +197,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
                 .setInterpolator(new AccelerateInterpolator())
                 .alpha(1f)
                 .withEndAction(() -> {
-                  playingHolder.playBtn.setVisibility(GONE);
+
                 })
                 .start();
           })
@@ -198,17 +210,16 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
           .setDuration(ANIM_DURATION)
           .alpha(0f)
           .withStartAction(() -> {
+
             playingHolder.pauseBtn.setRotation(90);
             playingHolder.pauseBtn.setScaleX(1);
             playingHolder.pauseBtn.setScaleY(1);
             playingHolder.pauseBtn.setAlpha(1f);
-            playingHolder.pauseBtn.setVisibility(VISIBLE);
 
             playingHolder.playBtn.setRotation(45);
             playingHolder.playBtn.setScaleX(0);
             playingHolder.playBtn.setScaleY(0);
             playingHolder.playBtn.setAlpha(0f);
-            playingHolder.playBtn.setVisibility(VISIBLE);
 
             playingHolder.playBtn.animate()
                 .scaleX(1f)
@@ -218,7 +229,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
                 .setDuration(ANIM_DURATION)
                 .alpha(1f)
                 .withEndAction(() -> {
-                  playingHolder.pauseBtn.setVisibility(GONE);
+
                 })
                 .start();
           })

@@ -136,8 +136,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
   }
 
   public Observable<List<Object>> onClickItem() {
-    return Observable.merge(messageTextAdapterDelegate.onClickItem(),
-        messageEventAdapterDelegate.onClickItem(), messageImageAdapterDelegate.onClickItem(),
-        messageEmojiAdapterDelegate.onClickItem(), messageAudioAdapterDelegate.onClickItem());
+    return Observable.merge(messageTextAdapterDelegate.onPopulateSCLastSeen(),
+        messageEventAdapterDelegate.onPopulateSCLastSeen(), messageImageAdapterDelegate.onPopulateSCLastSeen(),
+        messageEmojiAdapterDelegate.onPopulateSCLastSeen(), messageAudioAdapterDelegate.onPopulateSCLastSeen());
   }
 }

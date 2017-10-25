@@ -46,6 +46,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.domain.ShortcutLastSeen;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
@@ -138,7 +139,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   private Shortcut shortcut;
   private Recipient recipient;
   private MediaRecorder recorder = null;
-  private String mFileName = null;
+  private String fileName = null;
   private Float audioDuration = 0f;
   private Shortcut fromShortcut = null;
 
@@ -824,7 +825,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         message = new MessageAudio();
         // ((MessageAudio) message).setTime(content);
         Image m = new Image();
-        m.setUrl(mFileName);
+        m.setUrl(fileName);
         m.setDuration(audioDuration);
         ((MessageAudio) message).setOriginal(m);
         ((MessageAudio) message).setTime(content);
@@ -838,8 +839,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     message.setId(Message.PENDING);//+ UUID.randomUUID()
     recyclerView.sendMyMessageToAdapter(message);
     if (type.equals(MESSAGE_IMAGE) || type.equals(MESSAGE_AUDIO)) {
-      sendMedia(uri, mFileName, 0, type);
-      mFileName = null;
+      sendMedia(uri, fileName, 0, type);
+      fileName = null;
       audioDuration = 0f;
     } else {
       recyclerView.sendMessageToNetwork(arrIds, content, realmType, 0);
@@ -1249,18 +1250,18 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void startRecording() {
-    mFileName = context.getExternalCacheDir().getAbsolutePath()
+    fileName = context.getExternalCacheDir().getAbsolutePath()
         + File.separator
         + dateUtils.getUTCDateAsString()
         + user.getId()
         + "audiorecord.mp4";
-    mFileName = mFileName.replaceAll(" ", "_").replaceAll(":", "-");
+    fileName = fileName.replaceAll(" ", "_").replaceAll(":", "-");
 
-    Timber.w("SOEF " + mFileName);
+    Timber.w("SOEF " + fileName);
     recorder = new MediaRecorder();
     recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
     recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-    recorder.setOutputFile(mFileName);
+    recorder.setOutputFile(fileName);
     recorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC);
 
     try {
@@ -1269,6 +1270,17 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       Timber.e("prepare() failed");
     }
     recorder.start();
+  }
+
+  @Override public void isReadingUpdate(String userId) {
+    Timber.e("IS READING UPDATE " + userId);
+    for (ShortcutLastSeen shortcutLastSeen : shortcut.getShortcutLastSeen()) {
+      if (shortcutLastSeen.getUserId().equals(userId)) {
+        shortcutLastSeen.setDate(dateUtils.getUTCDateAsString());
+      }
+    }
+    recyclerView.setShortcut(shortcut);
+    recyclerView.notifyDataSetChanged();
   }
 
   @Override public void onShortcut(Shortcut shortcutQuickChat) {
