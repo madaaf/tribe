@@ -117,6 +117,8 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
     if (position == items.size() - 1) {
       vh.shortcutLastSeen.setVisibility(View.VISIBLE);
+    } else {
+      vh.shortcutLastSeen.setVisibility(View.GONE);
     }
 
     if (type == ChatView.FROM_LIVE) {

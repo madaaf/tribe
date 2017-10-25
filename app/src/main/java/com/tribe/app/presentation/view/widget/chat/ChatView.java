@@ -260,7 +260,9 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     }
     context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
         JsonUtils.arrayToJson(arrIds)));
-    if (shortcut != null) messagePresenter.getDiskShortcut(shortcut.getId());
+    //if (shortcut != null) messagePresenter.getDiskShortcut(shortcut.getId());
+
+    messagePresenter.updateShortcutForUserIds(arrIds);
     messagePresenter.getIsTyping();
     messagePresenter.getIsTalking();
     messagePresenter.getIsReading();
@@ -1001,6 +1003,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void setAnimation(String type) {
+    layoutPulse.setVisibility(VISIBLE);
     switch (type) {
       case TYPE_NORMAL:
         videoCallBtn.setImageDrawable(
@@ -1011,14 +1014,14 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       case TYPE_LIVE:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_red));
-        layoutPulse.setColor(ContextCompat.getColor(context, R.color.red_pulse));
+        layoutPulse.setColor(ContextCompat.getColor(context, R.color.red_new_contacts));
         layoutPulse.start();
         avatarView.setType(NewAvatarView.LIVE);
         break;
       case TYPE_ONLINE:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_live));
-        layoutPulse.setColor(ContextCompat.getColor(context, R.color.blue_new_opacity_40));
+        layoutPulse.setColor(ContextCompat.getColor(context, R.color.blue_new));
         layoutPulse.start();
         avatarView.setType(NewAvatarView.ONLINE);
         break;
@@ -1102,7 +1105,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     }
   }
 
-  @Override public void successShortcutUpdate(Shortcut shortcut) {
+  @Override public void onShortcutUpdate(Shortcut shortcut) {
+    Timber.e("SHORTCVUT UPDATE " + shortcut.toString());
     boolean isOnline = false;
     boolean isLive = false;
     for (User u : shortcut.getMembers()) {
@@ -1117,6 +1121,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     } else {
       setAnimation(TYPE_NORMAL);
     }
+    recyclerView.setShortcut(shortcut);
+    recyclerView.notifyDataSetChanged();
   }
 
   @Override public void errorShortcutUpdate() {

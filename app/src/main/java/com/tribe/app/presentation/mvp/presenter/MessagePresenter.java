@@ -95,10 +95,10 @@ public class MessagePresenter implements Presenter {
     getShortcutForUserIds.execute(shortcutForUserIdsSubscriber);
   }
 
-  public void getDiskShortcut(String shortcutId) {
+/*  public void getDiskShortcut(String shortcutId) {
     getDiskShortcut.setShortcutId(shortcutId);
     getDiskShortcut.execute(new GetDiskShortcutSubscriber());
-  }
+  }*/
 
   public void imTypingMessage(String[] userIds) {
     imTyping.setUserIds(userIds);
@@ -232,6 +232,7 @@ public class MessagePresenter implements Presenter {
     }
   }
 
+  /*
   private class GetDiskShortcutSubscriber extends DefaultSubscriber<Shortcut> {
 
     @Override public void onCompleted() {
@@ -246,6 +247,7 @@ public class MessagePresenter implements Presenter {
       if (chatMVPView != null) chatMVPView.successShortcutUpdate(shortcuts);
     }
   }
+  */
 
   private class isReadingSubscriber extends DefaultSubscriber<String> {
 
@@ -334,6 +336,27 @@ public class MessagePresenter implements Presenter {
   private void createShortcut(String userIds) {
     createShortcut.setup(userIds);
     createShortcut.execute(new ShortcutForUserIdsSubscriber(userIds));
+  }
+
+  public void updateShortcutForUserIds(String... userIds) {
+    getShortcutForUserIds.setup(userIds);
+    getShortcutForUserIds.execute(new UpdateShortcutForUserIdsSubscriber());
+  }
+
+  private class UpdateShortcutForUserIdsSubscriber extends DefaultSubscriber<Shortcut> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(Shortcut shortcut) {
+      if (chatMVPView != null) {
+        chatMVPView.onShortcutUpdate(shortcut);
+      }
+    }
   }
 
   private class ShortcutForUserIdsSubscriber extends DefaultSubscriber<Shortcut> {
