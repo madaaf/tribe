@@ -38,7 +38,7 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView {
   public void successMessageCreated(Message message, int position) {
   }
 
-  public void onShortcut(Shortcut shortcut) {
+  public void onQuickShortcutUpdated(Shortcut shortcut) {
   }
   public void onShortcutUpdate(Shortcut shortcut) {
   }

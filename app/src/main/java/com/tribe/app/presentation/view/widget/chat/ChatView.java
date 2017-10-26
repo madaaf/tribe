@@ -583,7 +583,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     }));
 
     subscriptions.add(chatUserAdapter.onQuickChat().subscribe(id -> {
-      messagePresenter.shortcutForUserIds(id);
+      messagePresenter.quickShortcutForUserIds(id);
     }));
 
     subscriptions.add(RxView.clicks(uploadImageBtn)
@@ -1045,6 +1045,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void expendRecyclerViewGrp() {
+    containerUsers.setVisibility(VISIBLE);
     containerUsers.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
@@ -1289,7 +1290,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     recyclerView.notifyDataSetChanged();
   }
 
-  @Override public void onShortcut(Shortcut shortcutQuickChat) {
+  @Override public void onQuickShortcutUpdated(Shortcut shortcutQuickChat) {
     tagManager.trackEvent(TagManagerUtils.Shortcut);
     navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut,
         TagManagerUtils.GESTURE_TAP, TagManagerUtils.SECTION_SHORTCUT, false);

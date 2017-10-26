@@ -591,7 +591,7 @@ public class CloudUserDataStore implements UserDataStore {
 
       if (userRealm.getShortcuts() != null) {
         for (ShortcutRealm shortcutRealm : userRealm.getShortcuts()) {
-          if (shortcutRealm.isOnline()) {
+          if (shortcutRealm.isOnline()) {//TODO SOEF
             liveCache.putOnline(shortcutRealm.getId());
           } else {
             liveCache.removeOnline(shortcutRealm.getId());
