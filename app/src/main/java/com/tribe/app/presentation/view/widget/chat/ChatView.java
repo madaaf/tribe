@@ -251,6 +251,10 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       title.setText(members.get(0).getDisplayName());
       title.setTextColor(Color.BLACK);
     }
+
+    if (shortcut.getEditTextMessage() != null && !shortcut.getEditTextMessage().isEmpty()) {
+      editText.setText(shortcut.getEditTextMessage());
+    }
   }
 
   public void onResumeView() {
@@ -877,6 +881,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   @Override protected void onDetachedFromWindow() {
     messagePresenter.onViewDetached();
     Timber.w("DETACHED SUBSC onDetachedFromWindow");
+    shortcut.setEditTextMessage(editText.getText().toString());
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
 
@@ -1045,7 +1050,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void expendRecyclerViewGrp() {
-    containerUsers.setVisibility(VISIBLE);
     containerUsers.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
@@ -1074,7 +1078,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
           u.setActive(true);
           u.setTyping(typeEvent);
           u.setIsOnline(true);
-          if (members.size() < 2) {
+          if (members.size() < 2 && fromShortcut == null) {
             expendRecyclerViewGrp();
           }
           Timber.i("START TYPING");
@@ -1091,7 +1095,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
                 // Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
                 if (u.isActive()) {
                   u.setActive(false);
-                  if (members.size() < 2) {
+                  if (members.size() < 2 && fromShortcut == null) {
                     shrankRecyclerViewGrp();
                   }
                   int i = chatUserAdapter.getIndexOfUser(u);
