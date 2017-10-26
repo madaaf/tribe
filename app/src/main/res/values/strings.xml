@@ -15,6 +15,7 @@
 	<string name="action_resend">Resend</string>
 	<string name="action_hide">Hide</string>
 	<string name="action_copy">Copy</string>
+	<string name="action_got_it">Got it!</string>
 	
 	<!-- User Actions -->
 	<string name="action_add_friend">Add Friend</string>
@@ -122,6 +123,8 @@
 	<string name="live_notification_action_see_thread">See the conversation</string>
 	<string name="live_notification_action_reply">Reply</string>
 	<string name="live_notification_online">is online</string>
+	<string name="live_notification_title">You are already live</string>
+	<string name="live_notification_message">What do you want to do?</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
@@ -622,7 +625,11 @@
 	<string name="game_event_started">%1$s launched the "%2$s" game! :video_game:</string>
 	<string name="game_event_post_it_re_roll">%1$s renewed the names! :video_game:</string>
 	<string name="game_event_stopped">%1$s ended the "%2$s" game. :video_game:</string>
-	<string name="game_tutorial">Tap long on the game button to stop the game.</string>
+	<string name="game_menu_title">Game options</string>
+	<string name="game_menu_restart">Restart this game</string>
+	<string name="game_menu_stop">Stop playing</string>
+	<string name="game_menu_play_another_game">Play another game</string>
+	<string name="game_tutorial">Tap on the game button to stop the game.</string>
 	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Guess 5 new songs!</string>
 	<string name="game_song_pop_menu_re_roll">Renew the songs</string>

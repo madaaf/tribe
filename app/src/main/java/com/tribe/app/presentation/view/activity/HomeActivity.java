@@ -1049,7 +1049,6 @@ public class HomeActivity extends BaseActivity
     itemTouchHelper.attachToRecyclerView(recyclerViewFriends);
 
     subscriptions.add(callback.onDxChange().subscribe(pairPosDx -> {
-      Timber.d("translationX : " + pairPosDx);
       if (pairPosDx.second == 0) {
         viewFadeInSwipe.setVisibility(View.GONE);
         viewFadeInSwipe.setAlpha(0);
