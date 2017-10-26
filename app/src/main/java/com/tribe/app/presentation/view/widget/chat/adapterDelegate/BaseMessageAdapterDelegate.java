@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 21/09/2017.
@@ -34,6 +33,9 @@ import timber.log.Timber;
 public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<Message>> {
 
   final private static int DIFF_TIMING_ALLOWED_MINUTE = 2;
+
+  private int currentSeenPosition;
+  private BaseTextViewHolder playingHolder;
   protected DateUtils dateUtils;
   protected ScreenUtils screenUtils;
   protected Navigator navigator;
@@ -42,7 +44,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
   protected int type;
   protected LayoutInflater layoutInflater;
 
-  private PublishSubject<List<Object>> onClickItem = PublishSubject.create();
+  private PublishSubject<List<Object>> onPopulateSCLastSeen = PublishSubject.create();
 
   public BaseMessageAdapterDelegate(Context context, int type) {
     this.type = type;
@@ -53,6 +55,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
         .screenUtils();
     navigator = ((AndroidApplication) context.getApplicationContext()).getApplicationComponent()
         .navigator();
+    currentSeenPosition = -1;
   }
 
   @Override public boolean isForViewType(@NonNull List<Message> items, int position) {
@@ -66,7 +69,6 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
-    Timber.e("PLAYLOAD " + position + " " + payloads.toString());
   }
 
   protected void setPendingBehavior(Message m, View container) {
@@ -77,28 +79,47 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     }
   }
 
-  private void openShortcutLastSeen(BaseTextViewHolder vh, Message m) {
-    vh.shortcutLastSeen.setVisibility(View.VISIBLE);
+  private void populateShortcutLastSeen(BaseTextViewHolder vh, Message m) {
     List<Object> list = new ArrayList<>();
     list.add(vh.shortcutLastSeen);
     list.add(m);
-    onClickItem.onNext(list);
+    onPopulateSCLastSeen.onNext(list);
+  }
+
+  private void onClickItem(int position, BaseTextViewHolder vh) {
+    if (position == currentSeenPosition) {
+      if (vh.shortcutLastSeen.getVisibility() == View.GONE
+          || vh.shortcutLastSeen.getVisibility() == View.INVISIBLE) {
+        vh.shortcutLastSeen.setVisibility(View.VISIBLE);
+      } else {
+        vh.shortcutLastSeen.setVisibility(View.GONE);
+      }
+    } else {
+      currentSeenPosition = position;
+      if (null != playingHolder) {
+        playingHolder.shortcutLastSeen.setVisibility(View.GONE);
+      }
+      playingHolder = vh;
+      vh.shortcutLastSeen.setVisibility(View.VISIBLE);
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     BaseTextViewHolder vh = (BaseTextViewHolder) holder;
     Message m = items.get(position);
-    if (position == (items.size()-1)) {
-      openShortcutLastSeen(vh, m);
-    }
+
+    populateShortcutLastSeen(vh, m);
+
     vh.itemView.setOnClickListener(view -> {
-      if (vh.shortcutLastSeen.getVisibility() == View.GONE) {
-        openShortcutLastSeen(vh, m);
-      } else {
-        vh.shortcutLastSeen.setVisibility(View.GONE);
-      }
+      onClickItem(position, vh);
     });
+
+    if (position == items.size() - 1) {
+      vh.shortcutLastSeen.setVisibility(View.VISIBLE);
+    } else {
+      vh.shortcutLastSeen.setVisibility(View.GONE);
+    }
 
     if (type == ChatView.FROM_LIVE) {
       vh.name.setTextColor(ContextCompat.getColor(context, R.color.white));
@@ -141,8 +162,6 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
       vh.daySeparatorContainer.setVisibility(View.VISIBLE);
       vh.header.setVisibility(View.VISIBLE);
     }
-
-    //onMessagePending.onNext(vh.getLayoutContent());
   }
 
   protected abstract BaseTextViewHolder getViewHolder(ViewGroup parent);
@@ -166,7 +185,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     protected abstract ViewGroup getLayoutContent();
   }
 
-  public Observable<List<Object>> onClickItem() {
-    return onClickItem;
+  public Observable<List<Object>> onPopulateSCLastSeen() {
+    return onPopulateSCLastSeen;
   }
 }

@@ -85,20 +85,20 @@ public class MessagePresenter implements Presenter {
     onMessageReceivedFromDisk.execute(new GetDiskMessageReceivedSubscriber());
   }
 
-  public void shortcutForUserIds(String userIds) {
+  public void quickShortcutForUserIds(String userIds) {
     if (shortcutForUserIdsSubscriber != null) {
       shortcutForUserIdsSubscriber.unsubscribe();
       shortcutForUserIdsSubscriber = null;
     }
-    shortcutForUserIdsSubscriber = new ShortcutForUserIdsSubscriber(userIds);
+    shortcutForUserIdsSubscriber = new ShortcutForUserIdsSubscriber(true, userIds);
     getShortcutForUserIds.setup(userIds);
     getShortcutForUserIds.execute(shortcutForUserIdsSubscriber);
   }
 
-  public void getDiskShortcut(String shortcutId) {
+/*  public void getDiskShortcut(String shortcutId) {
     getDiskShortcut.setShortcutId(shortcutId);
     getDiskShortcut.execute(new GetDiskShortcutSubscriber());
-  }
+  }*/
 
   public void imTypingMessage(String[] userIds) {
     imTyping.setUserIds(userIds);
@@ -232,6 +232,7 @@ public class MessagePresenter implements Presenter {
     }
   }
 
+  /*
   private class GetDiskShortcutSubscriber extends DefaultSubscriber<Shortcut> {
 
     @Override public void onCompleted() {
@@ -246,6 +247,7 @@ public class MessagePresenter implements Presenter {
       if (chatMVPView != null) chatMVPView.successShortcutUpdate(shortcuts);
     }
   }
+  */
 
   private class isReadingSubscriber extends DefaultSubscriber<String> {
 
@@ -331,16 +333,52 @@ public class MessagePresenter implements Presenter {
     }
   }
 
-  private void createShortcut(String userIds) {
+  public void createShortcut(boolean onQuickChat, String... userIds) {
     createShortcut.setup(userIds);
-    createShortcut.execute(new ShortcutForUserIdsSubscriber(userIds));
+    createShortcut.execute(new ShortcutForUserIdsSubscriber(onQuickChat, userIds));
   }
 
-  private class ShortcutForUserIdsSubscriber extends DefaultSubscriber<Shortcut> {
-    private String userIds;
+  public void updateShortcutForUserIds(String... userIds) {
+    getShortcutForUserIds.setup(userIds);
+    getShortcutForUserIds.execute(new ShortcutForUserIdsSubscriber(false, userIds));
+  }
 
-    public ShortcutForUserIdsSubscriber(String userIds) {
+  /*
+  private class UpdateShortcutForUserIdsSubscriber extends DefaultSubscriber<Shortcut> {
+    String[] userIds;
+
+    public UpdateShortcutForUserIdsSubscriber(String... userIds) {
       this.userIds = userIds;
+    }
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e("on error UpdateShortcutForUserIdsSubscriber " + e.toString());
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(Shortcut shortcut) {
+      if (shortcut == null) {
+        Timber.e("on eshortcut null ");
+        //createShortcut(userIds[0]);
+      } else {
+        if (chatMVPView != null) {
+          chatMVPView.onShortcutUpdate(shortcut);
+        }
+      }
+    }
+  }
+  */
+
+  private class ShortcutForUserIdsSubscriber extends DefaultSubscriber<Shortcut> {
+    String[] userIds;
+    boolean onQuickChat;
+
+    public ShortcutForUserIdsSubscriber(boolean onQuickChat, String... userIds) {
+      this.userIds = userIds;
+      this.onQuickChat = onQuickChat;
     }
 
     @Override public void onCompleted() {
@@ -352,15 +390,19 @@ public class MessagePresenter implements Presenter {
 
     @Override public void onNext(Shortcut shortcut) {
       if (shortcut == null) {
-        createShortcut(userIds);
+        createShortcut(onQuickChat, userIds);
       } else {
         if (chatMVPView != null) {
-          chatMVPView.onShortcut(shortcut);
+          if (onQuickChat) {
+            chatMVPView.onQuickShortcutUpdated(shortcut);
+          } else {
+            chatMVPView.onShortcutUpdate(shortcut);
+          }
         } else {
           Timber.e("chatMVPView NULL " + shortcut);
         }
       }
-      shortcutForUserIdsSubscriber.unsubscribe();
+      if (shortcutForUserIdsSubscriber != null) shortcutForUserIdsSubscriber.unsubscribe();
     }
   }
 }

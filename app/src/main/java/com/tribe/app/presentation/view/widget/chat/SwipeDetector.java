@@ -4,7 +4,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 11/10/2017.
@@ -30,6 +29,8 @@ public class SwipeDetector implements View.OnTouchListener {
     this.recordingView = recordingView;
     this.initialPosition = view.getX();
     this.screenUtils = screenUtils;
+
+    mGestureDetector.setIsLongpressEnabled(false);
   }
 
   @Override public boolean onTouch(View v, MotionEvent event) {
@@ -60,24 +61,19 @@ public class SwipeDetector implements View.OnTouchListener {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-          float x = recordingView.getX() + (recordingView.getWidth() / 2);
           float x2 = mView.getX() + (mView.getWidth() / 2);
           ratio = getRatio();
 
           try {
 
             if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && mView.getX() > initPos) {
-              Timber.e("SOEF 1");
               mView.setTranslationX(e2.getRawX() - mMotionDownX);
             } else if (mView.getX() < initPos) { // TRASH POSTITION
-              Timber.e("SOEF 2");
               mView.setX(initPos);
             } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
                 && mView.getX() < initialPosition) {
-              Timber.e("SOEF 3");
               mView.setTranslationX(e2.getRawX() - mMotionDownX);
             } else if (mView.getX() > initialPosition) {
-              Timber.e("SOEF 4");
               mView.setX(initialPosition);
             }
 

@@ -93,6 +93,7 @@ import javax.inject.Singleton;
 
     if (shortcutLastSeen != null) {
       shortcutLastSeenRealm = new ShortcutLastSeenRealm();
+      shortcutLastSeenRealm.setId(shortcutLastSeen.getId());
       shortcutLastSeenRealm.setDate(shortcutLastSeen.getDate());
       shortcutLastSeen.setUserId(shortcutLastSeen.getUserId());
     }

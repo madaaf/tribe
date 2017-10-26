@@ -33,7 +33,6 @@ import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import org.joda.time.DateTime;
@@ -122,7 +121,6 @@ public class RecyclerMessageView extends ChatMVPView {
   }
 
   private void initSubscriptions() {
-
     subscriptions.add(messageAdapter.onClickItem().subscribe(obj -> {
       TextViewFont view = ((TextViewFont) obj.get(0));
       Message m = ((Message) obj.get(1));
@@ -152,13 +150,8 @@ public class RecyclerMessageView extends ChatMVPView {
     }));
   }
 
-  @Override public void isReadingUpdate(String userId) {
-    Timber.e("IS READING UPDATE " + userId);
-    for (ShortcutLastSeen shortcutLastSeen : shortcut.getShortcutLastSeen()) {
-      if (shortcutLastSeen.getUserId().equals(userId)) {
-        shortcutLastSeen.setDate(dateUtils.getUTCDateAsString());
-      }
-    }
+  public void notifyDataSetChanged() {
+    messageAdapter.notifyDataSetChanged();
   }
 
   @Override protected void onAttachedToWindow() {
@@ -191,7 +184,6 @@ public class RecyclerMessageView extends ChatMVPView {
     recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
       @Override public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
         onScrollRecyclerView.onNext(dy);
-        Timber.e("DY / " + dy);
         if (dy != 0) {
           screenUtils.hideKeyboard((Activity) context);
         }

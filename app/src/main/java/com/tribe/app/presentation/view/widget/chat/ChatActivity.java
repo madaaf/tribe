@@ -65,7 +65,6 @@ public class ChatActivity extends BaseActivity {
       } else if (recipient instanceof Invite) {
         shortcut = ((Invite) recipient).getRoom().getShortcut();
       }
-
       chatView.setChatId(shortcut, recipient);
     }
 

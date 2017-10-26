@@ -46,6 +46,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.domain.ShortcutLastSeen;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
@@ -138,7 +139,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   private Shortcut shortcut;
   private Recipient recipient;
   private MediaRecorder recorder = null;
-  private String mFileName = null;
+  private String fileName = null;
   private Float audioDuration = 0f;
   private Shortcut fromShortcut = null;
 
@@ -259,7 +260,9 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     }
     context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
         JsonUtils.arrayToJson(arrIds)));
-    if (shortcut != null) messagePresenter.getDiskShortcut(shortcut.getId());
+    //if (shortcut != null) messagePresenter.getDiskShortcut(shortcut.getId());
+
+    messagePresenter.updateShortcutForUserIds(arrIds);
     messagePresenter.getIsTyping();
     messagePresenter.getIsTalking();
     messagePresenter.getIsReading();
@@ -580,7 +583,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     }));
 
     subscriptions.add(chatUserAdapter.onQuickChat().subscribe(id -> {
-      messagePresenter.shortcutForUserIds(id);
+      messagePresenter.quickShortcutForUserIds(id);
     }));
 
     subscriptions.add(RxView.clicks(uploadImageBtn)
@@ -824,7 +827,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         message = new MessageAudio();
         // ((MessageAudio) message).setTime(content);
         Image m = new Image();
-        m.setUrl(mFileName);
+        m.setUrl(fileName);
         m.setDuration(audioDuration);
         ((MessageAudio) message).setOriginal(m);
         ((MessageAudio) message).setTime(content);
@@ -838,8 +841,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     message.setId(Message.PENDING);//+ UUID.randomUUID()
     recyclerView.sendMyMessageToAdapter(message);
     if (type.equals(MESSAGE_IMAGE) || type.equals(MESSAGE_AUDIO)) {
-      sendMedia(uri, mFileName, 0, type);
-      mFileName = null;
+      sendMedia(uri, fileName, 0, type);
+      fileName = null;
       audioDuration = 0f;
     } else {
       recyclerView.sendMessageToNetwork(arrIds, content, realmType, 0);
@@ -1000,6 +1003,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void setAnimation(String type) {
+    layoutPulse.setVisibility(VISIBLE);
     switch (type) {
       case TYPE_NORMAL:
         videoCallBtn.setImageDrawable(
@@ -1010,14 +1014,14 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       case TYPE_LIVE:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_red));
-        layoutPulse.setColor(ContextCompat.getColor(context, R.color.red_pulse));
+        layoutPulse.setColor(ContextCompat.getColor(context, R.color.red_new_contacts));
         layoutPulse.start();
         avatarView.setType(NewAvatarView.LIVE);
         break;
       case TYPE_ONLINE:
         videoCallBtn.setImageDrawable(
             ContextCompat.getDrawable(context, R.drawable.picto_chat_video_live));
-        layoutPulse.setColor(ContextCompat.getColor(context, R.color.blue_new_opacity_40));
+        layoutPulse.setColor(ContextCompat.getColor(context, R.color.blue_new));
         layoutPulse.start();
         avatarView.setType(NewAvatarView.ONLINE);
         break;
@@ -1041,6 +1045,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void expendRecyclerViewGrp() {
+    containerUsers.setVisibility(VISIBLE);
     containerUsers.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
@@ -1101,7 +1106,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     }
   }
 
-  @Override public void successShortcutUpdate(Shortcut shortcut) {
+  @Override public void onShortcutUpdate(Shortcut shortcut) {
+    Timber.e("SHORTCVUT UPDATE " + shortcut.toString());
     boolean isOnline = false;
     boolean isLive = false;
     for (User u : shortcut.getMembers()) {
@@ -1116,6 +1122,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     } else {
       setAnimation(TYPE_NORMAL);
     }
+    recyclerView.setShortcut(shortcut);
+    recyclerView.notifyDataSetChanged();
   }
 
   @Override public void errorShortcutUpdate() {
@@ -1249,18 +1257,18 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void startRecording() {
-    mFileName = context.getExternalCacheDir().getAbsolutePath()
+    fileName = context.getExternalCacheDir().getAbsolutePath()
         + File.separator
         + dateUtils.getUTCDateAsString()
         + user.getId()
         + "audiorecord.mp4";
-    mFileName = mFileName.replaceAll(" ", "_").replaceAll(":", "-");
+    fileName = fileName.replaceAll(" ", "_").replaceAll(":", "-");
 
-    Timber.w("SOEF " + mFileName);
+    Timber.w("SOEF " + fileName);
     recorder = new MediaRecorder();
     recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
     recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-    recorder.setOutputFile(mFileName);
+    recorder.setOutputFile(fileName);
     recorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC);
 
     try {
@@ -1271,7 +1279,18 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     recorder.start();
   }
 
-  @Override public void onShortcut(Shortcut shortcutQuickChat) {
+  @Override public void isReadingUpdate(String userId) {
+    Timber.e("IS READING UPDATE " + userId);
+    for (ShortcutLastSeen shortcutLastSeen : shortcut.getShortcutLastSeen()) {
+      if (shortcutLastSeen.getUserId().equals(userId)) {
+        shortcutLastSeen.setDate(dateUtils.getUTCDateAsString());
+      }
+    }
+    recyclerView.setShortcut(shortcut);
+    recyclerView.notifyDataSetChanged();
+  }
+
+  @Override public void onQuickShortcutUpdated(Shortcut shortcutQuickChat) {
     tagManager.trackEvent(TagManagerUtils.Shortcut);
     navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut,
         TagManagerUtils.GESTURE_TAP, TagManagerUtils.SECTION_SHORTCUT, false);

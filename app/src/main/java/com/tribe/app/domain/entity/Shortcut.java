@@ -317,10 +317,14 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
         + '\''
         + ", name='"
         + name
-
-        + ", last_activity_at="
-        + last_activity_at
+        + ", online="
+        + online
+        + ", live="
+        + live
+        + ", pinned="
         + ", shortcutLastSeen="
-        + getShortcutLastSeen();
+        + shortcutLastSeen
+        + ", members="
+        + members;
   }
 }
