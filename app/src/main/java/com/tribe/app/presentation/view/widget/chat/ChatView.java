@@ -37,9 +37,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTouch;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxTextView;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -65,6 +67,8 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
+import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -178,6 +182,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   @BindView(R.id.likeBtn) ImageView likeBtn;
   @BindView(R.id.loadingRecordView) AVLoadingIndicatorView loadingRecordView;
 
+  @Inject @ChatShortcutData Preference<String> chatShortcutData;
   @Inject User user;
   @Inject MessagePresenter messagePresenter;
   @Inject RxImagePicker rxImagePicker;
@@ -251,9 +256,13 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       title.setText(members.get(0).getDisplayName());
       title.setTextColor(Color.BLACK);
     }
+    Map<String, String> map = PreferencesUtils.getMapFromJsonString(chatShortcutData);
 
-    if (shortcut.getEditTextMessage() != null && !shortcut.getEditTextMessage().isEmpty()) {
-      editText.setText(shortcut.getEditTextMessage());
+    if (map != null) {
+      String editTextContent = map.get(shortcut.getId());
+      if (editTextContent != null && !editTextContent.isEmpty()) {
+        editText.setText(editTextContent);
+      }
     }
   }
 
@@ -881,7 +890,15 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   @Override protected void onDetachedFromWindow() {
     messagePresenter.onViewDetached();
     Timber.w("DETACHED SUBSC onDetachedFromWindow");
-    shortcut.setEditTextMessage(editText.getText().toString());
+    
+    Map<String, String> list = PreferencesUtils.getMapFromJsonString(chatShortcutData);
+    if (list == null || list.isEmpty()) {
+      list = new HashMap<>();
+    }
+    list.put(shortcut.getId(), editText.getText().toString());
+    Gson gson = new Gson();
+    String jsonString = gson.toJson(list);
+    chatShortcutData.set(jsonString);
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
 

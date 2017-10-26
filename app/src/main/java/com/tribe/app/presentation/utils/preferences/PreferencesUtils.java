@@ -38,6 +38,7 @@ public class PreferencesUtils {
   public static String MINUTES_OF_CALLS = "MINUTES_OF_CALLS";
   public static String FULLSCREEN_NOTIFICATION_STATE = "FULLSCREEN_NOTIFICATION_STATE";
   public static String DATA_CHALLANGES_GAME = "DATA_CHALLANGES_GAME";
+  public static String CHAT_SHORTCUT_DATA = "CHAT_SHORTCUT_DATA";
   public static String TRIBE_STATE = "TRIBE_STATE";
   public static String CALL_TAGS_MAP = "CALL_TAGS_MAP";
   public static String LOOKUP_RESULT = "LOOKUP_RESULT";
@@ -54,6 +55,11 @@ public class PreferencesUtils {
 
   public static Map<String, Object> getMapFromJson(Preference<String> preference) {
     return new Gson().fromJson(preference.get(), new TypeToken<HashMap<String, Object>>() {
+    }.getType());
+  }
+
+  public static Map<String, String> getMapFromJsonString(Preference<String> preference) {
+    return new Gson().fromJson(preference.get(), new TypeToken<HashMap<String, String>>() {
     }.getType());
   }
 

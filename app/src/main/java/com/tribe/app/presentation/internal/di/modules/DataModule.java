@@ -6,6 +6,7 @@ import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
@@ -32,7 +33,9 @@ import com.tribe.app.presentation.utils.preferences.Walkthrough;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import dagger.Module;
 import dagger.Provides;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import javax.inject.Singleton;
 
@@ -152,6 +155,13 @@ import static android.content.Context.MODE_PRIVATE;
       RxSharedPreferences prefs) {
     return prefs.getStringSet(PreferencesUtils.DATA_CHALLANGES_GAME, new HashSet<>());
   }
+
+
+  @Provides @Singleton @ChatShortcutData Preference<String> provideChatShortcutData(
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.CHAT_SHORTCUT_DATA, "");
+  }
+
 
   @Provides @Singleton @MissedPlayloadNotification
   Preference<String> providedMissedPlayloadNotification(Context context,

@@ -36,7 +36,6 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   private String lastMessage;
   private Date leaveOnlineUntil;
   private String membersHash;
-  private String editTextMessage;
 
   private boolean selected;
 
@@ -329,11 +328,4 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
         + members;
   }
 
-  public String getEditTextMessage() {
-    return editTextMessage;
-  }
-
-  public void setEditTextMessage(String editTextMessage) {
-    this.editTextMessage = editTextMessage;
-  }
 }
