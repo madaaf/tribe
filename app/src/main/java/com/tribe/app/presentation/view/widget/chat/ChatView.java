@@ -1,7 +1,10 @@
 package com.tribe.app.presentation.view.widget.chat;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -135,7 +138,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   private LinearLayoutManager layoutManagerGrp;
   private List<User> members = new ArrayList<>();
   private ChatView chatView;
-  private String editTextString;
+  private String editTextString, typePulseAnim = TYPE_NORMAL;
   private int type, widthRefExpended, widthRefInit, containerUsersHeight, refMaxExpendedWidth,
       voiceNoteBtnX, recordingViewX, recordingViewInitWidth;
   private boolean editTextChange = false, isHeart = false;
@@ -146,7 +149,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   private String fileName = null;
   private Float audioDuration = 0f;
   private Shortcut fromShortcut = null;
-
+  private boolean hideVideoCallBtn = false;
   private Map<String, Object> tagMap;
   private String section, gesture;
   private int heartCount = 0, textCount = 0, audioCount = 0, imageCount = 0;
@@ -256,14 +259,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       title.setText(members.get(0).getDisplayName());
       title.setTextColor(Color.BLACK);
     }
-    Map<String, String> map = PreferencesUtils.getMapFromJsonString(chatShortcutData);
-
-    if (map != null) {
-      String editTextContent = map.get(shortcut.getId());
-      if (editTextContent != null && !editTextContent.isEmpty()) {
-        editText.setText(editTextContent);
-      }
-    }
   }
 
   public void onResumeView() {
@@ -307,6 +302,10 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
         widthRefExpended = refExpended.getWidth();
         widthRefInit = refInit.getWidth();
+
+        editText.getLayoutParams().width = widthRefInit;
+        editText.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+
         refMaxExpendedWidth = refMaxExpended.getWidth();
         containerUsersHeight = containerUsers.getHeight();
         recordingViewInitWidth = recordingView.getWidth();
@@ -316,7 +315,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         voiceNoteBtn.getLayoutParams().width = size;
 
         voiceNoteBtn.setTranslationX(
-            editText.getX() + editText.getWidth() - voiceNoteBtn.getWidth() - screenUtils.dpToPx(
+            editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(
                 5));
         voiceNoteBtn.setTranslationY(
             -editText.getHeight() + voiceNoteBtn.getHeight() - screenUtils.dpToPx(7));
@@ -326,7 +325,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
         pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (
             pictoVoiceNote.getHeight()
-                / 2) + screenUtils.dpToPx(12));
+                / 2) + screenUtils.dpToPx(10));
 
         voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
@@ -353,6 +352,17 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
             initVoiceCallPerm(moveListener);
             return false;
           });
+        }
+
+        Map<String, String> map = PreferencesUtils.getMapFromJsonString(chatShortcutData);
+
+        if (map != null && shortcut != null) {
+          String editTextContent = map.get(shortcut.getId());
+          if (editTextContent != null && !editTextContent.isEmpty()) {
+            editText.setText(editTextContent);
+            hideVideoCallBtn(false);
+            editText.setSelection(editText.getText().length());
+          }
         }
       }
     });
@@ -406,6 +416,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
           btnSendLikeContainer.setVisibility(VISIBLE);
           uploadImageBtn.setVisibility(VISIBLE);
           layoutPulse.setVisibility(VISIBLE);
+          videoCallBtn.setVisibility(VISIBLE);
 
           editText.setCursorVisible(true);
         })
@@ -480,6 +491,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
           btnSendLikeContainer.setVisibility(GONE);
           uploadImageBtn.setVisibility(GONE);
           layoutPulse.setVisibility(GONE);
+          videoCallBtn.setVisibility(GONE);
           recordingView.animate()
               .translationY(-(recordingView.getHeight() * 2.5f))
               .setInterpolator(new OvershootInterpolator())
@@ -524,8 +536,9 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     if (type == (FROM_LIVE)) {
       topbar.setVisibility(GONE);
       containerUsers.setVisibility(GONE);
-      layoutPulse.getLayoutParams().height = 0;
-      layoutPulse.getLayoutParams().width = 0;
+      videoCallBtn.getLayoutParams().height = 0;
+      videoCallBtn.getLayoutParams().width = 0;
+      layoutPulse.setVisibility(GONE);
       container.setBackground(null);
       uploadImageBtn.setImageDrawable(
           ContextCompat.getDrawable(context, R.drawable.picto_chat_upload_white));
@@ -535,8 +548,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
       voiceNoteBtn.setVisibility(GONE);
       pictoVoiceNote.setVisibility(GONE);
 
-    /*  editText.setBackground(
-          ContextCompat.getDrawable(context, R.drawable.shape_rect_chat_black10));*/
       blurBackEditText.setBackground(
           ContextCompat.getDrawable(context, R.drawable.background_blur));
       editText.setTextColor(ContextCompat.getColor(context, R.color.white));
@@ -642,7 +653,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     subscriptions.add(
         RxTextView.textChanges(editText).map(CharSequence::toString).subscribe(text -> {
           this.editTextString = text;
-
           if (text.isEmpty()) {
             editText.setHint("Aa");
             voiceNoteBtn.animate()
@@ -661,8 +671,10 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
                   ContextCompat.getDrawable(context, R.drawable.picto_like_heart));
             }
             switchLikeToSendBtn(false);
+            layoutPulse.setVisibility(VISIBLE);
           } else if (!text.isEmpty() && !editTextChange) {
             Timber.e("OOK " + text);
+            layoutPulse.setVisibility(INVISIBLE);
             voiceNoteBtn.animate()
                 .scaleX(0f)
                 .scaleY(0f)
@@ -752,47 +764,130 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     }
   }
 
+  private void hideVideoCallBtn(boolean withAnim) {
+    hideVideoCallBtn = true;
+    if (withAnim) {
+      ValueAnimator anim = ValueAnimator.ofInt(videoCallBtn.getWidth(), 0);
+      anim.addUpdateListener(valueAnimator -> {
+        int val = (Integer) valueAnimator.getAnimatedValue();
+        ViewGroup.LayoutParams layoutParams = videoCallBtn.getLayoutParams();
+        layoutParams.width = val;
+        layoutParams.height = val;
+        videoCallBtn.setLayoutParams(layoutParams);
+      });
+
+      anim.addListener(new AnimatorListenerAdapter() {
+        @Override public void onAnimationEnd(Animator animation) {
+          videoCallBtn.setImageDrawable(null);
+        }
+      });
+      anim.setDuration(300);
+      anim.start();
+    } else {
+      videoCallBtn.getLayoutParams().height = 0;
+      videoCallBtn.getLayoutParams().width = 0;
+      videoCallBtn.setImageDrawable(null);
+    }
+  }
+
   private void expendEditText() {
     if (type == FROM_LIVE) {
       return;
     }
-    editText.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            ResizeAnimation a = new ResizeAnimation(editText);
-            a.setDuration(100);
-            a.setInterpolator(new LinearInterpolator());
-            a.setAnimationListener(new AnimationListenerAdapter() {
-              @Override public void onAnimationStart(Animation animation) {
-                uploadImageBtn.setAlpha(0f);
-                uploadImageBtn.setVisibility(GONE);
+    btnSendLikeContainer.animate()
+        .translationX(videoCallBtn.getWidth())
+        .setDuration(ANIM_DURATION)
+        .withStartAction(() -> videoCallBtn.animate()
+            .alpha(0f)
+            .setDuration(ANIM_DURATION_FAST)
+            .withEndAction(new Runnable() {
+              @Override public void run() {
+                // hideVideoCallBtn(false);
+                ResizeAnimation a = new ResizeAnimation(editText);
+                a.setDuration(ANIM_DURATION);
+                a.setInterpolator(new LinearInterpolator());
+                a.setParams(editText.getWidth(), widthRefExpended, LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT);
+                editText.startAnimation(a);
               }
-            });
-            a.setParams(editText.getWidth(), widthRefExpended, LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT);
-            editText.startAnimation(a);
+            })
+            .start());
+   /* btnSendLikeContainer.animate()
+        .translationX(videoCallBtn.getWidth())
+        .setDuration(ANIM_DURATION)
+        .withStartAction(() -> videoCallBtn.animate()
+            .alpha(0f)
+            .setDuration(ANIM_DURATION_FAST)
+            .withEndAction(new Runnable() {
+              @Override public void run() {
+                hideVideoCallBtn(false);
+              }
+            })
+            .start())
+        .withEndAction(new Runnable() {
+          @Override public void run() {
+            editText.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                  @Override public void onGlobalLayout() {
+                    editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    ResizeAnimation a = new ResizeAnimation(editText);
+                    a.setDuration(ANIM_DURATION);
+                    a.setInterpolator(new LinearInterpolator());
+                    a.setParams(editText.getWidth(), widthRefExpended, LayoutParams.WRAP_CONTENT,
+                        LayoutParams.WRAP_CONTENT);
+                    editText.startAnimation(a);
+                  }
+                });
           }
-        });
+        })
+        .start();*/
+  }
+
+  private void showVideoCallBtn(boolean withAnim) {
+    hideVideoCallBtn = false;
+
+    if (withAnim) {
+      ValueAnimator anim = ValueAnimator.ofInt(0, LayoutParams.WRAP_CONTENT);
+      anim.addUpdateListener(valueAnimator -> {
+        int val = (Integer) valueAnimator.getAnimatedValue();
+        ViewGroup.LayoutParams layoutParams = videoCallBtn.getLayoutParams();
+        layoutParams.width = val;
+        layoutParams.height = val;
+        videoCallBtn.setLayoutParams(layoutParams);
+      });
+      anim.addListener(new AnimatorListenerAdapter() {
+        @Override public void onAnimationEnd(Animator animation) {
+          setPulseAnimation(typePulseAnim);
+        }
+      });
+      anim.setDuration(300);
+      anim.start();
+    } else {
+      videoCallBtn.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+      videoCallBtn.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+      setPulseAnimation(typePulseAnim);
+    }
   }
 
   private void shrankEditText() {
     if (type == FROM_LIVE) {
       return;
     }
+    btnSendLikeContainer.animate()
+        .translationX(0)
+        .setDuration(ANIM_DURATION)
+        .withEndAction(
+            () -> videoCallBtn.animate().alpha(1f).setDuration(ANIM_DURATION_FAST).start())
+        .start();
+    showVideoCallBtn(false);
+
     editText.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
             editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             ResizeAnimation a = new ResizeAnimation(editText);
-            a.setDuration(100);
+            a.setDuration(ANIM_DURATION);
             a.setInterpolator(new LinearInterpolator());
-            a.setAnimationListener(new AnimationListenerAdapter() {
-              @Override public void onAnimationEnd(Animation animation) {
-                uploadImageBtn.setVisibility(VISIBLE);
-                uploadImageBtn.animate().setDuration(100).alpha(1f).start();
-              }
-            });
             a.setParams(editText.getWidth(), widthRefInit, LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT);
             editText.startAnimation(a);
@@ -883,14 +978,14 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     super.onAttachedToWindow();
     messagePresenter.onViewAttached(this);
     populateUsersHorizontalList();
-    setAnimation(TYPE_NORMAL);
+    setPulseAnimation(TYPE_NORMAL);
     if (type == FROM_CHAT) screenUtils.showKeyboard(editText, 0);
   }
 
   @Override protected void onDetachedFromWindow() {
     messagePresenter.onViewDetached();
     Timber.w("DETACHED SUBSC onDetachedFromWindow");
-    
+
     Map<String, String> list = PreferencesUtils.getMapFromJsonString(chatShortcutData);
     if (list == null || list.isEmpty()) {
       list = new HashMap<>();
@@ -1024,8 +1119,9 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     return false;
   }
 
-  private void setAnimation(String type) {
-    layoutPulse.setVisibility(VISIBLE);
+  private void setPulseAnimation(String type) {
+    if (hideVideoCallBtn) return;
+    this.typePulseAnim = type;
     switch (type) {
       case TYPE_NORMAL:
         videoCallBtn.setImageDrawable(
@@ -1137,11 +1233,11 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     chatUserAdapter.setItems(shortcut.getMembers());
 
     if (shortcut.isLive()) {
-      setAnimation(TYPE_LIVE);
+      setPulseAnimation(TYPE_LIVE);
     } else if (shortcut.isOnline() || isOnline) {
-      setAnimation(TYPE_ONLINE);
+      setPulseAnimation(TYPE_ONLINE);
     } else {
-      setAnimation(TYPE_NORMAL);
+      setPulseAnimation(TYPE_NORMAL);
     }
     recyclerView.setShortcut(shortcut);
     recyclerView.notifyDataSetChanged();
@@ -1332,6 +1428,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
               R.string.chat_quickchat_back_to_group) : fromShortcut.getName();
       nameGrp += "  ";
       name.setText(nameGrp);
+      name.setTextColor(ContextCompat.getColor(context, R.color.black_opacity_40));
       name.setPadding(0, 15, 0, 15);
       containerQuickChat.addView(layout);
       name.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow, 0);

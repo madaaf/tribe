@@ -114,17 +114,26 @@
 	<string name="live_notification_action_add_as_friend">Ajouter en ami</string>
 	<string name="live_notification_action_hang_live_friend">Rejoindre %1$s</string>
 	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
-	<string name="live_notification_add_as_guest">Inviter %1$s ici</string>
-	<string name="live_notification_leave">Quitter pour rejoindre %1$s</string>
-	<string name="live_notification_decline">Refuser l\'appel</string>
 	<string name="live_notification_invite_after_decline">Inviter %1$s</string>
 	<string name="live_notification_call_after_decline">Appeler %1$s</string>
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	<string name="live_notification_action_see_thread">Voir la conversation</string>
 	<string name="live_notification_action_reply">Répondre</string>
 	<string name="live_notification_online">est en ligne</string>
-	<string name="live_notification_title">Vous êtes déjà dans un appel</string>
-	<string name="live_notification_message">Que souhaitez-vous faire ?</string>
+	<string name="live_notification_title">Choisissez une option</string>
+	<string name="live_notification_message">Voici ce que vous pouvez faire\navec %1$s maintenant.</string>
+	<string name="live_notification_call">:telephone_receiver: Appeler %1$s</string>
+	<string name="live_notification_leave">:telephone_receiver: Rejoindre %1$s</string>
+	<string name="live_notification_add_as_guest">:busts_in_silhouette: Inviter %1$s ici</string>
+	<string name="live_notification_text">:speech_balloon: Texter %1$s</string>
+	<string name="live_notification_decline">:no_mobile_phones: Refuser l\'appel de %1$s</string>
+	
+	<!-- Decline Menu -->
+	<string name="decline_menu_title">Texter %1$s</string>
+	<string name="decline_menu_message">Sélectionnez une option pour l\'envoyer\nà %1$s dans le Chat</string>
+	<string name="decline_menu_answer1">Je te rappelle dès que possible ! :dizzy:</string>
+	<string name="decline_menu_answer2">Je ne peux pas parler. Envoie moi un message sur le chat ! :speech_balloon:</string>
+	<string name="decline_menu_custom">Réponse personnalisée...</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>
@@ -681,7 +690,7 @@
 	<string name="game_aliens_attack_pending_instructions">LE JEU VA REDEMARRE QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_bird_rush">Bird Rush!</string>
 	<string name="game_bird_rush_title">BIRD\nRUSH</string>
-	<string name="game_bird_rush_lets_go">En vol!</string>
+	<string name="game_bird_rush_lets_go">TAP, TAP, TAP POUR VOLER !</string>
 	<string name="game_bird_rush_you_won">TU AS GAGNÉ !</string>
 	<string name="game_bird_rush_someone_won">%@ A GAGNÉ !</string>
 	<string name="game_bird_rush_you_lost">TU AS PERDU</string>
@@ -773,7 +782,7 @@
 	<string name="home_menu_shortcut_unmute">:bell: notification est en ligne</string>
 	<string name="home_menu_shortcut_hide">:speak_no_evil: Masquer</string>
 	<string name="home_menu_shortcut_block">:no_entry: Bloquer</string>
-	<string name="home_menu_shortcut_block_group">:no_entry: Mettre en sourdine</string>
+	<string name="home_menu_shortcut_block_group">:no_entry: Bloquer</string>
 	<string name="home_menu_shortcut_update_name">:pencil2: Modifier le nom</string>
 	<string name="home_menu_shortcut_customize">:art: Personnaliser</string>
 	<string name="home_menu_shortcut_update_avatar">:framed_picture: Modifier l\'avatar</string>
@@ -783,9 +792,9 @@
 	<string name="home_block_shortcut_title">Bloquer %1$s ?</string>
 	<string name="home_block_shortcut_message">Masquer de manière permanente cette personne et les groupes et les notifications qui lui sont associés.</string>
 	<string name="home_block_shortcut_validate">Bloquer</string>
-	<string name="home_mute_shortcut_title">Mettre en sourdine ce groupe ?</string>
-	<string name="home_mute_shortcut_message">Mettre en sourdine les nouveaux messages, appels et toutes les autres notifications de ce groupe.</string>
-	<string name="home_mute_shortcut_validate">Mettre en sourdine</string>
+	<string name="home_block_group_shortcut_title">Bloquer ce groupe ?</string>
+	<string name="home_block_group_shortcut_message">Masquer de manière permanente ce groupe et les notifications qui lui sont associés.</string>
+	<string name="home_block_group_shortcut_validate">Bloquer</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">Nouveau chat</string>
@@ -839,7 +848,10 @@
 	<!-- Report -->
 	<string name="error_invited_user_random_banned">Désolé, il est impossible d\'inviter %1$s car il lui est interdit d\'utiliser cette fonctionnalité.</string>
 	<string name="error_room_user_random_banned">Désolé, il est impossible d\'inviter %1$s car il lui est interdit d\'utiliser cette fonctionnalité.</string>
-	<string name="error_just_banned_kicked">Vous avez été éjecté pour comportement inaproprié. Veuillez stopper cela.</string>
-	<string name="error_just_banned_temporary">Vous avez été éjecté et temporairement banni pour comportement inaproprié. Veuillez stopper cela.</string>
-	<string name="error_just_banned_permanently">Vous avez été éjecté et banni de call roulette pour comportement inaproprié.</string>
+	<string name="error_just_banned_kicked_title">Éjecté.</string>
+	<string name="error_just_banned_kicked_message">Vous avez éjecté car votre comportement a été reporté à plusieurs reprise par d\'autres utilisateurs. Calmez-vous et revenez plus tard.</string>
+	<string name="error_just_banned_temporary_title">Ban temporaire.</string>
+	<string name="error_just_banned_temporary_message">Après avoir été éjecté à plusieurs reprises aujourd\'hui, vous avez été temporairement banni. Calmez-vous et revenez dans une heure. Attention, la prochaine étape est un ban permanent de l\'utilisation de cette fonctionnalité.</string>
+	<string name="error_just_banned_permanently_title">Ban permanent.</string>
+	<string name="error_just_banned_permanently_message">Après avoir été éjecté à plusieurs reprises et banni temporairement, vous avez été banni de manière permanente de l\'utilisation de cette fonctionnalité.</string>
 </resources>
