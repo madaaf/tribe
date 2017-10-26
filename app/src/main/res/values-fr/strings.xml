@@ -123,6 +123,8 @@
 	<string name="live_notification_action_see_thread">Voir la conversation</string>
 	<string name="live_notification_action_reply">Répondre</string>
 	<string name="live_notification_online">est en ligne</string>
+	<string name="live_notification_title">Vous êtes déjà dans un appel</string>
+	<string name="live_notification_message">Que souhaitez-vous faire ?</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>

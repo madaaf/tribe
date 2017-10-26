@@ -123,6 +123,8 @@
 	<string name="live_notification_action_see_thread">See the conversation</string>
 	<string name="live_notification_action_reply">Reply</string>
 	<string name="live_notification_online">is online</string>
+	<string name="live_notification_title">You are already live</string>
+	<string name="live_notification_message">What do you want to do?</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
