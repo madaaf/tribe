@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
+import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
@@ -31,14 +32,29 @@ import rx.subscriptions.CompositeSubscription;
   // VARIABLES
   private List<Game> gameList;
   private Game currentGame = null;
+  private WebRTCRoom webRTCRoom;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private CompositeSubscription subscriptionsRoom = new CompositeSubscription();
+  private CompositeSubscription subscriptionsGame = new CompositeSubscription();
   private PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
   private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
+  private PublishSubject<String> onPointsDrawReceived = PublishSubject.create();
+  private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
+  private PublishSubject<List<String>> onNewDrawReceived = PublishSubject.create();
+  private PublishSubject<Void> onClearDrawReceived = PublishSubject.create();
 
   @Inject public GameManager(Context context) {
     gameList = new ArrayList<>();
+  }
+
+  public void setWebRTCRoom(WebRTCRoom webRTCRoom) {
+    this.webRTCRoom = webRTCRoom;
+    subscriptionsRoom.add(webRTCRoom.onPointsDrawReceived().subscribe(onPointsDrawReceived));
+    subscriptionsRoom.add(webRTCRoom.onNewChallengeReceived().subscribe(onNewChallengeReceived));
+    subscriptionsRoom.add(webRTCRoom.onNewDrawReceived().subscribe(onNewDrawReceived));
+    subscriptionsRoom.add(webRTCRoom.onClearDrawReceived().subscribe(onClearDrawReceived));
   }
 
   public void addGame(Game game) {

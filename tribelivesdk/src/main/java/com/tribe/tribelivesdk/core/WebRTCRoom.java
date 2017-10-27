@@ -33,7 +33,7 @@ import timber.log.Timber;
  * Created by tiago on 13/01/2017.
  */
 
-public class Room {
+public class WebRTCRoom {
 
   @StringDef({
       STATE_NEW, STATE_CONNECTING, STATE_CONNECTED, STATE_DISCONNECTED, STATE_ERROR
@@ -79,7 +79,7 @@ public class Room {
   private WebSocketConnection webSocketConnection;
   private WebRTCClient webRTCClient;
   private TribeLiveOptions options;
-  private @Room.RoomState String state;
+  private @WebRTCRoom.RoomState String state;
   private JsonToModel jsonToModel;
   private boolean hasJoined = false;
 
@@ -110,7 +110,7 @@ public class Room {
   private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
   private PublishSubject<RemotePeer> onReceivedStream = PublishSubject.create();
 
-  public Room(Context context, WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
+  public WebRTCRoom(Context context, WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
     this.context = context;
     this.webSocketConnection = webSocketConnection;
     this.webRTCClient = webRTCClient;

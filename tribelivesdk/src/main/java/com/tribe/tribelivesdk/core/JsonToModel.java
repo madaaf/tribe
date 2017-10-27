@@ -62,7 +62,7 @@ public class JsonToModel {
   private void convertToModel(String json) throws IOException {
     if (json == null && !json.equals("")) return;
 
-    @Room.WebSocketMessageType String localWebSocketType = getWebSocketMessageFromJson(json);
+    @WebRTCRoom.WebSocketMessageType String localWebSocketType = getWebSocketMessageFromJson(json);
 
     if (localWebSocketType == null) {
       Timber.e("WebSocket message unhandled : " + json);
@@ -73,7 +73,7 @@ public class JsonToModel {
     try {
       object = new JSONObject(json);
 
-      if (localWebSocketType.equals(Room.MESSAGE_OFFER)) {
+      if (localWebSocketType.equals(WebRTCRoom.MESSAGE_OFFER)) {
 
         JSONObject data = object.getJSONObject("d");
         Timber.d("Received challenge : " + data);
@@ -88,7 +88,7 @@ public class JsonToModel {
             new TribeSession(session.getString("socketId"), session.getString("userId"));
 
         onReceivedOffer.onNext(new TribeOffer(tribeSession, sdp));
-      } else if (localWebSocketType.equals(Room.MESSAGE_CANDIDATE)) {
+      } else if (localWebSocketType.equals(WebRTCRoom.MESSAGE_CANDIDATE)) {
 
         JSONObject data = object.getJSONObject("d");
         Timber.d("Exchange candidate : " + data.toString());
@@ -104,15 +104,15 @@ public class JsonToModel {
                 candidate.getString("candidate")));
 
         onCandidate.onNext(tribeCandidate);
-      } else if (localWebSocketType.equals(Room.MESSAGE_LEAVE)) {
+      } else if (localWebSocketType.equals(WebRTCRoom.MESSAGE_LEAVE)) {
 
         Timber.d("Leave message received");
         JSONObject d = object.getJSONObject("d");
-        Timber.d(Room.MESSAGE_LEAVE + " received : " + d.toString());
+        Timber.d(WebRTCRoom.MESSAGE_LEAVE + " received : " + d.toString());
         String peerId = d.getString("socketId");
         String userId = d.getString("userId");
         onLeaveRoom.onNext(new TribeSession(peerId, userId));
-      } else if (localWebSocketType.equals(Room.MESSAGE_JOIN)) {
+      } else if (localWebSocketType.equals(WebRTCRoom.MESSAGE_JOIN)) {
 
         TribeJoinRoom tribeJoinRoom;
 
@@ -138,20 +138,20 @@ public class JsonToModel {
           JSONObject jo = r.getJSONObject("userMediaConfiguration");
           computeMediaConstraints(jo, false);
         }
-      } else if (localWebSocketType.equals(Room.MESSAGE_LEAVE)) {
+      } else if (localWebSocketType.equals(WebRTCRoom.MESSAGE_LEAVE)) {
 
         Timber.d("Leave message received");
         JSONObject d = object.getJSONObject("d");
-        Timber.d(Room.MESSAGE_LEAVE + " received : " + d.toString());
+        Timber.d(WebRTCRoom.MESSAGE_LEAVE + " received : " + d.toString());
         String peerId = d.getString("socketId");
         String userId = d.getString("userId");
         onLeaveRoom.onNext(new TribeSession(peerId, userId));
-      } else if (localWebSocketType.equals(Room.MESSAGE_MEDIA_CONSTRAINTS)) {
+      } else if (localWebSocketType.equals(WebRTCRoom.MESSAGE_MEDIA_CONSTRAINTS)) {
 
         Timber.d("User configuration message received");
         JSONObject d = object.getJSONObject("d");
         computeMediaConstraints(d, true);
-      } else if (localWebSocketType.equals(Room.MESSAGE_REMOTE_SWITCH_MODE)) {
+      } else if (localWebSocketType.equals(WebRTCRoom.MESSAGE_REMOTE_SWITCH_MODE)) {
 
         Timber.d("Receiving remote switch mode (low connectivity)");
         JSONObject d = object.getJSONObject("d");
@@ -165,7 +165,7 @@ public class JsonToModel {
         peerMediaConfiguration.setVideoEnabled(d.getBoolean("video"));
         peerMediaConfiguration.setMediaConfigurationType(TribePeerMediaConfiguration.LOW_BANDWIDTH);
         onShouldSwitchRemoteMediaMode.onNext(peerMediaConfiguration);
-      } else if (localWebSocketType.equals(Room.MESSAGE_MESSAGE)) {
+      } else if (localWebSocketType.equals(WebRTCRoom.MESSAGE_MESSAGE)) {
 
         JSONObject d = object.getJSONObject("d");
         Timber.d("Received message app");
@@ -176,22 +176,22 @@ public class JsonToModel {
 
         JSONObject message = d.getJSONObject("message");
 
-        if (message.has(Room.MESSAGE_APP)) {
-          JSONObject app = message.getJSONObject(Room.MESSAGE_APP);
+        if (message.has(WebRTCRoom.MESSAGE_APP)) {
+          JSONObject app = message.getJSONObject(WebRTCRoom.MESSAGE_APP);
 
-          if (app.has(Room.MESSAGE_UNLOCK_ROLL_DICE)) {
+          if (app.has(WebRTCRoom.MESSAGE_UNLOCK_ROLL_DICE)) {
             Timber.d("Receiving unlock roll the dice");
             unlockRollTheDice.onNext(tribeSession.getUserId());
-          } else if (app.has(Room.MESSAGE_UNLOCKED_ROLL_DICE)) {
+          } else if (app.has(WebRTCRoom.MESSAGE_UNLOCKED_ROLL_DICE)) {
             Timber.d("Receiving unlocked roll the dice");
             unlockedRollTheDice.onNext(tribeSession.getUserId());
-          } else if (app.has(Room.MESSAGE_ROLL_THE_DICE)) {
+          } else if (app.has(WebRTCRoom.MESSAGE_ROLL_THE_DICE)) {
             Timber.d("Receiving roll the dice");
             onRollTheDiceReceived.onNext(null);
-          } else if (app.has(Room.MESSAGE_INVITE_ADDED)) {
+          } else if (app.has(WebRTCRoom.MESSAGE_INVITE_ADDED)) {
             Timber.d("Receiving invite added");
             List<TribeGuest> guestList = new ArrayList<>();
-            JSONArray arrayInvited = app.getJSONArray(Room.MESSAGE_INVITE_ADDED);
+            JSONArray arrayInvited = app.getJSONArray(WebRTCRoom.MESSAGE_INVITE_ADDED);
             for (int i = 0; i < arrayInvited.length(); i++) {
               JSONObject guest = arrayInvited.getJSONObject(i);
               String userName = guest.has("username") ? guest.getString("username") : null;
@@ -199,10 +199,10 @@ public class JsonToModel {
                   guest.getString("picture"), false, true, userName));
             }
             onInvitedTribeGuestList.onNext(guestList);
-          } else if (app.has(Room.MESSAGE_INVITE_REMOVED)) {
+          } else if (app.has(WebRTCRoom.MESSAGE_INVITE_REMOVED)) {
             Timber.d("Receiving invite removed");
             List<TribeGuest> guestRemovedList = new ArrayList<>();
-            JSONArray arrayRemoved = app.getJSONArray(Room.MESSAGE_INVITE_REMOVED);
+            JSONArray arrayRemoved = app.getJSONArray(WebRTCRoom.MESSAGE_INVITE_REMOVED);
             for (int i = 0; i < arrayRemoved.length(); i++) {
               guestRemovedList.add(new TribeGuest(arrayRemoved.getString(i)));
             }
@@ -241,7 +241,7 @@ public class JsonToModel {
               onClearDrawReceived.onNext(null);
             }
           }
-        } else if (message.has(Room.MESSAGE_MEDIA_CONFIGURATION)) {
+        } else if (message.has(WebRTCRoom.MESSAGE_MEDIA_CONFIGURATION)) {
 
           Timber.d("Receiving media configuration");
           TribePeerMediaConfiguration peerMediaConfiguration =
@@ -260,8 +260,8 @@ public class JsonToModel {
             onNewGame.onNext(new Pair<>(tribeSession,
                 message.getJSONObject(Game.CURRENT_GAME).getString(Game.ID)));
           }
-        } else if (message.has(Room.MESSAGE_GAME)) {
-          JSONObject gameMessage = message.getJSONObject(Room.MESSAGE_GAME);
+        } else if (message.has(WebRTCRoom.MESSAGE_GAME)) {
+          JSONObject gameMessage = message.getJSONObject(WebRTCRoom.MESSAGE_GAME);
           String action = gameMessage.getString(Game.ACTION);
           if (action.equals(Game.START)) {
             onNewGame.onNext(new Pair<>(tribeSession, gameMessage.getString(Game.ID)));
@@ -269,7 +269,7 @@ public class JsonToModel {
             onStopGame.onNext(new Pair<>(tribeSession, gameMessage.getString(Game.ID)));
           }
         }
-      } else if (object != null && object.has(Room.MESSAGE_ERROR)) {
+      } else if (object != null && object.has(WebRTCRoom.MESSAGE_ERROR)) {
         boolean success = object.getBoolean("s");
 
         if (!success) {
@@ -291,17 +291,17 @@ public class JsonToModel {
     }
   }
 
-  private @Room.WebSocketMessageType String getWebSocketMessageFromJson(String json) {
+  private @WebRTCRoom.WebSocketMessageType String getWebSocketMessageFromJson(String json) {
     JSONObject object = null;
 
     try {
       object = new JSONObject(json);
 
-      if (object.has("a") && !object.has(Room.MESSAGE_ERROR)) {
+      if (object.has("a") && !object.has(WebRTCRoom.MESSAGE_ERROR)) {
         String a = object.getString("a");
-        return Room.getWebSocketMessageType(a);
-      } else if (object.has(Room.MESSAGE_ERROR)) {
-        return Room.MESSAGE_ERROR;
+        return WebRTCRoom.getWebSocketMessageType(a);
+      } else if (object.has(WebRTCRoom.MESSAGE_ERROR)) {
+        return WebRTCRoom.MESSAGE_ERROR;
       }
     } catch (JSONException e) {
       e.printStackTrace();

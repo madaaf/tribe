@@ -48,6 +48,7 @@ import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
+import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameDraw;
@@ -138,7 +139,7 @@ public class LiveView extends FrameLayout {
 
   // VARIABLES
   private Live live;
-  private com.tribe.tribelivesdk.core.Room webRTCRoom;
+  private WebRTCRoom webRTCRoom;
   private ObservableRxHashMap<String, LiveRowView> liveRowViewMap;
   private boolean hiddenControls = false;
   private Map<String, Object> tagMap;
@@ -565,7 +566,7 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(webRTCRoom.onRoomStateChanged().subscribe(state -> {
       Timber.d("Room state change : " + state);
-      if (state == com.tribe.tribelivesdk.core.Room.STATE_CONNECTED) {
+      if (state == WebRTCRoom.STATE_CONNECTED) {
         timeStart = System.currentTimeMillis();
 
         tempSubscriptions.add(Observable.interval(10, TimeUnit.SECONDS, Schedulers.computation())
@@ -582,14 +583,6 @@ public class LiveView extends FrameLayout {
     }));
 
     tempSubscriptions.add(webRTCRoom.unlockRollTheDice().subscribe(unlockRollTheDice));
-
-    tempSubscriptions.add(webRTCRoom.onPointsDrawReceived().subscribe(onPointsDrawReceived));
-
-    tempSubscriptions.add(webRTCRoom.onNewChallengeReceived().subscribe(onNewChallengeReceived));
-
-    tempSubscriptions.add(webRTCRoom.onNewDrawReceived().subscribe(onNewDrawReceived));
-
-    tempSubscriptions.add(webRTCRoom.onClearDrawReceived().subscribe(onClearDrawReceived));
 
     tempSubscriptions.add(webRTCRoom.unlockedRollTheDice().subscribe(unlockedRollTheDice));
 
@@ -799,7 +792,7 @@ public class LiveView extends FrameLayout {
         .subscribe(aLong -> onShouldJoinRoom.onNext(null)));
   }
 
-  public com.tribe.tribelivesdk.core.Room getWebRTCRoom() {
+  public WebRTCRoom getWebRTCRoom() {
     return webRTCRoom;
   }
 
@@ -957,7 +950,7 @@ public class LiveView extends FrameLayout {
     JSONObject gameStart = new JSONObject();
     jsonPut(gameStart, Game.ACTION, Game.START);
     jsonPut(gameStart, Game.ID, game.getId());
-    jsonPut(obj, com.tribe.tribelivesdk.core.Room.MESSAGE_GAME, gameStart);
+    jsonPut(obj, WebRTCRoom.MESSAGE_GAME, gameStart);
     return obj;
   }
 
@@ -1029,7 +1022,7 @@ public class LiveView extends FrameLayout {
     JSONObject gameStop = new JSONObject();
     jsonPut(gameStop, Game.ACTION, Game.STOP);
     jsonPut(gameStop, Game.ID, game.getId());
-    jsonPut(obj, com.tribe.tribelivesdk.core.Room.MESSAGE_GAME, gameStop);
+    jsonPut(obj, WebRTCRoom.MESSAGE_GAME, gameStop);
     return obj;
   }
 
@@ -1046,7 +1039,7 @@ public class LiveView extends FrameLayout {
       array.put(invitedGuest);
     }
 
-    jsonPut(jsonObject, com.tribe.tribelivesdk.core.Room.MESSAGE_INVITE_ADDED, array);
+    jsonPut(jsonObject, WebRTCRoom.MESSAGE_INVITE_ADDED, array);
     return jsonObject;
   }
 
@@ -1055,7 +1048,7 @@ public class LiveView extends FrameLayout {
     JSONObject appJson1 = new JSONObject();
     JsonUtils.jsonPut(appJson1, "by", getUserPlayload(user));
     JSONObject appJson = new JSONObject();
-    JsonUtils.jsonPut(appJson, com.tribe.tribelivesdk.core.Room.MESSAGE_UNLOCK_ROLL_DICE, appJson1);
+    JsonUtils.jsonPut(appJson, WebRTCRoom.MESSAGE_UNLOCK_ROLL_DICE, appJson1);
 
     return appJson;
   }
@@ -1063,7 +1056,7 @@ public class LiveView extends FrameLayout {
   private JSONObject getUnlockedRollTheDicePayload() {
 
     JSONObject appJson = new JSONObject();
-    JsonUtils.jsonPut(appJson, com.tribe.tribelivesdk.core.Room.MESSAGE_UNLOCKED_ROLL_DICE, true);
+    JsonUtils.jsonPut(appJson, WebRTCRoom.MESSAGE_UNLOCKED_ROLL_DICE, true);
 
     return appJson;
   }
@@ -1085,7 +1078,7 @@ public class LiveView extends FrameLayout {
       e.printStackTrace();
     }
 
-    jsonPut(jsonObject, com.tribe.tribelivesdk.core.Room.MESSAGE_ROLL_THE_DICE, json);
+    jsonPut(jsonObject, WebRTCRoom.MESSAGE_ROLL_THE_DICE, json);
     return jsonObject;
   }
 
@@ -1095,7 +1088,7 @@ public class LiveView extends FrameLayout {
 
     array.put(guest.getId());
 
-    jsonPut(jsonObject, com.tribe.tribelivesdk.core.Room.MESSAGE_INVITE_REMOVED, array);
+    jsonPut(jsonObject, WebRTCRoom.MESSAGE_INVITE_REMOVED, array);
     return jsonObject;
   }
 
