@@ -29,7 +29,6 @@ import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import javax.inject.Inject;
 import rx.Observable;
@@ -97,7 +96,7 @@ public class ProfileView extends ScrollView {
     initUI();
     initSubscriptions();
 
-    reloadUserUI();
+    reloadUserUI(user);
   }
 
   @Override protected void onAttachedToWindow() {
@@ -112,14 +111,16 @@ public class ProfileView extends ScrollView {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
   }
 
-  public void reloadUserUI() {
-
+  public void reloadUserUI(User user) {
     txtName.setText(user.getDisplayName());
     txtUsername.setText("@" + user.getUsername());
     viewAvatar.load(user.getProfilePicture());
 
     long minutes = Math.round(user.getTimeInCall() / 60.0f);
-    txtTimeInCall.setText(" " + getContext().getString(minutes > 1 ? R.string.profile_calls_length_mins : R.string.profile_calls_length_min, minutes));
+    txtTimeInCall.setText(" " +
+        getContext().getString(
+            minutes > 1 ? R.string.profile_calls_length_mins : R.string.profile_calls_length_min,
+            minutes));
 
     viewActionChangePhoneNumber.setWarning(!canOpenPhoneNumberView());
     viewActionFacebookAccount.setWarning(!canOpenFacebookView());

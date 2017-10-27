@@ -114,17 +114,26 @@
 	<string name="live_notification_action_add_as_friend">Add as friend</string>
 	<string name="live_notification_action_hang_live_friend">Join %1$s \'s video call</string>
 	<string name="live_notification_action_hang_live_group">Join %1$s \'s video call</string>
-	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
-	<string name="live_notification_leave">Leave to video call %1$s</string>
-	<string name="live_notification_decline">Decline the call</string>
 	<string name="live_notification_invite_after_decline">Drag %1$s a guest</string>
 	<string name="live_notification_call_after_decline">Video call %1$s</string>
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	<string name="live_notification_action_see_thread">See the conversation</string>
 	<string name="live_notification_action_reply">Reply</string>
 	<string name="live_notification_online">is online</string>
-	<string name="live_notification_title">You are already live</string>
-	<string name="live_notification_message">What do you want to do?</string>
+	<string name="live_notification_title">Pick an option</string>
+	<string name="live_notification_message">Here is what you can do\nwith %1$s now.</string>
+	<string name="live_notification_call">:telephone_receiver: Call %1$s</string>
+	<string name="live_notification_leave">:telephone_receiver: Join %1$s call</string>
+	<string name="live_notification_add_as_guest">:busts_in_silhouette: Add %1$s in this call</string>
+	<string name="live_notification_text">:speech_balloon: Text %1$s</string>
+	<string name="live_notification_decline">:no_mobile_phones: Decline %1$s call</string>
+	
+	<!-- Decline Menu -->
+	<string name="decline_menu_title">Text %1$s</string>
+	<string name="decline_menu_message">Tap on an option to be sent\to %1$s in the chat</string>
+	<string name="decline_menu_answer1">Call you back ASAP! :dizzy:</string>
+	<string name="decline_menu_answer2">Can\'t talk now. Text me! :speech_balloon:</string>
+	<string name="decline_menu_custom">Type custom reply...</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
@@ -681,7 +690,7 @@
 	<string name="game_aliens_attack_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
 	<string name="game_bird_rush">Bird Rush!</string>
 	<string name="game_bird_rush_title">BIRD\nRUSH</string>
-	<string name="game_bird_rush_lets_go">Let\'s go!</string>
+	<string name="game_bird_rush_lets_go">TAP, TAP TAP TO FLY!</string>
 	<string name="game_bird_rush_you_won">YOU WON!</string>
 	<string name="game_bird_rush_someone_won">%@ WON!</string>
 	<string name="game_bird_rush_you_lost">YOU LOST</string>
@@ -839,7 +848,10 @@
 	<!-- Report -->
 	<string name="error_invited_user_random_banned">Sorry, no can do, because %1$s has been banned from using that feature...</string>
 	<string name="error_room_user_random_banned">Sorry, no can do, because %1$s has been banned from using that feature...</string>
-	<string name="error_just_banned_kicked">You\'ve been kicked out for improper behavior. Don\'t. Do. THAT.</string>
-	<string name="error_just_banned_temporary">You\'ve been temporarily banned for improper behavior. Don\'t. Do. THAT. Last warning.</string>
-	<string name="error_just_banned_permanently">You\'ve been permanently banned from using the dice, for improper behavior. Just try and reflect on your life choices and attain inner peace. Elsewhere.</string>
+	<string name="error_just_banned_kicked_title">Kicked out.</string>
+	<string name="error_just_banned_kicked_message">You\'ve been kicked out because you behavior has been reported too many times by other users. Cool down, and come back later.</string>
+	<string name="error_just_banned_temporary_title">Temporarily banned.</string>
+	<string name="error_just_banned_temporary_message">After being kicked out several times today, you\'re now temporarily banned for improper behavior. Cool down for one hour, and come back. Careful, next step is a permanent ban.</string>
+	<string name="error_just_banned_permanently_title">Permanently banned.</string>
+	<string name="error_just_banned_permanently_message">After being kicked out several times and temporary banned, you\'re now permanently banned from launching the Dice.</string>
 </resources>

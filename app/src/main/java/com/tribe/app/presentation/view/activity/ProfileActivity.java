@@ -594,7 +594,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   }
 
   @Override public void successUpdateUser(User user) {
-    viewProfile.reloadUserUI();
+    viewProfile.reloadUserUI(user);
     if (viewSettingsManageFriendships == null) this.clickBack();
   }
 
@@ -634,7 +634,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   }
 
   @Override public void successUpdateFacebook(User user) {
-    viewProfile.reloadUserUI();
+    viewProfile.reloadUserUI(user);
 
     if (viewSettingsFacebookAccount != null) {
       if (FacebookUtils.isLoggedIn()) {
@@ -648,7 +648,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   }
 
   @Override public void successUpdatePhoneNumber(User user) {
-    viewProfile.reloadUserUI();
+    viewProfile.reloadUserUI(user);
 
     if (viewSettingsPhoneNumber != null) {
       viewSettingsPhoneNumber.reloadUserUI();
