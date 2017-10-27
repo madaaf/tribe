@@ -1089,7 +1089,6 @@ public class LiveActivity extends BaseActivity
   }
 
   private void getRoomInfos() {
-    soundManager.playSound(SoundManager.WAITING_FRIEND, SoundManager.SOUND_MID);
     livePresenter.getRoomInfos(live);
   }
 

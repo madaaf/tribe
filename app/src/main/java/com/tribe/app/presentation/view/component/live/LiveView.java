@@ -852,10 +852,6 @@ public class LiveView extends FrameLayout {
   private void addView(RemotePeer remotePeer) {
     LiveRowView liveRowView = null;
 
-    if (nbLiveInRoom() == 0) {
-      soundManager.cancelMediaPlayer();
-    }
-
     if (liveRowViewMap.getMap()
         .containsKey(remotePeer.getSession()
             .getUserId())) { // If the user was already live, usually the case on 1-1 calls
