@@ -22,12 +22,9 @@
       android:id="@+id/viewRoom"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:animateLayoutChanges="true"
-      android:background="@android:color/black"
+      android:background="@android:color/holo_red_dark"
       android:visibility="visible"
-      >
-
-  </com.tribe.app.presentation.view.component.live.LiveRoomView>
+      />
 
   <com.tribe.app.presentation.view.component.live.LiveRingingView
       android:id="@+id/viewRinging"

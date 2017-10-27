@@ -247,10 +247,10 @@ public class LiveRoomView extends FrameLayout {
   //}
   //
 
-  public void addView(LiveRowView liveRowView) {
+  public void addViewConstraint(View view) {
     int childCount = constraintLayout.getChildCount() - guidelineInUse.size();
     manageGuidelines(childCount, true);
-    addViewToContainer(childCount, liveRowView);
+    addViewToContainer(childCount, view);
     refactorConstraintsOnChilds();
   }
 
@@ -452,7 +452,7 @@ public class LiveRoomView extends FrameLayout {
               set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
                   ConstraintSet.TOP);
               set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
-                  ConstraintSet.START);
+                  ConstraintSet.END);
               set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
                   ConstraintSet.END);
               set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),

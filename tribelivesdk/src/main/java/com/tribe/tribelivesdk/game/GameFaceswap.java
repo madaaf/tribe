@@ -7,9 +7,9 @@ import com.tribe.tribelivesdk.webrtc.Frame;
  * Created by tiago on 10/04/2017.
  */
 
-public class GameSingFaceswap extends Game {
+public class GameFaceswap extends Game {
 
-  public GameSingFaceswap(Context context, @GameType String id, String name, int drawableRes,
+  public GameFaceswap(Context context, @GameType String id, String name, int drawableRes,
       boolean available) {
     super(context, id, name, drawableRes, available);
   }

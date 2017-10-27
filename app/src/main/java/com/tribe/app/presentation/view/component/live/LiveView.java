@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.json.JSONArray;
@@ -115,8 +116,6 @@ public class LiveView extends FrameLayout {
 
   @Inject @CallTagsMap Preference<String> callTagsMap;
 
-  @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
-
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
   @BindView(R.id.viewControlsLive) LiveControlsView viewControlsLive;
@@ -134,6 +133,8 @@ public class LiveView extends FrameLayout {
   @BindView(R.id.viewLiveInvite) LiveInviteView viewLiveInvite;
 
   @BindView(R.id.viewShadow) View viewShadow;
+
+  @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
 
   // VARIABLES
   private Live live;
@@ -375,6 +376,18 @@ public class LiveView extends FrameLayout {
     if (resourceId > 0) {
       statusBarHeight = getResources().getDimensionPixelSize(resourceId);
     }
+  }
+
+  private View createRandomView() {
+    View view = new View(getContext());
+    view.setId(View.generateViewId());
+    view.setBackgroundColor(getRandomColor());
+    return view;
+  }
+
+  private int getRandomColor() {
+    Random rnd = new Random();
+    return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
   }
 
   private void setAlphaOnGuestWhenHideControls(boolean hiddenControls) {
@@ -880,7 +893,8 @@ public class LiveView extends FrameLayout {
 
         liveRowView.setPeerView(remotePeer.getPeerView());
 
-        viewRoom.addView(liveRowView);
+        liveRowView.setId(View.generateViewId());
+        viewRoom.addViewConstraint(liveRowView);
       }
 
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
@@ -902,10 +916,7 @@ public class LiveView extends FrameLayout {
     if (liveRowViewMap.getMap().containsKey(id)) {
       LiveRowView liveRowView = liveRowViewMap.remove(id, true);
       liveRowView.dispose();
-
-      if (liveRowView.getParent() != null) {
-        ((ViewGroup) liveRowView.getParent()).removeView(liveRowView);
-      }
+      viewRoom.removeView(liveRowView);
     }
   }
 
@@ -1430,6 +1441,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<View> onGameUIActive() {
     return viewControlsLive.onGameUIActive();
+  }
+
+  public Observable<Boolean> onGameMenuOpen() {
+    return viewControlsLive.onGameMenuOpen();
   }
 
   public Observable<String> onDismissInvite() {

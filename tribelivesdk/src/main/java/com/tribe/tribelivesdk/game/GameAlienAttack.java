@@ -7,9 +7,9 @@ import com.tribe.tribelivesdk.webrtc.Frame;
  * Created by tiago on 10/04/2017.
  */
 
-public class GameInvaders extends Game {
+public class GameAlienAttack extends Game {
 
-  public GameInvaders(Context context, @GameType String id, String name, int drawableRes,
+  public GameAlienAttack(Context context, @GameType String id, String name, int drawableRes,
       boolean available) {
     super(context, id, name, drawableRes, available);
   }

@@ -164,6 +164,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
   private PublishSubject<Game> onGameOptions = PublishSubject.create();
   private PublishSubject<View> onGameUIActive = PublishSubject.create();
+  private PublishSubject<Boolean> onGameMenuOpened = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -450,6 +451,7 @@ public class LiveControlsView extends FrameLayout {
 
   private void showGames() {
     gamesMenuOn = true;
+    onGameMenuOpened.onNext(gamesMenuOn);
 
     recyclerViewGames.getRecycledViewPool().clear();
     gamesAdapter.notifyDataSetChanged();
@@ -503,6 +505,8 @@ public class LiveControlsView extends FrameLayout {
 
   private void hideGames() {
     gamesMenuOn = false;
+
+    onGameMenuOpened.onNext(gamesMenuOn);
 
     layoutGame.animate()
         .translationX(0)
@@ -906,5 +910,9 @@ public class LiveControlsView extends FrameLayout {
       chatMenuOn = false;
       closeMenuTop(viewToHideTopChat);
     });
+  }
+
+  public Observable<Boolean> onGameMenuOpen() {
+    return onGameMenuOpened;
   }
 }

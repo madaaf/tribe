@@ -82,7 +82,8 @@ public class LiveContainer extends FrameLayout {
   private float currentDragPercent, lastDownX, lastDownY, downX, downY, currentX, currentY,
       diffDown, scrollTolerance, initDistance = 0;
   private boolean beingDragged = false, isOpenedPartially = false, isOpenedFully = false, isDown =
-      false, hasNotifiedAtRest = false, dropEnabled = false, hasJoined = false, chatOpened;
+      false, hasNotifiedAtRest = false, dropEnabled = false, hasJoined = false, chatOpened = false,
+      gameMenuOpen = false;
   private int activePointerId, touchSlop, currentOffsetRight, overallScrollY = 0, statusBarHeight =
       0;
   private VelocityTracker velocityTracker;
@@ -171,9 +172,9 @@ public class LiveContainer extends FrameLayout {
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> hasJoined = true));
 
-    subscriptions.add(viewLiveInvite.onScroll().subscribe(dy -> {
-      overallScrollY += dy;
-    }));
+    subscriptions.add(viewLive.onGameMenuOpen().subscribe(aBoolean -> gameMenuOpen = aBoolean));
+
+    subscriptions.add(viewLiveInvite.onScroll().subscribe(dy -> overallScrollY += dy));
 
     subscriptions.add(viewLiveInvite.onScrollStateChanged().subscribe(newState -> {
       if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
@@ -238,7 +239,7 @@ public class LiveContainer extends FrameLayout {
     } else if (isOpenedPartially) widthOpen = viewLive.getLiveInviteViewPartialWidth();
 
     boolean isTouchInInviteView = ev.getRawX() >= screenUtils.getWidthPx() - widthOpen;
-    if (!isEnabled() || !hasJoined) {
+    if (!isEnabled() || !hasJoined || gameMenuOpen) {
       return false;
     }
 
