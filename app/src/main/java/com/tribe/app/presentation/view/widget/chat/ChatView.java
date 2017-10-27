@@ -2,8 +2,6 @@ package com.tribe.app.presentation.view.widget.chat;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
@@ -315,8 +313,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         voiceNoteBtn.getLayoutParams().width = size;
 
         voiceNoteBtn.setTranslationX(
-            editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(
-                5));
+            editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(5));
         voiceNoteBtn.setTranslationY(
             -editText.getHeight() + voiceNoteBtn.getHeight() - screenUtils.dpToPx(7));
 
@@ -325,7 +322,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
         pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (
             pictoVoiceNote.getHeight()
-                / 2) + screenUtils.dpToPx(10));
+                / 2) + screenUtils.dpToPx(12));
 
         voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
@@ -386,6 +383,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   private void stopVoiceNote(boolean sendMessage) {
+    editText.getLayoutParams().width = widthRefInit;
+    trashBtn.setVisibility(GONE);
     String time = String.valueOf(timerVoiceNote.getText());
     timerVoiceNote.setText("0:01");
     timerVoiceSub.unsubscribe();
@@ -800,47 +799,15 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         .withStartAction(() -> videoCallBtn.animate()
             .alpha(0f)
             .setDuration(ANIM_DURATION_FAST)
-            .withEndAction(new Runnable() {
-              @Override public void run() {
-                // hideVideoCallBtn(false);
-                ResizeAnimation a = new ResizeAnimation(editText);
-                a.setDuration(ANIM_DURATION);
-                a.setInterpolator(new LinearInterpolator());
-                a.setParams(editText.getWidth(), widthRefExpended, LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT);
-                editText.startAnimation(a);
-              }
+            .withEndAction(() -> {
+              ResizeAnimation a = new ResizeAnimation(editText);
+              a.setDuration(ANIM_DURATION);
+              a.setInterpolator(new LinearInterpolator());
+              a.setParams(editText.getWidth(), widthRefExpended, LayoutParams.WRAP_CONTENT,
+                  LayoutParams.WRAP_CONTENT);
+              editText.startAnimation(a);
             })
             .start());
-   /* btnSendLikeContainer.animate()
-        .translationX(videoCallBtn.getWidth())
-        .setDuration(ANIM_DURATION)
-        .withStartAction(() -> videoCallBtn.animate()
-            .alpha(0f)
-            .setDuration(ANIM_DURATION_FAST)
-            .withEndAction(new Runnable() {
-              @Override public void run() {
-                hideVideoCallBtn(false);
-              }
-            })
-            .start())
-        .withEndAction(new Runnable() {
-          @Override public void run() {
-            editText.getViewTreeObserver()
-                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                  @Override public void onGlobalLayout() {
-                    editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    ResizeAnimation a = new ResizeAnimation(editText);
-                    a.setDuration(ANIM_DURATION);
-                    a.setInterpolator(new LinearInterpolator());
-                    a.setParams(editText.getWidth(), widthRefExpended, LayoutParams.WRAP_CONTENT,
-                        LayoutParams.WRAP_CONTENT);
-                    editText.startAnimation(a);
-                  }
-                });
-          }
-        })
-        .start();*/
   }
 
   private void showVideoCallBtn(boolean withAnim) {
@@ -1256,10 +1223,33 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   }
 
   @Override public void right2left(View v, float ratio) {
-    Timber.i("right2left! " + editText.getWidth() + "  " + v.getX());
-    voiceNoteBtn.setScaleX(ratio);
-    voiceNoteBtn.setScaleY(ratio);
+    voiceNoteBtn.setScaleX(ratio * 0.75f);
+    voiceNoteBtn.setScaleY(ratio * 0.75f);
 
+    float newRatio = ratio - 1;
+    float val = (newRatio * recordingViewInitWidth) + ((1 - newRatio) * (playerBtn.getWidth()));
+
+    ViewGroup.LayoutParams layoutParams = recordingView.getLayoutParams();
+    layoutParams.width = (int) val;
+    recordingView.setLayoutParams(layoutParams);
+    if (newRatio == 1) {
+      loadingRecordView.animate()
+          .alpha(1f)
+          .withStartAction(() -> loadingRecordView.setVisibility(VISIBLE))
+          .setDuration(ANIM_DURATION_FAST)
+          .start();
+      timerVoiceNote.animate()
+          .alpha(1f)
+          .withStartAction(() -> timerVoiceNote.setVisibility(VISIBLE))
+          .setDuration(ANIM_DURATION_FAST)
+          .start();
+    } else {
+      loadingRecordView.setVisibility(GONE);
+      timerVoiceNote.setVisibility(GONE);
+      timerVoiceNote.setAlpha(0f);
+      loadingRecordView.setAlpha(0f);
+    }
+    Timber.i("right2left! " + ratio + " " + newRatio + " " + val + " " + (int) val);
     if (ratio == 1) {
       voiceNoteBtn.setImageDrawable(
           ContextCompat.getDrawable(context, R.drawable.picto_cancel_voice_note));
@@ -1276,77 +1266,39 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   @Override public void onActionUp(View v, float ratio) {
     Timber.i("onActionUp! " + ratio);
-
     if (ratio == 1) {
+      voiceNoteBtn.setBackground(
+          ContextCompat.getDrawable(context, R.drawable.shape_circle_orange));
+      voiceNoteBtn.setImageDrawable(
+          ContextCompat.getDrawable(context, R.drawable.picto_trash_white));
+      playerBtn.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_trash_white));
+      playerBtn.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_circle_orange));
 
-      Timber.i("ACTION UP RATIO 1! " + ratio);
-      ResizeAnimation a = new ResizeAnimation(recordingView);
-      a.setDuration(ANIM_DURATION);
-      a.setInterpolator(new AccelerateInterpolator());
-      a.setAnimationListener(new AnimationListenerAdapter() {
-        @Override public void onAnimationStart(Animation animation) {
-          super.onAnimationStart(animation);
-          loadingRecordView.setVisibility(GONE);
-          timerVoiceNote.setVisibility(GONE);
-
-          ObjectAnimator animator =
-              ObjectAnimator.ofPropertyValuesHolder(recordingView.getBackground(),
-                  PropertyValuesHolder.ofInt("alpha", 0));
-          animator.setTarget(recordingView.getBackground());
-          animator.setDuration(ANIM_DURATION);
-          animator.start();
-
-          voiceNoteBtn.setBackground(
-              ContextCompat.getDrawable(context, R.drawable.shape_circle_orange));
-          voiceNoteBtn.setImageDrawable(
-              ContextCompat.getDrawable(context, R.drawable.picto_trash_white));
-          playerBtn.setImageDrawable(
-              ContextCompat.getDrawable(context, R.drawable.picto_trash_white));
-          playerBtn.setBackground(
-              ContextCompat.getDrawable(context, R.drawable.shape_circle_orange));
-
-          ImageView v = new ImageView(context);
-          v.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_trash_white));
-
-          recordingView.animate()
-              .scaleX(1.3f)
-              .scaleY(1.3f)
-              .setDuration(ANIM_DURATION)
-              .setInterpolator(new OvershootInterpolator(2.5f))
-              .withEndAction(() -> {
-                recordingView.setScaleX(1);
-                recordingView.setScaleY(1);
-              })
-              .start();
-
-          voiceNoteBtn.postDelayed(() -> {
-            voiceNoteBtn.setImageDrawable(null);
-            voiceNoteBtn.animate()
-                .translationX(widthRefInit)
-                .setDuration(200)
-                .setInterpolator(new AccelerateInterpolator())
-                .withStartAction(() -> {
-                  playerBtn.animate()
-                      .scaleX(0)
-                      .scaleY(0)
-                      .setDuration(200)
-                      .setInterpolator(new OvershootInterpolator(2.5f))
-                      .start();
-                  voiceNoteBtn.setBackground(
-                      ContextCompat.getDrawable(context, R.drawable.shape_circle_grey));
-                })
-                .start();
-            stopVoiceNote(false);
-          }, 2000);
-        }
-
-        @Override public void onAnimationEnd(Animation animation) {
-
-        }
-      });
-      int size = playerBtn.getWidth() + screenUtils.dpToPx(10);
-      a.setParams(recordingView.getWidth(), size, recordingView.getHeight(), size);
-      recordingView.startAnimation(a);
+      voiceNoteBtn.postDelayed(() -> {
+        voiceNoteBtn.setImageDrawable(null);
+        voiceNoteBtn.animate()
+            .translationX(widthRefInit)
+            .setDuration(ANIM_DURATION)
+            .setInterpolator(new AccelerateInterpolator())
+            .withStartAction(() -> {
+              editText.getLayoutParams().width = widthRefInit;
+              recordingView.animate()
+                  .scaleX(0)
+                  .scaleY(0)
+                  .setDuration(ANIM_DURATION)
+                  .setInterpolator(new OvershootInterpolator(2.5f))
+                  .withEndAction(() -> {
+                    recordingView.setScaleX(1f);
+                    recordingView.setScaleY(1f);
+                    recordingView.setVisibility(GONE);
+                  })
+                  .start();
+              voiceNoteBtn.setBackground(
+                  ContextCompat.getDrawable(context, R.drawable.shape_circle_grey));
+            })
+            .start();
+        stopVoiceNote(false);
+      }, 1500);
     } else {
       Timber.i("ACTION UP RATIO 0! " + ratio);
       stopVoiceNote(true);

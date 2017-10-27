@@ -139,23 +139,15 @@
       android:layout_alignParentBottom="true"
       android:layout_centerHorizontal="true"
       android:background="@drawable/shape_rect_voice_note"
-      android:paddingBottom="5dp"
-      android:paddingStart="8dp"
-      android:paddingTop="5dp"
       android:visibility="visible"
       >
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/picto_trash_white"
-        />
-
-    <ImageView
         android:id="@+id/playerBtn"
-        android:layout_width="33dp"
-        android:layout_height="33dp"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
         android:layout_gravity="start"
+        android:padding="5dp"
         android:scaleType="centerInside"
         android:src="@drawable/picto_play_recording"
         android:visibility="visible"
@@ -229,8 +221,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/editText"
-        android:layout_toStartOf="@+id/btnSendLikeContainer"
         android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@+id/btnSendLikeContainer"
         android:visibility="invisible"
         />
 
@@ -241,7 +233,6 @@
         android:layout_alignBottom="@+id/editText"
         android:layout_gravity="bottom"
         android:layout_marginBottom="10dp"
-        android:layout_marginEnd="20dp"
         android:gravity="bottom"
         android:paddingStart="20dp"
         android:scaleType="centerInside"
@@ -280,7 +271,7 @@
         android:layout_gravity="bottom"
         android:layout_marginBottom="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginStart="0dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:layout_toEndOf="@+id/uploadBtn"
         android:background="@drawable/shape_rect_chat"
@@ -304,8 +295,8 @@
         android:layout_height="40dp"
         android:layout_alignBottom="@+id/editText"
         android:layout_gravity="bottom"
-        android:layout_marginTop="5dp"
         android:layout_marginEnd="10dp"
+        android:layout_marginTop="5dp"
         android:layout_toStartOf="@+id/videoCallBtn"
         android:gravity="bottom"
         >
