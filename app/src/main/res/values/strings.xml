@@ -858,4 +858,10 @@
 	<string name="error_just_banned_temporary_message">After being kicked out several times today, you\'re now temporarily banned for improper behavior. Cool down for one hour, and come back. Careful, next step is a permanent ban.</string>
 	<string name="error_just_banned_permanently_title">Permanently banned.</string>
 	<string name="error_just_banned_permanently_message">After being kicked out several times and temporary banned, you\'re now permanently banned from launching the Dice.</string>
+	
+	<!-- Mute Group Popup -->
+	<string name="mute_group_popup_title">Mute group?</string>
+	<string name="mute_group_popup_message">People you\'ve blocked are in this group. If you mute this group, you\'ll leave this view and won\'t receive new messages, calls and other associated notifications.</string>
+	<string name="mute_group_popup_validate">Mute group</string>
+	<string name="mute_group_popup_cancel">Don\'t mute group</string>
 </resources>

@@ -27,27 +27,32 @@ import timber.log.Timber;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.tribe.app.presentation.view.widget.chat.ChatView.ANIM_DURATION;
-import static com.tribe.app.presentation.view.widget.chat.ChatView.ANIM_DURATION_FAST;
 
 /**
  * Created by madaaflak on 11/10/2017.
  */
 
-public class SwipeDetector implements View.OnTouchListener {
+public class SwipeDetector2 implements View.OnTouchListener {
 
   private static float VOICE_NOTE_SCALE_RATIO = 0.75f;
+
   private static final int SWIPE_MIN_DISTANCE = 1;
+  private static final int MAX_CLICK_DURATION = 200;
+  private long startClickTime;
+  private long lastTouchDown;
+  private long lastTouchMove;
+  private static int CLICK_ACTION_THRESHHOLD = 200;
 
   private GestureDetector mGestureDetector;
-  private View mView, recordingView;
+  private View mView;
+  private View recordingView;
   private ChatView context;
   private float initialPosition, initPos, ratio;
-  private boolean isLongTap = false, isDown = false;
   private ScreenUtils screenUtils;
   private MediaRecorder recorder = null;
-  public Subscription timerVoiceSub, subscribe;
+  public Subscription timerVoiceSub;
 
-  public SwipeDetector(ChatView context, View view, View recordingView, float initPos,
+  public SwipeDetector2(ChatView context, View view, View recordingView, float initPos,
       ScreenUtils screenUtils) {
     mGestureDetector = new GestureDetector(view.getContext(), mGestureListener);
     this.mView = view;
@@ -62,28 +67,14 @@ public class SwipeDetector implements View.OnTouchListener {
 
   @Override public boolean onTouch(View v, MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_UP) {
-      isDown = false;
-      Timber.e("ACTION_UP");
       onActionUp(mView, getRatio());
+      return false;
     } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+      onActionDown(mView);
+      if (System.currentTimeMillis() - lastTouchMove > CLICK_ACTION_THRESHHOLD) {
 
-      if (subscribe == null) {
-        subscribe = Observable.interval(1, TimeUnit.SECONDS)
-            .timeInterval()
-            .observeOn(AndroidSchedulers.mainThread())
-            .onBackpressureDrop()
-            .subscribe(avoid -> {
-              if (isDown) {
-                Timber.e("LONG CLICK");
-                isLongTap = true;
-                onActionDown(mView);
-                isDown = false;
-              }
-            });
-        context.subscriptions.add(subscribe);
       }
-
-      isDown = true;
+      lastTouchDown = System.currentTimeMillis();
     }
     return mGestureDetector.onTouchEvent(event);
   }
@@ -99,17 +90,19 @@ public class SwipeDetector implements View.OnTouchListener {
         private float mMotionDownX, mMotionDownY;
 
         @Override public boolean onSingleTapUp(MotionEvent e) {
-          if (!isLongTap) {
-            Timber.e("MADA onSingleTapUp ");
-            onSingleTap();
-          }
+          Timber.e("MADA onSingleTapUp");
           return super.onSingleTapUp(e);
         }
 
         @Override public boolean onSingleTapConfirmed(MotionEvent e) {
           Timber.e("MADA onSingleTapConfirmed ");
-          isLongTap = false;
+          onSingleTap();
           return super.onSingleTapConfirmed(e);
+        }
+
+        @Override public boolean onContextClick(MotionEvent e) {
+          Timber.e("MADA onContextClick");
+          return super.onContextClick(e);
         }
 
         @Override public boolean onDown(MotionEvent e) {
@@ -121,7 +114,7 @@ public class SwipeDetector implements View.OnTouchListener {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-
+          lastTouchMove = System.currentTimeMillis();
           float x2 = mView.getX() + (mView.getWidth() / 2);
           ratio = getRatio();
 
@@ -153,23 +146,6 @@ public class SwipeDetector implements View.OnTouchListener {
         }
       };
 
-  private void initRecordingView() {
-    recordingView.setScaleX(1f);
-    recordingView.setScaleY(1f);
-
-    ViewGroup.LayoutParams p = context.recordingView.getLayoutParams();
-    p.width = context.recordingViewInitWidth;
-    context.recordingView.setLayoutParams(p);
-
-    context.timerVoiceNote.setAlpha(1f);
-    context.loadingRecordView.setAlpha(1f);
-    context.playerBtn.setAlpha(1f);
-
-    context.playerBtn.setVisibility(VISIBLE);
-    context.loadingRecordView.setVisibility(VISIBLE);
-    context.timerVoiceNote.setVisibility(VISIBLE);
-  }
-
   public void onActionUp(View v, float ratio) {
     Timber.i("ON ACTION :onActionUp! " + ratio + "  " + context.audioDuration);
     if (ratio == 1) {
@@ -196,35 +172,9 @@ public class SwipeDetector implements View.OnTouchListener {
                   .setDuration(ANIM_DURATION)
                   .setInterpolator(new OvershootInterpolator(2.5f))
                   .withEndAction(() -> {
-                    initRecordingView();
-                    recordingView.setVisibility(View.INVISIBLE);
-                  })
-                  .withEndAction(() -> {
-                    recordingView.clearAnimation();
-                    context.voiceNoteBtn.clearAnimation();
-
-                    ViewGroup.LayoutParams p = context.recordingView.getLayoutParams();
-                    p.width = context.recordingViewInitWidth;
-                    context.recordingView.setLayoutParams(p);
-
-                    recordingView.setX(context.recordingViewX);
-                    recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
-                    context.playerBtn.setScaleX(1);
-                    context.playerBtn.setScaleY(1);
-                    context.loadingRecordView.setVisibility(VISIBLE);
-                    context.timerVoiceNote.setVisibility(VISIBLE);
-                    recordingView.setBackground(ContextCompat.getDrawable(context.getContext(),
-                        R.drawable.shape_rect_voice_note));
-                    context.voiceNoteBtn.setX(context.voiceNoteBtnX);
-                    context.voiceNoteBtn.setAlpha(1f);
-                    context.playerBtn.setAlpha(1f);
-                    context.playerBtn.setImageDrawable(
-                        ContextCompat.getDrawable(context.getContext(),
-                            R.drawable.picto_play_recording));
-                    context.playerBtn.setBackground(null);
-                    context.voiceNoteBtn.setBackground(
-                        ContextCompat.getDrawable(context.getContext(),
-                            R.drawable.shape_circle_grey));
+                    recordingView.setScaleX(1f);
+                    recordingView.setScaleY(1f);
+                    recordingView.setVisibility(GONE);
                   })
                   .start();
               context.voiceNoteBtn.setBackground(
@@ -248,7 +198,7 @@ public class SwipeDetector implements View.OnTouchListener {
         .map(ok -> {
           long value = ok.getValue() + 1;
           context.audioDuration = Float.valueOf(value);
-          //  Timber.e("SOEF DURATION " + context.audioDuration);
+          Timber.e("SOEF DURATION " + context.audioDuration);
           String formatTime = "";
           if (value < 10) {
             formatTime = "0:0" + value;
@@ -269,15 +219,18 @@ public class SwipeDetector implements View.OnTouchListener {
           context.timerVoiceNote.setText(formatTime);
         });
 
-    recordingView.setVisibility(View.VISIBLE);
-    initRecordingView();
+    recordingView.setVisibility(VISIBLE);
+
+    context.voiceNoteBtn.setBackground(
+        ContextCompat.getDrawable(context.getContext(), R.drawable.shape_circle_blue));
+    context.editText.setCursorVisible(false);
+
     context.voiceNoteBtn.animate() // TODO SOEF
         .scaleX(2f * VOICE_NOTE_SCALE_RATIO)
         .scaleY(2f * VOICE_NOTE_SCALE_RATIO)
         .setInterpolator(new OvershootInterpolator())
         .setDuration(ANIM_DURATION)
         .withStartAction(() -> {
-          context.trashBtn.setVisibility(VISIBLE);
           context.btnSendLikeContainer.setVisibility(GONE);
           context.uploadImageBtn.setVisibility(GONE);
           context.layoutPulse.setVisibility(GONE);
@@ -288,14 +241,10 @@ public class SwipeDetector implements View.OnTouchListener {
               .setDuration(ANIM_DURATION)
               .start();
           context.editText.setHint("");
-          context.hintEditText.setVisibility(VISIBLE);
           context.hintEditText.setAlpha(0);
-          context.hintEditText.animate().alpha(0.75f).withStartAction(() -> {
-            context.editText.setHintTextColor(
-                ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
-            context.hintEditText.setText(
-                context.getContext().getString(R.string.chat_placeholder_slide_to_cancel));
-          }).setDuration(ANIM_DURATION).start();
+          context.hintEditText.setText(
+              context.getContext().getString(R.string.chat_placeholder_slide_to_cancel));
+          context.hintEditText.animate().alpha(0.75f).setDuration(ANIM_DURATION).start(); // TODO
         })
 
         .start();
@@ -322,15 +271,7 @@ public class SwipeDetector implements View.OnTouchListener {
     ResizeAnimation a2 = new ResizeAnimation(recordingView);
     a2.setDuration(500);
     a2.setInterpolator(new LinearInterpolator());
-    a2.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationStart(Animation animation) {
-        super.onAnimationStart(animation); // TODO
-        context.playerBtn.setVisibility(VISIBLE);
-        context.loadingRecordView.setVisibility(VISIBLE);
-        context.timerVoiceNote.setVisibility(VISIBLE);
-      }
-    });
-    a2.setParams(context.recordingViewInitWidth, context.recordingViewInitWidth + 100,
+    a2.setParams(recordingView.getWidth(), recordingView.getWidth() + 100,
         recordingView.getHeight(), recordingView.getHeight());
     recordingView.startAnimation(a2);
   }
@@ -343,11 +284,7 @@ public class SwipeDetector implements View.OnTouchListener {
   }
 
   private void stopRecording() {
-    Timber.i("stopRecording");
-    if (timerVoiceSub != null) timerVoiceSub.unsubscribe();
-    timerVoiceSub = null;
-    context.onRecord = false;
-    context.audioDuration = 0f;
+    Timber.e("stopRecording");
 
     if (recorder == null) return;
     try {
@@ -383,30 +320,156 @@ public class SwipeDetector implements View.OnTouchListener {
     recorder.start();
   }
 
+  private void setRecordingViewVisibility() {
+   /* if (context.audioDuration > 0) {
+      recordingView.setVisibility(VISIBLE);
+    } else {
+      recordingView.setVisibility(INVISIBLE);
+    }*/
+  }
+
+  public void bottom2top(View v) {
+    Timber.i("ON ACTION : bottom2top!");
+  }
+
+  public void left2right(View v) {
+    Timber.i("ON ACTION : left2right!");
+  }
+
+  public void right2left(View v, float ratio) {
+    setRecordingViewVisibility();
+    context.voiceNoteBtn.setScaleX(ratio * VOICE_NOTE_SCALE_RATIO);
+    context.voiceNoteBtn.setScaleY(ratio * VOICE_NOTE_SCALE_RATIO);
+
+    float newRatio = ratio - 1;
+    float val = (newRatio * context.recordingViewInitWidth) + ((1 - newRatio)
+        * (context.playerBtn.getWidth()));
+
+    ViewGroup.LayoutParams layoutParams = recordingView.getLayoutParams();
+    layoutParams.width = (int) val;
+    recordingView.setLayoutParams(layoutParams);
+    if (newRatio == 1) {
+      context.loadingRecordView.animate()
+          .alpha(1f)
+          .withStartAction(() -> context.loadingRecordView.setVisibility(VISIBLE))
+          .setDuration(context.ANIM_DURATION_FAST)
+          .start();
+      context.timerVoiceNote.animate()
+          .alpha(1f)
+          .withStartAction(() -> context.timerVoiceNote.setVisibility(VISIBLE))
+          .setDuration(context.ANIM_DURATION_FAST)
+          .start();
+    } else {
+      context.loadingRecordView.setVisibility(GONE);
+      context.timerVoiceNote.setVisibility(GONE);
+      context.timerVoiceNote.setAlpha(0f);
+      context.loadingRecordView.setAlpha(0f);
+    }
+    Timber.i("right2left! " + ratio + " " + newRatio + " " + val + " " + (int) val);
+    if (ratio == 1) {
+      context.voiceNoteBtn.setImageDrawable(
+          ContextCompat.getDrawable(context.getContext(), R.drawable.picto_cancel_voice_note));
+    } else {
+      context.voiceNoteBtn.setImageDrawable(null);
+    }
+
+    context.voiceNoteBtn.setAlpha(ratio);
+  }
+
+  public void onSingleTap() {
+    Timber.e(
+        "ON ACTION : ON SINGLE TAP " + context.audioDuration + " " + (context.audioDuration > 1f));
+    if (context.audioDuration > 1f) {
+      context.fileName = null;
+      context.audioDuration = 0f;
+      stopRecording();
+      return;
+    }
+    context.fileName = null;
+    context.audioDuration = 0f;
+    recordingView.setVisibility(GONE);
+    context.hintEditText.setAlpha(0);
+    context.hintEditText.setText(
+        context.getContext().getString(R.string.chat_placeholder_tap_and_hold));
+    context.hintEditText.setTextColor(
+        ContextCompat.getColor(context.getContext(), R.color.blue_voice_bck));
+    context.editText.setHint("");
+    context.hintEditText.animate()
+        .translationX(screenUtils.dpToPx(30))
+        .alpha(1f)
+        .setDuration(ANIM_DURATION)
+        .withEndAction(() -> context.hintEditText.postDelayed(() -> {
+          context.hintEditText.setText("");
+          context.editText.setHint(
+              context.getResources().getString(R.string.chat_placeholder_message));
+          context.hintEditText.setTextColor(
+              ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
+
+          ViewGroup.LayoutParams params = context.editText.getLayoutParams();
+          params.width = context.widthRefInit;
+          context.editText.setLayoutParams(params);
+          context.editText.clearAnimation();
+
+          context.voiceNoteBtn.setScaleX(1f);
+          context.voiceNoteBtn.setScaleY(1f);
+          ViewGroup.LayoutParams p = context.voiceNoteBtn.getLayoutParams();
+          p.width = context.voiceNoteBtnWidth;
+          p.height = context.voiceNoteBtnWidth;
+          context.voiceNoteBtn.setLayoutParams(p);
+          context.voiceNoteBtn.clearAnimation();
+        }, 1000))
+        .start();
+
+
+    ViewGroup.LayoutParams p = context.recordingView.getLayoutParams();
+    p.width = context.recordingViewInitWidth;
+    context.recordingView.setLayoutParams(p);
+
+
+
+    context.uploadImageBtn.setAlpha(1f);
+    context.uploadImageBtn.setVisibility(VISIBLE);
+    context.sendBtn.setVisibility(VISIBLE);
+    context.likeBtn.setVisibility(VISIBLE);
+    context.btnSendLikeContainer.setVisibility(VISIBLE);
+    context.uploadImageBtn.setVisibility(VISIBLE);
+    context.layoutPulse.setVisibility(VISIBLE);
+    context.videoCallBtn.setVisibility(VISIBLE);
+    context.editText.setCursorVisible(true);
+
+    recordingView.clearAnimation();
+
+    context.voiceNoteBtn.setBackground(
+        ContextCompat.getDrawable(context.getContext(), R.drawable.shape_circle_grey));
+  }
+
   private void stopVoiceNote(boolean sendMessage, boolean withAnim) {
-    Timber.i("stopVoiceNote " + sendMessage + "  " + context.audioDuration + "s");
+    Timber.e("stopVoiceNote  + send Message " + sendMessage + "  " + context.audioDuration);
+
     context.editText.getLayoutParams().width = context.widthRefInit;
     context.trashBtn.setVisibility(GONE);
     String time = String.valueOf(context.timerVoiceNote.getText());
     context.timerVoiceNote.setText("0:01");
+    timerVoiceSub.unsubscribe();
+    timerVoiceSub = null;
+    context.onRecord = false;
+    stopRecording();
+    if (context.audioDuration < 1f) {
+      return;
+    }
 
     if (sendMessage && context.audioDuration > 0) {
       context.audioCount++;
       context.sendMessageToAdapter(Message.MESSAGE_AUDIO, time, null);
     }
 
+    context.trashBtn.setAlpha(0f);
+    context.hintEditText.setAlpha(0f);
     context.editText.clearAnimation();
-    context.voiceNoteBtn.clearAnimation();
-    ViewGroup.LayoutParams params = context.editText.getLayoutParams();
-    params.width = context.widthRefInit;
-    context.editText.setLayoutParams(params);
-
-    recordingView.setVisibility(View.INVISIBLE);
 
     context.voiceNoteBtn.animate()
         .scaleX(1f)
         .scaleY(1f)
-        .translationX(context.voiceNoteBtnX - context.voiceNoteBtn.getLeft())
         .setInterpolator(new LinearInterpolator())
         .setDuration(ANIM_DURATION)
         .withStartAction(() -> {
@@ -421,11 +484,11 @@ public class SwipeDetector implements View.OnTouchListener {
           context.layoutPulse.setVisibility(VISIBLE);
           context.videoCallBtn.setVisibility(VISIBLE);
           context.editText.setCursorVisible(true);
-          context.hintEditText.setVisibility(View.INVISIBLE);
         })
         .withEndAction(() -> {
           recordingView.clearAnimation();
           context.voiceNoteBtn.clearAnimation();
+
 
           ViewGroup.LayoutParams p = context.recordingView.getLayoutParams();
           p.width = context.recordingViewInitWidth;
@@ -448,89 +511,6 @@ public class SwipeDetector implements View.OnTouchListener {
           context.voiceNoteBtn.setBackground(
               ContextCompat.getDrawable(context.getContext(), R.drawable.shape_circle_grey));
         })
-        .start();
-    stopRecording();
-  }
-
-  public void bottom2top(View v) {
-    Timber.i("ON ACTION : bottom2top!");
-  }
-
-  public void left2right(View v) {
-    Timber.i("ON ACTION : left2right!");
-  }
-
-  public void right2left(View v, float ratio) {
-    context.voiceNoteBtn.setScaleX(ratio * VOICE_NOTE_SCALE_RATIO);
-    context.voiceNoteBtn.setScaleY(ratio * VOICE_NOTE_SCALE_RATIO);
-
-    float newRatio = ratio - 1;
-    float val = (newRatio * context.recordingViewInitWidth) + ((1 - newRatio)
-        * (context.playerBtn.getWidth()));
-
-    ViewGroup.LayoutParams layoutParams = recordingView.getLayoutParams();
-    layoutParams.width = (int) val;
-    recordingView.setLayoutParams(layoutParams);
-
-    context.timerVoiceNote.setAlpha(newRatio);
-    context.loadingRecordView.setAlpha(newRatio);
-
-    if (newRatio == 1) {
-      context.loadingRecordView.animate()
-          .alpha(1f)
-          .withStartAction(() -> context.loadingRecordView.setVisibility(VISIBLE))
-          .setDuration(context.ANIM_DURATION_FAST)
-          .start();
-      context.timerVoiceNote.animate()
-          .alpha(1f)
-          .withStartAction(() -> context.timerVoiceNote.setVisibility(VISIBLE))
-          .setDuration(context.ANIM_DURATION_FAST)
-          .start();
-    }
-    Timber.i("right2left! " + ratio + " " + newRatio + " " + val + " " + (int) val);
-    if (ratio == 1) {
-      context.voiceNoteBtn.setImageDrawable(
-          ContextCompat.getDrawable(context.getContext(), R.drawable.picto_cancel_voice_note));
-    } else {
-      context.voiceNoteBtn.setImageDrawable(null);
-    }
-
-    context.voiceNoteBtn.setAlpha(ratio);
-  }
-
-  public void onSingleTap() {
-    Timber.e(
-        "ON ACTION : ON SINGLE TAP " + context.audioDuration + " " + (context.audioDuration > 1f));
-    context.hintEditText.setTranslationX(0);
-    recordingView.setVisibility(View.INVISIBLE);
-    context.hintEditText.setVisibility(VISIBLE);
-    context.hintEditText.setAlpha(0f);
-    context.hintEditText.setText(
-        context.getContext().getString(R.string.chat_placeholder_tap_and_hold));
-    context.hintEditText.setTextColor(
-        ContextCompat.getColor(context.getContext(), R.color.blue_voice_bck));
-    context.editText.setHintTextColor(
-        ContextCompat.getColor(context.getContext(), R.color.transparent));
-
-    context.hintEditText.animate()
-        .translationX(screenUtils.dpToPx(30))
-        .alpha(1f)
-        .setDuration(ANIM_DURATION)
-        .withEndAction(() -> context.hintEditText.postDelayed(() -> {
-          context.hintEditText.animate()
-              .translationX(-screenUtils.dpToPx(30))
-              .withStartAction(() -> {
-                context.hintEditText.setText("");
-                context.editText.setHintTextColor(
-                    ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
-                context.hintEditText.setTextColor(
-                    ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
-                context.editText.setHint(
-                    context.getResources().getString(R.string.chat_placeholder_message));
-              })
-              .setDuration(ANIM_DURATION_FAST)
-              .start();
-        }, 1000))
         .start();
   }
 }

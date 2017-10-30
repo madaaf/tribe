@@ -1,13 +1,9 @@
 package com.tribe.app.presentation.view.widget.chat;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,13 +18,10 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -71,7 +64,6 @@ import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
-import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ResizeAnimation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -91,7 +83,6 @@ import com.tribe.tribelivesdk.util.JsonUtils;
 import com.wang.avi.AVLoadingIndicatorView;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,11 +108,11 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
  * Created by madaaflak on 05/09/2017.
  */
 
-public class ChatView extends ChatMVPView implements SwipeInterface {
+public class ChatView extends ChatMVPView {
 
   private final static int INTERVAL_IM_TYPING = 2;
-  private static int ANIM_DURATION = 300;
-  private static int ANIM_DURATION_FAST = 150;
+  protected static int ANIM_DURATION = 300;
+  protected static int ANIM_DURATION_FAST = 150;
 
   public final static int FROM_CHAT = 0;
   public final static int FROM_LIVE = 1;
@@ -137,20 +128,21 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   private List<User> members = new ArrayList<>();
   private ChatView chatView;
   private String editTextString, typePulseAnim = TYPE_NORMAL;
-  private int type, widthRefExpended, widthRefInit, containerUsersHeight, refMaxExpendedWidth,
-      voiceNoteBtnX, recordingViewX, recordingViewInitWidth;
+  protected int type, widthRefExpended, widthRefInit, containerUsersHeight, refMaxExpendedWidth,
+      voiceNoteBtnX, recordingViewX, recordingViewInitWidth, voiceNoteBtnWidth;
   private boolean editTextChange = false, isHeart = false;
   private String[] arrIds = null;
   private Shortcut shortcut;
   private Recipient recipient;
-  private MediaRecorder recorder = null;
-  private String fileName = null;
-  private Float audioDuration = 0f;
+
+  protected String fileName = null;
+  public Float audioDuration = 0f;
   private Shortcut fromShortcut = null;
   private boolean hideVideoCallBtn = false;
   private Map<String, Object> tagMap;
   private String section, gesture;
-  private int heartCount = 0, textCount = 0, audioCount = 0, imageCount = 0;
+  protected int heartCount = 0, textCount = 0, audioCount = 0, imageCount = 0;
+  boolean onRecord = false;
 
   @BindView(R.id.editText) EditTextFont editText;
   @BindView(R.id.recyclerViewChat) RecyclerMessageView recyclerView;
@@ -193,9 +185,9 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
   @Inject StateManager stateManager;
   @Inject TagManager tagManager;
 
-  private CompositeSubscription subscriptions = new CompositeSubscription();
+  protected CompositeSubscription subscriptions = new CompositeSubscription();
   private Map<String, Subscription> subscriptionList = new HashMap<>();
-  private Subscription timerVoiceSub;
+
   private RxPermissions rxPermissions;
 
   public ChatView(@NonNull Context context) {
@@ -308,9 +300,9 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
         containerUsersHeight = containerUsers.getHeight();
         recordingViewInitWidth = recordingView.getWidth();
 
-        int size = editText.getHeight() - screenUtils.dpToPx(8);
-        voiceNoteBtn.getLayoutParams().height = size;
-        voiceNoteBtn.getLayoutParams().width = size;
+        voiceNoteBtnWidth = editText.getHeight() - screenUtils.dpToPx(8);
+        voiceNoteBtn.getLayoutParams().height = voiceNoteBtnWidth;
+        voiceNoteBtn.getLayoutParams().width = voiceNoteBtnWidth;
 
         voiceNoteBtn.setTranslationX(
             editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(5));
@@ -343,6 +335,7 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
         Boolean microEnabledState = PermissionUtils.hasPermissionsMicroOnly(rxPermissions);
         if (microEnabledState) {
+
           voiceNoteBtn.setOnTouchListener(moveListener);
         } else {
           voiceNoteBtn.setOnTouchListener((view, motionEvent) -> {
@@ -380,155 +373,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
             stateManager.addTutorialKey(StateManager.NEVER_ASK_AGAIN_MICRO_PERMISSION);
           }
         }));
-  }
-
-  private void stopVoiceNote(boolean sendMessage) {
-    editText.getLayoutParams().width = widthRefInit;
-    trashBtn.setVisibility(GONE);
-    String time = String.valueOf(timerVoiceNote.getText());
-    timerVoiceNote.setText("0:01");
-    timerVoiceSub.unsubscribe();
-    timerVoiceSub = null;
-    onRecord = false;
-    stopRecording();
-
-    if (sendMessage && audioDuration > 0) {
-      audioCount++;
-      sendMessageToAdapter(Message.MESSAGE_AUDIO, time, null);
-    }
-
-    trashBtn.setAlpha(0f);
-    hintEditText.setAlpha(0f);
-    editText.clearAnimation();
-
-    voiceNoteBtn.animate()
-        .scaleX(1f)
-        .scaleY(1f)
-        .setInterpolator(new LinearInterpolator())
-        .setDuration(ANIM_DURATION)
-        .withStartAction(() -> {
-          editText.setHint(context.getResources().getString(R.string.chat_placeholder_message));
-          uploadImageBtn.setAlpha(1f);
-          uploadImageBtn.setVisibility(VISIBLE);
-          sendBtn.setVisibility(VISIBLE);
-          likeBtn.setVisibility(VISIBLE);
-          btnSendLikeContainer.setVisibility(VISIBLE);
-          uploadImageBtn.setVisibility(VISIBLE);
-          layoutPulse.setVisibility(VISIBLE);
-          videoCallBtn.setVisibility(VISIBLE);
-
-          editText.setCursorVisible(true);
-        })
-        .withEndAction(() -> {
-          recordingView.clearAnimation();
-          voiceNoteBtn.clearAnimation();
-
-          ViewGroup.LayoutParams lp = recordingView.getLayoutParams();
-          lp.width = recordingViewInitWidth;
-          recordingView.setLayoutParams(lp);
-
-          recordingView.setX(recordingViewX);
-          recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight()); // TODO
-          playerBtn.setScaleX(1);
-          playerBtn.setScaleY(1);
-          loadingRecordView.setVisibility(VISIBLE);
-          timerVoiceNote.setVisibility(VISIBLE);
-          recordingView.setBackground(
-              ContextCompat.getDrawable(context, R.drawable.shape_rect_voice_note));
-          voiceNoteBtn.setX(voiceNoteBtnX);
-          voiceNoteBtn.setAlpha(1f);
-          playerBtn.setAlpha(1f);
-          playerBtn.setImageDrawable(
-              ContextCompat.getDrawable(context, R.drawable.picto_play_recording));
-          playerBtn.setBackground(null);
-          voiceNoteBtn.setBackground(
-              ContextCompat.getDrawable(context, R.drawable.shape_circle_grey));
-        })
-        .start();
-  }
-
-  private void startVoiceNote() {
-    timerVoiceSub = Observable.interval(1, TimeUnit.SECONDS)
-        .timeInterval()
-        .observeOn(AndroidSchedulers.mainThread())
-        .onBackpressureDrop()
-        .map(ok -> {
-          long value = ok.getValue() + 1;
-          audioDuration = Float.valueOf(value);
-          String formatTime = "";
-          if (value < 10) {
-            formatTime = "0:0" + value;
-          } else {
-            int sec = (int) (value % 60);
-            String secF;
-            if (sec < 10) {
-              secF = "0" + sec;
-            } else {
-              secF = String.valueOf(sec);
-            }
-            formatTime = (int) (value / 60) + ":" + secF;
-          }
-
-          return formatTime;
-        })
-        .subscribe(formatTime -> {
-          timerVoiceNote.setText(formatTime);
-        });
-
-    Timber.e("VOICE NOTE TAP");
-    voiceNoteBtn.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_circle_blue));
-    editText.setCursorVisible(false);
-
-    voiceNoteBtn.animate()
-        .scaleX(2f)
-        .scaleY(2f)
-        .setInterpolator(new OvershootInterpolator())
-        .setDuration(ANIM_DURATION)
-        .withStartAction(() -> {
-        /*  sendBtn.setVisibility(GONE);
-          likeBtn.setVisibility(GONE);*/ // TODO
-          btnSendLikeContainer.setVisibility(GONE);
-          uploadImageBtn.setVisibility(GONE);
-          layoutPulse.setVisibility(GONE);
-          videoCallBtn.setVisibility(GONE);
-          recordingView.animate()
-              .translationY(-(recordingView.getHeight() * 2.5f))
-              .setInterpolator(new OvershootInterpolator())
-              .setDuration(ANIM_DURATION)
-              .start();
-          editText.setHint("");
-          hintEditText.setAlpha(0);
-          hintEditText.setText(context.getString(R.string.chat_placeholder_slide_to_cancel));
-          hintEditText.animate().alpha(0.75f).setDuration(ANIM_DURATION).start(); // TODO
-        })
-        //  .withEndAction(() -> timerVoiceNote.setText(""))
-        .start();
-
-    ResizeAnimation a = new ResizeAnimation(editText);
-    a.setDuration(500);
-    a.setInterpolator(new LinearInterpolator());
-    a.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationStart(Animation animation) {
-        uploadImageBtn.setAlpha(0f);
-        uploadImageBtn.setVisibility(GONE);
-      }
-    });
-    a.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationEnd(Animation animation) {
-        super.onAnimationEnd(animation);
-        trashBtn.animate().alpha(1).setDuration(500).start();
-      }
-    });
-    a.setParams(widthRefInit, screenUtils.getWidthPx(), LayoutParams.WRAP_CONTENT,
-        LayoutParams.WRAP_CONTENT);
-    editText.startAnimation(a);
-
-    ResizeAnimation a2 = new ResizeAnimation(recordingView);
-    a2.setDuration(500);
-    a2.setInterpolator(new LinearInterpolator());
-    a2.setParams(recordingView.getWidth(), recordingView.getWidth() + 100,
-        recordingView.getHeight(), recordingView.getHeight());
-    recordingView.startAnimation(a2);
   }
 
   private void setTypeChatUX() {
@@ -750,9 +594,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .setDuration(ANIM_DURATION)
                 .alpha(1f)
-                .withStartAction(() -> {
-
-                })
                 .withEndAction(() -> {
                   likeBtn.setVisibility(GONE);
                 })
@@ -765,28 +606,9 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   private void hideVideoCallBtn(boolean withAnim) {
     hideVideoCallBtn = true;
-    if (withAnim) {
-      ValueAnimator anim = ValueAnimator.ofInt(videoCallBtn.getWidth(), 0);
-      anim.addUpdateListener(valueAnimator -> {
-        int val = (Integer) valueAnimator.getAnimatedValue();
-        ViewGroup.LayoutParams layoutParams = videoCallBtn.getLayoutParams();
-        layoutParams.width = val;
-        layoutParams.height = val;
-        videoCallBtn.setLayoutParams(layoutParams);
-      });
-
-      anim.addListener(new AnimatorListenerAdapter() {
-        @Override public void onAnimationEnd(Animator animation) {
-          videoCallBtn.setImageDrawable(null);
-        }
-      });
-      anim.setDuration(300);
-      anim.start();
-    } else {
-      videoCallBtn.getLayoutParams().height = 0;
-      videoCallBtn.getLayoutParams().width = 0;
-      videoCallBtn.setImageDrawable(null);
-    }
+    videoCallBtn.getLayoutParams().height = 0;
+    videoCallBtn.getLayoutParams().width = 0;
+    videoCallBtn.setImageDrawable(null);
   }
 
   private void expendEditText() {
@@ -812,28 +634,9 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   private void showVideoCallBtn(boolean withAnim) {
     hideVideoCallBtn = false;
-
-    if (withAnim) {
-      ValueAnimator anim = ValueAnimator.ofInt(0, LayoutParams.WRAP_CONTENT);
-      anim.addUpdateListener(valueAnimator -> {
-        int val = (Integer) valueAnimator.getAnimatedValue();
-        ViewGroup.LayoutParams layoutParams = videoCallBtn.getLayoutParams();
-        layoutParams.width = val;
-        layoutParams.height = val;
-        videoCallBtn.setLayoutParams(layoutParams);
-      });
-      anim.addListener(new AnimatorListenerAdapter() {
-        @Override public void onAnimationEnd(Animator animation) {
-          setPulseAnimation(typePulseAnim);
-        }
-      });
-      anim.setDuration(300);
-      anim.start();
-    } else {
-      videoCallBtn.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
-      videoCallBtn.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-      setPulseAnimation(typePulseAnim);
-    }
+    videoCallBtn.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+    videoCallBtn.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+    setPulseAnimation(typePulseAnim);
   }
 
   private void shrankEditText() {
@@ -874,7 +677,8 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     chatUserAdapter.setItems(members);
   }
 
-  private void sendMessageToAdapter(@Message.Type String type, String content, Uri uri) {
+  protected void sendMessageToAdapter(@Message.Type String type, String content, Uri uri) {
+    Timber.e("sendMessageToAdapter");
     Message message = null;
     String realmType = null;
 
@@ -917,8 +721,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
     recyclerView.sendMyMessageToAdapter(message);
     if (type.equals(MESSAGE_IMAGE) || type.equals(MESSAGE_AUDIO)) {
       sendMedia(uri, fileName, 0, type);
-      fileName = null;
-      audioDuration = 0f;
     } else {
       recyclerView.sendMessageToNetwork(arrIds, content, realmType, 0);
     }
@@ -1212,140 +1014,6 @@ public class ChatView extends ChatMVPView implements SwipeInterface {
 
   @Override public void errorShortcutUpdate() {
     Timber.e("errorShortcutUpdateHORTCUT SOEF ");
-  }
-
-  @Override public void bottom2top(View v) {
-    Timber.i("bottom2top!");
-  }
-
-  @Override public void left2right(View v) {
-    Timber.i("left2right!");
-  }
-
-  @Override public void right2left(View v, float ratio) {
-    voiceNoteBtn.setScaleX(ratio * 0.75f);
-    voiceNoteBtn.setScaleY(ratio * 0.75f);
-
-    float newRatio = ratio - 1;
-    float val = (newRatio * recordingViewInitWidth) + ((1 - newRatio) * (playerBtn.getWidth()));
-
-    ViewGroup.LayoutParams layoutParams = recordingView.getLayoutParams();
-    layoutParams.width = (int) val;
-    recordingView.setLayoutParams(layoutParams);
-    if (newRatio == 1) {
-      loadingRecordView.animate()
-          .alpha(1f)
-          .withStartAction(() -> loadingRecordView.setVisibility(VISIBLE))
-          .setDuration(ANIM_DURATION_FAST)
-          .start();
-      timerVoiceNote.animate()
-          .alpha(1f)
-          .withStartAction(() -> timerVoiceNote.setVisibility(VISIBLE))
-          .setDuration(ANIM_DURATION_FAST)
-          .start();
-    } else {
-      loadingRecordView.setVisibility(GONE);
-      timerVoiceNote.setVisibility(GONE);
-      timerVoiceNote.setAlpha(0f);
-      loadingRecordView.setAlpha(0f);
-    }
-    Timber.i("right2left! " + ratio + " " + newRatio + " " + val + " " + (int) val);
-    if (ratio == 1) {
-      voiceNoteBtn.setImageDrawable(
-          ContextCompat.getDrawable(context, R.drawable.picto_cancel_voice_note));
-    } else {
-      voiceNoteBtn.setImageDrawable(null);
-    }
-
-    voiceNoteBtn.setAlpha(ratio);
-  }
-
-  @Override public void top2bottom(View v) {
-    Timber.i("top2bottom!");
-  }
-
-  @Override public void onActionUp(View v, float ratio) {
-    Timber.i("onActionUp! " + ratio);
-    if (ratio == 1) {
-      voiceNoteBtn.setBackground(
-          ContextCompat.getDrawable(context, R.drawable.shape_circle_orange));
-      voiceNoteBtn.setImageDrawable(
-          ContextCompat.getDrawable(context, R.drawable.picto_trash_white));
-      playerBtn.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_trash_white));
-      playerBtn.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_circle_orange));
-
-      voiceNoteBtn.postDelayed(() -> {
-        voiceNoteBtn.setImageDrawable(null);
-        voiceNoteBtn.animate()
-            .translationX(widthRefInit)
-            .setDuration(ANIM_DURATION)
-            .setInterpolator(new AccelerateInterpolator())
-            .withStartAction(() -> {
-              editText.getLayoutParams().width = widthRefInit;
-              recordingView.animate()
-                  .scaleX(0)
-                  .scaleY(0)
-                  .setDuration(ANIM_DURATION)
-                  .setInterpolator(new OvershootInterpolator(2.5f))
-                  .withEndAction(() -> {
-                    recordingView.setScaleX(1f);
-                    recordingView.setScaleY(1f);
-                    recordingView.setVisibility(GONE);
-                  })
-                  .start();
-              voiceNoteBtn.setBackground(
-                  ContextCompat.getDrawable(context, R.drawable.shape_circle_grey));
-            })
-            .start();
-        stopVoiceNote(false);
-      }, 1500);
-    } else {
-      Timber.i("ACTION UP RATIO 0! " + ratio);
-      stopVoiceNote(true);
-    }
-  }
-
-  boolean onRecord = false;
-
-  @Override public void onActionDown(View v) {
-    Timber.i("onActionDown!");
-    onRecord = true;
-    startRecording();
-    startVoiceNote();
-  }
-
-  private void stopRecording() {
-    if (recorder == null) return;
-    try {
-      recorder.stop();
-    } catch (RuntimeException ex) {
-      //Ignore
-    }
-    recorder.release();
-    recorder = null;
-  }
-
-  private void startRecording() {
-    fileName = context.getExternalCacheDir().getAbsolutePath()
-        + File.separator
-        + dateUtils.getUTCDateAsString()
-        + user.getId()
-        + "audiorecord.mp4";
-    fileName = fileName.replaceAll(" ", "_").replaceAll(":", "-");
-
-    Timber.w("SOEF " + fileName);
-    recorder = new MediaRecorder();
-    recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-    recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-    recorder.setOutputFile(fileName);
-    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.HE_AAC);
-
-    try {
-      recorder.prepare();
-    } catch (IOException e) {
-      Timber.e("prepare() failed");
-    }
-    recorder.start();
   }
 
   @Override public void isReadingUpdate(String userId) {

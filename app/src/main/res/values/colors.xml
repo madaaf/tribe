@@ -81,6 +81,9 @@
   <color name="blue.voice.bck">#21A6FF</color>
   <color name="blue.voice.bck.opacity10">#1A21A6FF</color>
   <color name="blue.voice.bck.opacity40">#6621A6FF</color>
+  <color name="blue.voice.recording">#DFF0FC</color>
+
+  <color name="transparent">#00ffffff</color>
 
 
   <!-- VIOLET -->

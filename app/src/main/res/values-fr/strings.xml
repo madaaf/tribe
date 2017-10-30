@@ -858,4 +858,10 @@
 	<string name="error_just_banned_temporary_message">Après avoir été éjecté à plusieurs reprises aujourd\'hui, vous avez été temporairement banni. Calmez-vous et revenez dans une heure. Attention, la prochaine étape est un ban permanent de l\'utilisation de cette fonctionnalité.</string>
 	<string name="error_just_banned_permanently_title">Ban permanent.</string>
 	<string name="error_just_banned_permanently_message">Après avoir été éjecté à plusieurs reprises et banni temporairement, vous avez été banni de manière permanente de l\'utilisation de cette fonctionnalité.</string>
+	
+	<!-- Mute Group Popup -->
+	<string name="mute_group_popup_title">Mettre en sourdine le groupe ?</string>
+	<string name="mute_group_popup_message"></string>
+	<string name="mute_group_popup_validate">Mettre en sourdine</string>
+	<string name="mute_group_popup_cancel">Ne pas mettre en sourdine</string>
 </resources>

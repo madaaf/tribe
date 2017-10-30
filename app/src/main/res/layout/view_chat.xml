@@ -245,7 +245,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/editText"
         android:layout_marginBottom="12dp"
-        android:layout_marginStart="25dp"
+        android:layout_marginStart="35dp"
         android:alpha="0"
         android:scaleType="centerInside"
         android:src="@drawable/picto_cancel_voice_note"
@@ -259,8 +259,8 @@
         android:layout_alignStart="@+id/editText"
         android:layout_gravity="bottom"
         android:layout_marginBottom="10dp"
-        android:layout_marginStart="50dp"
-        android:paddingStart="20dp"
+        android:layout_marginStart="20dp"
+        android:paddingStart="55dp"
         android:textColor="@color/grey.chat.grey.hint"
         />
 
