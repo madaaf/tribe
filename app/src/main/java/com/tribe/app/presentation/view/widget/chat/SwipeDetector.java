@@ -63,7 +63,7 @@ public class SwipeDetector implements View.OnTouchListener {
   @Override public boolean onTouch(View v, MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_UP) {
       isDown = false;
-      Timber.e("ACTION_UP");
+      Timber.i("ACTION_UP");
       onActionUp(mView, getRatio());
     } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
@@ -74,7 +74,7 @@ public class SwipeDetector implements View.OnTouchListener {
             .onBackpressureDrop()
             .subscribe(avoid -> {
               if (isDown) {
-                Timber.e("LONG CLICK");
+                Timber.i("LONG CLICK");
                 isLongTap = true;
                 onActionDown(mView);
                 isDown = false;
@@ -100,14 +100,14 @@ public class SwipeDetector implements View.OnTouchListener {
 
         @Override public boolean onSingleTapUp(MotionEvent e) {
           if (!isLongTap) {
-            Timber.e("MADA onSingleTapUp ");
+            Timber.i("onSingleTapUp");
             onSingleTap();
           }
           return super.onSingleTapUp(e);
         }
 
         @Override public boolean onSingleTapConfirmed(MotionEvent e) {
-          Timber.e("MADA onSingleTapConfirmed ");
+          Timber.i("onSingleTapConfirmed");
           isLongTap = false;
           return super.onSingleTapConfirmed(e);
         }
@@ -240,7 +240,7 @@ public class SwipeDetector implements View.OnTouchListener {
   }
 
   private void startVoiceNote() {
-    Timber.e("startVoiceNote");
+    Timber.i("startVoiceNote");
     timerVoiceSub = Observable.interval(1, TimeUnit.SECONDS)
         .timeInterval()
         .observeOn(AndroidSchedulers.mainThread())
@@ -248,7 +248,6 @@ public class SwipeDetector implements View.OnTouchListener {
         .map(ok -> {
           long value = ok.getValue() + 1;
           context.audioDuration = Float.valueOf(value);
-          //  Timber.e("SOEF DURATION " + context.audioDuration);
           String formatTime = "";
           if (value < 10) {
             formatTime = "0:0" + value;
@@ -271,7 +270,7 @@ public class SwipeDetector implements View.OnTouchListener {
 
     recordingView.setVisibility(View.VISIBLE);
     initRecordingView();
-    context.voiceNoteBtn.animate() // TODO SOEF
+    context.voiceNoteBtn.animate()
         .scaleX(2f * VOICE_NOTE_SCALE_RATIO)
         .scaleY(2f * VOICE_NOTE_SCALE_RATIO)
         .setInterpolator(new OvershootInterpolator())
@@ -290,6 +289,7 @@ public class SwipeDetector implements View.OnTouchListener {
           context.editText.setHint("");
           context.hintEditText.setVisibility(VISIBLE);
           context.hintEditText.setAlpha(0);
+          context.editText.setCursorVisible(false);
           context.hintEditText.animate().alpha(0.75f).withStartAction(() -> {
             context.editText.setHintTextColor(
                 ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
@@ -336,7 +336,6 @@ public class SwipeDetector implements View.OnTouchListener {
   }
 
   public void onActionDown(View v) {
-    Timber.e("onActionDown");
     context.onRecord = true;
     startRecording();
     startVoiceNote();
@@ -360,7 +359,7 @@ public class SwipeDetector implements View.OnTouchListener {
   }
 
   private void startRecording() {
-    Timber.e("startRecording");
+
     context.fileName = context.getContext().getExternalCacheDir().getAbsolutePath()
         + File.separator
         + context.dateUtils.getUTCDateAsString()
@@ -368,7 +367,7 @@ public class SwipeDetector implements View.OnTouchListener {
         + "audiorecord.mp4";
     context.fileName = context.fileName.replaceAll(" ", "_").replaceAll(":", "-");
 
-    Timber.w("SOEF " + context.fileName);
+    Timber.i("startRecording" + context.fileName);
     recorder = new MediaRecorder();
     recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
     recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
@@ -487,7 +486,7 @@ public class SwipeDetector implements View.OnTouchListener {
           .setDuration(context.ANIM_DURATION_FAST)
           .start();
     }
-    Timber.i("right2left! " + ratio + " " + newRatio + " " + val + " " + (int) val);
+
     if (ratio == 1) {
       context.voiceNoteBtn.setImageDrawable(
           ContextCompat.getDrawable(context.getContext(), R.drawable.picto_cancel_voice_note));
@@ -499,8 +498,6 @@ public class SwipeDetector implements View.OnTouchListener {
   }
 
   public void onSingleTap() {
-    Timber.e(
-        "ON ACTION : ON SINGLE TAP " + context.audioDuration + " " + (context.audioDuration > 1f));
     context.hintEditText.setTranslationX(0);
     recordingView.setVisibility(View.INVISIBLE);
     context.hintEditText.setVisibility(VISIBLE);
