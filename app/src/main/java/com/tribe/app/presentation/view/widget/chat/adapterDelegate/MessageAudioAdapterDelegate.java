@@ -5,6 +5,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +19,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
@@ -26,7 +26,6 @@ import com.wang.avi.AVLoadingIndicatorView;
 import java.util.List;
 import timber.log.Timber;
 
-import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 /**
@@ -67,10 +66,6 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
 
     MessageAudio m = (MessageAudio) items.get(position);
     MessageAudioViewHolder vh = (MessageAudioViewHolder) holder;
-
-    if (type == ChatView.FROM_LIVE) {
-      vh.backView.setVisibility(GONE);
-    }
 
     Image o = m.getOriginal();
     String time =
@@ -132,7 +127,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
   }
 
   private void updateNonPlayingView(MessageAudioViewHolder holder) {
-    holder.playerIndicator.setVisibility(View.INVISIBLE);
+    holder.cardViewIndicator.setVisibility(View.INVISIBLE);
     holder.equalizer.setVisibility(VISIBLE);
     holder.loadingRecordView.setVisibility(View.INVISIBLE);
     switchPauseToPlayBtn(playingHolder, true);
@@ -250,14 +245,14 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
   }
 
   private void animePlayerIndicator(MessageAudioViewHolder vh, int duration) {
-    vh.playerIndicator.setVisibility(VISIBLE);
+    vh.cardViewIndicator.setVisibility(VISIBLE);
 
     anim = ValueAnimator.ofInt(0, vh.recordingView.getWidth());
     anim.addUpdateListener(valueAnimator -> {
       int val = (Integer) valueAnimator.getAnimatedValue();
-      ViewGroup.LayoutParams layoutParams = vh.playerIndicator.getLayoutParams();
+      ViewGroup.LayoutParams layoutParams = vh.viewPlayerProgress.getLayoutParams();
       layoutParams.width = val;
-      vh.playerIndicator.setLayoutParams(layoutParams);
+      vh.viewPlayerProgress.setLayoutParams(layoutParams);
     });
     anim.setDuration(duration);
     anim.start();
@@ -292,12 +287,12 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     @BindView(R.id.container) public RelativeLayout container;
     @BindView(R.id.timerVoiceNote) public TextViewFont timerVoiceNote;
     @BindView(R.id.playBtn) public ImageView playBtn;
-    @BindView(R.id.playerIndicator) public FrameLayout playerIndicator;
+    @BindView(R.id.cardViewIndicator) public CardView cardViewIndicator;
+    @BindView(R.id.viewPlayerProgress) public View viewPlayerProgress;
     @BindView(R.id.recordingView) public FrameLayout recordingView;
     @BindView(R.id.loadingRecordView) public AVLoadingIndicatorView loadingRecordView;
     @BindView(R.id.equalizer) ImageView equalizer;
     @BindView(R.id.pauseBtn) ImageView pauseBtn;
-    @BindView(R.id.backView) View backView;
 
     MessageAudioViewHolder(View itemView) {
       super(itemView);
