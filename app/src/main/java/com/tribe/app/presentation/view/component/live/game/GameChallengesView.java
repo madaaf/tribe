@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget.game;
+package com.tribe.app.presentation.view.component.live.game;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -26,6 +26,8 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
+import com.tribe.app.presentation.view.widget.game.GameChallengeViewPagerAdapter;
+import com.tribe.app.presentation.view.widget.game.GameViewPager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -88,10 +90,7 @@ public class GameChallengesView extends GameView {
   }
 
   @Override public void dispose() {
-    peerList.clear();
-    subscriptionsRoom.clear();
-    subscriptions.clear();
-    game.setPeerList(peerList.values());
+    super.dispose();
     adapter = null;
   }
 

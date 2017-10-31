@@ -135,6 +135,7 @@ public abstract class Game extends GameFilter {
   }
 
   public void setDataList(Collection<String> dataList) {
+    if (dataList == null) return;
     this.dataList.clear();
     this.dataList.addAll(dataList);
     generateNewDatas();

@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget.game;
+package com.tribe.app.presentation.view.component.live.game;
 
 import android.app.Activity;
 import android.content.Context;
@@ -101,8 +101,10 @@ public abstract class GameView extends FrameLayout {
   }
 
   public void dispose() {
+    peerList.clear();
     subscriptionsRoom.clear();
     subscriptions.clear();
+    game.setPeerList(peerList.values());
   }
 
   /**

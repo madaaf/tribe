@@ -41,7 +41,7 @@
       android:background="@color/black.opacity.70"
       />
 
-  <com.tribe.app.presentation.view.widget.game.GameManagerView
+  <com.tribe.app.presentation.view.component.live.game.GameManagerView
       android:id="@+id/viewGameManager"
       android:layout_width="match_parent"
       android:layout_height="match_parent"

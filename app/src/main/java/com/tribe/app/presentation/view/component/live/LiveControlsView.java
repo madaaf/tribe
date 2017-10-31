@@ -499,10 +499,6 @@ public class LiveControlsView extends FrameLayout {
       if (v != btnExpand || !filtersMenuOn) showView(v);
     }
 
-    for (View v : viewToHideTopGames) {
-      if (v != btnExpand || !filtersMenuOn) showView(v);
-    }
-
     hideGameControls();
   }
 
@@ -558,6 +554,8 @@ public class LiveControlsView extends FrameLayout {
     showBtnGameOff(false);
     imgTriangleCloseGames.setVisibility(View.GONE);
     showView(layoutGame);
+    showView(viewStatusName);
+    showView(btnChat);
   }
 
   private void hideView(View view, boolean top) {

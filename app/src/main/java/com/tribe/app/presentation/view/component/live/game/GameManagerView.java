@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.widget.game;
+package com.tribe.app.presentation.view.component.live.game;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,6 +20,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.GameData;
+import com.tribe.app.presentation.view.component.live.game.AliensAttack.GameAliensAttackView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
@@ -181,6 +182,9 @@ public class GameManagerView extends FrameLayout {
       subscriptions.add(gameDrawView.onNextDraw()
           .map(aBoolean -> gameManager.getCurrentGame())
           .subscribe(onRestartGame));
+    } else if (game.getId().equals(Game.GAME_INVADERS)) {
+      GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
+      gameView = gameAlienAttacksView;
     }
 
     gameView.setWebRTCRoom(webRTCRoom);

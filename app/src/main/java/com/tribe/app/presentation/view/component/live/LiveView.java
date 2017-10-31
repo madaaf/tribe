@@ -37,7 +37,7 @@ import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.widget.game.GameManagerView;
+import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
