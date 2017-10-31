@@ -170,7 +170,6 @@ public class LiveView extends FrameLayout {
   private PublishSubject<WebSocketError> onRoomError = PublishSubject.create();
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
-  private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<String> onDismissInvite = PublishSubject.create();
   private PublishSubject<Boolean> onOpenChat = PublishSubject.create();
   private PublishSubject<Boolean> onOpenInvite = PublishSubject.create();
@@ -1005,8 +1004,14 @@ public class LiveView extends FrameLayout {
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
     game.setUserAction(isUserAction);
     gameManager.setCurrentGame(game);
-    onStartGame.onNext(game);
     viewLocalLive.startGame(game);
+    viewRinging.hide();
+
+    if (game.isOverLive()) {
+      viewRoom.setType(LiveRoomView.TYPE_LIST);
+    } else {
+      viewRoom.setType(LiveRoomView.TYPE_GRID);
+    }
   }
 
   private void restartGame(Game game) {
@@ -1017,6 +1022,8 @@ public class LiveView extends FrameLayout {
     gameManager.setCurrentGame(null);
     viewControlsLive.stopGame();
     viewLocalLive.stopGame();
+    viewRinging.startRinging();
+    viewRoom.setType(LiveRoomView.TYPE_GRID);
   }
 
   private void displayStartGameNotification(String gameName, String userDisplayName) {
@@ -1130,10 +1137,6 @@ public class LiveView extends FrameLayout {
     return onNotificationGameRestart;
   }
 
-  public Observable<Map<String, LiveRowView>> onLiveChanged() {
-    return liveRowViewMap.getMapObservable();
-  }
-
   public Observable<Long> onEndCall() {
     return onEndCall;
   }
@@ -1148,10 +1151,6 @@ public class LiveView extends FrameLayout {
 
   public Observable<Object> onRemotePeerClick() {
     return onRemotePeerClick;
-  }
-
-  public Observable<Game> onStartGame() {
-    return onStartGame;
   }
 
   public Observable<Boolean> onGameMenuOpen() {

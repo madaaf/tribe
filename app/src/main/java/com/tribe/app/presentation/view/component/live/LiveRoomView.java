@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.support.annotation.IntDef;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.constraint.Guideline;
@@ -40,6 +41,12 @@ import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_
 
 public class LiveRoomView extends FrameLayout {
 
+  @IntDef({ TYPE_GRID, TYPE_LIST }) public @interface RoomUIType {
+  }
+
+  public static final int TYPE_GRID = 0;
+  public static final int TYPE_LIST = 1;
+
   private static final int GUIDELINE_HALF_HEIGHT = View.generateViewId();
   private static final int GUIDELINE_HALF_WIDTH = View.generateViewId();
   private static final int GUIDELINE_FIRST_THIRD_HEIGHT = View.generateViewId();
@@ -47,9 +54,6 @@ public class LiveRoomView extends FrameLayout {
   private static final int GUIDELINE_FIRST_QUARTER_HEIGHT = View.generateViewId();
   private static final int GUIDELINE_SECOND_QUARTER_HEIGHT = View.generateViewId();
   private static final int GUIDELINE_THIRD_QUARTER_HEIGHT = View.generateViewId();
-
-  private static final int TYPE_GRID = 0;
-  private static final int TYPE_LIST = 1;
 
   public static final int CORNER_RADIUS = 5;
   private static final int DURATION = 300;
@@ -226,6 +230,12 @@ public class LiveRoomView extends FrameLayout {
       constraintLayout.removeView(view);
       refactorConstraintsOnChilds();
     }
+  }
+
+  public void setType(@RoomUIType int type) {
+    if (this.type == type) return;
+    this.type = type;
+    refactorConstraintsOnChilds();
   }
 
   //

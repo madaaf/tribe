@@ -305,6 +305,7 @@ public class LiveControlsView extends FrameLayout {
         })
         .doOnNext(pairViewGame -> {
           gamesAdapter.updateSelected(pairViewGame.second);
+          gameManager.setCurrentGame(pairViewGame.second);
           onStartGame.onNext(pairViewGame.second);
         })
         .delay(400, TimeUnit.MILLISECONDS)

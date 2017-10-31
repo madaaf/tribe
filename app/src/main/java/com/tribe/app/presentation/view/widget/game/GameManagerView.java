@@ -117,6 +117,11 @@ public class GameManagerView extends FrameLayout {
             addGameView(computeGameView(game));
           }
 
+          if (currentGameView instanceof GameChallengesView) {
+            GameChallengesView gameChallengesView = (GameChallengesView) currentGameView;
+            gameChallengesView.displayPopup();
+          }
+
           currentGameView.setNextGame();
         }));
 

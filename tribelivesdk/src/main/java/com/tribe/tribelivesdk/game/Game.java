@@ -53,6 +53,7 @@ public abstract class Game extends GameFilter {
 
   protected boolean localFrameDifferent = false;
   protected boolean hasView = false;
+  protected boolean isOverLive = false;
   protected boolean isUserAction = false;
   protected List<TribeGuest> peerList;
   protected List<String> dataList;
@@ -68,6 +69,7 @@ public abstract class Game extends GameFilter {
     super(context, id, name, drawableRes, available);
     this.localFrameDifferent = id.equals(GAME_POST_IT);
     this.hasView = !id.equals(GAME_POST_IT);
+    this.isOverLive = id.equals(GAME_INVADERS);
     this.peerList = new ArrayList<>();
     this.dataList = new ArrayList<>();
   }
@@ -82,6 +84,10 @@ public abstract class Game extends GameFilter {
 
   public boolean hasView() {
     return hasView;
+  }
+
+  public boolean isOverLive() {
+    return isOverLive;
   }
 
   public boolean hasDatas() {
