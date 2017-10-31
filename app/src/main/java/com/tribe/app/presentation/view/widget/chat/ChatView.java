@@ -946,9 +946,6 @@ public class ChatView extends ChatMVPView {
         });
   }
 
-  @Override public void isTalkingEvent(String userId) {
-    Timber.i("START TALKING " + userId);
-  }
 
   @Override public void isTypingEvent(String userId, boolean typeEvent) {
     if (userId.equals(user.getId())) {

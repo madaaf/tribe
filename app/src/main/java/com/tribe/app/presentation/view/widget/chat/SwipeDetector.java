@@ -181,7 +181,12 @@ public class SwipeDetector implements View.OnTouchListener {
           ContextCompat.getDrawable(context.getContext(), R.drawable.picto_trash_white));
       context.playerBtn.setBackground(
           ContextCompat.getDrawable(context.getContext(), R.drawable.shape_circle_orange));
-
+      context.voiceNoteBtn.animate()
+          .setDuration(ANIM_DURATION)
+          .scaleX(0.8f)
+          .scaleY(0.8f)
+          .setInterpolator(new OvershootInterpolator(2.5f))
+          .start();
       context.voiceNoteBtn.postDelayed(() -> {
         context.voiceNoteBtn.setImageDrawable(null);
         context.voiceNoteBtn.animate()
@@ -232,7 +237,7 @@ public class SwipeDetector implements View.OnTouchListener {
             })
             .start();
         stopVoiceNote(false, true);
-      }, 1500);
+      }, 1000);
     } else {
       Timber.i("ACTION UP RATIO 0! " + ratio);
       stopVoiceNote(true, true);
@@ -498,7 +503,9 @@ public class SwipeDetector implements View.OnTouchListener {
   }
 
   public void onSingleTap() {
-    context.hintEditText.setTranslationX(0);
+    int translation = screenUtils.dpToPx(30);
+    context.hintEditText.setTranslationX(-translation);
+
     recordingView.setVisibility(View.INVISIBLE);
     context.hintEditText.setVisibility(VISIBLE);
     context.hintEditText.setAlpha(0f);
@@ -510,23 +517,19 @@ public class SwipeDetector implements View.OnTouchListener {
         ContextCompat.getColor(context.getContext(), R.color.transparent));
 
     context.hintEditText.animate()
-        .translationX(screenUtils.dpToPx(30))
+        .translationX(0)
         .alpha(1f)
         .setDuration(ANIM_DURATION)
         .withEndAction(() -> context.hintEditText.postDelayed(() -> {
-          context.hintEditText.animate()
-              .translationX(-screenUtils.dpToPx(30))
-              .withStartAction(() -> {
-                context.hintEditText.setText("");
-                context.editText.setHintTextColor(
-                    ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
-                context.hintEditText.setTextColor(
-                    ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
-                context.editText.setHint(
-                    context.getResources().getString(R.string.chat_placeholder_message));
-              })
-              .setDuration(ANIM_DURATION_FAST)
-              .start();
+          context.hintEditText.animate().translationX(-translation).withStartAction(() -> {
+            context.hintEditText.setText("");
+            context.editText.setHintTextColor(
+                ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
+            context.hintEditText.setTextColor(
+                ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
+            context.editText.setHint(
+                context.getResources().getString(R.string.chat_placeholder_message));
+          }).setDuration(ANIM_DURATION_FAST).start();
         }, 1000))
         .start();
   }

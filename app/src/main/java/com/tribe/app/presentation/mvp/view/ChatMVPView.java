@@ -40,6 +40,7 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView {
 
   public void onQuickShortcutUpdated(Shortcut shortcut) {
   }
+
   public void onShortcutUpdate(Shortcut shortcut) {
   }
 
@@ -48,12 +49,6 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView {
 
   public void isTypingEvent(String userId, boolean typeEvent) {
   }
-
-  public void isTalkingEvent(String userId) {
-  }
-
- /* public void successShortcutUpdate(Shortcut shortcut) {
-  }*/
 
   public void errorShortcutUpdate() {
   }
