@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.ShortcutRealm;
@@ -12,6 +13,7 @@ import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.game.GetGamesData;
 import com.tribe.app.domain.interactor.live.CreateRoom;
 import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.domain.interactor.user.GetDiskContactInviteList;
@@ -55,6 +57,7 @@ public class HomePresenter implements Presenter {
   private GetDiskContactOnAppList getDiskContactOnAppList;
   private GetDiskContactInviteList getDiskContactInviteList;
   private GetDiskFBContactInviteList getDiskFBContactInviteList;
+  private GetGamesData getGamesData;
 
   private DeclineInvite declineInvite;
   private SendInvitations sendInvitations;
@@ -76,7 +79,7 @@ public class HomePresenter implements Presenter {
       GetDiskContactOnAppList getDiskContactOnAppList,
       GetDiskContactInviteList getDiskContactInviteList, DeclineInvite declineInvite,
       SendInvitations sendInvitations, CreateRoom createRoom,
-      GetDiskFBContactInviteList getDiskFBContactInviteList) {
+      GetDiskFBContactInviteList getDiskFBContactInviteList, GetGamesData getGamesData) {
     this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
@@ -91,6 +94,7 @@ public class HomePresenter implements Presenter {
     this.sendInvitations = sendInvitations;
     this.createRoom = createRoom;
     this.getDiskFBContactInviteList = getDiskFBContactInviteList;
+    this.getGamesData = getGamesData;
   }
 
   @Override public void onViewDetached() {
@@ -105,6 +109,7 @@ public class HomePresenter implements Presenter {
     declineInvite.unsubscribe();
     sendInvitations.unsubscribe();
     createRoom.unsubscribe();
+    getGamesData.unsubscribe();
     homeGridView = null;
   }
 
@@ -358,6 +363,15 @@ public class HomePresenter implements Presenter {
     @Override public void onNext(Room room) {
       homeGridView.onCreateRoom(room, feature, phone, shouldOpenSMS);
     }
+  }
+
+  public void synchronizeGamesData(String lang, Preference<Long> lastSyncGameData) {
+    getGamesData.setup(lang);
+    getGamesData.execute(new DefaultSubscriber() {
+      @Override public void onNext(Object o) {
+        lastSyncGameData.set(System.currentTimeMillis());
+      }
+    });
   }
 
   public void createShortcut(String... userIds) {

@@ -47,15 +47,16 @@ import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
-import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
+import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastImOnline;
 import com.tribe.app.presentation.utils.preferences.LastSync;
+import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
@@ -367,6 +368,8 @@ public interface ApplicationComponent {
 
   @LastSync Preference<Long> lastSync();
 
+  @LastSyncGameData Preference<Long> lastSyncGameData();
+
   @LastImOnline Preference<Long> lastImOnline();
 
   @NewContactsTooltip Preference<Boolean> newContactsTooltip();
@@ -397,13 +400,13 @@ public interface ApplicationComponent {
 
   @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
 
-  @DataChallengesGame Preference<Set<String>> dataChallengesGame();
-
   @CallTagsMap Preference<String> callTagsMap();
 
   @LookupResult Preference<String> lookupResult();
 
   @UserPhoneNumber Preference<String> userPhoneNumber();
+
+  @GameData Preference<String> gameData();
 
   SoundManager soundManager();
 

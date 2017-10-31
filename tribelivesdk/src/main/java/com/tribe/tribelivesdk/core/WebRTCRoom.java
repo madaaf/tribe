@@ -110,7 +110,8 @@ public class WebRTCRoom {
   private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
   private PublishSubject<RemotePeer> onReceivedStream = PublishSubject.create();
 
-  public WebRTCRoom(Context context, WebSocketConnection webSocketConnection, WebRTCClient webRTCClient) {
+  public WebRTCRoom(Context context, WebSocketConnection webSocketConnection,
+      WebRTCClient webRTCClient) {
     this.context = context;
     this.webSocketConnection = webSocketConnection;
     this.webRTCClient = webRTCClient;
@@ -256,6 +257,8 @@ public class WebRTCRoom {
     }).subscribe(onRoomStateChanged));
 
     tempSubscriptions.add(webSocketConnection.onMessage()
+        .onBackpressureBuffer()
+        .doOnError(Throwable::printStackTrace)
         .onErrorResumeNext(throwable -> Observable.just(""))
         .subscribe(message -> {
           if (!webSocketConnection.getState().equals(WebSocketConnection.STATE_CONNECTED)) {
@@ -570,18 +573,6 @@ public class WebRTCRoom {
     return unlockRollTheDice;
   }
 
-  public Observable<String> onPointsDrawReceived() {
-    return onPointsDrawReceived;
-  }
-
-  public Observable<List<String>> onNewChallengeReceived() {
-    return onNewChallengeReceived;
-  }
-
-  public Observable<List<String>> onNewDrawReceived() {
-    return onNewDrawReceived;
-  }
-
   public Observable<String> unlockedRollTheDice() {
     return unlockedRollTheDice;
   }
@@ -592,18 +583,6 @@ public class WebRTCRoom {
 
   public Observable<RemotePeer> onRemotePeerRemoved() {
     return onRemotePeerRemoved;
-  }
-
-  public Observable<RemotePeer> onRemotePeerUpdated() {
-    return onRemotePeerUpdated;
-  }
-
-  public Observable<List<TribeGuest>> onInvitedTribeGuestList() {
-    return onInvitedTribeGuestList;
-  }
-
-  public Observable<List<TribeGuest>> onRemovedTribeGuestList() {
-    return onRemovedTribeGuestList;
   }
 
   public Observable<WebSocketError> onError() {
@@ -622,6 +601,10 @@ public class WebRTCRoom {
     return onRoomError;
   }
 
+  public Observable<RemotePeer> onReceivedStream() {
+    return onReceivedStream;
+  }
+
   public Observable<Pair<TribeSession, String>> onNewGame() {
     return onNewGame;
   }
@@ -630,7 +613,15 @@ public class WebRTCRoom {
     return onStopGame;
   }
 
-  public Observable<RemotePeer> onReceivedStream() {
-    return onReceivedStream;
+  public Observable<String> onPointsDrawReceived() {
+    return onPointsDrawReceived;
+  }
+
+  public Observable<List<String>> onNewChallengeReceived() {
+    return onNewChallengeReceived;
+  }
+
+  public Observable<List<String>> onNewDrawReceived() {
+    return onNewDrawReceived;
   }
 }

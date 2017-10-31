@@ -1,14 +1,19 @@
 package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
+import android.util.Pair;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribeSession;
+import com.tribe.tribelivesdk.util.JsonUtils;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.json.JSONObject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -38,24 +43,32 @@ import rx.subscriptions.CompositeSubscription;
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private CompositeSubscription subscriptionsRoom = new CompositeSubscription();
   private CompositeSubscription subscriptionsGame = new CompositeSubscription();
+  private CompositeSubscription subscriptionsUI = new CompositeSubscription();
   private PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
   private PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
   private PublishSubject<String> onPointsDrawReceived = PublishSubject.create();
   private PublishSubject<List<String>> onNewChallengeReceived = PublishSubject.create();
   private PublishSubject<List<String>> onNewDrawReceived = PublishSubject.create();
   private PublishSubject<Void> onClearDrawReceived = PublishSubject.create();
+  private PublishSubject<Game> onCurrentUserStartGame = PublishSubject.create();
+  private PublishSubject<Pair<TribeSession, Game>> onRemoteUserStartGame = PublishSubject.create();
+  private PublishSubject<Game> onCurrentUserNewSessionGame = PublishSubject.create();
+  private PublishSubject<Pair<TribeSession, Game>> onRemoteUserNewSessionGame =
+      PublishSubject.create();
+  private PublishSubject<Game> onCurrentUserStopGame = PublishSubject.create();
+  private PublishSubject<Pair<TribeSession, Game>> onRemoteUserStopGame = PublishSubject.create();
 
   @Inject public GameManager(Context context) {
     gameList = new ArrayList<>();
   }
 
-  public void setWebRTCRoom(WebRTCRoom webRTCRoom) {
-    this.webRTCRoom = webRTCRoom;
-    subscriptionsRoom.add(webRTCRoom.onPointsDrawReceived().subscribe(onPointsDrawReceived));
-    subscriptionsRoom.add(webRTCRoom.onNewChallengeReceived().subscribe(onNewChallengeReceived));
-    subscriptionsRoom.add(webRTCRoom.onNewDrawReceived().subscribe(onNewDrawReceived));
-    subscriptionsRoom.add(webRTCRoom.onClearDrawReceived().subscribe(onClearDrawReceived));
-  }
+  /**
+   * PRIVATE
+   */
+
+  /**
+   * PUBLIC
+   */
 
   public void addGame(Game game) {
     gameList.add(game);
@@ -80,6 +93,47 @@ import rx.subscriptions.CompositeSubscription;
     subscriptions.add(obs.subscribe(frame -> currentGame.apply(frame)));
   }
 
+  public void initUIControlsStartGame(Observable<Game> obs) {
+    subscriptionsUI.add(obs.doOnNext(game -> webRTCRoom.sendToPeers(getNewGamePayload(game), false))
+        .subscribe(onCurrentUserStartGame));
+  }
+
+  public void initUIControlsRestartGame(Observable<Game> obs) {
+    subscriptionsUI.add(obs.doOnNext(game -> webRTCRoom.sendToPeers(getNewGamePayload(game), false))
+        .subscribe(onCurrentUserNewSessionGame));
+  }
+
+  public void initUIControlsStopGame(Observable<Game> obs) {
+    subscriptionsUI.add(
+        obs.doOnNext(game -> webRTCRoom.sendToPeers(getStopGamePayload(game), false))
+            .subscribe(onCurrentUserStopGame));
+  }
+
+  public void setWebRTCRoom(WebRTCRoom webRTCRoom) {
+    this.webRTCRoom = webRTCRoom;
+    subscriptionsRoom.add(webRTCRoom.onPointsDrawReceived().subscribe(onPointsDrawReceived));
+    subscriptionsRoom.add(webRTCRoom.onNewChallengeReceived().subscribe(onNewChallengeReceived));
+    subscriptionsRoom.add(webRTCRoom.onNewDrawReceived().subscribe(onNewDrawReceived));
+    subscriptionsRoom.add(webRTCRoom.onClearDrawReceived().subscribe(onClearDrawReceived));
+    subscriptionsRoom.add(webRTCRoom.onNewGame().subscribe(pairSessionGame -> {
+      Game game = getGameById(pairSessionGame.second);
+      if (game != null) {
+        if (currentGame == null) {
+          onRemoteUserStartGame.onNext(Pair.create(pairSessionGame.first, game));
+        } else {
+          onRemoteUserNewSessionGame.onNext(Pair.create(pairSessionGame.first, game));
+        }
+      }
+    }));
+
+    subscriptionsRoom.add(webRTCRoom.onStopGame().subscribe(pairSessionGame -> {
+      Game game = getGameById(pairSessionGame.second);
+      if (game != null) {
+        onRemoteUserStopGame.onNext(Pair.create(pairSessionGame.first, game));
+      }
+    }));
+  }
+
   public List<Game> getGames() {
     return gameList;
   }
@@ -94,17 +148,15 @@ import rx.subscriptions.CompositeSubscription;
 
   public void setCurrentGame(Game game) {
     this.currentGame = game;
+
     if (currentGame != null) {
       if (currentGame instanceof GamePostIt) {
         GamePostIt gamePostIt = (GamePostIt) game;
         gamePostIt.generateNewName();
-      }
-
-      if (currentGame instanceof GameDraw) {
+      } else if (currentGame instanceof GameDraw) {
         GameDraw gameDraw = (GameDraw) game;
         gameDraw.generateNewDatas();
-      }
-      if (currentGame instanceof GameChallenge) {
+      } else if (currentGame instanceof GameChallenge) {
         GameChallenge gameChallenge = (GameChallenge) game;
         gameChallenge.generateNewDatas();
       }
@@ -130,6 +182,45 @@ import rx.subscriptions.CompositeSubscription;
     }
   }
 
+  public void disposeLive() {
+    subscriptionsRoom.clear();
+    subscriptionsUI.clear();
+    subscriptionsGame.clear();
+    webRTCRoom = null;
+  }
+
+  /**
+   * PAYLOADS FOR WEBRTC ROOM
+   */
+
+  public JSONObject getStopGamePayload(Game game) {
+    JSONObject obj = new JSONObject();
+    JSONObject gameStop = new JSONObject();
+    JsonUtils.jsonPut(gameStop, Game.ACTION, Game.STOP);
+    JsonUtils.jsonPut(gameStop, Game.ID, game.getId());
+    JsonUtils.jsonPut(obj, WebRTCRoom.MESSAGE_GAME, gameStop);
+    return obj;
+  }
+
+  public JSONObject getNewGamePayload(Game game) {
+    JSONObject obj = new JSONObject();
+    JSONObject gameStart = new JSONObject();
+    JsonUtils.jsonPut(gameStart, Game.ACTION, Game.START);
+    JsonUtils.jsonPut(gameStart, Game.ID, game.getId());
+    JsonUtils.jsonPut(obj, WebRTCRoom.MESSAGE_GAME, gameStart);
+    return obj;
+  }
+
+  public void setCurrentDataGame(String name, TribeGuest currentPlayer) {
+    if (currentGame.getId().equals(Game.GAME_DRAW)) {
+      ((GameDraw) currentGame).setCurrentDrawer(currentPlayer);
+      ((GameDraw) currentGame).setCurrentDrawName(name);
+    } else if (currentGame.getId().equals(Game.GAME_CHALLENGE)) {
+      ((GameChallenge) currentGame).setCurrentChallenger(currentPlayer);
+      ((GameChallenge) currentGame).setCurrentChallenge(name);
+    }
+  }
+
   /////////////////
   // OBSERVABLES //
   /////////////////
@@ -142,13 +233,27 @@ import rx.subscriptions.CompositeSubscription;
     return onLocalFrame;
   }
 
-  public void setCurrentDataGame(String name, TribeGuest currentPlayer) {
-    if (currentGame.getId().equals(Game.GAME_DRAW)) {
-      ((GameDraw) currentGame).setCurrentDrawer(currentPlayer);
-      ((GameDraw) currentGame).setCurrentDrawName(name);
-    } else if (currentGame.getId().equals(Game.GAME_CHALLENGE)) {
-      ((GameChallenge) currentGame).setCurrentChallenger(currentPlayer);
-      ((GameChallenge) currentGame).setCurrentChallenge(name);
-    }
+  public Observable<Game> onCurrentUserStartGame() {
+    return onCurrentUserStartGame;
+  }
+
+  public Observable<Pair<TribeSession, Game>> onRemoteUserStartGame() {
+    return onRemoteUserStartGame;
+  }
+
+  public Observable<Game> onCurrentUserNewSessionGame() {
+    return onCurrentUserNewSessionGame;
+  }
+
+  public Observable<Pair<TribeSession, Game>> onRemoteUserNewSessionGame() {
+    return onRemoteUserNewSessionGame;
+  }
+
+  public Observable<Game> onCurrentUserStopGame() {
+    return onCurrentUserStopGame;
+  }
+
+  public Observable<Pair<TribeSession, Game>> onRemoteUserStopGame() {
+    return onRemoteUserStopGame;
   }
 }

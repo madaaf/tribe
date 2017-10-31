@@ -7,9 +7,6 @@ import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.game.GetDataChallengesGame;
-import com.tribe.app.domain.interactor.game.GetNamesDrawGame;
-import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
 import com.tribe.app.domain.interactor.user.FbIdUpdated;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetInvites;
@@ -36,9 +33,6 @@ public class LivePresenter implements Presenter {
   private JobManager jobManager;
   private GetRecipientInfos getRecipientInfos;
   private GetCloudUserInfosList cloudUserInfosList;
-  private GetNamesPostItGame getNamesPostItGame;
-  private GetNamesDrawGame getNamesDrawGame;
-  private GetDataChallengesGame getDataChallengesGame;
   private FbIdUpdated fbIdUpdated;
   private ReportUser reportUser;
   private IncrUserTimeInCall incrUserTimeInCall;
@@ -50,21 +44,16 @@ public class LivePresenter implements Presenter {
 
   @Inject public LivePresenter(JobManager jobManager, RoomPresenter roomPresenter,
       ShortcutPresenter shortcutPresenter, GetRecipientInfos getRecipientInfos,
-      GetCloudUserInfosList cloudUserInfosList, GetNamesPostItGame getNamesPostItGame,
-      ReportUser reportUser, FbIdUpdated fbIdUpdated, GetDataChallengesGame getDataChallengesGame,
-      IncrUserTimeInCall incrUserTimeInCall, GetNamesDrawGame getNamesDrawGame,
-      GetInvites getInvites) {
+      GetCloudUserInfosList cloudUserInfosList, ReportUser reportUser, FbIdUpdated fbIdUpdated,
+      IncrUserTimeInCall incrUserTimeInCall, GetInvites getInvites) {
     this.jobManager = jobManager;
     this.shortcutPresenter = shortcutPresenter;
     this.roomPresenter = roomPresenter;
     this.getRecipientInfos = getRecipientInfos;
     this.cloudUserInfosList = cloudUserInfosList;
-    this.getNamesPostItGame = getNamesPostItGame;
     this.reportUser = reportUser;
     this.incrUserTimeInCall = incrUserTimeInCall;
     this.fbIdUpdated = fbIdUpdated;
-    this.getDataChallengesGame = getDataChallengesGame;
-    this.getNamesDrawGame = getNamesDrawGame;
     this.getInvites = getInvites;
   }
 
@@ -73,12 +62,9 @@ public class LivePresenter implements Presenter {
     roomPresenter.onViewDetached();
     cloudUserInfosList.unsubscribe();
     getRecipientInfos.unsubscribe();
-    getNamesPostItGame.unsubscribe();
     reportUser.unsubscribe();
     incrUserTimeInCall.unsubscribe();
     fbIdUpdated.unsubscribe();
-    getDataChallengesGame.unsubscribe();
-    getNamesDrawGame.unsubscribe();
     getInvites.unsubscribe();
     liveMVPView = null;
   }
@@ -116,63 +102,6 @@ public class LivePresenter implements Presenter {
     if (timeInCall != null) {
       incrUserTimeInCall.prepare(userId, timeInCall);
       incrUserTimeInCall.execute(new DefaultSubscriber());
-    }
-  }
-
-  public void getNamesPostItGame(String lang) {
-    getNamesPostItGame.setup(lang);
-    getNamesPostItGame.execute(new GetNamesPostItGameSubscriber());
-  }
-
-  public void getNamesDrawGame(String lang) {
-    getNamesDrawGame.setup(lang);
-    getNamesDrawGame.execute(new GetNamesDrawGameSubscriber());
-  }
-
-  public void getDataChallengesGame(String lang) {
-    getDataChallengesGame.setup(lang);
-    getDataChallengesGame.execute(new GetDataChallengesGameSubscriber());
-  }
-
-  private final class GetNamesPostItGameSubscriber extends DefaultSubscriber<List<String>> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(List<String> nameList) {
-      liveMVPView.onNamesPostItGame(nameList);
-    }
-  }
-
-  private final class GetNamesDrawGameSubscriber extends DefaultSubscriber<List<String>> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(List<String> nameList) {
-      liveMVPView.onNamesDrawGame(nameList);
-    }
-  }
-
-  private final class GetDataChallengesGameSubscriber extends DefaultSubscriber<List<String>> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(List<String> nameList) {
-      liveMVPView.onDataChallengesGame(nameList);
     }
   }
 

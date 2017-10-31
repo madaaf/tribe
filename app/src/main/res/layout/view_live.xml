@@ -22,7 +22,7 @@
       android:id="@+id/viewRoom"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:background="@android:color/holo_red_dark"
+      android:background="@android:color/black"
       android:visibility="visible"
       />
 
@@ -41,28 +41,8 @@
       android:background="@color/black.opacity.70"
       />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtTooltipFirstGame"
-      android:layout_width="match_parent"
-      android:layout_height="@dimen/game_tooltip_first_height"
-      android:layout_gravity="bottom|center_horizontal"
-      android:background="@android:color/black"
-      android:gravity="center"
-      android:maxLines="1"
-      android:text="@string/game_tutorial"
-      android:translationY="@dimen/game_tooltip_first_height"
-      style="@style/Caption.Two.White40"
-      />
-
-  <com.tribe.app.presentation.view.widget.game.GameChallengesView
-      android:id="@+id/gameChallengesView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:visibility="gone"
-      />
-
-  <com.tribe.app.presentation.view.widget.game.GameDrawView
-      android:id="@+id/gameDrawView"
+  <com.tribe.app.presentation.view.widget.game.GameManagerView
+      android:id="@+id/viewGameManager"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:visibility="gone"
@@ -73,6 +53,4 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       />
-
-
 </merge>

@@ -5,5 +5,8 @@ import javax.inject.Qualifier;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Qualifier @Retention(RUNTIME) public @interface DataChallengesGame {
+/**
+ * Created by tiagoduarte on 10/31/17
+ */
+@Qualifier @Retention(RUNTIME) public @interface LastSyncGameData {
 }

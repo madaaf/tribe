@@ -13,9 +13,6 @@ public interface LiveMVPView extends MVPView {
 
   Context context();
 
-  // TODO REPLACE WITH SHORTCUTS
-  //void renderFriendshipList(List<Friendship> friendshipList);
-
   void onRoomInfos(Room room);
 
   void onRoomInfosError(String message);
@@ -27,12 +24,6 @@ public interface LiveMVPView extends MVPView {
   void randomRoomAssignedSubscriber(String roomId);
 
   void fbIdUpdatedSubscriber(User userUpdated);
-
-  void onNamesDrawGame(List<String> nameList);
-
-  void onNamesPostItGame(List<String> nameList);
-
-  void onDataChallengesGame(List<String> nameList);
 
   void onRoomUpdate(Room room);
 

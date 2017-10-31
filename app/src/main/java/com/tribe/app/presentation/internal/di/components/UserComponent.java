@@ -56,6 +56,8 @@ import com.tribe.app.presentation.view.widget.chat.PictureActivity;
 import com.tribe.app.presentation.view.widget.chat.RecyclerMessageView;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
 import com.tribe.app.presentation.view.widget.game.GameDrawView;
+import com.tribe.app.presentation.view.widget.game.GameManagerView;
+import com.tribe.app.presentation.view.widget.game.GameView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
@@ -97,8 +99,6 @@ import dagger.Component;
 
   void inject(ScreenshotView screenshotView);
 
-  void inject(GameDrawView gameDrawView);
-
   void inject(FacebookHiddenActivity facebookHiddenActivity);
 
   void inject(CountryActivity countryActivity);
@@ -108,8 +108,6 @@ import dagger.Component;
   void inject(VideoActivity videoActivity);
 
   void inject(ProfileInfoView profileInfoView);
-
-  void inject(GameChallengesView gameChallengesView);
 
   void inject(MediaHiddenActivity mediaHiddenActivity);
 
@@ -192,4 +190,16 @@ import dagger.Component;
   void inject(ShortcutCompletionTokenView shortcutCompletionTokenView);
 
   void inject(TileInviteView tileInviteView);
+
+  /**
+   * GAMES
+   */
+
+  void inject(GameManagerView gameManagerView);
+
+  void inject(GameView gameView);
+
+  void inject(GameChallengesView gameChallengesView);
+
+  void inject(GameDrawView gameDrawView);
 }

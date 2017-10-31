@@ -21,4 +21,8 @@ public class GameBattleMusic extends Game {
   @Override public void onFrameSizeChange(Frame frame) {
 
   }
+
+  @Override public void generateNewDatas() {
+
+  }
 }

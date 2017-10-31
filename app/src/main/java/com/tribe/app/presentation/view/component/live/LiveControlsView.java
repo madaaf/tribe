@@ -23,7 +23,9 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -33,6 +35,7 @@ import com.tribe.app.presentation.view.adapter.GamesFiltersAdapter;
 import com.tribe.app.presentation.view.adapter.manager.GamesFiltersLayoutManager;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.BitmapUtils;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.tribelivesdk.entity.GameFilter;
@@ -162,7 +165,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
-  private PublishSubject<Game> onGameOptions = PublishSubject.create();
+  private PublishSubject<Game> onStopGame = PublishSubject.create();
   private PublishSubject<View> onGameUIActive = PublishSubject.create();
   private PublishSubject<Boolean> onGameMenuOpened = PublishSubject.create();
   private Subscription timerSubscription;
@@ -302,7 +305,6 @@ public class LiveControlsView extends FrameLayout {
         })
         .doOnNext(pairViewGame -> {
           gamesAdapter.updateSelected(pairViewGame.second);
-          gameManager.setCurrentGame(pairViewGame.second);
           onStartGame.onNext(pairViewGame.second);
         })
         .delay(400, TimeUnit.MILLISECONDS)
@@ -616,10 +618,20 @@ public class LiveControlsView extends FrameLayout {
           }
         });
     currentGameView.setClickable(true);
-    currentGameView.setOnLongClickListener(v -> {
-      onGameOptions.onNext(gameManager.getCurrentGame());
-      return false;
-    });
+
+    subscriptions.add(RxView.longClicks(currentGameView)
+        .map(aVoid -> gameManager.getCurrentGame())
+        .flatMap(game -> DialogFactory.showBottomSheetForGame(getContext(), game),
+            ((game, labelType) -> {
+              if (labelType.getTypeDef().equals(LabelType.GAME_RE_ROLL)) {
+                onRestartGame.onNext(game);
+              } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
+                onStopGame.onNext(game);
+              }
+
+              return game;
+            }))
+        .subscribe());
 
     currentGameView.setOnClickListener(v -> {
       AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
@@ -850,24 +862,8 @@ public class LiveControlsView extends FrameLayout {
     return onClickFilter;
   }
 
-  public Observable<Game> onStartGame() {
-    return onStartGame;
-  }
-
   public Observable<Void> onLeave() {
     return onLeave;
-  }
-
-  public Observable<Game> onGameOptions() {
-    return onGameOptions;
-  }
-
-  public Observable<Game> onRestartGame() {
-    return onRestartGame;
-  }
-
-  public Observable<View> onGameUIActive() {
-    return onGameUIActive;
   }
 
   public Observable<Boolean> onOpenInvite() {
@@ -914,5 +910,17 @@ public class LiveControlsView extends FrameLayout {
 
   public Observable<Boolean> onGameMenuOpen() {
     return onGameMenuOpened;
+  }
+
+  public Observable<Game> onStartGame() {
+    return onStartGame;
+  }
+
+  public Observable<Game> onRestartGame() {
+    return onRestartGame;
+  }
+
+  public Observable<Game> onStopGame() {
+    return onStopGame;
   }
 }

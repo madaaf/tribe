@@ -11,57 +11,46 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import com.facebook.rebound.SimpleSpringListener;
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
-import com.tribe.tribelivesdk.game.GameManager;
+import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.util.JsonUtils;
 import java.lang.reflect.Field;
-import javax.inject.Inject;
+import org.json.JSONObject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
  * Created by madaaflak on 19/07/2017.
  */
 
-public class GameChallengesView extends FrameLayout {
+public class GameChallengesView extends GameView {
 
   private static int DURATION_EXIT_POPUP = 300;
-
-  @Inject User user;
-  @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.pager) GameViewPager viewpager;
   @BindView(R.id.popupChallenge) FrameLayout popup;
 
-  private LayoutInflater inflater;
-  private Unbinder unbinder;
-  private Context context;
   private GameChallengeViewPagerAdapter adapter;
   private boolean popupDisplayed = false;
-  private GameManager gameManager;
 
-  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
   private PublishSubject<Game> onCurrentGame = PublishSubject.create();
@@ -77,12 +66,8 @@ public class GameChallengesView extends FrameLayout {
   }
 
   private void initView(Context context) {
-    this.context = context;
-    initDependencyInjector();
-    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_game_challenges, this, true);
     unbinder = ButterKnife.bind(this);
-    gameManager = GameManager.getInstance(context);
 
     adapter = new GameChallengeViewPagerAdapter(context, user);
     viewpager.setAdapter(adapter);
@@ -94,14 +79,23 @@ public class GameChallengesView extends FrameLayout {
     changePagerScroller();
 
     subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
-    subscriptions.add(adapter.onCurrentGame().subscribe(onCurrentGame));
+    subscriptions.add(adapter.onCurrentGame().subscribe(game -> {
+      GameChallenge gameChallenge = (GameChallenge) game;
+      webRTCRoom.sendToPeers(
+          getNewChallengePayload(user.getId(), gameChallenge.getCurrentChallenger().getId(),
+              gameChallenge.getCurrentChallenge()), false);
+    }));
   }
 
-  public void close() {
+  @Override public void dispose() {
+    peerList.clear();
+    subscriptionsRoom.clear();
+    subscriptions.clear();
+    game.setPeerList(peerList.values());
     adapter = null;
   }
 
-  public void setNextChallenge() {
+  @Override public void setNextGame() {
     if (adapter == null) initView(context);
     if (popupDisplayed) hidePopup();
     new Handler().post(() -> {
@@ -109,6 +103,19 @@ public class GameChallengesView extends FrameLayout {
       viewpager.setCurrentItem(currentItem);
       setVisibility(VISIBLE);
     });
+  }
+
+  private JSONObject getNewChallengePayload(String userId, String peerId, String challengeMessage) {
+    JSONObject app = new JSONObject();
+    JSONObject obj = new JSONObject();
+    JSONObject challenge = new JSONObject();
+    JsonUtils.jsonPut(challenge, "from", userId);
+    JsonUtils.jsonPut(challenge, Game.ACTION, Game.NEW_CHALLENGE);
+    JsonUtils.jsonPut(challenge, "user", peerId);
+    JsonUtils.jsonPut(challenge, Game.CHALLENGE, challengeMessage);
+    JsonUtils.jsonPut(obj, Game.GAME_CHALLENGE, challenge);
+    JsonUtils.jsonPut(app, "app", obj);
+    return app;
   }
 
   private void changePagerScroller() {
@@ -147,14 +154,10 @@ public class GameChallengesView extends FrameLayout {
     scaleDown.start();
   }
 
-  public void displayPopup(float translationY) {
-    if (translationY == 0) {
-      popup.setTranslationY(
-          -context.getResources().getDimensionPixelSize(R.dimen.game_tooltip_first_height)
-              + screenUtils.dpToPx(-82));
-    } else {
-      popup.setTranslationY(screenUtils.dpToPx(-82));
-    }
+  public void displayPopup() {
+    popup.setTranslationY(
+        -context.getResources().getDimensionPixelSize(R.dimen.game_tooltip_first_height) +
+            screenUtils.dpToPx(-82));
 
     popup.setVisibility(VISIBLE);
     popup.setAlpha(1);
@@ -190,15 +193,30 @@ public class GameChallengesView extends FrameLayout {
     return new ActivityModule(((Activity) getContext()));
   }
 
+  @Override protected void initWebRTCRoomSubscriptions() {
+    subscriptions.add(webRTCRoom.onNewChallengeReceived()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(datas -> {
+          TribeGuest guestChallenged = null;
+
+          for (TribeGuest guest : peerList.values()) {
+            if (guest.getId().equals(datas.get(1))) {
+              guestChallenged = guest;
+            }
+          }
+
+          gameManager.setCurrentDataGame(datas.get(0), guestChallenged);
+
+          GameChallenge gameChallenge = (GameChallenge) gameManager.getCurrentGame();
+          if (gameChallenge.hasDatas()) setNextGame();
+        }));
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
   public Observable<GameChallenge> onNextChallenge() {
     return onNextChallenge;
-  }
-
-  public Observable<Boolean> onBlockOpenInviteView() {
-    return onBlockOpenInviteView;
-  }
-
-  public Observable<Game> onCurrentGame() {
-    return onCurrentGame;
   }
 }

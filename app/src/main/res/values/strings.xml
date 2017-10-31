@@ -135,6 +135,10 @@
 	<string name="decline_menu_answer2">Can\'t talk now. Text me! :speech_balloon:</string>
 	<string name="decline_menu_custom">Type custom reply...</string>
 	
+	<!-- Invited Popup -->
+	<string name="invited_popup_title">%1$s invites you to join a call.</string>
+	<string name="invited_popup_message">%1$s is already in a call with %2$s.</string>
+	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
 	<string name="live_notification_peer_joining">%1$s joining...</string>
@@ -438,8 +442,8 @@
 	<string name="profile_invisible_mode_enable_alert_title">Downgrading Experience :warning:</string>
 	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you as a friend on Tribe. Only you will be able to add people as friends.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Disable</string>
-	<string name="profile_blocked_friends">Blocked or hidden friends</string>
-	<string name="profile_manage_friendships">Is online notification :bell:</string>
+	<string name="profile_blocked_friends">Blocked or hidden chats :no_entry:</string>
+	<string name="profile_manage_friendships">Is online\' notification :bell:</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_contact_us">Contact us :envelope:</string>
@@ -782,7 +786,7 @@
 	<string name="home_menu_shortcut_unmute">:bell: is online notification</string>
 	<string name="home_menu_shortcut_hide">:speak_no_evil: Hide</string>
 	<string name="home_menu_shortcut_block">:no_entry: Block</string>
-	<string name="home_menu_shortcut_block_group">:no_entry: Mute</string>
+	<string name="home_menu_shortcut_block_group">:no_entry: Block</string>
 	<string name="home_menu_shortcut_update_name">:pencil2: Edit name</string>
 	<string name="home_menu_shortcut_customize">:art: Customize</string>
 	<string name="home_menu_shortcut_update_avatar">:framed_picture: Edit avatar</string>
@@ -790,11 +794,11 @@
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Mark as unread</string>
 	<string name="home_menu_invite_decline">:phone: Decline call</string>
 	<string name="home_block_shortcut_title">Block %1$s?</string>
-	<string name="home_block_shortcut_message">Hide permanently this person, related groups and associated notifications.</string>
+	<string name="home_block_shortcut_message">Mute new messages, calls and other associated notifications from this person. You\'ll be able to unblock this person from your profile.</string>
 	<string name="home_block_shortcut_validate">Block</string>
-	<string name="home_mute_shortcut_title">Mute this group?</string>
-	<string name="home_mute_shortcut_message">Mute new messages, calls and other associated notifications from this group.</string>
-	<string name="home_mute_shortcut_validate">Mute</string>
+	<string name="home_block_group_shortcut_title">Block this group?</string>
+	<string name="home_block_group_shortcut_message">Mute new messages, calls and other associated notifications from this group. You\'ll be able to unblock this group from your profile.</string>
+	<string name="home_block_group_shortcut_validate">Block</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">New Chat</string>
@@ -854,4 +858,10 @@
 	<string name="error_just_banned_temporary_message">After being kicked out several times today, you\'re now temporarily banned for improper behavior. Cool down for one hour, and come back. Careful, next step is a permanent ban.</string>
 	<string name="error_just_banned_permanently_title">Permanently banned.</string>
 	<string name="error_just_banned_permanently_message">After being kicked out several times and temporary banned, you\'re now permanently banned from launching the Dice.</string>
+	
+	<!-- Mute Group Popup -->
+	<string name="mute_group_popup_title">Mute group?</string>
+	<string name="mute_group_popup_message">People you\'ve blocked are in this group. If you mute this group, you\'ll leave this view and won\'t receive new messages, calls and other associated notifications.</string>
+	<string name="mute_group_popup_validate">Mute group</string>
+	<string name="mute_group_popup_cancel">Don\'t mute group</string>
 </resources>

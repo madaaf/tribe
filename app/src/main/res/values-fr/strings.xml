@@ -135,6 +135,10 @@
 	<string name="decline_menu_answer2">Je ne peux pas parler. Envoie moi un message sur le chat ! :speech_balloon:</string>
 	<string name="decline_menu_custom">Réponse personnalisée...</string>
 	
+	<!-- Invited Popup -->
+	<string name="invited_popup_title">%1$s vous invite à rejoindre un live</string>
+	<string name="invited_popup_message">%1$s est déjà en live avec %2$s.</string>
+	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>
 	<string name="live_notification_peer_joining">%1$s est en train d\'arriver...</string>
@@ -438,8 +442,8 @@
 	<string name="profile_invisible_mode_enable_alert_title">Attention! :warning:</string>
 	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'ami. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
-	<string name="profile_blocked_friends">Amis masqués ou bloqués</string>
-	<string name="profile_manage_friendships">Is online notification :bell:</string>
+	<string name="profile_blocked_friends">Conversations masquées ou bloquées :no_entry:</string>
+	<string name="profile_manage_friendships">Is online\' notification :bell:</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
 	<string name="profile_contact_us">Contactez-nous :envelope:</string>
@@ -782,7 +786,7 @@
 	<string name="home_menu_shortcut_unmute">:bell: notification est en ligne</string>
 	<string name="home_menu_shortcut_hide">:speak_no_evil: Masquer</string>
 	<string name="home_menu_shortcut_block">:no_entry: Bloquer</string>
-	<string name="home_menu_shortcut_block_group">:no_entry: Mettre en sourdine</string>
+	<string name="home_menu_shortcut_block_group">:no_entry: Bloquer</string>
 	<string name="home_menu_shortcut_update_name">:pencil2: Modifier le nom</string>
 	<string name="home_menu_shortcut_customize">:art: Personnaliser</string>
 	<string name="home_menu_shortcut_update_avatar">:framed_picture: Modifier l\'avatar</string>
@@ -790,11 +794,11 @@
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Marquer comme non-lu</string>
 	<string name="home_menu_invite_decline">:phone: Rejeter l\'appel</string>
 	<string name="home_block_shortcut_title">Bloquer %1$s ?</string>
-	<string name="home_block_shortcut_message">Masquer de manière permanente cette personne et les groupes et les notifications qui lui sont associés.</string>
+	<string name="home_block_shortcut_message">Masquer les nouveaux messages, appels et autres notifications venant de cette personne. Vous pourrez débloquer cette personne depuis votre profil.</string>
 	<string name="home_block_shortcut_validate">Bloquer</string>
-	<string name="home_mute_shortcut_title">Mettre en sourdine ce groupe ?</string>
-	<string name="home_mute_shortcut_message">Mettre en sourdine les nouveaux messages, appels et toutes les autres notifications de ce groupe.</string>
-	<string name="home_mute_shortcut_validate">Mettre en sourdine</string>
+	<string name="home_block_group_shortcut_title">Bloquer ce groupe ?</string>
+	<string name="home_block_group_shortcut_message">Masquer de manière permanente ce groupe et les notifications qui lui sont associés. Vous pourrez débloquer ce groupe depuis votre profil.</string>
+	<string name="home_block_group_shortcut_validate">Bloquer</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">Nouveau chat</string>
@@ -854,4 +858,10 @@
 	<string name="error_just_banned_temporary_message">Après avoir été éjecté à plusieurs reprises aujourd\'hui, vous avez été temporairement banni. Calmez-vous et revenez dans une heure. Attention, la prochaine étape est un ban permanent de l\'utilisation de cette fonctionnalité.</string>
 	<string name="error_just_banned_permanently_title">Ban permanent.</string>
 	<string name="error_just_banned_permanently_message">Après avoir été éjecté à plusieurs reprises et banni temporairement, vous avez été banni de manière permanente de l\'utilisation de cette fonctionnalité.</string>
+	
+	<!-- Mute Group Popup -->
+	<string name="mute_group_popup_title">Mettre en sourdine le groupe ?</string>
+	<string name="mute_group_popup_message"></string>
+	<string name="mute_group_popup_validate">Mettre en sourdine</string>
+	<string name="mute_group_popup_cancel">Ne pas mettre en sourdine</string>
 </resources>

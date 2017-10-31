@@ -175,6 +175,10 @@ public class GamePostIt extends Game {
         bitmapRemotePostIt.getWidth(), bitmapRemotePostIt.getHeight());
   }
 
+  @Override public void generateNewDatas() {
+
+  }
+
   public PointF findXYForPostIt(Face face) {
     PointF leftEye = visionAPIManager.getLeftEye();
     PointF rightEye = visionAPIManager.getRightEye();
