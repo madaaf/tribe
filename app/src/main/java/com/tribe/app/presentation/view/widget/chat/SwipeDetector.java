@@ -157,9 +157,9 @@ public class SwipeDetector implements View.OnTouchListener {
     recordingView.setScaleX(1f);
     recordingView.setScaleY(1f);
 
-    ViewGroup.LayoutParams p = context.recordingView.getLayoutParams();
+    ViewGroup.LayoutParams p = recordingView.getLayoutParams();
     p.width = context.recordingViewInitWidth;
-    context.recordingView.setLayoutParams(p);
+    recordingView.setLayoutParams(p);
 
     context.timerVoiceNote.setAlpha(1f);
     context.loadingRecordView.setAlpha(1f);
@@ -208,9 +208,9 @@ public class SwipeDetector implements View.OnTouchListener {
                     recordingView.clearAnimation();
                     context.voiceNoteBtn.clearAnimation();
 
-                    ViewGroup.LayoutParams p = context.recordingView.getLayoutParams();
+                    ViewGroup.LayoutParams p = recordingView.getLayoutParams();
                     p.width = context.recordingViewInitWidth;
-                    context.recordingView.setLayoutParams(p);
+                    recordingView.setLayoutParams(p);
 
                     recordingView.setX(context.recordingViewX);
                     recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
@@ -431,9 +431,9 @@ public class SwipeDetector implements View.OnTouchListener {
           recordingView.clearAnimation();
           context.voiceNoteBtn.clearAnimation();
 
-          ViewGroup.LayoutParams p = context.recordingView.getLayoutParams();
+          ViewGroup.LayoutParams p = recordingView.getLayoutParams();
           p.width = context.recordingViewInitWidth;
-          context.recordingView.setLayoutParams(p);
+          recordingView.setLayoutParams(p);
 
           recordingView.setX(context.recordingViewX);
           recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
@@ -505,7 +505,7 @@ public class SwipeDetector implements View.OnTouchListener {
   public void onSingleTap() {
     int translation = screenUtils.dpToPx(30);
     context.hintEditText.setTranslationX(-translation);
-
+    context.editText.setCursorVisible(false);
     recordingView.setVisibility(View.INVISIBLE);
     context.hintEditText.setVisibility(VISIBLE);
     context.hintEditText.setAlpha(0f);
@@ -521,6 +521,7 @@ public class SwipeDetector implements View.OnTouchListener {
         .alpha(1f)
         .setDuration(ANIM_DURATION)
         .withEndAction(() -> context.hintEditText.postDelayed(() -> {
+          context.editText.setCursorVisible(true);
           context.hintEditText.animate().translationX(-translation).withStartAction(() -> {
             context.hintEditText.setText("");
             context.editText.setHintTextColor(

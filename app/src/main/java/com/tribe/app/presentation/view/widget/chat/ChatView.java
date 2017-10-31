@@ -167,13 +167,15 @@ public class ChatView extends ChatMVPView {
   @BindView(R.id.blurBackEditText) View blurBackEditText;
   @BindView(R.id.separator) View separator;
   @BindView(R.id.voiceNoteBtn) ImageView voiceNoteBtn;
-  @BindView(R.id.recordingView) FrameLayout recordingView;
+  @BindView(R.id.viewRecording) View recordingView;
+  //@BindView(R.id.recordingView) FrameLayout recordingView;
   @BindView(R.id.btnSendLikeContainer) FrameLayout btnSendLikeContainer;
   @BindView(R.id.pictoVoiceNote) ImageView pictoVoiceNote;
   @BindView(R.id.trashBtn) ImageView trashBtn;
-  @BindView(R.id.playerBtn) ImageView playerBtn;
+  @BindView(R.id.playBtn) ImageView playerBtn;
   @BindView(R.id.likeBtn) ImageView likeBtn;
   @BindView(R.id.loadingRecordView) AVLoadingIndicatorView loadingRecordView;
+  @BindView(R.id.equalizer) ImageView equalizer;
 
   @Inject @ChatShortcutData Preference<String> chatShortcutData;
   @Inject User user;
@@ -282,7 +284,7 @@ public class ChatView extends ChatMVPView {
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
+        equalizer.setVisibility(GONE);
         recyclerView.setOnTouchListener(new OnTouchListener() {
           @Override public boolean onTouch(View view, MotionEvent motionEvent) {
             screenUtils.hideKeyboard((Activity) context);
@@ -754,15 +756,16 @@ public class ChatView extends ChatMVPView {
   @Override protected void onDetachedFromWindow() {
     messagePresenter.onViewDetached();
     Timber.w("DETACHED SUBSC onDetachedFromWindow");
-
-    Map<String, String> list = PreferencesUtils.getMapFromJsonString(chatShortcutData);
-    if (list == null || list.isEmpty()) {
-      list = new HashMap<>();
+    if (shortcut != null) {
+      Map<String, String> list = PreferencesUtils.getMapFromJsonString(chatShortcutData);
+      if (list == null || list.isEmpty()) {
+        list = new HashMap<>();
+      }
+      list.put(shortcut.getId(), editText.getText().toString());
+      Gson gson = new Gson();
+      String jsonString = gson.toJson(list);
+      chatShortcutData.set(jsonString);
     }
-    list.put(shortcut.getId(), editText.getText().toString());
-    Gson gson = new Gson();
-    String jsonString = gson.toJson(list);
-    chatShortcutData.set(jsonString);
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) {
 
@@ -945,7 +948,6 @@ public class ChatView extends ChatMVPView {
           }
         });
   }
-
 
   @Override public void isTypingEvent(String userId, boolean typeEvent) {
     if (userId.equals(user.getId())) {

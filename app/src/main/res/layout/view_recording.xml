@@ -5,7 +5,6 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginBottom="10dp"
-    android:background="@color/white"
     >
 
 
@@ -14,17 +13,15 @@
       android:layout_width="150dp"
       android:layout_height="wrap_content"
       android:background="@drawable/shape_rect_voice_note"
-      android:paddingBottom="5dp"
-      android:paddingStart="8dp"
-      android:paddingTop="5dp"
       android:visibility="visible"
       >
 
 
     <ImageView
         android:id="@+id/pauseBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
+        android:padding="5dp"
         android:scaleType="centerInside"
         android:src="@drawable/picto_pause_recording"
         android:visibility="visible"
@@ -32,13 +29,13 @@
 
     <ImageView
         android:id="@+id/playBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
+        android:padding="5dp"
         android:scaleType="centerInside"
         android:src="@drawable/picto_play_recording"
         android:visibility="visible"
         />
-
 
     <ImageView
         android:id="@+id/equalizer"

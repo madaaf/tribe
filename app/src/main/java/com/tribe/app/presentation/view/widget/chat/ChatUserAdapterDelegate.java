@@ -85,7 +85,7 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
       vh.name.setTextColor(ContextCompat.getColor(context, R.color.blue_new));
     } else {
       vh.container.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_rect_chat));
-      vh.name.setTextColor(ContextCompat.getColor(context, R.color.grey_chat_border));
+      vh.name.setTextColor(ContextCompat.getColor(context, R.color.black_opacity_40));
     }
   }
 

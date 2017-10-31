@@ -83,9 +83,11 @@ import javax.inject.Singleton;
     Message message;
 
     for (MessageRealm messageRealm : messageRealmCollection) {
-      message = transform(messageRealm);
-      if (message != null) {
-        messageList.add(message);
+      if (messageRealm != null) {
+        message = transform(messageRealm);
+        if (message != null) {
+          messageList.add(message);
+        }
       }
     }
 
