@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -168,7 +169,7 @@ public class ChatView extends ChatMVPView {
   @BindView(R.id.separator) View separator;
   @BindView(R.id.voiceNoteBtn) ImageView voiceNoteBtn;
   @BindView(R.id.viewRecording) View recordingView;
-  //@BindView(R.id.recordingView) FrameLayout recordingView;
+  @BindView(R.id.recordingView) FrameLayout recordingFrame;
   @BindView(R.id.btnSendLikeContainer) FrameLayout btnSendLikeContainer;
   @BindView(R.id.pictoVoiceNote) ImageView pictoVoiceNote;
   @BindView(R.id.trashBtn) ImageView trashBtn;
@@ -176,6 +177,8 @@ public class ChatView extends ChatMVPView {
   @BindView(R.id.likeBtn) ImageView likeBtn;
   @BindView(R.id.loadingRecordView) AVLoadingIndicatorView loadingRecordView;
   @BindView(R.id.equalizer) ImageView equalizer;
+  @BindView(R.id.cardViewIndicator) public CardView cardViewIndicator;
+  @BindView(R.id.viewPlayerProgress) public View viewPlayerProgress;
 
   @Inject @ChatShortcutData Preference<String> chatShortcutData;
   @Inject User user;
@@ -300,7 +303,7 @@ public class ChatView extends ChatMVPView {
 
         refMaxExpendedWidth = refMaxExpended.getWidth();
         containerUsersHeight = containerUsers.getHeight();
-        recordingViewInitWidth = recordingView.getWidth();
+        recordingViewInitWidth = recordingFrame.getWidth();
 
         voiceNoteBtnWidth = editText.getHeight() - screenUtils.dpToPx(8);
         voiceNoteBtn.getLayoutParams().height = voiceNoteBtnWidth;

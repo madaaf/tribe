@@ -701,7 +701,6 @@
 	<string name="game_bird_rush_someone_lost">%@ A PERDU !</string>
 	<string name="game_bird_rush_pending_instructions">LE JEU VA REDEMARRE QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_speed_racer">Speed Racer</string>
-	<string name="game_speed_racer_title">SPEED\nRACER</string>
 	<string name="game_speed_racer_lets_go">CONDUIS, VITE !</string>
 	<string name="game_speed_racer_you_won">TU AS GAGNÉ !</string>
 	<string name="game_speed_racer_someone_won">%@ A GAGNÉ !</string>

@@ -1,5 +1,8 @@
 package com.tribe.app.presentation.view.widget.chat;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.media.MediaRecorder;
 import android.support.v4.content.ContextCompat;
 import android.view.GestureDetector;
@@ -173,6 +176,9 @@ public class SwipeDetector implements View.OnTouchListener {
   public void onActionUp(View v, float ratio) {
     Timber.i("ON ACTION :onActionUp! " + ratio + "  " + context.audioDuration);
     if (ratio == 1) {
+      context.viewPlayerProgress.setVisibility(View.INVISIBLE);
+      context.cardViewIndicator.setVisibility(View.INVISIBLE);
+
       context.voiceNoteBtn.setBackground(
           ContextCompat.getDrawable(context.getContext(), R.drawable.shape_circle_orange));
       context.voiceNoteBtn.setImageDrawable(
@@ -218,8 +224,9 @@ public class SwipeDetector implements View.OnTouchListener {
                     context.playerBtn.setScaleY(1);
                     context.loadingRecordView.setVisibility(VISIBLE);
                     context.timerVoiceNote.setVisibility(VISIBLE);
-                    recordingView.setBackground(ContextCompat.getDrawable(context.getContext(),
-                        R.drawable.shape_rect_voice_note));
+                    context.recordingFrame.setBackground(
+                        ContextCompat.getDrawable(context.getContext(),
+                            R.drawable.shape_rect_voice_note));
                     context.voiceNoteBtn.setX(context.voiceNoteBtnX);
                     context.voiceNoteBtn.setAlpha(1f);
                     context.playerBtn.setAlpha(1f);
@@ -242,6 +249,32 @@ public class SwipeDetector implements View.OnTouchListener {
       Timber.i("ACTION UP RATIO 0! " + ratio);
       stopVoiceNote(true, true);
     }
+  }
+
+  private void animePlayerIndicator(int duration) {
+    context.cardViewIndicator.setVisibility(VISIBLE);
+    context.viewPlayerProgress.setVisibility(View.VISIBLE);
+    context.viewPlayerProgress.clearAnimation();
+
+    ValueAnimator anim = ValueAnimator.ofInt(0, context.recordingViewInitWidth);
+    anim.addUpdateListener(valueAnimator -> {
+      int val = (Integer) valueAnimator.getAnimatedValue();
+      ViewGroup.LayoutParams layoutParams = context.viewPlayerProgress.getLayoutParams();
+      layoutParams.width = val;
+      context.viewPlayerProgress.setLayoutParams(layoutParams);
+    });
+    anim.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        super.onAnimationEnd(animation);
+        context.cardViewIndicator.setVisibility(View.INVISIBLE);
+        context.viewPlayerProgress.setVisibility(View.INVISIBLE);
+        context.viewPlayerProgress.clearAnimation();
+      }
+    });
+    anim.setDuration(duration);
+    anim.start();
+
+    anim.getCurrentPlayTime();
   }
 
   private void startVoiceNote() {
@@ -273,6 +306,7 @@ public class SwipeDetector implements View.OnTouchListener {
           context.timerVoiceNote.setText(formatTime);
         });
 
+    animePlayerIndicator(1000 * 60 * 3); // 3min
     recordingView.setVisibility(View.VISIBLE);
     initRecordingView();
     context.voiceNoteBtn.animate()
@@ -441,7 +475,7 @@ public class SwipeDetector implements View.OnTouchListener {
           context.playerBtn.setScaleY(1);
           context.loadingRecordView.setVisibility(VISIBLE);
           context.timerVoiceNote.setVisibility(VISIBLE);
-          recordingView.setBackground(
+          context.recordingFrame.setBackground(
               ContextCompat.getDrawable(context.getContext(), R.drawable.shape_rect_voice_note));
           context.voiceNoteBtn.setX(context.voiceNoteBtnX);
           context.voiceNoteBtn.setAlpha(1f);
