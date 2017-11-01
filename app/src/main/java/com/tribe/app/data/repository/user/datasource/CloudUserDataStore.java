@@ -741,11 +741,10 @@ public class CloudUserDataStore implements UserDataStore {
   @Override public Observable<ShortcutRealm> createShortcut(String[] userIds) {
     String params = "";
 
-    if (userIds != null && userIds.length > 0) {
-      params += params.length() == 0 ? "( " : "";
-      params +=
-          context.getString(R.string.createShortcut_userIds, StringUtils.arrayToJson(userIds));
-    }
+    if (userIds == null || userIds.length == 0) return Observable.empty();
+
+    params += params.length() == 0 ? "( " : "";
+    params += context.getString(R.string.createShortcut_userIds, StringUtils.arrayToJson(userIds));
 
     if (params.length() > 0) params += " )";
 
