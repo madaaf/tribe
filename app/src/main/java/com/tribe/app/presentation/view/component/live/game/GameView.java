@@ -29,8 +29,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public abstract class GameView extends FrameLayout {
 
-  @Inject User user;
-  @Inject ScreenUtils screenUtils;
+  @Inject protected User user;
+  @Inject protected ScreenUtils screenUtils;
 
   protected LayoutInflater inflater;
   protected Unbinder unbinder;
