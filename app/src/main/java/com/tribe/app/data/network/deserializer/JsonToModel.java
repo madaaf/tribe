@@ -127,15 +127,21 @@ import timber.log.Timber;
             } else if (entry.getKey().contains(WSService.MESSAGE_IS_TALKING_SUFFIX)) {
               String user_id = jo.get("user_id").getAsString();
               Timber.w("ON TALKING");
-              if(!user_id.equals(user.getId())) onTalking.onNext(user_id);
+              if (!user_id.equals(user.getId())) onTalking.onNext(user_id);
             } else if (entry.getKey().contains(WSService.MESSAGE_IS_READING_SUFFIX)) {
               String user_id = jo.get("user_id").getAsString();
               Timber.w("ON READING");
-             if(!user_id.equals(user.getId())) onReading.onNext(user_id);
+              if (!user_id.equals(user.getId())) onReading.onNext(user_id);
             } else if (entry.getKey().contains(WSService.MESSAGE_CREATED_SUFFIX)) {
               Timber.d("onMessageReceived : " + entry.getValue().toString());
               MessageRealm messageRealm =
                   gson.fromJson(entry.getValue().toString(), MessageRealm.class);
+
+              UserRealm userRealm =
+                  gson.fromJson(entry.getValue().getAsJsonObject().get("user"), UserRealm.class);
+              if (userRealm != null) {
+                messageRealm.setUser(userRealm);
+              }
               JsonArray jsonElements = jo.get("thread_id").getAsJsonArray();
 
               ArrayList<String> list = new ArrayList<>();

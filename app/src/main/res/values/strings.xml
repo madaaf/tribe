@@ -707,6 +707,13 @@
 	<string name="game_speed_racer_you_lost">YOU LOST</string>
 	<string name="game_speed_racer_someone_lost">%@ LOST!</string>
 	<string name="game_speed_racer_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
+	<string name="game_slice_fruit">Slice Fruit</string>
+	<string name="game_slice_fruit_lets_go">LET\'S MAKE A SALAD</string>
+	<string name="game_slice_fruit_you_won">YOU WON!</string>
+	<string name="game_slice_fruit_someone_won">%@ WON!</string>
+	<string name="game_slice_fruit_you_lost">YOU LOST</string>
+	<string name="game_slice_fruit_someone_lost">%@ LOST!</string>
+	<string name="game_slice_fruit_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>

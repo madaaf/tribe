@@ -186,7 +186,7 @@ public class MessagePresenter implements Presenter {
     getShortcutForUserIds.unsubscribe();
     imTyping.unsubscribe();
     createShortcut.unsubscribe();
-
+    if (shortcutForUserIdsSubscriber != null) shortcutForUserIdsSubscriber.unsubscribe();
     chatMVPView = null;
     pictureMVPView = null;
   }

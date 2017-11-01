@@ -707,6 +707,13 @@
 	<string name="game_speed_racer_you_lost">TU AS PERDU</string>
 	<string name="game_speed_racer_someone_lost">%@ A PERDU !</string>
 	<string name="game_speed_racer_pending_instructions">LE JEU VA REDEMARRE QUAND\nUN JOUEUR GAGNE</string>
+	<string name="game_slice_fruit">Slice Fruit</string>
+	<string name="game_slice_fruit_lets_go">FAISONS UNE PETITE SALADE</string>
+	<string name="game_slice_fruit_you_won">TU AS GAGNÉ !</string>
+	<string name="game_slice_fruit_someone_won">%@ A GAGNÉ !</string>
+	<string name="game_slice_fruit_you_lost">TU AS PERDU</string>
+	<string name="game_slice_fruit_someone_lost">%@ A PERDU !</string>
+	<string name="game_slice_fruit_pending_instructions">LE JEU VA REDEMARRE QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>
