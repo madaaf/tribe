@@ -222,12 +222,9 @@ public class SwipeDetector implements View.OnTouchListener {
                   .scaleX(0)
                   .scaleY(0)
                   .setDuration(ANIM_DURATION)
-                  .setInterpolator(new OvershootInterpolator(3f))
+                  .setInterpolator(new AccelerateInterpolator())
                   .withEndAction(() -> {
                     initRecordingView();
-                    recordingView.setVisibility(View.INVISIBLE);
-                  })
-                  .withEndAction(() -> {
                     recordingView.clearAnimation();
                     context.voiceNoteBtn.clearAnimation();
 
@@ -267,11 +264,11 @@ public class SwipeDetector implements View.OnTouchListener {
                   ContextCompat.getDrawable(context.getContext(), R.drawable.shape_circle_grey));
             })
             .start();
-        stopVoiceNote(false, true);
+        stopVoiceNote(false);
       }, 1000);
     } else {
       Timber.i("ACTION UP RATIO 0! " + ratio);
-      stopVoiceNote(true, true);
+      stopVoiceNote(true);
     }
   }
 
@@ -463,7 +460,7 @@ public class SwipeDetector implements View.OnTouchListener {
     recorder.start();
   }
 
-  private void stopVoiceNote(boolean sendMessage, boolean withAnim) {
+  private void stopVoiceNote(boolean sendMessage) {
     Timber.i("stopVoiceNote " + sendMessage + "  " + context.audioDuration + "s");
     context.editText.getLayoutParams().width = context.widthRefInit;
     context.trashBtn.setVisibility(GONE);
@@ -480,8 +477,6 @@ public class SwipeDetector implements View.OnTouchListener {
     ViewGroup.LayoutParams params = context.editText.getLayoutParams();
     params.width = context.widthRefInit;
     context.editText.setLayoutParams(params);
-
-    recordingView.setVisibility(View.INVISIBLE);
 
     context.voiceNoteBtn.animate()
         .scaleX(1f)
@@ -556,6 +551,7 @@ public class SwipeDetector implements View.OnTouchListener {
     context.loadingRecordView.setAlpha(newRatio);
 
     if (newRatio == 1) {
+
       context.loadingRecordView.animate()
           .alpha(1f)
           .withStartAction(() -> context.loadingRecordView.setVisibility(VISIBLE))
@@ -576,6 +572,13 @@ public class SwipeDetector implements View.OnTouchListener {
     }
 
     context.voiceNoteBtn.setAlpha(ratio);
+
+    if (newRatio == 0) {
+      recordingView.clearAnimation();
+      context.voiceNoteBtn.clearAnimation();
+      context.timerVoiceNote.setVisibility(View.INVISIBLE);
+      context.loadingRecordView.setVisibility(View.INVISIBLE);
+    }
   }
 
   public void onSingleTap() {
