@@ -19,6 +19,7 @@
     <ImageView
         android:layout_width="43dp"
         android:layout_height="43dp"
+        android:layout_gravity="center_vertical"
         android:padding="5dp"
         android:scaleType="center"
         android:visibility="invisible"
@@ -52,10 +53,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|center_vertical"
-        android:paddingEnd="10dp"
+        android:paddingEnd="18dp"
         android:text="0:28"
         android:textColor="@color/blue.voice.bck"
         android:textSize="11sp"
+        style="@style/Title.Regular.White"
         />
 
   </FrameLayout>

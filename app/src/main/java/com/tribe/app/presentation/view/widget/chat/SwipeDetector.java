@@ -68,6 +68,7 @@ public class SwipeDetector implements View.OnTouchListener {
       isDown = false;
       Timber.i("ACTION_UP");
       onActionUp(mView, getRatio());
+      isLongTap = false;
     } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
       if (subscribe == null) {
@@ -99,58 +100,59 @@ public class SwipeDetector implements View.OnTouchListener {
 
   private GestureDetector.OnGestureListener mGestureListener =
       new GestureDetector.SimpleOnGestureListener() {
-        private float mMotionDownX, mMotionDownY;
+        private float viewMotionDownX, recordingViewMotionDownX;
 
         @Override public boolean onSingleTapUp(MotionEvent e) {
+          Timber.i("onSingleTapUp " + isLongTap);
           if (!isLongTap) {
-            Timber.i("onSingleTapUp");
             onSingleTap();
           }
+          isLongTap = false;
           return super.onSingleTapUp(e);
         }
 
         @Override public boolean onSingleTapConfirmed(MotionEvent e) {
           Timber.i("onSingleTapConfirmed");
-          isLongTap = false;
+
           return super.onSingleTapConfirmed(e);
         }
 
         @Override public boolean onDown(MotionEvent e) {
-          mMotionDownX = e.getRawX() - mView.getTranslationX();
-          mMotionDownY = e.getRawY() - mView.getTranslationY();
+          viewMotionDownX = e.getRawX() - mView.getTranslationX();
+          recordingViewMotionDownX = e.getRawX() - recordingView.getTranslationX();
 
           return true;
         }
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-          Timber.i(" onScroll :" + isLongTap);
-          float x2 = mView.getX() + (mView.getWidth() / 2);
-          ratio = getRatio();
+          if (isLongTap) {
+            float x2 = mView.getX() + (mView.getWidth() / 2);
+            float x1 = recordingView.getX() + (recordingView.getWidth() / 2);
 
-          try {
+            ratio = getRatio();
+            try {
+              if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && mView.getX() > initPos) {
+                mView.setTranslationX(e2.getRawX() - viewMotionDownX);
+              } else if (mView.getX() < initPos) { // TRASH BTN POSTITION
+                mView.setX(initPos);
+              } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
+                  && mView.getX() < initialPosition) {
+                mView.setTranslationX(e2.getRawX() - viewMotionDownX);
+              } else if (mView.getX() > initialPosition) {
+                mView.setX(initialPosition);
+              }
 
-            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && mView.getX() > initPos) {
-              mView.setTranslationX(e2.getRawX() - mMotionDownX);
-            } else if (mView.getX() < initPos) { // TRASH POSTITION
-              mView.setX(initPos);
-            } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
-                && mView.getX() < initialPosition) {
-              mView.setTranslationX(e2.getRawX() - mMotionDownX);
-            } else if (mView.getX() > initialPosition) {
-              mView.setX(initialPosition);
+              if (e2.getRawX() > initialPosition) {
+                recordingView.setTranslationX(initialPosition - recordingViewMotionDownX);
+              } else if (e2.getRawX() >= (screenUtils.getWidthPx() / 2)) {
+                recordingView.setTranslationX(e2.getRawX() - recordingViewMotionDownX);
+              }
+
+              right2left(mView, ratio);
+            } catch (Exception e) {
+              // nothing
             }
-
-            if (x2 < (screenUtils.getWidthPx() / 2) || x2 > initialPosition) {
-              recordingView.setX(screenUtils.getWidthPx() / 2 - (recordingView.getWidth() / 2));
-            } else {
-              recordingView.setTranslationX(
-                  e2.getRawX() - mMotionDownX - (screenUtils.getWidthPx() / 2));
-            }
-
-            right2left(mView, ratio);
-          } catch (Exception e) {
-            // nothing
           }
           return true;
         }
@@ -187,24 +189,21 @@ public class SwipeDetector implements View.OnTouchListener {
       context.playerBtn.setImageDrawable(
           ContextCompat.getDrawable(context.getContext(), R.drawable.picto_trash_white));
 
-      context.btnContainer.setBackground(null);
-    /*  context.playerBtn.setBackground(
-          ContextCompat.getDrawable(context.getContext(), R.drawable.shape_circle_orange));
-*/
+      context.btnContainer.setImageDrawable(null);
+
       context.recordingFrame.setBackground(
           ContextCompat.getDrawable(context.getContext(), R.drawable.shape_circle_orange));
 
-
-    /*  context.recordingFrame.setScaleX(0.8f);
-      context.recordingFrame.setScaleY(0.8f);*/
+      context.recordingFrame.setScaleX(0.8f);
+      context.recordingFrame.setScaleY(0.8f);
 
       context.playerBtn.animate()
-          .setDuration(ANIM_DURATION_FAST)
+          .setDuration(ANIM_DURATION)
           .scaleX(1.2f)
           .scaleY(1.2f)
           .setInterpolator(new OvershootInterpolator(3f))
           .withEndAction(() -> context.playerBtn.animate()
-              .setDuration(ANIM_DURATION_FAST)
+              .setDuration(ANIM_DURATION)
               .scaleX(1f)
               .scaleY(1f)
               .setInterpolator(new OvershootInterpolator(3f))
@@ -256,9 +255,12 @@ public class SwipeDetector implements View.OnTouchListener {
                         ContextCompat.getDrawable(context.getContext(),
                             R.drawable.shape_circle_grey));
 
-                    context.btnContainer.setBackground(
+                    context.btnContainer.setImageDrawable(
                         ContextCompat.getDrawable(context.getContext(),
                             R.drawable.shape_circle_blue_recording));
+
+                    context.recordingFrame.setScaleX(1f);
+                    context.recordingFrame.setScaleY(1f);
                   })
                   .start();
               context.voiceNoteBtn.setBackground(

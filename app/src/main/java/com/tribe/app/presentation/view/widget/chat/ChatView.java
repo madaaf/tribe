@@ -17,7 +17,6 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -293,11 +292,9 @@ public class ChatView extends ChatMVPView {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
         equalizer.setVisibility(GONE);
         pauseBtn.setVisibility(GONE);
-        recyclerView.setOnTouchListener(new OnTouchListener() {
-          @Override public boolean onTouch(View view, MotionEvent motionEvent) {
-            screenUtils.hideKeyboard((Activity) context);
-            return false;
-          }
+        recyclerView.setOnTouchListener((view, motionEvent) -> {
+          screenUtils.hideKeyboard((Activity) context);
+          return false;
         });
 
         playerBtn.setImageDrawable(
@@ -395,21 +392,22 @@ public class ChatView extends ChatMVPView {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
         if (type == (FROM_LIVE)) {
-/*          videoCallBtn.getLayoutParams().height = 0;
+          videoCallBtn.getLayoutParams().height = 0;
           videoCallBtn.getLayoutParams().width = 0;
-
+          videoCallBtn.setImageDrawable(null);
+          pictoVoiceNote.setImageDrawable(null);
           topbar.setVisibility(GONE);
           containerUsers.setVisibility(GONE);
           layoutPulse.setVisibility(GONE);
           container.setBackground(null);
           widthRefInit = refInit.getWidth();
 
-          editText.getLayoutParams().width = refInit.getWidth();
-          editText.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+          RelativeLayout.LayoutParams op = (RelativeLayout.LayoutParams) editText.getLayoutParams();
+          op.addRule(RelativeLayout.START_OF, btnSendLikeContainer.getId());
 
           uploadImageBtn.setImageDrawable(
               ContextCompat.getDrawable(context, R.drawable.picto_chat_upload_white));
-          videoCallBtn.setVisibility(GONE);
+
           sendBtn.setImageDrawable(
               ContextCompat.getDrawable(context, R.drawable.picto_send_btn_white));
           separator.setVisibility(GONE);
@@ -418,7 +416,7 @@ public class ChatView extends ChatMVPView {
 
           blurBackEditText.setBackground(
               ContextCompat.getDrawable(context, R.drawable.background_blur));
-          editText.setTextColor(ContextCompat.getColor(context, R.color.white));*/
+          editText.setTextColor(ContextCompat.getColor(context, R.color.white));
         }
       }
     });
@@ -533,6 +531,7 @@ public class ChatView extends ChatMVPView {
                 .start();
             isHeart = true;
             editTextChange = false;
+
             if (type == FROM_LIVE) {
               likeBtn.setImageDrawable(
                   ContextCompat.getDrawable(context, R.drawable.picto_like_heart_white));
@@ -547,7 +546,6 @@ public class ChatView extends ChatMVPView {
             switchLikeToSendBtn(false);
             layoutPulse.setVisibility(VISIBLE);
           } else if (!text.isEmpty() && !editTextChange) {
-            Timber.e("OOK " + text);
             layoutPulse.setVisibility(INVISIBLE);
             voiceNoteBtn.animate()
                 .scaleX(0f)
@@ -645,7 +643,7 @@ public class ChatView extends ChatMVPView {
   private void expendEditText() {
     if (type == FROM_LIVE) {
       return;
-    }
+    } //TODO
     btnSendLikeContainer.animate()
         .translationX(videoCallBtn.getWidth())
         .setDuration(ANIM_DURATION)
@@ -921,7 +919,7 @@ public class ChatView extends ChatMVPView {
   }
 
   private void setPulseAnimation(String type) {
-    if (hideVideoCallBtn) return;
+    if (hideVideoCallBtn || this.type == (FROM_LIVE)) return;
     this.typePulseAnim = type;
     switch (type) {
       case TYPE_NORMAL:
