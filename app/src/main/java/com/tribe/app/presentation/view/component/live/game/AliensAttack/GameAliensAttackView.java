@@ -52,6 +52,7 @@ public class GameAliensAttackView extends GameView {
 
   @Override public void dispose() {
     super.dispose();
+
   }
 
   @Override public void setNextGame() {

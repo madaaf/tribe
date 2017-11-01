@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.component.live.game.AliensAttack;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -21,11 +23,13 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 10/31/2017.
@@ -34,8 +38,18 @@ import rx.subscriptions.CompositeSubscription;
 public class GameAliensAttackBackground extends FrameLayout {
 
   private static final int CARS_COUNT = 2;
+  private static final int CLOUDS_COUNT = 4;
+  private static final int STARS_COUNT = 5;
 
-  private static final int DURATION = 6000;
+  private static final int MARGIN_BOTTOM_CAR = 86;
+  private static final int MARGIN_LEFT_CAR = 50;
+  private static final int MARGIN_LEFT_CLOUD = 30;
+  private static final int Y_LIMIT_SKY = 220;
+  private static final int X_LIMIT_SKY = 0;
+
+  private static final int DURATION_CARS = 10000;
+  private static final int MIN_DURATION_CLOUDS = 35000;
+  private static final int MAX_DURATION_CLOUDS = 60000;
 
   @Inject ScreenUtils screenUtils;
 
@@ -45,18 +59,21 @@ public class GameAliensAttackBackground extends FrameLayout {
 
   private Unbinder unbinder;
   private List<ImageView> viewsCar;
+  private List<ImageView> viewsCloud;
+  private List<ImageView> viewsStar;
 
   /**
    * RESOURCES
    */
 
-  private int marginBottomCar, marginLeftCar;
+  private int marginBottomCar, marginLeftCar, marginLeftCloud, yLimitSky, xLimitSky;
 
   /**
    * OBSERVABLES
    */
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private CompositeSubscription subscriptionsAnimation = new CompositeSubscription();
 
   public GameAliensAttackBackground(@NonNull Context context) {
     super(context);
@@ -68,6 +85,16 @@ public class GameAliensAttackBackground extends FrameLayout {
     init();
   }
 
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    initAnimations();
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    dispose();
+  }
+
   private void init() {
     initDependencyInjector();
     initResources();
@@ -75,8 +102,15 @@ public class GameAliensAttackBackground extends FrameLayout {
   }
 
   private void initResources() {
-    marginBottomCar = screenUtils.dpToPx(86);
-    marginLeftCar = screenUtils.dpToPx(50);
+    marginBottomCar = screenUtils.dpToPx(MARGIN_BOTTOM_CAR);
+    marginLeftCar = screenUtils.dpToPx(MARGIN_LEFT_CAR);
+    marginLeftCloud = screenUtils.dpToPx(MARGIN_LEFT_CLOUD);
+    yLimitSky = screenUtils.dpToPx(Y_LIMIT_SKY);
+    xLimitSky = screenUtils.dpToPx(X_LIMIT_SKY);
+
+    viewsCar = new ArrayList<>();
+    viewsCloud = new ArrayList<>();
+    viewsStar = new ArrayList<>();
   }
 
   private void initView() {
@@ -87,24 +121,8 @@ public class GameAliensAttackBackground extends FrameLayout {
 
     setBackgroundResource(R.drawable.game_aliens_attack_bg);
 
-    viewsCar = new ArrayList<>();
-    ImageView imageView;
-
-    for (int i = 0; i < CARS_COUNT; i++) {
-      imageView = new ImageView(getContext());
-      FrameLayout.LayoutParams params =
-          new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-              FrameLayout.LayoutParams.WRAP_CONTENT);
-      params.gravity = Gravity.BOTTOM;
-      params.bottomMargin = marginBottomCar;
-      params.leftMargin = -marginLeftCar;
-      imageView.setImageResource(R.drawable.game_aliens_attack_car);
-
-      viewsCar.add(imageView);
-      addView(imageView, params);
-    }
-
-    initAnimations();
+    positionCars();
+    positionSky();
   }
 
   protected void initDependencyInjector() {
@@ -123,9 +141,84 @@ public class GameAliensAttackBackground extends FrameLayout {
     return new ActivityModule(((Activity) getContext()));
   }
 
+  private void positionCars() {
+    ImageView imageView;
+
+    for (int i = 0; i < CARS_COUNT; i++) {
+      imageView = new ImageView(getContext());
+      FrameLayout.LayoutParams params =
+          new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+              FrameLayout.LayoutParams.WRAP_CONTENT);
+      params.gravity = Gravity.BOTTOM;
+      params.bottomMargin = marginBottomCar;
+      params.leftMargin = -marginLeftCar;
+      imageView.setImageResource(R.drawable.game_aliens_attack_car);
+
+      viewsCar.add(imageView);
+      addView(imageView, params);
+    }
+  }
+
+  private void positionSky() {
+    clearSky();
+    ImageView imageView;
+
+    for (int i = 0; i < CLOUDS_COUNT; i++) {
+      imageView = new ImageView(getContext());
+      imageView.setId(View.generateViewId());
+      FrameLayout.LayoutParams params =
+          new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+              FrameLayout.LayoutParams.WRAP_CONTENT);
+      params.gravity = Gravity.TOP;
+      params.topMargin = randomYForCloud(i, CLOUDS_COUNT);
+      params.leftMargin = -marginLeftCloud;
+      imageView.setImageResource(
+          getResources().getIdentifier("game_aliens_attack_cloud_" + randInt(1, 3), "drawable",
+              getContext().getPackageName()));
+      imageView.setTranslationX(randomXForSky(i, CLOUDS_COUNT));
+      viewsCloud.add(imageView);
+      addView(imageView, params);
+    }
+
+    for (int i = 0; i < STARS_COUNT; i++) {
+      imageView = new ImageView(getContext());
+      imageView.setId(View.generateViewId());
+      FrameLayout.LayoutParams params =
+          new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+              FrameLayout.LayoutParams.WRAP_CONTENT);
+      params.gravity = Gravity.TOP;
+      params.topMargin = randomYForStar();
+      params.leftMargin = randomXForSky(i, STARS_COUNT);
+      imageView.setImageResource(R.drawable.game_aliens_attack_star);
+
+      viewsCloud.add(imageView);
+      addView(imageView, params);
+    }
+  }
+
+  private int randomXForSky(int i, int nb) {
+    return randInt(xLimitSky, screenUtils.getWidthPx());
+  }
+
+  private int randomYForCloud(int i, int nb) {
+    int portion = yLimitSky / nb;
+    int rangeAvailable = portion * i;
+    return randInt(rangeAvailable, rangeAvailable + portion);
+  }
+
+  private int randomYForStar() {
+    return randInt(0, yLimitSky);
+  }
+
+  public static int randInt(int min, int max) {
+    Random rand = new Random();
+    int randomNum = rand.nextInt((max - min) + 1) + min;
+    return randomNum;
+  }
+
   private void initAnimations() {
-    subscriptions.add(Observable.interval(0,
-        DURATION * CARS_COUNT - ((int) (DURATION * 0.10f) * (CARS_COUNT - 1)),
+    subscriptionsAnimation.add(Observable.interval(0,
+        DURATION_CARS * CARS_COUNT - ((int) (DURATION_CARS * 0.10f) * (CARS_COUNT - 1)),
         TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(aLong -> {
       for (int i = 0; i < CARS_COUNT; i++) {
         ImageView car = viewsCar.get(i);
@@ -133,12 +226,58 @@ public class GameAliensAttackBackground extends FrameLayout {
         car.setTranslationX(0);
         car.animate()
             .translationX(screenUtils.getWidthPx() + marginLeftCar)
-            .setDuration(DURATION)
-            .setStartDelay(i * (int) (DURATION * 0.90f))
+            .setDuration(DURATION_CARS)
+            .setStartDelay(i * (int) (DURATION_CARS * 0.90f))
             .setInterpolator(new LinearInterpolator())
             .start();
       }
     }));
+
+    for (int i = 0; i < CLOUDS_COUNT; i++) {
+      animateCloud(viewsCloud.get(i));
+    }
+  }
+
+  private void animateCloud(ImageView cloud) {
+    Timber.d("Animate cloud : " + cloud.getId() + " / translation X = " + cloud.getTranslationX());
+    cloud.animate()
+        .translationX(cloud.getTranslationX() +
+            (screenUtils.getWidthPx() - cloud.getTranslationX()) +
+            marginLeftCloud)
+        .setDuration(randInt(MIN_DURATION_CLOUDS, MAX_DURATION_CLOUDS))
+        .setInterpolator(new LinearInterpolator())
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            animation.removeAllListeners();
+            cloud.animate().translationX(0).setDuration(0).setListener(null).start();
+            animateCloud(cloud);
+            Timber.d("End animate cloud : " +
+                cloud.getId() +
+                " / translation X = " +
+                cloud.getTranslationX());
+          }
+        })
+        .start();
+  }
+
+  private void clearCars() {
+    for (int i = 0; i < viewsCar.size(); i++) {
+      View view = viewsCar.get(i);
+      view.clearAnimation();
+    }
+  }
+
+  private void clearSky() {
+    for (int i = 0; i < viewsStar.size(); i++) {
+      View view = viewsStar.get(i);
+      view.clearAnimation();
+    }
+
+    for (int i = 0; i < viewsCloud.size(); i++) {
+      View view = viewsCloud.get(i);
+      view.clearAnimation();
+      view.animate().setListener(null).start();
+    }
   }
 
   /**
@@ -146,12 +285,10 @@ public class GameAliensAttackBackground extends FrameLayout {
    */
 
   public void dispose() {
-    for (int i = 0; i < viewsCar.size(); i++) {
-      View view = viewsCar.get(i);
-      view.clearAnimation();
-    }
-
+    clearCars();
+    clearSky();
     subscriptions.clear();
+    subscriptionsAnimation.clear();
   }
 
   /**

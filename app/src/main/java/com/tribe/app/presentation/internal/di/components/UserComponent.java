@@ -36,6 +36,7 @@ import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.component.live.TileInviteView;
+import com.tribe.app.presentation.view.component.live.game.AliensAttack.GameAliensAttackAlienView;
 import com.tribe.app.presentation.view.component.live.game.AliensAttack.GameAliensAttackBackground;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
@@ -205,4 +206,6 @@ import dagger.Component;
   void inject(GameDrawView gameDrawView);
 
   void inject(GameAliensAttackBackground gameAliensAttackBackground);
+
+  void inject(GameAliensAttackAlienView gameAliensAttackAlienView);
 }

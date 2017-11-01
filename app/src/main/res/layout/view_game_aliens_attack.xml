@@ -6,4 +6,10 @@
       android:layout_gravity="center"
       />
 
+  <com.tribe.app.presentation.view.component.live.game.AliensAttack.GameAliensAttackAlienDrop
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:background="@null"
+      />
 </merge>
