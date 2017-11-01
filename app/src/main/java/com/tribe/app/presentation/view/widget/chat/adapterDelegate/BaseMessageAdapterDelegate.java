@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.widget.chat.adapterDelegate;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -112,6 +113,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
     populateShortcutLastSeen(vh, m);
 
     vh.itemView.setOnClickListener(view -> {
+      screenUtils.hideKeyboard((Activity) context);
       onClickItem(position, vh);
     });
 

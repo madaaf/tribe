@@ -96,7 +96,7 @@ public class ProfileView extends ScrollView {
     initUI();
     initSubscriptions();
 
-    reloadUserUI();
+    reloadUserUI(user);
   }
 
   @Override protected void onAttachedToWindow() {
@@ -111,8 +111,7 @@ public class ProfileView extends ScrollView {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
   }
 
-  public void reloadUserUI() {
-
+  public void reloadUserUI(User user) {
     txtName.setText(user.getDisplayName());
     txtUsername.setText("@" + user.getUsername());
     viewAvatar.load(user.getProfilePicture());

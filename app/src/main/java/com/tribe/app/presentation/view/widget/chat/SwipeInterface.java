@@ -19,4 +19,6 @@ public interface SwipeInterface {
   public void onActionUp(View v, float ratio);
 
   public void onActionDown(View v);
+
+  public void onSingleTap();
 }

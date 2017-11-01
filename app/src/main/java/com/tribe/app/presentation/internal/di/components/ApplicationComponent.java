@@ -46,6 +46,7 @@ import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
@@ -136,6 +137,7 @@ import dagger.Component;
 import io.realm.Realm;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 import java.util.Set;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -399,6 +401,8 @@ public interface ApplicationComponent {
   @MissedPlayloadNotification Preference<String> missedPlayloadNotification();
 
   @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
+
+  @ChatShortcutData Preference<String> chatShortcutData();
 
   @CallTagsMap Preference<String> callTagsMap();
 

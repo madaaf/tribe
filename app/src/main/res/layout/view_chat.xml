@@ -11,9 +11,9 @@
       android:id="@+id/topbar"
       android:layout_width="match_parent"
       android:layout_height="@dimen/top_bar_height_small"
-      android:background="@drawable/shape_rect_white_rounded_corners_top"
-      android:layout_alignParentTop="true"
       android:layout_alignParentStart="true"
+      android:layout_alignParentTop="true"
+      android:background="@drawable/shape_rect_white_rounded_corners_top"
       >
 
     <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
@@ -65,6 +65,7 @@
 
   </com.tribe.app.presentation.view.widget.chat.RecyclerMessageView>
 
+
   <FrameLayout
       android:id="@+id/containerUsers"
       android:layout_width="wrap_content"
@@ -82,27 +83,19 @@
         android:background="@color/grey.chat.grey"
         />
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:orientation="horizontal"
+        android:weightSum="1"
         >
-      <FrameLayout
-          android:id="@+id/containerQuickChat"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignParentEnd="true"
-          android:layout_centerVertical="true"
-          android:visibility="gone"
-          />
 
       <android.support.v7.widget.RecyclerView
           android:id="@+id/recyclerViewGrp"
-          android:layout_width="wrap_content"
-          android:layout_height="60dp"
-          android:layout_alignParentStart="true"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
           android:layout_gravity="center_vertical"
-          android:layout_toStartOf="@+id/containerQuickChat"
+          android:layout_weight="1"
           android:orientation="horizontal"
           android:overScrollMode="never"
           android:paddingBottom="10dp"
@@ -113,8 +106,19 @@
           app:reverseLayout="true"
           />
 
+      <FrameLayout
+          android:id="@+id/containerQuickChat"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="end|center_horizontal"
+          android:paddingBottom="5dp"
+          android:paddingEnd="5dp"
+          android:paddingStart="5dp"
+          android:paddingTop="10dp"
+          android:visibility="visible"
+          />
 
-    </RelativeLayout>
+    </LinearLayout>
 
 
   </FrameLayout>
@@ -135,23 +139,15 @@
       android:layout_alignParentBottom="true"
       android:layout_centerHorizontal="true"
       android:background="@drawable/shape_rect_voice_note"
-      android:paddingBottom="5dp"
-      android:paddingStart="8dp"
-      android:paddingTop="5dp"
       android:visibility="visible"
       >
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/picto_trash_white"
-        />
-
-    <ImageView
         android:id="@+id/playerBtn"
-        android:layout_width="33dp"
-        android:layout_height="33dp"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
         android:layout_gravity="start"
+        android:padding="5dp"
         android:scaleType="centerInside"
         android:src="@drawable/picto_play_recording"
         android:visibility="visible"
@@ -196,9 +192,9 @@
       android:layout_alignParentBottom="true"
       android:layout_alignParentStart="true"
       android:layout_gravity="bottom"
+      android:clipChildren="false"
+      android:clipToPadding="false"
       android:gravity="bottom"
-      android:paddingEnd="5dp"
-      android:paddingStart="2dp"
       >
 
 
@@ -206,7 +202,7 @@
         android:id="@+id/refMaxExpended"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/layoutPulse"
+        android:layout_alignEnd="@+id/videoCallBtn"
         android:layout_marginEnd="15dp"
         android:layout_marginStart="15dp"
         android:visibility="invisible"
@@ -216,16 +212,17 @@
         android:id="@+id/refExpended"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/editText"
-        android:layout_marginStart="15dp"
+        android:layout_alignEnd="@+id/btnSendLikeContainer"
+        android:layout_alignStart="@+id/editText"
         android:visibility="invisible"
         />
     <FrameLayout
         android:id="@+id/refInit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/editText"
         android:layout_alignStart="@+id/editText"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@+id/btnSendLikeContainer"
         android:visibility="invisible"
         />
 
@@ -236,9 +233,8 @@
         android:layout_alignBottom="@+id/editText"
         android:layout_gravity="bottom"
         android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"
         android:gravity="bottom"
+        android:paddingStart="20dp"
         android:scaleType="centerInside"
         android:src="@drawable/picto_chat_upload"
         />
@@ -249,7 +245,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/editText"
         android:layout_marginBottom="12dp"
-        android:layout_marginStart="25dp"
+        android:layout_marginStart="35dp"
         android:alpha="0"
         android:scaleType="centerInside"
         android:src="@drawable/picto_cancel_voice_note"
@@ -263,22 +259,21 @@
         android:layout_alignStart="@+id/editText"
         android:layout_gravity="bottom"
         android:layout_marginBottom="10dp"
-        android:layout_marginStart="50dp"
-        android:paddingStart="20dp"
+        android:layout_marginStart="20dp"
+        android:paddingStart="55dp"
         android:textColor="@color/grey.chat.grey.hint"
         />
 
     <com.tribe.app.presentation.view.widget.EditTextFont
         android:id="@+id/editText"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginBottom="10dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:layout_toEndOf="@+id/uploadBtn"
-        android:layout_toStartOf="@+id/btnSendLikeContainer"
         android:background="@drawable/shape_rect_chat"
         android:ems="10"
         android:hint="Aa"
@@ -286,6 +281,7 @@
         android:inputType="textMultiLine|textShortMessage|textNoSuggestions"
         android:minHeight="40dp"
         android:padding="10dp"
+        android:paddingStart="20dp"
         android:textColor="@android:color/black"
         android:textColorHint="@color/grey.chat.grey.hint"
         android:textCursorDrawable="@drawable/color_cursor"
@@ -295,12 +291,13 @@
 
     <FrameLayout
         android:id="@+id/btnSendLikeContainer"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_alignBottom="@+id/editText"
         android:layout_gravity="bottom"
+        android:layout_marginEnd="10dp"
         android:layout_marginTop="5dp"
-        android:layout_toStartOf="@+id/layoutPulse"
+        android:layout_toStartOf="@+id/videoCallBtn"
         android:gravity="bottom"
         >
 
@@ -325,35 +322,33 @@
 
     </FrameLayout>
 
-    <com.tribe.app.presentation.view.widget.PulseLayout
-        android:id="@+id/layoutPulse"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+    <ImageView
+        android:id="@+id/videoCallBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/editText"
         android:layout_alignParentEnd="true"
-        android:layout_gravity="bottom"
-        android:layout_marginTop="5dp"
-        android:gravity="bottom"
-        app:pulseColor="@null"
-        app:pulseCount="3"
-        app:pulseDuration="3000"
-        >
-
-      <ImageView
-          android:id="@+id/videoCallBtn"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_centerInParent="true"
-          android:layout_centerVertical="true"
-          android:scaleType="centerInside"
-          android:src="@drawable/picto_chat_video"
-          />
-
-    </com.tribe.app.presentation.view.widget.PulseLayout>
+        android:layout_marginBottom="12dp"
+        android:paddingEnd="20dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_chat_video"
+        />
 
 
   </RelativeLayout>
 
+  <com.tribe.app.presentation.view.widget.PulseLayout
+      android:id="@+id/layoutPulse"
+      android:layout_width="150dp"
+      android:layout_height="150dp"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentEnd="true"
+      android:layout_marginBottom="-45dp"
+      android:layout_marginEnd="-45dp"
+      app:pulseColor="@null"
+      app:pulseCount="4"
+      app:pulseDuration="3000"
+      />
 
   <ImageView
       android:id="@+id/voiceNoteBtn"

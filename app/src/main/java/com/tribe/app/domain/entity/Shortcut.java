@@ -327,4 +327,5 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
         + ", members="
         + members;
   }
+
 }

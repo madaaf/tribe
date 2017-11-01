@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="@color/white"
+    >
+
+
+  <FrameLayout
+      android:id="@+id/recordingView"
+      android:layout_width="150dp"
+      android:layout_height="wrap_content"
+      android:background="@drawable/shape_rect_voice_note"
+      android:paddingBottom="5dp"
+      android:paddingStart="8dp"
+      android:paddingTop="5dp"
+      android:visibility="visible"
+      >
+
+
+    <ImageView
+        android:id="@+id/pauseBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_pause_recording"
+        android:visibility="visible"
+        />
+
+    <ImageView
+        android:id="@+id/playBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_play_recording"
+        android:visibility="visible"
+        />
+
+
+    <ImageView
+        android:id="@+id/equalizer"
+        android:layout_width="40dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_equalizer"
+        android:visibility="visible"
+        />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/loadingRecordView"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:visibility="invisible"
+        app:indicatorColor="@color/blue.voice.bck"
+        app:indicatorName="LineScalePulseOutIndicator"
+        />
+
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/timerVoiceNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:paddingEnd="10dp"
+        android:text="0:28"
+        android:textColor="@color/blue.voice.bck"
+        android:textSize="11sp"
+        />
+
+  </FrameLayout>
+
+  <android.support.v7.widget.CardView
+      android:id="@+id/cardViewIndicator"
+      android:layout_width="150dp"
+      android:layout_height="match_parent"
+      android:layout_alignBottom="@+id/recordingView"
+      android:layout_alignTop="@+id/recordingView"
+      android:background="@null"
+      android:clipChildren="true"
+      android:elevation="0dp"
+      android:visibility="invisible"
+      app:cardBackgroundColor="@android:color/transparent"
+      app:cardCornerRadius="24dp"
+      app:cardElevation="0dp"
+      app:cardMaxElevation="0dp"
+      >
+    <View
+        android:id="@+id/viewPlayerProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/blue.voice.bck.opacity40"
+        />
+  </android.support.v7.widget.CardView>
+</RelativeLayout>
