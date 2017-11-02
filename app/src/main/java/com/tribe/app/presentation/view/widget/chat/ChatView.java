@@ -18,7 +18,6 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
@@ -288,90 +287,86 @@ public class ChatView extends ChatMVPView {
     loadingRecordView.setIndicator("LineScalePulseOutIndicator");
     loadingRecordView.show();
 
-    getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            equalizer.setVisibility(GONE);
-            pauseBtn.setVisibility(GONE);
-            recyclerView.setOnTouchListener((view, motionEvent) -> {
-              screenUtils.hideKeyboard((Activity) context);
-              return false;
-            });
-
-            playerBtn.setImageDrawable(
-                ContextCompat.getDrawable(context, R.drawable.picto_recording_voice));
-            widthRefExpended = refExpended.getWidth();
-            widthRefInit = refInit.getWidth();
-
-            editText.getLayoutParams().width = widthRefInit;
-            editText.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
-
-
-            refMaxExpendedWidth = refMaxExpended.getWidth();
-            containerUsersHeight = containerUsers.getHeight();
-            recordingViewInitWidth = recordingFrame.getWidth();
-
-            voiceNoteBtnWidth = editText.getHeight() - screenUtils.dpToPx(8);
-            voiceNoteBtn.getLayoutParams().height = voiceNoteBtnWidth;
-            voiceNoteBtn.getLayoutParams().width = voiceNoteBtnWidth;
-
-            voiceNoteBtn.setTranslationX(
-                editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(5));
-            voiceNoteBtn.setTranslationY(
-                -editText.getHeight() + voiceNoteBtn.getHeight() - screenUtils.dpToPx(7));
-
-            pictoVoiceNote.setTranslationX(voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (
-                pictoVoiceNote.getWidth()
-                    / 2));
-
-            pictoVoiceNote.setTranslationY(
-                -editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (pictoVoiceNote.getHeight()
-                    / 2) + screenUtils.dpToPx(12));
-
-            voiceNoteBtnX = (int) (voiceNoteBtn.getX());
-            float transX =
-                voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (screenUtils.getWidthPx()
-                    / 2);
-
-            recordingView.setTranslationX(transX);
-            recordingViewX = (int) recordingView.getX();
-            recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
-
-            if (members.size() < 2 && fromShortcut == null) {
-              containerUsers.setVisibility(GONE);
-            } else {
-              containerUsers.setVisibility(VISIBLE);
-            }
-
-            SwipeDetector moveListener = new SwipeDetector(chatView, voiceNoteBtn, recordingView,
-                trashBtn.getX() - (trashBtn.getWidth() / 2), screenUtils);
-
-            Boolean microEnabledState = PermissionUtils.hasPermissionsMicroOnly(rxPermissions);
-            if (microEnabledState) {
-
-              voiceNoteBtn.setOnTouchListener(moveListener);
-            } else {
-              voiceNoteBtn.setOnTouchListener((view, motionEvent) -> {
-                initVoiceCallPerm(moveListener);
-                return false;
-              });
-            }
-
-            Map<String, String> map = PreferencesUtils.getMapFromJsonString(chatShortcutData);
-
-            if (map != null && shortcut != null) {
-              String editTextContent = map.get(shortcut.getId());
-              if (editTextContent != null && !editTextContent.isEmpty()) {
-                editText.setText(editTextContent);
-                hideVideoCallBtn(false);
-                editText.setSelection(editText.getText().length());
-              }
-            }
-
-            setTypeChatUX();
-          }
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override public void onGlobalLayout() {
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        equalizer.setVisibility(GONE);
+        pauseBtn.setVisibility(GONE);
+        recyclerView.setOnTouchListener((view, motionEvent) -> {
+          screenUtils.hideKeyboard((Activity) context);
+          return false;
         });
+
+        playerBtn.setImageDrawable(
+            ContextCompat.getDrawable(context, R.drawable.picto_recording_voice));
+        widthRefExpended = refExpended.getWidth();
+        widthRefInit = refInit.getWidth();
+
+        editText.getLayoutParams().width = widthRefInit;
+        editText.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+
+        refMaxExpendedWidth = refMaxExpended.getWidth();
+        containerUsersHeight = containerUsers.getHeight();
+        recordingViewInitWidth = recordingFrame.getWidth();
+
+        voiceNoteBtnWidth = editText.getHeight() - screenUtils.dpToPx(8);
+        voiceNoteBtn.getLayoutParams().height = voiceNoteBtnWidth;
+        voiceNoteBtn.getLayoutParams().width = voiceNoteBtnWidth;
+
+        voiceNoteBtn.setTranslationX(
+            editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(5));
+        voiceNoteBtn.setTranslationY(
+            -editText.getHeight() + voiceNoteBtn.getHeight() - screenUtils.dpToPx(7));
+
+        pictoVoiceNote.setTranslationX(
+            voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
+
+        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (
+            pictoVoiceNote.getHeight()
+                / 2) + screenUtils.dpToPx(12));
+
+        voiceNoteBtnX = (int) (voiceNoteBtn.getX());
+        float transX =
+            voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (screenUtils.getWidthPx() / 2);
+
+        recordingView.setTranslationX(transX);
+        recordingViewX = (int) recordingView.getX();
+        recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
+
+        if (members.size() < 2 && fromShortcut == null) {
+          containerUsers.setVisibility(GONE);
+        } else {
+          containerUsers.setVisibility(VISIBLE);
+        }
+
+        SwipeDetector moveListener = new SwipeDetector(chatView, voiceNoteBtn, recordingView,
+            trashBtn.getX() - (trashBtn.getWidth() / 2), screenUtils);
+
+        Boolean microEnabledState = PermissionUtils.hasPermissionsMicroOnly(rxPermissions);
+        if (microEnabledState) {
+
+          voiceNoteBtn.setOnTouchListener(moveListener);
+        } else {
+          voiceNoteBtn.setOnTouchListener((view, motionEvent) -> {
+            initVoiceCallPerm(moveListener);
+            return false;
+          });
+        }
+
+        Map<String, String> map = PreferencesUtils.getMapFromJsonString(chatShortcutData);
+
+        if (map != null && shortcut != null) {
+          String editTextContent = map.get(shortcut.getId());
+          if (editTextContent != null && !editTextContent.isEmpty()) {
+            editText.setText(editTextContent);
+            hideVideoCallBtn(false);
+            editText.setSelection(editText.getText().length());
+          }
+        }
+
+        setTypeChatUX();
+      }
+    });
   }
 
   private void initVoiceCallPerm(SwipeDetector moveListener) {
@@ -639,6 +634,7 @@ public class ChatView extends ChatMVPView {
   }
 
   private void hideVideoCallBtn(boolean withAnim) {
+    videoCallBtn.setClickable(false);
     hideVideoCallBtn = true;
     videoCallBtn.getLayoutParams().height = 0;
     videoCallBtn.getLayoutParams().width = 0;
@@ -648,25 +644,25 @@ public class ChatView extends ChatMVPView {
   private void expendEditText() {
     if (type == FROM_LIVE) {
       return;
-    } //TODO
+    }
     btnSendLikeContainer.animate()
         .translationX(videoCallBtn.getWidth())
         .setDuration(ANIM_DURATION)
-        .withStartAction(() -> videoCallBtn.animate()
-            .alpha(0f)
-            .setDuration(ANIM_DURATION_FAST)
-            .withEndAction(() -> {
-              ResizeAnimation a = new ResizeAnimation(editText);
-              a.setDuration(ANIM_DURATION);
-              a.setInterpolator(new LinearInterpolator());
-              a.setParams(editText.getWidth(), widthRefExpended, LayoutParams.WRAP_CONTENT,
-                  LayoutParams.WRAP_CONTENT);
-              editText.startAnimation(a);
-            })
-            .start());
+        .withStartAction(() -> {
+          videoCallBtn.setClickable(false);
+          videoCallBtn.animate().alpha(0f).setDuration(ANIM_DURATION_FAST).withEndAction(() -> {
+            ResizeAnimation a = new ResizeAnimation(editText);
+            a.setDuration(ANIM_DURATION);
+            a.setInterpolator(new LinearInterpolator());
+            a.setParams(editText.getWidth(), widthRefExpended, LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT);
+            editText.startAnimation(a);
+          }).start();
+        });
   }
 
   private void showVideoCallBtn(boolean withAnim) {
+    videoCallBtn.setClickable(true);
     hideVideoCallBtn = false;
     videoCallBtn.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
     videoCallBtn.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
