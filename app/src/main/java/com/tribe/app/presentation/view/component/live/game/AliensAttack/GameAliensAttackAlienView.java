@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import com.tribe.app.R;
@@ -39,6 +40,9 @@ public class GameAliensAttackAlienView extends FrameLayout {
   private ImageView imgAlienBG;
   private ImageView imgAlienLost;
   private int alienType;
+  private int rotation;
+  private float startX;
+  private float speed;
 
   /**
    * RESOURCES
@@ -50,9 +54,9 @@ public class GameAliensAttackAlienView extends FrameLayout {
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
-  public GameAliensAttackAlienView(@NonNull Context context, @AlienType int type) {
+  public GameAliensAttackAlienView(@NonNull Context context, GameAliensAttackEngine.Level level) {
     super(context);
-    this.alienType = type;
+    this.alienType = level.getType();
     init();
   }
 
@@ -124,18 +128,30 @@ public class GameAliensAttackAlienView extends FrameLayout {
     imgAlien.setImageResource(drawableAlienId);
     addView(imgAlien, paramsAlien);
 
-    //imgAlienLost = new ImageView(getContext());
-    //FrameLayout.LayoutParams paramsAlienLost =
-    //    new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-    //        FrameLayout.LayoutParams.WRAP_CONTENT);
-    //paramsAlienLost.gravity = Gravity.BOTTOM;
-    //imgAlienLost.setVisibility(View.GONE);
-    //imgAlienLost.setImageResource(R.drawable.game_alien_bl);
+    imgAlienLost = new ImageView(getContext());
+    FrameLayout.LayoutParams paramsAlienLost =
+        new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT);
+    paramsAlienLost.gravity = Gravity.BOTTOM;
+    imgAlienLost.setVisibility(View.GONE);
+    imgAlienLost.setImageResource(R.drawable.game_aliens_attack_alien_black);
+    addView(imgAlienLost, paramsAlien);
+
+    imgAlien.setRotation(rotation);
+    imgAlienLost.setRotation(rotation);
   }
 
   /**
    * PUBLIC
    */
+
+  public float getStartX() {
+    return startX;
+  }
+
+  public float getSpeed() {
+    return speed;
+  }
 
   public void dispose() {
     subscriptions.clear();

@@ -61,19 +61,7 @@ public class GameAliensAttackAlienDrop extends FrameLayout {
   }
 
   private void initView() {
-    GameAliensAttackAlienView alien =
-        new GameAliensAttackAlienView(getContext(), GameAliensAttackAlienView.BLUE);
-    FrameLayout.LayoutParams paramsAlien =
-        new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT);
-    paramsAlien.gravity = Gravity.BOTTOM | Gravity.LEFT;
-    addView(alien, paramsAlien);
 
-    alien = new GameAliensAttackAlienView(getContext(), GameAliensAttackAlienView.YELLOW);
-    paramsAlien = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-        FrameLayout.LayoutParams.WRAP_CONTENT);
-    paramsAlien.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-    addView(alien, paramsAlien);
   }
 
   /**
