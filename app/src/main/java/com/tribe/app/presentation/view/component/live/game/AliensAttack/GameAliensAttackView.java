@@ -19,6 +19,10 @@ import com.tribe.app.presentation.view.component.live.game.GameView;
 
 public class GameAliensAttackView extends GameView {
 
+  // VARIABLES
+
+  private GameAliensAttackEngine engine;
+
   public GameAliensAttackView(@NonNull Context context) {
     super(context);
     initView(context);
@@ -29,9 +33,17 @@ public class GameAliensAttackView extends GameView {
     initView(context);
   }
 
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    engine.stop();
+  }
+
   private void initView(Context context) {
     inflater.inflate(R.layout.view_game_aliens_attack, this, true);
     unbinder = ButterKnife.bind(this);
+
+    engine = new GameAliensAttackEngine(context);
+    engine.start();
   }
 
   protected void initDependencyInjector() {
@@ -52,7 +64,6 @@ public class GameAliensAttackView extends GameView {
 
   @Override public void dispose() {
     super.dispose();
-
   }
 
   @Override public void setNextGame() {

@@ -1,34 +1,35 @@
 package com.tribe.app.presentation.view.component.live.game.AliensAttack;
 
 import android.content.Context;
+import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 02/11/2017.
  */
 
-public class GameAliensAttackEngine {
+public class GameAliensAttackEngine extends GameEngine {
 
   public List<Level> levels;
 
   // VARIABLES
-  private Context context;
 
   // OBSERVABLES
-  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Subscription popIntervalSubscription;
   private PublishSubject<Level> onLevelChange = PublishSubject.create();
   private PublishSubject<GameAliensAttackAlienView> onAlien = PublishSubject.create();
 
   public GameAliensAttackEngine(Context context) {
-    this.context = context;
+    super(context);
   }
 
   public enum Level {
@@ -39,7 +40,7 @@ public class GameAliensAttackEngine {
     private final float speed;
     private Random rand;
 
-    Level(int count, float popInterval, float speed) {
+    Level(int count, float speed, float popInterval) {
       this.count = count;
       this.popInterval = popInterval;
       this.speed = speed;
@@ -50,16 +51,16 @@ public class GameAliensAttackEngine {
       return count;
     }
 
-    public int getPopInterval() {
-      return (int) (popInterval + (rand.nextFloat() * 0.2f));
+    public float getPopInterval() {
+      return popInterval + (rand.nextFloat() * 0.2f);
     }
 
     public @GameAliensAttackAlienView.AlienType int getType() {
       return rand.nextInt() * (1 - 0) + 0;
     }
 
-    public int speed() {
-      return (int) (speed + (rand.nextFloat() * 2));
+    public float speed() {
+      return speed + (rand.nextFloat() * 2);
     }
 
     public float startX() {
@@ -82,12 +83,13 @@ public class GameAliensAttackEngine {
     levels.add(Level.HARD);
     levels.add(Level.EXTREME);
     levels.add(Level.ALIEN);
+    Collections.reverse(levels);
     return levels;
   }
 
   public Level levelForCount(int points) {
     List<Level> levelList = getAllLevels();
-    Collections.reverse(getAllLevels());
+
     for (Level level : levelList) {
       if (points > level.count) {
         return level;
@@ -101,11 +103,29 @@ public class GameAliensAttackEngine {
     Level level = levelForCount(count);
     onLevelChange.onNext(level);
 
-    subscriptions.add(Observable.timer(level.getPopInterval(), TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          GameAliensAttackAlienView viewAlien = new GameAliensAttackAlienView(context, level);
-        }));
+    Timber.d("Pop alien : " +
+        level +
+        "/ count : " +
+        count +
+        " / popInterval : " +
+        level.getPopInterval());
+
+    if (popIntervalSubscription != null) popIntervalSubscription.unsubscribe();
+    popIntervalSubscription =
+        Observable.timer((int) (level.getPopInterval() * 1000), TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> {
+              GameAliensAttackAlienView viewAlien = new GameAliensAttackAlienView(context, level);
+              popAlien(count + 1);
+            });
+  }
+
+  @Override public void start() {
+    popAlien(0);
+  }
+
+  @Override public void stop() {
+    if (popIntervalSubscription != null) popIntervalSubscription.unsubscribe();
   }
 
   /**
