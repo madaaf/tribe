@@ -113,6 +113,7 @@ public class ChatView extends ChatMVPView {
   private final static int INTERVAL_IM_TYPING = 2;
   protected static int ANIM_DURATION = 300;
   protected static int ANIM_DURATION_FAST = 150;
+  protected static int ANIM_DURATION_LONG = 500;
 
   public final static int FROM_CHAT = 0;
   public final static int FROM_LIVE = 1;
@@ -327,12 +328,12 @@ public class ChatView extends ChatMVPView {
 
         voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
-            voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (screenUtils.getWidthPx() / 2);
+            voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (recordingView.getWidth() / 2);
+        recordingView.setX(transX);
+        recordingViewX = (int) transX;
+        recordingView.setVisibility(INVISIBLE);
 
-        recordingView.setTranslationX(transX);
-        recordingViewX = (int) recordingView.getX();
-        recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
-
+        //  recordingView.setY(screenUtils.getHeightPx() +recordingView.getHeight());
         if (members.size() < 2 && fromShortcut == null) {
           containerUsers.setVisibility(GONE);
         } else {

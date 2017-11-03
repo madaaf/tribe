@@ -792,6 +792,7 @@
 	<string name="home_action_tap_to_chat">Tap to chat</string>
 	<string name="home_action_chat_preview">%1$s: %2$s</string>
 	<string name="home_action_new_chat">New chat</string>
+	<string name="home_action_new_game">New game</string>
 	<string name="home_anonymous_user">person</string>
 	<string name="home_anonymous_users">persons</string>
 	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Fav to top</string>
@@ -878,4 +879,10 @@
 	<string name="mute_group_popup_message">People you\'ve blocked are in this group. If you mute this group, you\'ll leave this view and won\'t receive new messages, calls and other associated notifications.</string>
 	<string name="mute_group_popup_validate">Mute group</string>
 	<string name="mute_group_popup_cancel">Don\'t mute group</string>
+	
+	<!-- New Game -->
+	<string name="new_game_title">New game</string>
+	<string name="new_game_plays">%1$s plays</string>
+	<string name="new_game_new">New</string>
+	<string name="new_game_featured">Featured</string>
 </resources>

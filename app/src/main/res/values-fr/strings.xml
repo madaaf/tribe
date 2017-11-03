@@ -792,6 +792,7 @@
 	<string name="home_action_tap_to_chat">Tapez pour discuter</string>
 	<string name="home_action_chat_preview">%1$s : %2$s</string>
 	<string name="home_action_new_chat">Nouveau chat</string>
+	<string name="home_action_new_game">Nouvelle partie</string>
 	<string name="home_anonymous_user">personne</string>
 	<string name="home_anonymous_users">personnes</string>
 	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Épingler en haut</string>
@@ -878,4 +879,10 @@
 	<string name="mute_group_popup_message"></string>
 	<string name="mute_group_popup_validate">Mettre en sourdine</string>
 	<string name="mute_group_popup_cancel">Ne pas mettre en sourdine</string>
+	
+	<!-- New Game -->
+	<string name="new_game_title">Nouvelle partie</string>
+	<string name="new_game_plays">%1$s parties jouées</string>
+	<string name="new_game_new">Nouveau</string>
+	<string name="new_game_featured">À la une</string>
 </resources>
