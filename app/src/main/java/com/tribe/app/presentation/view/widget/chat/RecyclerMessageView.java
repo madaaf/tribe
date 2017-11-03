@@ -256,10 +256,17 @@ public class RecyclerMessageView extends ChatMVPView {
    * MESSAGE RECEPTION
    */
 
-  @Override public void successLoadingMessage(List<Message> messages) {
-    Timber.w("SOEF successLoadingMessage " + messages.size() + " ");
-    errorLoadingMessages = false;
+  private boolean isDisplayedMessageDisk = false;
+  private boolean successLoadingMessage = false;
 
+  @Override public void successLoadingMessage(List<Message> messages) {
+    successLoadingMessage = true;
+    Timber.w("SOEF successLoadingMessage " + messages.size() + " ");
+    if (isDisplayedMessageDisk) {
+      messageAdapter.clearItem();
+      isDisplayedMessageDisk = false;
+    }
+    errorLoadingMessages = false;
     for (Message m : messages) {
       if (!messageAdapter.getItems().contains(m)) {
         unreadMessage.add(m);
@@ -295,18 +302,20 @@ public class RecyclerMessageView extends ChatMVPView {
     load = false;
   }
 
+  @Override public void successLoadingMessageDisk(List<Message> messages) {
+    Timber.w("successLoadingMessageDisk " + messages.size() + " ");
+    if (errorLoadingMessages || !successLoadingMessage) {
+      messageAdapter.setItems(messages, 0);
+      scrollListToBottom();
+      isDisplayedMessageDisk = true;
+    }
+
+    // DO SAME THING THE SUCVCESSLOADING MESSAGE/
+  }
+
   @Override public void successMessageCreated(Message message, int position) {
     Timber.w("successMessageCreated " + position + " " + message.toString());
     messageAdapter.notifyItemChanged(messageAdapter.getItemCount() - 1, message);
-  }
-
-  @Override public void successLoadingMessageDisk(List<Message> messages) {
-    Timber.w("successLoadingMessageDisk " + messages.size() + " ");
-    if (errorLoadingMessages) {
-      messageAdapter.setItems(messages, 0);
-      scrollListToBottom();
-    }
-    // DO SAME THING THE SUCVCESSLOADING MESSAGE/
   }
 
   /**
@@ -329,7 +338,6 @@ public class RecyclerMessageView extends ChatMVPView {
 
   public void successMessageReceived(List<Message> messages) {
     messageAdapter.setItem(messages.get(0));
-    //TODO
     context.startService(WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMREADING,
         JsonUtils.arrayToJson(arrIds)));
     scrollListToBottom();

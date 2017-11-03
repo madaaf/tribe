@@ -119,11 +119,7 @@ public class MessagePresenter implements Presenter {
 
   public void loadMessagesDisk(String[] userIds, String date) {
     getMessageFromDisk.setUserIds(userIds, date);
-    try {
-      getMessageFromDisk.execute(new LoadMessageDiskSubscriber());
-    } catch (Exception e) {
-      Timber.e("ERROR " + e.getStackTrace());
-    }
+    getMessageFromDisk.execute(new LoadMessageDiskSubscriber());
   }
 
   public void loadMessage(String[] userIds, String date) {

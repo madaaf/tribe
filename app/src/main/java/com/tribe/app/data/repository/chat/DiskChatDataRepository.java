@@ -10,6 +10,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
+import rx.exceptions.Exceptions;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -37,7 +38,13 @@ import rx.Observable;
         (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
     return chatDataStore.getMessages(userIds)
         .doOnError(Throwable::printStackTrace)
-        .map(messageRealmDataMapper::transform);
+        .map(messageRealms -> {
+          try {
+            return messageRealmDataMapper.transform(messageRealms);
+          } catch (Throwable t) {
+            throw Exceptions.propagate(t);
+          }
+        });
   }
 
   @Override public Observable<List<Message>> getMessagesImage(String[] userIds) {

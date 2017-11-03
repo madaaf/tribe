@@ -33,7 +33,6 @@ import javax.inject.Singleton;
   public Message transform(MessageRealm messageRealm) {
     Message message = null;
     if (messageRealm != null) {
-
       switch (messageRealm.get__typename()) {
         case Message.MESSAGE_TEXT:
           message = new MessageText(messageRealm.getId());
@@ -70,9 +69,10 @@ import javax.inject.Singleton;
           //((MessageAudio) message).setDuration();
           break;
       }
-
-      message.setType(messageRealm.get__typename());
-      message.setCreationDate(messageRealm.getCreated_at());
+      if (message != null) {
+        message.setType(messageRealm.get__typename());
+        message.setCreationDate(messageRealm.getCreated_at());
+      }
     }
 
     return message;
@@ -80,11 +80,13 @@ import javax.inject.Singleton;
 
   public List<Message> transform(Collection<MessageRealm> messageRealmCollection) {
     List<Message> messageList = new ArrayList<>();
-    Message message;
+    Message message = null;
 
     for (MessageRealm messageRealm : messageRealmCollection) {
       if (messageRealm != null) {
-        message = transform(messageRealm);
+        if (messageRealm.get__typename() != null) {
+          message = transform(messageRealm);
+        }
         if (message != null) {
           messageList.add(message);
         }

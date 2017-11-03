@@ -991,7 +991,7 @@ public class ChatView extends ChatMVPView {
           if (members.size() < 2 && fromShortcut == null) {
             expendRecyclerViewGrp();
           }
-          Timber.i("START TYPING");
+          Timber.i("START TYPING " + (members.size() < 2 && fromShortcut == null));
           int pos = chatUserAdapter.getIndexOfUser(u);
           chatUserAdapter.notifyItemChanged(pos, u);
         }

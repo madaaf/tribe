@@ -93,6 +93,12 @@ public class MessageAdapter extends RecyclerView.Adapter {
     super.notifyDataSetChanged();
   }
 
+
+  public void clearItem(){
+    this.items.clear();
+    super.notifyDataSetChanged();
+  }
+
   public void setItem(Message message) {
     this.items.add(message);
     super.notifyDataSetChanged();
