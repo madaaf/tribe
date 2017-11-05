@@ -19,6 +19,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.app.presentation.view.widget.game.GameDrawViewPagerAdapter;
 import com.tribe.app.presentation.view.widget.game.GameViewPager;
@@ -60,15 +61,13 @@ public class GameDrawView extends GameView {
 
   public GameDrawView(@NonNull Context context) {
     super(context);
-    initView(context);
   }
 
   public GameDrawView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
-    initView(context);
   }
 
-  private void initView(Context context) {
+  @Override protected void initView(Context context) {
     this.context = context;
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

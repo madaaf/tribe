@@ -21,6 +21,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.view.component.live.game.AliensAttack.GameAliensAttackView;
+import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
@@ -61,6 +62,7 @@ public class GameManagerView extends FrameLayout {
    */
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> peerObservable;
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
 
   public GameManagerView(@NonNull Context context) {
@@ -138,8 +140,7 @@ public class GameManagerView extends FrameLayout {
         gameManager.onRemoteUserStopGame().map(tribeSessionGamePair -> tribeSessionGamePair.second))
         .filter(game -> game.hasView())
         .subscribe(game -> {
-          if (currentGameView != null) removeView(currentGameView);
-          currentGameView.dispose();
+          currentGameView.stop();
           currentGameView = null;
           currentGame = null;
           setVisibility(View.GONE);
@@ -148,6 +149,7 @@ public class GameManagerView extends FrameLayout {
 
   public void initPeerGuestObservable(
       Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> obs) {
+    peerObservable = obs;
     peerList.put(currentUser.getId(), currentUser.asTribeGuest());
 
     subscriptions.add(obs.subscribe(rxHashMapAction -> {

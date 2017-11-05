@@ -59,7 +59,7 @@ import com.tribe.app.presentation.view.widget.chat.RecyclerMessageView;
 import com.tribe.app.presentation.view.component.live.game.GameChallengesView;
 import com.tribe.app.presentation.view.component.live.game.GameDrawView;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
-import com.tribe.app.presentation.view.component.live.game.GameView;
+import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.LifeNotification;

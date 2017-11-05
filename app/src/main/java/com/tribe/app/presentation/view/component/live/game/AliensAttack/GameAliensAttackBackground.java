@@ -29,7 +29,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 10/31/2017.
@@ -239,7 +238,6 @@ public class GameAliensAttackBackground extends FrameLayout {
   }
 
   private void animateCloud(ImageView cloud) {
-    Timber.d("Animate cloud : " + cloud.getId() + " / translation X = " + cloud.getTranslationX());
     cloud.animate()
         .translationX(cloud.getTranslationX() +
             (screenUtils.getWidthPx() - cloud.getTranslationX()) +
@@ -251,10 +249,6 @@ public class GameAliensAttackBackground extends FrameLayout {
             animation.removeAllListeners();
             cloud.animate().translationX(0).setDuration(0).setListener(null).start();
             animateCloud(cloud);
-            Timber.d("End animate cloud : " +
-                cloud.getId() +
-                " / translation X = " +
-                cloud.getTranslationX());
           }
         })
         .start();
@@ -283,6 +277,10 @@ public class GameAliensAttackBackground extends FrameLayout {
   /**
    * PUBLIC
    */
+
+  public int getRoadBottomMargin() {
+    return screenUtils.dpToPx(15);
+  }
 
   public void dispose() {
     clearCars();

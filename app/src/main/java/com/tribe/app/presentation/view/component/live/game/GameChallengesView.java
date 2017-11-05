@@ -25,6 +25,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.app.presentation.view.widget.game.GameChallengeViewPagerAdapter;
 import com.tribe.app.presentation.view.widget.game.GameViewPager;
@@ -59,15 +60,14 @@ public class GameChallengesView extends GameView {
 
   public GameChallengesView(@NonNull Context context) {
     super(context);
-    initView(context);
   }
 
   public GameChallengesView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
-    initView(context);
   }
 
-  private void initView(Context context) {
+  @Override
+  protected void initView(Context context) {
     inflater.inflate(R.layout.view_game_challenges, this, true);
     unbinder = ButterKnife.bind(this);
 

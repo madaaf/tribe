@@ -11,7 +11,6 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 02/11/2017.
@@ -56,7 +55,8 @@ public class GameAliensAttackEngine extends GameEngine {
     }
 
     public @GameAliensAttackAlienView.AlienType int getType() {
-      return rand.nextInt() * (1 - 0) + 0;
+      // generates random number between 0 and 1
+      return (int) Math.round(Math.random());
     }
 
     public float speed() {
@@ -64,11 +64,11 @@ public class GameAliensAttackEngine extends GameEngine {
     }
 
     public float startX() {
-      return rand.nextFloat() * (0.95f - 0.15f) + 0.15f;
+      return rand.nextFloat() * (0.85f - 0.15f) + 0.15f;
     }
 
     public float rotation() {
-      return (float) ((rand.nextFloat() * (3 + 3) + 3) * Math.PI / 180);
+      return rand.nextFloat() * 3;
     }
 
     public float scale() {
@@ -103,19 +103,13 @@ public class GameAliensAttackEngine extends GameEngine {
     Level level = levelForCount(count);
     onLevelChange.onNext(level);
 
-    Timber.d("Pop alien : " +
-        level +
-        "/ count : " +
-        count +
-        " / popInterval : " +
-        level.getPopInterval());
-
     if (popIntervalSubscription != null) popIntervalSubscription.unsubscribe();
     popIntervalSubscription =
         Observable.timer((int) (level.getPopInterval() * 1000), TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(aLong -> {
               GameAliensAttackAlienView viewAlien = new GameAliensAttackAlienView(context, level);
+              onAlien.onNext(viewAlien);
               popAlien(count + 1);
             });
   }
@@ -133,7 +127,7 @@ public class GameAliensAttackEngine extends GameEngine {
    */
 
   public Observable<Level> onLevelChange() {
-    return onLevelChange;
+    return onLevelChange.distinctUntilChanged();
   }
 
   public Observable<GameAliensAttackAlienView> onAlien() {

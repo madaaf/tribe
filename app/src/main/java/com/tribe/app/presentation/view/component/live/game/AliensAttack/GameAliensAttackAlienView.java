@@ -1,11 +1,15 @@
 package com.tribe.app.presentation.view.component.live.game.AliensAttack;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import com.tribe.app.R;
@@ -13,6 +17,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.Random;
 import javax.inject.Inject;
@@ -23,6 +28,8 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class GameAliensAttackAlienView extends FrameLayout {
+
+  private static final int DURATION = 300;
 
   @IntDef({ YELLOW, BLUE }) public @interface AlienType {
   }
@@ -36,13 +43,9 @@ public class GameAliensAttackAlienView extends FrameLayout {
    * VARIABLES
    */
 
-  private ImageView imgAlien;
-  private ImageView imgAlienBG;
-  private ImageView imgAlienLost;
+  private ImageView imgAlien, imgAlienBG, imgAlienLost;
   private int alienType;
-  private int rotation;
-  private float startX;
-  private float speed;
+  private float startX, speed, scale, rotation;
 
   /**
    * RESOURCES
@@ -57,6 +60,10 @@ public class GameAliensAttackAlienView extends FrameLayout {
   public GameAliensAttackAlienView(@NonNull Context context, GameAliensAttackEngine.Level level) {
     super(context);
     this.alienType = level.getType();
+    this.startX = level.startX();
+    this.scale = level.scale();
+    this.rotation = level.rotation();
+    this.speed = level.speed();
     init();
   }
 
@@ -102,7 +109,7 @@ public class GameAliensAttackAlienView extends FrameLayout {
       drawableAlienId = R.drawable.game_aliens_attack_alien_1;
       drawableAlienBGId = R.drawable.game_aliens_attack_alien_gradient_blue;
     } else {
-      int alienIndex = new Random().nextInt((3 - 2) + 2) + 2;
+      int alienIndex = new Random().nextInt(3 - 2) + 2;
       drawableAlienId =
           getResources().getIdentifier("game_aliens_attack_alien_" + alienIndex, "drawable",
               getContext().getPackageName());
@@ -149,8 +156,39 @@ public class GameAliensAttackAlienView extends FrameLayout {
     return startX;
   }
 
+  public float getStartScale() {
+    return scale;
+  }
+
   public float getSpeed() {
     return speed;
+  }
+
+  public ImageView getAlienImageView() {
+    return imgAlien;
+  }
+
+  public void animateKill() {
+    AnimationUtils.fadeOut(imgAlienBG, DURATION);
+
+    imgAlien.animate()
+        .scaleY(0)
+        .scaleX(0)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .setListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationEnd(Animator animation) {
+            animation.removeAllListeners();
+            ViewGroup parent = ((ViewGroup) getParent());
+            if (parent != null) parent.removeView(GameAliensAttackAlienView.this);
+          }
+        })
+        .start();
+  }
+
+  public void lost() {
+    imgAlien.setVisibility(View.GONE);
+    imgAlienLost.setVisibility(View.VISIBLE);
   }
 
   public void dispose() {

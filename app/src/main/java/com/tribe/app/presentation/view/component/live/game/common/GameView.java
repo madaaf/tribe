@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.component.live.game;
+package com.tribe.app.presentation.view.component.live.game.common;
 
 import android.app.Activity;
 import android.content.Context;
@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import butterknife.Unbinder;
 import com.tribe.app.domain.entity.User;
@@ -14,6 +15,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
@@ -31,6 +33,7 @@ public abstract class GameView extends FrameLayout {
 
   @Inject protected User user;
   @Inject protected ScreenUtils screenUtils;
+  @Inject protected SoundManager soundManager;
 
   protected LayoutInflater inflater;
   protected Unbinder unbinder;
@@ -53,7 +56,7 @@ public abstract class GameView extends FrameLayout {
     initView(context);
   }
 
-  private void initView(Context context) {
+  protected void initView(Context context) {
     this.context = context;
     initDependencyInjector();
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -90,6 +93,16 @@ public abstract class GameView extends FrameLayout {
    * PUBLIC
    */
 
+  public void start() {
+
+  }
+
+  public void stop() {
+    ViewGroup parent = (ViewGroup) getParent();
+    if (parent != null) removeView(GameView.this);
+    dispose();
+  }
+
   public void setGame(Game game) {
     this.game = game;
   }
@@ -102,9 +115,9 @@ public abstract class GameView extends FrameLayout {
 
   public void dispose() {
     peerList.clear();
+    game.setPeerList(peerList.values());
     subscriptionsRoom.clear();
     subscriptions.clear();
-    game.setPeerList(peerList.values());
   }
 
   /**
