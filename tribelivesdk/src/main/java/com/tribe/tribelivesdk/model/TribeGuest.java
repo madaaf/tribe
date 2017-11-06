@@ -114,4 +114,8 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   public boolean isExternal() {
     return isExternal;
   }
+
+  public boolean canPlayGames(String gameId) {
+    return true;
+  }
 }

@@ -166,4 +166,9 @@ public class StringUtils {
 
     return buffer.toString();
   }
+
+  public static int stringWithPrefix(Context context, String prefix, String name) {
+    return context.getResources().getIdentifier(prefix + name, "string",
+        context.getPackageName());
+  }
 }

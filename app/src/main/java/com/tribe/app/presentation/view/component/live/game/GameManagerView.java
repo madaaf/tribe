@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -53,7 +54,7 @@ public class GameManagerView extends FrameLayout {
   private GameManager gameManager;
   private GameView currentGameView;
   private WebRTCRoom webRTCRoom;
-  private Map<String, TribeGuest> peerList;
+  private Map<String, TribeGuest> peerMap;
   private Game currentGame;
   private Map<String, List<String>> mapGameData;
 
@@ -62,7 +63,7 @@ public class GameManagerView extends FrameLayout {
    */
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> peerObservable;
+  private BehaviorSubject<Map<String, TribeGuest>> onPeerMapChange = BehaviorSubject.create();
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
 
   public GameManagerView(@NonNull Context context) {
@@ -79,7 +80,7 @@ public class GameManagerView extends FrameLayout {
     initDependencyInjector();
     unbinder = ButterKnife.bind(this);
     gameManager = GameManager.getInstance(getContext());
-    peerList = new HashMap<>();
+    peerMap = new HashMap<>();
 
     if (!StringUtils.isEmpty(gameData.get())) {
       mapGameData = new Gson().fromJson(gameData.get(), new TypeToken<HashMap<String, Object>>() {
@@ -149,17 +150,16 @@ public class GameManagerView extends FrameLayout {
 
   public void initPeerGuestObservable(
       Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> obs) {
-    peerObservable = obs;
-    peerList.put(currentUser.getId(), currentUser.asTribeGuest());
+    peerMap.put(currentUser.getId(), currentUser.asTribeGuest());
 
     subscriptions.add(obs.subscribe(rxHashMapAction -> {
       if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD)) {
-        peerList.put(rxHashMapAction.item.getId(), rxHashMapAction.item);
+        peerMap.put(rxHashMapAction.item.getId(), rxHashMapAction.item);
       } else if (rxHashMapAction.changeType.equals(ObservableRxHashMap.REMOVE)) {
-        peerList.remove(rxHashMapAction.item.getId());
+        peerMap.remove(rxHashMapAction.item.getId());
       }
 
-      if (currentGame != null) currentGame.setPeerList(peerList.values());
+      onPeerMapChange.onNext(peerMap);
     }));
   }
 
@@ -191,7 +191,7 @@ public class GameManagerView extends FrameLayout {
 
     gameView.setWebRTCRoom(webRTCRoom);
     gameView.setGame(game);
-    game.setPeerList(peerList.values());
+    game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));
 
     return gameView;

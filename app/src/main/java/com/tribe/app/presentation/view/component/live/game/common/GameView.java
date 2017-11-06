@@ -20,9 +20,13 @@ import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -31,7 +35,11 @@ import rx.subscriptions.CompositeSubscription;
 
 public abstract class GameView extends FrameLayout {
 
-  @Inject protected User user;
+  protected static final String ACTION_KEY = "action";
+  protected static final String USER_KEY = "user";
+  protected static final String FROM_KEY = "from";
+
+  @Inject protected User currentUser;
   @Inject protected ScreenUtils screenUtils;
   @Inject protected SoundManager soundManager;
 
@@ -41,10 +49,13 @@ public abstract class GameView extends FrameLayout {
   protected GameManager gameManager;
   protected WebRTCRoom webRTCRoom;
   protected Game game;
-  protected Map<String, TribeGuest> peerList;
+  protected Map<String, TribeGuest> peerMap;
+  protected String currentMasterId;
 
+  // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected CompositeSubscription subscriptionsRoom = new CompositeSubscription();
+  protected Observable<Map<String, TribeGuest>> peerMapObservable;
 
   public GameView(@NonNull Context context) {
     super(context);
@@ -62,7 +73,7 @@ public abstract class GameView extends FrameLayout {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     gameManager = GameManager.getInstance(context);
 
-    peerList = new HashMap<>();
+    peerMap = new HashMap<>();
   }
 
   protected void initDependencyInjector() {
@@ -87,14 +98,36 @@ public abstract class GameView extends FrameLayout {
 
   protected abstract void initWebRTCRoomSubscriptions();
 
-  public abstract void setNextGame();
+  private Observable<String> generateNewMasterId() {
+    if (game != null) {
+      List<String> candidatesIds = new ArrayList<String>();
+      candidatesIds.add(currentUser.getId());
+
+      return peerMapObservable.single().flatMap(map -> {
+        for (String key : map.keySet()) {
+          if (map.get(key).canPlayGames(game.getId())) {
+            candidatesIds.add(map.get(key).getId());
+          }
+        }
+
+        Collections.sort(candidatesIds);
+        return Observable.just(candidatesIds.get(0));
+      });
+    } else {
+      return Observable.just(null);
+    }
+  }
+
+  protected abstract void takeOverGame();
 
   /**
    * PUBLIC
    */
 
-  public void start() {
+  public abstract void setNextGame();
 
+  public void start(Observable<Map<String, TribeGuest>> map) {
+    peerMapObservable = map;
   }
 
   public void stop() {
@@ -114,10 +147,19 @@ public abstract class GameView extends FrameLayout {
   }
 
   public void dispose() {
-    peerList.clear();
-    game.setPeerList(peerList.values());
+    peerMap.clear();
     subscriptionsRoom.clear();
     subscriptions.clear();
+  }
+
+  public void userLeft(String userId) {
+    if (userId.equals(currentMasterId)) {
+      subscriptions.add(generateNewMasterId().subscribe(newMasterId -> {
+        if (newMasterId.equals(currentUser.getId())) {
+          takeOverGame();
+        }
+      }));
+    }
   }
 
   /**

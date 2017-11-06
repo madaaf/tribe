@@ -505,6 +505,30 @@
     <item name="android:textColor">@android:color/white</item>
   </style>
 
+  <style name="GameTitle">
+    <item name="android:textSize">39sp</item>
+  </style>
+
+  <style name="GameTitle.1" parent="@style/GameTitle">
+    <item name="customFont">Gulkave-Regular.ttf</item>
+  </style>
+
+  <style name="GameTitle.1.White" parent="@style/GameTitle.1">
+    <item name="android:textColor">@android:color/white</item>
+  </style>
+
+  <style name="GameBody">
+    <item name="android:textSize">19sp</item>
+  </style>
+
+  <style name="GameBody.1" parent="@style/GameBody">
+    <item name="customFont">Gulkave-Regular.ttf</item>
+  </style>
+
+  <style name="GameBody.1.White" parent="@style/GameBody.1">
+    <item name="android:textColor">@android:color/white</item>
+  </style>
+
   <!--Alerter-->
   <style name="AlertStyle" parent="@android:style/Widget">
     <item name="android:layout_width">match_parent</item>

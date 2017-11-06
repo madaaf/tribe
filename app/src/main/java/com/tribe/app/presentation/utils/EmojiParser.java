@@ -138,4 +138,8 @@ public class EmojiParser {
     // Returning text
     return returnTextString;
   }
+
+  public static String getEmoji(String key) {
+    return IEmojiMap.get(key);
+  }
 }

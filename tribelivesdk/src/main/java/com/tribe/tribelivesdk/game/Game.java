@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -61,6 +62,7 @@ public abstract class Game extends GameFilter {
 
   // OBSERVABLE / SUBSCRIPTIONS
   protected CompositeSubscription subscriptions = new CompositeSubscription();
+  protected CompositeSubscription roomSubscriptions = new CompositeSubscription();
   protected PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
   protected PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
 
@@ -129,9 +131,11 @@ public abstract class Game extends GameFilter {
     }
   }
 
-  public void setPeerList(Collection<TribeGuest> peerCollection) {
-    this.peerList.clear();
-    this.peerList.addAll(peerCollection);
+  public void initPeerMapObservable(Observable<Map<String, TribeGuest>> peerMap) {
+    roomSubscriptions.add(peerMap.subscribe(map -> {
+      this.peerList.clear();
+      this.peerList.addAll(map.values());
+    }));
   }
 
   public void setDataList(Collection<String> dataList) {
