@@ -355,4 +355,9 @@ public class RecyclerMessageView extends ChatMVPView {
   public void setShortcut(Shortcut shortcut) {
     this.shortcut = shortcut;
   }
+
+  public void refreshLayout() {
+    recyclerView.getLayoutParams().width = RecyclerView.LayoutParams.MATCH_PARENT;
+    recyclerView.getLayoutParams().height = RecyclerView.LayoutParams.MATCH_PARENT;
+  }
 }

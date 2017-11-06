@@ -16,6 +16,7 @@
 	<string name="action_hide">Hide</string>
 	<string name="action_copy">Copy</string>
 	<string name="action_got_it">Got it!</string>
+	<string name="action_tap_to_add">Tap to add</string>
 	
 	<!-- User Actions -->
 	<string name="action_add_friend">Add Friend</string>
@@ -700,20 +701,12 @@
 	<string name="game_bird_rush_you_lost">YOU LOST</string>
 	<string name="game_bird_rush_someone_lost">%@ LOST!</string>
 	<string name="game_bird_rush_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
-	<string name="game_speed_racer">Speed Racer</string>
-	<string name="game_speed_racer_lets_go">GO AS FAR AS POSSIBLE!</string>
-	<string name="game_speed_racer_you_won">YOU WON!</string>
-	<string name="game_speed_racer_someone_won">%@ WON!</string>
-	<string name="game_speed_racer_you_lost">YOU LOST</string>
-	<string name="game_speed_racer_someone_lost">%@ LOST!</string>
-	<string name="game_speed_racer_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
-	<string name="game_slice_fruit">Slice Fruit</string>
-	<string name="game_slice_fruit_lets_go">LET\'S MAKE A SALAD</string>
-	<string name="game_slice_fruit_you_won">YOU WON!</string>
-	<string name="game_slice_fruit_someone_won">%@ WON!</string>
-	<string name="game_slice_fruit_you_lost">YOU LOST</string>
-	<string name="game_slice_fruit_someone_lost">%@ LOST!</string>
-	<string name="game_slice_fruit_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
+	<string name="game_webv1_lets_go">LET\'S GO!</string>
+	<string name="game_webv1_you_won">YOU WON!</string>
+	<string name="game_webv1_someone_won">%@ WON!</string>
+	<string name="game_webv1_you_lost">YOU LOST</string>
+	<string name="game_webv1_someone_lost">%@ LOST!</string>
+	<string name="game_webv1_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>
@@ -817,7 +810,7 @@
 	
 	<!-- New Chat -->
 	<string name="newchat_title">New Chat</string>
-	<string name="newchat_to">To</string>
+	<string name="newchat_to">With</string>
 	<string name="newchat_create_error_noone_selected">You have to select people to create a chat</string>
 	
 	<!-- Shortcut -->
@@ -885,4 +878,7 @@
 	<string name="new_game_plays">%1$s plays</string>
 	<string name="new_game_new">New</string>
 	<string name="new_game_featured">Featured</string>
+	
+	<!-- Game -->
+	<string name="game_loading">Loading %1$s</string>
 </resources>

@@ -333,13 +333,6 @@ public class ChatView extends ChatMVPView {
         recordingViewX = (int) transX;
         recordingView.setVisibility(INVISIBLE);
 
-        //  recordingView.setY(screenUtils.getHeightPx() +recordingView.getHeight());
-        if (members.size() < 2 && fromShortcut == null) {
-          containerUsers.setVisibility(GONE);
-        } else {
-          containerUsers.setVisibility(VISIBLE);
-        }
-
         SwipeDetector moveListener = new SwipeDetector(chatView, voiceNoteBtn, recordingView,
             trashBtn.getX() - (trashBtn.getWidth() / 2), screenUtils);
 
@@ -366,6 +359,12 @@ public class ChatView extends ChatMVPView {
         }
 
         setTypeChatUX();
+
+        if (members.size() < 2 && fromShortcut == null) {
+          containerUsers.setVisibility(GONE);
+        } else {
+          containerUsers.setVisibility(VISIBLE);
+        }
       }
     });
   }
@@ -948,34 +947,11 @@ public class ChatView extends ChatMVPView {
   }
 
   private void shrankRecyclerViewGrp() {
-    containerUsers.setVisibility(VISIBLE);
-    containerUsers.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            containerUsers.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            ResizeAnimation a = new ResizeAnimation(containerUsers);
-            a.setDuration(ANIM_DURATION);
-            a.setInterpolator(new LinearInterpolator());
-            a.setParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, containerUsersHeight,
-                0);
-            containerUsers.startAnimation(a);
-          }
-        });
+    containerUsers.setVisibility(GONE);
   }
 
   private void expendRecyclerViewGrp() {
-    containerUsers.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            containerUsers.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            ResizeAnimation a = new ResizeAnimation(containerUsers);
-            a.setDuration(ANIM_DURATION);
-            a.setInterpolator(new LinearInterpolator());
-            a.setParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 0,
-                containerUsersHeight);
-            containerUsers.startAnimation(a);
-          }
-        });
+    containerUsers.setVisibility(VISIBLE);
   }
 
   @Override public void isTypingEvent(String userId, boolean typeEvent) {

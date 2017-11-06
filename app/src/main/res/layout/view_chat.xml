@@ -4,6 +4,7 @@
     android:id="@+id/contentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:orientation="vertical"
     >
 
@@ -54,16 +55,6 @@
       android:background="@android:color/white"
       android:clickable="true"
       />
-
-  <com.tribe.app.presentation.view.widget.chat.RecyclerMessageView
-      android:id="@+id/recyclerViewChat"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_above="@+id/containerUsers"
-      android:layout_below="@+id/topbar"
-      >
-
-  </com.tribe.app.presentation.view.widget.chat.RecyclerMessageView>
 
 
   <FrameLayout
@@ -122,6 +113,17 @@
 
 
   </FrameLayout>
+
+  <com.tribe.app.presentation.view.widget.chat.RecyclerMessageView
+      android:id="@+id/recyclerViewChat"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_above="@+id/containerUsers"
+      android:layout_below="@+id/topbar"
+      android:animateLayoutChanges="true"
+      >
+
+  </com.tribe.app.presentation.view.widget.chat.RecyclerMessageView>
 
 
   <View

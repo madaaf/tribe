@@ -61,4 +61,5 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView {
 
   public void isReadingUpdate(String userId) {
   }
+
 }
