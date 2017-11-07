@@ -22,6 +22,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -81,6 +82,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   @Nullable @BindView(R.id.imgMessage) ImageView imgMessage;
   @Nullable @BindView(R.id.viewPictoChat) PictoChatView viewPictoChat;
   @Nullable @BindView(R.id.viewPictoLive) PictoLiveView viewPictoLive;
+  @Nullable @BindView(R.id.notification) RelativeLayout notification;
 
   @Inject SoundManager soundManager;
   @Inject ScreenUtils screenUtils;
@@ -132,15 +134,14 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
         notificationContainer.getPaddingTop() + (getScreenHeight() / SCREEN_SCALE_FACTOR),
         notificationContainer.getPaddingRight(), 0);
 
-    if (type == LIVE ||
-        (!StringUtils.isEmpty(action) && action.equals(NotificationPayload.ACTION_JOINED))) {
+    if (type == LIVE || (!StringUtils.isEmpty(action) && action.equals(
+        NotificationPayload.ACTION_JOINED))) {
       layoutDetails.setVisibility(View.VISIBLE);
       viewPictoLive.setVisibility(View.VISIBLE);
       viewPictoLive.setStatus(PictoLiveView.ACTIVE);
-    } else if (actionType.equals(NotificationPayload.CLICK_ACTION_MESSAGE) &&
-        (StringUtils.isEmpty(action) ||
-            (!action.equals(NotificationPayload.ACTION_LEFT) &&
-                !actionType.equals(NotificationPayload.ACTION_JOINED)))) {
+    } else if (actionType.equals(NotificationPayload.CLICK_ACTION_MESSAGE) && (StringUtils.isEmpty(
+        action) || (!action.equals(NotificationPayload.ACTION_LEFT) && !actionType.equals(
+        NotificationPayload.ACTION_JOINED)))) {
       layoutDetails.setVisibility(View.VISIBLE);
       viewPictoChat.setVisibility(View.VISIBLE);
       viewPictoChat.setStatus(PictoChatView.ACTIVE);
@@ -369,6 +370,10 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
       return view;
     }
+  }
+
+  public View getContainer() {
+    return notification;
   }
 
   ///////////////////////

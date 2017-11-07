@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Pair;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
@@ -15,11 +18,17 @@ import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 27/09/2017.
@@ -28,6 +37,7 @@ import rx.subscriptions.CompositeSubscription;
 public class TribeBroadcastReceiver extends BroadcastReceiver {
 
   @Inject Navigator navigator;
+  @Inject User user;
 
   private WeakReference<Activity> weakReferenceActivity;
 
@@ -59,6 +69,49 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
     LiveNotificationView liveNotificationView =
         NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
+    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_MESSAGE)) {
+      if (liveNotificationView.getContainer() != null) {
+
+        List<String> myList =
+            new ArrayList<String>(Arrays.asList(notificationPayload.getUsers_ids().split(",")));
+
+        liveNotificationView.getContainer().setOnClickListener(view -> {
+          List<String> idslist = new ArrayList<>();
+          idslist.add(user.getId());
+          Shortcut notificationShortcut = null;
+          for (Recipient recipient : user.getRecipientList()) {
+            if (recipient instanceof Shortcut) {
+              for (User member : ((Shortcut) recipient).getMembers()) {
+                idslist.add(member.getId());
+              }
+
+              if (equalLists(myList, idslist)) {
+                Timber.e("SOEF GENIAL");
+                notificationShortcut = (Shortcut) recipient;
+              }
+            }
+            idslist.clear();
+          }
+          if (notificationShortcut != null) {
+            if (context instanceof ChatActivity) {
+              if (!((ChatActivity) context).getShortcut()
+                  .getId()
+                  .equals(notificationShortcut.getId())) {
+                navigator.navigateToChat((Activity) context, notificationShortcut, null, null, null,
+                    false);
+              }
+            } else if (context instanceof LiveActivity) {
+              // ((LiveActivity)context).getSho
+              Timber.e("ok " + idslist);
+            } else {
+              navigator.navigateToChat((Activity) context, notificationShortcut, null, null, null,
+                  false);
+            }
+          }
+        });
+      }
+    }
+
     if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
       onDisplayNotification.onNext(EmojiParser.demojizedText(
           context.getString(R.string.live_notification_guest_declined,
@@ -66,9 +119,8 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
       onDisplayNotification.onNext(null);
     }
 
-    if (liveNotificationView != null &&
-        (weakReferenceActivity.get() != null &&
-            !(weakReferenceActivity.get() instanceof LiveActivity))) {
+    if (liveNotificationView != null && (weakReferenceActivity.get() != null
+        && !(weakReferenceActivity.get() instanceof LiveActivity))) {
       Alerter.create(weakReferenceActivity.get(), liveNotificationView).show();
     } else if (liveNotificationView != null) {
       onShowNotificationLive.onNext(Pair.create(notificationPayload, liveNotificationView));
@@ -78,6 +130,23 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
   /**
    * OBSERVABLES
    */
+
+  public boolean equalLists(List<String> one, List<String> two) {
+    if (one == null && two == null) {
+      return true;
+    }
+
+    if ((one == null && two != null) || one != null && two == null || one.size() != two.size()) {
+      return false;
+    }
+
+    one = new ArrayList<String>(one);
+    two = new ArrayList<String>(two);
+
+    Collections.sort(one);
+    Collections.sort(two);
+    return one.equals(two);
+  }
 
   public Observable<String> onDeclineInvitation() {
     return onDeclineInvitation;

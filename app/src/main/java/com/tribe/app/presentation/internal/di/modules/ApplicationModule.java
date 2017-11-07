@@ -20,7 +20,9 @@ import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.ShortcutRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.data.repository.chat.DiskChatDataRepository;
@@ -67,6 +69,7 @@ import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Module;
 import dagger.Provides;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -186,7 +189,7 @@ import timber.log.Timber;
   }
 
   @Provides @Singleton User provideCurrentUser(Realm realm, AccessToken accessToken,
-      UserRealmDataMapper userRealmDataMapper) {
+      UserRealmDataMapper userRealmDataMapper, ShortcutRealmDataMapper shortcutRealmDataMapper) {
     final User user = new User("");
 
     userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findAll();
@@ -199,8 +202,13 @@ import timber.log.Timber;
       }
     });
 
+    RealmResults<ShortcutRealm> shortcutRealmResults = realm.where(ShortcutRealm.class).findAll();
+    RealmList<ShortcutRealm> finalList = new RealmList<ShortcutRealm>();
+    finalList.addAll(shortcutRealmResults.subList(0, shortcutRealmResults.size()));
+
     if (userRealm != null && userRealm.size() > 0) {
       user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm.get(0))));
+      user.setShortcutList(shortcutRealmDataMapper.transform(finalList));
     }
 
     return user;

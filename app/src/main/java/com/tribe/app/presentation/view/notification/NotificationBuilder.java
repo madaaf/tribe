@@ -69,8 +69,8 @@ import javax.inject.Singleton;
 
       Notification notification = buildNotification(notificationPayload);
 
-      if (application.getAppState() != null &&
-          application.getAppState().equals(AppState.FOREGROUND)) {
+      if (application.getAppState() != null && application.getAppState()
+          .equals(AppState.FOREGROUND)) {
         Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
         intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD, notificationPayload);
         application.sendBroadcast(intentUnique);
@@ -81,10 +81,10 @@ import javax.inject.Singleton;
         }
       } else {
         if (notification != null) {
-          if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE) &&
-              fullScreenNotifications.get() &&
-              !StringUtils.isEmpty(notificationPayload.getSound()) &&
-              !fullScreenNotificationState.get().contains(notificationPayload.getThread())) {
+          if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
+              && fullScreenNotifications.get()
+              && !StringUtils.isEmpty(notificationPayload.getSound())
+              && !fullScreenNotificationState.get().contains(notificationPayload.getThread())) {
             notification.sound = null;
             sendFullScreenNotification(remoteMessage);
           }
@@ -157,8 +157,8 @@ import javax.inject.Singleton;
         } else {
           return getPendingIntentForLive(payload);
         }
-      } else if (pendingClass.equals(HomeActivity.class) &&
-          payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
+      } else if (pendingClass.equals(HomeActivity.class) && payload.getClickAction()
+          .equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
         return getPendingIntentForUserRegistered(payload);
       }
     }
@@ -167,13 +167,13 @@ import javax.inject.Singleton;
   }
 
   private Class getClassFromPayload(NotificationPayload payload) {
-    if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
+    if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
       return HomeActivity.class;
-    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
+    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
       return LiveActivity.class;
     }
 

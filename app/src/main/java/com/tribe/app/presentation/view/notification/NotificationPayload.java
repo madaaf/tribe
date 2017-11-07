@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.notification;
 
 import android.support.annotation.StringDef;
+import com.google.gson.JsonArray;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,9 +48,23 @@ public class NotificationPayload implements Serializable {
   private List<MissedCallAction> missedCallList = new ArrayList<>();
   private long time;
   private String message_picture;
+  private String users_ids;
+  private JsonArray thread_id;
 
   public void setTime(long time) {
     this.time = time;
+  }
+
+  public String getUsers_ids() {
+    return users_ids;
+  }
+
+  public void setUsers_ids(String users_ids) {
+    this.users_ids = users_ids;
+  }
+
+  public void setThread_id(JsonArray thread_id) {
+    this.thread_id = thread_id;
   }
 
   public long getTime() {
@@ -185,9 +200,8 @@ public class NotificationPayload implements Serializable {
   }
 
   public boolean isLive() {
-    return click_action == null ||
-        click_action.equals(CLICK_ACTION_BUZZ) ||
-        click_action.equals(CLICK_ACTION_LIVE);
+    return click_action == null || click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(
+        CLICK_ACTION_LIVE);
   }
 
   public boolean isUserCall() {

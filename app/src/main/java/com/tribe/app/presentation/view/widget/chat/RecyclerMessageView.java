@@ -315,7 +315,7 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void successMessageCreated(Message message, int position) {
     Timber.w("successMessageCreated " + position + " " + message.toString());
-    messageAdapter.notifyItemChanged(messageAdapter.getItemCount() - 1, message);
+    messageAdapter.updateItem(messageAdapter.getItemCount() - 1, message);
   }
 
   /**

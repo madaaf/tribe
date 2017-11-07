@@ -128,6 +128,8 @@
 	<string name="live_notification_add_as_guest">:busts_in_silhouette: Add %1$s in this call</string>
 	<string name="live_notification_text">:speech_balloon: Text %1$s</string>
 	<string name="live_notification_decline">:no_mobile_phones: Decline %1$s call</string>
+	<string name="live_notification_ringing_people">Ringing %1$d people</string>
+	<string name="live_notification_waiting_people">Waiting for %1$d people to join</string>
 	
 	<!-- Decline Menu -->
 	<string name="decline_menu_title">Text %1$s</string>
@@ -444,7 +446,7 @@
 	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you as a friend on Tribe. Only you will be able to add people as friends.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Disable</string>
 	<string name="profile_blocked_friends">Blocked or hidden chats :no_entry:</string>
-	<string name="profile_manage_friendships">Is online\' notification :bell:</string>
+	<string name="profile_manage_friendships">Is online notification :bell:</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_contact_us">Contact us :envelope:</string>
@@ -695,7 +697,7 @@
 	<string name="game_aliens_attack_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
 	<string name="game_bird_rush">Bird Rush!</string>
 	<string name="game_bird_rush_title">BIRD\nRUSH</string>
-	<string name="game_bird_rush_lets_go">TAP, TAP TAP TO FLY!</string>
+	<string name="game_bird_rush_lets_go">TAP, TAP, TAP, TO FLY!</string>
 	<string name="game_bird_rush_you_won">YOU WON!</string>
 	<string name="game_bird_rush_someone_won">%@ WON!</string>
 	<string name="game_bird_rush_you_lost">YOU LOST</string>
@@ -837,7 +839,7 @@
 	<string name="chat_live_status_hide">Hide</string>
 	<string name="chat_live_status_switching">Switching</string>
 	<string name="chat_quickchat_back_to_group">Group</string>
-	<string name="chat_placeholder_message">Message</string>
+	<string name="chat_placeholder_message">Aa</string>
 	<string name="chat_placeholder_tap_and_hold">Tap and Hold!</string>
 	<string name="chat_placeholder_slide_to_cancel">Slide to cancel</string>
 	<string name="chat_seen_by">Seen by %1$s</string>
@@ -878,7 +880,11 @@
 	<string name="new_game_plays">%1$s plays</string>
 	<string name="new_game_new">New</string>
 	<string name="new_game_featured">Featured</string>
+	<string name="new_game_dice_title">Random people</string>
+	<string name="new_game_dice_subtitle">Get a quick match up!</string>
 	
 	<!-- Game -->
 	<string name="game_loading">Loading %1$s</string>
+	<string name="game_rotate_landscape">Rotate to Landscape mode</string>
+	<string name="game_rotate_portrait">Rotate to Portrait mode</string>
 </resources>
