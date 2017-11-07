@@ -54,6 +54,10 @@ public class JsonToModel {
       PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onNewGame = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
+  private PublishSubject<JSONObject> onGameMessage = PublishSubject.create();
+
+  // ALIENS ATTACK
+  private PublishSubject<JSONObject> onAlienPop = PublishSubject.create();
 
   public void setOptions(TribeLiveOptions options) {
     this.options = options;
@@ -240,6 +244,8 @@ public class JsonToModel {
             } else if (action.equals("clear")) {
               onClearDrawReceived.onNext(null);
             }
+          } else {
+            onGameMessage.onNext(app);
           }
         } else if (message.has(WebRTCRoom.MESSAGE_MEDIA_CONFIGURATION)) {
 
@@ -415,5 +421,9 @@ public class JsonToModel {
 
   public Observable<Pair<TribeSession, String>> onStopGame() {
     return onStopGame;
+  }
+
+  public Observable<JSONObject> onGameMessage() {
+    return onGameMessage;
   }
 }

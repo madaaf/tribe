@@ -126,7 +126,7 @@ public abstract class GameView extends FrameLayout {
 
   public abstract void setNextGame();
 
-  public void start(Observable<Map<String, TribeGuest>> map) {
+  public void start(Observable<Map<String, TribeGuest>> map, String userId) {
     peerMapObservable = map;
   }
 

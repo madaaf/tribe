@@ -84,16 +84,6 @@ public class GameAliensAttackBackground extends FrameLayout {
     init();
   }
 
-  @Override protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
-    initAnimations();
-  }
-
-  @Override protected void onDetachedFromWindow() {
-    super.onDetachedFromWindow();
-    dispose();
-  }
-
   private void init() {
     initDependencyInjector();
     initResources();
@@ -277,6 +267,14 @@ public class GameAliensAttackBackground extends FrameLayout {
   /**
    * PUBLIC
    */
+
+  public void start() {
+    initAnimations();
+  }
+
+  public void stop() {
+
+  }
 
   public int getRoadBottomMargin() {
     return screenUtils.dpToPx(15);

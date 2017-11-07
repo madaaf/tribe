@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -39,7 +40,7 @@ public class GameEngine {
   protected PublishSubject<String> onPlayerLost = PublishSubject.create();
   protected PublishSubject<String> onPlayerPending = PublishSubject.create();
   protected PublishSubject<String> onGameOver = PublishSubject.create();
-  protected PublishSubject<Map<String, Integer>> onPlayerStatusChange = PublishSubject.create();
+  protected BehaviorSubject<Map<String, Integer>> onPlayerStatusChange = BehaviorSubject.create();
 
   public GameEngine(Context context) {
     this.context = context;
@@ -49,6 +50,14 @@ public class GameEngine {
   /**
    * PUBLIC
    */
+
+  public void start() {
+
+  }
+
+  public void stop() {
+    subscriptions.clear();
+  }
 
   public void initPeerMapObservable(Observable<Map<String, TribeGuest>> map) {
     subscriptions.add(map.subscribe(peerMap -> {
@@ -76,12 +85,8 @@ public class GameEngine {
     }));
   }
 
-  public void start() {
-
-  }
-
-  public void stop() {
-    subscriptions.clear();
+  public Map<String, Integer> getMapPlayerStatus() {
+    return mapPlayerStatus;
   }
 
   public void setUserGameOver(String userId) {

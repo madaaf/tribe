@@ -19,6 +19,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 import rx.Observable;
@@ -39,6 +40,9 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   private static final String ACTION_USER_WAITING = "userWaiting";
   private static final String ACTION_SHOW_USER_LOST = "showUserLost";
   private static final String ACTION_GAME_OVER = "gameOver";
+
+  private static final String PLAYERS = "players";
+  private static final String TIMESTAMP = "timestamp";
 
   // VARIABLES
   protected GameEngine gameEngine;
@@ -68,16 +72,27 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected abstract GameEngine generateEngine();
 
+  protected long startGameTimestamp() {
+    return System.currentTimeMillis() + 5 * 1000;
+  }
+
   protected void becomePlayer() {
     stopEngine();
     startEngine();
   }
 
   protected void becomeGameMaster() {
+    startMasterEngine();
 
+    Map<String, Integer> mapPlayerStatus = gameEngine.getMapPlayerStatus();
+    long timestamp = startGameTimestamp();
+    Set<String> playerIds = mapPlayerStatus.keySet();
+    webRTCRoom.sendToPeers(getNewGamePayload(currentUser.getId(), timestamp,
+        playerIds.toArray(new String[playerIds.size()])), true);
+    //setupGameLocally(currentUser.getId(), playerIds, timestamp);
   }
 
-  protected void startEngine() {
+  protected void startMasterEngine() {
     subscriptions.add(gameEngine.onPlayerLost.subscribe(userId -> {
       webRTCRoom.sendToPeers(getLostPayload(userId), true);
       playerLost(userId);
@@ -85,18 +100,23 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
     subscriptions.add(gameEngine.onGameOver.subscribe(winnerId -> {
       stopEngine();
-      webRTCRoom.sendToPeers(getLostPayload(winnerId), true);
+      webRTCRoom.sendToPeers(getGameOverPayload(winnerId), true);
       gameOver(winnerId);
     }));
   }
 
-  protected void stopEngine() {
+  protected void startEngine() {
     gameEngine = generateEngine();
 
     subscriptions.add(gameEngine.onPlayerPending.subscribe(userId -> {
       setStatus(RankingStatus.PENDING, userId);
       playerPending(userId);
     }));
+  }
+
+  protected void stopEngine() {
+    gameEngine.stop();
+    gameEngine = null;
   }
 
   private void playerPending(String userId) {
@@ -137,15 +157,23 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
       if (player.getId().equals(currentUser.getId())) {
         showMessage(getResources().getString(
-            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "you_won")), 250);
+            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "you_won")), 250,
+            new LabelListener() {
+              @Override public void onStart() {
+              }
+
+              @Override public void onEnd() {
+                becomeGameMaster();
+              }
+            });
       } else {
         showMessage(getResources().getString(
             StringUtils.stringWithPrefix(getContext(), wordingPrefix, "someone_won"),
-            player.getDisplayName()), 250);
+            player.getDisplayName()), 250, null);
       }
     }
   }
-  
+
   private void changeMessageStatus(View view, boolean isVisible, boolean isAnimated, int delay,
       LabelListener listener) {
     float alpha = isVisible ? 1.0f : 0.0f;
@@ -180,7 +208,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     animator.setDuration(DURATION).start();
   }
 
-  private void showMessage(String text, int delay) {
+  private void showMessage(String text, int delay, LabelListener completionListener) {
     txtMessage = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsMessage =
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -196,16 +224,15 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     changeMessageStatus(txtMessage, false, false, 0, null);
     changeMessageStatus(txtMessage, true, true, delay, new LabelListener() {
       @Override public void onStart() {
-
       }
 
       @Override public void onEnd() {
         changeMessageStatus(txtMessage, false, true, 0, new LabelListener() {
           @Override public void onStart() {
-
           }
 
           @Override public void onEnd() {
+            if (completionListener != null) completionListener.onEnd();
             removeView(txtMessage);
             txtMessage = null;
           }
@@ -225,31 +252,40 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
    */
 
   private JSONObject getLostPayload(String userId) {
-    JSONObject app = new JSONObject();
     JSONObject obj = new JSONObject();
     JSONObject game = new JSONObject();
     JsonUtils.jsonPut(game, ACTION_KEY, ACTION_SHOW_USER_LOST);
     JsonUtils.jsonPut(game, USER_KEY, userId);
     JsonUtils.jsonPut(obj, this.game.getName(), game);
-    return app;
+    return obj;
   }
 
   private JSONObject getGameOverPayload(String userId) {
-    JSONObject app = new JSONObject();
     JSONObject obj = new JSONObject();
     JSONObject game = new JSONObject();
     JsonUtils.jsonPut(game, ACTION_KEY, ACTION_GAME_OVER);
     JsonUtils.jsonPut(game, USER_KEY, userId);
     JsonUtils.jsonPut(obj, this.game.getName(), game);
-    return app;
+    return obj;
+  }
+
+  private JSONObject getNewGamePayload(String userId, long timestamp, String[] playerIds) {
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_NEW_GAME);
+    JsonUtils.jsonPut(game, FROM_KEY, userId);
+    JsonUtils.jsonPut(game, PLAYERS, playerIds);
+    JsonUtils.jsonPut(game, TIMESTAMP, timestamp);
+    JsonUtils.jsonPut(obj, this.game.getName(), game);
+    return obj;
   }
 
   /**
    * PUBLIC
    */
 
-  public void start(Observable<Map<String, TribeGuest>> mapObservable) {
-    super.start(mapObservable);
+  public void start(Observable<Map<String, TribeGuest>> mapObservable, String userId) {
+    super.start(mapObservable, userId);
 
     txtRestart = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsRestart =
@@ -265,7 +301,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     addView(txtRestart, paramsRestart);
 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS).subscribe(aLong -> {
-
+      becomePlayer();
+      if (userId.equals(currentUser.getId())) becomeGameMaster();
     }));
   }
 

@@ -202,12 +202,12 @@ public class GameDrawView extends GameView {
     subscriptionsRoom.add(
         webRTCRoom.onClearDrawReceived().subscribe(aVoid -> onClearDrawReceived()));
 
-    subscriptions.add(webRTCRoom.onNewDrawReceived()
+    subscriptionsRoom.add(webRTCRoom.onNewDrawReceived()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(datas -> {
           TribeGuest guestChallenged = null;
 
-          for (TribeGuest guest : peerList.values()) {
+          for (TribeGuest guest : peerMap.values()) {
             if (guest.getId().equals(datas.get(1))) {
               guestChallenged = guest;
             }
@@ -218,6 +218,10 @@ public class GameDrawView extends GameView {
           GameChallenge gameChallenge = (GameChallenge) gameManager.getCurrentGame();
           if (gameChallenge.hasDatas()) setNextGame();
         }));
+  }
+
+  @Override protected void takeOverGame() {
+
   }
 
   @Override public void setNextGame() {

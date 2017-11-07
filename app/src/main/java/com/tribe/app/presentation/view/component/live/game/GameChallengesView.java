@@ -71,7 +71,7 @@ public class GameChallengesView extends GameView {
     inflater.inflate(R.layout.view_game_challenges, this, true);
     unbinder = ButterKnife.bind(this);
 
-    adapter = new GameChallengeViewPagerAdapter(context, user);
+    adapter = new GameChallengeViewPagerAdapter(context, currentUser);
     viewpager.setAdapter(adapter);
 
     viewpager.setOnTouchListener((v, event) -> {
@@ -84,7 +84,7 @@ public class GameChallengesView extends GameView {
     subscriptions.add(adapter.onCurrentGame().subscribe(game -> {
       GameChallenge gameChallenge = (GameChallenge) game;
       webRTCRoom.sendToPeers(
-          getNewChallengePayload(user.getId(), gameChallenge.getCurrentChallenger().getId(),
+          getNewChallengePayload(currentUser.getId(), gameChallenge.getCurrentChallenger().getId(),
               gameChallenge.getCurrentChallenge()), false);
     }));
   }
@@ -198,7 +198,7 @@ public class GameChallengesView extends GameView {
         .subscribe(datas -> {
           TribeGuest guestChallenged = null;
 
-          for (TribeGuest guest : peerList.values()) {
+          for (TribeGuest guest : peerMap.values()) {
             if (guest.getId().equals(datas.get(1))) {
               guestChallenged = guest;
             }
@@ -209,6 +209,10 @@ public class GameChallengesView extends GameView {
           GameChallenge gameChallenge = (GameChallenge) gameManager.getCurrentGame();
           if (gameChallenge.hasDatas()) setNextGame();
         }));
+  }
+
+  @Override protected void takeOverGame() {
+
   }
 
   /**

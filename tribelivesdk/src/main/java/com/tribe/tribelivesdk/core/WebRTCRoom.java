@@ -624,4 +624,8 @@ public class WebRTCRoom {
   public Observable<List<String>> onNewDrawReceived() {
     return onNewDrawReceived;
   }
+
+  public Observable<JSONObject> onGameMessage() {
+    return jsonToModel.onGameMessage();
+  }
 }

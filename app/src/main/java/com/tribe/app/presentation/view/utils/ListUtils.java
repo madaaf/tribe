@@ -43,4 +43,15 @@ public class ListUtils {
       items.add(new Shortcut(Recipient.ID_EMPTY));
     }
   }
+
+  private String listToStringArray(List<String> ids) {
+    StringBuilder result = new StringBuilder();
+
+    for (String string : ids) {
+      result.append("" + string + "\"");
+      result.append(",");
+    }
+
+    return result.length() > 0 ? result.substring(0, result.length() - 1) : "";
+  }
 }
