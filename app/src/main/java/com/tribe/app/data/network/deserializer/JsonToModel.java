@@ -159,10 +159,19 @@ import timber.log.Timber;
               String roomName =
                   (!roomJson.get("name").isJsonNull()) ? roomJson.get("name").getAsString() : null;
               room.setName(roomName);
-              room.setAcceptRandom(roomJson.get("accept_random").getAsBoolean());
 
-              JsonArray live_users_json = roomJson.get("live_users").getAsJsonArray();
-              JsonArray invited_users_json = roomJson.get("invited_users").getAsJsonArray();
+              Boolean accept_random =
+                  !roomJson.get("accept_random").isJsonNull() && roomJson.get("accept_random")
+                      .getAsBoolean();
+              room.setAcceptRandom(accept_random);
+
+              JsonArray live_users_json =
+                  (roomJson.get("live_users").isJsonNull()) ? new JsonArray()
+                      : roomJson.get("live_users").getAsJsonArray();
+
+              JsonArray invited_users_json =
+                  (roomJson.get("invited_users").isJsonNull()) ? new JsonArray()
+                      : roomJson.get("invited_users").getAsJsonArray();
 
               if (roomJson.has("initiator")) {
                 try {
@@ -236,9 +245,11 @@ import timber.log.Timber;
               onShortcutUpdated.onNext(shortcutRealm);
             } else if (entry.getKey().contains(WSService.SHORTCUT_REMOVED_SUFFIX)) {
               Timber.d("Shortcut removed : " + entry.getValue().toString());
-              String shortcutId =
-                  entry.getValue().getAsJsonObject().get("shortcut_id").getAsString();
-              onShortcutRemoved.onNext(shortcutId);
+              if (!entry.getValue().getAsJsonObject().get("shortcut_id").isJsonNull()) {
+                String shortcutId =
+                    entry.getValue().getAsJsonObject().get("shortcut_id").getAsString();
+                onShortcutRemoved.onNext(shortcutId);
+              }
             }
           }
         }

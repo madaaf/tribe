@@ -32,8 +32,8 @@ import timber.log.Timber;
 
 public class MessagePresenter implements Presenter {
   // VIEW ATTACHED
-  private ChatMVPView chatMVPView;
-  private PictureMVPView pictureMVPView;
+  private ChatMVPView chatMVPView = null;
+  private PictureMVPView pictureMVPView = null;
 
   // USECASES
   protected UserMessageInfos userMessageInfos;
@@ -169,6 +169,10 @@ public class MessagePresenter implements Presenter {
     } else if (view instanceof PictureMVPView) {
       pictureMVPView = (PictureMVPView) view;
     }
+  }
+
+  public boolean isAttached() {
+    return (chatMVPView != null || pictureMVPView != null);
   }
 
   @Override public void onViewDetached() {

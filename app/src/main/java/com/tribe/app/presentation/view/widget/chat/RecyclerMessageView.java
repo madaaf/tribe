@@ -154,8 +154,14 @@ public class RecyclerMessageView extends ChatMVPView {
     messageAdapter.notifyDataSetChanged();
   }
 
+  public void onResumeView() {
+    if (!messagePresenter.isAttached()) {
+      messagePresenter.onViewAttached(this);
+    }
+  }
+
   @Override protected void onAttachedToWindow() {
-    Timber.w(" onAttachedToWindow");
+    Timber.i("onAttachedToWindow");
     super.onAttachedToWindow();
     messagePresenter.onViewAttached(this);
   }
@@ -163,7 +169,7 @@ public class RecyclerMessageView extends ChatMVPView {
   @Override protected void onDetachedFromWindow() {
     messagePresenter.onViewDetached();
     super.onDetachedFromWindow();
-    Timber.w("DETACHED onDetachedFromWindow");
+    Timber.i("onDetachedFromWindow");
   }
 
   private void initRecyclerView() {
@@ -211,13 +217,6 @@ public class RecyclerMessageView extends ChatMVPView {
             });
           }
         });
-  }
-
-  public void onResumeView() {
-    Timber.w("SOEF SET CHAT ID AND CALL PRESENTER ");
-    if (arrIds == null) {
-      return;
-    }
   }
 
   public void scrollListToBottom() {

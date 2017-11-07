@@ -565,7 +565,7 @@ public class LiveActivity extends BaseActivity
 
   private void initSubscriptions() {
     subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
-      Timber.e("ON CHAT OPEN");
+      Timber.e("ON CHAT OPEN " + open);
       if (open) {
         if (live.getShortcut() == null) {
           String[] array = new String[live.getUserIdsOfShortcut().size()];
@@ -581,6 +581,7 @@ public class LiveActivity extends BaseActivity
             .translationX(-screenUtils.getWidthPx())
             .withEndAction(() -> chatView.setVisibility(View.GONE))
             .setListener(null);
+        chatView.dispose();
       }
     }));
 

@@ -262,22 +262,22 @@ public class ChatView extends ChatMVPView {
     if (arrIds == null) {
       return;
     }
+    recyclerView.onResumeView();
     context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
         JsonUtils.arrayToJson(arrIds)));
-    //if (shortcut != null) messagePresenter.getDiskShortcut(shortcut.getId());
-
     messagePresenter.updateShortcutForUserIds(arrIds);
     messagePresenter.getIsTyping();
     messagePresenter.getIsTalking();
     messagePresenter.getIsReading();
-    recyclerView.onResumeView();
   }
 
   public void dispose() {
-    Timber.e(" SOEF subscription REMOVE : " + arrIds);
+    Timber.i("dispose chatView " + arrIds);
     if (arrIds != null) {
       context.startService(
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
+      messagePresenter.onViewDetached();
+      recyclerView.onDetachedFromWindow();
     }
   }
 
@@ -886,7 +886,7 @@ public class ChatView extends ChatMVPView {
         .subscribe());
   }
 
-  public Shortcut getShortcut(){
+  public Shortcut getShortcut() {
     return shortcut;
   }
 
