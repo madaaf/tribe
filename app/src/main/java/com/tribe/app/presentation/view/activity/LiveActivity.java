@@ -1162,6 +1162,18 @@ public class LiveActivity extends BaseActivity
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
   }
 
+  public String getShortcutId() {
+    String shortcutId = null;
+    if (chatView != null
+        && chatView.getShortcut() != null
+        && chatView.getShortcut().getId() != null) {
+      shortcutId = chatView.getShortcut().getId();
+    } else if (live != null && live.getShortcut() != null) {
+      shortcutId = live.getShortcut().getId();
+    }
+    return shortcutId;
+  }
+
   public Observable<List<User>> onAnonymousReceived() {
     return onAnonymousReceived;
   }

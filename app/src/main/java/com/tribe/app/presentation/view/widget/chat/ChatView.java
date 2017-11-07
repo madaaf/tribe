@@ -886,6 +886,10 @@ public class ChatView extends ChatMVPView {
         .subscribe());
   }
 
+  public Shortcut getShortcut(){
+    return shortcut;
+  }
+
   @OnClick(R.id.videoCallBtn) void onClickVideoCall() {
     navigator.navigateToLive((Activity) context, recipient, LiveActivity.SOURCE_GRID,
         TagManagerUtils.SECTION_SHORTCUT);

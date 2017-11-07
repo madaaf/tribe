@@ -17,18 +17,17 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 27/09/2017.
@@ -70,45 +69,8 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
         NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
     if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_MESSAGE)) {
-      if (liveNotificationView.getContainer() != null) {
-
-        List<String> myList =
-            new ArrayList<String>(Arrays.asList(notificationPayload.getUsers_ids().split(",")));
-
-        liveNotificationView.getContainer().setOnClickListener(view -> {
-          List<String> idslist = new ArrayList<>();
-          idslist.add(user.getId());
-          Shortcut notificationShortcut = null;
-          for (Recipient recipient : user.getRecipientList()) {
-            if (recipient instanceof Shortcut) {
-              for (User member : ((Shortcut) recipient).getMembers()) {
-                idslist.add(member.getId());
-              }
-
-              if (equalLists(myList, idslist)) {
-                Timber.e("SOEF GENIAL");
-                notificationShortcut = (Shortcut) recipient;
-              }
-            }
-            idslist.clear();
-          }
-          if (notificationShortcut != null) {
-            if (context instanceof ChatActivity) {
-              if (!((ChatActivity) context).getShortcut()
-                  .getId()
-                  .equals(notificationShortcut.getId())) {
-                navigator.navigateToChat((Activity) context, notificationShortcut, null, null, null,
-                    false);
-              }
-            } else if (context instanceof LiveActivity) {
-              // ((LiveActivity)context).getSho
-              Timber.e("ok " + idslist);
-            } else {
-              navigator.navigateToChat((Activity) context, notificationShortcut, null, null, null,
-                  false);
-            }
-          }
-        });
+      if (!showMessageNotification(context, liveNotificationView, notificationPayload)) {
+        return;
       }
     }
 
@@ -128,25 +90,73 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
   }
 
   /**
-   * OBSERVABLES
+   * PRIVATE METHODE
    */
 
-  public boolean equalLists(List<String> one, List<String> two) {
-    if (one == null && two == null) {
-      return true;
-    }
+  private boolean showMessageNotification(Context context,
+      LiveNotificationView liveNotificationView, NotificationPayload notificationPayload) {
+    if (liveNotificationView.getContainer() != null) {
 
-    if ((one == null && two != null) || one != null && two == null || one.size() != two.size()) {
-      return false;
-    }
+      List<String> myList =
+          new ArrayList<>(Arrays.asList(notificationPayload.getUsers_ids().split(",")));
+      List<String> idslist = new ArrayList<>();
+      idslist.add(user.getId());
+      Shortcut notificationShortcut = null;
+      for (Recipient recipient : user.getRecipientList()) {
+        if (recipient instanceof Shortcut) {
+          for (User member : ((Shortcut) recipient).getMembers()) {
+            idslist.add(member.getId());
+          }
 
-    one = new ArrayList<String>(one);
-    two = new ArrayList<String>(two);
+          if (ListUtils.equalLists(myList, idslist)) {
+            notificationShortcut = (Shortcut) recipient;
+            myList.clear();
+            idslist.clear();
+            break;
+          }
+        }
+        idslist.clear();
+      }
 
-    Collections.sort(one);
-    Collections.sort(two);
-    return one.equals(two);
+      if (notificationShortcut != null) {
+        if (context instanceof ChatActivity) {
+          if (((ChatActivity) context).getShortcut().getId().equals(notificationShortcut.getId())) {
+            return false;
+          }
+        } else if (context instanceof LiveActivity) {
+          String shortcutId = ((LiveActivity) context).getShortcutId();
+          if (shortcutId != null && shortcutId.equals(notificationShortcut.getId())) {
+            return false;
+          }
+        }
+      }
+
+
+    Shortcut finalNotificationShortcut = notificationShortcut;
+    liveNotificationView.getContainer().setOnClickListener(view -> {
+      if (finalNotificationShortcut != null) {
+        if (context instanceof ChatActivity) {
+          if (!((ChatActivity) context).getShortcut()
+              .getId()
+              .equals(finalNotificationShortcut.getId())) {
+            navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null,
+                null, false);
+          }
+        } else if (context instanceof LiveActivity) {
+          // TODO
+        } else {
+          navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null, null,
+              false);
+        }
+      }
+    });
   }
+    return true;
+}
+
+  /**
+   * OBSERVABLES
+   */
 
   public Observable<String> onDeclineInvitation() {
     return onDeclineInvitation;
