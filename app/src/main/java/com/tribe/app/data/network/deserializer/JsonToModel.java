@@ -156,7 +156,9 @@ import timber.log.Timber;
               Timber.d("onRoomUpdate : " + entry.getValue().toString());
               JsonObject roomJson = entry.getValue().getAsJsonObject();
               Room room = new Room(roomJson.get("id").getAsString());
-              room.setName(roomJson.get("name").getAsString());
+              String roomName =
+                  (!roomJson.get("name").isJsonNull()) ? roomJson.get("name").getAsString() : null;
+              room.setName(roomName);
               room.setAcceptRandom(roomJson.get("accept_random").getAsBoolean());
 
               JsonArray live_users_json = roomJson.get("live_users").getAsJsonArray();

@@ -880,8 +880,8 @@
 	<string name="new_game_plays">%1$s parties jouées</string>
 	<string name="new_game_new">Nouveau</string>
 	<string name="new_game_featured">À la une</string>
-	<string name="new_game_dice_title">Personne aléatoire</string>
-	<string name="new_game_dice_subtitle">Un ami rapidement!</string>
+	<string name="new_game_dice_title">Joueurs aléatoire</string>
+	<string name="new_game_dice_subtitle">Rencontrez de nouveaux joueurs !</string>
 	
 	<!-- Game -->
 	<string name="game_loading">Chargement de %1$s</string>

@@ -880,7 +880,7 @@
 	<string name="new_game_plays">%1$s plays</string>
 	<string name="new_game_new">New</string>
 	<string name="new_game_featured">Featured</string>
-	<string name="new_game_dice_title">Random people</string>
+	<string name="new_game_dice_title">Random players</string>
 	<string name="new_game_dice_subtitle">Get a quick match up!</string>
 	
 	<!-- Game -->

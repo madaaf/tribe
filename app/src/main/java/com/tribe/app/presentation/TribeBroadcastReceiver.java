@@ -131,28 +131,27 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
         }
       }
 
-
-    Shortcut finalNotificationShortcut = notificationShortcut;
-    liveNotificationView.getContainer().setOnClickListener(view -> {
-      if (finalNotificationShortcut != null) {
-        if (context instanceof ChatActivity) {
-          if (!((ChatActivity) context).getShortcut()
-              .getId()
-              .equals(finalNotificationShortcut.getId())) {
+      Shortcut finalNotificationShortcut = notificationShortcut;
+      liveNotificationView.getContainer().setOnClickListener(view -> {
+        if (finalNotificationShortcut != null) {
+          if (context instanceof ChatActivity) {
+            if (!((ChatActivity) context).getShortcut()
+                .getId()
+                .equals(finalNotificationShortcut.getId())) {
+              navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null,
+                  null, false);
+            }
+          } else if (context instanceof LiveActivity) {
+            // TODO
+          } else {
             navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null,
                 null, false);
           }
-        } else if (context instanceof LiveActivity) {
-          // TODO
-        } else {
-          navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null, null,
-              false);
         }
-      }
-    });
-  }
+      });
+    }
     return true;
-}
+  }
 
   /**
    * OBSERVABLES
