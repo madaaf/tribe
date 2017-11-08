@@ -42,6 +42,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.ShortcutLastSeen;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
@@ -233,16 +234,46 @@ public class ChatView extends ChatMVPView {
     this.section = section;
   }
 
+  public void displayBlockNotif() {
+    String blockedShortcutId = null;
+
+    for (Recipient r : user.getRecipientList()) {
+      if (r instanceof Shortcut) {
+        Shortcut s = (Shortcut) r;
+        if (s.getMembers().size() == 1 && s.isBlocked()) {
+          User u = s.getMembers().get(0);
+          if (shortcut.getMembers().contains(u)) {
+            blockedShortcutId = s.getId();
+            break;
+          }
+        }
+      }
+    }
+    if (blockedShortcutId != null) {
+      subscriptions.add(
+          DialogFactory.dialog(context, context.getString(R.string.mute_group_popup_title),
+              context.getString(R.string.mute_group_popup_message),
+              context.getString(R.string.mute_group_popup_validate),
+              context.getString(R.string.mute_group_popup_cancel)).subscribe(blockGrp -> {
+            if (blockGrp) {
+              messagePresenter.updateShortcutStatus(shortcut.getId(), ShortcutRealm.BLOCKED);
+            }
+          }));
+    }
+  }
+
   public void setChatId(Shortcut shortcut, Recipient recipient) {
     this.recipient = recipient;
     this.shortcut = shortcut;
     this.members = shortcut.getMembers();
+
     recyclerView.setShortcut(shortcut);
     avatarView.load(members.get(0).getProfilePicture());
     List<String> userIds = new ArrayList<>();
     for (User friend : members) {
       userIds.add(friend.getId());
     }
+    displayBlockNotif();
 
     this.arrIds = userIds.toArray(new String[userIds.size()]);
     recyclerView.setArrIds(arrIds);
@@ -1078,5 +1109,40 @@ public class ChatView extends ChatMVPView {
       }
     }
     return super.dispatchKeyEvent(event);
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutCreatedError() {
+
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+    Timber.e(" " + shortcut.isBlocked());
+    if (shortcut.isBlocked()) {
+      ((Activity) context).finish();
+    }
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+
+  }
+
+  @Override public void onShortcut(Shortcut shortcut) {
+
   }
 }

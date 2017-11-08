@@ -163,7 +163,9 @@ public class RecyclerMessageView extends ChatMVPView {
   @Override protected void onAttachedToWindow() {
     Timber.i("onAttachedToWindow");
     super.onAttachedToWindow();
-    messagePresenter.onViewAttached(this);
+    if (!messagePresenter.isAttached()) {
+      messagePresenter.onViewAttached(this);
+    }
   }
 
   @Override protected void onDetachedFromWindow() {
@@ -358,5 +360,37 @@ public class RecyclerMessageView extends ChatMVPView {
   public void refreshLayout() {
     recyclerView.getLayoutParams().width = RecyclerView.LayoutParams.MATCH_PARENT;
     recyclerView.getLayoutParams().height = RecyclerView.LayoutParams.MATCH_PARENT;
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutCreatedError() {
+
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+
+  }
+
+  @Override public void onShortcut(Shortcut shortcut) {
+
   }
 }

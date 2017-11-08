@@ -457,6 +457,8 @@
 	<string name="profile_calls_length_min">%1$d min</string>
 	<string name="profile_change_phone">Changer mon numéro :telephone:</string>
 	<string name="profile_facebook_account">Profil Facebook :bust_in_silhouette:</string>
+	<string name="profile_contact_us_email">Envoyez nous un email</string>
+	<string name="profile_contact_us_chat">Chattez avec nous</string>
 	
 	<!-- Profile Phone Number -->
 	<string name="profile_change_phone_title">Numéro de téléphone</string>
@@ -870,10 +872,20 @@
 	<string name="error_just_banned_permanently_message">Après avoir été éjecté à plusieurs reprises et banni temporairement, vous avez été banni de manière permanente de l\'utilisation de cette fonctionnalité.</string>
 	
 	<!-- Mute Group Popup -->
-	<string name="mute_group_popup_title">Mettre en sourdine le groupe ?</string>
-	<string name="mute_group_popup_message"></string>
-	<string name="mute_group_popup_validate">Mettre en sourdine</string>
-	<string name="mute_group_popup_cancel">Ne pas mettre en sourdine</string>
+	<string name="mute_group_popup_title">Bloquer le groupe ?</string>
+	<string name="mute_group_popup_message">Masquer les nouveaux messages, appels et autres notifications venant de ce groupe. Vous pourrez débloquer ce groupe depuis votre profil.</string>
+	<string name="mute_group_popup_validate">Bloquer le groupe</string>
+	<string name="mute_group_popup_cancel">Ne pas bloquer</string>
+	
+	<!-- Empty Call Popup -->
+	<string name="empty_call_popup_title">Personne ne semble disponible</string>
+	<string name="empty_call_popup_message">Ajoute des amis pour faire des Facetime en group et jouer ensemble !</string>
+	<string name="empty_call_popup_share_sms_ios">:speech_balloon: Partager par iMessage</string>
+	<string name="empty_call_popup_share_sms_android">:speech_balloon: Partager par SMS</string>
+	<string name="empty_call_popup_share_messenger">:busts_in_silhouette: Partager par Messenger</string>
+	<string name="empty_call_popup_throw_the_dice">:game_die: Trouver des adversaires aléatoires</string>
+	<string name="empty_call_popup_search_friend">:mag: Rechercher un ami</string>
+	<string name="empty_call_popup_cancel">Rester seul</string>
 	
 	<!-- New Game -->
 	<string name="new_game_title">Nouvelle partie</string>
@@ -882,6 +894,7 @@
 	<string name="new_game_featured">À la une</string>
 	<string name="new_game_dice_title">Joueurs aléatoire</string>
 	<string name="new_game_dice_subtitle">Rencontrez de nouveaux joueurs !</string>
+	<string name="new_game_suggest">Suggérer un jeu</string>
 	
 	<!-- Game -->
 	<string name="game_loading">Chargement de %1$s</string>

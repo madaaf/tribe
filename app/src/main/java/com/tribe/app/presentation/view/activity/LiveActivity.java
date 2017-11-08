@@ -183,7 +183,7 @@ public class LiveActivity extends BaseActivity
   private RxPermissions rxPermissions;
   private Intent returnIntent = new Intent();
   private List anonymousIdList = new ArrayList();
-  private boolean finished = false;
+  private boolean finished = false, isChatViewOpen = false;
   private boolean shouldOverridePendingTransactions = false;
   private float initialBrightness = -1;
   private int createRoomErrorCount = 0;
@@ -545,12 +545,15 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
-    initChatView(shortcut);
+    initChatView(shortcut, true);
   }
 
-  private void initChatView(Shortcut shortcut) {
+  private void initChatView(Shortcut shortcut, boolean displayView) {
     chatView.setChatId(shortcut, null);
     chatView.onResumeView();
+  }
+
+  private void animateChatView() {
     chatView.setAlpha(0);
     chatView.setTranslationX(-screenUtils.getWidthPx());
     chatView.setVisibility(VISIBLE);
@@ -563,15 +566,23 @@ public class LiveActivity extends BaseActivity
         .setListener(null);
   }
 
+  public void notififyNewMessage() {
+    if (isChatViewOpen) {
+      viewLive.onNewMessage();
+    }
+  }
+
   private void initSubscriptions() {
+    initChatView(getShortcut(), true);
     subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
       Timber.e("ON CHAT OPEN " + open);
+      isChatViewOpen = open;
       if (open) {
         if (live.getShortcut() == null) {
           String[] array = new String[live.getUserIdsOfShortcut().size()];
           livePresenter.createShortcut(live.getUserIdsOfShortcut().toArray(array));
         } else {
-          initChatView(live.getShortcut());
+          animateChatView();
         }
       } else {
         chatView.animate()
@@ -581,7 +592,6 @@ public class LiveActivity extends BaseActivity
             .translationX(-screenUtils.getWidthPx())
             .withEndAction(() -> chatView.setVisibility(View.GONE))
             .setListener(null);
-        chatView.dispose();
       }
     }));
 
@@ -1164,15 +1174,19 @@ public class LiveActivity extends BaseActivity
   }
 
   public String getShortcutId() {
-    String shortcutId = null;
-    if (chatView != null
-        && chatView.getShortcut() != null
-        && chatView.getShortcut().getId() != null) {
-      shortcutId = chatView.getShortcut().getId();
+    return getShortcut().getId();
+  }
+
+  public Shortcut getShortcut() {
+    Shortcut shortcut = null;
+    if (chatView != null && chatView.getShortcut() != null) {
+      shortcut = chatView.getShortcut();
     } else if (live != null && live.getShortcut() != null) {
-      shortcutId = live.getShortcut().getId();
+      shortcut = live.getShortcut();
+    } else if (live != null && live.getRoom() != null && live.getRoom().getShortcut() != null) {
+      shortcut = live.getRoom().getShortcut();
     }
-    return shortcutId;
+    return shortcut;
   }
 
   public Observable<List<User>> onAnonymousReceived() {

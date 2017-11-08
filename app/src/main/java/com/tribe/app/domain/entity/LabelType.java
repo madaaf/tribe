@@ -11,7 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 public class LabelType implements Serializable {
 
   @StringDef({
-      SET_AS_ADMIN, REMOVE_FROM_GROUP, REMOVE_FROM_ADMIN, BLOCK, CANCEL, OPEN_CAMERA, OPEN_PHOTOS,
+      SET_AS_ADMIN, REMOVE_FROM_GROUP, REMOVE_FROM_ADMIN, BLOCK, BLOCK_GROUP, CANCEL, OPEN_CAMERA, OPEN_PHOTOS,
       CLEAR_MESSAGES, HIDE, BLOCK_HIDE, TRIBE_SAVE, TRIBE_INCREASE_SPEED, TRIBE_DECREASE_SPEED,
       UNHIDE
   }) @Retention(RetentionPolicy.SOURCE) public @interface GenericTypeDef {
@@ -22,6 +22,7 @@ public class LabelType implements Serializable {
   public static final String REMOVE_FROM_ADMIN = "removeFromAdmin";
 
   public static final String BLOCK = "block";
+  public static final String BLOCK_GROUP = "blockGroup";
   public static final String CANCELBTN = "cancelbtn";
 
   public static final String OPEN_CAMERA = "openCamera";

@@ -126,6 +126,7 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
         } else if (context instanceof LiveActivity) {
           String shortcutId = ((LiveActivity) context).getShortcutId();
           if (shortcutId != null && shortcutId.equals(notificationShortcut.getId())) {
+            ((LiveActivity) context).notififyNewMessage();
             return false;
           }
         }

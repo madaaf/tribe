@@ -457,6 +457,8 @@
 	<string name="profile_calls_length_min">%1$d min</string>
 	<string name="profile_change_phone">Change phone number :telephone:</string>
 	<string name="profile_facebook_account">Facebook profile :bust_in_silhouette:</string>
+	<string name="profile_contact_us_email">Email us</string>
+	<string name="profile_contact_us_chat">Chat with us</string>
 	
 	<!-- Profile Phone Number -->
 	<string name="profile_change_phone_title">Phone number</string>
@@ -870,10 +872,20 @@
 	<string name="error_just_banned_permanently_message">After being kicked out several times and temporary banned, you\'re now permanently banned from launching the Dice.</string>
 	
 	<!-- Mute Group Popup -->
-	<string name="mute_group_popup_title">Mute group?</string>
+	<string name="mute_group_popup_title">Block group?</string>
 	<string name="mute_group_popup_message">People you\'ve blocked are in this group. If you mute this group, you\'ll leave this view and won\'t receive new messages, calls and other associated notifications.</string>
-	<string name="mute_group_popup_validate">Mute group</string>
-	<string name="mute_group_popup_cancel">Don\'t mute group</string>
+	<string name="mute_group_popup_validate">Block group</string>
+	<string name="mute_group_popup_cancel">Don\'t block group</string>
+	
+	<!-- Empty Call Popup -->
+	<string name="empty_call_popup_title">Nobody available yet</string>
+	<string name="empty_call_popup_message">Drag friends in to make group Facetime and play together!</string>
+	<string name="empty_call_popup_share_sms_ios">:speech_balloon: Send call link on iMessage</string>
+	<string name="empty_call_popup_share_sms_android">:speech_balloon: Send call link by SMS</string>
+	<string name="empty_call_popup_share_messenger">:busts_in_silhouette: Send call link on Messenger</string>
+	<string name="empty_call_popup_throw_the_dice">:game_die: Match with random players</string>
+	<string name="empty_call_popup_search_friend">:mag: Search for a friend</string>
+	<string name="empty_call_popup_cancel">Stay alone</string>
 	
 	<!-- New Game -->
 	<string name="new_game_title">New game</string>
@@ -882,6 +894,7 @@
 	<string name="new_game_featured">Featured</string>
 	<string name="new_game_dice_title">Random players</string>
 	<string name="new_game_dice_subtitle">Get a quick match up!</string>
+	<string name="new_game_suggest">Suggest a game</string>
 	
 	<!-- Game -->
 	<string name="game_loading">Loading %1$s</string>
