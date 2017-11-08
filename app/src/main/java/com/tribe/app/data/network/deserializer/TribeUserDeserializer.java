@@ -112,17 +112,19 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       userRealm.setShortcuts(listShortcuts);
     }
 
-    JsonArray resultsMessages = result.getAsJsonArray("messages");
-    RealmList<MessageRealm> realmListMessages = new RealmList();
-    if (resultsMessages != null) {
-      for (JsonElement obj : resultsMessages) {
-        if (!(obj instanceof JsonNull)) {
-          MessageRealm messageRealm = gson.fromJson(obj, MessageRealm.class);
-          if (messageRealm != null) realmListMessages.add(messageRealm);
+    if (result.has("messages") && !(result.get("messages") instanceof JsonNull)) {
+      JsonArray resultsMessages = result.getAsJsonArray("messages");
+      RealmList<MessageRealm> realmListMessages = new RealmList();
+      if (resultsMessages != null) {
+        for (JsonElement obj : resultsMessages) {
+          if (!(obj instanceof JsonNull)) {
+            MessageRealm messageRealm = gson.fromJson(obj, MessageRealm.class);
+            if (messageRealm != null) realmListMessages.add(messageRealm);
+          }
         }
-      }
 
-      userRealm.setMessages(realmListMessages);
+        userRealm.setMessages(realmListMessages);
+      }
     }
 
     List<Invite> listInvites = new ArrayList<>();
@@ -152,10 +154,10 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
         if (!(obj instanceof JsonNull)) {
           ShortcutRealm shortcut = gson.fromJson(obj, ShortcutRealm.class);
           if (category.equals("online")) shortcut.setOnline(true);
-          if (shortcut != null &&
-              !shortcutSet.contains(shortcut.getId()) &&
-              shortcut.getMembers() != null &&
-              shortcut.getMembers().size() > 0) {
+          if (shortcut != null
+              && !shortcutSet.contains(shortcut.getId())
+              && shortcut.getMembers() != null
+              && shortcut.getMembers().size() > 0) {
             listShortcuts.add(shortcut);
             shortcutSet.add(shortcut.getId());
           }

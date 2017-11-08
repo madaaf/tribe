@@ -114,7 +114,8 @@ public class LiveActivity extends BaseActivity
   @StringDef({
       SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
       SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
-      SOURCE_NEW_CALL, SOURCE_JOIN_LIVE, SOURCE_ADD_PEERS, SOURCE_CALL_ROULETTE
+      SOURCE_NEW_CALL, SOURCE_JOIN_LIVE, SOURCE_ADD_PEERS, SOURCE_CALL_ROULETTE,
+      SOURCE_IN_APP_NOTIFICATION
   }) public @interface Source {
   }
 
@@ -129,6 +130,7 @@ public class LiveActivity extends BaseActivity
   public static final String SOURCE_SHORTCUT_ITEM = "ShortcutItem";
   public static final String SOURCE_DRAGGED_AS_GUEST = "DraggedAsGuest";
   public static final String SOURCE_ONLINE_NOTIFICATION = "OnlineNotification";
+  public static final String SOURCE_IN_APP_NOTIFICATION = "in-appNotification";
   public static final String SOURCE_LIVE_NOTIFICATION = "LiveNotification";
   public static final String SOURCE_FRIENDS = "Friends";
   public static final String SOURCE_NEW_CALL = "NewCall";
@@ -567,7 +569,7 @@ public class LiveActivity extends BaseActivity
   }
 
   public void notififyNewMessage() {
-    if (isChatViewOpen) {
+    if (!isChatViewOpen) {
       viewLive.onNewMessage();
     }
   }
