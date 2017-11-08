@@ -5,10 +5,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Pair;
-import android.view.View;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Invite;
-import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
@@ -16,22 +14,18 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
-import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 27/09/2017.
@@ -72,11 +66,9 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
     LiveNotificationView liveNotificationView =
         NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
-
-
     if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
       liveNotificationView.getContainer().setOnClickListener(view -> {
-        Shortcut shortcut = getRecipientFromId(notificationPayload.getUserId());
+        Shortcut shortcut = ShortcutUtil.getRecipientFromId(notificationPayload.getUserId(), user);
         Room room = new Room(notificationPayload.getSessionId());
         room.setShortcut(shortcut);
         Invite invite = new Invite();
@@ -108,44 +100,12 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
     }
   }
 
-  /**
-   * PRIVATE METHODE
-   */
-
-  private Shortcut getRecipientFromId(String userIds) {
-    List<String> myList = new ArrayList<>(Arrays.asList(userIds.split(",")));
-    removeMyId(myList);
-    List<String> idslist = new ArrayList<>();
-    Shortcut notificationShortcut = null;
-    for (Recipient recipient : user.getRecipientList()) {
-      if (recipient instanceof Shortcut) {
-        for (User member : ((Shortcut) recipient).getMembers()) {
-          idslist.add(member.getId());
-        }
-        removeMyId(idslist);
-        if (ListUtils.equalLists(myList, idslist)) {
-          notificationShortcut = (Shortcut) recipient;
-          myList.clear();
-          idslist.clear();
-          break;
-        }
-      }
-      idslist.clear();
-    }
-    return notificationShortcut;
-  }
-
-  private void removeMyId(List<String> list) {
-    if (list.contains(user.getId())) {
-      list.remove(user.getId());
-    }
-  }
-
   private boolean showMessageNotification(Context context,
       LiveNotificationView liveNotificationView, NotificationPayload notificationPayload) {
     if (liveNotificationView.getContainer() != null) {
 
-      Shortcut notificationShortcut = getRecipientFromId(notificationPayload.getUsers_ids());
+      Shortcut notificationShortcut =
+          ShortcutUtil.getRecipientFromId(notificationPayload.getUsers_ids(), user);
 
       if (notificationShortcut != null) {
         if (context instanceof ChatActivity) {

@@ -900,4 +900,5 @@
 	<string name="game_loading">Chargement de %1$s</string>
 	<string name="game_rotate_landscape">Tournez en mode paysage</string>
 	<string name="game_rotate_portrait">Tournez en mode portrait</string>
+	<string name="game_unavailable">Le jeu en cours n\'est pas disponible sur votre téléphone.</string>
 </resources>

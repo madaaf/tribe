@@ -223,7 +223,7 @@ public class LiveActivity extends BaseActivity
   }
 
   public static Intent getCallingIntent(Context context, String recipientId, String picture,
-      String name, String roomId, @Source String source) {
+      String name, String roomId, @Source String source, Shortcut shortcut) {
     Intent intent = new Intent(context, LiveActivity.class);
 
     User user = new User(recipientId);
@@ -232,11 +232,13 @@ public class LiveActivity extends BaseActivity
 
     Live.Builder builder =
         new Live.Builder(StringUtils.isEmpty(recipientId) ? Live.WEB : Live.FRIEND_CALL).users(user)
-            .shortcut(new Shortcut(recipientId))
+            .shortcut(shortcut)
             .countdown(StringUtils.isEmpty(roomId))
             .roomId(roomId)
             .intent(true)
             .source(source);
+
+    // Live live = new Live();
 
     intent.putExtra(EXTRA_LIVE, builder.build());
 
@@ -577,7 +579,6 @@ public class LiveActivity extends BaseActivity
   private void initSubscriptions() {
     initChatView(getShortcut(), true);
     subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
-      Timber.e("ON CHAT OPEN " + open);
       isChatViewOpen = open;
       if (open) {
         if (live.getShortcut() == null) {

@@ -15,6 +15,7 @@ import com.jenzz.appstate.AppState;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.IntentUtils;
@@ -43,6 +44,7 @@ import javax.inject.Singleton;
   @Inject @ImmersiveCallState Preference<Boolean> immersiveCallState;
   @Inject JobManager jobManager;
   @Inject MissedCallManager missedCallManager;
+  @Inject User user;
   private AndroidApplication application;
 
   @Inject public NotificationBuilder(AndroidApplication application) {
@@ -205,7 +207,7 @@ import javax.inject.Singleton;
   }
 
   private PendingIntent getPendingIntentForLive(NotificationPayload payload) {
-    Intent notificationIntent = NotificationUtils.getIntentForLive(application, payload, false);
+    Intent notificationIntent = NotificationUtils.getIntentForLive(application, payload, false, user);
     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
     PendingIntent pendingIntent =

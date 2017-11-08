@@ -900,4 +900,5 @@
 	<string name="game_loading">Loading %1$s</string>
 	<string name="game_rotate_landscape">Rotate to Landscape mode</string>
 	<string name="game_rotate_portrait">Rotate to Portrait mode</string>
+	<string name="game_unavailable">The game played is not available on your phone.</string>
 </resources>
