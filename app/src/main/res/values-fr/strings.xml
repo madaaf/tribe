@@ -61,6 +61,12 @@
 	<string name="contacts_section_facebook_no_os_facebook_cancel">Annuler</string>
 	<string name="contacts_section_facebook_no_os_facebook_settings">C\'est noté !</string>
 	<string name="contacts_section_addressbook_friends_in_app">Aurait %1$d amis sur Tribe</string>
+	<string name="contacts_section_addressbook_friends_in_app_prefix">Aurait</string>
+	<string name="contacts_section_addressbook_friends_in_app_friend">un(e) ami(e)</string>
+	<string name="contacts_section_addressbook_friends_in_app_friends">%1$d ami(e)s</string>
+	<string name="contacts_section_addressbook_friends_in_app_suffix">sur Tribe</string>
+	<string name="contacts_section_addressbook_friends_in_app_including">comprenant</string>
+	<string name="contacts_section_addressbook_friends_in_app_yourself">vous-même</string>
 	
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">Accès aux "Contacts" désactivé</string>
@@ -647,6 +653,7 @@
 	<string name="game_menu_restart">Relancer ce jeu</string>
 	<string name="game_menu_stop">Arrêter de jouer</string>
 	<string name="game_menu_play_another_game">Jouer à un autre jeu</string>
+	<string name="game_menu_reset_scores">Reset scores</string>
 	<string name="game_tutorial">Appuie sur le bouton du jeu pour arreter.</string>
 	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Devinez 5 autres morceaux !</string>

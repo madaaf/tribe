@@ -61,6 +61,12 @@
 	<string name="contacts_section_facebook_no_os_facebook_cancel">Cancel</string>
 	<string name="contacts_section_facebook_no_os_facebook_settings">Got it!</string>
 	<string name="contacts_section_addressbook_friends_in_app">Would have %1$d friends on Tribe</string>
+	<string name="contacts_section_addressbook_friends_in_app_prefix">Would have</string>
+	<string name="contacts_section_addressbook_friends_in_app_friend">one friend</string>
+	<string name="contacts_section_addressbook_friends_in_app_friends">%1$d friends</string>
+	<string name="contacts_section_addressbook_friends_in_app_suffix">on Tribe</string>
+	<string name="contacts_section_addressbook_friends_in_app_including">including</string>
+	<string name="contacts_section_addressbook_friends_in_app_yourself">yourself</string>
 	
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">"Address book" permission denied</string>
@@ -647,6 +653,7 @@
 	<string name="game_menu_restart">Restart this game</string>
 	<string name="game_menu_stop">Stop playing</string>
 	<string name="game_menu_play_another_game">Play another game</string>
+	<string name="game_menu_reset_scores">Reset scores</string>
 	<string name="game_tutorial">Tap on the game button to stop the game.</string>
 	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Guess 5 new songs!</string>
