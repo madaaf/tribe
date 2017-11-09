@@ -62,11 +62,10 @@
 	<string name="contacts_section_facebook_no_os_facebook_settings">Got it!</string>
 	<string name="contacts_section_addressbook_friends_in_app">Would have %1$d friends on Tribe</string>
 	<string name="contacts_section_addressbook_friends_in_app_prefix">Would have</string>
-	<string name="contacts_section_addressbook_friends_in_app_friend">one friend</string>
+	<string name="contacts_section_addressbook_friends_in_app_friend">you as friend</string>
 	<string name="contacts_section_addressbook_friends_in_app_friends">%1$d friends</string>
 	<string name="contacts_section_addressbook_friends_in_app_suffix">on Tribe</string>
 	<string name="contacts_section_addressbook_friends_in_app_including">including</string>
-	<string name="contacts_section_addressbook_friends_in_app_yourself">yourself</string>
 	
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">"Address book" permission denied</string>

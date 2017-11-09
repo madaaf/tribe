@@ -14,6 +14,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import timber.log.Timber;
 
 /**
  * https://github.com/paetztm/recycler_view_headers
@@ -72,6 +73,7 @@ public class HomeSectionItemDecoration extends BaseSectionItemDecoration {
   }
 
   @Override protected View inflateHeaderView(RecyclerView parent) {
+    Timber.e("soef inflateHeaderView");
     View view = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.item_home_list_header, parent, false);
     txtLabel = ButterKnife.findById(view, R.id.txtLabel);

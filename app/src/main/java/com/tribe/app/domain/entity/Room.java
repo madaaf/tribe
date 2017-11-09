@@ -15,6 +15,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 30/01/2017.
@@ -281,8 +282,40 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     return onRemovedInvitedUser;
   }
 
+  /*
   @Override public String toString() {
     return "id : " + id + "\n" + "coordinates : " + coordinates;
+  }
+  */
+
+  @Override public String toString() {
+    return "Room{"
+        + "id='"
+        + id
+        + '\''
+        + ", name='"
+        + name
+        + ", initiator="
+        + initiator
+        + ", live_users="
+        + live_users
+        + ", invited_users="
+        + invited_users
+        + ", all_users="
+        + all_users
+        + ", shortcut "
+        + shortcut
+        + ", onAddedInvitedUser="
+        + onAddedInvitedUser
+        + ", onRemovedInvitedUser="
+        + onRemovedInvitedUser
+        + ", onAddedLiveUser="
+        + onAddedLiveUser
+        + ", onRemovedLiveUser="
+        + onRemovedLiveUser
+        + ", onRoomUpdated="
+        + onRoomUpdated
+        + '}';
   }
 
   public List<String> getUserIds() {
@@ -372,7 +405,8 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   /////////////////
 
   public Observable<Room> onRoomUpdated() {
-    return onRoomUpdated.observeOn(AndroidSchedulers.mainThread());
+    Timber.e("onRoomUpdated");
+    return onRoomUpdated.onBackpressureDrop().observeOn(AndroidSchedulers.mainThread());
   }
 
   @Override public int getLiveInviteSectionType() {

@@ -471,6 +471,7 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(
         jsonToModel.onRoomUpdated().observeOn(AndroidSchedulers.mainThread()).subscribe(room -> {
+          Timber.e("PUT ROOM UPDATED ON CASH " + room.getId());
           liveCache.onRoomUpdated(room);
         }));
 

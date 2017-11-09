@@ -13,6 +13,7 @@ import io.realm.RealmList;
 import java.util.List;
 import rx.Observable;
 import rx.functions.Action1;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -46,6 +47,10 @@ public class CloudChatDataStore implements ChatDataStore {
   }
 
   @Override public Observable<UserRealm> loadMessages(String[] userIds, String dateBefore) {
+    Timber.i(" SOEF REQUEST " + context.getString(R.string.messages_details,
+        JsonUtils.arrayToJson(userIds), dateBefore,
+        context.getString(R.string.messagefragment_info)));
+
     return this.tribeApi.getUserMessage(
         context.getString(R.string.messages_details, JsonUtils.arrayToJson(userIds), dateBefore,
             context.getString(R.string.messagefragment_info)))

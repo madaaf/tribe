@@ -21,7 +21,7 @@ public class ShortcutRealmDeserializer implements JsonDeserializer<ShortcutRealm
 
     if (results.has("updateShortcut")) {
       result = results.getAsJsonObject("updateShortcut");
-    } else if (results.has("createShortcut")) {
+    } else if (results.has("createShortcut") && !results.get("createShortcut").isJsonNull()) {
       result = results.getAsJsonObject("createShortcut");
     }
 

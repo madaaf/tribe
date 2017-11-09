@@ -59,6 +59,7 @@ import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
@@ -106,6 +107,7 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
+import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class LiveActivity extends BaseActivity
@@ -169,7 +171,7 @@ public class LiveActivity extends BaseActivity
   @BindView(R.id.blockView) FrameLayout blockView;
   @BindView(R.id.gameDrawView) GameDrawView gameDrawView;
   @BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
-  @BindView(R.id.chatview) ChatView chatView;
+  @BindView(R.id.chatview) FrameLayout chatViewContainer;
   @BindView(R.id.viewLiveContainer) LiveContainer viewLiveContainer;
 
   // VARIABLES
@@ -190,7 +192,7 @@ public class LiveActivity extends BaseActivity
   private float initialBrightness = -1;
   private int createRoomErrorCount = 0;
   private HashSet<String> usersThatWereLive = new HashSet<>();
-
+  private ChatView chatView;
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
@@ -457,7 +459,7 @@ public class LiveActivity extends BaseActivity
 
   private void initRoomSubscription() {
     startService(WSService.getCallingIntentSubscribeRoom(this, room.getId()));
-    //livePresenter.subscribeToRoomUpdates(room.getId());
+    //  livePresenter.subscribeToRoomUpdates(room.getId());
   }
 
   private void removeRoomSubscription() {
@@ -549,18 +551,38 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
-    initChatView(shortcut, true);
+    initChatView(shortcut);
   }
 
-  private void initChatView(Shortcut shortcut, boolean displayView) {
+  private void initChatView(Shortcut shortcut) {
+    if (chatView != null) {
+      chatView.dispose();
+      chatView.destroyDrawingCache();
+      chatView = null;
+      chatViewContainer.removeAllViews();
+      setChatView(shortcut);
+    } else {
+      setChatView(shortcut);
+    }
+  }
+
+  private void setChatView(Shortcut shortcut) {
+    chatView = new ChatView(context());
+    chatView.setType(ChatView.FROM_LIVE);
     chatView.setChatId(shortcut, null);
     chatView.onResumeView();
+    chatViewContainer.addView(chatView);
+  }
+
+  private void setChatVisibility(int visibility) {
+    chatViewContainer.setVisibility(visibility);
+    chatView.setVisibility(visibility);
   }
 
   private void animateChatView() {
     chatView.setAlpha(0);
     chatView.setTranslationX(-screenUtils.getWidthPx());
-    chatView.setVisibility(VISIBLE);
+    setChatVisibility(VISIBLE);
     chatView.animate()
         .setInterpolator(new AccelerateDecelerateInterpolator())
         .setDuration(300)
@@ -577,7 +599,34 @@ public class LiveActivity extends BaseActivity
   }
 
   private void initSubscriptions() {
-    initChatView(getShortcut(), true);
+    initChatView(getShortcut());
+
+    subscriptions.add(live.onRoomUpdated().subscribe(room -> {
+      List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
+
+      Timber.e("ON ROOM UPDATED LUVE ACTIVOTRTY 2: " + allUsers.toString());
+
+      if (chatView.getShortcut().getMembers() != null && !chatView.getShortcut()
+          .getMembers()
+          .isEmpty()) {
+
+        Timber.e("ON ROOM UPDATED LUVE ACTIVOTRTY 3 : "
+            + chatView.getShortcut().getMembers().toString()
+            + ShortcutUtil.equalShortcutMembers(chatView.getShortcut().getMembers(), allUsers,
+            user));
+
+        if (!allUsers.isEmpty() && !ShortcutUtil.equalShortcutMembers(
+            chatView.getShortcut().getMembers(), allUsers, user)) {
+          chatView.dispose();
+          Timber.e("INIT CHAT VIEW " + room.getShortcut().getMembers().size());
+          room.getShortcut().setMembers(allUsers);
+          initChatView(room.getShortcut());
+        }
+      }
+      Timber.e(" ");
+      Timber.e(" ");
+    }));
+
     subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
       isChatViewOpen = open;
       if (open) {
@@ -593,7 +642,7 @@ public class LiveActivity extends BaseActivity
             .alpha(0f)
             .withStartAction(() -> chatView.setAlpha(1f))
             .translationX(-screenUtils.getWidthPx())
-            .withEndAction(() -> chatView.setVisibility(View.GONE))
+            .withEndAction(() -> setChatVisibility(GONE))
             .setListener(null);
       }
     }));
@@ -1065,6 +1114,7 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onRoomUpdate(Room room) {
+    Timber.e("onRoomUpdate on LiveACtivity " + room.getId());
     this.room.update(room, true);
 
     if (this.room.getLiveUsers() != null) {

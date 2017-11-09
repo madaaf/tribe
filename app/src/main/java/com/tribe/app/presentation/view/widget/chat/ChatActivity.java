@@ -90,7 +90,6 @@ public class ChatActivity extends BaseActivity {
   @Override protected void onResume() {
     super.onResume();
     chatView.onResumeView();
-
     if (!receiverRegistered) {
       if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
       registerReceiver(notificationReceiver,

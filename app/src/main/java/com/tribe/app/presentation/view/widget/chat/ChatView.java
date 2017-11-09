@@ -277,10 +277,19 @@ public class ChatView extends ChatMVPView {
 
     this.arrIds = userIds.toArray(new String[userIds.size()]);
     recyclerView.setArrIds(arrIds);
+    setTitle();
+  }
 
+  private void setTitle() {
     if (members.size() > 1) {
-      String txt = context.getString(R.string.shortcut_members_count, (members.size() + 1)) + " ";
-      title.setText(txt);
+      if (shortcut.getName() != null) {
+        title.setTextColor(Color.BLACK);
+        title.setText(shortcut.getName());
+      } else {
+        String txt =
+            (context.getString(R.string.shortcut_members_count, (members.size() + 1)) + " ");
+        title.setText(txt);
+      }
       title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_edit_chat, 0);
     } else {
       title.setText(members.get(0).getDisplayName());
@@ -309,6 +318,7 @@ public class ChatView extends ChatMVPView {
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
       messagePresenter.onViewDetached();
       recyclerView.onDetachedFromWindow();
+      arrIds = null;
     }
   }
 
@@ -391,13 +401,18 @@ public class ChatView extends ChatMVPView {
 
         setTypeChatUX();
 
-        if (members.size() < 2 && fromShortcut == null) {
-          containerUsers.setVisibility(GONE);
-        } else {
+       /* if (showOnlineUsers()) {
           containerUsers.setVisibility(VISIBLE);
-        }
+        } else {
+          containerUsers.setVisibility(GONE);
+        }*/
       }
     });
+  }
+
+  private boolean showOnlineUsers() {
+    return true;
+    // return members.size() < 2 && fromShortcut == null; // TODO
   }
 
   private void initVoiceCallPerm(SwipeDetector moveListener) {
@@ -428,7 +443,6 @@ public class ChatView extends ChatMVPView {
           videoCallBtn.setImageDrawable(null);
           pictoVoiceNote.setImageDrawable(null);
           topbar.setVisibility(GONE);
-          containerUsers.setVisibility(GONE);
           layoutPulse.setVisibility(GONE);
           container.setBackground(null);
           widthRefInit = refInit.getWidth();
@@ -787,6 +801,10 @@ public class ChatView extends ChatMVPView {
     }
   }
 
+  public void setType(int type) {
+    this.type = type;
+  }
+
   protected void initDependencyInjector() {
     DaggerUserComponent.builder()
         .activityModule(getActivityModule())
@@ -982,11 +1000,11 @@ public class ChatView extends ChatMVPView {
   }
 
   private void shrankRecyclerViewGrp() {
-    containerUsers.setVisibility(GONE);
+    //   containerUsers.setVisibility(GONE);
   }
 
   private void expendRecyclerViewGrp() {
-    containerUsers.setVisibility(VISIBLE);
+    //  containerUsers.setVisibility(VISIBLE);
   }
 
   @Override public void isTypingEvent(String userId, boolean typeEvent) {
@@ -999,10 +1017,9 @@ public class ChatView extends ChatMVPView {
           u.setActive(true);
           u.setTyping(typeEvent);
           u.setIsOnline(true);
-          if (members.size() < 2 && fromShortcut == null) {
+          if (showOnlineUsers()) {
             expendRecyclerViewGrp();
           }
-          Timber.i("START TYPING " + (members.size() < 2 && fromShortcut == null));
           int pos = chatUserAdapter.getIndexOfUser(u);
           chatUserAdapter.notifyItemChanged(pos, u);
         }
@@ -1016,7 +1033,7 @@ public class ChatView extends ChatMVPView {
                 // Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
                 if (u.isActive()) {
                   u.setActive(false);
-                  if (members.size() < 2 && fromShortcut == null) {
+                  if (showOnlineUsers()) {
                     shrankRecyclerViewGrp();
                   }
                   int i = chatUserAdapter.getIndexOfUser(u);
@@ -1032,7 +1049,6 @@ public class ChatView extends ChatMVPView {
   }
 
   @Override public void onShortcutUpdate(Shortcut shortcut) {
-    Timber.e("SHORTCVUT UPDATE " + shortcut.toString());
     boolean isOnline = false;
     boolean isLive = false;
     for (User u : shortcut.getMembers()) {

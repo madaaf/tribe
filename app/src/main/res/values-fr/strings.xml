@@ -62,11 +62,10 @@
 	<string name="contacts_section_facebook_no_os_facebook_settings">C\'est noté !</string>
 	<string name="contacts_section_addressbook_friends_in_app">Aurait %1$d amis sur Tribe</string>
 	<string name="contacts_section_addressbook_friends_in_app_prefix">Aurait</string>
-	<string name="contacts_section_addressbook_friends_in_app_friend">un(e) ami(e)</string>
+	<string name="contacts_section_addressbook_friends_in_app_friend">vous en ami(e)</string>
 	<string name="contacts_section_addressbook_friends_in_app_friends">%1$d ami(e)s</string>
 	<string name="contacts_section_addressbook_friends_in_app_suffix">sur Tribe</string>
 	<string name="contacts_section_addressbook_friends_in_app_including">comprenant</string>
-	<string name="contacts_section_addressbook_friends_in_app_yourself">vous-même</string>
 	
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">Accès aux "Contacts" désactivé</string>
