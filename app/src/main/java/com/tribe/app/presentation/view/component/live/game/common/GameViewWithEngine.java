@@ -48,6 +48,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   protected GameEngine gameEngine;
   protected TextViewFont txtRestart, txtMessage;
   protected String wordingPrefix = "";
+  protected boolean pending = false;
 
   // OBSERVABLES
   protected PublishSubject<Boolean> onPending = PublishSubject.create();
@@ -89,7 +90,12 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     Set<String> playerIds = mapPlayerStatus.keySet();
     webRTCRoom.sendToPeers(getNewGamePayload(currentUser.getId(), timestamp,
         playerIds.toArray(new String[playerIds.size()])), true);
-    //setupGameLocally(currentUser.getId(), playerIds, timestamp);
+    setupGameLocally(currentUser.getId(), playerIds, timestamp);
+  }
+
+  @Override protected void takeOverGame() {
+    startMasterEngine();
+    //gameEngine.chec
   }
 
   protected void startMasterEngine() {
@@ -119,18 +125,18 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     gameEngine = null;
   }
 
-  private void playerPending(String userId) {
+  protected void playerPending(String userId) {
     TribeGuest player = peerMap.get(userId);
 
     if (player != null) {
       if (player.getId().equals(currentUser.getId())) {
         changeMessageStatus(txtRestart, true, true, 0, null);
-        onPending.onNext(true);
+        refactorPending(true);
       }
     }
   }
 
-  private void playerLost(String userId) {
+  protected void playerLost(String userId) {
     TribeGuest player = peerMap.get(userId);
 
     if (player != null) {
@@ -145,8 +151,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     }
   }
 
-  private void gameOver(String winnerId) {
-    onPending.onNext(false);
+  protected void gameOver(String winnerId) {
+    refactorPending(false);
     changeMessageStatus(txtRestart, false, true, DELAY, null);
     changeMessageStatus(txtMessage, false, true, DELAY, null);
 
@@ -174,7 +180,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     }
   }
 
-  private void changeMessageStatus(View view, boolean isVisible, boolean isAnimated, int delay,
+  protected void changeMessageStatus(View view, boolean isVisible, boolean isAnimated, int delay,
       LabelListener listener) {
     float alpha = isVisible ? 1.0f : 0.0f;
     float translationY = isVisible ? 0.0f : screenUtils.dpToPx(30.0f);
@@ -208,7 +214,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     animator.setDuration(DURATION).start();
   }
 
-  private void showMessage(String text, int delay, LabelListener completionListener) {
+  protected void showMessage(String text, int delay, LabelListener completionListener) {
     txtMessage = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsMessage =
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -247,6 +253,19 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     void onEnd();
   }
 
+  protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
+
+  }
+
+  private void refactorPending(boolean pending) {
+    this.pending = pending;
+    this.onPending.onNext(pending);
+  }
+
+  protected boolean isPending() {
+    return pending;
+  }
+
   /**
    * JSON PAYLOADS
    */
@@ -256,7 +275,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     JSONObject game = new JSONObject();
     JsonUtils.jsonPut(game, ACTION_KEY, ACTION_SHOW_USER_LOST);
     JsonUtils.jsonPut(game, USER_KEY, userId);
-    JsonUtils.jsonPut(obj, this.game.getName(), game);
+    JsonUtils.jsonPut(obj, this.game.getId(), game);
     return obj;
   }
 
@@ -265,7 +284,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     JSONObject game = new JSONObject();
     JsonUtils.jsonPut(game, ACTION_KEY, ACTION_GAME_OVER);
     JsonUtils.jsonPut(game, USER_KEY, userId);
-    JsonUtils.jsonPut(obj, this.game.getName(), game);
+    JsonUtils.jsonPut(obj, this.game.getId(), game);
     return obj;
   }
 
@@ -276,7 +295,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     JsonUtils.jsonPut(game, FROM_KEY, userId);
     JsonUtils.jsonPut(game, PLAYERS, playerIds);
     JsonUtils.jsonPut(game, TIMESTAMP, timestamp);
-    JsonUtils.jsonPut(obj, this.game.getName(), game);
+    JsonUtils.jsonPut(obj, this.game.getId(), game);
     return obj;
   }
 

@@ -42,7 +42,7 @@ public abstract class Game extends GameFilter {
   public static final String GAME_CHALLENGE = "challenges";
   public static final String GAME_BATTLE_MUSIC = "battlemusic";
   public static final String GAME_SCREAM = "scream";
-  public static final String GAME_INVADERS = "invaders";
+  public static final String GAME_INVADERS = "aliens-attack";
   public static final String GAME_DROP_IT = "dropit";
   public static final String GAME_SING_ALONG = "singalong";
   public static final String GAME_FACESWAP = "faceswap";

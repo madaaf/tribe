@@ -128,6 +128,8 @@
 	<string name="live_notification_add_as_guest">:busts_in_silhouette: Inviter %1$s ici</string>
 	<string name="live_notification_text">:speech_balloon: Texter %1$s</string>
 	<string name="live_notification_decline">:no_mobile_phones: Refuser l\'appel de %1$s</string>
+	<string name="live_notification_ringing_people">Appel de %1$d personne(s)</string>
+	<string name="live_notification_waiting_people">Attente de %1$d personne(s)</string>
 	
 	<!-- Decline Menu -->
 	<string name="decline_menu_title">Texter %1$s</string>
@@ -444,7 +446,7 @@
 	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'ami. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
 	<string name="profile_blocked_friends">Conversations masquées ou bloquées :no_entry:</string>
-	<string name="profile_manage_friendships">Is online\' notification :bell:</string>
+	<string name="profile_manage_friendships">Notification est en ligne :bell:</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
 	<string name="profile_contact_us">Contactez-nous :envelope:</string>
@@ -455,6 +457,8 @@
 	<string name="profile_calls_length_min">%1$d min</string>
 	<string name="profile_change_phone">Changer mon numéro :telephone:</string>
 	<string name="profile_facebook_account">Profil Facebook :bust_in_silhouette:</string>
+	<string name="profile_contact_us_email">Envoyez nous un email</string>
+	<string name="profile_contact_us_chat">Chattez avec nous</string>
 	
 	<!-- Profile Phone Number -->
 	<string name="profile_change_phone_title">Numéro de téléphone</string>
@@ -643,6 +647,7 @@
 	<string name="game_menu_restart">Relancer ce jeu</string>
 	<string name="game_menu_stop">Arrêter de jouer</string>
 	<string name="game_menu_play_another_game">Jouer à un autre jeu</string>
+	<string name="game_menu_reset_scores">Reset scores</string>
 	<string name="game_tutorial">Appuie sur le bouton du jeu pour arreter.</string>
 	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Devinez 5 autres morceaux !</string>
@@ -692,7 +697,7 @@
 	<string name="game_aliens_attack_someone_won">%@ A GAGNÉ !</string>
 	<string name="game_aliens_attack_you_lost">TU AS PERDU</string>
 	<string name="game_aliens_attack_someone_lost">%@ A PERDU !</string>
-	<string name="game_aliens_attack_pending_instructions">LE JEU VA REDEMARRE QUAND\nUN JOUEUR GAGNE</string>
+	<string name="game_aliens_attack_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_bird_rush">Bird Rush!</string>
 	<string name="game_bird_rush_title">BIRD\nRUSH</string>
 	<string name="game_bird_rush_lets_go">TAP, TAP, TAP POUR VOLER !</string>
@@ -700,13 +705,13 @@
 	<string name="game_bird_rush_someone_won">%@ A GAGNÉ !</string>
 	<string name="game_bird_rush_you_lost">TU AS PERDU</string>
 	<string name="game_bird_rush_someone_lost">%@ A PERDU !</string>
-	<string name="game_bird_rush_pending_instructions">LE JEU VA REDEMARRE QUAND\nUN JOUEUR GAGNE</string>
+	<string name="game_bird_rush_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_webv1_lets_go">C\'EST PARTI !</string>
 	<string name="game_webv1_you_won">TU AS GAGNÉ !</string>
 	<string name="game_webv1_someone_won">%@ A GAGNÉ !</string>
 	<string name="game_webv1_you_lost">TU AS PERDU</string>
 	<string name="game_webv1_someone_lost">%@ A PERDU !</string>
-	<string name="game_webv1_pending_instructions">LE JEU VA REDEMARRE QUAND\nUN JOUEUR GAGNE</string>
+	<string name="game_webv1_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>
@@ -837,7 +842,7 @@
 	<string name="chat_live_status_hide">Masquer</string>
 	<string name="chat_live_status_switching">Changement</string>
 	<string name="chat_quickchat_back_to_group">Groupe</string>
-	<string name="chat_placeholder_message">Message</string>
+	<string name="chat_placeholder_message">Aa</string>
 	<string name="chat_placeholder_tap_and_hold">Appui long!</string>
 	<string name="chat_placeholder_slide_to_cancel">Slide pour annuler</string>
 	<string name="chat_seen_by">Lu par %1$s</string>
@@ -868,17 +873,33 @@
 	<string name="error_just_banned_permanently_message">Après avoir été éjecté à plusieurs reprises et banni temporairement, vous avez été banni de manière permanente de l\'utilisation de cette fonctionnalité.</string>
 	
 	<!-- Mute Group Popup -->
-	<string name="mute_group_popup_title">Mettre en sourdine le groupe ?</string>
-	<string name="mute_group_popup_message"></string>
-	<string name="mute_group_popup_validate">Mettre en sourdine</string>
-	<string name="mute_group_popup_cancel">Ne pas mettre en sourdine</string>
+	<string name="mute_group_popup_title">Bloquer le groupe ?</string>
+	<string name="mute_group_popup_message">Masquer les nouveaux messages, appels et autres notifications venant de ce groupe. Vous pourrez débloquer ce groupe depuis votre profil.</string>
+	<string name="mute_group_popup_validate">Bloquer le groupe</string>
+	<string name="mute_group_popup_cancel">Ne pas bloquer</string>
+	
+	<!-- Empty Call Popup -->
+	<string name="empty_call_popup_title">Personne ne semble disponible</string>
+	<string name="empty_call_popup_message">Ajoute des amis pour faire des Facetime en group et jouer ensemble !</string>
+	<string name="empty_call_popup_share_sms_ios">:speech_balloon: Partager par iMessage</string>
+	<string name="empty_call_popup_share_sms_android">:speech_balloon: Partager par SMS</string>
+	<string name="empty_call_popup_share_messenger">:busts_in_silhouette: Partager par Messenger</string>
+	<string name="empty_call_popup_throw_the_dice">:game_die: Trouver des adversaires aléatoires</string>
+	<string name="empty_call_popup_search_friend">:mag: Rechercher un ami</string>
+	<string name="empty_call_popup_cancel">Rester seul</string>
 	
 	<!-- New Game -->
 	<string name="new_game_title">Nouvelle partie</string>
 	<string name="new_game_plays">%1$s parties jouées</string>
 	<string name="new_game_new">Nouveau</string>
 	<string name="new_game_featured">À la une</string>
+	<string name="new_game_dice_title">Joueurs aléatoire</string>
+	<string name="new_game_dice_subtitle">Rencontrez de nouveaux joueurs !</string>
+	<string name="new_game_suggest">Suggérer un jeu</string>
 	
 	<!-- Game -->
 	<string name="game_loading">Chargement de %1$s</string>
+	<string name="game_rotate_landscape">Tournez en mode paysage</string>
+	<string name="game_rotate_portrait">Tournez en mode portrait</string>
+	<string name="game_unavailable">Le jeu en cours n\'est pas disponible sur votre téléphone.</string>
 </resources>

@@ -19,8 +19,12 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.Random;
+import java.util.UUID;
 import javax.inject.Inject;
+import org.json.JSONException;
+import org.json.JSONObject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -28,6 +32,13 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class GameAliensAttackAlienView extends FrameLayout {
+
+  private static final String ID_KEY = "id";
+  private static final String TYPE_KEY = "type";
+  private static final String ROTATION_KEY = "rotation";
+  private static final String SCALE_KEY = "scale";
+  private static final String START_RATIO_KEY = "start";
+  private static final String SPEED_KEY = "speed";
 
   private static final int DURATION = 300;
 
@@ -43,9 +54,11 @@ public class GameAliensAttackAlienView extends FrameLayout {
    * VARIABLES
    */
 
+  private String id;
   private ImageView imgAlien, imgAlienBG, imgAlienLost;
   private int alienType;
   private float startX, speed, scale, rotation;
+  private boolean lost = false;
 
   /**
    * RESOURCES
@@ -64,6 +77,24 @@ public class GameAliensAttackAlienView extends FrameLayout {
     this.scale = level.scale();
     this.rotation = level.rotation();
     this.speed = level.speed();
+    this.id = (UUID.randomUUID().toString());
+    init();
+  }
+
+  public GameAliensAttackAlienView(@NonNull Context context, @NonNull JSONObject json) {
+    super(context);
+
+    try {
+      this.alienType = json.getInt(TYPE_KEY);
+      this.startX = Float.parseFloat(json.getString(START_RATIO_KEY));
+      this.scale = Float.parseFloat(json.getString(SCALE_KEY));
+      this.rotation = Float.parseFloat(json.getString(ROTATION_KEY));
+      this.speed = Float.parseFloat(json.getString(SPEED_KEY));
+      this.id = (UUID.randomUUID().toString());
+    } catch (JSONException ex) {
+      ex.printStackTrace();
+    }
+
     init();
   }
 
@@ -189,6 +220,22 @@ public class GameAliensAttackAlienView extends FrameLayout {
   public void lost() {
     imgAlien.setVisibility(View.GONE);
     imgAlienLost.setVisibility(View.VISIBLE);
+    lost = true;
+  }
+
+  public boolean isLost() {
+    return lost;
+  }
+
+  public JSONObject asJSON() {
+    JSONObject alien = new JSONObject();
+    JsonUtils.jsonPut(alien, ID_KEY, id);
+    JsonUtils.jsonPut(alien, TYPE_KEY, alienType);
+    JsonUtils.jsonPut(alien, ROTATION_KEY, rotation);
+    JsonUtils.jsonPut(alien, SCALE_KEY, scale);
+    JsonUtils.jsonPut(alien, START_RATIO_KEY, startX);
+    JsonUtils.jsonPut(alien, SPEED_KEY, speed);
+    return alien;
   }
 
   public void dispose() {

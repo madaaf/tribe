@@ -3,6 +3,7 @@ package com.tribe.app.data.network.deserializer;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
@@ -127,11 +128,11 @@ import timber.log.Timber;
             } else if (entry.getKey().contains(WSService.MESSAGE_IS_TALKING_SUFFIX)) {
               String user_id = jo.get("user_id").getAsString();
               Timber.w("ON TALKING");
-              if(!user_id.equals(user.getId())) onTalking.onNext(user_id);
+              if (!user_id.equals(user.getId())) onTalking.onNext(user_id);
             } else if (entry.getKey().contains(WSService.MESSAGE_IS_READING_SUFFIX)) {
               String user_id = jo.get("user_id").getAsString();
               Timber.w("ON READING");
-             if(!user_id.equals(user.getId())) onReading.onNext(user_id);
+              if (!user_id.equals(user.getId())) onReading.onNext(user_id);
             } else if (entry.getKey().contains(WSService.MESSAGE_CREATED_SUFFIX)) {
               Timber.d("onMessageReceived : " + entry.getValue().toString());
               MessageRealm messageRealm =
@@ -150,7 +151,11 @@ import timber.log.Timber;
               Timber.d("onRoomUpdate : " + entry.getValue().toString());
               JsonObject roomJson = entry.getValue().getAsJsonObject();
               Room room = new Room(roomJson.get("id").getAsString());
-              room.setName(roomJson.get("name").getAsString());
+              
+              if (roomJson.has("name") && !(roomJson.get("name") instanceof JsonNull)) {
+                room.setName(roomJson.get("name").getAsString());
+              }
+
               room.setAcceptRandom(roomJson.get("accept_random").getAsBoolean());
 
               JsonArray live_users_json = roomJson.get("live_users").getAsJsonArray();

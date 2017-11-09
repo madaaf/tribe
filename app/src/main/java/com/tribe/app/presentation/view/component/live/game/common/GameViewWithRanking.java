@@ -101,6 +101,10 @@ public abstract class GameViewWithRanking extends GameView {
 
   }
 
+  protected void addPoint(String userId) {
+
+  }
+
   /**
    * PUBLIC
    */

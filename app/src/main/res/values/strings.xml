@@ -128,6 +128,8 @@
 	<string name="live_notification_add_as_guest">:busts_in_silhouette: Add %1$s in this call</string>
 	<string name="live_notification_text">:speech_balloon: Text %1$s</string>
 	<string name="live_notification_decline">:no_mobile_phones: Decline %1$s call</string>
+	<string name="live_notification_ringing_people">Ringing %1$d people</string>
+	<string name="live_notification_waiting_people">Waiting for %1$d people to join</string>
 	
 	<!-- Decline Menu -->
 	<string name="decline_menu_title">Text %1$s</string>
@@ -444,7 +446,7 @@
 	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you as a friend on Tribe. Only you will be able to add people as friends.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Disable</string>
 	<string name="profile_blocked_friends">Blocked or hidden chats :no_entry:</string>
-	<string name="profile_manage_friendships">Is online\' notification :bell:</string>
+	<string name="profile_manage_friendships">Is online notification :bell:</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_contact_us">Contact us :envelope:</string>
@@ -455,6 +457,8 @@
 	<string name="profile_calls_length_min">%1$d min</string>
 	<string name="profile_change_phone">Change phone number :telephone:</string>
 	<string name="profile_facebook_account">Facebook profile :bust_in_silhouette:</string>
+	<string name="profile_contact_us_email">Email us</string>
+	<string name="profile_contact_us_chat">Chat with us</string>
 	
 	<!-- Profile Phone Number -->
 	<string name="profile_change_phone_title">Phone number</string>
@@ -643,6 +647,7 @@
 	<string name="game_menu_restart">Restart this game</string>
 	<string name="game_menu_stop">Stop playing</string>
 	<string name="game_menu_play_another_game">Play another game</string>
+	<string name="game_menu_reset_scores">Reset scores</string>
 	<string name="game_tutorial">Tap on the game button to stop the game.</string>
 	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Guess 5 new songs!</string>
@@ -695,7 +700,7 @@
 	<string name="game_aliens_attack_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
 	<string name="game_bird_rush">Bird Rush!</string>
 	<string name="game_bird_rush_title">BIRD\nRUSH</string>
-	<string name="game_bird_rush_lets_go">TAP, TAP TAP TO FLY!</string>
+	<string name="game_bird_rush_lets_go">TAP, TAP, TAP, TO FLY!</string>
 	<string name="game_bird_rush_you_won">YOU WON!</string>
 	<string name="game_bird_rush_someone_won">%@ WON!</string>
 	<string name="game_bird_rush_you_lost">YOU LOST</string>
@@ -837,7 +842,7 @@
 	<string name="chat_live_status_hide">Hide</string>
 	<string name="chat_live_status_switching">Switching</string>
 	<string name="chat_quickchat_back_to_group">Group</string>
-	<string name="chat_placeholder_message">Message</string>
+	<string name="chat_placeholder_message">Aa</string>
 	<string name="chat_placeholder_tap_and_hold">Tap and Hold!</string>
 	<string name="chat_placeholder_slide_to_cancel">Slide to cancel</string>
 	<string name="chat_seen_by">Seen by %1$s</string>
@@ -868,17 +873,33 @@
 	<string name="error_just_banned_permanently_message">After being kicked out several times and temporary banned, you\'re now permanently banned from launching the Dice.</string>
 	
 	<!-- Mute Group Popup -->
-	<string name="mute_group_popup_title">Mute group?</string>
+	<string name="mute_group_popup_title">Block group?</string>
 	<string name="mute_group_popup_message">People you\'ve blocked are in this group. If you mute this group, you\'ll leave this view and won\'t receive new messages, calls and other associated notifications.</string>
-	<string name="mute_group_popup_validate">Mute group</string>
-	<string name="mute_group_popup_cancel">Don\'t mute group</string>
+	<string name="mute_group_popup_validate">Block group</string>
+	<string name="mute_group_popup_cancel">Don\'t block group</string>
+	
+	<!-- Empty Call Popup -->
+	<string name="empty_call_popup_title">Nobody available yet</string>
+	<string name="empty_call_popup_message">Drag friends in to make group Facetime and play together!</string>
+	<string name="empty_call_popup_share_sms_ios">:speech_balloon: Send call link on iMessage</string>
+	<string name="empty_call_popup_share_sms_android">:speech_balloon: Send call link by SMS</string>
+	<string name="empty_call_popup_share_messenger">:busts_in_silhouette: Send call link on Messenger</string>
+	<string name="empty_call_popup_throw_the_dice">:game_die: Match with random players</string>
+	<string name="empty_call_popup_search_friend">:mag: Search for a friend</string>
+	<string name="empty_call_popup_cancel">Stay alone</string>
 	
 	<!-- New Game -->
 	<string name="new_game_title">New game</string>
 	<string name="new_game_plays">%1$s plays</string>
 	<string name="new_game_new">New</string>
 	<string name="new_game_featured">Featured</string>
+	<string name="new_game_dice_title">Random players</string>
+	<string name="new_game_dice_subtitle">Get a quick match up!</string>
+	<string name="new_game_suggest">Suggest a game</string>
 	
 	<!-- Game -->
 	<string name="game_loading">Loading %1$s</string>
+	<string name="game_rotate_landscape">Rotate to Landscape mode</string>
+	<string name="game_rotate_portrait">Rotate to Portrait mode</string>
+	<string name="game_unavailable">The game played is not available on your phone.</string>
 </resources>
