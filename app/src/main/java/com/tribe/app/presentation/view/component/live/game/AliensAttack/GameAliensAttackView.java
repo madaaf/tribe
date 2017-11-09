@@ -160,6 +160,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
                 animatorTranslation.cancel();
 
                 alienView.lost();
+                iLost();
               }
             });
             animatorTranslation.start();

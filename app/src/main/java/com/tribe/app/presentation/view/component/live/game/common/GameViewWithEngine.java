@@ -7,10 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import com.tribe.app.R;
@@ -18,12 +20,17 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 10/30/2017.
@@ -31,7 +38,7 @@ import rx.subjects.PublishSubject;
 
 public abstract class GameViewWithEngine extends GameViewWithRanking {
 
-  private static final int DURATION = 300;
+  private static final int DURATION = 250;
   private static final int DELAY = 250;
   private static final float OVERSHOOT = 1.25f;
 
@@ -95,7 +102,39 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   @Override protected void takeOverGame() {
     startMasterEngine();
-    //gameEngine.chec
+    gameEngine.checkGameOver();
+  }
+
+  @Override protected void initWebRTCRoomSubscriptions() {
+    subscriptionsRoom.add(webRTCRoom.onGameMessage().subscribe(jsonObject -> {
+      if (jsonObject.has(game.getId())) {
+        try {
+          JSONObject message = jsonObject.getJSONObject(game.getId());
+          if (message.has(ACTION_KEY)) {
+            String actionKey = message.getString(ACTION_KEY);
+            if (actionKey.equals(ACTION_USER_GAME_OVER)) {
+              String fromUserId = message.getString(USER_KEY);
+              setStatus(RankingStatus.LOST, fromUserId);
+              gameEngine.setUserGameOver(fromUserId);
+            } else if (actionKey.equals(ACTION_NEW_GAME)) {
+              String fromUserId = message.getString(FROM_KEY);
+              JSONArray jsonArray = message.getJSONArray(PLAYERS);
+              Set<String> players = new HashSet<>();
+              for (int i = 0; i < jsonArray.length(); i++) {
+                players.add(jsonArray.getString(i));
+              }
+              setupGameLocally(fromUserId, players, message.getLong(TIMESTAMP));
+            } else if (actionKey.equals(ACTION_SHOW_USER_LOST)) {
+              playerLost(message.getString(USER_KEY));
+            } else if (actionKey.equals(ACTION_GAME_OVER)) {
+              gameOver(message.getString(USER_KEY));
+            }
+          }
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+    }));
   }
 
   protected void startMasterEngine() {
@@ -113,6 +152,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void startEngine() {
     gameEngine = generateEngine();
+    gameEngine.initPeerMapObservable(peerMapObservable);
 
     subscriptions.add(gameEngine.onPlayerPending.subscribe(userId -> {
       setStatus(RankingStatus.PENDING, userId);
@@ -130,10 +170,16 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
     if (player != null) {
       if (player.getId().equals(currentUser.getId())) {
-        changeMessageStatus(txtRestart, true, true, 0, null);
+        changeMessageStatus(txtRestart, true, true, 100, 0, null);
         refactorPending(true);
       }
     }
+  }
+
+  protected void iLost() {
+    webRTCRoom.sendToPeers(getILostPayload(currentUser.getId()), true);
+    gameEngine.setUserGameOver(currentUser.getId());
+    refactorPending(true);
   }
 
   protected void playerLost(String userId) {
@@ -153,8 +199,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void gameOver(String winnerId) {
     refactorPending(false);
-    changeMessageStatus(txtRestart, false, true, DELAY, null);
-    changeMessageStatus(txtMessage, false, true, DELAY, null);
+    changeMessageStatus(txtRestart, false, true, DURATION, 0, null);
+    changeMessageStatus(txtMessage, false, true, DURATION, 0, null);
 
     TribeGuest player = peerMap.get(winnerId);
 
@@ -180,8 +226,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     }
   }
 
-  protected void changeMessageStatus(View view, boolean isVisible, boolean isAnimated, int delay,
-      LabelListener listener) {
+  protected void changeMessageStatus(View view, boolean isVisible, boolean isAnimated, int duration,
+      int delay, LabelListener listener) {
     float alpha = isVisible ? 1.0f : 0.0f;
     float translationY = isVisible ? 0.0f : screenUtils.dpToPx(30.0f);
 
@@ -211,10 +257,10 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
       });
     }
 
-    animator.setDuration(DURATION).start();
+    animator.setDuration(duration).start();
   }
 
-  protected void showMessage(String text, int delay, LabelListener completionListener) {
+  protected void showMessage(String text, int duration, LabelListener completionListener) {
     txtMessage = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsMessage =
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -227,13 +273,13 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     txtRestart.setAlpha(0);
     addView(txtRestart, paramsMessage);
 
-    changeMessageStatus(txtMessage, false, false, 0, null);
-    changeMessageStatus(txtMessage, true, true, delay, new LabelListener() {
+    changeMessageStatus(txtMessage, false, false, 100, 0, null);
+    changeMessageStatus(txtMessage, true, true, duration, 0, new LabelListener() {
       @Override public void onStart() {
       }
 
       @Override public void onEnd() {
-        changeMessageStatus(txtMessage, false, true, 0, new LabelListener() {
+        changeMessageStatus(txtMessage, false, true, duration, 1000, new LabelListener() {
           @Override public void onStart() {
           }
 
@@ -254,7 +300,64 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
+    currentMasterId = userId;
+    refactorPending(false);
+    listenMessages();
+    resetStatuses();
+    showTitle(new LabelListener() {
+      @Override public void onStart() {
+      }
 
+      @Override public void onEnd() {
+        showMessage(getResources().getString(
+            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "lets_go")), 250, null);
+      }
+    });
+
+    subscriptions.add(onGameReady.single().subscribe(aBoolean -> {
+      playGame();
+    }));
+  }
+
+  private void playGame() {
+    gameEngine.start();
+  }
+
+  private void listenMessages() {
+    if (subscriptionsSession != null) subscriptionsSession.clear();
+    subscriptionsSession = new CompositeSubscription();
+
+    subscriptionsSession.add(Observable.combineLatest(onPending.distinctUntilChanged(),
+        onMessage.distinctUntilChanged((s, s2) -> s.equals(s2)), (t1, t2) -> Pair.create(t1, t2))
+        .buffer(750, TimeUnit.MILLISECONDS, 0)
+        .subscribe(values -> {
+          if (values.size() == 0) return;
+
+          boolean isPending = values.get(values.size() - 1).first;
+          Set<String> textList = new HashSet<>();
+
+          for (Pair<Boolean, String> pair : values) {
+            textList.add(pair.second);
+          }
+
+          int duration = 250;
+          if (textList.size() > 0) {
+            String merged = "";
+            for (String str : textList) merged += str + "\\n";
+            changeMessageStatus(txtRestart, false, true, duration, 0, null);
+            showMessage(merged, duration, new LabelListener() {
+              @Override public void onStart() {
+                changeMessageStatus(txtRestart, isPending, true, duration, 0, null);
+              }
+
+              @Override public void onEnd() {
+
+              }
+            });
+          } else {
+            changeMessageStatus(txtRestart, isPending, true, duration, 0, null);
+          }
+        }));
   }
 
   private void refactorPending(boolean pending) {
@@ -262,8 +365,92 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     this.onPending.onNext(pending);
   }
 
-  protected boolean isPending() {
-    return pending;
+  private void showTitle(LabelListener listener) {
+    int translation = screenUtils.dpToPx(30.0f);
+
+    TextViewFont txtTitleBG = new TextViewFont(getContext());
+    FrameLayout.LayoutParams paramsTitleBG =
+        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+    paramsTitleBG.gravity = Gravity.CENTER;
+
+    TextViewCompat.setTextAppearance(txtTitleBG, R.style.GameBody_1_White);
+    txtTitleBG.setText(StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title"));
+    txtTitleBG.setAllCaps(true);
+    txtTitleBG.setAlpha(0);
+    setTranslationX(translation);
+    setTranslationY(translation);
+    addView(txtTitleBG, paramsTitleBG);
+
+    TextViewFont txtTitleFront = new TextViewFont(getContext());
+    FrameLayout.LayoutParams paramsTitleFront =
+        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+    paramsTitleFront.gravity = Gravity.CENTER;
+
+    TextViewCompat.setTextAppearance(txtTitleFront, R.style.GameBody_1_White);
+    txtTitleFront.setText(StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title"));
+    txtTitleFront.setAllCaps(true);
+    txtTitleFront.setAlpha(0);
+    setTranslationX(translation);
+    setTranslationY(translation);
+    addView(txtTitleFront, paramsTitleFront);
+
+    int duration = 250;
+
+    changeMessageStatus(txtTitleBG, true, true, duration, 0, null);
+    changeMessageStatus(txtTitleFront, true, true, duration, 0, null);
+
+    subscriptions.add(Observable.timer(1500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          int translate = screenUtils.dpToPx(4);
+          txtTitleBG.animate()
+              .translationX(translate)
+              .translationY(0)
+              .setDuration(duration)
+              .setStartDelay(0)
+              .setInterpolator(new DecelerateInterpolator())
+              .start();
+
+          subscriptions.add(Observable.timer(1500, TimeUnit.MILLISECONDS)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(aLong1 -> {
+                txtTitleBG.animate()
+                    .translationX(0)
+                    .translationY(0)
+                    .setDuration(duration)
+                    .setStartDelay(0)
+                    .setInterpolator(new DecelerateInterpolator())
+                    .setListener(new AnimatorListenerAdapter() {
+                      @Override public void onAnimationEnd(Animator animation) {
+                        animation.removeAllListeners();
+
+                        if (listener != null) listener.onEnd();
+
+                        txtTitleBG.animate()
+                            .setDuration(0)
+                            .setListener(null)
+                            .setStartDelay(0)
+                            .start();
+
+                        changeMessageStatus(txtTitleFront, false, true, duration, 0, null);
+                        changeMessageStatus(txtTitleBG, false, true, duration, 0,
+                            new LabelListener() {
+                              @Override public void onStart() {
+
+                              }
+
+                              @Override public void onEnd() {
+                                removeView(txtTitleBG);
+                                removeView(txtTitleFront);
+                              }
+                            });
+                      }
+                    })
+                    .start();
+              }));
+        }));
   }
 
   /**
@@ -274,6 +461,15 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     JSONObject obj = new JSONObject();
     JSONObject game = new JSONObject();
     JsonUtils.jsonPut(game, ACTION_KEY, ACTION_SHOW_USER_LOST);
+    JsonUtils.jsonPut(game, USER_KEY, userId);
+    JsonUtils.jsonPut(obj, this.game.getId(), game);
+    return obj;
+  }
+
+  private JSONObject getILostPayload(String userId) {
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_USER_GAME_OVER);
     JsonUtils.jsonPut(game, USER_KEY, userId);
     JsonUtils.jsonPut(obj, this.game.getId(), game);
     return obj;

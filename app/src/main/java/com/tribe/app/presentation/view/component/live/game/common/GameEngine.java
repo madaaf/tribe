@@ -48,6 +48,29 @@ public class GameEngine {
   }
 
   /**
+   * PRIVATE
+   */
+
+  protected boolean isGameOver(String userId) {
+    List<String> totalPlayers = new ArrayList<>();
+
+    for (String key : mapPlayerStatus.keySet()) {
+      if (mapPlayerStatus.get(key) == PLAYING) totalPlayers.add(key);
+    }
+
+    if (totalPlayers.size() == 0) {
+      onGameOver.onNext(userId);
+      return true;
+    }
+
+    return false;
+  }
+
+  protected void checkGameOver() {
+    isGameOver(lastPlayerGameOver);
+  }
+
+  /**
    * PUBLIC
    */
 
@@ -95,21 +118,6 @@ public class GameEngine {
     onPlayerStatusChange.onNext(mapPlayerStatus);
 
     if (!isGameOver(userId) && wasPlaying) onPlayerLost.onNext(userId);
-  }
-
-  private boolean isGameOver(String userId) {
-    List<String> totalPlayers = new ArrayList<>();
-
-    for (String key : mapPlayerStatus.keySet()) {
-      if (mapPlayerStatus.get(key) == PLAYING) totalPlayers.add(key);
-    }
-
-    if (totalPlayers.size() == 0) {
-      onGameOver.onNext(userId);
-      return true;
-    }
-
-    return false;
   }
 
   /**

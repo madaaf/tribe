@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -26,6 +27,7 @@ import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.HashMap;
 import java.util.List;
@@ -109,16 +111,16 @@ public class GameManagerView extends FrameLayout {
   }
 
   private void initSubscriptions() {
-    subscriptions.add(Observable.merge(gameManager.onCurrentUserStartGame(),
-        gameManager.onRemoteUserStartGame()
-            .map(tribeSessionGamePair -> tribeSessionGamePair.second))
-        .filter(game -> game.hasView())
-        .subscribe(game -> {
-          currentGame = game;
+    subscriptions.add(Observable.merge(gameManager.onCurrentUserStartGame()
+        .map(game -> Pair.create(new TribeSession(TribeSession.PUBLISHER_ID, currentUser.getId()),
+            game)), gameManager.onRemoteUserStartGame())
+        .filter(sessionPairgame -> sessionPairgame.second.hasView())
+        .subscribe(sessionGamePair -> {
+          currentGame = sessionGamePair.second;
 
           if (currentGameView == null) {
             setVisibility(View.VISIBLE);
-            addGameView(computeGameView(game));
+            addGameView(computeGameView(currentGame, sessionGamePair.first.getUserId()));
           }
 
           if (currentGameView instanceof GameChallengesView) {
@@ -171,7 +173,7 @@ public class GameManagerView extends FrameLayout {
     addView(this.currentGameView, params);
   }
 
-  private GameView computeGameView(Game game) {
+  private GameView computeGameView(Game game, String userId) {
     GameView gameView = null;
 
     if (game.getId().equals(Game.GAME_CHALLENGE)) {
@@ -187,6 +189,7 @@ public class GameManagerView extends FrameLayout {
     } else if (game.getId().equals(Game.GAME_INVADERS)) {
       GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
       gameView = gameAlienAttacksView;
+      gameView.start(onPeerMapChange, userId);
     }
 
     gameView.setWebRTCRoom(webRTCRoom);
