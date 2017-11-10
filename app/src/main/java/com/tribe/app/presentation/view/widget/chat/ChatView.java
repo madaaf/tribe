@@ -6,12 +6,14 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -198,6 +200,11 @@ public class ChatView extends ChatMVPView {
   public ChatView(@NonNull Context context, int type) {
     super(context);
     this.type = type;
+    initView(context);
+  }
+
+  public ChatView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    super(context, attrs);
     initView(context);
   }
 

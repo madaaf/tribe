@@ -41,6 +41,9 @@ public class ShortcutUtil {
   }
 
   public static boolean equalShortcutMembers(List<User> one, List<User> two, User user) {
+    if ((one == null) || (two == null) || (user == null)) {
+      return false;
+    }
     List<String> oneIds = new ArrayList<String>();
     List<String> twoIds = new ArrayList<String>();
 

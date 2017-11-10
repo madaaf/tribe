@@ -22,6 +22,7 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import java.lang.ref.WeakReference;
+import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -109,12 +110,27 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
 
       if (notificationShortcut != null) {
         if (context instanceof ChatActivity) {
-          if (((ChatActivity) context).getShortcut().getId().equals(notificationShortcut.getId())) {
+          List<User> memberInChat = null;
+          if (((ChatActivity) context).getShortcut() != null
+              && ((ChatActivity) context).getShortcut().getMembers() != null) {
+            memberInChat = ((ChatActivity) context).getShortcut().getMembers();
+          }
+          boolean isSameChat =
+              ShortcutUtil.equalShortcutMembers(memberInChat, notificationShortcut.getMembers(),
+                  user);
+          if (isSameChat) {
             return false;
           }
         } else if (context instanceof LiveActivity) {
-          String shortcutId = ((LiveActivity) context).getShortcutId();
-          if (shortcutId != null && shortcutId.equals(notificationShortcut.getId())) {
+          List<User> memberInlive = null;
+          if (((LiveActivity) context).getShortcut() != null
+              && ((LiveActivity) context).getShortcut().getMembers() != null) {
+            memberInlive = ((LiveActivity) context).getShortcut().getMembers();
+          }
+          boolean isSameChat =
+              ShortcutUtil.equalShortcutMembers(memberInlive, notificationShortcut.getMembers(),
+                  user);
+          if (isSameChat) {
             ((LiveActivity) context).notififyNewMessage();
             return false;
           }

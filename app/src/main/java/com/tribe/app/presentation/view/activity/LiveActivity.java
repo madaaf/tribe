@@ -572,11 +572,6 @@ public class LiveActivity extends BaseActivity
     chatView.setChatId(shortcut, null);
     chatView.onResumeView();
     chatViewContainer.addView(chatView);
-    chatView.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View view) {
-
-      }
-    });
   }
 
   private void setChatVisibility(int visibility) {
