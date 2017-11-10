@@ -556,6 +556,10 @@ public class LiveActivity extends BaseActivity
 
   private void initChatView(Shortcut shortcut) {
     Timber.e("INIT CHAT VIEW " + (chatView != null));
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+      return;
+    }
+
     if (chatView != null) {
       chatView.dispose();
       chatView.destroyDrawingCache();
@@ -601,48 +605,43 @@ public class LiveActivity extends BaseActivity
   private void initSubscriptions() {
     initChatView(getShortcut());
 
-    subscriptions.add(live.onRoomUpdated().subscribe(room -> {
-      List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
+    if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+      subscriptions.add(live.onRoomUpdated().subscribe(room -> {
+        List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
-      if (chatView.getShortcut().getMembers() != null && !chatView.getShortcut()
-          .getMembers()
-          .isEmpty()) {
+        if (chatView.getShortcut().getMembers() != null && !chatView.getShortcut()
+            .getMembers()
+            .isEmpty()) {
 
-        if (!allUsers.isEmpty() && !ShortcutUtil.equalShortcutMembers(
-            chatView.getShortcut().getMembers(), allUsers, user)) {
-          chatView.dispose();
-          room.getShortcut().setMembers(allUsers);
-          initChatView(room.getShortcut());
+          if (!allUsers.isEmpty() && !ShortcutUtil.equalShortcutMembers(
+              chatView.getShortcut().getMembers(), allUsers, user)) {
+            chatView.dispose();
+            room.getShortcut().setMembers(allUsers);
+            initChatView(room.getShortcut());
+          }
         }
-      }
-    }));
+      }));
 
-    chatViewContainer.setOnTouchListener(new View.OnTouchListener() {
-      @Override public boolean onTouch(View view, MotionEvent motionEvent) {
-        Timber.e("TEST ");
-        return false;
-      }
-    });
-
-    subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
-      isChatViewOpen = open;
-      if (open) {
-        if (live.getShortcut() == null) {
-          String[] array = new String[live.getUserIdsOfShortcut().size()];
-          livePresenter.createShortcut(live.getUserIdsOfShortcut().toArray(array));
+      subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
+        isChatViewOpen = open;
+        if (open) {
+          if (live.getShortcut() == null) {
+            String[] array = new String[live.getUserIdsOfShortcut().size()];
+            livePresenter.createShortcut(live.getUserIdsOfShortcut().toArray(array));
+          } else {
+            animateChatView();
+          }
         } else {
-          animateChatView();
+          chatView.animate()
+              .setDuration(300)
+              .alpha(0f)
+              .withStartAction(() -> chatView.setAlpha(1f))
+              .translationX(-screenUtils.getWidthPx())
+              .withEndAction(() -> setChatVisibility(INVISIBLE))
+              .setListener(null);
         }
-      } else {
-        chatView.animate()
-            .setDuration(300)
-            .alpha(0f)
-            .withStartAction(() -> chatView.setAlpha(1f))
-            .translationX(-screenUtils.getWidthPx())
-            .withEndAction(() -> setChatVisibility(INVISIBLE))
-            .setListener(null);
-      }
-    }));
+      }));
+    }
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
       if (!live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) {

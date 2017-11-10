@@ -256,7 +256,7 @@ public class TopBarView extends FrameLayout {
     clickProfile.onNext(null);
   }
 
-  @OnClick(R.id.diceView) void clickCallRoulette() {
+  @OnClick(R.id.diceLayout) void clickCallRoulette() {
     clickCallRoulette.onNext(null);
   }
 

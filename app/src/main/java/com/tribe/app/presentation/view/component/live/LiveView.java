@@ -785,6 +785,11 @@ public class LiveView extends FrameLayout {
     this.live = live;
     this.fbId = live.hasUsers() ? live.getUsersOfShortcut().get(0).getFbid() : "";
 
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+      viewControlsLive.btnChat.setVisibility(INVISIBLE);
+      viewRinging.setVisibility(INVISIBLE);
+    }
+
     webRTCRoom = tribeLiveSDK.newRoom();
     webRTCRoom.initLocalStream(viewLocalLive.getLocalPeerView());
 

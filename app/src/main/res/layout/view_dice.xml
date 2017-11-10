@@ -18,7 +18,7 @@
       android:layout_gravity="center"
       android:layout_margin="5dp"
       android:background="@drawable/shape_dice"
-      android:clickable="false"
+      android:clickable="true"
       android:gravity="center"
       />
 
