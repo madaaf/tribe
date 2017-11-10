@@ -161,7 +161,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void stopEngine() {
-    gameEngine.stop();
+    if (gameEngine != null) gameEngine.stop();
     gameEngine = null;
   }
 
@@ -378,8 +378,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     txtTitleBG.setText(StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title"));
     txtTitleBG.setAllCaps(true);
     txtTitleBG.setAlpha(0);
-    setTranslationX(translation);
-    setTranslationY(translation);
+    txtTitleBG.setTranslationX(translation);
+    txtTitleBG.setTranslationY(translation);
     addView(txtTitleBG, paramsTitleBG);
 
     TextViewFont txtTitleFront = new TextViewFont(getContext());
@@ -392,8 +392,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     txtTitleFront.setText(StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title"));
     txtTitleFront.setAllCaps(true);
     txtTitleFront.setAlpha(0);
-    setTranslationX(translation);
-    setTranslationY(translation);
+    txtTitleFront.setTranslationX(translation);
+    txtTitleFront.setTranslationY(translation);
     addView(txtTitleFront, paramsTitleFront);
 
     int duration = 250;
@@ -515,10 +515,12 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     txtRestart.setAlpha(0);
     addView(txtRestart, paramsRestart);
 
-    subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS).subscribe(aLong -> {
-      becomePlayer();
-      if (userId.equals(currentUser.getId())) becomeGameMaster();
-    }));
+    subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          becomePlayer();
+          if (userId.equals(currentUser.getId())) becomeGameMaster();
+        }));
   }
 
   public void stop() {
