@@ -817,6 +817,10 @@
 	<string name="home_block_group_shortcut_title">Block this group?</string>
 	<string name="home_block_group_shortcut_message">Mute new messages, calls and other associated notifications from this group. You\'ll be able to unblock this group from your profile.</string>
 	<string name="home_block_group_shortcut_validate">Block</string>
+	<string name="home_sync_address_book_title">Connect Address Book</string>
+	<string name="home_sync_address_book_subtitle">Tap to see who\'s here!</string>
+	<string name="home_sync_facebook_title">Connect Facebook</string>
+	<string name="home_sync_facebook_subtitle">Tap to see who\'s here!</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">New Chat</string>

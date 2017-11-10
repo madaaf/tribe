@@ -817,6 +817,10 @@
 	<string name="home_block_group_shortcut_title">Bloquer ce groupe ?</string>
 	<string name="home_block_group_shortcut_message">Masquer de manière permanente ce groupe et les notifications qui lui sont associés. Vous pourrez débloquer ce groupe depuis votre profil.</string>
 	<string name="home_block_group_shortcut_validate">Bloquer</string>
+	<string name="home_sync_address_book_title">Connecter votre carnet d\'adresses</string>
+	<string name="home_sync_address_book_subtitle">Tappez pour voir qui est là !</string>
+	<string name="home_sync_facebook_title">Connecter Facebook</string>
+	<string name="home_sync_facebook_subtitle">Tappez pour voir qui est là !</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">Nouveau chat</string>
