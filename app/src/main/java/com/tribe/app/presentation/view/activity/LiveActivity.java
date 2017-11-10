@@ -107,7 +107,7 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-import static android.view.View.GONE;
+import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 public class LiveActivity extends BaseActivity
@@ -555,6 +555,7 @@ public class LiveActivity extends BaseActivity
   }
 
   private void initChatView(Shortcut shortcut) {
+    Timber.e("INIT CHAT VIEW " + (chatView != null));
     if (chatView != null) {
       chatView.dispose();
       chatView.destroyDrawingCache();
@@ -572,6 +573,11 @@ public class LiveActivity extends BaseActivity
     chatView.setChatId(shortcut, null);
     chatView.onResumeView();
     chatViewContainer.addView(chatView);
+    chatView.setOnClickListener(new View.OnClickListener() {
+      @Override public void onClick(View view) {
+
+      }
+    });
   }
 
   private void setChatVisibility(int visibility) {
@@ -604,28 +610,25 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(live.onRoomUpdated().subscribe(room -> {
       List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
-      Timber.e("ON ROOM UPDATED LUVE ACTIVOTRTY 2: " + allUsers.toString());
-
       if (chatView.getShortcut().getMembers() != null && !chatView.getShortcut()
           .getMembers()
           .isEmpty()) {
 
-        Timber.e("ON ROOM UPDATED LUVE ACTIVOTRTY 3 : "
-            + chatView.getShortcut().getMembers().toString()
-            + ShortcutUtil.equalShortcutMembers(chatView.getShortcut().getMembers(), allUsers,
-            user));
-
         if (!allUsers.isEmpty() && !ShortcutUtil.equalShortcutMembers(
             chatView.getShortcut().getMembers(), allUsers, user)) {
           chatView.dispose();
-          Timber.e("INIT CHAT VIEW " + room.getShortcut().getMembers().size());
           room.getShortcut().setMembers(allUsers);
           initChatView(room.getShortcut());
         }
       }
-      Timber.e(" ");
-      Timber.e(" ");
     }));
+
+    chatViewContainer.setOnTouchListener(new View.OnTouchListener() {
+      @Override public boolean onTouch(View view, MotionEvent motionEvent) {
+        Timber.e("TEST ");
+        return false;
+      }
+    });
 
     subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
       isChatViewOpen = open;
@@ -642,7 +645,7 @@ public class LiveActivity extends BaseActivity
             .alpha(0f)
             .withStartAction(() -> chatView.setAlpha(1f))
             .translationX(-screenUtils.getWidthPx())
-            .withEndAction(() -> setChatVisibility(GONE))
+            .withEndAction(() -> setChatVisibility(INVISIBLE))
             .setListener(null);
       }
     }));

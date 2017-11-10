@@ -284,7 +284,7 @@ public class ChatView extends ChatMVPView {
     if (members.size() > 1) {
       if (shortcut.getName() != null) {
         title.setTextColor(Color.BLACK);
-        title.setText(shortcut.getName());
+        title.setText(shortcut.getName() + " ");
       } else {
         String txt =
             (context.getString(R.string.shortcut_members_count, (members.size() + 1)) + " ");
