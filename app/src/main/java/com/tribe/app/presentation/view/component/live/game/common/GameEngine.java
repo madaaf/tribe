@@ -1,8 +1,13 @@
 package com.tribe.app.presentation.view.component.live.game.common;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.IntDef;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,11 +50,28 @@ public class GameEngine {
   public GameEngine(Context context) {
     this.context = context;
     this.mapPlayerStatus = new HashMap<>();
+    initDependencyInjector();
   }
 
   /**
    * PRIVATE
    */
+
+  protected void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
+
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) context).getApplication()).getApplicationComponent();
+  }
+
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) context));
+  }
 
   protected boolean isGameOver(String userId) {
     List<String> totalPlayers = new ArrayList<>();
@@ -83,6 +105,8 @@ public class GameEngine {
   }
 
   public void initPeerMapObservable(Observable<Map<String, TribeGuest>> map) {
+    isFirst = true;
+
     subscriptions.add(map.subscribe(peerMap -> {
       if (isFirst) {
         for (TribeGuest guest : peerMap.values()) {
@@ -105,6 +129,8 @@ public class GameEngine {
           }
         }
       }
+
+      isFirst = false;
     }));
   }
 

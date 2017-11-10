@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     >
+
+  <!--  <FrameLayout
+        android:id="@+id/chatview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="65dp"
+        android:clickable="true"
+        android:visibility="visible"
+        />-->
 
   <FrameLayout
       android:layout_width="match_parent"
@@ -12,6 +21,7 @@
       android:orientation="vertical"
       tools:context=".presentation.view.activity.LiveActivity"
       >
+
 
     <com.tribe.app.presentation.view.component.live.LiveContainer
         android:id="@+id/viewLiveContainer"
@@ -30,6 +40,17 @@
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           />
+
+      <FrameLayout
+          android:id="@+id/chatview"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_alignParentBottom="true"
+          android:layout_marginTop="65dp"
+          android:clickable="true"
+          android:visibility="invisible"
+          />
+
     </com.tribe.app.presentation.view.component.live.LiveContainer>
 
     <com.tribe.app.presentation.view.widget.PopupContainerView
@@ -94,14 +115,17 @@
 
   </FrameLayout>
 
-  <com.tribe.app.presentation.view.widget.chat.ChatView
-      android:id="@+id/chatview"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_alignParentBottom="true"
-      android:layout_marginTop="65dp"
-      android:visibility="gone"
-      app:chatViewType="fromlive"
-      />
+  <!--
+    <com.tribe.app.presentation.view.widget.chat.ChatView
+        android:id="@+id/chatview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="65dp"
+        android:visibility="gone"
+        app:chatViewType="fromlive"
+        />
+  -->
+
 
 </merge>

@@ -35,6 +35,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 10/05/2017.
@@ -259,7 +260,7 @@ public class LiveContainer extends FrameLayout {
 
           velocityTracker = VelocityTracker.obtain();
           velocityTracker.addMovement(ev);
-        } else if (isTouchInInviteView && isOpenedPartially) {
+        } else if (isTouchInInviteView && (isOpenedPartially || isOpenedFully)) {
           longDown = System.currentTimeMillis();
           downX = currentX = ev.getRawX();
           downY = currentY = ev.getRawY();
@@ -270,11 +271,11 @@ public class LiveContainer extends FrameLayout {
               .subscribeOn(Schedulers.computation())
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(time -> {
-                if ((System.currentTimeMillis() - longDown) >= LONG_PRESS &&
-                    isDown &&
-                    Math.abs(currentX - downX) < diffDown &&
-                    Math.abs(currentY - downY) < diffDown &&
-                    overallScrollY < scrollTolerance) {
+                if ((System.currentTimeMillis() - longDown) >= LONG_PRESS
+                    && isDown
+                    && Math.abs(currentX - downX) < diffDown
+                    && Math.abs(currentY - downY) < diffDown
+                    && overallScrollY < scrollTolerance) {
                   int nbInRoom = viewLive.nbInRoom();
 
                   if (nbInRoom == LiveView.LIVE_MAX) {
@@ -300,14 +301,14 @@ public class LiveContainer extends FrameLayout {
         float diffY = ev.getY() - lastDownY;
         float diffX = ev.getX() - lastDownX;
 
-        if ((!isOpenedPartially || !isOpenedFully || !isTouchInInviteView) &&
-            currentTileView == null) {
+        if ((!isOpenedPartially || !isOpenedFully || !isTouchInInviteView)
+            && currentTileView == null) {
           final boolean isSwipingHorizontally = Math.abs(diffX) > Math.abs(diffY);
 
-          if (isSwipingHorizontally &&
-              Math.abs(diffX) > touchSlop &&
-              Math.abs(diffX) > screenUtils.dpToPx(DRAG_THRESHOLD) &&
-              !beingDragged) {
+          if (isSwipingHorizontally
+              && Math.abs(diffX) > touchSlop
+              && Math.abs(diffX) > screenUtils.dpToPx(DRAG_THRESHOLD)
+              && !beingDragged) {
             beingDragged = true;
           }
         }
@@ -361,10 +362,10 @@ public class LiveContainer extends FrameLayout {
               double distance = Math.sqrt((dx * dx) + (dy * dy));
               if (initDistance == 0) initDistance = (float) distance;
 
-              float scale = Math.min(Math.max((float) (TileInviteView.SCALE_MIN +
-                      ((TileInviteView.SCALE_MAX - TileInviteView.SCALE_MIN) *
-                          (1 - (distance / initDistance)))), TileInviteView.SCALE_MIN),
-                  TileInviteView.SCALE_MAX);
+              float scale = Math.min(Math.max(
+                  (float) (TileInviteView.SCALE_MIN + ((TileInviteView.SCALE_MAX
+                      - TileInviteView.SCALE_MIN) * (1 - (distance / initDistance)))),
+                  TileInviteView.SCALE_MIN), TileInviteView.SCALE_MAX);
 
               float scaleDrop = Math.min(Math.max(
                   (float) (1 + ((TileInviteView.SCALE_MAX - 1) * (1 - (distance / initDistance)))),
@@ -454,8 +455,10 @@ public class LiveContainer extends FrameLayout {
           int[] locationInviteView = new int[2];
           viewLiveInvite.getLocationOnScreen(locationInviteView);
 
-          int xEnd = locationInviteView[0] - tileLocationLast[0] - currentTileView.getWidth() +
-              (int) (currentTileView.getWidth() * 0.10f);
+          int xEnd =
+              locationInviteView[0] - tileLocationLast[0] - currentTileView.getWidth() + (int) (
+                  currentTileView.getWidth()
+                      * 0.10f);
           int yEnd = screenUtils.getHeightPx() - tileLocationLast[1] - currentTileView.getHeight();
           int duration = draggedTileView.animateOnDrop(xEnd, yEnd);
           prepareRemoveTileForDrag(duration);
@@ -485,10 +488,12 @@ public class LiveContainer extends FrameLayout {
     currentTileView.getLocationOnScreen(tileLocationStart);
     FrameLayout.LayoutParams params =
         new FrameLayout.LayoutParams(currentTileView.getWidth(), currentTileView.getHeight());
-    tileLocationStart[0] = tileLocationStart[0] +
-        (currentTileView.getUser().isSelected() ? -screenUtils.dpToPx(10) : 0);
-    tileLocationStart[1] = tileLocationStart[1] +
-        (currentTileView.getUser().isSelected() ? screenUtils.dpToPx(10) : 0);
+    tileLocationStart[0] =
+        tileLocationStart[0] + (currentTileView.getUser().isSelected() ? -screenUtils.dpToPx(10)
+            : 0);
+    tileLocationStart[1] =
+        tileLocationStart[1] + (currentTileView.getUser().isSelected() ? screenUtils.dpToPx(10)
+            : 0);
     params.leftMargin = tileLocationStart[0];
     params.topMargin = tileLocationStart[1] - statusBarHeight;
     addView(draggedTileView, params);

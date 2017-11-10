@@ -93,6 +93,11 @@ public class MessageAdapter extends RecyclerView.Adapter {
     super.notifyDataSetChanged();
   }
 
+  public void clearItem() {
+    this.items.clear();
+    super.notifyDataSetChanged();
+  }
+
   public void setItem(Message message) {
     this.items.add(message);
     super.notifyDataSetChanged();
@@ -119,10 +124,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
   public void updateItem(int position, Message message) {
     Message pendingItem = items.get(position);
-    Timber.w("SOEF UPDATE ITEM : " + position + " " + pendingItem.toString());
     pendingItem.setId(message.getId());
     pendingItem.setPending(false);
-    if (position != -1) notifyItemChanged(position, pendingItem);
+    if (position != -1) notifyItemChanged(position);
   }
 
   public int getPendingMessage() {
@@ -137,7 +141,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
   public Observable<List<Object>> onClickItem() {
     return Observable.merge(messageTextAdapterDelegate.onPopulateSCLastSeen(),
-        messageEventAdapterDelegate.onPopulateSCLastSeen(), messageImageAdapterDelegate.onPopulateSCLastSeen(),
-        messageEmojiAdapterDelegate.onPopulateSCLastSeen(), messageAudioAdapterDelegate.onPopulateSCLastSeen());
+        messageEventAdapterDelegate.onPopulateSCLastSeen(),
+        messageImageAdapterDelegate.onPopulateSCLastSeen(),
+        messageEmojiAdapterDelegate.onPopulateSCLastSeen(),
+        messageAudioAdapterDelegate.onPopulateSCLastSeen());
   }
 }

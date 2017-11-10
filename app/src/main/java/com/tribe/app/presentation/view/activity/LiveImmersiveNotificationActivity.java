@@ -21,6 +21,7 @@ import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LiveImmersiveNotificationPresenter;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -84,6 +85,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
   @Inject @ImmersiveCallState Preference<Boolean> immersiveCallState;
   @Inject LiveImmersiveNotificationPresenter presenter;
   @Inject MissedCallManager missedCallManager;
+  @Inject User user;
 
   @BindView(R.id.txtDisplayName) TextViewFont txtDisplayName;
   @BindView(R.id.txtCallerName) TextViewFont txtCallerName;
@@ -340,7 +342,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
                 .withEndAction(() -> {
                   shouldStartHome = true;
                   finish();
-                  startActivity(NotificationUtils.getIntentForLive(v.getContext(), payload, true));
+                  startActivity(NotificationUtils.getIntentForLive(v.getContext(), payload, true, user));
                 })
                 .start();
           } else {

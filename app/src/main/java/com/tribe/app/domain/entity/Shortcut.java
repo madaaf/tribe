@@ -311,21 +311,6 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   }
 
   @Override public String toString() {
-    return "Shortcut{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
-        + name
-        + ", online="
-        + online
-        + ", live="
-        + live
-        + ", pinned="
-        + ", shortcutLastSeen="
-        + shortcutLastSeen
-        + ", members="
-        + members;
+    return "Shortcut{" + "id='" + id + '\'' + ", name='" + name + ", members=" + members;
   }
-
 }

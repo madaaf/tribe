@@ -154,16 +154,24 @@ public class RecyclerMessageView extends ChatMVPView {
     messageAdapter.notifyDataSetChanged();
   }
 
+  public void onResumeView() {
+    if (!messagePresenter.isAttached()) {
+      messagePresenter.onViewAttached(this);
+    }
+  }
+
   @Override protected void onAttachedToWindow() {
-    Timber.w(" onAttachedToWindow");
+    Timber.i("onAttachedToWindow");
     super.onAttachedToWindow();
-    messagePresenter.onViewAttached(this);
+    if (!messagePresenter.isAttached()) {
+      messagePresenter.onViewAttached(this);
+    }
   }
 
   @Override protected void onDetachedFromWindow() {
     messagePresenter.onViewDetached();
     super.onDetachedFromWindow();
-    Timber.w("DETACHED onDetachedFromWindow");
+    Timber.i("onDetachedFromWindow");
   }
 
   private void initRecyclerView() {
@@ -213,13 +221,6 @@ public class RecyclerMessageView extends ChatMVPView {
         });
   }
 
-  public void onResumeView() {
-    Timber.w("SOEF SET CHAT ID AND CALL PRESENTER ");
-    if (arrIds == null) {
-      return;
-    }
-  }
-
   public void scrollListToBottom() {
     layoutManager.scrollToPositionWithOffset(messageAdapter.getItemCount() - 1, 0);
   }
@@ -256,10 +257,17 @@ public class RecyclerMessageView extends ChatMVPView {
    * MESSAGE RECEPTION
    */
 
-  @Override public void successLoadingMessage(List<Message> messages) {
-    Timber.w("SOEF successLoadingMessage " + messages.size() + " ");
-    errorLoadingMessages = false;
+  private boolean isDisplayedMessageDisk = false;
+  private boolean successLoadingMessage = false;
 
+  @Override public void successLoadingMessage(List<Message> messages) {
+    successLoadingMessage = true;
+    Timber.w("SOEF successLoadingMessage " + messages.size() + " ");
+    if (isDisplayedMessageDisk) {
+      messageAdapter.clearItem();
+      isDisplayedMessageDisk = false;
+    }
+    errorLoadingMessages = false;
     for (Message m : messages) {
       if (!messageAdapter.getItems().contains(m)) {
         unreadMessage.add(m);
@@ -295,18 +303,20 @@ public class RecyclerMessageView extends ChatMVPView {
     load = false;
   }
 
-  @Override public void successMessageCreated(Message message, int position) {
-    Timber.w("successMessageCreated " + position + " " + message.toString());
-    messageAdapter.notifyItemChanged(messageAdapter.getItemCount() - 1, message);
-  }
-
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.w("successLoadingMessageDisk " + messages.size() + " ");
-    if (errorLoadingMessages) {
+    if (errorLoadingMessages || !successLoadingMessage) {
       messageAdapter.setItems(messages, 0);
       scrollListToBottom();
+      isDisplayedMessageDisk = true;
     }
+
     // DO SAME THING THE SUCVCESSLOADING MESSAGE/
+  }
+
+  @Override public void successMessageCreated(Message message, int position) {
+    Timber.w("successMessageCreated " + position + " " + message.toString());
+    messageAdapter.updateItem(messageAdapter.getItemCount() - 1, message);
   }
 
   /**
@@ -329,7 +339,6 @@ public class RecyclerMessageView extends ChatMVPView {
 
   public void successMessageReceived(List<Message> messages) {
     messageAdapter.setItem(messages.get(0));
-    //TODO
     context.startService(WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMREADING,
         JsonUtils.arrayToJson(arrIds)));
     scrollListToBottom();
@@ -346,5 +355,42 @@ public class RecyclerMessageView extends ChatMVPView {
 
   public void setShortcut(Shortcut shortcut) {
     this.shortcut = shortcut;
+  }
+
+  public void refreshLayout() {
+    recyclerView.getLayoutParams().width = RecyclerView.LayoutParams.MATCH_PARENT;
+    recyclerView.getLayoutParams().height = RecyclerView.LayoutParams.MATCH_PARENT;
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutCreatedError() {
+
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+
+  }
+
+  @Override public void onShortcut(Shortcut shortcut) {
+
   }
 }

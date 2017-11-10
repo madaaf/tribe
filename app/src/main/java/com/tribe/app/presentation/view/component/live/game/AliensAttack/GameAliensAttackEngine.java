@@ -11,6 +11,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 02/11/2017.
@@ -100,6 +101,7 @@ public class GameAliensAttackEngine extends GameEngine {
   }
 
   public void popAlien(int count) {
+    Timber.d("Pop alien : " + count);
     Level level = levelForCount(count);
     onLevelChange.onNext(level);
 
@@ -115,10 +117,12 @@ public class GameAliensAttackEngine extends GameEngine {
   }
 
   @Override public void start() {
+    super.start();
     popAlien(0);
   }
 
   @Override public void stop() {
+    super.stop();
     if (popIntervalSubscription != null) popIntervalSubscription.unsubscribe();
   }
 

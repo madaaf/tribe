@@ -24,11 +24,11 @@ public class ChatUserAdapter extends RecyclerView.Adapter {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<String> onQuickChat = PublishSubject.create();
 
-  public ChatUserAdapter(Context context, User user) {
+  public ChatUserAdapter(Context context, User user, int type) {
     items = new ArrayList<>();
     delegatesManager = new RxAdapterDelegatesManager<>();
 
-    chatUserAdapterDelegate = new ChatUserAdapterDelegate(context, user);
+    chatUserAdapterDelegate = new ChatUserAdapterDelegate(context, user, type);
     delegatesManager.addDelegate(chatUserAdapterDelegate);
 
     subscriptions.add(chatUserAdapterDelegate.onQuickChat().subscribe(onQuickChat));
@@ -95,5 +95,4 @@ public class ChatUserAdapter extends RecyclerView.Adapter {
   public Observable<String> onQuickChat() {
     return onQuickChat;
   }
-
 }

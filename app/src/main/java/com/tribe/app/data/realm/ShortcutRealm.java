@@ -50,6 +50,7 @@ public class ShortcutRealm extends RealmObject {
   private Date leaveOnlineUntil;
   private String membersHash;
 
+
   @Ignore private boolean online;
   @Ignore private boolean live;
 

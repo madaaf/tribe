@@ -207,6 +207,10 @@ public final class DialogFactory {
             LabelType.CUSTOMIZE));
       }
 
+/*      moreTypeList.add(new LabelType(
+          EmojiParser.demojizedText(context.getString(R.string.home_block_group_shortcut_title)),
+          LabelType.BLOCK_GROUP));*/
+
       if (!shortcut.isMute()) {
         moreTypeList.add(new LabelType(
             EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_mute)),
@@ -221,9 +225,9 @@ public final class DialogFactory {
           context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()),
           LabelType.HIDE));
 
-      if (shortcut.isSingle()) {
-        moreTypeList.add(new LabelType(
-            context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()),
+      // if (shortcut.isSingle()) {
+      if (true) {
+        moreTypeList.add(new LabelType(context.getString(R.string.home_block_shortcut_validate),
             LabelType.BLOCK_HIDE));
       }
     } else if (recipient instanceof Invite) {

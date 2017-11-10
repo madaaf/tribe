@@ -120,6 +120,7 @@ public class EmojiParser {
     IEmojiMap.put(":house:", "\u2302");
     IEmojiMap.put(":arrow_right:", "\u27A1");
     IEmojiMap.put(":arrow_left:", "\u2B05");
+    IEmojiMap.put(":no_entry:", "\u26D4");
   }
 
   /**

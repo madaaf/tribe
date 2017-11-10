@@ -262,6 +262,7 @@ import timber.log.Timber;
   }
 
   public void unsubscribeChat(String userIds) {
+    Timber.i("unsubscibe chat " + chatSubscriptions.size());
     List<String> valueToRemove = new ArrayList<>();
     for (String key : chatSubscriptions.keySet()) {
       String req = getApplicationContext().getString(R.string.subscription,
@@ -305,9 +306,8 @@ import timber.log.Timber;
       }
     }
 
-    if (webSocketState != null &&
-        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
-            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
+        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -332,9 +332,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous() ||
-        StringUtils.isEmpty(accessToken.getTokenType()) ||
-        StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous()
+        || StringUtils.isEmpty(accessToken.getTokenType())
+        || StringUtils.isEmpty(accessToken.getAccessToken())) {
 
       webSocketConnection.setShouldReconnect(false);
     } else {
@@ -471,6 +471,7 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(
         jsonToModel.onRoomUpdated().observeOn(AndroidSchedulers.mainThread()).subscribe(room -> {
+          Timber.e("PUT ROOM UPDATED ON CASH " + room.getId());
           liveCache.onRoomUpdated(room);
         }));
 
@@ -543,8 +544,9 @@ import timber.log.Timber;
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
-        getApplicationContext().getString(R.string.userfragment_infos) : "");
+    String userInfosFragment =
+        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
+            R.string.userfragment_infos) : "");
 
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 

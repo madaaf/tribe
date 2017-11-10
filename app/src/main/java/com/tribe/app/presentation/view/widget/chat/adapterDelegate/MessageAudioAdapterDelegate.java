@@ -287,12 +287,13 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     @BindView(R.id.container) public RelativeLayout container;
     @BindView(R.id.timerVoiceNote) public TextViewFont timerVoiceNote;
     @BindView(R.id.playBtn) public ImageView playBtn;
+    @BindView(R.id.pauseBtn) ImageView pauseBtn;
     @BindView(R.id.cardViewIndicator) public CardView cardViewIndicator;
     @BindView(R.id.viewPlayerProgress) public View viewPlayerProgress;
     @BindView(R.id.recordingView) public FrameLayout recordingView;
     @BindView(R.id.loadingRecordView) public AVLoadingIndicatorView loadingRecordView;
     @BindView(R.id.equalizer) ImageView equalizer;
-    @BindView(R.id.pauseBtn) ImageView pauseBtn;
+
 
     MessageAudioViewHolder(View itemView) {
       super(itemView);

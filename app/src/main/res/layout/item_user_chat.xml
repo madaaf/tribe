@@ -13,15 +13,15 @@
       android:background="@drawable/shape_rect_chat"
       android:orientation="horizontal"
       android:paddingBottom="5dp"
-      android:paddingEnd="5dp"
+      android:paddingEnd="7dp"
       android:paddingStart="5dp"
-      android:paddingTop="5dp"
+      android:paddingTop="7dp"
       >
 
     <com.tribe.app.presentation.view.widget.avatar.AvatarView
         android:id="@+id/viewAvatar"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_gravity="left|center_vertical"
         android:background="@null"
         android:scaleType="centerCrop"

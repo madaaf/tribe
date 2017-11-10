@@ -17,6 +17,7 @@ import com.tribe.app.domain.interactor.user.CreateShortcut;
 import com.tribe.app.domain.interactor.user.GetDiskShortcut;
 import com.tribe.app.domain.interactor.user.GetShortcutForUserIds;
 import com.tribe.app.domain.interactor.user.UpdateShortcut;
+import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.PictureMVPView;
@@ -31,9 +32,12 @@ import timber.log.Timber;
  */
 
 public class MessagePresenter implements Presenter {
+
+  private ShortcutPresenter shortcutPresenter;
+
   // VIEW ATTACHED
-  private ChatMVPView chatMVPView;
-  private PictureMVPView pictureMVPView;
+  private ChatMVPView chatMVPView = null;
+  private PictureMVPView pictureMVPView = null;
 
   // USECASES
   protected UserMessageInfos userMessageInfos;
@@ -54,13 +58,15 @@ public class MessagePresenter implements Presenter {
   private UpdateShortcutSubscriber updateShortcutSubscriber;
   private ShortcutForUserIdsSubscriber shortcutForUserIdsSubscriber;
 
-  @Inject public MessagePresenter(UserMessageInfos userMessageInfos, CreateMessage createMessage,
-      GetMessageFromDisk getMessageFromDisk, GetDiskShortcut getDiskShortcut,
-      IsTypingFromDisk isTypingFromDisk, ImTyping imTyping,
+  @Inject
+  public MessagePresenter(ShortcutPresenter shortcutPresenter, UserMessageInfos userMessageInfos,
+      CreateMessage createMessage, GetMessageFromDisk getMessageFromDisk,
+      GetDiskShortcut getDiskShortcut, IsTypingFromDisk isTypingFromDisk, ImTyping imTyping,
       OnMessageReceivedFromDisk onMessageReceivedFromDisk, UpdateShortcut updateShortcut,
       GetMessageImageFromDisk getMessageImageFromDisk, GetShortcutForUserIds getShortcutForUserIds,
       CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk,
       IsReadingFromDisk isReadingFromDisk) {
+    this.shortcutPresenter = shortcutPresenter;
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
     this.getMessageFromDisk = getMessageFromDisk;
@@ -169,9 +175,15 @@ public class MessagePresenter implements Presenter {
     } else if (view instanceof PictureMVPView) {
       pictureMVPView = (PictureMVPView) view;
     }
+    shortcutPresenter.onViewAttached(view);
+  }
+
+  public boolean isAttached() {
+    return (chatMVPView != null || pictureMVPView != null);
   }
 
   @Override public void onViewDetached() {
+    shortcutPresenter.onViewDetached();
     userMessageInfos.unsubscribe();
     createMessage.unsubscribe();
     getMessageFromDisk.unsubscribe();
@@ -182,7 +194,7 @@ public class MessagePresenter implements Presenter {
     getShortcutForUserIds.unsubscribe();
     imTyping.unsubscribe();
     createShortcut.unsubscribe();
-
+    if (shortcutForUserIdsSubscriber != null) shortcutForUserIdsSubscriber.unsubscribe();
     chatMVPView = null;
     pictureMVPView = null;
   }
@@ -231,23 +243,6 @@ public class MessagePresenter implements Presenter {
       if (chatMVPView != null) chatMVPView.successMessageReceived(messages);
     }
   }
-
-  /*
-  private class GetDiskShortcutSubscriber extends DefaultSubscriber<Shortcut> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      Timber.e(e.getMessage());
-      if (chatMVPView != null) chatMVPView.errorShortcutUpdate();
-    }
-
-    @Override public void onNext(Shortcut shortcuts) {
-      if (chatMVPView != null) chatMVPView.successShortcutUpdate(shortcuts);
-    }
-  }
-  */
 
   private class isReadingSubscriber extends DefaultSubscriber<String> {
 
@@ -343,34 +338,9 @@ public class MessagePresenter implements Presenter {
     getShortcutForUserIds.execute(new ShortcutForUserIdsSubscriber(false, userIds));
   }
 
-  /*
-  private class UpdateShortcutForUserIdsSubscriber extends DefaultSubscriber<Shortcut> {
-    String[] userIds;
-
-    public UpdateShortcutForUserIdsSubscriber(String... userIds) {
-      this.userIds = userIds;
-    }
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      Timber.e("on error UpdateShortcutForUserIdsSubscriber " + e.toString());
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(Shortcut shortcut) {
-      if (shortcut == null) {
-        Timber.e("on eshortcut null ");
-        //createShortcut(userIds[0]);
-      } else {
-        if (chatMVPView != null) {
-          chatMVPView.onShortcutUpdate(shortcut);
-        }
-      }
-    }
+  public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status) {
+    shortcutPresenter.updateShortcutStatus(shortcutId, status);
   }
-  */
 
   private class ShortcutForUserIdsSubscriber extends DefaultSubscriber<Shortcut> {
     String[] userIds;

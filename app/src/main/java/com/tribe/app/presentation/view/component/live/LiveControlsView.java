@@ -391,8 +391,8 @@ public class LiveControlsView extends FrameLayout {
     filtersMenuOn = true;
 
     int toX =
-        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1) +
-            screenUtils.dpToPx(2.5f);
+        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1)
+            + screenUtils.dpToPx(2.5f);
     int toY = -screenUtils.dpToPx(65);
 
     layoutFilter.animate()
@@ -790,6 +790,10 @@ public class LiveControlsView extends FrameLayout {
         btnChat.close();
       }
     }));
+  }
+
+  public void onNewMessage() {
+    btnChat.setNewBtn();
   }
 
   public ImageView getCurrentGameView() {

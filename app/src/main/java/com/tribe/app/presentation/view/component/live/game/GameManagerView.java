@@ -144,6 +144,7 @@ public class GameManagerView extends FrameLayout {
         .filter(game -> game.hasView())
         .subscribe(game -> {
           currentGameView.stop();
+          removeView(currentGameView);
           currentGameView = null;
           currentGame = null;
           setVisibility(View.GONE);
@@ -153,6 +154,7 @@ public class GameManagerView extends FrameLayout {
   public void initPeerGuestObservable(
       Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> obs) {
     peerMap.put(currentUser.getId(), currentUser.asTribeGuest());
+    onPeerMapChange.onNext(peerMap);
 
     subscriptions.add(obs.subscribe(rxHashMapAction -> {
       if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD)) {

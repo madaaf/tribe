@@ -137,6 +137,12 @@ import timber.log.Timber;
               Timber.d("onMessageReceived : " + entry.getValue().toString());
               MessageRealm messageRealm =
                   gson.fromJson(entry.getValue().toString(), MessageRealm.class);
+
+              UserRealm userRealm =
+                  gson.fromJson(entry.getValue().getAsJsonObject().get("user"), UserRealm.class);
+              if (userRealm != null) {
+                messageRealm.setUser(userRealm);
+              }
               JsonArray jsonElements = jo.get("thread_id").getAsJsonArray();
 
               ArrayList<String> list = new ArrayList<>();
@@ -151,15 +157,23 @@ import timber.log.Timber;
               Timber.d("onRoomUpdate : " + entry.getValue().toString());
               JsonObject roomJson = entry.getValue().getAsJsonObject();
               Room room = new Room(roomJson.get("id").getAsString());
-              
-              if (roomJson.has("name") && !(roomJson.get("name") instanceof JsonNull)) {
-                room.setName(roomJson.get("name").getAsString());
-              }
 
-              room.setAcceptRandom(roomJson.get("accept_random").getAsBoolean());
+              String roomName =
+                  (!roomJson.get("name").isJsonNull()) ? roomJson.get("name").getAsString() : null;
+              room.setName(roomName);
 
-              JsonArray live_users_json = roomJson.get("live_users").getAsJsonArray();
-              JsonArray invited_users_json = roomJson.get("invited_users").getAsJsonArray();
+              Boolean accept_random =
+                  !roomJson.get("accept_random").isJsonNull() && roomJson.get("accept_random")
+                      .getAsBoolean();
+              room.setAcceptRandom(accept_random);
+
+              JsonArray live_users_json =
+                  (roomJson.get("live_users").isJsonNull()) ? new JsonArray()
+                      : roomJson.get("live_users").getAsJsonArray();
+
+              JsonArray invited_users_json =
+                  (roomJson.get("invited_users").isJsonNull()) ? new JsonArray()
+                      : roomJson.get("invited_users").getAsJsonArray();
 
               if (roomJson.has("initiator")) {
                 try {
@@ -220,6 +234,21 @@ import timber.log.Timber;
                 room.setInvitedUsers(invited_users);
               }
 
+              if (room.getShortcut() != null) {
+                Timber.e("on room updated received | shortcutId : " + room.getShortcut().getId());
+              }
+              if (room.getShortcut() != null) {
+                Timber.e("on room updated received | shortcut : " + room.getShortcut().toString());
+              }
+              if (room.getShortcut() != null && room.getShortcut().getMembers() != null) {
+                Timber.e("on room updated received | members : " + room.getShortcut()
+                    .getMembers()
+                    .size());
+              }
+              if (room != null) {
+                Timber.e("on room updated received | roomId : " + room.getId());
+              }
+
               onRoomUpdated.onNext(room);
             } else if (entry.getKey().contains(WSService.SHORTCUT_CREATED_SUFFIX)) {
               Timber.d("Shortcut created : " + entry.getValue().toString());
@@ -233,9 +262,11 @@ import timber.log.Timber;
               onShortcutUpdated.onNext(shortcutRealm);
             } else if (entry.getKey().contains(WSService.SHORTCUT_REMOVED_SUFFIX)) {
               Timber.d("Shortcut removed : " + entry.getValue().toString());
-              String shortcutId =
-                  entry.getValue().getAsJsonObject().get("shortcut_id").getAsString();
-              onShortcutRemoved.onNext(shortcutId);
+              if (!entry.getValue().getAsJsonObject().get("shortcut_id").isJsonNull()) {
+                String shortcutId =
+                    entry.getValue().getAsJsonObject().get("shortcut_id").getAsString();
+                onShortcutRemoved.onNext(shortcutId);
+              }
             }
           }
         }

@@ -239,6 +239,8 @@ public class GameAliensAttackAlienView extends FrameLayout {
   }
 
   public void dispose() {
+    animate().setDuration(0).setStartDelay(0).setListener(null).start();
+    clearAnimation();
     subscriptions.clear();
   }
 

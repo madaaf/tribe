@@ -38,6 +38,7 @@ import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.component.live.TileInviteView;
 import com.tribe.app.presentation.view.component.live.game.AliensAttack.GameAliensAttackAlienView;
 import com.tribe.app.presentation.view.component.live.game.AliensAttack.GameAliensAttackBackground;
+import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -208,4 +209,6 @@ import dagger.Component;
   void inject(GameAliensAttackBackground gameAliensAttackBackground);
 
   void inject(GameAliensAttackAlienView gameAliensAttackAlienView);
+
+  void inject(GameEngine gameEngine);
 }

@@ -36,6 +36,7 @@ public class LiveChatButton extends FrameLayout {
 
   @BindView(R.id.txtActive) TextViewFont txtActive;
   @BindView(R.id.txtInactive) TextViewFont txtInactive;
+  @BindView(R.id.txtNew) TextViewFont txtNew;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -140,12 +141,21 @@ public class LiveChatButton extends FrameLayout {
     onOpenChat.onNext(true);
     showView(txtActive);
     hideView(txtInactive);
+    hideView(txtNew);
   }
 
   public void close() {
     onCloseChat.onNext(true);
     showView(txtInactive);
     hideView(txtActive);
+    hideView(txtNew);
+  }
+
+  public void setNewBtn() {
+    hideView(txtInactive);
+    hideView(txtInactive);
+    showView(txtNew);
+    txtNew.setOnClickListener(view -> open());
   }
 
   public void dispose() {

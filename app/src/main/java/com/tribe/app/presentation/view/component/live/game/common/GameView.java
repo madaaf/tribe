@@ -128,6 +128,10 @@ public abstract class GameView extends FrameLayout {
 
   public void start(Observable<Map<String, TribeGuest>> map, String userId) {
     peerMapObservable = map;
+    subscriptions.add(map.subscribe(peerMap -> {
+      this.peerMap.clear();
+      this.peerMap.putAll(peerMap);
+    }));
   }
 
   public void stop() {

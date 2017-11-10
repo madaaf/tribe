@@ -147,16 +147,16 @@ public class UserCacheImpl implements UserCache {
     if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.FBID)) {
       to.setFbid(from.getFbid());
     }
-    if (from.getJsonPayloadUpdate() == null ||
-        from.getJsonPayloadUpdate().has(UserRealm.TRIBE_SAVE)) {
+    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
+        .has(UserRealm.TRIBE_SAVE)) {
       to.setTribeSave(from.isTribeSave());
     }
-    if (from.getJsonPayloadUpdate() == null ||
-        from.getJsonPayloadUpdate().has(UserRealm.INVISIBLE_MODE)) {
+    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
+        .has(UserRealm.INVISIBLE_MODE)) {
       to.setInvisibleMode(from.isInvisibleMode());
     }
-    if (from.getJsonPayloadUpdate() == null ||
-        from.getJsonPayloadUpdate().has(UserRealm.PUSH_NOTIF)) {
+    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
+        .has(UserRealm.PUSH_NOTIF)) {
       to.setPushNotif(from.isPushNotif());
     }
     if (from.getLastSeenAt() != null) to.setLastSeenAt(from.getLastSeenAt());

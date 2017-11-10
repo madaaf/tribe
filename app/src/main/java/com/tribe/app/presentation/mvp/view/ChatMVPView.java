@@ -13,7 +13,7 @@ import java.util.List;
  * Created by madaaflak on 06/09/2017.
  */
 
-public abstract class ChatMVPView extends FrameLayout implements MVPView {
+public abstract class ChatMVPView extends FrameLayout implements MVPView, ShortcutMVPView {
 
   public ChatMVPView(@NonNull Context context) {
     super(context);

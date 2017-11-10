@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtActive"
       android:layout_width="wrap_content"
@@ -11,7 +13,7 @@
       android:gravity="center"
       android:maxLines="1"
       android:shadowColor="@color/black.opacity.50"
-      android:text="@string/action_hide"
+      android:text="@string/chat_live_status_hide"
       android:textAllCaps="true"
       style="@style/Body.Two.Black"
       />
@@ -30,8 +32,27 @@
       android:shadowDx="3"
       android:shadowDy="3"
       android:shadowRadius="10"
-      android:text="Chat"
+      android:text="@string/chat_live_status_none"
       android:textAllCaps="true"
       style="@style/Body.Two.White"
+      />
+
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtNew"
+      android:layout_width="wrap_content"
+      android:layout_height="50dp"
+      android:layout_gravity="center"
+      android:alpha="0"
+      android:background="@drawable/bg_live_chat_new"
+      android:clickable="false"
+      android:gravity="center"
+      android:maxLines="1"
+      android:paddingBottom="2dp"
+      android:shadowColor="@color/black.opacity.50"
+      android:text="@string/chat_live_status_new"
+      android:textAllCaps="true"
+      android:textColor="@color/white"
+      style="@style/Body.Two.Black"
       />
 </merge>

@@ -277,7 +277,7 @@ public class GameAliensAttackBackground extends FrameLayout {
   }
 
   public int getRoadBottomMargin() {
-    return screenUtils.dpToPx(15);
+    return screenUtils.dpToPx(0);
   }
 
   public void dispose() {

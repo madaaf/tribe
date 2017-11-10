@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.utils.Constants;
@@ -35,12 +37,12 @@ public class NotificationUtils {
       return builder.build();
     }
 
-    if ((notificationPayload.getClickAction() == null &&
-        StringUtils.isEmpty(notificationPayload.getBody())) ||
-        notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+    if ((notificationPayload.getClickAction() == null && StringUtils.isEmpty(
+        notificationPayload.getBody())) || notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       return null;
-    } else if (notificationPayload.getClickAction() == null &&
-        !StringUtils.isEmpty(notificationPayload.getBody())) {
+    } else if (notificationPayload.getClickAction() == null && !StringUtils.isEmpty(
+        notificationPayload.getBody())) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       return builder.build();
     }
@@ -118,7 +120,7 @@ public class NotificationUtils {
   }
 
   public static Intent getIntentForLive(Context context, NotificationPayload payload,
-      boolean isFromCallkit) {
+      boolean isFromCallkit, User user) {
     String recipientId = payload.getUserId();
     String sessionId = payload.getSessionId();
     String name = payload.getUserDisplayName();
@@ -132,8 +134,11 @@ public class NotificationUtils {
           ? LiveActivity.SOURCE_ONLINE_NOTIFICATION : LiveActivity.SOURCE_LIVE_NOTIFICATION;
     }
 
+   /* Intent intent =
+        LiveActivity.getCallingIntent(context, recipientId, picture, name, sessionId, source);*/
     Intent intent =
-        LiveActivity.getCallingIntent(context, recipientId, picture, name, sessionId, source);
+        LiveActivity.getCallingIntent(context, recipientId, picture, name, sessionId, source,
+            ShortcutUtil.getRecipientFromId(recipientId, user));
     intent.putExtra(Constants.NOTIFICATION_LIVE, payload.getClickAction());
     return intent;
   }

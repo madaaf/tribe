@@ -58,6 +58,7 @@ import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
@@ -96,6 +97,7 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
+import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 public class LiveActivity extends BaseActivity
@@ -104,7 +106,8 @@ public class LiveActivity extends BaseActivity
   @StringDef({
       SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
       SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
-      SOURCE_NEW_CALL, SOURCE_JOIN_LIVE, SOURCE_ADD_PEERS, SOURCE_CALL_ROULETTE
+      SOURCE_NEW_CALL, SOURCE_JOIN_LIVE, SOURCE_ADD_PEERS, SOURCE_CALL_ROULETTE,
+      SOURCE_IN_APP_NOTIFICATION
   }) public @interface Source {
   }
 
@@ -119,6 +122,7 @@ public class LiveActivity extends BaseActivity
   public static final String SOURCE_SHORTCUT_ITEM = "ShortcutItem";
   public static final String SOURCE_DRAGGED_AS_GUEST = "DraggedAsGuest";
   public static final String SOURCE_ONLINE_NOTIFICATION = "OnlineNotification";
+  public static final String SOURCE_IN_APP_NOTIFICATION = "in-appNotification";
   public static final String SOURCE_LIVE_NOTIFICATION = "LiveNotification";
   public static final String SOURCE_FRIENDS = "Friends";
   public static final String SOURCE_NEW_CALL = "NewCall";
@@ -154,9 +158,7 @@ public class LiveActivity extends BaseActivity
   //@BindView(R.id.diceLayoutRoomView) DiceView diceView;
   @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
   @BindView(R.id.blockView) FrameLayout blockView;
-  //@BindView(R.id.gameDrawView) GameDrawView gameDrawView;
-  //@BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
-  @BindView(R.id.chatview) ChatView chatView;
+  @BindView(R.id.chatview) FrameLayout chatViewContainer;
   @BindView(R.id.viewLiveContainer) LiveContainer viewLiveContainer;
 
   // VARIABLES
@@ -172,12 +174,12 @@ public class LiveActivity extends BaseActivity
   private RxPermissions rxPermissions;
   private Intent returnIntent = new Intent();
   private List anonymousIdList = new ArrayList();
-  private boolean finished = false;
+  private boolean finished = false, isChatViewOpen = false;
   private boolean shouldOverridePendingTransactions = false;
   private float initialBrightness = -1;
   private int createRoomErrorCount = 0;
   private HashSet<String> usersThatWereLive = new HashSet<>();
-
+  private ChatView chatView;
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
@@ -210,7 +212,7 @@ public class LiveActivity extends BaseActivity
   }
 
   public static Intent getCallingIntent(Context context, String recipientId, String picture,
-      String name, String roomId, @Source String source) {
+      String name, String roomId, @Source String source, Shortcut shortcut) {
     Intent intent = new Intent(context, LiveActivity.class);
 
     User user = new User(recipientId);
@@ -219,11 +221,13 @@ public class LiveActivity extends BaseActivity
 
     Live.Builder builder =
         new Live.Builder(StringUtils.isEmpty(recipientId) ? Live.WEB : Live.FRIEND_CALL).users(user)
-            .shortcut(new Shortcut(recipientId))
+            .shortcut(shortcut)
             .countdown(StringUtils.isEmpty(roomId))
             .roomId(roomId)
             .intent(true)
             .source(source);
+
+    // Live live = new Live();
 
     intent.putExtra(EXTRA_LIVE, builder.build());
 
@@ -443,7 +447,7 @@ public class LiveActivity extends BaseActivity
 
   private void initRoomSubscription() {
     startService(WSService.getCallingIntentSubscribeRoom(this, room.getId()));
-    //livePresenter.subscribeToRoomUpdates(room.getId());
+    //  livePresenter.subscribeToRoomUpdates(room.getId());
   }
 
   private void removeRoomSubscription() {
@@ -539,11 +543,34 @@ public class LiveActivity extends BaseActivity
   }
 
   private void initChatView(Shortcut shortcut) {
+    Timber.e("INIT CHAT VIEW " + (chatView != null));
+    if (chatView != null) {
+      chatView.dispose();
+      chatView.destroyDrawingCache();
+      chatView = null;
+      chatViewContainer.removeAllViews();
+      setChatView(shortcut);
+    } else {
+      setChatView(shortcut);
+    }
+  }
+
+  private void setChatView(Shortcut shortcut) {
+    chatView = new ChatView(context(), ChatView.FROM_LIVE);
     chatView.setChatId(shortcut, null);
     chatView.onResumeView();
+    chatViewContainer.addView(chatView);
+  }
+
+  private void setChatVisibility(int visibility) {
+    chatViewContainer.setVisibility(visibility);
+    chatView.setVisibility(visibility);
+  }
+
+  private void animateChatView() {
     chatView.setAlpha(0);
     chatView.setTranslationX(-screenUtils.getWidthPx());
-    chatView.setVisibility(VISIBLE);
+    setChatVisibility(VISIBLE);
     chatView.animate()
         .setInterpolator(new AccelerateDecelerateInterpolator())
         .setDuration(300)
@@ -553,15 +580,46 @@ public class LiveActivity extends BaseActivity
         .setListener(null);
   }
 
+  public void notififyNewMessage() {
+    if (!isChatViewOpen) {
+      viewLive.onNewMessage();
+    }
+  }
+
   private void initSubscriptions() {
+    initChatView(getShortcut());
+
+    subscriptions.add(live.onRoomUpdated().subscribe(room -> {
+      List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
+
+      if (chatView.getShortcut().getMembers() != null &&
+          !chatView.getShortcut().getMembers().isEmpty()) {
+
+        if (!allUsers.isEmpty() &&
+            !ShortcutUtil.equalShortcutMembers(chatView.getShortcut().getMembers(), allUsers,
+                user)) {
+          chatView.dispose();
+          room.getShortcut().setMembers(allUsers);
+          initChatView(room.getShortcut());
+        }
+      }
+    }));
+
+    chatViewContainer.setOnTouchListener(new View.OnTouchListener() {
+      @Override public boolean onTouch(View view, MotionEvent motionEvent) {
+        Timber.e("TEST ");
+        return false;
+      }
+    });
+
     subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
-      Timber.e("ON CHAT OPEN");
+      isChatViewOpen = open;
       if (open) {
         if (live.getShortcut() == null) {
           String[] array = new String[live.getUserIdsOfShortcut().size()];
           livePresenter.createShortcut(live.getUserIdsOfShortcut().toArray(array));
         } else {
-          initChatView(live.getShortcut());
+          animateChatView();
         }
       } else {
         chatView.animate()
@@ -569,7 +627,7 @@ public class LiveActivity extends BaseActivity
             .alpha(0f)
             .withStartAction(() -> chatView.setAlpha(1f))
             .translationX(-screenUtils.getWidthPx())
-            .withEndAction(() -> chatView.setVisibility(View.GONE))
+            .withEndAction(() -> setChatVisibility(INVISIBLE))
             .setListener(null);
       }
     }));
@@ -883,6 +941,7 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onRoomUpdate(Room room) {
+    Timber.e("onRoomUpdate on LiveACtivity " + room.getId());
     this.room.update(room, true);
 
     if (this.room.getLiveUsers() != null) {
@@ -992,6 +1051,22 @@ public class LiveActivity extends BaseActivity
 
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
+  }
+
+  public String getShortcutId() {
+    return getShortcut().getId();
+  }
+
+  public Shortcut getShortcut() {
+    Shortcut shortcut = null;
+    if (chatView != null && chatView.getShortcut() != null) {
+      shortcut = chatView.getShortcut();
+    } else if (live != null && live.getShortcut() != null) {
+      shortcut = live.getShortcut();
+    } else if (live != null && live.getRoom() != null && live.getRoom().getShortcut() != null) {
+      shortcut = live.getRoom().getShortcut();
+    }
+    return shortcut;
   }
 
   public Observable<List<User>> onAnonymousReceived() {

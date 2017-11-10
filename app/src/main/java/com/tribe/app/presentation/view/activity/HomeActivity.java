@@ -508,13 +508,27 @@ public class HomeActivity extends BaseActivity
           if (pair.first.getTypeDef().equals(LabelType.CUSTOMIZE)) {
             return DialogFactory.showBottomSheetForCustomizeShortcut(this, (Shortcut) pair.second);
           } else {
-            subscriptions.add(DialogFactory.dialog(this,
-                getString(R.string.home_block_shortcut_title, pair.second.getDisplayName()),
-                getString(R.string.home_block_shortcut_message),
-                getString(R.string.home_block_shortcut_validate), getString(R.string.action_cancel))
-                .filter(aBoolean -> aBoolean)
-                .subscribe(aBoolean -> homeGridPresenter.updateShortcutStatus(pair.second.getId(),
-                    ShortcutRealm.BLOCKED)));
+            if (((Shortcut) pair.second).isSingle()) {
+              subscriptions.add(DialogFactory.dialog(this,
+                  getString(R.string.home_block_shortcut_title, pair.second.getDisplayName()),
+                  getString(R.string.home_block_shortcut_message),
+                  getString(R.string.home_block_shortcut_validate),
+                  getString(R.string.action_cancel))
+                  .filter(aBoolean -> aBoolean)
+                  .subscribe(aBoolean -> homeGridPresenter.updateShortcutStatus(pair.second.getId(),
+                      ShortcutRealm.BLOCKED)));
+            } else {
+              subscriptions.add(
+                  DialogFactory.dialog(this, getString(R.string.home_block_group_shortcut_title),
+                      getString(R.string.home_block_group_shortcut_message),
+                      getString(R.string.home_block_group_shortcut_validate),
+                      getString(R.string.action_cancel))
+                      .filter(aBoolean -> aBoolean)
+                      .subscribe(
+                          aBoolean -> homeGridPresenter.updateShortcutStatus(pair.second.getId(),
+                              ShortcutRealm.BLOCKED)));
+            }
+
             return Observable.empty();
           }
         }, (pair, labelType) -> {
@@ -630,6 +644,7 @@ public class HomeActivity extends BaseActivity
                 diffResult =
                     DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
                 homeGridAdapter.setItems(temp);
+                layoutManager.scrollToPositionWithOffset(0, 0);
               }
 
               latestRecipientList.clear();

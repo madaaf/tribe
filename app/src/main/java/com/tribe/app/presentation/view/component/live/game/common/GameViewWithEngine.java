@@ -16,6 +16,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -30,7 +31,7 @@ import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 10/30/2017.
@@ -85,11 +86,13 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void becomePlayer() {
+    Timber.d("becomePlayer");
     stopEngine();
     startEngine();
   }
 
   protected void becomeGameMaster() {
+    Timber.d("becomeGameMaster");
     startMasterEngine();
 
     Map<String, Integer> mapPlayerStatus = gameEngine.getMapPlayerStatus();
@@ -101,6 +104,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   @Override protected void takeOverGame() {
+    Timber.d("takeOverGame");
     startMasterEngine();
     gameEngine.checkGameOver();
   }
@@ -138,6 +142,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void startMasterEngine() {
+    Timber.d("startMasterEngine");
     subscriptions.add(gameEngine.onPlayerLost.subscribe(userId -> {
       webRTCRoom.sendToPeers(getLostPayload(userId), true);
       playerLost(userId);
@@ -151,6 +156,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void startEngine() {
+    Timber.d("startEngine");
     gameEngine = generateEngine();
     gameEngine.initPeerMapObservable(peerMapObservable);
 
@@ -161,11 +167,13 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void stopEngine() {
+    Timber.d("stopEngine");
     if (gameEngine != null) gameEngine.stop();
     gameEngine = null;
   }
 
   protected void playerPending(String userId) {
+    Timber.d("playerPending (userId : " + userId + " )");
     TribeGuest player = peerMap.get(userId);
 
     if (player != null) {
@@ -177,12 +185,14 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void iLost() {
+    Timber.d("iLost");
     webRTCRoom.sendToPeers(getILostPayload(currentUser.getId()), true);
     gameEngine.setUserGameOver(currentUser.getId());
     refactorPending(true);
   }
 
   protected void playerLost(String userId) {
+    Timber.d("playerLost (userId : " + userId + " )");
     TribeGuest player = peerMap.get(userId);
 
     if (player != null) {
@@ -198,7 +208,12 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void gameOver(String winnerId) {
+    Timber.d("gameOver (winnerId : " + winnerId + " )");
+
+    if (subscriptionsSession != null) subscriptionsSession.clear();
+
     refactorPending(false);
+    onMessage.onNext(null);
     changeMessageStatus(txtRestart, false, true, DURATION, 0, null);
     changeMessageStatus(txtMessage, false, true, DURATION, 0, null);
 
@@ -230,18 +245,20 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
       int delay, LabelListener listener) {
     float alpha = isVisible ? 1.0f : 0.0f;
     float translationY = isVisible ? 0.0f : screenUtils.dpToPx(30.0f);
+    float translationX = 0.0f;
 
     if (!isAnimated) {
-      listener.onStart();
+      if (listener != null) listener.onStart();
       view.setAlpha(alpha);
       view.setTranslationY(translationY);
-      listener.onEnd();
+      if (listener != null) listener.onEnd();
       return;
     }
 
     ViewPropertyAnimator animator = view.animate()
         .alpha(alpha)
         .translationY(translationY)
+        .translationX(translationX)
         .setStartDelay(delay)
         .setInterpolator(new OvershootInterpolator());
 
@@ -255,23 +272,29 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
           listener.onEnd();
         }
       });
+    } else {
+      animator.setListener(null);
     }
 
     animator.setDuration(duration).start();
   }
 
   protected void showMessage(String text, int duration, LabelListener completionListener) {
-    txtMessage = new TextViewFont(getContext());
+    Timber.d("Show message : " + text);
+    TextViewFont textViewFont = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsMessage =
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
     paramsMessage.gravity = Gravity.CENTER;
 
-    TextViewCompat.setTextAppearance(txtRestart, R.style.GameBody_1_White);
-    txtMessage.setText(text);
-    txtRestart.setAllCaps(true);
-    txtRestart.setAlpha(0);
-    addView(txtRestart, paramsMessage);
+    TextViewCompat.setTextAppearance(textViewFont, R.style.GameBody_1_White);
+    textViewFont.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
+    textViewFont.setText(text);
+    textViewFont.setAllCaps(true);
+    textViewFont.setAlpha(0);
+    addView(textViewFont, paramsMessage);
+
+    txtMessage = textViewFont;
 
     changeMessageStatus(txtMessage, false, false, 100, 0, null);
     changeMessageStatus(txtMessage, true, true, duration, 0, new LabelListener() {
@@ -279,14 +302,15 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
       }
 
       @Override public void onEnd() {
+        Timber.d("Show message end : " + text);
         changeMessageStatus(txtMessage, false, true, duration, 1000, new LabelListener() {
           @Override public void onStart() {
           }
 
           @Override public void onEnd() {
+            Timber.d("Show message end end : " + text);
             if (completionListener != null) completionListener.onEnd();
             removeView(txtMessage);
-            txtMessage = null;
           }
         });
       }
@@ -300,6 +324,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
+    Timber.d("setupGameLocally : " + userId + " / players : " + players);
     currentMasterId = userId;
     refactorPending(false);
     listenMessages();
@@ -314,22 +339,28 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
       }
     });
 
-    subscriptions.add(onGameReady.single().subscribe(aBoolean -> {
+    long now = System.currentTimeMillis();
+    if (timestamp > System.currentTimeMillis()) {
+      subscriptions.add(Observable.timer(timestamp - now, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> playGame()));
+    } else {
       playGame();
-    }));
+    }
   }
 
   private void playGame() {
+    Timber.d("playGame");
     gameEngine.start();
   }
 
   private void listenMessages() {
     if (subscriptionsSession != null) subscriptionsSession.clear();
-    subscriptionsSession = new CompositeSubscription();
 
     subscriptionsSession.add(Observable.combineLatest(onPending.distinctUntilChanged(),
         onMessage.distinctUntilChanged((s, s2) -> s.equals(s2)), (t1, t2) -> Pair.create(t1, t2))
         .buffer(750, TimeUnit.MILLISECONDS, 0)
+        .observeOn(AndroidSchedulers.mainThread())
         .subscribe(values -> {
           if (values.size() == 0) return;
 
@@ -361,6 +392,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   private void refactorPending(boolean pending) {
+    Timber.d("Refactor pending : " + pending);
     this.pending = pending;
     this.onPending.onNext(pending);
   }
@@ -374,7 +406,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
             ViewGroup.LayoutParams.WRAP_CONTENT);
     paramsTitleBG.gravity = Gravity.CENTER;
 
-    TextViewCompat.setTextAppearance(txtTitleBG, R.style.GameBody_1_White);
+    TextViewCompat.setTextAppearance(txtTitleBG, R.style.GameTitle_1_White40);
+    txtTitleBG.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
     txtTitleBG.setText(StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title"));
     txtTitleBG.setAllCaps(true);
     txtTitleBG.setAlpha(0);
@@ -388,7 +421,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
             ViewGroup.LayoutParams.WRAP_CONTENT);
     paramsTitleFront.gravity = Gravity.CENTER;
 
-    TextViewCompat.setTextAppearance(txtTitleFront, R.style.GameBody_1_White);
+    TextViewCompat.setTextAppearance(txtTitleFront, R.style.GameTitle_1_White);
+    txtTitleFront.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
     txtTitleFront.setText(StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title"));
     txtTitleFront.setAllCaps(true);
     txtTitleFront.setAlpha(0);
@@ -407,7 +441,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
           int translate = screenUtils.dpToPx(4);
           txtTitleBG.animate()
               .translationX(translate)
-              .translationY(0)
+              .translationY(translate)
               .setDuration(duration)
               .setStartDelay(0)
               .setInterpolator(new DecelerateInterpolator())
@@ -415,41 +449,39 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
           subscriptions.add(Observable.timer(1500, TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(aLong1 -> {
-                txtTitleBG.animate()
-                    .translationX(0)
-                    .translationY(0)
-                    .setDuration(duration)
-                    .setStartDelay(0)
-                    .setInterpolator(new DecelerateInterpolator())
-                    .setListener(new AnimatorListenerAdapter() {
-                      @Override public void onAnimationEnd(Animator animation) {
-                        animation.removeAllListeners();
+              .subscribe(aLong1 -> txtTitleBG.animate()
+                  .translationX(0)
+                  .translationY(0)
+                  .setDuration(duration)
+                  .setStartDelay(0)
+                  .setInterpolator(new DecelerateInterpolator())
+                  .setListener(new AnimatorListenerAdapter() {
+                    @Override public void onAnimationEnd(Animator animation) {
+                      animation.removeAllListeners();
 
-                        if (listener != null) listener.onEnd();
+                      if (listener != null) listener.onEnd();
 
-                        txtTitleBG.animate()
-                            .setDuration(0)
-                            .setListener(null)
-                            .setStartDelay(0)
-                            .start();
+                      txtTitleBG.animate()
+                          .setDuration(0)
+                          .setListener(null)
+                          .setStartDelay(0)
+                          .start();
 
-                        changeMessageStatus(txtTitleFront, false, true, duration, 0, null);
-                        changeMessageStatus(txtTitleBG, false, true, duration, 0,
-                            new LabelListener() {
-                              @Override public void onStart() {
+                      changeMessageStatus(txtTitleFront, false, true, duration, 0, null);
+                      changeMessageStatus(txtTitleBG, false, true, duration, 0,
+                          new LabelListener() {
+                            @Override public void onStart() {
 
-                              }
+                            }
 
-                              @Override public void onEnd() {
-                                removeView(txtTitleBG);
-                                removeView(txtTitleFront);
-                              }
-                            });
-                      }
-                    })
-                    .start();
-              }));
+                            @Override public void onEnd() {
+                              removeView(txtTitleBG);
+                              removeView(txtTitleFront);
+                            }
+                          });
+                    }
+                  })
+                  .start()));
         }));
   }
 
@@ -500,6 +532,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
    */
 
   public void start(Observable<Map<String, TribeGuest>> mapObservable, String userId) {
+    Timber.d("start : " + userId);
     super.start(mapObservable, userId);
 
     txtRestart = new TextViewFont(getContext());
@@ -508,7 +541,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
             ViewGroup.LayoutParams.WRAP_CONTENT);
     paramsRestart.gravity = Gravity.CENTER;
 
-    TextViewCompat.setTextAppearance(txtRestart, R.style.GameBody_1_White);
+    TextViewCompat.setTextAppearance(txtRestart, R.style.GameBody_1_White40);
+    txtRestart.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
     txtRestart.setText(
         StringUtils.stringWithPrefix(getContext(), wordingPrefix, "pending_instructions"));
     txtRestart.setAllCaps(true);
@@ -524,9 +558,9 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   public void stop() {
+    Timber.d("stop");
     super.stop();
-    gameEngine.stop();
-    dispose();
+    if (gameEngine != null) gameEngine.stop();
   }
 
   public void dispose() {

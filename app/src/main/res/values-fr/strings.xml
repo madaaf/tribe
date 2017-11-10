@@ -817,6 +817,10 @@
 	<string name="home_block_group_shortcut_title">Bloquer ce groupe ?</string>
 	<string name="home_block_group_shortcut_message">Masquer de manière permanente ce groupe et les notifications qui lui sont associés. Vous pourrez débloquer ce groupe depuis votre profil.</string>
 	<string name="home_block_group_shortcut_validate">Bloquer</string>
+	<string name="home_sync_address_book_title">Connecter votre carnet d\'adresses</string>
+	<string name="home_sync_address_book_subtitle">Tappez pour voir qui est là !</string>
+	<string name="home_sync_facebook_title">Connecter Facebook</string>
+	<string name="home_sync_facebook_subtitle">Tappez pour voir qui est là !</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">Nouveau chat</string>
@@ -907,4 +911,9 @@
 	<string name="game_rotate_landscape">Tournez en mode paysage</string>
 	<string name="game_rotate_portrait">Tournez en mode portrait</string>
 	<string name="game_unavailable">Le jeu en cours n\'est pas disponible sur votre téléphone.</string>
+	
+	<!-- Facebook Invite -->
+	<string name="facebook_invite_popup_message">Vous avez tout compris ! Vous avez juste à sélectionner un(e) ami(e) pour lui envoyer une notification.</string>
+	<string name="facebook_invite_popup_validate">Super :love_letter:</string>
+	<string name="facebook_invite_confirmation">Notifié(e) sur Facebook ! :love_letter:</string>
 </resources>

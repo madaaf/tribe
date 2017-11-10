@@ -11,8 +11,8 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,6 +26,7 @@ import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 10/31/2017.
@@ -101,12 +102,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
   @Override protected void gameOver(String winnerId) {
     super.gameOver(winnerId);
-    for (int i = 0; i < viewAliens.getChildCount(); i++) {
-      if (viewAliens.getChildAt(i) instanceof GameAliensAttackAlienView) {
-        GameAliensAttackAlienView alienView = (GameAliensAttackAlienView) viewAliens.getChildAt(i);
-        viewAliens.removeView(alienView);
-      }
-    }
+    viewAliens.removeAllViews();
   }
 
   private void killAlien() {
@@ -121,7 +117,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
         new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
             FrameLayout.LayoutParams.WRAP_CONTENT);
     params.gravity = Gravity.TOP;
-    params.topMargin = -(screenUtils.getHeightPx() / 6);
+    params.topMargin = -(screenUtils.getHeightPx() / 5);
     alienView.setScaleX(alienView.getStartScale());
     alienView.setScaleY(alienView.getStartScale());
     viewAliens.addView(alienView, params);
@@ -129,6 +125,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
     alienView.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
+            Timber.d("OnGlobalLayout : " + alienView.getId());
             alienView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             FrameLayout.LayoutParams params = (LayoutParams) alienView.getLayoutParams();
             int leftMargin = (int) (alienView.getStartX() * screenUtils.getWidthPx());
@@ -147,23 +144,40 @@ public class GameAliensAttackView extends GameViewWithEngine {
             animatorRotation.setInterpolator(new DecelerateInterpolator());
             animatorRotation.start();
 
-            ValueAnimator animatorTranslation = ObjectAnimator.ofFloat(alienView, "translationY",
-                screenUtils.getHeightPx() + params.topMargin -
-                    viewBackground.getRoadBottomMargin());
-            animatorTranslation.setDuration((long) (alienView.getSpeed() * 1000));
-            animatorTranslation.setInterpolator(new AccelerateInterpolator());
-            animatorTranslation.addListener(new AnimatorListenerAdapter() {
-              @Override public void onAnimationEnd(Animator animation) {
-                animation.removeAllListeners();
-                animatorRotation.cancel();
-                animatorRotation.end();
-                animatorTranslation.cancel();
+            alienView.animate()
+                .translationY(screenUtils.getHeightPx() + params.topMargin + alienView.getHeight() -
+                    viewBackground.getRoadBottomMargin())
+                .setDuration((long) (alienView.getSpeed() * 1000))
+                .setStartDelay(0)
+                .setInterpolator(new LinearInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                  @Override public void onAnimationCancel(Animator animation) {
+                    super.onAnimationCancel(animation);
+                    Timber.d("Animation cancel : " + alienView.getId());
+                  }
 
-                alienView.lost();
-                iLost();
-              }
-            });
-            animatorTranslation.start();
+                  @Override public void onAnimationEnd(Animator animation) {
+                    animation.removeAllListeners();
+                    animatorRotation.cancel();
+                    alienView.clearAnimation();
+
+                    Timber.d("Pending alien + " + alienView.getId() + " : " + pending);
+                    if (pending) {
+                      //AnimationUtils.fadeOut(alienView, 250, new AnimatorListenerAdapter() {
+                      //  @Override public void onAnimationEnd(Animator animation) {
+                      //    animation.removeAllListeners();
+                      //    viewAliens.removeView(alienView);
+                      //  }
+                      //});
+
+                      return;
+                    }
+
+                    alienView.lost();
+                    iLost();
+                  }
+                })
+                .start();
           }
         });
 

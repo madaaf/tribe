@@ -1,5 +1,8 @@
 package com.tribe.app.presentation.view.widget.chat;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.media.MediaRecorder;
 import android.support.v4.content.ContextCompat;
 import android.view.GestureDetector;
@@ -28,6 +31,7 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.tribe.app.presentation.view.widget.chat.ChatView.ANIM_DURATION;
 import static com.tribe.app.presentation.view.widget.chat.ChatView.ANIM_DURATION_FAST;
+import static com.tribe.app.presentation.view.widget.chat.ChatView.ANIM_DURATION_LONG;
 
 /**
  * Created by madaaflak on 11/10/2017.
@@ -42,7 +46,7 @@ public class SwipeDetector implements View.OnTouchListener {
   private View mView, recordingView;
   private ChatView context;
   private float initialPosition, initPos, ratio;
-  private boolean isLongTap = false, isDown = false;
+  private boolean isLongTap = false, isDown = false, onSingleTapUp = false, onSingleLongTap = false;
   private ScreenUtils screenUtils;
   private MediaRecorder recorder = null;
   public Subscription timerVoiceSub, subscribe;
@@ -63,8 +67,12 @@ public class SwipeDetector implements View.OnTouchListener {
   @Override public boolean onTouch(View v, MotionEvent event) {
     if (event.getAction() == MotionEvent.ACTION_UP) {
       isDown = false;
-      Timber.i("ACTION_UP");
-      onActionUp(mView, getRatio());
+      if (isLongTap) {
+        onActionUp(mView, getRatio());
+        isLongTap = false;
+      } else {
+        Timber.i("ACTION_UP " + isLongTap);
+      }
     } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
       if (subscribe == null) {
@@ -74,10 +82,11 @@ public class SwipeDetector implements View.OnTouchListener {
             .onBackpressureDrop()
             .subscribe(avoid -> {
               if (isDown) {
-                Timber.i("LONG CLICK");
                 isLongTap = true;
-                onActionDown(mView);
                 isDown = false;
+                onSingleLongTap = true;
+                Timber.i("LONG CLICK " + isLongTap);
+                onActionDown(mView);
               }
             });
         context.subscriptions.add(subscribe);
@@ -96,58 +105,63 @@ public class SwipeDetector implements View.OnTouchListener {
 
   private GestureDetector.OnGestureListener mGestureListener =
       new GestureDetector.SimpleOnGestureListener() {
-        private float mMotionDownX, mMotionDownY;
+        private float viewMotionDownX, recordingViewMotionDownX;
 
         @Override public boolean onSingleTapUp(MotionEvent e) {
-          if (!isLongTap) {
-            Timber.i("onSingleTapUp");
-            onSingleTap();
-          }
+          Timber.i("onSingleTapUp " + isLongTap);
+
           return super.onSingleTapUp(e);
         }
 
         @Override public boolean onSingleTapConfirmed(MotionEvent e) {
           Timber.i("onSingleTapConfirmed");
+          if (!isLongTap) {
+            onSingleTap();
+            Timber.i("onSingleTapUp Confirmed");
+          }
           isLongTap = false;
           return super.onSingleTapConfirmed(e);
         }
 
         @Override public boolean onDown(MotionEvent e) {
-          mMotionDownX = e.getRawX() - mView.getTranslationX();
-          mMotionDownY = e.getRawY() - mView.getTranslationY();
+          viewMotionDownX = e.getRawX() - mView.getTranslationX();
+          recordingViewMotionDownX = e.getRawX() - recordingView.getTranslationX();
 
           return true;
         }
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+          Timber.e("on scroll " + isLongTap + " " + isDown);
+          if (isLongTap) {
+            float x2 = mView.getX() + (mView.getWidth() / 2);
+            float x1 = recordingView.getX() + (recordingView.getWidth() / 2);
 
-          float x2 = mView.getX() + (mView.getWidth() / 2);
-          ratio = getRatio();
+            ratio = getRatio();
+            try {
+              if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && mView.getX() > initPos) {
+                mView.setTranslationX(e2.getRawX() - viewMotionDownX);
+              } else if (mView.getX() < initPos) { // TRASH BTN POSTITION
+                mView.setX(initPos);
+              } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
+                  && mView.getX() < initialPosition) {
+                mView.setTranslationX(e2.getRawX() - viewMotionDownX);
+              } else if (mView.getX() > initialPosition) {
+                mView.setX(initialPosition);
+              }
 
-          try {
+              if (e2.getRawX() > initialPosition) {
+                recordingView.setTranslationX(initialPosition - recordingViewMotionDownX);
+              } else if (e2.getRawX() >= (screenUtils.getWidthPx() / 2)) {
+                recordingView.setTranslationX(e2.getRawX() - recordingViewMotionDownX);
+              }
 
-            if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && mView.getX() > initPos) {
-              mView.setTranslationX(e2.getRawX() - mMotionDownX);
-            } else if (mView.getX() < initPos) { // TRASH POSTITION
-              mView.setX(initPos);
-            } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
-                && mView.getX() < initialPosition) {
-              mView.setTranslationX(e2.getRawX() - mMotionDownX);
-            } else if (mView.getX() > initialPosition) {
-              mView.setX(initialPosition);
+              right2left(mView, ratio);
+            } catch (Exception e) {
+              // nothing
             }
-
-            if (x2 < (screenUtils.getWidthPx() / 2) || x2 > initialPosition) {
-              recordingView.setX(screenUtils.getWidthPx() / 2 - (recordingView.getWidth() / 2));
-            } else {
-              recordingView.setTranslationX(
-                  e2.getRawX() - mMotionDownX - (screenUtils.getWidthPx() / 2));
-            }
-
-            right2left(mView, ratio);
-          } catch (Exception e) {
-            // nothing
+          } else {
+            onSingleTap();
           }
           return true;
         }
@@ -157,9 +171,9 @@ public class SwipeDetector implements View.OnTouchListener {
     recordingView.setScaleX(1f);
     recordingView.setScaleY(1f);
 
-    ViewGroup.LayoutParams p = context.recordingView.getLayoutParams();
+    ViewGroup.LayoutParams p = recordingView.getLayoutParams();
     p.width = context.recordingViewInitWidth;
-    context.recordingView.setLayoutParams(p);
+    recordingView.setLayoutParams(p);
 
     context.timerVoiceNote.setAlpha(1f);
     context.loadingRecordView.setAlpha(1f);
@@ -173,20 +187,35 @@ public class SwipeDetector implements View.OnTouchListener {
   public void onActionUp(View v, float ratio) {
     Timber.i("ON ACTION :onActionUp! " + ratio + "  " + context.audioDuration);
     if (ratio == 1) {
+      context.viewPlayerProgress.setVisibility(View.INVISIBLE);
+      context.cardViewIndicator.setVisibility(View.INVISIBLE);
+
       context.voiceNoteBtn.setBackground(
           ContextCompat.getDrawable(context.getContext(), R.drawable.shape_circle_orange));
       context.voiceNoteBtn.setImageDrawable(
           ContextCompat.getDrawable(context.getContext(), R.drawable.picto_trash_white));
+
       context.playerBtn.setImageDrawable(
           ContextCompat.getDrawable(context.getContext(), R.drawable.picto_trash_white));
-      context.playerBtn.setBackground(
+
+      context.btnContainer.setImageDrawable(null);
+
+      context.recordingFrame.setBackground(
           ContextCompat.getDrawable(context.getContext(), R.drawable.shape_circle_orange));
-      context.voiceNoteBtn.animate()
+
+      context.playerBtn.animate()
           .setDuration(ANIM_DURATION)
-          .scaleX(0.8f)
-          .scaleY(0.8f)
-          .setInterpolator(new OvershootInterpolator(2.5f))
+          .scaleX(1.2f)
+          .scaleY(1.2f)
+          .setInterpolator(new OvershootInterpolator(3f))
+          .withEndAction(() -> context.playerBtn.animate()
+              .setDuration(ANIM_DURATION)
+              .scaleX(1f)
+              .scaleY(1f)
+              .setInterpolator(new OvershootInterpolator(3f))
+              .start())
           .start();
+
       context.voiceNoteBtn.postDelayed(() -> {
         context.voiceNoteBtn.setImageDrawable(null);
         context.voiceNoteBtn.animate()
@@ -199,49 +228,102 @@ public class SwipeDetector implements View.OnTouchListener {
                   .scaleX(0)
                   .scaleY(0)
                   .setDuration(ANIM_DURATION)
-                  .setInterpolator(new OvershootInterpolator(2.5f))
+                  .setInterpolator(new AccelerateInterpolator())
                   .withEndAction(() -> {
                     initRecordingView();
-                    recordingView.setVisibility(View.INVISIBLE);
-                  })
-                  .withEndAction(() -> {
                     recordingView.clearAnimation();
                     context.voiceNoteBtn.clearAnimation();
 
-                    ViewGroup.LayoutParams p = context.recordingView.getLayoutParams();
+                    ViewGroup.LayoutParams p = recordingView.getLayoutParams();
                     p.width = context.recordingViewInitWidth;
-                    context.recordingView.setLayoutParams(p);
+                    recordingView.setLayoutParams(p);
 
                     recordingView.setX(context.recordingViewX);
                     recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
                     context.playerBtn.setScaleX(1);
                     context.playerBtn.setScaleY(1);
-                    context.loadingRecordView.setVisibility(VISIBLE);
-                    context.timerVoiceNote.setVisibility(VISIBLE);
-                    recordingView.setBackground(ContextCompat.getDrawable(context.getContext(),
-                        R.drawable.shape_rect_voice_note));
+                    context.recordingFrame.setBackground(
+                        ContextCompat.getDrawable(context.getContext(),
+                            R.drawable.shape_rect_voice_note));
                     context.voiceNoteBtn.setX(context.voiceNoteBtnX);
                     context.voiceNoteBtn.setAlpha(1f);
                     context.playerBtn.setAlpha(1f);
                     context.playerBtn.setImageDrawable(
                         ContextCompat.getDrawable(context.getContext(),
-                            R.drawable.picto_play_recording));
+                            R.drawable.picto_recording_voice));
                     context.playerBtn.setBackground(null);
                     context.voiceNoteBtn.setBackground(
                         ContextCompat.getDrawable(context.getContext(),
                             R.drawable.shape_circle_grey));
+
+                    context.btnContainer.setImageDrawable(
+                        ContextCompat.getDrawable(context.getContext(),
+                            R.drawable.shape_circle_blue_recording));
+
+                    context.recordingFrame.setScaleX(1f);
+                    context.recordingFrame.setScaleY(1f);
                   })
                   .start();
               context.voiceNoteBtn.setBackground(
                   ContextCompat.getDrawable(context.getContext(), R.drawable.shape_circle_grey));
             })
             .start();
-        stopVoiceNote(false, true);
+        stopVoiceNote(false);
       }, 1000);
     } else {
       Timber.i("ACTION UP RATIO 0! " + ratio);
-      stopVoiceNote(true, true);
+      stopVoiceNote(true);
     }
+  }
+
+  private void animePlayerIndicator(int duration) {
+    context.cardViewIndicator.setVisibility(VISIBLE);
+    context.viewPlayerProgress.setVisibility(View.VISIBLE);
+    context.viewPlayerProgress.clearAnimation();
+
+    ValueAnimator anim = ValueAnimator.ofInt(0, context.recordingViewInitWidth);
+    anim.addUpdateListener(valueAnimator -> {
+      int val = (Integer) valueAnimator.getAnimatedValue();
+      ViewGroup.LayoutParams layoutParams = context.viewPlayerProgress.getLayoutParams();
+      layoutParams.width = val;
+      context.viewPlayerProgress.setLayoutParams(layoutParams);
+    });
+    anim.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        super.onAnimationEnd(animation);
+        context.cardViewIndicator.setVisibility(View.INVISIBLE);
+        context.viewPlayerProgress.setVisibility(View.INVISIBLE);
+        context.viewPlayerProgress.clearAnimation();
+      }
+    });
+    anim.setDuration(duration);
+    anim.start();
+
+    anim.getCurrentPlayTime();
+  }
+
+  private void animHintView() {
+    int translation = screenUtils.dpToPx(30);
+    context.hintEditText.animate()
+        .translationX(translation)
+        .alpha(1f)
+        .setDuration(3000)
+        .withStartAction(() -> {
+          context.hintEditText.setAlpha(0f);
+          context.editText.setHintTextColor(
+              ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
+          context.hintEditText.setTextColor(
+              ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
+          context.hintEditText.setText(
+              context.getContext().getString(R.string.chat_placeholder_slide_to_cancel));
+        })
+        .withEndAction(() -> context.hintEditText.animate()
+            .translationX(-translation)
+            .alpha(0)
+            .setDuration(3000)
+            .withEndAction(() -> animHintView())
+            .start())
+        .start();
   }
 
   private void startVoiceNote() {
@@ -273,6 +355,7 @@ public class SwipeDetector implements View.OnTouchListener {
           context.timerVoiceNote.setText(formatTime);
         });
 
+    animePlayerIndicator(1000 * 60 * 3); // 3min
     recordingView.setVisibility(View.VISIBLE);
     initRecordingView();
     context.voiceNoteBtn.animate()
@@ -281,32 +364,35 @@ public class SwipeDetector implements View.OnTouchListener {
         .setInterpolator(new OvershootInterpolator())
         .setDuration(ANIM_DURATION)
         .withStartAction(() -> {
+          recordingView.setVisibility(VISIBLE);
           context.trashBtn.setVisibility(VISIBLE);
           context.btnSendLikeContainer.setVisibility(GONE);
           context.uploadImageBtn.setVisibility(GONE);
           context.layoutPulse.setVisibility(GONE);
           context.videoCallBtn.setVisibility(GONE);
+          recordingView.setAlpha(0);
+          recordingView.setScaleX(0);
+          recordingView.setScaleY(0);
+          recordingView.setTranslationY(0);
           recordingView.animate()
+              .scaleX(1)
+              .scaleY(1)
+              .alpha(1)
               .translationY(-(recordingView.getHeight() * 2.5f))
-              .setInterpolator(new OvershootInterpolator())
-              .setDuration(ANIM_DURATION)
+              .setInterpolator(new AccelerateInterpolator())
+              .setDuration(500)
               .start();
           context.editText.setHint("");
           context.hintEditText.setVisibility(VISIBLE);
           context.hintEditText.setAlpha(0);
           context.editText.setCursorVisible(false);
-          context.hintEditText.animate().alpha(0.75f).withStartAction(() -> {
-            context.editText.setHintTextColor(
-                ContextCompat.getColor(context.getContext(), R.color.grey_chat_grey_hint));
-            context.hintEditText.setText(
-                context.getContext().getString(R.string.chat_placeholder_slide_to_cancel));
-          }).setDuration(ANIM_DURATION).start();
+          animHintView();
         })
 
         .start();
 
     ResizeAnimation a = new ResizeAnimation(context.editText);
-    a.setDuration(500);
+    a.setDuration(ANIM_DURATION_LONG);
     a.setInterpolator(new LinearInterpolator());
     a.setAnimationListener(new AnimationListenerAdapter() {
       @Override public void onAnimationStart(Animation animation) {
@@ -317,15 +403,15 @@ public class SwipeDetector implements View.OnTouchListener {
     a.setAnimationListener(new AnimationListenerAdapter() {
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
-        context.trashBtn.animate().alpha(1).setDuration(500).start();
+        context.trashBtn.animate().alpha(1).setDuration(ANIM_DURATION_LONG).start();
       }
     });
     a.setParams(context.widthRefInit, screenUtils.getWidthPx(),
         FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
     context.editText.startAnimation(a);
 
-    ResizeAnimation a2 = new ResizeAnimation(recordingView);
-    a2.setDuration(500);
+    ResizeAnimation a2 = new ResizeAnimation(context.recordingFrame);
+    a2.setDuration(ANIM_DURATION_LONG);
     a2.setInterpolator(new LinearInterpolator());
     a2.setAnimationListener(new AnimationListenerAdapter() {
       @Override public void onAnimationStart(Animation animation) {
@@ -336,8 +422,8 @@ public class SwipeDetector implements View.OnTouchListener {
       }
     });
     a2.setParams(context.recordingViewInitWidth, context.recordingViewInitWidth + 100,
-        recordingView.getHeight(), recordingView.getHeight());
-    recordingView.startAnimation(a2);
+        context.recordingFrame.getHeight(), context.recordingFrame.getHeight());
+    context.recordingFrame.startAnimation(a2);
   }
 
   public void onActionDown(View v) {
@@ -387,7 +473,7 @@ public class SwipeDetector implements View.OnTouchListener {
     recorder.start();
   }
 
-  private void stopVoiceNote(boolean sendMessage, boolean withAnim) {
+  private void stopVoiceNote(boolean sendMessage) {
     Timber.i("stopVoiceNote " + sendMessage + "  " + context.audioDuration + "s");
     context.editText.getLayoutParams().width = context.widthRefInit;
     context.trashBtn.setVisibility(GONE);
@@ -405,14 +491,12 @@ public class SwipeDetector implements View.OnTouchListener {
     params.width = context.widthRefInit;
     context.editText.setLayoutParams(params);
 
-    recordingView.setVisibility(View.INVISIBLE);
-
     context.voiceNoteBtn.animate()
         .scaleX(1f)
         .scaleY(1f)
         .translationX(context.voiceNoteBtnX - context.voiceNoteBtn.getLeft())
         .setInterpolator(new LinearInterpolator())
-        .setDuration(ANIM_DURATION)
+        .setDuration(ANIM_DURATION_FAST)
         .withStartAction(() -> {
           context.editText.setHint(
               context.getResources().getString(R.string.chat_placeholder_message));
@@ -431,9 +515,9 @@ public class SwipeDetector implements View.OnTouchListener {
           recordingView.clearAnimation();
           context.voiceNoteBtn.clearAnimation();
 
-          ViewGroup.LayoutParams p = context.recordingView.getLayoutParams();
+          ViewGroup.LayoutParams p = recordingView.getLayoutParams();
           p.width = context.recordingViewInitWidth;
-          context.recordingView.setLayoutParams(p);
+          recordingView.setLayoutParams(p);
 
           recordingView.setX(context.recordingViewX);
           recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
@@ -480,6 +564,7 @@ public class SwipeDetector implements View.OnTouchListener {
     context.loadingRecordView.setAlpha(newRatio);
 
     if (newRatio == 1) {
+
       context.loadingRecordView.animate()
           .alpha(1f)
           .withStartAction(() -> context.loadingRecordView.setVisibility(VISIBLE))
@@ -500,12 +585,19 @@ public class SwipeDetector implements View.OnTouchListener {
     }
 
     context.voiceNoteBtn.setAlpha(ratio);
+
+    if (newRatio == 0) {
+      recordingView.clearAnimation();
+      context.voiceNoteBtn.clearAnimation();
+      context.timerVoiceNote.setVisibility(View.INVISIBLE);
+      context.loadingRecordView.setVisibility(View.INVISIBLE);
+    }
   }
 
   public void onSingleTap() {
     int translation = screenUtils.dpToPx(30);
     context.hintEditText.setTranslationX(-translation);
-
+    context.editText.setCursorVisible(false);
     recordingView.setVisibility(View.INVISIBLE);
     context.hintEditText.setVisibility(VISIBLE);
     context.hintEditText.setAlpha(0f);
@@ -521,6 +613,7 @@ public class SwipeDetector implements View.OnTouchListener {
         .alpha(1f)
         .setDuration(ANIM_DURATION)
         .withEndAction(() -> context.hintEditText.postDelayed(() -> {
+          context.editText.setCursorVisible(true);
           context.hintEditText.animate().translationX(-translation).withStartAction(() -> {
             context.hintEditText.setText("");
             context.editText.setHintTextColor(

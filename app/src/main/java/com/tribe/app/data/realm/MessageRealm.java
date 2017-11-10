@@ -93,6 +93,7 @@ public class MessageRealm extends RealmObject {
 
   public void setUser(UserRealm user) {
     this.user = user;
+    setAuthor(user);
   }
 
   public void setAction(String action) {

@@ -4,6 +4,8 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ListUtils {
@@ -53,5 +55,22 @@ public class ListUtils {
     }
 
     return result.length() > 0 ? result.substring(0, result.length() - 1) : "";
+  }
+  
+  public static boolean equalLists(List<String> one, List<String> two) {
+    if (one == null && two == null) {
+      return true;
+    }
+
+    if ((one == null && two != null) || one != null && two == null || one.size() != two.size()) {
+      return false;
+    }
+
+    one = new ArrayList<String>(one);
+    two = new ArrayList<String>(two);
+
+    Collections.sort(one);
+    Collections.sort(two);
+    return one.equals(two);
   }
 }

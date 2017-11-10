@@ -2,13 +2,13 @@ package com.tribe.app.presentation.view.widget.chat;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +16,6 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -42,6 +41,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.ShortcutLastSeen;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
@@ -113,6 +113,7 @@ public class ChatView extends ChatMVPView {
   private final static int INTERVAL_IM_TYPING = 2;
   protected static int ANIM_DURATION = 300;
   protected static int ANIM_DURATION_FAST = 150;
+  protected static int ANIM_DURATION_LONG = 500;
 
   public final static int FROM_CHAT = 0;
   public final static int FROM_LIVE = 1;
@@ -167,13 +168,19 @@ public class ChatView extends ChatMVPView {
   @BindView(R.id.blurBackEditText) View blurBackEditText;
   @BindView(R.id.separator) View separator;
   @BindView(R.id.voiceNoteBtn) ImageView voiceNoteBtn;
-  @BindView(R.id.recordingView) FrameLayout recordingView;
+  @BindView(R.id.viewRecording) View recordingView;
+  @BindView(R.id.recordingView) FrameLayout recordingFrame;
   @BindView(R.id.btnSendLikeContainer) FrameLayout btnSendLikeContainer;
   @BindView(R.id.pictoVoiceNote) ImageView pictoVoiceNote;
   @BindView(R.id.trashBtn) ImageView trashBtn;
-  @BindView(R.id.playerBtn) ImageView playerBtn;
+  @BindView(R.id.playBtn) ImageView playerBtn;
   @BindView(R.id.likeBtn) ImageView likeBtn;
   @BindView(R.id.loadingRecordView) AVLoadingIndicatorView loadingRecordView;
+  @BindView(R.id.equalizer) ImageView equalizer;
+  @BindView(R.id.pauseBtn) ImageView pauseBtn;
+  @BindView(R.id.btnContainer) ImageView btnContainer;
+  @BindView(R.id.cardViewIndicator) public CardView cardViewIndicator;
+  @BindView(R.id.viewPlayerProgress) public View viewPlayerProgress;
 
   @Inject @ChatShortcutData Preference<String> chatShortcutData;
   @Inject User user;
@@ -190,15 +197,14 @@ public class ChatView extends ChatMVPView {
 
   private RxPermissions rxPermissions;
 
-  public ChatView(@NonNull Context context) {
+  public ChatView(@NonNull Context context, int type) {
     super(context);
+    this.type = type;
     initView(context);
   }
 
   public ChatView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
-    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChatView);
-    this.type = a.getInt(R.styleable.ChatView_chatViewType, 0);
     initView(context);
   }
 
@@ -208,7 +214,6 @@ public class ChatView extends ChatMVPView {
     inflater.inflate(R.layout.view_chat, this, true);
     unbinder = ButterKnife.bind(this);
     Timber.w("SOEF  INIT VIEW");
-
     tagMap = new HashMap<>();
 
     initDependencyInjector();
@@ -226,24 +231,62 @@ public class ChatView extends ChatMVPView {
     this.section = section;
   }
 
+  public void displayBlockNotif() {
+    String blockedShortcutId = null;
+
+    for (Recipient r : user.getRecipientList()) {
+      if (r instanceof Shortcut) {
+        Shortcut s = (Shortcut) r;
+        if (s.getMembers().size() == 1 && s.isBlocked()) {
+          User u = s.getMembers().get(0);
+          if (shortcut.getMembers().contains(u)) {
+            blockedShortcutId = s.getId();
+            break;
+          }
+        }
+      }
+    }
+    if (blockedShortcutId != null) {
+      subscriptions.add(
+          DialogFactory.dialog(context, context.getString(R.string.mute_group_popup_title),
+              context.getString(R.string.mute_group_popup_message),
+              context.getString(R.string.mute_group_popup_validate),
+              context.getString(R.string.mute_group_popup_cancel)).subscribe(blockGrp -> {
+            if (blockGrp) {
+              messagePresenter.updateShortcutStatus(shortcut.getId(), ShortcutRealm.BLOCKED);
+            }
+          }));
+    }
+  }
+
   public void setChatId(Shortcut shortcut, Recipient recipient) {
     this.recipient = recipient;
     this.shortcut = shortcut;
-    setTypeChatUX();
     this.members = shortcut.getMembers();
+
     recyclerView.setShortcut(shortcut);
     avatarView.load(members.get(0).getProfilePicture());
     List<String> userIds = new ArrayList<>();
     for (User friend : members) {
       userIds.add(friend.getId());
     }
+    displayBlockNotif();
 
     this.arrIds = userIds.toArray(new String[userIds.size()]);
     recyclerView.setArrIds(arrIds);
+    setTitle();
+  }
 
+  private void setTitle() {
     if (members.size() > 1) {
-      String txt = context.getString(R.string.shortcut_members_count, (members.size() + 1)) + " ";
-      title.setText(txt);
+      if (shortcut.getName() != null) {
+        title.setTextColor(Color.BLACK);
+        title.setText(shortcut.getName() + " ");
+      } else {
+        String txt =
+            (context.getString(R.string.shortcut_members_count, (members.size() + 1)) + " ");
+        title.setText(txt);
+      }
       title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_edit_chat, 0);
     } else {
       title.setText(members.get(0).getDisplayName());
@@ -256,22 +299,23 @@ public class ChatView extends ChatMVPView {
     if (arrIds == null) {
       return;
     }
+    recyclerView.onResumeView();
     context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
         JsonUtils.arrayToJson(arrIds)));
-    //if (shortcut != null) messagePresenter.getDiskShortcut(shortcut.getId());
-
     messagePresenter.updateShortcutForUserIds(arrIds);
     messagePresenter.getIsTyping();
     messagePresenter.getIsTalking();
     messagePresenter.getIsReading();
-    recyclerView.onResumeView();
   }
 
   public void dispose() {
-    Timber.e(" SOEF subscription REMOVE : " + arrIds);
+    Timber.i("dispose chatView " + arrIds);
     if (arrIds != null) {
       context.startService(
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
+      messagePresenter.onViewDetached();
+      recyclerView.onDetachedFromWindow();
+      arrIds = null;
     }
   }
 
@@ -279,17 +323,21 @@ public class ChatView extends ChatMVPView {
     chatView = this;
     rxPermissions = new RxPermissions((Activity) context);
 
+    loadingRecordView.setIndicator("LineScalePulseOutIndicator");
+    loadingRecordView.show();
+
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-        recyclerView.setOnTouchListener(new OnTouchListener() {
-          @Override public boolean onTouch(View view, MotionEvent motionEvent) {
-            screenUtils.hideKeyboard((Activity) context);
-            return false;
-          }
+        equalizer.setVisibility(GONE);
+        pauseBtn.setVisibility(GONE);
+        recyclerView.setOnTouchListener((view, motionEvent) -> {
+          screenUtils.hideKeyboard((Activity) context);
+          return false;
         });
 
+        playerBtn.setImageDrawable(
+            ContextCompat.getDrawable(context, R.drawable.picto_recording_voice));
         widthRefExpended = refExpended.getWidth();
         widthRefInit = refInit.getWidth();
 
@@ -298,7 +346,7 @@ public class ChatView extends ChatMVPView {
 
         refMaxExpendedWidth = refMaxExpended.getWidth();
         containerUsersHeight = containerUsers.getHeight();
-        recordingViewInitWidth = recordingView.getWidth();
+        recordingViewInitWidth = recordingFrame.getWidth();
 
         voiceNoteBtnWidth = editText.getHeight() - screenUtils.dpToPx(8);
         voiceNoteBtn.getLayoutParams().height = voiceNoteBtnWidth;
@@ -317,18 +365,11 @@ public class ChatView extends ChatMVPView {
 
         voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
-            voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (screenUtils.getWidthPx() / 2);
+            voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (recordingView.getWidth() / 2);
+        recordingView.setX(transX);
+        recordingViewX = (int) transX;
+        recordingView.setVisibility(INVISIBLE);
 
-        recordingView.setTranslationX(transX);
-        recordingViewX = (int) recordingView.getX();
-        recordingView.setY(screenUtils.getHeightPx() + recordingView.getHeight());
-
-        if (members.size() < 2 && fromShortcut == null) {
-          containerUsers.setVisibility(GONE);
-        } else {
-          containerUsers.setVisibility(VISIBLE);
-        }
-        //  float ok = recordingViewX + (recordingView.getWidth() / 2);
         SwipeDetector moveListener = new SwipeDetector(chatView, voiceNoteBtn, recordingView,
             trashBtn.getX() - (trashBtn.getWidth() / 2), screenUtils);
 
@@ -353,8 +394,21 @@ public class ChatView extends ChatMVPView {
             editText.setSelection(editText.getText().length());
           }
         }
+
+        setTypeChatUX();
+
+       /* if (showOnlineUsers()) {
+          containerUsers.setVisibility(VISIBLE);
+        } else {
+          containerUsers.setVisibility(GONE);
+        }*/
       }
     });
+  }
+
+  private boolean showOnlineUsers() {
+    return true;
+    // return members.size() < 2 && fromShortcut == null; // TODO
   }
 
   private void initVoiceCallPerm(SwipeDetector moveListener) {
@@ -376,16 +430,24 @@ public class ChatView extends ChatMVPView {
 
   private void setTypeChatUX() {
     if (type == (FROM_LIVE)) {
-      topbar.setVisibility(GONE);
-      containerUsers.setVisibility(GONE);
       videoCallBtn.getLayoutParams().height = 0;
       videoCallBtn.getLayoutParams().width = 0;
+      videoCallBtn.setImageDrawable(null);
+      pictoVoiceNote.setImageDrawable(null);
+      topbar.setVisibility(GONE);
       layoutPulse.setVisibility(GONE);
       container.setBackground(null);
+      widthRefInit = refInit.getWidth();
+
+      RelativeLayout.LayoutParams op = (RelativeLayout.LayoutParams) editText.getLayoutParams();
+      op.addRule(RelativeLayout.START_OF, btnSendLikeContainer.getId());
+
       uploadImageBtn.setImageDrawable(
           ContextCompat.getDrawable(context, R.drawable.picto_chat_upload_white));
-      videoCallBtn.setVisibility(GONE);
+
       sendBtn.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_send_btn_white));
+      likeBtn.setImageDrawable(
+          ContextCompat.getDrawable(context, R.drawable.picto_like_heart_white));
       separator.setVisibility(GONE);
       voiceNoteBtn.setVisibility(GONE);
       pictoVoiceNote.setVisibility(GONE);
@@ -505,17 +567,21 @@ public class ChatView extends ChatMVPView {
                 .start();
             isHeart = true;
             editTextChange = false;
+
             if (type == FROM_LIVE) {
               likeBtn.setImageDrawable(
                   ContextCompat.getDrawable(context, R.drawable.picto_like_heart_white));
+              sendBtn.setImageDrawable(
+                  ContextCompat.getDrawable(context, R.drawable.picto_send_btn_white));
             } else {
               likeBtn.setImageDrawable(
                   ContextCompat.getDrawable(context, R.drawable.picto_like_heart));
+              sendBtn.setImageDrawable(
+                  ContextCompat.getDrawable(context, R.drawable.picto_chat_send));
             }
             switchLikeToSendBtn(false);
             layoutPulse.setVisibility(VISIBLE);
           } else if (!text.isEmpty() && !editTextChange) {
-            Timber.e("OOK " + text);
             layoutPulse.setVisibility(INVISIBLE);
             voiceNoteBtn.animate()
                 .scaleX(0f)
@@ -604,6 +670,7 @@ public class ChatView extends ChatMVPView {
   }
 
   private void hideVideoCallBtn(boolean withAnim) {
+    videoCallBtn.setClickable(false);
     hideVideoCallBtn = true;
     videoCallBtn.getLayoutParams().height = 0;
     videoCallBtn.getLayoutParams().width = 0;
@@ -617,21 +684,21 @@ public class ChatView extends ChatMVPView {
     btnSendLikeContainer.animate()
         .translationX(videoCallBtn.getWidth())
         .setDuration(ANIM_DURATION)
-        .withStartAction(() -> videoCallBtn.animate()
-            .alpha(0f)
-            .setDuration(ANIM_DURATION_FAST)
-            .withEndAction(() -> {
-              ResizeAnimation a = new ResizeAnimation(editText);
-              a.setDuration(ANIM_DURATION);
-              a.setInterpolator(new LinearInterpolator());
-              a.setParams(editText.getWidth(), widthRefExpended, LayoutParams.WRAP_CONTENT,
-                  LayoutParams.WRAP_CONTENT);
-              editText.startAnimation(a);
-            })
-            .start());
+        .withStartAction(() -> {
+          videoCallBtn.setClickable(false);
+          videoCallBtn.animate().alpha(0f).setDuration(ANIM_DURATION_FAST).withEndAction(() -> {
+            ResizeAnimation a = new ResizeAnimation(editText);
+            a.setDuration(ANIM_DURATION);
+            a.setInterpolator(new LinearInterpolator());
+            a.setParams(editText.getWidth(), widthRefExpended, LayoutParams.WRAP_CONTENT,
+                LayoutParams.WRAP_CONTENT);
+            editText.startAnimation(a);
+          }).start();
+        });
   }
 
   private void showVideoCallBtn(boolean withAnim) {
+    videoCallBtn.setClickable(true);
     hideVideoCallBtn = false;
     videoCallBtn.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
     videoCallBtn.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
@@ -666,7 +733,7 @@ public class ChatView extends ChatMVPView {
 
   private void initRecyclerView() {
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-    chatUserAdapter = new ChatUserAdapter(getContext(), user);
+    chatUserAdapter = new ChatUserAdapter(getContext(), user, type);
     recyclerViewGrp.setLayoutManager(layoutManagerGrp);
     recyclerViewGrp.setItemAnimator(new DefaultItemAnimator());
     recyclerViewGrp.setAdapter(chatUserAdapter);
@@ -856,6 +923,10 @@ public class ChatView extends ChatMVPView {
         .subscribe());
   }
 
+  public Shortcut getShortcut() {
+    return shortcut;
+  }
+
   @OnClick(R.id.videoCallBtn) void onClickVideoCall() {
     navigator.navigateToLive((Activity) context, recipient, LiveActivity.SOURCE_GRID,
         TagManagerUtils.SECTION_SHORTCUT);
@@ -890,7 +961,7 @@ public class ChatView extends ChatMVPView {
   }
 
   private void setPulseAnimation(String type) {
-    if (hideVideoCallBtn) return;
+    if (hideVideoCallBtn || this.type == (FROM_LIVE)) return;
     this.typePulseAnim = type;
     switch (type) {
       case TYPE_NORMAL:
@@ -917,34 +988,11 @@ public class ChatView extends ChatMVPView {
   }
 
   private void shrankRecyclerViewGrp() {
-    containerUsers.setVisibility(VISIBLE);
-    containerUsers.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            containerUsers.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            ResizeAnimation a = new ResizeAnimation(containerUsers);
-            a.setDuration(ANIM_DURATION);
-            a.setInterpolator(new LinearInterpolator());
-            a.setParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, containerUsersHeight,
-                0);
-            containerUsers.startAnimation(a);
-          }
-        });
+    //   containerUsers.setVisibility(GONE);
   }
 
   private void expendRecyclerViewGrp() {
-    containerUsers.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            containerUsers.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            ResizeAnimation a = new ResizeAnimation(containerUsers);
-            a.setDuration(ANIM_DURATION);
-            a.setInterpolator(new LinearInterpolator());
-            a.setParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, 0,
-                containerUsersHeight);
-            containerUsers.startAnimation(a);
-          }
-        });
+    //  containerUsers.setVisibility(VISIBLE);
   }
 
   @Override public void isTypingEvent(String userId, boolean typeEvent) {
@@ -957,10 +1005,9 @@ public class ChatView extends ChatMVPView {
           u.setActive(true);
           u.setTyping(typeEvent);
           u.setIsOnline(true);
-          if (members.size() < 2 && fromShortcut == null) {
+          if (showOnlineUsers()) {
             expendRecyclerViewGrp();
           }
-          Timber.i("START TYPING");
           int pos = chatUserAdapter.getIndexOfUser(u);
           chatUserAdapter.notifyItemChanged(pos, u);
         }
@@ -974,7 +1021,7 @@ public class ChatView extends ChatMVPView {
                 // Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
                 if (u.isActive()) {
                   u.setActive(false);
-                  if (members.size() < 2 && fromShortcut == null) {
+                  if (showOnlineUsers()) {
                     shrankRecyclerViewGrp();
                   }
                   int i = chatUserAdapter.getIndexOfUser(u);
@@ -990,7 +1037,6 @@ public class ChatView extends ChatMVPView {
   }
 
   @Override public void onShortcutUpdate(Shortcut shortcut) {
-    Timber.e("SHORTCVUT UPDATE " + shortcut.toString());
     boolean isOnline = false;
     boolean isLive = false;
     for (User u : shortcut.getMembers()) {
@@ -1067,5 +1113,40 @@ public class ChatView extends ChatMVPView {
       }
     }
     return super.dispatchKeyEvent(event);
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutCreatedError() {
+
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+    Timber.e(" " + shortcut.isBlocked());
+    if (shortcut.isBlocked()) {
+      ((Activity) context).finish();
+    }
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+
+  }
+
+  @Override public void onShortcut(Shortcut shortcut) {
+
   }
 }
