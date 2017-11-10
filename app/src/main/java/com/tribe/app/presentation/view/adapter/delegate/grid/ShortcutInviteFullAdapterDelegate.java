@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
@@ -41,8 +42,9 @@ public class ShortcutInviteFullAdapterDelegate
 
   @Override public boolean isForViewType(@NonNull List<LiveInviteAdapterSectionInterface> items,
       int position) {
-    return items.get(position) instanceof Shortcut &&
-        !items.get(position).getId().equals(Shortcut.ID_EMPTY);
+    return items.get(position) instanceof Shortcut && !items.get(position)
+        .getId()
+        .equals(Shortcut.ID_EMPTY);
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
@@ -60,6 +62,8 @@ public class ShortcutInviteFullAdapterDelegate
     vh.viewTile.updateWidth(width);
     vh.viewTile.setUser(shortcut.getSingleFriend());
     vh.txtName.setText(user.getDisplayName());
+    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) vh.txtName.getLayoutParams();
+    params.setMargins(width + screenUtils.dpToPx(10), 0, 0, 0);
   }
 
   @Override public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items,
