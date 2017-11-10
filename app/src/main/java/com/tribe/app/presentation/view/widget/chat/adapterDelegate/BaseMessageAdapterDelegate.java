@@ -60,12 +60,18 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
   }
 
   @Override public boolean isForViewType(@NonNull List<Message> items, int position) {
-    Message m = items.get(position);
     return true;
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-    return getViewHolder(parent);
+    BaseTextViewHolder vh = getViewHolder(parent);
+    if (type == ChatView.FROM_LIVE) {
+      vh.name.setTextColor(ContextCompat.getColor(context, R.color.white));
+      vh.time.setTextColor(ContextCompat.getColor(context, R.color.white_opacity_40));
+      vh.time2.setTextColor(ContextCompat.getColor(context, R.color.white_opacity_40));
+      vh.daySeparator.setTextColor(ContextCompat.getColor(context, R.color.white));
+    }
+    return vh;
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,
@@ -121,13 +127,6 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
       vh.shortcutLastSeen.setVisibility(View.VISIBLE);
     } else {
       vh.shortcutLastSeen.setVisibility(View.GONE);
-    }
-
-    if (type == ChatView.FROM_LIVE) {
-      vh.name.setTextColor(ContextCompat.getColor(context, R.color.white));
-      vh.time.setTextColor(ContextCompat.getColor(context, R.color.white_opacity_40));
-      vh.time2.setTextColor(ContextCompat.getColor(context, R.color.white_opacity_40));
-      vh.daySeparator.setTextColor(ContextCompat.getColor(context, R.color.white));
     }
 
     if (m instanceof MessageEvent) {

@@ -568,8 +568,7 @@ public class LiveActivity extends BaseActivity
   }
 
   private void setChatView(Shortcut shortcut) {
-    chatView = new ChatView(context());
-    chatView.setType(ChatView.FROM_LIVE);
+    chatView = new ChatView(context(), ChatView.FROM_LIVE);
     chatView.setChatId(shortcut, null);
     chatView.onResumeView();
     chatViewContainer.addView(chatView);

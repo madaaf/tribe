@@ -2,19 +2,16 @@ package com.tribe.app.presentation.view.widget.chat;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
-import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -198,15 +195,9 @@ public class ChatView extends ChatMVPView {
 
   private RxPermissions rxPermissions;
 
-  public ChatView(@NonNull Context context) {
+  public ChatView(@NonNull Context context, int type) {
     super(context);
-    initView(context);
-  }
-
-  public ChatView(@NonNull Context context, @Nullable AttributeSet attrs) {
-    super(context, attrs);
-    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ChatView);
-    this.type = a.getInt(R.styleable.ChatView_chatViewType, 0);
+    this.type = type;
     initView(context);
   }
 
@@ -216,7 +207,6 @@ public class ChatView extends ChatMVPView {
     inflater.inflate(R.layout.view_chat, this, true);
     unbinder = ButterKnife.bind(this);
     Timber.w("SOEF  INIT VIEW");
-
     tagMap = new HashMap<>();
 
     initDependencyInjector();
@@ -433,38 +423,33 @@ public class ChatView extends ChatMVPView {
   }
 
   private void setTypeChatUX() {
-    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-      @Override public void onGlobalLayout() {
-        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    if (type == (FROM_LIVE)) {
+      videoCallBtn.getLayoutParams().height = 0;
+      videoCallBtn.getLayoutParams().width = 0;
+      videoCallBtn.setImageDrawable(null);
+      pictoVoiceNote.setImageDrawable(null);
+      topbar.setVisibility(GONE);
+      layoutPulse.setVisibility(GONE);
+      container.setBackground(null);
+      widthRefInit = refInit.getWidth();
 
-        if (type == (FROM_LIVE)) {
-          videoCallBtn.getLayoutParams().height = 0;
-          videoCallBtn.getLayoutParams().width = 0;
-          videoCallBtn.setImageDrawable(null);
-          pictoVoiceNote.setImageDrawable(null);
-          topbar.setVisibility(GONE);
-          layoutPulse.setVisibility(GONE);
-          container.setBackground(null);
-          widthRefInit = refInit.getWidth();
+      RelativeLayout.LayoutParams op = (RelativeLayout.LayoutParams) editText.getLayoutParams();
+      op.addRule(RelativeLayout.START_OF, btnSendLikeContainer.getId());
 
-          RelativeLayout.LayoutParams op = (RelativeLayout.LayoutParams) editText.getLayoutParams();
-          op.addRule(RelativeLayout.START_OF, btnSendLikeContainer.getId());
+      uploadImageBtn.setImageDrawable(
+          ContextCompat.getDrawable(context, R.drawable.picto_chat_upload_white));
 
-          uploadImageBtn.setImageDrawable(
-              ContextCompat.getDrawable(context, R.drawable.picto_chat_upload_white));
+      sendBtn.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.picto_send_btn_white));
+      likeBtn.setImageDrawable(
+          ContextCompat.getDrawable(context, R.drawable.picto_like_heart_white));
+      separator.setVisibility(GONE);
+      voiceNoteBtn.setVisibility(GONE);
+      pictoVoiceNote.setVisibility(GONE);
 
-          sendBtn.setImageDrawable(
-              ContextCompat.getDrawable(context, R.drawable.picto_send_btn_white));
-          separator.setVisibility(GONE);
-          voiceNoteBtn.setVisibility(GONE);
-          pictoVoiceNote.setVisibility(GONE);
-
-          blurBackEditText.setBackground(
-              ContextCompat.getDrawable(context, R.drawable.background_blur));
-          editText.setTextColor(ContextCompat.getColor(context, R.color.white));
-        }
-      }
-    });
+      blurBackEditText.setBackground(
+          ContextCompat.getDrawable(context, R.drawable.background_blur));
+      editText.setTextColor(ContextCompat.getColor(context, R.color.white));
+    }
   }
 
   private void sendMedia(Uri uri, String audioFile, int position, String type) {
@@ -742,7 +727,7 @@ public class ChatView extends ChatMVPView {
 
   private void initRecyclerView() {
     layoutManagerGrp = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-    chatUserAdapter = new ChatUserAdapter(getContext(), user);
+    chatUserAdapter = new ChatUserAdapter(getContext(), user, type);
     recyclerViewGrp.setLayoutManager(layoutManagerGrp);
     recyclerViewGrp.setItemAnimator(new DefaultItemAnimator());
     recyclerViewGrp.setAdapter(chatUserAdapter);
@@ -799,10 +784,6 @@ public class ChatView extends ChatMVPView {
     } else {
       recyclerView.sendMessageToNetwork(arrIds, content, realmType, 0);
     }
-  }
-
-  public void setType(int type) {
-    this.type = type;
   }
 
   protected void initDependencyInjector() {

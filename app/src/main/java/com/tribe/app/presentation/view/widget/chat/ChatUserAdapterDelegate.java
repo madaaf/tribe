@@ -42,15 +42,15 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
   protected LayoutInflater layoutInflater;
   private Context context;
   private List<View> viewDots = new ArrayList<>();
-  private int counter = 0;
-  private int width = 0;
-  private int height = 0;
+  private int width = 0, height = 0;
+  int type;
   private User user;
 
   private PublishSubject<String> onQuickChat = PublishSubject.create();
 
-  public ChatUserAdapterDelegate(Context context, User user) {
+  public ChatUserAdapterDelegate(Context context, User user, int type) {
     this.user = user;
+    this.type = type;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     this.context = context;
@@ -61,14 +61,16 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-    RecyclerView.ViewHolder vh =
+    ChatUserViewHolder vh =
         new ChatUserViewHolder(layoutInflater.inflate(R.layout.item_user_chat, parent, false));
+    setNameColor(vh);
     return vh;
   }
 
   @Override public void onBindViewHolder(@NonNull List<User> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     ChatUserViewHolder vh = (ChatUserViewHolder) holder;
+
     User i = items.get(position);
 
     vh.itemView.setOnClickListener(view -> {
@@ -85,6 +87,14 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
       vh.name.setTextColor(ContextCompat.getColor(context, R.color.blue_new));
     } else {
       vh.container.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_rect_chat));
+      setNameColor(vh);
+    }
+  }
+
+  private void setNameColor(ChatUserViewHolder vh) {
+    if (type == ChatView.FROM_LIVE) {
+      vh.name.setTextColor(ContextCompat.getColor(context, R.color.white));
+    } else {
       vh.name.setTextColor(ContextCompat.getColor(context, R.color.black_opacity_40));
     }
   }
@@ -95,7 +105,6 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
     User i = (User) payloads.get(0);
 
     ChatUserViewHolder vh = (ChatUserViewHolder) holder;
-    counter++;
 
     if (i.isActive()) {
       extendsDots(vh, i.isTyping());
@@ -109,7 +118,7 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
       vh.name.setTextColor(ContextCompat.getColor(context, R.color.blue_new));
     } else {
       vh.container.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_rect_chat));
-      vh.name.setTextColor(ContextCompat.getColor(context, R.color.grey_chat_border));
+      setNameColor(vh);
     }
   }
 
