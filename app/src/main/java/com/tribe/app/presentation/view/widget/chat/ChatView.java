@@ -315,7 +315,6 @@ public class ChatView extends ChatMVPView {
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
       messagePresenter.onViewDetached();
       recyclerView.onDetachedFromWindow();
-      arrIds = null;
     }
   }
 

@@ -295,7 +295,7 @@ public class LiveActivity extends BaseActivity
 
   @Override protected void onResume() {
     super.onResume();
-    chatView.onResumeView();
+    if (chatView != null) chatView.onResumeView();
     onResumeLockPhone();
 
     if (!receiverRegistered) {
@@ -337,7 +337,7 @@ public class LiveActivity extends BaseActivity
       receiverRegistered = false;
     }
 
-    chatView.dispose();
+    if (chatView != null) chatView.dispose();
 
     super.onPause();
   }
