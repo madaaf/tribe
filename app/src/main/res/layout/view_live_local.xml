@@ -8,13 +8,13 @@
       android:layout_gravity="center"
       >
 
+    <com.tribe.app.presentation.view.component.live.LivePeerOverlayView
+        android:id="@+id/viewPeerOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        />
   </FrameLayout>
 
-  <com.tribe.app.presentation.view.component.live.LivePeerOverlayView
-      android:id="@+id/viewPeerOverlay"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:visibility="gone"
-      />
 
 </merge>

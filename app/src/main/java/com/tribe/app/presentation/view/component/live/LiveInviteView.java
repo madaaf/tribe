@@ -204,8 +204,8 @@ public class LiveInviteView extends FrameLayout
 
         int currentFirstVisible = layoutManager.findFirstVisibleItemPosition();
 
-        if (currentFirstVisible < positionOfFirstShortcut
-            && recyclerViewInvite.getScrollDirection() == RecyclerViewInvite.UP) {
+        if (currentFirstVisible < positionOfFirstShortcut &&
+            recyclerViewInvite.getScrollDirection() == RecyclerViewInvite.UP) {
           recyclerViewInvite.stopScroll();
           recyclerViewInvite.post(
               () -> layoutManager.scrollToPositionWithOffset(positionOfFirstShortcut, 0));
@@ -240,9 +240,8 @@ public class LiveInviteView extends FrameLayout
   private SectionCallback getSectionCallback(final List<LiveInviteAdapterSectionInterface> list) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
-        return list.get(position) instanceof Header && (list.get(position)
-            .getId()
-            .equals(Header.HEADER_NAME));
+        return list.get(position) instanceof Header &&
+            (list.get(position).getId().equals(Header.HEADER_NAME));
       }
 
       @Override public int getSectionType(int position) {
@@ -277,12 +276,12 @@ public class LiveInviteView extends FrameLayout
     subscriptions.add(Observable.combineLatest(live.onRoomUpdated().onBackpressureBuffer(),
         onShortcutUpdate.onBackpressureBuffer(), (room, listShortcut) -> {
 
-          Timber.e("onRoomUpdated "
-              + room.getId()
-              + " "
-              + room.getShortcut()
-              + " "
-              + listShortcut.size());
+          Timber.e("onRoomUpdated " +
+              room.getId() +
+              " " +
+              room.getShortcut() +
+              " " +
+              listShortcut.size());
           Set<String> alreadyPresent = new HashSet<>();
           List<LiveInviteAdapterSectionInterface> temp = new ArrayList<>();
           List<String> usersAtBeginningOfCall = null;
@@ -330,8 +329,8 @@ public class LiveInviteView extends FrameLayout
           for (Shortcut shortcut : listShortcut) {
             User user = shortcut.getSingleFriend();
             user.setSelected(selected != null && selected.getId().equals(shortcut.getId()));
-            if (!alreadyPresent.contains(user.getId()) && !usersAtBeginningOfCall.contains(
-                user.getId())) {
+            if (!alreadyPresent.contains(user.getId()) &&
+                !usersAtBeginningOfCall.contains(user.getId())) {
               temp.add(shortcut);
             }
           }
@@ -358,8 +357,8 @@ public class LiveInviteView extends FrameLayout
       adapter.setItems(itemsList);
       adapter.notifyDataSetChanged();
 
-      if (drawerState == LiveContainer.CLOSED
-          && layoutManager.findFirstCompletelyVisibleItemPosition() != positionOfFirstShortcut) {
+      if (drawerState == LiveContainer.CLOSED &&
+          layoutManager.findFirstCompletelyVisibleItemPosition() != positionOfFirstShortcut) {
         recyclerViewInvite.post(
             () -> layoutManager.scrollToPositionWithOffset(positionOfFirstShortcut, 0));
       }

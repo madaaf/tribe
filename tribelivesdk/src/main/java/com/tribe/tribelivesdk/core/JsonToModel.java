@@ -268,11 +268,15 @@ public class JsonToModel {
           }
         } else if (message.has(WebRTCRoom.MESSAGE_GAME)) {
           JSONObject gameMessage = message.getJSONObject(WebRTCRoom.MESSAGE_GAME);
-          String action = gameMessage.getString(Game.ACTION);
-          if (action.equals(Game.START)) {
-            onNewGame.onNext(new Pair<>(tribeSession, gameMessage.getString(Game.ID)));
-          } else if (action.equals(Game.STOP)) {
-            onStopGame.onNext(new Pair<>(tribeSession, gameMessage.getString(Game.ID)));
+          if (gameMessage.has(Game.ACTION)) {
+            String action = gameMessage.getString(Game.ACTION);
+            if (action.equals(Game.START)) {
+              onNewGame.onNext(new Pair<>(tribeSession, gameMessage.getString(Game.ID)));
+            } else if (action.equals(Game.STOP)) {
+              onStopGame.onNext(new Pair<>(tribeSession, gameMessage.getString(Game.ID)));
+            }
+          } else {
+            onGameMessage.onNext(gameMessage);
           }
         }
       } else if (object != null && object.has(WebRTCRoom.MESSAGE_ERROR)) {

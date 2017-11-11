@@ -191,11 +191,10 @@ public class GameManagerView extends FrameLayout {
     } else if (game.getId().equals(Game.GAME_INVADERS)) {
       GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
       gameView = gameAlienAttacksView;
-      gameView.start(onPeerMapChange, userId);
+      gameView.start(game, onPeerMapChange, userId);
     }
 
     gameView.setWebRTCRoom(webRTCRoom);
-    gameView.setGame(game);
     game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));
 

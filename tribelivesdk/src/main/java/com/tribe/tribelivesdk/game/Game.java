@@ -9,6 +9,7 @@ import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -24,6 +25,7 @@ public abstract class Game extends GameFilter {
 
   public static final String ID = "id";
   public static final String ACTION = "action";
+  public static final String CONTEXT = "context";
   public static final String CHALLENGE = "challenge";
   public static final String NEW_CHALLENGE = "newChallenge";
   public static final String START = "start";
@@ -59,6 +61,7 @@ public abstract class Game extends GameFilter {
   protected List<TribeGuest> peerList;
   protected List<String> dataList;
   protected String previousGuestId = null;
+  protected Map<String, Object> contextMap = null;
 
   // OBSERVABLE / SUBSCRIPTIONS
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -74,6 +77,7 @@ public abstract class Game extends GameFilter {
     this.isOverLive = id.equals(GAME_INVADERS);
     this.peerList = new ArrayList<>();
     this.dataList = new ArrayList<>();
+    this.contextMap = new HashMap<>();
   }
 
   @GameType public String getId() {
@@ -155,6 +159,10 @@ public abstract class Game extends GameFilter {
 
   public void dispose() {
     subscriptions.clear();
+  }
+
+  public Map<String, Object> getContextMap() {
+    return contextMap;
   }
 
   /////////////////

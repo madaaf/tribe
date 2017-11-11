@@ -20,6 +20,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.Map;
@@ -27,6 +28,7 @@ import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
 /**
@@ -64,24 +66,26 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
   @Override protected void initWebRTCRoomSubscriptions() {
     super.initWebRTCRoomSubscriptions();
-    subscriptionsRoom.add(webRTCRoom.onGameMessage().subscribe(jsonObject -> {
-      if (jsonObject.has(game.getId())) {
-        try {
-          JSONObject message = jsonObject.getJSONObject(game.getId());
-          if (message.has(ACTION_KEY)) {
-            String actionKey = message.getString(ACTION_KEY);
-            if (actionKey.equals(ACTION_POP_ALIEN)) {
-              JSONObject alienJson = message.getJSONObject(ALIEN_KEY);
-              GameAliensAttackAlienView alienView =
-                  new GameAliensAttackAlienView(getContext(), alienJson);
-              if (alienView != null) animateAlien(alienView);
+    subscriptionsRoom.add(webRTCRoom.onGameMessage()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(jsonObject -> {
+          if (jsonObject.has(game.getId())) {
+            try {
+              JSONObject message = jsonObject.getJSONObject(game.getId());
+              if (message.has(ACTION_KEY)) {
+                String actionKey = message.getString(ACTION_KEY);
+                if (actionKey.equals(ACTION_POP_ALIEN)) {
+                  JSONObject alienJson = message.getJSONObject(ALIEN_KEY);
+                  GameAliensAttackAlienView alienView =
+                      new GameAliensAttackAlienView(getContext(), alienJson);
+                  if (alienView != null) animateAlien(alienView);
+                }
+              }
+            } catch (JSONException e) {
+              e.printStackTrace();
             }
           }
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-      }
-    }));
+        }));
   }
 
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
@@ -109,7 +113,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
   private void killAlien() {
     if (!pending) {
-      addPoint(currentUser.getId());
+      addPoint(currentUser.getId(), true);
     }
   }
 
@@ -214,9 +218,9 @@ public class GameAliensAttackView extends GameViewWithEngine {
    * PUBLIC
    */
 
-  @Override public void start(Observable<Map<String, TribeGuest>> mapObservable, String userId) {
+  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable, String userId) {
     wordingPrefix = "game_aliens_attack_";
-    super.start(mapObservable, userId);
+    super.start(game, mapObservable, userId);
     viewBackground.start();
   }
 

@@ -126,8 +126,10 @@ public abstract class GameView extends FrameLayout {
 
   public abstract void setNextGame();
 
-  public void start(Observable<Map<String, TribeGuest>> map, String userId) {
-    peerMapObservable = map;
+  public void start(Game game, Observable<Map<String, TribeGuest>> map, String userId) {
+    this.game = game;
+    this.peerMapObservable = map;
+
     subscriptions.add(map.subscribe(peerMap -> {
       this.peerMap.clear();
       this.peerMap.putAll(peerMap);
@@ -138,10 +140,6 @@ public abstract class GameView extends FrameLayout {
     ViewGroup parent = (ViewGroup) getParent();
     if (parent != null) removeView(GameView.this);
     dispose();
-  }
-
-  public void setGame(Game game) {
-    this.game = game;
   }
 
   public void setWebRTCRoom(WebRTCRoom webRTCRoom) {

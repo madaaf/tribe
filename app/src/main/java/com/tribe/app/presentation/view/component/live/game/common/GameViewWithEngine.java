@@ -19,6 +19,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.HashSet;
@@ -110,35 +111,37 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   @Override protected void initWebRTCRoomSubscriptions() {
-    subscriptionsRoom.add(webRTCRoom.onGameMessage().subscribe(jsonObject -> {
-      if (jsonObject.has(game.getId())) {
-        try {
-          JSONObject message = jsonObject.getJSONObject(game.getId());
-          if (message.has(ACTION_KEY)) {
-            String actionKey = message.getString(ACTION_KEY);
-            if (actionKey.equals(ACTION_USER_GAME_OVER)) {
-              String fromUserId = message.getString(USER_KEY);
-              setStatus(RankingStatus.LOST, fromUserId);
-              gameEngine.setUserGameOver(fromUserId);
-            } else if (actionKey.equals(ACTION_NEW_GAME)) {
-              String fromUserId = message.getString(FROM_KEY);
-              JSONArray jsonArray = message.getJSONArray(PLAYERS);
-              Set<String> players = new HashSet<>();
-              for (int i = 0; i < jsonArray.length(); i++) {
-                players.add(jsonArray.getString(i));
+    subscriptionsRoom.add(webRTCRoom.onGameMessage()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(jsonObject -> {
+          if (jsonObject.has(game.getId())) {
+            try {
+              JSONObject message = jsonObject.getJSONObject(game.getId());
+              if (message.has(ACTION_KEY)) {
+                String actionKey = message.getString(ACTION_KEY);
+                if (actionKey.equals(ACTION_USER_GAME_OVER)) {
+                  String fromUserId = message.getString(USER_KEY);
+                  setStatus(RankingStatus.LOST, fromUserId);
+                  gameEngine.setUserGameOver(fromUserId);
+                } else if (actionKey.equals(ACTION_NEW_GAME)) {
+                  String fromUserId = message.getString(FROM_KEY);
+                  JSONArray jsonArray = message.getJSONArray(PLAYERS);
+                  Set<String> players = new HashSet<>();
+                  for (int i = 0; i < jsonArray.length(); i++) {
+                    players.add(jsonArray.getString(i));
+                  }
+                  setupGameLocally(fromUserId, players, message.getLong(TIMESTAMP));
+                } else if (actionKey.equals(ACTION_SHOW_USER_LOST)) {
+                  playerLost(message.getString(USER_KEY));
+                } else if (actionKey.equals(ACTION_GAME_OVER)) {
+                  gameOver(message.getString(USER_KEY));
+                }
               }
-              setupGameLocally(fromUserId, players, message.getLong(TIMESTAMP));
-            } else if (actionKey.equals(ACTION_SHOW_USER_LOST)) {
-              playerLost(message.getString(USER_KEY));
-            } else if (actionKey.equals(ACTION_GAME_OVER)) {
-              gameOver(message.getString(USER_KEY));
+            } catch (JSONException e) {
+              e.printStackTrace();
             }
           }
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-      }
-    }));
+        }));
   }
 
   protected void startMasterEngine() {
@@ -238,6 +241,20 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
             StringUtils.stringWithPrefix(getContext(), wordingPrefix, "someone_won"),
             player.getDisplayName()), 250, null);
       }
+    } else {
+      becomePlayer();
+      showMessage("Game Over", 250, new LabelListener() {
+        @Override public void onStart() {
+
+        }
+
+        @Override public void onEnd() {
+          if (gameEngine != null) {
+            resetScores();
+            becomeGameMaster();
+          }
+        }
+      });
     }
   }
 
@@ -532,9 +549,10 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
    * PUBLIC
    */
 
-  public void start(Observable<Map<String, TribeGuest>> mapObservable, String userId) {
+  @Override
+  public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable, String userId) {
     Timber.d("start : " + userId);
-    super.start(mapObservable, userId);
+    super.start(game, mapObservable, userId);
 
     txtRestart = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsRestart =

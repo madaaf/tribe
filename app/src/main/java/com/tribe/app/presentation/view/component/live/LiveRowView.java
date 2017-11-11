@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -32,7 +32,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 01/22/17.
  */
-public class LiveRowView extends FrameLayout {
+public class LiveRowView extends LinearLayout {
 
   private static final int DURATION = 500;
 
@@ -84,6 +84,8 @@ public class LiveRowView extends FrameLayout {
     if (guest != null) {
       viewPeerOverlay.setGuest(guest);
     }
+
+    setOrientation(HORIZONTAL);
   }
 
   public void guestAppear() {
@@ -156,7 +158,7 @@ public class LiveRowView extends FrameLayout {
       ViewGroup.LayoutParams params =
           new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
               ViewGroup.LayoutParams.MATCH_PARENT);
-      if (remotePeerView.getParent() == null) layoutStream.addView(remotePeerView, params);
+      if (remotePeerView.getParent() == null) layoutStream.addView(remotePeerView, 0, params);
     }
   }
 

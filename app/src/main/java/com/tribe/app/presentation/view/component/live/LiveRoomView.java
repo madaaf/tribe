@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.support.annotation.IntDef;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -235,6 +236,11 @@ public class LiveRoomView extends FrameLayout {
   public void setType(@RoomUIType int type) {
     if (this.type == type) return;
     this.type = type;
+    if (type == TYPE_GRID) {
+      setBackgroundColor(Color.BLACK);
+    } else {
+      setBackgroundColor(Color.TRANSPARENT);
+    }
     refactorConstraintsOnChilds();
   }
 
@@ -679,21 +685,21 @@ public class LiveRoomView extends FrameLayout {
         set.clear(v.getId());
 
         set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START,
-            20);
-        set.constrainWidth(v.getId(), 0);
-        set.constrainHeight(v.getId(), 100);
-        set.setDimensionRatio(v.getId(), "w,1:1");
-        set.setElevation(v.getId(), 10);
+            screenUtils.dpToPx(20));
+        set.constrainWidth(v.getId(), screenUtils.dpToPx(75));
+        set.constrainHeight(v.getId(), screenUtils.dpToPx(45));
+        set.setElevation(v.getId(), screenUtils.dpToPx(10));
 
         switch (i) {
           case 0:
             set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP,
-                20);
+                screenUtils.dpToPx(20));
             break;
 
           default:
             View previous = constraintLayout.getChildAt(i - 1);
-            set.connect(v.getId(), ConstraintSet.TOP, previous.getId(), ConstraintSet.BOTTOM, 20);
+            set.connect(v.getId(), ConstraintSet.TOP, previous.getId(), ConstraintSet.BOTTOM,
+                screenUtils.dpToPx(20));
             break;
         }
       }
