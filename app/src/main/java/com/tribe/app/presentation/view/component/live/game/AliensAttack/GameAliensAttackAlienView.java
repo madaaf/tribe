@@ -200,6 +200,8 @@ public class GameAliensAttackAlienView extends FrameLayout {
   }
 
   public void animateKill() {
+    animate().setDuration(0).setStartDelay(0).setListener(null).start();
+    clearAnimation();
     AnimationUtils.fadeOut(imgAlienBG, DURATION);
 
     imgAlien.animate()

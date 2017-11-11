@@ -280,7 +280,6 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void showMessage(String text, int duration, LabelListener completionListener) {
-    Timber.d("Show message : " + text);
     TextViewFont textViewFont = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsMessage =
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -302,13 +301,11 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
       }
 
       @Override public void onEnd() {
-        Timber.d("Show message end : " + text);
         changeMessageStatus(txtMessage, false, true, duration, 1000, new LabelListener() {
           @Override public void onStart() {
           }
 
           @Override public void onEnd() {
-            Timber.d("Show message end end : " + text);
             if (completionListener != null) completionListener.onEnd();
             removeView(txtMessage);
           }
@@ -374,7 +371,11 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
           int duration = 250;
           if (textList.size() > 0) {
             String merged = "";
-            for (String str : textList) merged += str + "\\n";
+            int count = 0;
+            for (String str : textList) {
+              merged += str + (count < textList.size() - 1 ? "\\n" : "");
+              count++;
+            }
             changeMessageStatus(txtRestart, false, true, duration, 0, null);
             showMessage(merged, duration, new LabelListener() {
               @Override public void onStart() {

@@ -19,6 +19,7 @@ import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.Map;
@@ -62,6 +63,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
   }
 
   @Override protected void initWebRTCRoomSubscriptions() {
+    super.initWebRTCRoomSubscriptions();
     subscriptionsRoom.add(webRTCRoom.onGameMessage().subscribe(jsonObject -> {
       if (jsonObject.has(game.getId())) {
         try {
@@ -125,7 +127,6 @@ public class GameAliensAttackView extends GameViewWithEngine {
     alienView.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
-            Timber.d("OnGlobalLayout : " + alienView.getId());
             alienView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             FrameLayout.LayoutParams params = (LayoutParams) alienView.getLayoutParams();
             int leftMargin = (int) (alienView.getStartX() * screenUtils.getWidthPx());
@@ -163,12 +164,12 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
                     Timber.d("Pending alien + " + alienView.getId() + " : " + pending);
                     if (pending) {
-                      //AnimationUtils.fadeOut(alienView, 250, new AnimatorListenerAdapter() {
-                      //  @Override public void onAnimationEnd(Animator animation) {
-                      //    animation.removeAllListeners();
-                      //    viewAliens.removeView(alienView);
-                      //  }
-                      //});
+                      AnimationUtils.fadeOut(alienView, 250, new AnimatorListenerAdapter() {
+                        @Override public void onAnimationEnd(Animator animation) {
+                          animation.removeAllListeners();
+                          viewAliens.removeView(alienView);
+                        }
+                      });
 
                       return;
                     }
