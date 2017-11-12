@@ -18,6 +18,8 @@ import android.widget.FrameLayout;
 import com.tribe.app.R;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.component.live.LiveStreamView;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -82,6 +84,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected abstract GameEngine generateEngine();
 
+  protected abstract int getSoundtrack();
+
   protected long startGameTimestamp() {
     return System.currentTimeMillis() + 5 * 1000;
   }
@@ -111,6 +115,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   @Override protected void initWebRTCRoomSubscriptions() {
+    super.initWebRTCRoomSubscriptions();
+
     subscriptionsRoom.add(webRTCRoom.onGameMessage()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(jsonObject -> {
@@ -160,6 +166,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void startEngine() {
     Timber.d("startEngine");
+    if (gameEngine != null) gameEngine.stop();
     gameEngine = generateEngine();
     gameEngine.initPeerMapObservable(peerMapObservable);
 
@@ -396,11 +403,10 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
             changeMessageStatus(txtRestart, false, true, duration, 0, null);
             showMessage(merged, duration, new LabelListener() {
               @Override public void onStart() {
-                changeMessageStatus(txtRestart, isPending, true, duration, 0, null);
               }
 
               @Override public void onEnd() {
-
+                changeMessageStatus(txtRestart, isPending, true, duration, 0, null);
               }
             });
           } else {
@@ -549,10 +555,10 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
    * PUBLIC
    */
 
-  @Override
-  public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable, String userId) {
+  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     Timber.d("start : " + userId);
-    super.start(game, mapObservable, userId);
+    super.start(game, mapObservable, liveViewsObservable, userId);
 
     txtRestart = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsRestart =
@@ -574,12 +580,15 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
           becomePlayer();
           if (userId.equals(currentUser.getId())) becomeGameMaster();
         }));
+
+    soundManager.playSound(getSoundtrack(), SoundManager.SOUND_MAX);
   }
 
   public void stop() {
     Timber.d("stop");
     super.stop();
     if (gameEngine != null) gameEngine.stop();
+    soundManager.cancelMediaPlayer();
   }
 
   public void dispose() {

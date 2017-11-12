@@ -391,8 +391,8 @@ public class LiveControlsView extends FrameLayout {
     filtersMenuOn = true;
 
     int toX =
-        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1)
-            + screenUtils.dpToPx(2.5f);
+        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1) +
+            screenUtils.dpToPx(2.5f);
     int toY = -screenUtils.dpToPx(65);
 
     layoutFilter.animate()
@@ -440,11 +440,13 @@ public class LiveControlsView extends FrameLayout {
     imgTriangleCloseFilters.setVisibility(View.GONE);
 
     for (View v : viewToHideBottomFilters) {
-      showView(v);
+      if (currentGameView != null && v != layoutGame) showView(v);
     }
 
-    for (View v : viewToHideTopFilters) {
-      showView(v);
+    if (currentGameView == null) {
+      for (View v : viewToHideTopFilters) {
+        showView(v);
+      }
     }
 
     if (currentGameView != null) showView(currentGameView);
@@ -490,6 +492,8 @@ public class LiveControlsView extends FrameLayout {
 
   private void showActiveGame(boolean shouldDisplayGameTutorialPopup) {
     gamesMenuOn = false;
+
+    onGameMenuOpened.onNext(false);
 
     if (shouldDisplayGameTutorialPopup) onGameUIActive.onNext(currentGameView);
 

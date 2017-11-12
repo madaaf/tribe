@@ -11,7 +11,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
@@ -31,13 +30,13 @@ import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.app.presentation.view.utils.Degrees;
 import com.tribe.app.presentation.view.utils.DoubleUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.tribelivesdk.TribeLiveSDK;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
@@ -121,8 +120,6 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
 
-  @BindView(R.id.viewGameManager) GameManagerView viewGameManager;
-
   // VARIABLES
   private Live live;
   private WebRTCRoom webRTCRoom;
@@ -143,6 +140,7 @@ public class LiveView extends FrameLayout {
   private double duration;
   private GameManager gameManager;
   private String fbId;
+  private GameManagerView viewGameManager;
 
   // RESOURCES
   private int timeJoinRoom, statusBarHeight, tooltipFirstGameHeight;
@@ -173,6 +171,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onDismissInvite = PublishSubject.create();
   private PublishSubject<Boolean> onOpenChat = PublishSubject.create();
   private PublishSubject<Boolean> onOpenInvite = PublishSubject.create();
+  private PublishSubject<Boolean> onTouchEnabled = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -239,9 +238,8 @@ public class LiveView extends FrameLayout {
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
 
         onEndCall.onNext(durationInSeconds);
-      } else if ((hasJoined && averageCountLive <= 1 && !live.getType().equals(Live.NEW_CALL)) || (
-          live.getType().equals(Live.NEW_CALL)
-              && (invitedCount > 0 || hasShared))) {
+      } else if ((hasJoined && averageCountLive <= 1 && !live.getType().equals(Live.NEW_CALL)) ||
+          (live.getType().equals(Live.NEW_CALL) && (invitedCount > 0 || hasShared))) {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
@@ -270,7 +268,7 @@ public class LiveView extends FrameLayout {
     for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
       Timber.d("liverowview dispose");
       liveRowView.dispose();
-      viewRoom.removeView(liveRowView);
+      viewRoom.removeView(liveRowView.getGuest().getId(), liveRowView);
     }
 
     liveRowViewMap.clear();
@@ -349,6 +347,8 @@ public class LiveView extends FrameLayout {
     liveRowViewMap = new ObservableRxHashMap<>();
     tribeGuestMap = new ObservableRxHashMap<>();
     tagMap = new HashMap<>();
+
+    viewGameManager = new GameManagerView(getContext());
   }
 
   private void initUI() {
@@ -435,6 +435,7 @@ public class LiveView extends FrameLayout {
         .subscribe(game -> onRestartGame(gameManager.getCurrentGame())));
 
     viewGameManager.initPeerGuestObservable(tribeGuestMap.getObservable());
+    viewGameManager.initLiveViewsObservable(viewRoom.onLiveViewsChange());
 
     gameManager.initUIControlsStartGame(viewControlsLive.onStartGame());
     gameManager.initUIControlsRestartGame(viewControlsLive.onRestartGame());
@@ -503,12 +504,6 @@ public class LiveView extends FrameLayout {
   ///////////////////
   //    CLICKS     //
   ///////////////////
-
-  @OnClick(R.id.viewRoom) void onClickRoom() {
-    if (hiddenControls) {
-      onHiddenControls.onNext(false);
-    }
-  }
 
   ///////////////////
   //    PUBLIC     //
@@ -580,10 +575,10 @@ public class LiveView extends FrameLayout {
             onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
           }
 
-          Timber.d("Remote peer added with id : "
-              + remotePeer.getSession().getPeerId()
-              + " & view : "
-              + remotePeer.getPeerView());
+          Timber.d("Remote peer added with id : " +
+              remotePeer.getSession().getPeerId() +
+              " & view : " +
+              remotePeer.getPeerView());
           addView(remotePeer);
           onNotificationRemoteWaiting.onNext(getDisplayNameFromSession(remotePeer.getSession()));
 
@@ -760,8 +755,9 @@ public class LiveView extends FrameLayout {
   }
 
   public boolean shouldLeave() {
-    return liveRowViewMap.size() == 0 && live != null && !live.getSource()
-        .equals(SOURCE_CALL_ROULETTE);
+    return liveRowViewMap.size() == 0 &&
+        live != null &&
+        !live.getSource().equals(SOURCE_CALL_ROULETTE);
   }
 
   public @LiveActivity.Source String getSource() {
@@ -815,7 +811,7 @@ public class LiveView extends FrameLayout {
 
         liveRowView.setPeerView(remotePeer.getPeerView());
         liveRowView.setId(View.generateViewId());
-        viewRoom.addViewConstraint(liveRowView);
+        viewRoom.addViewConstraint(remotePeer.getSession().getUserId(), liveRowView);
       }
 
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
@@ -1005,17 +1001,36 @@ public class LiveView extends FrameLayout {
   private void startGame(Game game, boolean isUserAction) {
     if (game == null) return;
 
+    onTouchEnabled.onNext(false);
+
     if (!isUserAction) viewControlsLive.startGameFromAnotherUser(game);
     game.setUserAction(isUserAction);
     gameManager.setCurrentGame(game);
     viewLocalLive.startGame(game);
     viewRinging.hide();
 
+    int indexOfViewRoom = indexOfChild(viewRoom);
+
     if (game.isOverLive()) {
       viewRoom.setType(LiveRoomView.TYPE_LIST);
+      if (viewGameManager.getParent() == null) {
+        viewGameManager.setBackgroundColor(Color.BLACK);
+        addViewGameManagerAtPosition(indexOfViewRoom);
+      }
     } else {
       viewRoom.setType(LiveRoomView.TYPE_GRID);
+      if (viewGameManager.getParent() == null) {
+        viewGameManager.setBackground(null);
+        addViewGameManagerAtPosition(indexOfViewRoom + 1);
+      }
     }
+  }
+
+  private void addViewGameManagerAtPosition(int position) {
+    FrameLayout.LayoutParams params =
+        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT);
+    addView(viewGameManager, position, params);
   }
 
   private void restartGame(Game game) {
@@ -1023,7 +1038,9 @@ public class LiveView extends FrameLayout {
   }
 
   private void stopGame() {
+    onTouchEnabled.onNext(true);
     gameManager.setCurrentGame(null);
+    removeView(viewGameManager);
     viewControlsLive.stopGame();
     viewLocalLive.stopGame();
     viewRinging.startRinging();
@@ -1059,6 +1076,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Boolean> onOpenInvite() {
     return onOpenInvite;
+  }
+
+  public Observable<Boolean> onTouchEnabled() {
+    return onTouchEnabled;
   }
 
   public Observable<String> onBuzzPopup() {

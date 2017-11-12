@@ -22,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 
 import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
@@ -63,6 +65,8 @@ public class LiveRoomView extends FrameLayout {
 
   @Inject Navigator navigator;
 
+  @Inject User currentUser;
+
   // VARIABLES
   private Unbinder unbinder;
   private boolean landscapeMode = false;
@@ -75,13 +79,17 @@ public class LiveRoomView extends FrameLayout {
   private Map<Integer, Guideline> guidelineMap = new HashMap<>();
   private List<Guideline> guidelineInUse = new ArrayList<>();
   private int type = TYPE_GRID;
+  private Map<String, LiveStreamView> mapViews;
 
   @BindView(R.id.layoutConstraint) ConstraintLayout constraintLayout;
+
+  @BindView(R.id.viewLocalLive) LiveLocalView viewLiveLocal;
 
   //@BindView(R.id.diceLayoutRoomView) DiceView diceView;
 
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
+  private BehaviorSubject<Map<String, LiveStreamView>> onViews = BehaviorSubject.create();
 
   public LiveRoomView(Context context) {
     super(context);
@@ -104,6 +112,10 @@ public class LiveRoomView extends FrameLayout {
     } else {
       landscapeMode = false;
     }
+
+    mapViews = new HashMap<>();
+    mapViews.put(currentUser.getId(), viewLiveLocal);
+    onViews.onNext(mapViews);
 
     //setScreenSize(0);
     initGuidelines();
@@ -224,13 +236,17 @@ public class LiveRoomView extends FrameLayout {
   //   PUBLIC    //
   /////////////////
 
-  public void removeView(LiveRowView view) {
+  public void removeView(String userId, LiveRowView view) {
     int childCount = constraintLayout.getChildCount() - guidelineInUse.size();
     manageGuidelines(childCount, false);
+
     if (view != null) {
       constraintLayout.removeView(view);
       refactorConstraintsOnChilds();
     }
+
+    mapViews.remove(userId);
+    onViews.onNext(mapViews);
   }
 
   public void setType(@RoomUIType int type) {
@@ -263,7 +279,9 @@ public class LiveRoomView extends FrameLayout {
   //}
   //
 
-  public void addViewConstraint(View view) {
+  public void addViewConstraint(String userId, LiveRowView view) {
+    mapViews.put(userId, view);
+    onViews.onNext(mapViews);
     int childCount = constraintLayout.getChildCount() - guidelineInUse.size();
     manageGuidelines(childCount, true);
     addViewToContainer(childCount, view);
@@ -363,14 +381,15 @@ public class LiveRoomView extends FrameLayout {
     ConstraintSet set = new ConstraintSet();
     set.clone(constraintLayout);
 
-    View v = null;
+    LiveStreamView v = null;
 
     for (int i = 0; i < childCount; i++) {
-      v = constraintLayout.getChildAt(i);
+      v = (LiveStreamView) constraintLayout.getChildAt(i);
 
       if (type == TYPE_GRID) {
         set.clear(v.getId());
         set.setElevation(v.getId(), 0);
+        v.setStyle(LiveStreamView.TYPE_GRID);
 
         switch (i) {
           case 0:
@@ -686,9 +705,10 @@ public class LiveRoomView extends FrameLayout {
 
         set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START,
             screenUtils.dpToPx(20));
-        set.constrainWidth(v.getId(), screenUtils.dpToPx(75));
-        set.constrainHeight(v.getId(), screenUtils.dpToPx(45));
+        set.constrainWidth(v.getId(), screenUtils.dpToPx(150));
+        set.constrainHeight(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
         set.setElevation(v.getId(), screenUtils.dpToPx(10));
+        v.setStyle(LiveStreamView.TYPE_LIST);
 
         switch (i) {
           case 0:
@@ -887,5 +907,9 @@ public class LiveRoomView extends FrameLayout {
 
   public Observable<Void> onChangeCallRouletteRoom() {
     return onChangeCallRouletteRoom;
+  }
+
+  public Observable<Map<String, LiveStreamView>> onLiveViewsChange() {
+    return onViews;
   }
 }

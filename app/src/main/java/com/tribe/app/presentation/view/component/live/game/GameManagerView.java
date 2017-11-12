@@ -21,6 +21,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.GameData;
+import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.AliensAttack.GameAliensAttackView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
@@ -59,6 +60,7 @@ public class GameManagerView extends FrameLayout {
   private Map<String, TribeGuest> peerMap;
   private Game currentGame;
   private Map<String, List<String>> mapGameData;
+  private Observable<Map<String, LiveStreamView>> onLiveViewsChange;
 
   /**
    * OBSERVABLES
@@ -90,6 +92,8 @@ public class GameManagerView extends FrameLayout {
     } else {
       mapGameData = new HashMap<>();
     }
+
+    setBackground(null);
 
     initSubscriptions();
   }
@@ -161,10 +165,15 @@ public class GameManagerView extends FrameLayout {
         peerMap.put(rxHashMapAction.item.getId(), rxHashMapAction.item);
       } else if (rxHashMapAction.changeType.equals(ObservableRxHashMap.REMOVE)) {
         peerMap.remove(rxHashMapAction.item.getId());
+        if (currentGameView != null) currentGameView.userLeft(rxHashMapAction.item.getId());
       }
 
       onPeerMapChange.onNext(peerMap);
     }));
+  }
+
+  public void initLiveViewsObservable(Observable<Map<String, LiveStreamView>> observable) {
+    this.onLiveViewsChange = observable;
   }
 
   private void addGameView(GameView currentGameView) {
@@ -191,7 +200,7 @@ public class GameManagerView extends FrameLayout {
     } else if (game.getId().equals(Game.GAME_INVADERS)) {
       GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
       gameView = gameAlienAttacksView;
-      gameView.start(game, onPeerMapChange, userId);
+      gameView.start(game, onPeerMapChange, onLiveViewsChange, userId);
     }
 
     gameView.setWebRTCRoom(webRTCRoom);

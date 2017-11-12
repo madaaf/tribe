@@ -4,15 +4,17 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Pair;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 11/06/2017.
@@ -44,9 +44,6 @@ public abstract class GameViewWithRanking extends GameView {
 
   // OBSERVABLES
   protected CompositeSubscription subscriptionsSession = new CompositeSubscription();
-  private PublishSubject<Void> onResetLiveScores = PublishSubject.create();
-  private PublishSubject<Pair<Map<String, RankingStatus>, Map<String, Integer>>>
-      onUpdateLiveScores = PublishSubject.create();
 
   public enum RankingStatus {
     LOST(":skull:"), PENDING(":timer:");
@@ -90,7 +87,6 @@ public abstract class GameViewWithRanking extends GameView {
   }
 
   private void receiveMessage(JSONObject jsonObject) {
-    Timber.d("MDR : " + jsonObject);
     if (jsonObject.has(game.getId())) {
       try {
         JSONObject message = jsonObject.getJSONObject(game.getId());
@@ -102,7 +98,6 @@ public abstract class GameViewWithRanking extends GameView {
                     new TypeToken<HashMap<String, Integer>>() {
                     }.getType());
             updateRanking(scores);
-            System.out.println(scores);
           }
         }
       } catch (JSONException e) {
@@ -127,10 +122,10 @@ public abstract class GameViewWithRanking extends GameView {
   protected void updateRanking(Map<String, Integer> scores) {
     if (scores == null) return;
 
-    mapRanking.keySet().forEach(tribeGuest -> {
-      if (scores.containsKey(tribeGuest.getId())) {
-        mapRanking.put(tribeGuest, scores.get(tribeGuest.getId()));
-        mapRankingById.put(tribeGuest.getId(), scores.get(tribeGuest.getId()));
+    scores.keySet().forEach(tribeGuestId -> {
+      if (scores.containsKey(tribeGuestId) && peerMap.containsKey(tribeGuestId)) {
+        mapRanking.put(peerMap.get(tribeGuestId), scores.get(tribeGuestId));
+        mapRankingById.put(tribeGuestId, scores.get(tribeGuestId));
       }
     });
 
@@ -138,7 +133,9 @@ public abstract class GameViewWithRanking extends GameView {
   }
 
   protected void resetLiveScores() {
-    onResetLiveScores.onNext(null);
+    for (LiveStreamView view : liveViewsMap.values()) {
+      view.updateScoreWithEmoji(0, null);
+    }
   }
 
   protected void resetScores() {
@@ -148,7 +145,26 @@ public abstract class GameViewWithRanking extends GameView {
   }
 
   protected void updateLiveScores() {
-    onUpdateLiveScores.onNext(Pair.create(mapStatusesById, mapRankingById));
+    Collection<Integer> rankings = mapRanking.values();
+    int maxRanking = rankings != null && rankings.size() > 0 ? Collections.max(rankings) : 0;
+    int minRanking = rankings != null && rankings.size() > 0 ? Collections.min(rankings) : 0;
+
+    for (String userId : liveViewsMap.keySet()) {
+      LiveStreamView liveStreamView = liveViewsMap.get(userId);
+      if (mapRankingById.get(userId) != null) {
+        int newScore = mapRankingById.get(userId);
+        int oldScore = liveStreamView.getScore();
+        String statusText =
+            mapStatusesById.containsKey(userId) ? mapStatusesById.get(userId).getEmoji() : "";
+        String emojiText =
+            (newScore > 0 && newScore == maxRanking ? EmojiParser.demojizedText(":crown:")
+                : ((newScore == minRanking ? EmojiParser.demojizedText(":poop:") : "")));
+        liveStreamView.updateScoreWithEmoji(newScore, statusText + emojiText);
+        if (newScore != oldScore) liveStreamView.bounceView();
+      } else {
+        liveStreamView.updateScoreWithEmoji(0, null);
+      }
+    }
   }
 
   protected void addPoint(String userId, boolean shouldBroadcast) {
@@ -235,8 +251,9 @@ public abstract class GameViewWithRanking extends GameView {
    * PUBLIC
    */
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> map, String userId) {
-    super.start(game, map, userId);
+  @Override public void start(Game game, Observable<Map<String, TribeGuest>> map,
+      Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
+    super.start(game, map, liveViewsObservable, userId);
 
     game.getContextMap().put(SCORES_KEY, new HashMap<String, Integer>());
 
@@ -284,13 +301,10 @@ public abstract class GameViewWithRanking extends GameView {
 
   public void dispose() {
     super.dispose();
+    subscriptionsSession.clear();
   }
 
   /**
    * OBSERVABLE
    */
-
-  public Observable<Void> onResetLiveScores() {
-    return onResetLiveScores;
-  }
 }

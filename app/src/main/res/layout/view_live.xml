@@ -18,19 +18,14 @@
       android:background="@drawable/shadow_right"
       />
 
-  <com.tribe.app.presentation.view.component.live.game.GameManagerView
-      android:id="@+id/viewGameManager"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@android:color/black"
-      android:visibility="gone"
-      />
-
   <com.tribe.app.presentation.view.component.live.LiveRoomView
       android:id="@+id/viewRoom"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:background="@android:color/black"
+      android:clickable="false"
+      android:focusable="false"
+      android:focusableInTouchMode="false"
       android:visibility="visible"
       />
 
@@ -39,6 +34,8 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
+      android:clickable="false"
+      android:focusableInTouchMode="false"
       />
 
   <View
@@ -47,6 +44,8 @@
       android:layout_height="match_parent"
       android:alpha="0"
       android:background="@color/black.opacity.70"
+      android:clickable="false"
+      android:focusableInTouchMode="false"
       />
 
   <com.tribe.app.presentation.view.component.live.LiveControlsView

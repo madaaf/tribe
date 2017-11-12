@@ -644,7 +644,6 @@ public class HomeActivity extends BaseActivity
                 diffResult =
                     DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
                 homeGridAdapter.setItems(temp);
-                layoutManager.scrollToPositionWithOffset(0, 0);
               }
 
               latestRecipientList.clear();
@@ -652,6 +651,7 @@ public class HomeActivity extends BaseActivity
               return diffResult;
             }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
           if (diffResult != null) {
+            layoutManager.scrollToPositionWithOffset(0, 0);
             diffResult.dispatchUpdatesTo(homeGridAdapter);
           } else {
             homeGridAdapter.setItems(latestRecipientList);

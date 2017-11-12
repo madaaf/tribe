@@ -56,7 +56,6 @@ public class GameChallengesView extends GameView {
 
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
-  private PublishSubject<Game> onCurrentGame = PublishSubject.create();
 
   public GameChallengesView(@NonNull Context context) {
     super(context);
@@ -66,8 +65,8 @@ public class GameChallengesView extends GameView {
     super(context, attrs);
   }
 
-  @Override
-  protected void initView(Context context) {
+  @Override protected void initView(Context context) {
+    super.initView(context);
     inflater.inflate(R.layout.view_game_challenges, this, true);
     unbinder = ButterKnife.bind(this);
 
@@ -80,12 +79,16 @@ public class GameChallengesView extends GameView {
     });
     changePagerScroller();
 
+    onBlockOpenInviteView = PublishSubject.create();
+    onNextChallenge = PublishSubject.create();
+
     subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
     subscriptions.add(adapter.onCurrentGame().subscribe(game -> {
       GameChallenge gameChallenge = (GameChallenge) game;
       webRTCRoom.sendToPeers(
           getNewChallengePayload(currentUser.getId(), gameChallenge.getCurrentChallenger().getId(),
               gameChallenge.getCurrentChallenge()), false);
+      onNextChallenge.onNext(gameChallenge);
     }));
   }
 

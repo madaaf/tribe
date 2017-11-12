@@ -17,9 +17,11 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
@@ -29,7 +31,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 10/31/2017.
@@ -62,6 +63,10 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
   @Override protected GameEngine generateEngine() {
     return new GameAliensAttackEngine(context);
+  }
+
+  @Override protected int getSoundtrack() {
+    return SoundManager.ALIENS_ATTACK_SOUNDTRACK;
   }
 
   @Override protected void initWebRTCRoomSubscriptions() {
@@ -158,7 +163,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
                 .setListener(new AnimatorListenerAdapter() {
                   @Override public void onAnimationCancel(Animator animation) {
                     super.onAnimationCancel(animation);
-                    Timber.d("Animation cancel : " + alienView.getId());
+                    //Timber.d("Animation cancel : " + alienView.getId());
                   }
 
                   @Override public void onAnimationEnd(Animator animation) {
@@ -166,7 +171,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
                     animatorRotation.cancel();
                     alienView.clearAnimation();
 
-                    Timber.d("Pending alien + " + alienView.getId() + " : " + pending);
+                    //Timber.d("Pending alien + " + alienView.getId() + " : " + pending);
                     if (pending) {
                       AnimationUtils.fadeOut(alienView, 250, new AnimatorListenerAdapter() {
                         @Override public void onAnimationEnd(Animator animation) {
@@ -187,6 +192,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
         });
 
     alienView.setOnClickListener(view -> {
+      soundManager.playSound(SoundManager.ALIENS_ATTACK_KILLED, SoundManager.SOUND_MAX);
       killAlien();
       alienView.animateKill();
     });
@@ -218,9 +224,10 @@ public class GameAliensAttackView extends GameViewWithEngine {
    * PUBLIC
    */
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable, String userId) {
+  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     wordingPrefix = "game_aliens_attack_";
-    super.start(game, mapObservable, userId);
+    super.start(game, mapObservable, liveViewsObservable, userId);
     viewBackground.start();
   }
 

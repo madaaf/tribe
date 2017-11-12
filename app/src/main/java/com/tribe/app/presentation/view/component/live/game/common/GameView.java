@@ -14,6 +14,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
@@ -50,6 +51,7 @@ public abstract class GameView extends FrameLayout {
   protected WebRTCRoom webRTCRoom;
   protected Game game;
   protected Map<String, TribeGuest> peerMap;
+  protected Map<String, LiveStreamView> liveViewsMap;
   protected String currentMasterId;
 
   // OBSERVABLES
@@ -74,6 +76,7 @@ public abstract class GameView extends FrameLayout {
     gameManager = GameManager.getInstance(context);
 
     peerMap = new HashMap<>();
+    liveViewsMap = new HashMap<>();
   }
 
   protected void initDependencyInjector() {
@@ -100,7 +103,7 @@ public abstract class GameView extends FrameLayout {
 
   private Observable<String> generateNewMasterId() {
     if (game != null) {
-      List<String> candidatesIds = new ArrayList<String>();
+      List<String> candidatesIds = new ArrayList<>();
       candidatesIds.add(currentUser.getId());
 
       return peerMapObservable.single().flatMap(map -> {
@@ -126,9 +129,15 @@ public abstract class GameView extends FrameLayout {
 
   public abstract void setNextGame();
 
-  public void start(Game game, Observable<Map<String, TribeGuest>> map, String userId) {
+  public void start(Game game, Observable<Map<String, TribeGuest>> map,
+      Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     this.game = game;
     this.peerMapObservable = map;
+
+    subscriptions.add(liveViewsObservable.subscribe(stringLiveStreamViewMap -> {
+      this.liveViewsMap.clear();
+      this.liveViewsMap.putAll(stringLiveStreamViewMap);
+    }));
 
     subscriptions.add(map.subscribe(peerMap -> {
       this.peerMap.clear();
@@ -150,6 +159,9 @@ public abstract class GameView extends FrameLayout {
 
   public void dispose() {
     peerMap.clear();
+    peerMapObservable = null;
+    liveViewsMap.clear();
+    game = null;
     subscriptionsRoom.clear();
     subscriptions.clear();
   }

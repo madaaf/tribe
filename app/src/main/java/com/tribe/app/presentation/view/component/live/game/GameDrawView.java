@@ -7,14 +7,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.animation.OvershootInterpolator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import com.google.gson.Gson;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -26,18 +23,15 @@ import com.tribe.app.presentation.view.widget.game.GameViewPager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameDraw;
-import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.lang.reflect.Field;
 import java.util.List;
-import javax.inject.Inject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -46,18 +40,11 @@ import timber.log.Timber;
 
 public class GameDrawView extends GameView {
 
-  @Inject User user;
-
-  private LayoutInflater inflater;
-  private Unbinder unbinder;
-  private Context context;
-  private GameManager gameManager;
   private GameDrawViewPagerAdapter adapter;
 
   @BindView(R.id.pager) GameViewPager viewpager;
 
-  private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Boolean> onNextDraw = PublishSubject.create();
+  private PublishSubject<Boolean> onNextDraw;
 
   public GameDrawView(@NonNull Context context) {
     super(context);
@@ -68,24 +55,25 @@ public class GameDrawView extends GameView {
   }
 
   @Override protected void initView(Context context) {
-    this.context = context;
-    initDependencyInjector();
-    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    super.initView(context);
+
     inflater.inflate(R.layout.view_game_draw, this, true);
     unbinder = ButterKnife.bind(this);
-    gameManager = GameManager.getInstance(getContext());
 
-    adapter = new GameDrawViewPagerAdapter(context, user);
+    adapter = new GameDrawViewPagerAdapter(context, currentUser);
     viewpager.setAdapter(adapter);
 
     changePagerScroller();
+
+    onNextDraw = PublishSubject.create();
 
     subscriptions.add(adapter.onNextDraw().subscribe(onNextDraw));
 
     subscriptions.add(adapter.onCurrentGame().subscribe(game -> {
       GameDraw gameDraw = (GameDraw) game;
-      webRTCRoom.sendToPeers(getNewDrawPayload(user.getId(), gameDraw.getCurrentDrawer().getId(),
-          gameDraw.getCurrentDrawName()), false);
+      webRTCRoom.sendToPeers(
+          getNewDrawPayload(currentUser.getId(), gameDraw.getCurrentDrawer().getId(),
+              gameDraw.getCurrentDrawName()), false);
     }));
 
     subscriptions.add(adapter.onClearDraw()

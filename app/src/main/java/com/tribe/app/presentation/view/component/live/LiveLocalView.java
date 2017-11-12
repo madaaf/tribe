@@ -7,23 +7,19 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
-import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
-import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -35,29 +31,19 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 01/22/17.
  */
-public class LiveLocalView extends FrameLayout {
+public class LiveLocalView extends LiveStreamView {
 
   private static final int DURATION = 300;
 
-  @Inject User user;
-
-  @Inject ScreenUtils screenUtils;
-
   @Inject PaletteGrid paletteGrid;
-
-  @BindView(R.id.viewPeerOverlay) LivePeerOverlayView viewPeerOverlay;
-
-  @BindView(R.id.layoutStream) FrameLayout layoutStream;
 
   private LocalPeerView viewPeerLocal;
 
   // VARIABLES
-  private Unbinder unbinder;
   private boolean hiddenControls = false;
   private GestureDetectorCompat gestureDetector;
   private TribePeerMediaConfiguration localMediaConfiguration;
@@ -66,28 +52,24 @@ public class LiveLocalView extends FrameLayout {
   private int translationY;
 
   // OBSERVABLES
-  private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<TribePeerMediaConfiguration> onEnableCamera = PublishSubject.create();
-  private PublishSubject<TribePeerMediaConfiguration> onEnableMicro = PublishSubject.create();
-  private PublishSubject<Void> onSwitchCamera = PublishSubject.create();
-  private PublishSubject<Void> onSwitchFilter = PublishSubject.create();
-  private PublishSubject<Game> onStartGame = PublishSubject.create();
-  private PublishSubject<Void> onClick = PublishSubject.create();
-  private PublishSubject<Void> onStopGame = PublishSubject.create();
+  private PublishSubject<TribePeerMediaConfiguration> onEnableCamera;
+  private PublishSubject<TribePeerMediaConfiguration> onEnableMicro;
+  private PublishSubject<Void> onSwitchCamera;
+  private PublishSubject<Void> onSwitchFilter;
+  private PublishSubject<Game> onStartGame;
+  private PublishSubject<Void> onClick;
+  private PublishSubject<Void> onStopGame;
 
   public LiveLocalView(Context context) {
     super(context);
-    init();
   }
 
   public LiveLocalView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    init();
   }
 
   public LiveLocalView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    init();
   }
 
   public void init() {
@@ -110,8 +92,16 @@ public class LiveLocalView extends FrameLayout {
 
     // We add the view in between the background and overlay
     layoutStream.addView(viewPeerLocal, 0,
-        new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT));
+        new CardView.LayoutParams(CardView.LayoutParams.MATCH_PARENT,
+            CardView.LayoutParams.MATCH_PARENT));
+
+    onEnableCamera = PublishSubject.create();
+    onEnableMicro = PublishSubject.create();
+    onSwitchCamera = PublishSubject.create();
+    onSwitchFilter = PublishSubject.create();
+    onStartGame = PublishSubject.create();
+    onClick = PublishSubject.create();
+    onStopGame = PublishSubject.create();
 
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
@@ -125,6 +115,8 @@ public class LiveLocalView extends FrameLayout {
             user.getUsername()));
 
     initSubscriptions();
+
+    endInit();
   }
 
   private void initSubscriptions() {
