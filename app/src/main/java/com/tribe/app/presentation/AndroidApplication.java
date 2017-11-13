@@ -177,7 +177,6 @@ public class AndroidApplication extends Application {
           }
 
           if (oldVersion == 8) {
-            Timber.d("Migrating");
             schema.create("AudioResourceRealm")
                 .addField("url", String.class)
                 .addField("duration", Float.class)
@@ -246,34 +245,26 @@ public class AndroidApplication extends Application {
             schema.remove("FriendshipRealm");
 
             oldVersion++;
-            Timber.d("Migration done");
           }
         })
         .build();
 
-    Timber.d("setting default configuration : " + realmConfiguration.getSchemaVersion());
     Realm.setDefaultConfiguration(realmConfiguration);
 
     Realm realm = null;
     try {
-      Timber.d("Opening realm Android Application : " + realmConfiguration.getSchemaVersion());
       realm = Realm.getDefaultInstance();
     } catch (RealmMigrationNeededException e) {
       e.printStackTrace();
-      Timber.d("Deleting realm Android Application : " + realmConfiguration.getSchemaVersion());
       Realm.deleteRealm(realmConfiguration);
     } finally {
-      Timber.d("Finally Android Application : " + realmConfiguration.getSchemaVersion());
       if (realm != null) {
-        Timber.d(
-            "Closing Realm Android Application : " + realm.getConfiguration().getSchemaVersion());
         realm.close();
       }
     }
   }
 
   private void initBadger() {
-    Timber.d("Accessing Realm");
     this.applicationComponent.badgeRealm();
   }
 
