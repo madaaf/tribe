@@ -82,7 +82,9 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
    * PRIVATE
    */
 
-  protected abstract GameEngine generateEngine();
+  protected GameEngine generateEngine() {
+    return gameEngine = new GameEngine(getContext());
+  }
 
   protected abstract int getSoundtrack();
 
@@ -424,6 +426,9 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   private void showTitle(LabelListener listener) {
     int translation = screenUtils.dpToPx(30.0f);
 
+    int titleResId = StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title");
+    String title = titleResId == 0 ? "" : getContext().getString(titleResId);
+
     TextViewFont txtTitleBG = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsTitleBG =
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -432,7 +437,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
     TextViewCompat.setTextAppearance(txtTitleBG, R.style.GameTitle_1_White40);
     txtTitleBG.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
-    txtTitleBG.setText(StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title"));
+    txtTitleBG.setText(title);
     txtTitleBG.setAllCaps(true);
     txtTitleBG.setAlpha(0);
     txtTitleBG.setTranslationX(translation);
@@ -447,7 +452,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
     TextViewCompat.setTextAppearance(txtTitleFront, R.style.GameTitle_1_White);
     txtTitleFront.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
-    txtTitleFront.setText(StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title"));
+    txtTitleFront.setText(title);
     txtTitleFront.setAllCaps(true);
     txtTitleFront.setAlpha(0);
     txtTitleFront.setTranslationX(translation);
@@ -581,7 +586,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
           if (userId.equals(currentUser.getId())) becomeGameMaster();
         }));
 
-    soundManager.playSound(getSoundtrack(), SoundManager.SOUND_MAX);
+    if (getSoundtrack() != -1) soundManager.playSound(getSoundtrack(), SoundManager.SOUND_MAX);
   }
 
   public void stop() {
@@ -592,7 +597,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   public void dispose() {
-
+    super.dispose();
   }
 
   /**

@@ -51,10 +51,12 @@ import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameDropIt;
 import com.tribe.tribelivesdk.game.GameFaceswap;
 import com.tribe.tribelivesdk.game.GameHandFight;
+import com.tribe.tribelivesdk.game.GameLavaFloor;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.game.GameScream;
 import com.tribe.tribelivesdk.game.GameSingAlong;
+import com.tribe.tribelivesdk.game.GameSpeedRacer;
 import com.tribe.tribelivesdk.game.GameTaboo;
 import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
@@ -324,6 +326,9 @@ public class AndroidApplication extends Application {
     gameManager.addGame(
         new GameAlienAttack(this, Game.GAME_INVADERS, getString(R.string.game_invaders),
             R.drawable.icon_game_invaders, true));
+    gameManager.addGame(new GameSpeedRacer(this, Game.GAME_SPEED_RACER, "Speed Racer",
+        R.drawable.icon_game_speed_racer,
+        "https://static.tribe.pm/games/speedracer/index.html", true));
     gameManager.addGame(
         new GameDraw(this, Game.GAME_DRAW, getString(R.string.game_draw), R.drawable.icon_game_draw,
             true));
@@ -349,7 +354,7 @@ public class AndroidApplication extends Application {
         new GameHandFight(this, Game.GAME_HAND_FIGHT, getString(R.string.game_hand_fight),
             R.drawable.icon_game_handfight, false));
     gameManager.addGame(
-        new GameDraw(this, Game.GAME_LAVA_FLOOR, getString(R.string.game_lava_floor),
+        new GameLavaFloor(this, Game.GAME_LAVA_FLOOR, getString(R.string.game_lava_floor),
             R.drawable.icon_game_lava, false));
     gameManager.addGame(new GameTaboo(this, Game.GAME_TABOO, getString(R.string.game_taboo),
         R.drawable.icon_game_taboo, false));

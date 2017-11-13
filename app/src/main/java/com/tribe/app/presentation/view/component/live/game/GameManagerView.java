@@ -22,8 +22,9 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
-import com.tribe.app.presentation.view.component.live.game.AliensAttack.GameAliensAttackView;
+import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
+import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
@@ -201,6 +202,10 @@ public class GameManagerView extends FrameLayout {
       GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
       gameView = gameAlienAttacksView;
       gameView.start(game, onPeerMapChange, onLiveViewsChange, userId);
+    } else if (game.isWeb()) {
+      GameWebView gameWebView = new GameWebView(getContext());
+      gameView = gameWebView;
+      gameView.start(game, onPeerMapChange, onLiveViewsChange, userId);
     }
 
     gameView.setWebRTCRoom(webRTCRoom);
@@ -220,6 +225,7 @@ public class GameManagerView extends FrameLayout {
 
   public void dispose() {
     subscriptions.clear();
+    if (currentGameView != null) currentGameView.stop();
   }
 
   /**

@@ -48,7 +48,7 @@ public class GamePostIt extends Game {
 
   public GamePostIt(Context context, @GameType String id, String name, int drawableRes,
       boolean isAvailable) {
-    super(context, id, name, drawableRes, isAvailable);
+    super(context, id, name, drawableRes, null, isAvailable);
     openCVWrapper = new OpenCVWrapper();
     libYuvConverter = new LibYuvConverter();
     visionAPIManager = VisionAPIManager.getInstance(context);

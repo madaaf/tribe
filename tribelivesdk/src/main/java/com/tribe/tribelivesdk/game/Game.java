@@ -35,7 +35,7 @@ public abstract class Game extends GameFilter {
   @StringDef({
       GAME_POST_IT, GAME_CHALLENGE, GAME_DRAW, GAME_BATTLE_MUSIC, GAME_SCREAM, GAME_INVADERS,
       GAME_DROP_IT, GAME_SING_ALONG, GAME_FACESWAP, GAME_HAND_FIGHT, GAME_LAVA_FLOOR, GAME_TABOO,
-      GAME_BACKGAMON, GAME_BEATS
+      GAME_BACKGAMON, GAME_BEATS, GAME_SPEED_RACER
   }) public @interface GameType {
   }
 
@@ -53,15 +53,18 @@ public abstract class Game extends GameFilter {
   public static final String GAME_TABOO = "taboo";
   public static final String GAME_BACKGAMON = "backgamon";
   public static final String GAME_BEATS = "beats";
+  public static final String GAME_SPEED_RACER = "speed-racer";
 
   protected boolean localFrameDifferent = false;
   protected boolean hasView = false;
   protected boolean isOverLive = false;
+  protected boolean isWeb = false;
   protected boolean isUserAction = false;
   protected List<TribeGuest> peerList;
   protected List<String> dataList;
   protected String previousGuestId = null;
   protected Map<String, Object> contextMap = null;
+  protected String url;
 
   // OBSERVABLE / SUBSCRIPTIONS
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -69,15 +72,17 @@ public abstract class Game extends GameFilter {
   protected PublishSubject<Frame> onRemoteFrame = PublishSubject.create();
   protected PublishSubject<TribeI420Frame> onLocalFrame = PublishSubject.create();
 
-  public Game(Context context, @GameType String id, String name, int drawableRes,
+  public Game(Context context, @GameType String id, String name, int drawableRes, String url,
       boolean available) {
     super(context, id, name, drawableRes, available);
     this.localFrameDifferent = id.equals(GAME_POST_IT);
     this.hasView = !id.equals(GAME_POST_IT);
-    this.isOverLive = id.equals(GAME_INVADERS);
+    this.isOverLive = id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER);
+    this.isWeb = id.equals(GAME_SPEED_RACER);
     this.peerList = new ArrayList<>();
     this.dataList = new ArrayList<>();
     this.contextMap = new HashMap<>();
+    this.url = url;
   }
 
   @GameType public String getId() {
@@ -96,6 +101,10 @@ public abstract class Game extends GameFilter {
     return isOverLive;
   }
 
+  public boolean isWeb() {
+    return isWeb;
+  }
+
   public boolean hasDatas() {
     return dataList != null && dataList.size() > 0;
   }
@@ -108,6 +117,10 @@ public abstract class Game extends GameFilter {
 
   public void setUserAction(boolean isUserAction) {
     this.isUserAction = isUserAction;
+  }
+
+  public String getUrl() {
+    return url;
   }
 
   protected TribeGuest getNextGuest() {

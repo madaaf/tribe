@@ -17,7 +17,7 @@ public class GameChallenge extends Game {
 
   public GameChallenge(Context context, @GameType String id, String name, int drawableRes,
       boolean available) {
-    super(context, id, name, drawableRes, available);
+    super(context, id, name, drawableRes, null, available);
   }
 
   public void generateNewDatas() {

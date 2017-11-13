@@ -905,6 +905,7 @@
 	<string name="new_game_dice_title">Joueurs aléatoire</string>
 	<string name="new_game_dice_subtitle">Rencontrez de nouveaux joueurs !</string>
 	<string name="new_game_suggest">Suggérer un jeu</string>
+	<string name="new_game_cancelled">Votre sélection (%1$s) a été annulée car un jeu est déjà en cours.</string>
 	
 	<!-- Game -->
 	<string name="game_loading">Chargement de %1$s</string>

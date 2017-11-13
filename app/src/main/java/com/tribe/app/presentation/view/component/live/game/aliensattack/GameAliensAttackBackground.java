@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.component.live.game.AliensAttack;
+package com.tribe.app.presentation.view.component.live.game.aliensattack;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

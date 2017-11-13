@@ -7,11 +7,11 @@ import com.tribe.tribelivesdk.webrtc.Frame;
  * Created by tiago on 10/04/2017.
  */
 
-public class GameDropIt extends Game {
+public class GameSpeedRacer extends Game {
 
-  public GameDropIt(Context context, @GameType String id, String name, int drawableRes,
+  public GameSpeedRacer(Context context, @GameType String id, String name, int drawableRes, String url,
       boolean available) {
-    super(context, id, name, drawableRes, null, available);
+    super(context, id, name, drawableRes, url, available);
   }
 
   @Override public void apply(Frame frame) {

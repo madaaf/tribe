@@ -288,6 +288,7 @@ public class LiveView extends FrameLayout {
     }
 
     gameManager.disposeLive();
+    if (viewGameManager != null) viewGameManager.dispose();
   }
 
   public void dispose(boolean isJump) {
@@ -1041,6 +1042,7 @@ public class LiveView extends FrameLayout {
     onTouchEnabled.onNext(true);
     gameManager.setCurrentGame(null);
     removeView(viewGameManager);
+    viewGameManager.dispose();
     viewControlsLive.stopGame();
     viewLocalLive.stopGame();
     viewRinging.startRinging();

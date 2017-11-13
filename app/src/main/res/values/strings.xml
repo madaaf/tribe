@@ -905,6 +905,7 @@
 	<string name="new_game_dice_title">Random players</string>
 	<string name="new_game_dice_subtitle">Get a quick match up!</string>
 	<string name="new_game_suggest">Suggest a game</string>
+	<string name="new_game_cancelled">Your game selection (%1$s) has been cancelled because there is already another game in the room.</string>
 	
 	<!-- Game -->
 	<string name="game_loading">Loading %1$s</string>

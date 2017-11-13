@@ -146,9 +146,9 @@ public abstract class GameView extends FrameLayout {
   }
 
   public void stop() {
+    dispose();
     ViewGroup parent = (ViewGroup) getParent();
     if (parent != null) removeView(GameView.this);
-    dispose();
   }
 
   public void setWebRTCRoom(WebRTCRoom webRTCRoom) {
