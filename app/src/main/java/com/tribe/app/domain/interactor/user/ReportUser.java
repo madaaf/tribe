@@ -15,6 +15,7 @@ public class ReportUser extends UseCase {
   private UserRepository userRepository;
 
   private String userId;
+  private String imageUrl;
 
   @Inject public ReportUser(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
@@ -22,11 +23,12 @@ public class ReportUser extends UseCase {
     this.userRepository = userRepository;
   }
 
-  public void setUserId(String userId) {
+  public void setUserId(String userId, String imageUrl) {
     this.userId = userId;
+    this.imageUrl = imageUrl;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.reportUser(userId);
+    return this.userRepository.reportUser(userId, imageUrl);
   }
 }

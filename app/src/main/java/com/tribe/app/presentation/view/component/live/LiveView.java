@@ -238,6 +238,10 @@ public class LiveView extends FrameLayout {
     viewControlsLive.displayGamesBtn();
   }
 
+  public View getLayoutStream() {
+    return liveRowViewMap.getMap().entrySet().iterator().next().getValue();
+  }
+
   public void endCall(boolean isJump) {
     String state = TagManagerUtils.CANCELLED;
 

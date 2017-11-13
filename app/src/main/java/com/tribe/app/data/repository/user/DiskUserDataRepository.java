@@ -113,7 +113,7 @@ import rx.Observable;
     return userDataStore.getFbIdUpdated();
   }
 
-  @Override public Observable<Boolean> reportUser(String userId) {
+  @Override public Observable<Boolean> reportUser(String userId, String imageUrl) {
     return null;
   }
 

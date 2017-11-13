@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutContentok"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -18,80 +17,88 @@
       android:paddingRight="@dimen/horizontal_margin_small"
       >
 
-    <include layout="@layout/item_user_base"/>
+    <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+        android:id="@+id/viewNewAvatar"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_gravity="left|center_vertical"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        />
+
+    <RelativeLayout
+        android:id="@+id/layoutInfos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/avatar_size_small_margin_start"
+        android:gravity="center_vertical"
+        >
+
+      <LinearLayout
+          android:id="@+id/layoutName"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="25dp"
+            android:orientation="horizontal"
+            >
+
+          <com.tribe.app.presentation.view.widget.TextViewFont
+              android:id="@+id/txtName"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_centerVertical="true"
+              android:ellipsize="end"
+              android:lines="1"
+              android:singleLine="true"
+              android:textSize="15sp"
+              style="@style/Body.Two.Black"
+              />
+
+        </RelativeLayout>
+      </LinearLayout>
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtUsername"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/layoutName"
+          android:layout_marginTop="2.5dp"
+          android:singleLine="true"
+          android:textColor="@color/black.opacity.40"
+          android:textSize="11sp"
+          style="@style/Title.Regular.White"
+          />
+
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/btnMore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="13dp"
+        android:layout_marginEnd="55dp"
         android:clickable="true"
-        android:src="@drawable/extend_btn_notif"
+        android:src="@drawable/picto_ban"
+        />
+
+    <ImageView
+        android:id="@+id/btnAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|end"
+        android:clickable="true"
+        android:src="@drawable/btn_add"
         />
 
 
   </FrameLayout>
-  <FrameLayout
-      android:id="@+id/layoutAddFriend"
-      android:layout_width="match_parent"
-      android:layout_height="65dp"
-      android:layout_marginTop="65dp"
-      android:background="@drawable/shape_rect_blueaddfriend_rounded_corners"
-      android:clickable="true"
-      >
 
-    <FrameLayout
-        android:id="@+id/AddBtnBg"
-        android:layout_width="65dp"
-        android:layout_height="match_parent"
-        android:background="@drawable/shape_rect_blueaddfriendplus_rounded_corners"
-        >
-      <ImageView
-          android:id="@+id/iconAdd"
-          android:layout_width="65dp"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical"
-          android:src="@drawable/add_icon_bg"
-          />
-
-    </FrameLayout>
-    <FrameLayout
-        android:id="@+id/btnAdd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|right"
-        android:animateLayoutChanges="true"
-        android:paddingBottom="@dimen/horizontal_margin_smaller"
-        android:paddingLeft="@dimen/horizontal_margin_small"
-        android:paddingRight="@dimen/horizontal_margin_small"
-        android:paddingTop="@dimen/horizontal_margin_smaller"
-        >
-
-
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/txtAction"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center"
-          android:maxLines="1"
-          android:text="@string/action_add_friend"
-          style="@style/Body.Two.White"
-          />
-
-      <com.github.rahatarmanahmed.cpv.CircularProgressView
-          android:id="@+id/progressBarAdd"
-          android:layout_width="20dp"
-          android:layout_height="20dp"
-          android:layout_gravity="center"
-          android:alpha="0"
-          app:cpv_animAutostart="true"
-          app:cpv_color="@android:color/white"
-          app:cpv_indeterminate="true"
-          app:cpv_thickness="2dp"
-          />
-
-    </FrameLayout>
-  </FrameLayout>
 
 </FrameLayout>

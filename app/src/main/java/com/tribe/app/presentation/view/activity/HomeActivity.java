@@ -636,7 +636,7 @@ public class HomeActivity extends BaseActivity
                 diffResult =
                     DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
                 homeGridAdapter.setItems(temp);
-                layoutManager.scrollToPositionWithOffset(0, 0);
+                runOnUiThread(() -> layoutManager.scrollToPositionWithOffset(0, 0));
               }
 
               latestRecipientList.clear();

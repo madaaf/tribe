@@ -730,9 +730,9 @@ public class CloudUserDataStore implements UserDataStore {
         .doOnNext(aVoid -> lookupResult.set(""));
   }
 
-  @Override public Observable<Boolean> reportUser(String userId) {
-    final String request =
-        context.getString(R.string.mutation, context.getString(R.string.reportUser, userId));
+  @Override public Observable<Boolean> reportUser(String userId, String imageUrl) {
+    final String request = context.getString(R.string.mutation,
+        context.getString(R.string.reportUser, userId, imageUrl));
 
     return this.tribeApi.reportUser(request);
   }

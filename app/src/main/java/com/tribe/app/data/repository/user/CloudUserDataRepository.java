@@ -221,10 +221,10 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<Boolean> reportUser(String userId) {
+  @Override public Observable<Boolean> reportUser(String userId, String imageUrl) {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.reportUser(userId);
+    return cloudDataStore.reportUser(userId,imageUrl);
   }
 
   @Override public Observable<Shortcut> createShortcut(String... userIds) {

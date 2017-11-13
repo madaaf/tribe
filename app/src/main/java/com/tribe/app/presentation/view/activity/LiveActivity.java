@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
@@ -25,6 +27,9 @@ import com.f2prateek.rx.preferences.BuildConfig;
 import com.f2prateek.rx.preferences.Preference;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
@@ -93,6 +98,7 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -161,7 +167,7 @@ public class LiveActivity extends BaseActivity
   @Inject @DataChallengesGame Preference<Set<String>> dataChallengesGames;
   @Inject MissedCallManager missedCallManager;
   @Inject RxImagePicker rxImagePicker;
-
+  @Inject com.tribe.app.presentation.utils.DateUtils dateUtils;
   @BindView(R.id.viewLive) LiveView viewLive;
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
   @BindView(R.id.userInfosNotificationView) UserInfosNotificationView userInfosNotificationView;
@@ -912,7 +918,7 @@ public class LiveActivity extends BaseActivity
                 .subscribe(labelType -> {
                   if (labelType.getTypeDef().equals(LabelType.REPORT)) {
                     Timber.e("report user " + tribeGuest.getId());
-                    livePresenter.reportUser(tribeGuest.getId());
+                    setImageFirebase(tribeGuest.getId());
                   } else {
                     Timber.d("cancel report user");
                   }
@@ -1091,6 +1097,83 @@ public class LiveActivity extends BaseActivity
             null);
     guestList.add(me);
     return guestList;
+  }
+
+  private void setImageFirebase(String tribeGuestId) {
+    View view = viewLive.getLayoutStream();
+
+    final boolean cachePreviousState = view.isDrawingCacheEnabled();
+    final int backgroundPreviousColor = view.getDrawingCacheBackgroundColor();
+    view.setDrawingCacheEnabled(true);
+    view.setDrawingCacheBackgroundColor(0xfffafafa);
+    final Bitmap bitmap = view.getDrawingCache();
+    view.setDrawingCacheBackgroundColor(backgroundPreviousColor);
+    //view.setDrawingCacheEnabled(cachePreviousState);
+
+    ok(bitmap, tribeGuestId);
+/*    subscriptions.add(InstaCapture.getInstance((Activity) context())
+        .captureRx(viewLive.getLiveView())
+        .subscribe(new Subscriber<Bitmap>() {
+          @Override public void onCompleted() {
+          }
+
+          @Override public void onError(Throwable e) {
+          }
+
+          @Override publi
+          c void onNext(Bitmap bitmap) {
+            *//*View v = viewLive.getLayoutStream();
+
+            v.setDrawingCacheEnabled(true);
+            v.buildDrawingCache();
+            Bitmap bitmap = v.getDrawingCache();*//*
+
+            String suffix = ".jpg";
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            // ThumbnailUtils.createVideoThumbnail(String, int)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            byte[] data = baos.toByteArray();
+            StorageReference riversRef = storageRef.child("app/uploads/reported-users/"
+                + user.getId()
+                + "/"
+                + dateUtils.getUTCDateAsString()
+                + suffix);
+            UploadTask uploadTask = riversRef.putBytes(data);
+            uploadTask.addOnFailureListener(exception -> {
+              Timber.e("error fetching image on firebase ");
+            }).
+
+                addOnSuccessListener(taskSnapshot -> {
+                  Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                  // TODO SEND MESSAGE TO NETWORK
+                  livePresenter.reportUser(tribeGuestId, downloadUrl.toString());
+                });
+          }
+        }));*/
+  }
+
+  private void ok(Bitmap bitmap, String tribeGuestId) {
+    String suffix = ".jpg";
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReference();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    // ThumbnailUtils.createVideoThumbnail(String, int)
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+    byte[] data = baos.toByteArray();
+    StorageReference riversRef = storageRef.child("app/uploads/reported-users/"
+        + user.getId()
+        + "/"
+        + dateUtils.getUTCDateAsString()
+        + suffix);
+    UploadTask uploadTask = riversRef.putBytes(data);
+    uploadTask.addOnFailureListener(exception -> {
+      Timber.e("error fetching image on firebase ");
+    }).addOnSuccessListener(taskSnapshot -> {
+      Uri downloadUrl = taskSnapshot.getDownloadUrl();
+      livePresenter.reportUser(tribeGuestId, downloadUrl.toString());
+    });
   }
 
   @Override public void onDataChallengesGame(List<String> nameList) {

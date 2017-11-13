@@ -14,9 +14,11 @@ import rx.Observable;
  * Created by tiago on 11/29/16.
  */
 public class UserNotifAdapterDelegate extends BaseNotifAdapterDelegate {
+  private User user;
 
-  public UserNotifAdapterDelegate(Context context) {
+  public UserNotifAdapterDelegate(Context context, User user) {
     super(context);
+    this.user = user;
   }
 
   @Override public boolean isForViewType(@NonNull List<Object> items, int position) {
@@ -34,8 +36,8 @@ public class UserNotifAdapterDelegate extends BaseNotifAdapterDelegate {
 
   @Override public void onBindViewHolder(@NonNull List<Object> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
-    User user = (User) items.get(position);
-    onBindViewHolderForUnfriend(user, holder, false);
+    User friend = (User) items.get(position);
+    onBindViewHolderForUnfriend(friend, holder, false, user);
   }
 
   @Override

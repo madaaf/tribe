@@ -167,7 +167,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<Boolean> reportUser(String userId) {
+  @Override public Observable<Boolean> reportUser(String userId, String imageUrl) {
     return null;
   }
 

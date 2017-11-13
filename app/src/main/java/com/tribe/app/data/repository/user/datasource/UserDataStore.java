@@ -125,7 +125,7 @@ public interface UserDataStore {
 
   Observable<Void> sendInvitations();
 
-  Observable<Boolean> reportUser(String userId);
+  Observable<Boolean> reportUser(String userId, String imageUrl);
 
   Observable<ShortcutRealm> createShortcut(String[] userIds);
 

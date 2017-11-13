@@ -699,23 +699,23 @@
 	<string name="game_aliens_attack_title">ALIENS\nATTACK</string>
 	<string name="game_aliens_attack_lets_go">TAP UN ALIEN POUR LE TUER !</string>
 	<string name="game_aliens_attack_you_won">TU AS GAGNÉ !</string>
-	<string name="game_aliens_attack_someone_won">%@ A GAGNÉ !</string>
+	<string name="game_aliens_attack_someone_won">%1$s A GAGNÉ !</string>
 	<string name="game_aliens_attack_you_lost">TU AS PERDU</string>
-	<string name="game_aliens_attack_someone_lost">%@ A PERDU !</string>
+	<string name="game_aliens_attack_someone_lost">%1$s A PERDU !</string>
 	<string name="game_aliens_attack_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_bird_rush">Bird Rush!</string>
 	<string name="game_bird_rush_title">BIRD\nRUSH</string>
 	<string name="game_bird_rush_lets_go">TAP, TAP, TAP POUR VOLER !</string>
 	<string name="game_bird_rush_you_won">TU AS GAGNÉ !</string>
-	<string name="game_bird_rush_someone_won">%@ A GAGNÉ !</string>
+	<string name="game_bird_rush_someone_won">%1$s A GAGNÉ !</string>
 	<string name="game_bird_rush_you_lost">TU AS PERDU</string>
-	<string name="game_bird_rush_someone_lost">%@ A PERDU !</string>
+	<string name="game_bird_rush_someone_lost">%1$s A PERDU !</string>
 	<string name="game_bird_rush_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_webv1_lets_go">C\'EST PARTI !</string>
 	<string name="game_webv1_you_won">TU AS GAGNÉ !</string>
-	<string name="game_webv1_someone_won">%@ A GAGNÉ !</string>
+	<string name="game_webv1_someone_won">%1$s A GAGNÉ !</string>
 	<string name="game_webv1_you_lost">TU AS PERDU</string>
-	<string name="game_webv1_someone_lost">%@ A PERDU !</string>
+	<string name="game_webv1_someone_lost">%1$s A PERDU !</string>
 	<string name="game_webv1_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
@@ -905,6 +905,7 @@
 	<string name="new_game_dice_title">Joueurs aléatoire</string>
 	<string name="new_game_dice_subtitle">Rencontrez de nouveaux joueurs !</string>
 	<string name="new_game_suggest">Suggérer un jeu</string>
+	<string name="new_game_cancelled">Votre sélection (%1$s) a été annulée car un jeu est déjà en cours.</string>
 	
 	<!-- Game -->
 	<string name="game_loading">Chargement de %1$s</string>

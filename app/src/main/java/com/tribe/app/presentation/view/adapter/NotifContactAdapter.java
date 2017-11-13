@@ -31,7 +31,7 @@ public class NotifContactAdapter extends RecyclerView.Adapter {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
-  @Inject public NotifContactAdapter(Context context) {
+  @Inject public NotifContactAdapter(Context context, User user) {
     items = new ArrayList<>();
 
     delegatesManager = new RxAdapterDelegatesManager();
@@ -42,7 +42,7 @@ public class NotifContactAdapter extends RecyclerView.Adapter {
     tribeGuestAdapterDelegate = new TribeGuestAdapterDelegate(context);
     delegatesManager.addDelegate(tribeGuestAdapterDelegate);
 
-    userListAdapterDelegate = new UserNotifAdapterDelegate(context);
+    userListAdapterDelegate = new UserNotifAdapterDelegate(context, user);
     delegatesManager.addDelegate(userListAdapterDelegate);
 
     setHasStableIds(true);

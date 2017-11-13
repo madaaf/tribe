@@ -498,7 +498,7 @@
   </string>
 
   <string name="reportUser" translatable="false">
-    reportUser(userId : \"%1$s\")
+    reportUser(userId : \"%1$s\", imageUrl: \"%2$s\")
   </string>
 
   <string name="shortcutFragment.infos" translatable="false">

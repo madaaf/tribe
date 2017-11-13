@@ -133,7 +133,7 @@ public interface UserRepository {
 
   Observable<User> getFbIdUpdated();
 
-  Observable<Boolean> reportUser(String userId);
+  Observable<Boolean> reportUser(String userId, String imageUrl);
 
   /**
    * Get an {@link Observable} which will emit a {@link List<Shortcut>}

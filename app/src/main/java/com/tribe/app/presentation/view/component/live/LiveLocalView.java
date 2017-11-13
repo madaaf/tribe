@@ -270,6 +270,9 @@ public class LiveLocalView extends FrameLayout {
     return viewPeerLocal.isFrontFacing();
   }
 
+  public View getLayoutStream() {
+    return layoutStream;
+  }
   //////////////////
   //  OBSERVABLES //
   //////////////////

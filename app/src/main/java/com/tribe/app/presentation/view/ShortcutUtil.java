@@ -93,4 +93,17 @@ public class ShortcutUtil {
       list.remove(user.getId());
     }
   }
+
+  public static Shortcut getShortcut(User friend, User user) {
+    Shortcut s = null;
+    List<Shortcut> shortcutList = user.getShortcutList();
+    for (Shortcut shortcut : shortcutList) {
+      if (shortcut.isSingle()) {
+        if (shortcut.getMembers().get(0).getId().equals(friend.getId())) {
+          s = shortcut;
+        }
+      }
+    }
+    return s;
+  }
 }

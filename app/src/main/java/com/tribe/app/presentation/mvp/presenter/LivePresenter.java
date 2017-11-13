@@ -176,8 +176,8 @@ public class LivePresenter implements Presenter {
     }
   }
 
-  public void reportUser(String userId) {
-    reportUser.setUserId(userId);
+  public void reportUser(String userId, String imageUrl) {
+    reportUser.setUserId(userId, imageUrl);
     reportUser.execute(new DefaultSubscriber());
   }
 
