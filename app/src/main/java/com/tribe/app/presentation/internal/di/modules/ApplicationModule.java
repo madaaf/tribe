@@ -269,6 +269,7 @@ import timber.log.Timber;
   }
 
   @Provides @Singleton Realm provideRealm() {
+    Timber.d("Accessing Realm applicationModule");
     Realm realm = Realm.getDefaultInstance();
     return realm;
   }

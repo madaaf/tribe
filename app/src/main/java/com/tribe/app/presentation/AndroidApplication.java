@@ -87,6 +87,7 @@ public class AndroidApplication extends Application {
 
   @Override public void onCreate() {
     super.onCreate();
+    initTimber();
     initInjector();
     // initLeakDetection();
     initRealm();
@@ -94,7 +95,6 @@ public class AndroidApplication extends Application {
     initStetho();
     initFacebook();
     initBranch();
-    initTimber();
     initAppState();
     initTakt();
     initUlsee();
@@ -145,7 +145,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(8)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(9)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -177,6 +177,7 @@ public class AndroidApplication extends Application {
           }
 
           if (oldVersion == 8) {
+            Timber.d("Migrating");
             schema.create("AudioResourceRealm")
                 .addField("url", String.class)
                 .addField("duration", Float.class)
@@ -215,10 +216,11 @@ public class AndroidApplication extends Application {
                 .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
                 .addField("name", String.class)
                 .addField("picture", String.class)
-                .addField("pinned", Boolean.class)
-                .addField("read", Boolean.class)
-                .addField("mute", Boolean.class)
-                .addField("single", Boolean.class)
+                .addField("pinned", Boolean.class, FieldAttribute.REQUIRED)
+                .addField("read", Boolean.class, FieldAttribute.REQUIRED)
+                .addField("mute", Boolean.class, FieldAttribute.REQUIRED)
+                .addField("status", String.class, FieldAttribute.INDEXED)
+                .addField("single", Boolean.class, FieldAttribute.INDEXED, FieldAttribute.REQUIRED)
                 .addRealmListField("last_seen", schema.get("ShortcutLastSeenRealm"))
                 .addField("created_at", Date.class)
                 .addField("last_activity_at", Date.class)
@@ -244,23 +246,34 @@ public class AndroidApplication extends Application {
             schema.remove("FriendshipRealm");
 
             oldVersion++;
+            Timber.d("Migration done");
           }
         })
         .build();
 
+    Timber.d("setting default configuration : " + realmConfiguration.getSchemaVersion());
     Realm.setDefaultConfiguration(realmConfiguration);
 
     Realm realm = null;
     try {
+      Timber.d("Opening realm Android Application : " + realmConfiguration.getSchemaVersion());
       realm = Realm.getDefaultInstance();
     } catch (RealmMigrationNeededException e) {
+      e.printStackTrace();
+      Timber.d("Deleting realm Android Application : " + realmConfiguration.getSchemaVersion());
       Realm.deleteRealm(realmConfiguration);
     } finally {
-      if (realm != null) realm.close();
+      Timber.d("Finally Android Application : " + realmConfiguration.getSchemaVersion());
+      if (realm != null) {
+        Timber.d(
+            "Closing Realm Android Application : " + realm.getConfiguration().getSchemaVersion());
+        realm.close();
+      }
     }
   }
 
   private void initBadger() {
+    Timber.d("Accessing Realm");
     this.applicationComponent.badgeRealm();
   }
 
