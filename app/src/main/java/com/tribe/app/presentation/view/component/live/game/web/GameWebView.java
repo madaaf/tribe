@@ -1,9 +1,12 @@
 package com.tribe.app.presentation.view.component.live.game.web;
 
 import android.content.Context;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -15,12 +18,15 @@ import android.webkit.WebViewClient;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
@@ -36,6 +42,8 @@ public class GameWebView extends GameViewWithEngine {
   @BindView(R.id.webView) WebView webView;
 
   // VARIABLES
+  private boolean didRestartWhenReady = false;
+  private MediaPlayer mediaPlayer;
 
   public GameWebView(@NonNull Context context) {
     super(context);
@@ -94,6 +102,44 @@ public class GameWebView extends GameViewWithEngine {
 
   @Override protected void startMasterEngine() {
     super.startMasterEngine();
+
+    subscriptions.add(gameEngine.onPlayerReady().subscribe(s -> {
+      if (!didRestartWhenReady) {
+        Map<String, Integer> mapPlayerStatus = gameEngine.getMapPlayerStatus();
+        if (mapPlayerStatus.size() == 2) {
+          didRestartWhenReady = true;
+        }
+
+        subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> {
+              resetScores();
+              Set<String> playerIds = mapPlayerStatus.keySet();
+              newGame(playerIds);
+            }));
+      }
+    }));
+  }
+
+  private void gameLoaded() {
+    // remove loading
+
+    imReady();
+
+    refactorReady(true);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      webView.evaluateJavascript("Tribe.getSoundtrack()", value -> {
+        mediaPlayer = new MediaPlayer();
+        try {
+          mediaPlayer.setDataSource(value);
+          mediaPlayer.prepare();
+          mediaPlayer.start();
+        } catch (IOException e) {
+          Timber.e("Soundtrack prepare() failed");
+        }
+      });
+    }
   }
 
   @Override protected long startGameTimestamp() {
@@ -119,7 +165,77 @@ public class GameWebView extends GameViewWithEngine {
     }
   };
 
-  class WebViewGameInterface {
+  private void executeJavascript(String code) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      webView.evaluateJavascript(code, value -> {
+        Timber.d("value : " + value);
+      });
+    }
+  }
+
+  private String escapeJavascript(String code) {
+    return code.replaceAll("'", "\'").replaceAll("\n", "<br>");
+  }
+
+  @Override protected void showTitle(LabelListener listener) {
+    executeJavascript("Tribe.displayTitle(3.5)");
+
+    subscriptions.add(Observable.timer(3500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          if (listener != null) listener.call();
+        }));
+  }
+
+  @Override
+  protected void showMessage(String text, int duration, LabelListener willDisappearListener,
+      LabelListener completionListener) {
+    executeJavascript("Tribe.displayMessage('" + escapeJavascript(text) + "', 1.5);");
+
+    subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          if (completionListener != null) completionListener.call();
+        }));
+
+    subscriptions.add(Observable.timer(1500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          if (willDisappearListener != null) willDisappearListener.call();
+        }));
+  }
+
+  @Override
+  protected void changeMessageStatus(View view, boolean isVisible, boolean isAnimated, int duration,
+      int delay, LabelListener blockToCall, LabelListener completionListener) {
+    if (view == txtRestart && isVisible) {
+      executeJavascript("Tribe.displayRestart('" +
+          escapeJavascript(getResources().getString(
+              StringUtils.stringWithPrefix(getContext(), wordingPrefix, "pending_instructions"))) +
+          "');");
+    }
+
+    if (blockToCall != null) blockToCall.call();
+
+    if (isAnimated) {
+      subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            if (completionListener != null) completionListener.call();
+          }));
+    } else {
+      if (completionListener != null) completionListener.call();
+    }
+  }
+
+  @Override protected void playGame() {
+    super.playGame();
+
+    executeJavascript("Tribe.startGame()");
+  }
+
+  private class WebViewGameInterface {
+
     @JavascriptInterface public void gameEnded() {
       Timber.d("Game ended");
     }
@@ -133,7 +249,7 @@ public class GameWebView extends GameViewWithEngine {
     }
 
     @JavascriptInterface public void gameLoaded() {
-      Timber.d("Game loaded");
+      GameWebView.this.gameLoaded();
     }
   }
 
@@ -154,6 +270,13 @@ public class GameWebView extends GameViewWithEngine {
 
   @Override public void stop() {
     super.stop();
+
+    if (mediaPlayer != null) {
+      mediaPlayer.reset();
+      mediaPlayer.stop();
+      mediaPlayer.release();
+      mediaPlayer = null;
+    }
   }
 
   @Override public void dispose() {

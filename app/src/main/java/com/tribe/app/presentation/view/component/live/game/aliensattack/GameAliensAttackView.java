@@ -27,6 +27,7 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
@@ -157,8 +158,11 @@ public class GameAliensAttackView extends GameViewWithEngine {
             animatorRotation.start();
 
             alienView.animate()
-                .translationY(screenUtils.getHeightPx() - params.topMargin - alienView.getHeight() -
-                    viewBackground.getRoadBottomMargin() - screenUtils.dpToPx(30))
+                .translationY(screenUtils.getHeightPx() -
+                    params.topMargin -
+                    alienView.getHeight() -
+                    viewBackground.getRoadBottomMargin() -
+                    screenUtils.dpToPx(30))
                 .setDuration((long) (alienView.getSpeed() * 1000))
                 .setStartDelay(0)
                 .setInterpolator(new LinearInterpolator())
@@ -203,10 +207,11 @@ public class GameAliensAttackView extends GameViewWithEngine {
   @Override protected void startMasterEngine() {
     super.startMasterEngine();
 
-    subscriptionsSession.add(((GameAliensAttackEngine) gameEngine).onAlien().subscribe(alienView -> {
-      webRTCRoom.sendToPeers(getAlienPayload(alienView.asJSON()), true);
-      animateAlien(alienView);
-    }));
+    subscriptionsSession.add(
+        ((GameAliensAttackEngine) gameEngine).onAlien().subscribe(alienView -> {
+          webRTCRoom.sendToPeers(getAlienPayload(alienView.asJSON()), true);
+          animateAlien(alienView);
+        }));
   }
 
   /**
@@ -231,6 +236,10 @@ public class GameAliensAttackView extends GameViewWithEngine {
     wordingPrefix = "game_aliens_attack_";
     super.start(game, mapObservable, liveViewsObservable, userId);
     viewBackground.start();
+
+    subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> imReady()));
   }
 
   @Override public void stop() {
