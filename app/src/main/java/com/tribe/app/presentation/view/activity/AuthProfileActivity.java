@@ -329,8 +329,18 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
               a -> navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId,
                   true)));
     } else {
+      tagSignUp();
       navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), null, false);
     }
+  }
+
+  private void tagSignUp() {
+    Bundle properties = new Bundle();
+    properties.putString(TagManagerUtils.TYPE, "signup");
+    properties.putString(TagManagerUtils.PLATFORM,
+        loginEntity.getFbAccessToken() != null ? TagManagerUtils.PLATFORM_FACEBOOK
+            : TagManagerUtils.PLATFORM_PHONE);
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
   }
 
   @Override public void successFacebookLogin() {
@@ -373,10 +383,9 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
-    profileInfoView.setUsernameValid(usernameValid ||
-        (user != null &&
-            !StringUtils.isEmpty(profileInfoView.getUsername()) &&
-            profileInfoView.getUsername().equals(user.getUsername())));
+    profileInfoView.setUsernameValid(usernameValid || (user != null
+        && !StringUtils.isEmpty(profileInfoView.getUsername())
+        && profileInfoView.getUsername().equals(user.getUsername())));
   }
 
   @Override public void showLoading() {
