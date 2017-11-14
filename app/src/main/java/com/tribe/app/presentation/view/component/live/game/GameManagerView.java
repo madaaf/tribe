@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Pair;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import butterknife.ButterKnife;
@@ -68,6 +67,7 @@ public class GameManagerView extends FrameLayout {
    */
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private CompositeSubscription subscriptionsGame = new CompositeSubscription();
   private BehaviorSubject<Map<String, TribeGuest>> onPeerMapChange = BehaviorSubject.create();
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
 
@@ -124,7 +124,6 @@ public class GameManagerView extends FrameLayout {
           currentGame = sessionGamePair.second;
 
           if (currentGameView == null) {
-            setVisibility(View.VISIBLE);
             addGameView(computeGameView(currentGame, sessionGamePair.first.getUserId()));
           }
 
@@ -152,7 +151,6 @@ public class GameManagerView extends FrameLayout {
           removeView(currentGameView);
           currentGameView = null;
           currentGame = null;
-          setVisibility(View.GONE);
         }));
   }
 
@@ -191,11 +189,11 @@ public class GameManagerView extends FrameLayout {
     if (game.getId().equals(Game.GAME_CHALLENGE)) {
       GameChallengesView gameChallengesView = new GameChallengesView(getContext());
       gameView = gameChallengesView;
-      subscriptions.add(gameChallengesView.onNextChallenge().subscribe(onRestartGame));
+      subscriptionsGame.add(gameChallengesView.onNextChallenge().subscribe(onRestartGame));
     } else if (game.getId().equals(Game.GAME_DRAW)) {
       GameDrawView gameDrawView = new GameDrawView(getContext());
       gameView = gameDrawView;
-      subscriptions.add(gameDrawView.onNextDraw()
+      subscriptionsGame.add(gameDrawView.onNextDraw()
           .map(aBoolean -> gameManager.getCurrentGame())
           .subscribe(onRestartGame));
     } else if (game.getId().equals(Game.GAME_INVADERS)) {
@@ -223,9 +221,17 @@ public class GameManagerView extends FrameLayout {
     this.webRTCRoom = webRTCRoom;
   }
 
+  public void disposeGame() {
+    subscriptionsGame.clear();
+    if (currentGameView != null) {
+      currentGameView.stop();
+      currentGameView = null;
+    }
+  }
+
   public void dispose() {
     subscriptions.clear();
-    if (currentGameView != null) currentGameView.stop();
+    disposeGame();
   }
 
   /**

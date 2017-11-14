@@ -40,7 +40,7 @@ public class GameAliensAttackBackground extends FrameLayout {
   private static final int CLOUDS_COUNT = 4;
   private static final int STARS_COUNT = 5;
 
-  private static final int MARGIN_BOTTOM_CAR = 86;
+  private static final int MARGIN_BOTTOM_CAR = 120;
   private static final int MARGIN_LEFT_CAR = 50;
   private static final int MARGIN_LEFT_CLOUD = 30;
   private static final int Y_LIMIT_SKY = 220;
@@ -208,7 +208,7 @@ public class GameAliensAttackBackground extends FrameLayout {
   private void initAnimations() {
     subscriptionsAnimation.add(Observable.interval(0,
         DURATION_CARS * CARS_COUNT - ((int) (DURATION_CARS * 0.10f) * (CARS_COUNT - 1)),
-        TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(aLong -> {
+        TimeUnit.MILLISECONDS).onBackpressureDrop().observeOn(AndroidSchedulers.mainThread()).subscribe(aLong -> {
       for (int i = 0; i < CARS_COUNT; i++) {
         ImageView car = viewsCar.get(i);
         car.clearAnimation();
@@ -277,14 +277,14 @@ public class GameAliensAttackBackground extends FrameLayout {
   }
 
   public int getRoadBottomMargin() {
-    return screenUtils.dpToPx(60);
+    return marginBottomCar;
   }
 
   public void dispose() {
     clearCars();
     clearSky();
-    subscriptions.clear();
-    subscriptionsAnimation.clear();
+    subscriptions.unsubscribe();
+    subscriptionsAnimation.unsubscribe();
   }
 
   /**

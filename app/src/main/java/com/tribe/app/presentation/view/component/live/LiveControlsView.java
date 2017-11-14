@@ -551,6 +551,8 @@ public class LiveControlsView extends FrameLayout {
 
   private void hideGameControls() {
     hideView(layoutGame, false);
+    hideView(btnChat, true);
+    hideView(viewStatusName, true);
   }
 
   private void showGameControls() {

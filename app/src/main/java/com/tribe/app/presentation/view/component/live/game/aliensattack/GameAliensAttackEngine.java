@@ -117,6 +117,7 @@ public class GameAliensAttackEngine extends GameEngine {
   }
 
   @Override public void start() {
+    Timber.d("Start game engine");
     super.start();
     popAlien(0);
   }

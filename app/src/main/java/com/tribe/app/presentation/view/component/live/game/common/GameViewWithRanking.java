@@ -301,7 +301,7 @@ public abstract class GameViewWithRanking extends GameView {
 
   public void dispose() {
     super.dispose();
-    subscriptionsSession.clear();
+    subscriptionsSession.unsubscribe();
   }
 
   /**

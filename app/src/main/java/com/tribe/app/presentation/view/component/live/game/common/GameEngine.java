@@ -18,6 +18,7 @@ import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 02/11/2017.
@@ -139,6 +140,7 @@ public class GameEngine {
   }
 
   public void setUserGameOver(String userId) {
+    Timber.d("Set user game over");
     boolean wasPlaying = mapPlayerStatus.get(userId) == PLAYING;
     mapPlayerStatus.put(userId, GAMEOVER);
     onPlayerStatusChange.onNext(mapPlayerStatus);

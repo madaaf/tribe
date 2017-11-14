@@ -31,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 10/31/2017.
@@ -72,6 +73,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
   @Override protected void initWebRTCRoomSubscriptions() {
     super.initWebRTCRoomSubscriptions();
     subscriptionsRoom.add(webRTCRoom.onGameMessage()
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(jsonObject -> {
           if (jsonObject.has(game.getId())) {
@@ -101,17 +103,14 @@ public class GameAliensAttackView extends GameViewWithEngine {
           GameAliensAttackAlienView alienView =
               (GameAliensAttackAlienView) viewAliens.getChildAt(i);
           float alpha = aBoolean && !alienView.isLost() ? 0.5f : 1f;
-          alienView.animate()
-              .alpha(alpha)
-              .setDuration(100)
-              .setInterpolator(new DecelerateInterpolator())
-              .start();
+          alienView.setAlpha(alpha);
         }
       }
     }));
   }
 
   @Override protected void gameOver(String winnerId) {
+    Timber.d("Game over : " + winnerId);
     super.gameOver(winnerId);
     viewAliens.removeAllViews();
   }
@@ -137,6 +136,9 @@ public class GameAliensAttackView extends GameViewWithEngine {
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
             alienView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+            if (pending) alienView.setAlpha(0.5f);
+
             FrameLayout.LayoutParams params = (LayoutParams) alienView.getLayoutParams();
             int leftMargin = (int) (alienView.getStartX() * screenUtils.getWidthPx());
             if (leftMargin > (screenUtils.getWidthPx() - alienView.getMeasuredWidth())) {
@@ -155,8 +157,8 @@ public class GameAliensAttackView extends GameViewWithEngine {
             animatorRotation.start();
 
             alienView.animate()
-                .translationY(screenUtils.getHeightPx() + params.topMargin + alienView.getHeight() -
-                    viewBackground.getRoadBottomMargin())
+                .translationY(screenUtils.getHeightPx() - params.topMargin - alienView.getHeight() -
+                    viewBackground.getRoadBottomMargin() - screenUtils.dpToPx(30))
                 .setDuration((long) (alienView.getSpeed() * 1000))
                 .setStartDelay(0)
                 .setInterpolator(new LinearInterpolator())
@@ -171,7 +173,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
                     animatorRotation.cancel();
                     alienView.clearAnimation();
 
-                    //Timber.d("Pending alien + " + alienView.getId() + " : " + pending);
+                    Timber.d("Pending alien + " + alienView.getId() + " : " + pending);
                     if (pending) {
                       AnimationUtils.fadeOut(alienView, 250, new AnimatorListenerAdapter() {
                         @Override public void onAnimationEnd(Animator animation) {
@@ -201,7 +203,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
   @Override protected void startMasterEngine() {
     super.startMasterEngine();
 
-    subscriptions.add(((GameAliensAttackEngine) gameEngine).onAlien().subscribe(alienView -> {
+    subscriptionsSession.add(((GameAliensAttackEngine) gameEngine).onAlien().subscribe(alienView -> {
       webRTCRoom.sendToPeers(getAlienPayload(alienView.asJSON()), true);
       animateAlien(alienView);
     }));
@@ -239,6 +241,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
   @Override public void dispose() {
     super.dispose();
     viewBackground.dispose();
+    viewAliens.removeAllViews();
   }
 
   @Override public void setNextGame() {

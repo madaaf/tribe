@@ -106,16 +106,14 @@ public abstract class GameView extends FrameLayout {
       List<String> candidatesIds = new ArrayList<>();
       candidatesIds.add(currentUser.getId());
 
-      return peerMapObservable.single().flatMap(map -> {
-        for (String key : map.keySet()) {
-          if (map.get(key).canPlayGames(game.getId())) {
-            candidatesIds.add(map.get(key).getId());
-          }
+      for (String key : peerMap.keySet()) {
+        if (peerMap.get(key).canPlayGames(game.getId())) {
+          candidatesIds.add(peerMap.get(key).getId());
         }
+      }
 
-        Collections.sort(candidatesIds);
-        return Observable.just(candidatesIds.get(0));
-      });
+      Collections.sort(candidatesIds);
+      return Observable.just(candidatesIds.get(0));
     } else {
       return Observable.just(null);
     }
@@ -162,8 +160,8 @@ public abstract class GameView extends FrameLayout {
     peerMapObservable = null;
     liveViewsMap.clear();
     game = null;
-    subscriptionsRoom.clear();
-    subscriptions.clear();
+    subscriptionsRoom.unsubscribe();
+    subscriptions.unsubscribe();
   }
 
   public void userLeft(String userId) {

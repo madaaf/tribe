@@ -119,6 +119,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -241,6 +242,8 @@ public class HomeActivity extends BaseActivity
     initRemoteConfig();
     manageLogin(getIntent());
     manageIntent(getIntent());
+
+    RxJavaHooks.enableAssemblyTracking();
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);

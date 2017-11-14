@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 11/01/2017.
@@ -200,6 +201,7 @@ public class GameAliensAttackAlienView extends FrameLayout {
   }
 
   public void animateKill() {
+    Timber.d("Animate Kill");
     animate().setDuration(0).setStartDelay(0).setListener(null).start();
     clearAnimation();
     AnimationUtils.fadeOut(imgAlienBG, DURATION);

@@ -534,9 +534,9 @@ public class ChatView extends ChatMVPView {
         .subscribe());
 
     subscriptions.add(Observable.interval(INTERVAL_IM_TYPING, TimeUnit.SECONDS)
+        .onBackpressureDrop()
         .timeInterval()
         .observeOn(AndroidSchedulers.mainThread())
-        .onBackpressureDrop()
         .subscribe(avoid -> {
           if (!editTextString.isEmpty()) {
             Timber.e("OK  I AM TYPING");

@@ -328,7 +328,7 @@ public class WebSocketConnection {
       retrying = true;
       int time = generateInterval(attempts);
       Timber.d("Trying to reconnect in : " + time);
-      subscriptions.add(Observable.timer(time, TimeUnit.MILLISECONDS).subscribe(aLong -> {
+      subscriptions.add(Observable.timer(time, TimeUnit.MILLISECONDS).onBackpressureDrop().subscribe(aLong -> {
         Timber.d("Reconnecting");
         attempts++;
         connect(url);

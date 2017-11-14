@@ -71,6 +71,7 @@ public class GameWebView extends GameViewWithEngine {
   @Override protected void initWebRTCRoomSubscriptions() {
     super.initWebRTCRoomSubscriptions();
     subscriptionsRoom.add(webRTCRoom.onGameMessage()
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(jsonObject -> {
           if (jsonObject.has(game.getId())) {

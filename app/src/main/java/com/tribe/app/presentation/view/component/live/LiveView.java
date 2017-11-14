@@ -1042,7 +1042,7 @@ public class LiveView extends FrameLayout {
     onTouchEnabled.onNext(true);
     gameManager.setCurrentGame(null);
     removeView(viewGameManager);
-    viewGameManager.dispose();
+    viewGameManager.disposeGame();
     viewControlsLive.stopGame();
     viewLocalLive.stopGame();
     viewRinging.startRinging();

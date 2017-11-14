@@ -19,6 +19,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
+import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.game.Game;
@@ -100,6 +101,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void becomeGameMaster() {
     Timber.d("becomeGameMaster");
+    if (subscriptionsSession != null) subscriptionsSession.clear();
+
     startMasterEngine();
 
     Map<String, Integer> mapPlayerStatus = gameEngine.getMapPlayerStatus();
@@ -120,6 +123,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     super.initWebRTCRoomSubscriptions();
 
     subscriptionsRoom.add(webRTCRoom.onGameMessage()
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(jsonObject -> {
           if (jsonObject.has(game.getId())) {
@@ -138,6 +142,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
                   for (int i = 0; i < jsonArray.length(); i++) {
                     players.add(jsonArray.getString(i));
                   }
+
+                  if (subscriptionsSession != null) subscriptionsSession.clear();
                   setupGameLocally(fromUserId, players, message.getLong(TIMESTAMP));
                 } else if (actionKey.equals(ACTION_SHOW_USER_LOST)) {
                   playerLost(message.getString(USER_KEY));
@@ -269,6 +275,11 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void changeMessageStatus(View view, boolean isVisible, boolean isAnimated, int duration,
       int delay, LabelListener listener) {
+    if (view == null) {
+      if (listener != null) listener.onEnd();
+      return;
+    }
+
     float alpha = isVisible ? 1.0f : 0.0f;
     float translationY = isVisible ? 0.0f : screenUtils.dpToPx(30.0f);
     float translationX = 0.0f;
@@ -349,27 +360,39 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
     Timber.d("setupGameLocally : " + userId + " / players : " + players);
     currentMasterId = userId;
-    refactorPending(false);
     listenMessages();
     resetStatuses();
+    refactorPending(false);
     showTitle(new LabelListener() {
       @Override public void onStart() {
       }
 
       @Override public void onEnd() {
         showMessage(getResources().getString(
-            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "lets_go")), 250, null);
+            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "lets_go")), 250,
+            new LabelListener() {
+              @Override public void onStart() {
+
+              }
+
+              @Override public void onEnd() {
+                if (GameViewWithEngine.this == null ||
+                    (GameViewWithEngine.this instanceof GameWebView)) {
+                  return;
+                }
+
+                long now = System.currentTimeMillis();
+                if (timestamp > System.currentTimeMillis()) {
+                  subscriptions.add(Observable.timer(timestamp - now, TimeUnit.MILLISECONDS)
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribe(aLong -> playGame()));
+                } else {
+                  playGame();
+                }
+              }
+            });
       }
     });
-
-    long now = System.currentTimeMillis();
-    if (timestamp > System.currentTimeMillis()) {
-      subscriptions.add(Observable.timer(timestamp - now, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> playGame()));
-    } else {
-      playGame();
-    }
   }
 
   private void playGame() {
@@ -378,11 +401,10 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   private void listenMessages() {
-    if (subscriptionsSession != null) subscriptionsSession.clear();
-
     subscriptionsSession.add(Observable.combineLatest(onPending.distinctUntilChanged(),
         onMessage.distinctUntilChanged((s, s2) -> s.equals(s2)), (t1, t2) -> Pair.create(t1, t2))
-        .buffer(750, TimeUnit.MILLISECONDS, 0)
+        .buffer(750, TimeUnit.MILLISECONDS, 2)
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(values -> {
           if (values.size() == 0) return;
@@ -577,6 +599,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
         StringUtils.stringWithPrefix(getContext(), wordingPrefix, "pending_instructions"));
     txtRestart.setAllCaps(true);
     txtRestart.setAlpha(0);
+    txtRestart.setGravity(Gravity.CENTER);
     addView(txtRestart, paramsRestart);
 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
