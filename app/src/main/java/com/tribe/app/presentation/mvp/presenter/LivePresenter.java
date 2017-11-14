@@ -46,10 +46,9 @@ public class LivePresenter implements Presenter {
 
   @Inject public LivePresenter(JobManager jobManager, RoomPresenter roomPresenter,
       ShortcutPresenter shortcutPresenter, GetRecipientInfos getRecipientInfos,
-      GetCloudUserInfosList cloudUserInfosList, GetNamesPostItGame getNamesPostItGame,
-      ReportUser reportUser, FbIdUpdated fbIdUpdated, GetDataChallengesGame getDataChallengesGame,
-      IncrUserTimeInCall incrUserTimeInCall, GetNamesDrawGame getNamesDrawGame,
-      GetInvites getInvites, GetRandomBannedUntil getRandomBannedUntil, ReportUser reportUser) {
+      GetCloudUserInfosList cloudUserInfosList, ReportUser reportUser, FbIdUpdated fbIdUpdated,
+      IncrUserTimeInCall incrUserTimeInCall, GetInvites getInvites,
+      GetRandomBannedUntil getRandomBannedUntil) {
 
     this.jobManager = jobManager;
     this.shortcutPresenter = shortcutPresenter;
@@ -112,24 +111,8 @@ public class LivePresenter implements Presenter {
     }
   }
 
-
-  public void getNamesPostItGame(String lang) {
-    getNamesPostItGame.setup(lang);
-    getNamesPostItGame.execute(new GetNamesPostItGameSubscriber());
-  }
-
-  public void getNamesDrawGame(String lang) {
-    getNamesDrawGame.setup(lang);
-    getNamesDrawGame.execute(new GetNamesDrawGameSubscriber());
-  }
-
-  public void getDataChallengesGame(String lang) {
-    getDataChallengesGame.setup(lang);
-    getDataChallengesGame.execute(new GetDataChallengesGameSubscriber());
-  }
-
   public void getRandomBannedUntil() {
-    getRandomBannedUntil.execute(new GetDataChallengesGameSubscriber());
+    getRandomBannedUntil.execute(new GetRandomBannedUntilSubscriber());
   }
 
   private final class GetRandomBannedUntilSubscriber extends DefaultSubscriber<String> {
@@ -143,48 +126,6 @@ public class LivePresenter implements Presenter {
 
     @Override public void onNext(String date) {
       liveMVPView.onRandomBannedUntil(date);
-    }
-  }
-
-  private final class GetNamesPostItGameSubscriber extends DefaultSubscriber<List<String>> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(List<String> nameList) {
-      liveMVPView.onNamesPostItGame(nameList);
-    }
-  }
-
-  private final class GetNamesDrawGameSubscriber extends DefaultSubscriber<List<String>> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(List<String> nameList) {
-      liveMVPView.onNamesDrawGame(nameList);
-    }
-  }
-
-  private final class GetDataChallengesGameSubscriber extends DefaultSubscriber<List<String>> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(List<String> nameList) {
-      liveMVPView.onDataChallengesGame(nameList);
     }
   }
 

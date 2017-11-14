@@ -87,6 +87,7 @@ import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationVie
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
 import com.tribe.tribelivesdk.game.GameManager;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
@@ -323,9 +324,8 @@ public class LiveActivity extends BaseActivity
 
         if (room.getId().equals(payload.getSessionId())) {
           String action = payload.getAction();
-          if (action != null &&
-              (action.equals(NotificationPayload.ACTION_LEFT) ||
-                  action.equals(NotificationPayload.ACTION_JOINED))) {
+          if (action != null && (action.equals(NotificationPayload.ACTION_LEFT) || action.equals(
+              NotificationPayload.ACTION_JOINED))) {
             shouldDisplay = false;
           }
         }
@@ -606,7 +606,8 @@ public class LiveActivity extends BaseActivity
 
   private void initSubscriptions() {
     initChatView(getShortcut());
-if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+    livePresenter.getRandomBannedUntil();
+    if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       subscriptions.add(live.onRoomUpdated().subscribe(room -> {
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
@@ -650,8 +651,8 @@ if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
     }));
 
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
-      if (live.fromRoom() &&
-          (tribeJoinRoom.getSessionList() == null || tribeJoinRoom.getSessionList().size() == 0)) {
+      if (live.fromRoom() && (tribeJoinRoom.getSessionList() == null
+          || tribeJoinRoom.getSessionList().size() == 0)) {
         Toast.makeText(this,
             getString(R.string.live_other_user_hung_up, room.getInitiator().getDisplayName()),
             Toast.LENGTH_SHORT).show();
@@ -881,8 +882,8 @@ if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE &&
-        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
+        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -942,59 +943,6 @@ if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
     onAnonymousReceived.onNext(users);
   }
 
-  private void setNextDrawGame() {
-    Game game = gameManager.getCurrentGame();
-    if (game != null && game instanceof GameDraw) {
-      GameDraw gameDraw = (GameDraw) game;
-      if (game.isUserAction()) gameDraw.setGuestList(getListGamer());
-    }
-
-    gameDrawView.setNextGame();
-  }
-
-  private void setNextChallengeGame() {
-    Game game = gameManager.getCurrentGame();
-    if (game != null && game instanceof GameChallenge) {
-      GameChallenge gameChallenge = (GameChallenge) game;
-      if (game.isUserAction()) gameChallenge.setGuestList(getListGamer());
-    }
-
-    gameChallengesView.setNextChallenge();
-  }
-
-  /***
-   *
-   *  GENERATE DATA FOR GAMES
-   */
-  @Override public void onNamesPostItGame(List<String> nameList) {
-    Game game = gameManager.getCurrentGame();
-
-    if (game != null && game instanceof GamePostIt) {
-      GamePostIt gamePostIt = (GamePostIt) game;
-      gamePostIt.setNameList(nameList);
-    }
-  }
-
-  @Override public void onNamesDrawGame(List<String> nameList) {
-    Game game = gameManager.getCurrentGame();
-
-    if (game != null && game instanceof GameDraw) {
-      GameDraw gameDraw = (GameDraw) game;
-      if (game.isUserAction()) gameDraw.setNewDatas(nameList, getListGamer());
-    }
-
-    setNextDrawGame();
-  }
-
-  private List<TribeGuest> getListGamer() {
-    List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
-    TribeGuest me =
-        new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
-            null);
-    guestList.add(me);
-    return guestList;
-  }
-
   // TODO MADA
   private void setImageFirebase(String tribeGuestId, BaseNotifViewHolder holder) {
     subscriptions.add(InstaCapture.getInstance((Activity) context())
@@ -1041,23 +989,6 @@ if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
           }
         }));
   }
-
-  @Override public void onDataChallengesGame(List<String> nameList) {
-    Game game = gameManager.getCurrentGame();
-
-    if (game != null && game instanceof GameChallenge) {
-      GameChallenge gameChallenge = (GameChallenge) game;
-      List<TribeGuest> guestList = viewLive.getUsersInLiveRoom().getPeopleInRoom();
-      TribeGuest me =
-          new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
-              false, null);
-      guestList.add(me);
-      if (game.isUserAction()) gameChallenge.setNewDatas(nameList, guestList);
-    }
-
-    setNextChallengeGame();
-  }
-
 
   @Override public void onRoomUpdate(Room room) {
     Timber.e("onRoomUpdate on LiveACtivity " + room.getId());
@@ -1230,9 +1161,9 @@ if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
     live.setRoom(room);
     viewLive.joinRoom(this.room);
 
-    if (!StringUtils.isEmpty(live.getRoomId()) &&
-        !StringUtils.isEmpty(room.getName()) &&
-        !room.getInitiator().getId().equals(getCurrentUser().getId())) {
+    if (!StringUtils.isEmpty(live.getRoomId())
+        && !StringUtils.isEmpty(room.getName())
+        && !room.getInitiator().getId().equals(getCurrentUser().getId())) {
       NotificationPayload notificationPayload = new NotificationPayload();
       notificationPayload.setBody(EmojiParser.demojizedText(
           getString(R.string.live_notification_initiator_has_been_notified,

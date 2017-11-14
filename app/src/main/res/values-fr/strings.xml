@@ -912,6 +912,7 @@
 	<string name="game_rotate_landscape">Tournez en mode paysage</string>
 	<string name="game_rotate_portrait">Tournez en mode portrait</string>
 	<string name="game_unavailable">Le jeu en cours n\'est pas disponible sur votre téléphone.</string>
+	<string name="game_update_forbidden">Seul %1$s peut changer le jeu.</string>
 	
 	<!-- Facebook Invite -->
 	<string name="facebook_invite_popup_message">Vous avez tout compris ! Vous avez juste à sélectionner un(e) ami(e) pour lui envoyer une notification.</string>

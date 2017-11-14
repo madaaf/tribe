@@ -912,6 +912,7 @@
 	<string name="game_rotate_landscape">Rotate to Landscape mode</string>
 	<string name="game_rotate_portrait">Rotate to Portrait mode</string>
 	<string name="game_unavailable">The game played is not available on your phone.</string>
+	<string name="game_update_forbidden">Only %1$s can change the current game.</string>
 	
 	<!-- Facebook Invite -->
 	<string name="facebook_invite_popup_message">You got it. Just tap a Facebook friend to send a Facebook notification.</string>

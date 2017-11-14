@@ -179,73 +179,77 @@ public class AndroidApplication extends Application {
           }
 
           if (oldVersion == 8) {
-            schema.create("AudioResourceRealm")
-                .addField("url", String.class)
-                .addField("duration", Float.class)
-                .addField("filesize", Integer.class);
+            if (schema.get("AudioResourceRealm") == null) {
+              schema.create("AudioResourceRealm")
+                  .addField("url", String.class)
+                  .addField("duration", Float.class)
+                  .addField("filesize", Integer.class);
 
-            schema.create("BadgeRealm")
-                .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
-                .addField("value", int.class);
+              schema.create("BadgeRealm")
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                  .addField("value", int.class);
 
-            schema.create("ImageRealm")
-                .addField("url", String.class, FieldAttribute.PRIMARY_KEY)
-                .addField("filesize", Integer.class)
-                .addField("width", String.class)
-                .addField("height", String.class)
-                .addField("duration", float.class);
+              schema.create("ImageRealm")
+                  .addField("url", String.class, FieldAttribute.PRIMARY_KEY)
+                  .addField("filesize", Integer.class)
+                  .addField("width", String.class)
+                  .addField("height", String.class)
+                  .addField("duration", float.class);
 
-            schema.create("MessageRealm")
-                .addField("localId", String.class)
-                .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
-                .addRealmObjectField("author", schema.get("UserRealm"))
-                .addRealmObjectField("user", schema.get("UserRealm"))
-                .addField("data", String.class)
-                .addField("__typename", String.class)
-                .addRealmObjectField("original", schema.get("ImageRealm"))
-                .addRealmListField("alts", schema.get("ImageRealm"))
-                .addField("action", String.class)
-                .addField("created_at", String.class)
-                .addField("threadId", String.class);
+              schema.create("MessageRealm")
+                  .addField("localId", String.class)
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                  .addRealmObjectField("author", schema.get("UserRealm"))
+                  .addRealmObjectField("user", schema.get("UserRealm"))
+                  .addField("data", String.class)
+                  .addField("__typename", String.class)
+                  .addRealmObjectField("original", schema.get("ImageRealm"))
+                  .addRealmListField("alts", schema.get("ImageRealm"))
+                  .addField("action", String.class)
+                  .addField("created_at", String.class)
+                  .addField("threadId", String.class)
+                  .addField("random_banned_permanently", Boolean.class)
+                  .addField("random_banned_until", String.class);
 
-            schema.create("ShortcutLastSeenRealm")
-                .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
-                .addField("user_id", String.class)
-                .addField("date", String.class);
+              schema.create("ShortcutLastSeenRealm")
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                  .addField("user_id", String.class)
+                  .addField("date", String.class);
 
-            schema.create("ShortcutRealm")
-                .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
-                .addField("name", String.class)
-                .addField("picture", String.class)
-                .addField("pinned", Boolean.class, FieldAttribute.REQUIRED)
-                .addField("read", Boolean.class, FieldAttribute.REQUIRED)
-                .addField("mute", Boolean.class, FieldAttribute.REQUIRED)
-                .addField("status", String.class, FieldAttribute.INDEXED)
-                .addField("single", Boolean.class, FieldAttribute.INDEXED, FieldAttribute.REQUIRED)
-                .addRealmListField("last_seen", schema.get("ShortcutLastSeenRealm"))
-                .addField("created_at", Date.class)
-                .addField("last_activity_at", Date.class)
-                .addRealmListField("members", schema.get("UserRealm"))
-                .addField("lastMessage", String.class)
-                .addField("leaveOnlineUntil", Date.class)
-                .addField("membersHash", String.class);
+              schema.create("ShortcutRealm")
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
+                  .addField("name", String.class)
+                  .addField("picture", String.class)
+                  .addField("pinned", Boolean.class, FieldAttribute.REQUIRED)
+                  .addField("read", Boolean.class, FieldAttribute.REQUIRED)
+                  .addField("mute", Boolean.class, FieldAttribute.REQUIRED)
+                  .addField("status", String.class, FieldAttribute.INDEXED)
+                  .addField("single", Boolean.class, FieldAttribute.INDEXED,
+                      FieldAttribute.REQUIRED)
+                  .addRealmListField("last_seen", schema.get("ShortcutLastSeenRealm"))
+                  .addField("created_at", Date.class)
+                  .addField("last_activity_at", Date.class)
+                  .addRealmListField("members", schema.get("UserRealm"))
+                  .addField("lastMessage", String.class)
+                  .addField("leaveOnlineUntil", Date.class)
+                  .addField("membersHash", String.class);
 
-            schema.get("UserRealm")
-                .addRealmListField("messages", schema.get("MessageRealm"))
-                .removeField("friendships")
-                .removeField("memberships");
+              schema.get("UserRealm")
+                  .addRealmListField("messages", schema.get("MessageRealm"))
+                  .removeField("friendships")
+                  .removeField("memberships");
 
-            schema.get("SearchResultRealm")
-                .addRealmObjectField("shortcutRealm", schema.get("ShortcutRealm"))
-                .removeField("friendshipRealm");
+              schema.get("SearchResultRealm")
+                  .addRealmObjectField("shortcutRealm", schema.get("ShortcutRealm"))
+                  .removeField("friendshipRealm");
 
-            schema.get("ContactFBRealm").addField("hasApp", boolean.class);
+              schema.get("ContactFBRealm").addField("hasApp", boolean.class);
 
-            schema.remove("MembershipRealm");
-            schema.remove("GroupRealm");
-            schema.remove("GroupMemberRealm");
-            schema.remove("FriendshipRealm");
-
+              schema.remove("MembershipRealm");
+              schema.remove("GroupRealm");
+              schema.remove("GroupMemberRealm");
+              schema.remove("FriendshipRealm");
+            }
             oldVersion++;
           }
         })
