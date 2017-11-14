@@ -79,7 +79,6 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
 
     vh.name.setText(i.getDisplayName());
     vh.avatarView.load(i.getProfilePicture());
-    // Timber.i("SOEF onBindViewHolder " + position + " " + i.toString());
 
     if (i.isOnline()) {
       vh.container.setBackground(

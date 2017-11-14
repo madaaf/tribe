@@ -44,8 +44,6 @@ public class ChatCacheImpl implements ChatCache {
   }
 
   @Override public void putMessages(RealmList<MessageRealm> messages, String userIds) {
-    Timber.e("SOEF PUT MESSAGE IN CACH " + userIds);
-
     Realm obsRealm = Realm.getDefaultInstance();
     try {
       obsRealm.executeTransaction(realm1 -> {

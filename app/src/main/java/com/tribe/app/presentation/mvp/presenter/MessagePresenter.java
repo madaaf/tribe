@@ -294,19 +294,6 @@ public class MessagePresenter implements Presenter {
     }
   }
 
-  private class IamTypingSubscriber extends DefaultSubscriber<Boolean> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      Timber.e(e.getMessage());
-    }
-
-    @Override public void onNext(Boolean isTyping) {
-      Timber.e("OK SEND ");
-    }
-  }
 
   private class CreateMessageSubscriber extends DefaultSubscriber<Message> {
     private int positon;

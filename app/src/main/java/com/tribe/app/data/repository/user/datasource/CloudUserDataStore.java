@@ -590,7 +590,7 @@ public class CloudUserDataStore implements UserDataStore {
 
       if (userRealm.getShortcuts() != null) {
         for (ShortcutRealm shortcutRealm : userRealm.getShortcuts()) {
-          if (shortcutRealm.isOnline()) {//TODO SOEF
+          if (shortcutRealm.isOnline()) {
             liveCache.putOnline(shortcutRealm.getId());
           } else {
             liveCache.removeOnline(shortcutRealm.getId());
@@ -752,8 +752,6 @@ public class CloudUserDataStore implements UserDataStore {
     final String request = context.getString(R.string.mutation, body) + "\n" + context.getString(
         R.string.shortcutFragment_infos) + "\n" + context.getString(
         R.string.userfragment_infos_light);
-    Timber.e("soef request " + request);
-    Timber.e("soef body " + body);
     return this.tribeApi.createShortcut(request).doOnNext(shortcutRealm -> {
       if (shortcutRealm != null) {
         userCache.addShortcut(shortcutRealm);
