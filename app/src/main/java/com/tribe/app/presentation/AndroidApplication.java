@@ -282,10 +282,12 @@ public class AndroidApplication extends Application {
   private void initTimber() {
     if (BuildConfig.DEBUG) {
       Timber.plant(new Timber.DebugTree());
-    } else {
-      Timber.plant(new ProductionTree(this));
-      Fabric.with(this, new Crashlytics(), new Answers());
     }
+
+    //else {
+    Timber.plant(new ProductionTree(this));
+    Fabric.with(this, new Crashlytics(), new Answers());
+    //}
   }
 
   private void initAppState() {
@@ -327,8 +329,8 @@ public class AndroidApplication extends Application {
         new GameAlienAttack(this, Game.GAME_INVADERS, getString(R.string.game_invaders),
             R.drawable.icon_game_invaders, true));
     gameManager.addGame(new GameSpeedRacer(this, Game.GAME_SPEED_RACER, "Speed Racer",
-        R.drawable.icon_game_speed_racer,
-        "https://static.tribe.pm/games/speedracer/index.html", true));
+        R.drawable.icon_game_speed_racer, "https://static.tribe.pm/games/speedracer/index.html",
+        true));
     gameManager.addGame(
         new GameDraw(this, Game.GAME_DRAW, getString(R.string.game_draw), R.drawable.icon_game_draw,
             true));

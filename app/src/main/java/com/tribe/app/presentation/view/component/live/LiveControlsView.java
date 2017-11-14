@@ -440,7 +440,7 @@ public class LiveControlsView extends FrameLayout {
     imgTriangleCloseFilters.setVisibility(View.GONE);
 
     for (View v : viewToHideBottomFilters) {
-      if (currentGameView != null && v != layoutGame) showView(v);
+      if (currentGameView == null || v != layoutGame) showView(v);
     }
 
     if (currentGameView == null) {

@@ -48,6 +48,7 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -97,7 +98,7 @@ public class LiveInviteView extends FrameLayout
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<List<Shortcut>> onShortcutUpdate = PublishSubject.create();
+  private BehaviorSubject<List<Shortcut>> onShortcutUpdate = BehaviorSubject.create();
   private PublishSubject<Integer> onInviteViewWidthChanged = PublishSubject.create();
   private PublishSubject<Void> onClickBottom = PublishSubject.create();
   private PublishSubject<Boolean> onDisplayDropZone = PublishSubject.create();
@@ -273,70 +274,65 @@ public class LiveInviteView extends FrameLayout
   public void setLive(Live live) {
     this.live = live;
 
-    subscriptions.add(Observable.combineLatest(live.onRoomUpdated().onBackpressureBuffer(),
-        onShortcutUpdate.onBackpressureBuffer(), (room, listShortcut) -> {
+    subscriptions.add(Observable.combineLatest(this.live.onRoomUpdated()
+        .startWith(new Room())
+        .defaultIfEmpty(new Room())
+        .onBackpressureBuffer(), onShortcutUpdate.onBackpressureBuffer(), (room, listShortcut) -> {
+      Set<String> alreadyPresent = new HashSet<>();
+      List<LiveInviteAdapterSectionInterface> temp = new ArrayList<>();
+      List<String> usersAtBeginningOfCall = null;
 
-          Timber.e("onRoomUpdated " +
-              room.getId() +
-              " " +
-              room.getShortcut() +
-              " " +
-              listShortcut.size());
-          Set<String> alreadyPresent = new HashSet<>();
-          List<LiveInviteAdapterSectionInterface> temp = new ArrayList<>();
-          List<String> usersAtBeginningOfCall = null;
+      if (live.fromRoom()) {
+        usersAtBeginningOfCall = new ArrayList<>();
+      } else {
+        usersAtBeginningOfCall = live.getUserIdsOfShortcut();
+      }
 
-          if (live.fromRoom()) {
-            usersAtBeginningOfCall = new ArrayList<>();
-          } else {
-            usersAtBeginningOfCall = live.getUserIdsOfShortcut();
+      if (room.getShortcut() != null && !room.getShortcut().isSingle()) {
+        temp.add(new Header(Header.HEADER_NAME,
+            live.getShortcut() != null ? live.getShortcut().getName() : "",
+            R.drawable.picto_live_invite_header_edit, Gravity.START | Gravity.CENTER_VERTICAL));
+      }
+
+      temp.add(new Header(Header.HEADER_CHAT_MEMBERS,
+          getResources().getString(R.string.live_invite_section_chat_members), 0,
+          Gravity.START | Gravity.CENTER_VERTICAL));
+
+      if (room.getLiveUsers() != null) {
+        for (User user : room.getLiveUsers()) {
+          if (!user.equals(currentUser)) {
+            user.setCurrentRoomId(room.getId());
+            computeUser(temp, user, alreadyPresent);
           }
+        }
+      }
 
-          if (room.getShortcut() != null && !room.getShortcut().isSingle()) {
-            temp.add(new Header(Header.HEADER_NAME,
-                live.getShortcut() != null ? live.getShortcut().getName() : "",
-                R.drawable.picto_live_invite_header_edit, Gravity.START | Gravity.CENTER_VERTICAL));
-          }
+      if (room.getInvitedUsers() != null) {
+        for (User user : room.getInvitedUsers()) {
+          user.setRinging(true);
+          computeUser(temp, user, alreadyPresent);
+        }
+      }
 
-          temp.add(new Header(Header.HEADER_CHAT_MEMBERS,
-              getResources().getString(R.string.live_invite_section_chat_members), 0,
-              Gravity.START | Gravity.CENTER_VERTICAL));
+      temp.add(room);
 
-          if (room.getLiveUsers() != null) {
-            for (User user : room.getLiveUsers()) {
-              if (!user.equals(currentUser)) {
-                user.setCurrentRoomId(room.getId());
-                computeUser(temp, user, alreadyPresent);
-              }
-            }
-          }
+      positionOfFirstShortcut = temp.size();
+      recyclerViewInvite.setPositionToBlock(positionOfFirstShortcut);
 
-          if (room.getInvitedUsers() != null) {
-            for (User user : room.getInvitedUsers()) {
-              user.setRinging(true);
-              computeUser(temp, user, alreadyPresent);
-            }
-          }
+      temp.add(new Header(Header.HEADER_DRAG_IN,
+          getResources().getString(R.string.live_members_invite_friends_section_title), 0,
+          Gravity.CENTER));
+      for (Shortcut shortcut : listShortcut) {
+        User user = shortcut.getSingleFriend();
+        user.setSelected(selected != null && selected.getId().equals(shortcut.getId()));
+        if (!alreadyPresent.contains(user.getId()) &&
+            !usersAtBeginningOfCall.contains(user.getId())) {
+          temp.add(shortcut);
+        }
+      }
 
-          temp.add(room);
-
-          positionOfFirstShortcut = temp.size();
-          recyclerViewInvite.setPositionToBlock(positionOfFirstShortcut);
-
-          temp.add(new Header(Header.HEADER_DRAG_IN,
-              getResources().getString(R.string.live_members_invite_friends_section_title), 0,
-              Gravity.CENTER));
-          for (Shortcut shortcut : listShortcut) {
-            User user = shortcut.getSingleFriend();
-            user.setSelected(selected != null && selected.getId().equals(shortcut.getId()));
-            if (!alreadyPresent.contains(user.getId()) &&
-                !usersAtBeginningOfCall.contains(user.getId())) {
-              temp.add(shortcut);
-            }
-          }
-
-          return temp;
-        }).subscribeOn(singleThreadExecutor).map(newListItems -> {
+      return temp;
+    }).subscribeOn(singleThreadExecutor).map(newListItems -> {
       DiffUtil.DiffResult diffResult = null;
       List<LiveInviteAdapterSectionInterface> temp = new ArrayList<>(newListItems);
 

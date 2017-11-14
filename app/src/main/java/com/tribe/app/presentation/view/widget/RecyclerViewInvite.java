@@ -59,7 +59,7 @@ public class RecyclerViewInvite extends RecyclerView {
 
     int action = e.getAction();
     float y = e.getY();
-    int topOfView = getChildAt(0).getTop();
+    int topOfView = getChildAt(0) != null ? getChildAt(0).getTop() : 0;
     boolean shouldCare = false;
 
     if (liveInviteLayoutManager == null) {
