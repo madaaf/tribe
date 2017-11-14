@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
@@ -27,7 +26,7 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
   // OBSERVABLES
   protected PublishSubject<View> onClickAdd = PublishSubject.create();
   protected PublishSubject<View> onUnblock = PublishSubject.create();
-  protected PublishSubject<View> clickMore = PublishSubject.create();
+  protected PublishSubject<BaseNotifViewHolder> clickMore = PublishSubject.create();
 
   public BaseNotifAdapterDelegate(Context context) {
     this.context = context;
@@ -49,9 +48,15 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
     vh.txtDescription.setText("@" + friend.getUsername());
     vh.viewAvatar.load("");
     vh.btnMore.setOnClickListener(v -> {
-      Toast.makeText(context, context.getString(R.string.action_user_reported), Toast.LENGTH_SHORT)
-          .show();
-      clickMore.onNext(vh.itemView);
+      clickMore.onNext(vh); // TODO MADA
+      vh.progressView.setScaleX(0);
+      vh.progressView.setScaleY(0);
+      vh.progressView.setVisibility(View.VISIBLE);
+      vh.btnMore.animate().scaleX(0).scaleY(0).setDuration(300).withEndAction(new Runnable() {
+        @Override public void run() {
+          vh.progressView.animate().scaleX(1).scaleY(1).setDuration(300).start();
+        }
+      }).start();
     });
 
     Shortcut s = ShortcutUtil.getShortcut(friend, user);

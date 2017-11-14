@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
@@ -25,6 +26,8 @@ public class BaseNotifViewHolder extends RecyclerView.ViewHolder {
   @Nullable @BindView(R.id.viewNewAvatar) public NewAvatarView viewAvatar;
 
   @Nullable @BindView(R.id.btnMore) public ImageView btnMore;
+
+  @Nullable @BindView(R.id.progressView) public CircularProgressView progressView;
 
   @Nullable @BindView(R.id.txtAction) public TextViewFont txtAction;
 

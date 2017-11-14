@@ -142,4 +142,6 @@ public interface UserDataStore {
   Observable<List<ShortcutRealm>> blockedShortcuts();
 
   List<Invite> invites();
+
+  Observable<String> getRandomBannedUntil();
 }

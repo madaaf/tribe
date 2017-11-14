@@ -189,6 +189,9 @@ public class HomePresenter implements Presenter {
 
     @Override public void onNext(User user) {
       if (!cloud) {
+        if (user.getRandom_banned_until() != null || user.isRandom_banned_permanently()) {
+          homeGridView.onBannedUser(user);
+        }
         try {
           List<Recipient> recipientList = user.getRecipientList();
           showRecipients(recipientList);

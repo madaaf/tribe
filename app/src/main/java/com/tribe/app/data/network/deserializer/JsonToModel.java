@@ -57,6 +57,7 @@ import timber.log.Timber;
   private PublishSubject<String> onTyping = PublishSubject.create();
   private PublishSubject<String> onTalking = PublishSubject.create();
   private PublishSubject<String> onReading = PublishSubject.create();
+  private PublishSubject<String> onRandomBannedUntil = PublishSubject.create();
 
   @Inject MessageRealmDataMapper messageRealmDataMapper;
 
@@ -93,6 +94,10 @@ import timber.log.Timber;
               UserRealm userRealm = gson.fromJson(entry.getValue().toString(), UserRealm.class);
               userRealm.setJsonPayloadUpdate(jo);
 
+              if(jo.has("random_banned_until")){
+                String date = jo.get("random_banned_until").getAsString();
+                onRandomBannedUntil.onNext(date);
+              }
               if (jo.has("is_online")) shouldUpdateOnlineStatus = true;
               if (jo.has("fbid")) {
                 String fbId = jo.get("fbid").getAsString();
@@ -288,6 +293,10 @@ import timber.log.Timber;
 
   public Observable<MessageRealm> onMessageCreated() {
     return onMessageCreated;
+  }
+
+  public Observable<String> onRandomBannedUntil() {
+    return onRandomBannedUntil;
   }
 
   public Observable<User> onFbIdUpdated() {

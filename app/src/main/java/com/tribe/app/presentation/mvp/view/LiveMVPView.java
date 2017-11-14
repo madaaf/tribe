@@ -37,4 +37,6 @@ public interface LiveMVPView extends MVPView {
   void onRoomUpdate(Room room);
 
   void onInvites(List<Invite> invites);
+
+  void onRandomBannedUntil(String date);
 }

@@ -54,6 +54,8 @@ public class User
   private boolean isTyping = false;
   private long time_in_call = 0;
   private Date last_seen_at;
+  private boolean random_banned_permanently;
+  private Date random_banned_until;
 
   private boolean isNewFriend = false;
   private boolean isFriend = false;
@@ -71,6 +73,22 @@ public class User
     this.id = id;
     this.inviteList = new ArrayList<>();
     this.shortcutList = new ArrayList<>();
+  }
+
+  public boolean isRandom_banned_permanently() {
+    return random_banned_permanently;
+  }
+
+  public void setRandom_banned_permanently(boolean random_banned_permanently) {
+    this.random_banned_permanently = random_banned_permanently;
+  }
+
+  public Date getRandom_banned_until() {
+    return random_banned_until;
+  }
+
+  public void setRandom_banned_until(Date random_banned_until) {
+    this.random_banned_until = random_banned_until;
   }
 
   public boolean isActive() {
@@ -370,6 +388,7 @@ public class User
       setPushNotif(user.isPushNotif());
       setTimeInCall(user.getTimeInCall());
       setLastSeenAt(user.getLastSeenAt());
+      setRandom_banned_until(user.getRandom_banned_until());
     }
   }
 
@@ -386,6 +405,7 @@ public class User
     setPushNotif(false);
     setTimeInCall(0);
     setLastSeenAt(null);
+    setRandom_banned_until(null);
   }
 
   public boolean isEmpty() {
@@ -411,17 +431,17 @@ public class User
   }
 
   @Override public String toString() {
-    return "User{" +
-        "id='" +
-        id +
-        '\'' +
-        ", display_name='" +
-        display_name +
-        '\'' +
-        ", is_online=" +
-        isOnline() +
-        ", isActive=" +
-        isActive() +
-        '}';
+    return "User{"
+        + "id='"
+        + id
+        + '\''
+        + ", display_name='"
+        + display_name
+        + '\''
+        + ", is_online="
+        + isOnline()
+        + ", isActive="
+        + isActive()
+        + '}';
   }
 }

@@ -137,6 +137,12 @@ import rx.Observable;
     return Observable.just(userDataStore.invites());
   }
 
+  @Override public Observable<String> getRandomBannedUntil() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.getRandomBannedUntil();
+  }
+
   @Override public Observable<List<User>> getUsersInfosList(List<String> usersIds) {
     return null;
   }

@@ -91,6 +91,12 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
     try {
       if (result.get("last_seen_at") != null) {
         userRealm.setLastSeenAt(simpleDateFormat.parse(result.get("last_seen_at").getAsString()));
+        if (!result.get("random_banned_until").isJsonNull()) {
+          userRealm.setRandom_banned_until(
+              simpleDateFormat.parse(result.get("random_banned_until").getAsString()));
+        }
+        userRealm.setRandom_banned_permanently(
+            result.get("random_banned_permanently").getAsBoolean());
       }
     } catch (ParseException e) {
       e.printStackTrace();

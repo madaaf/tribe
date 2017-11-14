@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseNotifAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
 import java.util.List;
 import rx.Observable;
 
@@ -50,7 +51,7 @@ public class UserNotifAdapterDelegate extends BaseNotifAdapterDelegate {
     return onClickAdd;
   }
 
-  public Observable<View> clickMore() {
+  public Observable<BaseNotifViewHolder> clickMore() {
     return clickMore;
   }
 }

@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.view;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.User;
 import java.util.List;
 
 public interface HomeGridMVPView extends LoadDataMVPView {
@@ -30,4 +31,6 @@ public interface HomeGridMVPView extends LoadDataMVPView {
   void onCreateRoom(Room room, String feature, String phone, boolean shouldOpenSMS);
 
   void onSyncError();
+
+  void onBannedUser(User user);
 }

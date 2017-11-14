@@ -68,4 +68,8 @@ import rx.Observable;
   void incrementBadge();
 
   void decrementBadge();
+
+  Observable<String> getRandomBannedUntil();
+
+  void putRandomBannedUntil(String date);
 }

@@ -54,6 +54,8 @@ import javax.inject.Singleton;
       user.setIsOnline(userRealm.isOnline());
       user.setIsLive(userRealm.isLive());
       user.setLastSeenAt(userRealm.getLastSeenAt());
+      user.setRandom_banned_until(userRealm.getRandom_banned_until());
+      user.setRandom_banned_permanently(userRealm.getRandom_banned_permanently());
       if (userRealm.getShortcuts() != null) {
         user.setShortcutList(shortcutRealmDataMapper.transform(userRealm.getShortcuts()));
       }
@@ -171,6 +173,8 @@ import javax.inject.Singleton;
       userRealm.setIsLive(user.isLive());
       userRealm.setTimeInCall(user.getTimeInCall());
       userRealm.setLastSeenAt(user.getLastSeenAt());
+      userRealm.setRandom_banned_until(user.getRandom_banned_until());
+      userRealm.setRandom_banned_permanently(user.isRandom_banned_permanently());
       userRealm.setShortcuts(shortcutRealmDataMapper.transformList(user.getShortcutList()));
 
       if (user.getMessages() != null) {

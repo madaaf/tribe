@@ -17,6 +17,7 @@ import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -27,6 +28,8 @@ public class UserCacheImpl implements UserCache {
   private Realm realm;
   private UserRealm results;
   private AccessToken accessToken;
+
+  private PublishSubject<String> onRandomBannedUntil = PublishSubject.create();
 
   @Inject public UserCacheImpl(Context context, Realm realm, AccessToken accessToken) {
     this.context = context;
@@ -160,6 +163,14 @@ public class UserCacheImpl implements UserCache {
       to.setPushNotif(from.isPushNotif());
     }
     if (from.getLastSeenAt() != null) to.setLastSeenAt(from.getLastSeenAt());
+
+    if (from.getRandom_banned_until() != null) {
+      to.setRandom_banned_until(from.getRandom_banned_until());
+    }
+
+    if (from.getRandom_banned_permanently() != null) {
+      to.setRandom_banned_permanently(from.getRandom_banned_permanently());
+    }
   }
 
   public void put(AccessToken accessToken) {
@@ -452,5 +463,13 @@ public class UserCacheImpl implements UserCache {
     } finally {
       realm.close();
     }
+  }
+
+  @Override public Observable<String> getRandomBannedUntil() {
+    return onRandomBannedUntil;
+  }
+
+  @Override public void putRandomBannedUntil(String date) {
+    onRandomBannedUntil.onNext(date);
   }
 }

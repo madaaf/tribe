@@ -33,6 +33,7 @@ import com.google.firebase.storage.UploadTask;
 import com.jenzz.appstate.AppStateListener;
 import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
+import com.tarek360.instacapture.InstaCapture;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
@@ -65,6 +66,7 @@ import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.ShortcutUtil;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
@@ -107,6 +109,7 @@ import java.util.Random;
 import java.util.Set;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -610,7 +613,6 @@ public class LiveActivity extends BaseActivity
 
   private void initSubscriptions() {
     initChatView(getShortcut());
-
     if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       subscriptions.add(live.onRoomUpdated().subscribe(room -> {
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
@@ -912,17 +914,12 @@ public class LiveActivity extends BaseActivity
               live.getLinkId(), room.getId(), false);
         }));
 
-    subscriptions.add(userInfosNotificationView.onClickMore().
-        subscribe(
-            tribeGuest -> DialogFactory.showBottomSheetForMoreBtn(this, tribeGuest.getDisplayName())
-                .subscribe(labelType -> {
-                  if (labelType.getTypeDef().equals(LabelType.REPORT)) {
-                    Timber.e("report user " + tribeGuest.getId());
-                    setImageFirebase(tribeGuest.getId());
-                  } else {
-                    Timber.d("cancel report user");
-                  }
-                })));
+    subscriptions.add(userInfosNotificationView.onClickMore().subscribe(list -> {
+      TribeGuest tribeGuest = (TribeGuest) list.get(0);
+      BaseNotifViewHolder holder = (BaseNotifViewHolder) list.get(1);
+      userInfosNotificationView.setVisibility(View.GONE);
+      setImageFirebase(tribeGuest.getId(), holder);
+    }));
 
     subscriptions.add(userInfosNotificationView.onAdd().
         subscribe(user -> {
@@ -1099,20 +1096,10 @@ public class LiveActivity extends BaseActivity
     return guestList;
   }
 
-  private void setImageFirebase(String tribeGuestId) {
-    View view = viewLive.getLayoutStream();
-
-    final boolean cachePreviousState = view.isDrawingCacheEnabled();
-    final int backgroundPreviousColor = view.getDrawingCacheBackgroundColor();
-    view.setDrawingCacheEnabled(true);
-    view.setDrawingCacheBackgroundColor(0xfffafafa);
-    final Bitmap bitmap = view.getDrawingCache();
-    view.setDrawingCacheBackgroundColor(backgroundPreviousColor);
-    //view.setDrawingCacheEnabled(cachePreviousState);
-
-    ok(bitmap, tribeGuestId);
-/*    subscriptions.add(InstaCapture.getInstance((Activity) context())
-        .captureRx(viewLive.getLiveView())
+  // TODO MADA
+  private void setImageFirebase(String tribeGuestId, BaseNotifViewHolder holder) {
+    subscriptions.add(InstaCapture.getInstance((Activity) context())
+        .captureRx(userInfosNotificationView, notificationContainerView, screenshotView)
         .subscribe(new Subscriber<Bitmap>() {
           @Override public void onCompleted() {
           }
@@ -1120,19 +1107,11 @@ public class LiveActivity extends BaseActivity
           @Override public void onError(Throwable e) {
           }
 
-          @Override publi
-          c void onNext(Bitmap bitmap) {
-            *//*View v = viewLive.getLayoutStream();
-
-            v.setDrawingCacheEnabled(true);
-            v.buildDrawingCache();
-            Bitmap bitmap = v.getDrawingCache();*//*
-
+          @Override public void onNext(Bitmap bitmap) {
             String suffix = ".jpg";
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            // ThumbnailUtils.createVideoThumbnail(String, int)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] data = baos.toByteArray();
             StorageReference riversRef = storageRef.child("app/uploads/reported-users/"
@@ -1143,37 +1122,25 @@ public class LiveActivity extends BaseActivity
             UploadTask uploadTask = riversRef.putBytes(data);
             uploadTask.addOnFailureListener(exception -> {
               Timber.e("error fetching image on firebase ");
-            }).
-
-                addOnSuccessListener(taskSnapshot -> {
-                  Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                  // TODO SEND MESSAGE TO NETWORK
-                  livePresenter.reportUser(tribeGuestId, downloadUrl.toString());
-                });
+            }).addOnSuccessListener(taskSnapshot -> {
+              Uri downloadUrl = taskSnapshot.getDownloadUrl();
+              livePresenter.reportUser(tribeGuestId, downloadUrl.toString());
+              holder.btnMore.setImageResource(R.drawable.picto_ban_active);
+              holder.btnMore.setClickable(false);
+              holder.progressView.animate()
+                  .scaleX(0)
+                  .scaleY(0)
+                  .setDuration(300)
+                  .withEndAction(() -> {
+                    holder.progressView.setVisibility(View.GONE);
+                    holder.btnMore.animate().scaleX(1).scaleY(1).setDuration(300).start();
+                  })
+                  .start();
+              Toast.makeText((Activity) context(), getString(R.string.action_user_reported),
+                  Toast.LENGTH_SHORT).show();
+            });
           }
-        }));*/
-  }
-
-  private void ok(Bitmap bitmap, String tribeGuestId) {
-    String suffix = ".jpg";
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    StorageReference storageRef = storage.getReference();
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    // ThumbnailUtils.createVideoThumbnail(String, int)
-    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
-    byte[] data = baos.toByteArray();
-    StorageReference riversRef = storageRef.child("app/uploads/reported-users/"
-        + user.getId()
-        + "/"
-        + dateUtils.getUTCDateAsString()
-        + suffix);
-    UploadTask uploadTask = riversRef.putBytes(data);
-    uploadTask.addOnFailureListener(exception -> {
-      Timber.e("error fetching image on firebase ");
-    }).addOnSuccessListener(taskSnapshot -> {
-      Uri downloadUrl = taskSnapshot.getDownloadUrl();
-      livePresenter.reportUser(tribeGuestId, downloadUrl.toString());
-    });
+        }));
   }
 
   @Override public void onDataChallengesGame(List<String> nameList) {
@@ -1222,6 +1189,15 @@ public class LiveActivity extends BaseActivity
     } else {
       createRoom();
     }
+  }
+
+  @Override public void onRandomBannedUntil(String date) {
+    Timber.e("onRandomBannedUntil " + date);
+    DialogFactory.dialog(this, getString(R.string.error_just_banned_kicked_title),
+        getString(R.string.error_just_banned_kicked_message),
+        getString(R.string.walkthrough_action_step2), null)
+        .filter(aBoolean -> aBoolean)
+        .subscribe();
   }
 
   private void displayNotification(String txt) {

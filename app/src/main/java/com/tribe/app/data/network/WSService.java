@@ -445,6 +445,9 @@ import timber.log.Timber;
       liveCache.putRandomRoomAssigned(assignedRoomId);
     }));
 
+    persistentSubscriptions.add(jsonToModel.onRandomBannedUntil().subscribe(date -> {
+      userCache.putRandomBannedUntil(date);
+    }));
     persistentSubscriptions.add(jsonToModel.onMessageCreated().subscribe(messagRealm -> {
       RealmList<MessageRealm> messages = new RealmList<>();
       messages.add(messagRealm);

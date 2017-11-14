@@ -139,6 +139,8 @@
             is_online
             last_seen_at
             time_in_call
+            random_banned_permanently
+  	        random_banned_until
         }
     </string>
 

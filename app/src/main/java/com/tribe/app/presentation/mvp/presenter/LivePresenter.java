@@ -13,6 +13,7 @@ import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
 import com.tribe.app.domain.interactor.user.FbIdUpdated;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetInvites;
+import com.tribe.app.domain.interactor.user.GetRandomBannedUntil;
 import com.tribe.app.domain.interactor.user.GetRecipientInfos;
 import com.tribe.app.domain.interactor.user.IncrUserTimeInCall;
 import com.tribe.app.domain.interactor.user.ReportUser;
@@ -43,6 +44,7 @@ public class LivePresenter implements Presenter {
   private ReportUser reportUser;
   private IncrUserTimeInCall incrUserTimeInCall;
   private GetInvites getInvites;
+  private GetRandomBannedUntil getRandomBannedUntil;
 
   // SUBSCRIBERS
   private GetUserInfoListSubscriber getUserInfoListSubscriber;
@@ -53,7 +55,7 @@ public class LivePresenter implements Presenter {
       GetCloudUserInfosList cloudUserInfosList, GetNamesPostItGame getNamesPostItGame,
       ReportUser reportUser, FbIdUpdated fbIdUpdated, GetDataChallengesGame getDataChallengesGame,
       IncrUserTimeInCall incrUserTimeInCall, GetNamesDrawGame getNamesDrawGame,
-      GetInvites getInvites) {
+      GetInvites getInvites, GetRandomBannedUntil getRandomBannedUntil) {
     this.jobManager = jobManager;
     this.shortcutPresenter = shortcutPresenter;
     this.roomPresenter = roomPresenter;
@@ -66,6 +68,7 @@ public class LivePresenter implements Presenter {
     this.getDataChallengesGame = getDataChallengesGame;
     this.getNamesDrawGame = getNamesDrawGame;
     this.getInvites = getInvites;
+    this.getRandomBannedUntil = getRandomBannedUntil;
   }
 
   @Override public void onViewDetached() {
@@ -80,6 +83,7 @@ public class LivePresenter implements Presenter {
     getDataChallengesGame.unsubscribe();
     getNamesDrawGame.unsubscribe();
     getInvites.unsubscribe();
+    getRandomBannedUntil.unsubscribe();
     liveMVPView = null;
   }
 
@@ -132,6 +136,24 @@ public class LivePresenter implements Presenter {
   public void getDataChallengesGame(String lang) {
     getDataChallengesGame.setup(lang);
     getDataChallengesGame.execute(new GetDataChallengesGameSubscriber());
+  }
+
+  public void getRandomBannedUntil() {
+    getRandomBannedUntil.execute(new GetDataChallengesGameSubscriber());
+  }
+
+  private final class GetRandomBannedUntilSubscriber extends DefaultSubscriber<String> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+    }
+
+    @Override public void onNext(String date) {
+      liveMVPView.onRandomBannedUntil(date);
+    }
   }
 
   private final class GetNamesPostItGameSubscriber extends DefaultSubscriber<List<String>> {

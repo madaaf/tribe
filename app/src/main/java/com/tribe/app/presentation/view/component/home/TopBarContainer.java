@@ -169,6 +169,10 @@ public class TopBarContainer extends FrameLayout {
 
   }
 
+  public View getDiceViewBtn(){
+    return topBarView.getDiceViewBtn();
+  }
+
   private void initSubscriptions() {
     topBarView.initNewContactsObs(onNewContactsInfos);
   }

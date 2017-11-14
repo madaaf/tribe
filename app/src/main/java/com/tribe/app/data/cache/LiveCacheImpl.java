@@ -147,4 +147,6 @@ public class LiveCacheImpl implements LiveCache {
   @Override public Observable<Room> getRoomUpdated() {
     return onRoomUpdated;
   }
+
+
 }

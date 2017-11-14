@@ -224,7 +224,7 @@ import rx.Observable;
   @Override public Observable<Boolean> reportUser(String userId, String imageUrl) {
     final CloudUserDataStore cloudDataStore =
         (CloudUserDataStore) this.userDataStoreFactory.createCloudDataStore();
-    return cloudDataStore.reportUser(userId,imageUrl);
+    return cloudDataStore.reportUser(userId, imageUrl);
   }
 
   @Override public Observable<Shortcut> createShortcut(String... userIds) {
@@ -251,6 +251,10 @@ import rx.Observable;
   }
 
   @Override public Observable<List<Invite>> invites() {
+    return null;
+  }
+
+  @Override public Observable<String> getRandomBannedUntil() {
     return null;
   }
 }

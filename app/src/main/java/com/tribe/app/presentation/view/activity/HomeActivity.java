@@ -636,7 +636,12 @@ public class HomeActivity extends BaseActivity
                 diffResult =
                     DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
                 homeGridAdapter.setItems(temp);
-                runOnUiThread(() -> layoutManager.scrollToPositionWithOffset(0, 0));
+                runOnUiThread(new Runnable() {
+                  @Override public void run() {
+
+                    layoutManager.scrollToPositionWithOffset(0, 0);
+                  }
+                });
               }
 
               latestRecipientList.clear();
@@ -894,6 +899,31 @@ public class HomeActivity extends BaseActivity
   @Override public void onSyncError() {
     displaySyncBanner(getString(R.string.grid_sync_failed_contacts_banner));
     topBarContainer.onSyncError();
+  }
+
+  boolean isBannedUser = false;
+
+  @Override public void onBannedUser(User user) {
+    if (isBannedUser) {
+      return;
+    }
+    if (user.isRandom_banned_permanently()) {
+      subscriptions.add(
+          DialogFactory.dialog(this, getString(R.string.error_just_banned_permanently_title),
+              getString(R.string.error_just_banned_permanently_message),
+              getString(R.string.walkthrough_action_step2), null)
+              .filter(aBoolean -> aBoolean)
+              .subscribe());
+    } else if (user.getRandom_banned_until() != null) {
+      subscriptions.add(
+          DialogFactory.dialog(this, getString(R.string.error_just_banned_temporary_title),
+              getString(R.string.error_just_banned_temporary_message),
+              getString(R.string.walkthrough_action_step2), null)
+              .filter(aBoolean -> aBoolean)
+              .subscribe());
+    }
+    isBannedUser = true;
+    topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
   }
 
   @Override public void renderContactsOnApp(List<Contact> contactList) {

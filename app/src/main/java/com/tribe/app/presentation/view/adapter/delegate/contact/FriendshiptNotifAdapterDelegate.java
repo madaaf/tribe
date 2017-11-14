@@ -44,7 +44,7 @@ public class FriendshiptNotifAdapterDelegate extends BaseNotifAdapterDelegate {
   }
 
   public Observable<View> clickMore() {
-    return clickMore;
+    return null;
   }
 
   public Observable<View> onUnblock() {

@@ -219,6 +219,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return new ArrayList<>(liveCache.getInviteMap().values());
   }
 
+  @Override public Observable<String> getRandomBannedUntil() {
+    return userCache.getRandomBannedUntil();
+  }
+
   @Override public Observable<Map<String, Invite>> inviteMap() {
     return liveCache.inviteMap();
   }
@@ -245,8 +249,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     Map<String, Boolean> onlineMap = liveCache.getOnlineMap();
     if (shortcutRealm != null) {
       shortcutRealm.computeMembersOnline(onlineMap);
-      shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId()) ||
-          shortcutRealm.isUniqueMemberOnline());
+      shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId())
+          || shortcutRealm.isUniqueMemberOnline());
     }
   }
 

@@ -44,6 +44,8 @@ public class UserRealm extends RealmObject {
   private boolean push_notif = true;
   private Date last_seen_at;
   private long time_in_call = 0;
+  private Boolean random_banned_permanently;
+  private Date random_banned_until;
 
   @Ignore private List<Invite> invites;
 
@@ -56,6 +58,22 @@ public class UserRealm extends RealmObject {
 
   public UserRealm() {
 
+  }
+
+  public Boolean getRandom_banned_permanently() {
+    return random_banned_permanently;
+  }
+
+  public void setRandom_banned_permanently(Boolean random_banned_permanently) {
+    this.random_banned_permanently = random_banned_permanently;
+  }
+
+  public Date getLastSeenAt() {
+    return last_seen_at;
+  }
+
+  public Date getRandom_banned_until() {
+    return random_banned_until;
   }
 
   public String getId() {
@@ -194,12 +212,12 @@ public class UserRealm extends RealmObject {
     this.is_live = isLive;
   }
 
-  public Date getLastSeenAt() {
-    return last_seen_at;
-  }
-
   public void setLastSeenAt(Date lastSeenAt) {
     this.last_seen_at = lastSeenAt;
+  }
+
+  public void setRandom_banned_until(Date random_banned_until) {
+    this.random_banned_until = random_banned_until;
   }
 
   public long getTimeInCall() {

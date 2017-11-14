@@ -260,6 +260,10 @@ public class TopBarView extends FrameLayout {
     clickCallRoulette.onNext(null);
   }
 
+  public View getDiceViewBtn(){
+    return diceView;
+  }
+
   @OnClick(R.id.btnSyncContacts) void btnSyncContactsClick() {
     onSyncContacts.onNext(null);
   }

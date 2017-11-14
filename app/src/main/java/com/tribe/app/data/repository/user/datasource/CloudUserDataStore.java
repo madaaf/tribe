@@ -881,4 +881,8 @@ public class CloudUserDataStore implements UserDataStore {
   @Override public List<Invite> invites() {
     return null;
   }
+
+  @Override public Observable<String> getRandomBannedUntil() {
+    return null;
+  }
 }
