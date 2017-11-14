@@ -253,6 +253,7 @@ public class LivePeerOverlayView extends FrameLayout {
     if (!isViewVisible) {
       int timer = wasLowConnection ? viewLowConnection.getTimeToHide() : DURATION;
       subscriptions.add(Observable.timer(timer, TimeUnit.MILLISECONDS)
+          .onBackpressureDrop()
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> setVisibility(View.GONE)));
     } else {

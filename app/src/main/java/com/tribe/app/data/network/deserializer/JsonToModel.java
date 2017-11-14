@@ -3,6 +3,7 @@ package com.tribe.app.data.network.deserializer;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
@@ -161,6 +162,7 @@ import timber.log.Timber;
               Timber.d("onRoomUpdate : " + entry.getValue().toString());
               JsonObject roomJson = entry.getValue().getAsJsonObject();
               Room room = new Room(roomJson.get("id").getAsString());
+
               String roomName =
                   (!roomJson.get("name").isJsonNull()) ? roomJson.get("name").getAsString() : null;
               room.setName(roomName);

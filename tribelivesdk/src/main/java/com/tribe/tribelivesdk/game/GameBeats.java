@@ -11,7 +11,7 @@ public class GameBeats extends Game {
 
   public GameBeats(Context context, @GameType String id, String name, int drawableRes,
       boolean available) {
-    super(context, id, name, drawableRes, available);
+    super(context, id, name, drawableRes, null, available);
   }
 
   @Override public void apply(Frame frame) {
@@ -19,6 +19,10 @@ public class GameBeats extends Game {
   }
 
   @Override public void onFrameSizeChange(Frame frame) {
+
+  }
+
+  @Override public void generateNewDatas() {
 
   }
 }

@@ -48,7 +48,7 @@ public class GamePostIt extends Game {
 
   public GamePostIt(Context context, @GameType String id, String name, int drawableRes,
       boolean isAvailable) {
-    super(context, id, name, drawableRes, isAvailable);
+    super(context, id, name, drawableRes, null, isAvailable);
     openCVWrapper = new OpenCVWrapper();
     libYuvConverter = new LibYuvConverter();
     visionAPIManager = VisionAPIManager.getInstance(context);
@@ -173,6 +173,10 @@ public class GamePostIt extends Game {
     remotePostIt = new int[bitmapRemotePostIt.getWidth() * bitmapRemotePostIt.getHeight()];
     bitmapRemotePostIt.getPixels(remotePostIt, 0, bitmapRemotePostIt.getWidth(), 0, 0,
         bitmapRemotePostIt.getWidth(), bitmapRemotePostIt.getHeight());
+  }
+
+  @Override public void generateNewDatas() {
+
   }
 
   public PointF findXYForPostIt(Face face) {

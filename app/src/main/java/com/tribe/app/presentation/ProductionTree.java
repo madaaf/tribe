@@ -30,7 +30,11 @@ public class ProductionTree extends Timber.Tree {
     }
 
     if (priority == Log.INFO) {
-      Answers.getInstance().logCustom(new CustomEvent(message));
+      try {
+        Answers.getInstance().logCustom(new CustomEvent(message));
+      } catch (Exception ex) {
+
+      }
     }
   }
 }

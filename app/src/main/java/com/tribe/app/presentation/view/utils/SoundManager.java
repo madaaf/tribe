@@ -28,6 +28,8 @@ import rx.android.schedulers.AndroidSchedulers;
   public static final int JOIN_CALL = 3;
   public static final int QUIT_CALL = 4;
   public static final int WIZZ = 5;
+  public static final int ALIENS_ATTACK_KILLED = 6;
+  public static final int ALIENS_ATTACK_SOUNDTRACK = 7;
 
   // VARIABLES
   private Context context;
@@ -67,6 +69,8 @@ import rx.android.schedulers.AndroidSchedulers;
     addSound(JOIN_CALL, R.raw.join_call);
     addSound(QUIT_CALL, R.raw.quit_call);
     addSound(WIZZ, R.raw.wizz);
+    addSound(ALIENS_ATTACK_KILLED, R.raw.aliens_attack_alien_killed);
+    addSound(ALIENS_ATTACK_SOUNDTRACK, R.raw.aliens_attack_soundtrack);
   }
 
   public void addSound(int index, int soundID) {
@@ -80,7 +84,7 @@ import rx.android.schedulers.AndroidSchedulers;
   public void playSound(int index, float volumeRate) {
     if (index == NO_SOUND) {
       cancelMediaPlayer();
-    } else if (index == WAITING_FRIEND || index == CALL_RING) {
+    } else if (index == WAITING_FRIEND || index == CALL_RING || index == ALIENS_ATTACK_SOUNDTRACK) {
       if (mediaPlayer != null) cancelMediaPlayer();
 
       mediaPlayer = MediaPlayer.create(context, soundsRawIds.get(index));

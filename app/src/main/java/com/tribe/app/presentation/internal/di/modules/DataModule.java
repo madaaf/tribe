@@ -8,15 +8,16 @@ import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
-import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
+import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
 import com.tribe.app.presentation.utils.preferences.LastImOnline;
 import com.tribe.app.presentation.utils.preferences.LastSync;
+import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
@@ -70,6 +71,11 @@ import static android.content.Context.MODE_PRIVATE;
 
   @Provides @Singleton @LastSync Preference<Long> provideLastSync(RxSharedPreferences prefs) {
     return prefs.getLong(PreferencesUtils.LAST_SYNC, 0L);
+  }
+
+  @Provides @Singleton @LastSyncGameData Preference<Long> provideLastSyncGameData(
+      RxSharedPreferences prefs) {
+    return prefs.getLong(PreferencesUtils.LAST_SYNC_GAME_DATA, 0L);
   }
 
   @Provides @Singleton @LastImOnline Preference<Long> provideLastImOnline(
@@ -151,17 +157,10 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getStringSet(PreferencesUtils.FULLSCREEN_NOTIFICATION_STATE, new HashSet<>());
   }
 
-  @Provides @Singleton @DataChallengesGame Preference<Set<String>> provideDataChallengesGame(
-      RxSharedPreferences prefs) {
-    return prefs.getStringSet(PreferencesUtils.DATA_CHALLANGES_GAME, new HashSet<>());
-  }
-
-
   @Provides @Singleton @ChatShortcutData Preference<String> provideChatShortcutData(
       RxSharedPreferences prefs) {
     return prefs.getString(PreferencesUtils.CHAT_SHORTCUT_DATA, "");
   }
-
 
   @Provides @Singleton @MissedPlayloadNotification
   Preference<String> providedMissedPlayloadNotification(Context context,
@@ -182,5 +181,9 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @UserPhoneNumber Preference<String> provideUserPhoneNumber(
       RxSharedPreferences prefs) {
     return prefs.getString(PreferencesUtils.USER_PHONE_NUMBER, null);
+  }
+
+  @Provides @Singleton @GameData Preference<String> provideGameData(RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.GAME_DATA, "");
   }
 }

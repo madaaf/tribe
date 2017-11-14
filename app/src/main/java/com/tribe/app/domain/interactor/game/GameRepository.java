@@ -14,4 +14,6 @@ public interface GameRepository {
   Observable<List<String>> getDataForChallengeGame(String lang);
 
   Observable<List<String>> getNamesForDrawGame(String lang);
+
+  Observable<Void> synchronizeGamesData(String lang);
 }

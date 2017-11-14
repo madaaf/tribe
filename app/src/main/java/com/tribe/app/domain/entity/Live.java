@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -44,7 +45,7 @@ public class Live implements Serializable {
   private String gesture;
 
   private transient CompositeSubscription subscriptions;
-  private transient PublishSubject<Room> onRoomUpdated;
+  private transient BehaviorSubject<Room> onRoomUpdated;
   private transient PublishSubject<Shortcut> onShortcutUpdated;
 
   private Live(Builder builder) {
@@ -65,7 +66,7 @@ public class Live implements Serializable {
 
   public void init() {
     subscriptions = new CompositeSubscription();
-    onRoomUpdated = PublishSubject.create();
+    onRoomUpdated = BehaviorSubject.create();
     onShortcutUpdated = PublishSubject.create();
   }
 

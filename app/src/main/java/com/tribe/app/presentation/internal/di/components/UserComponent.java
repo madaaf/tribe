@@ -36,6 +36,9 @@ import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.component.live.TileInviteView;
+import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackAlienView;
+import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackBackground;
+import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -54,8 +57,10 @@ import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.PictureActivity;
 import com.tribe.app.presentation.view.widget.chat.RecyclerMessageView;
-import com.tribe.app.presentation.view.widget.game.GameChallengesView;
-import com.tribe.app.presentation.view.widget.game.GameDrawView;
+import com.tribe.app.presentation.view.component.live.game.GameChallengesView;
+import com.tribe.app.presentation.view.component.live.game.GameDrawView;
+import com.tribe.app.presentation.view.component.live.game.GameManagerView;
+import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
@@ -97,8 +102,6 @@ import dagger.Component;
 
   void inject(ScreenshotView screenshotView);
 
-  void inject(GameDrawView gameDrawView);
-
   void inject(FacebookHiddenActivity facebookHiddenActivity);
 
   void inject(CountryActivity countryActivity);
@@ -108,8 +111,6 @@ import dagger.Component;
   void inject(VideoActivity videoActivity);
 
   void inject(ProfileInfoView profileInfoView);
-
-  void inject(GameChallengesView gameChallengesView);
 
   void inject(MediaHiddenActivity mediaHiddenActivity);
 
@@ -192,4 +193,22 @@ import dagger.Component;
   void inject(ShortcutCompletionTokenView shortcutCompletionTokenView);
 
   void inject(TileInviteView tileInviteView);
+
+  /**
+   * GAMES
+   */
+
+  void inject(GameManagerView gameManagerView);
+
+  void inject(GameView gameView);
+
+  void inject(GameChallengesView gameChallengesView);
+
+  void inject(GameDrawView gameDrawView);
+
+  void inject(GameAliensAttackBackground gameAliensAttackBackground);
+
+  void inject(GameAliensAttackAlienView gameAliensAttackAlienView);
+
+  void inject(GameEngine gameEngine);
 }

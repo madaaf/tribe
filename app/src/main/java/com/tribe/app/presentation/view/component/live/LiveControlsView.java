@@ -23,7 +23,9 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -33,6 +35,7 @@ import com.tribe.app.presentation.view.adapter.GamesFiltersAdapter;
 import com.tribe.app.presentation.view.adapter.manager.GamesFiltersLayoutManager;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.BitmapUtils;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.tribelivesdk.entity.GameFilter;
@@ -162,8 +165,9 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
-  private PublishSubject<Game> onGameOptions = PublishSubject.create();
+  private PublishSubject<Game> onStopGame = PublishSubject.create();
   private PublishSubject<View> onGameUIActive = PublishSubject.create();
+  private PublishSubject<Boolean> onGameMenuOpened = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -387,8 +391,8 @@ public class LiveControlsView extends FrameLayout {
     filtersMenuOn = true;
 
     int toX =
-        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1)
-            + screenUtils.dpToPx(2.5f);
+        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1) +
+            screenUtils.dpToPx(2.5f);
     int toY = -screenUtils.dpToPx(65);
 
     layoutFilter.animate()
@@ -436,11 +440,13 @@ public class LiveControlsView extends FrameLayout {
     imgTriangleCloseFilters.setVisibility(View.GONE);
 
     for (View v : viewToHideBottomFilters) {
-      showView(v);
+      if (currentGameView == null || v != layoutGame) showView(v);
     }
 
-    for (View v : viewToHideTopFilters) {
-      showView(v);
+    if (currentGameView == null) {
+      for (View v : viewToHideTopFilters) {
+        showView(v);
+      }
     }
 
     if (currentGameView != null) showView(currentGameView);
@@ -450,6 +456,7 @@ public class LiveControlsView extends FrameLayout {
 
   private void showGames() {
     gamesMenuOn = true;
+    onGameMenuOpened.onNext(gamesMenuOn);
 
     recyclerViewGames.getRecycledViewPool().clear();
     gamesAdapter.notifyDataSetChanged();
@@ -486,6 +493,8 @@ public class LiveControlsView extends FrameLayout {
   private void showActiveGame(boolean shouldDisplayGameTutorialPopup) {
     gamesMenuOn = false;
 
+    onGameMenuOpened.onNext(false);
+
     if (shouldDisplayGameTutorialPopup) onGameUIActive.onNext(currentGameView);
 
     hideRecyclerView(recyclerViewGames);
@@ -494,15 +503,13 @@ public class LiveControlsView extends FrameLayout {
       if (v != btnExpand || !filtersMenuOn) showView(v);
     }
 
-    for (View v : viewToHideTopGames) {
-      if (v != btnExpand || !filtersMenuOn) showView(v);
-    }
-
     hideGameControls();
   }
 
   private void hideGames() {
     gamesMenuOn = false;
+
+    onGameMenuOpened.onNext(gamesMenuOn);
 
     layoutGame.animate()
         .translationX(0)
@@ -544,6 +551,8 @@ public class LiveControlsView extends FrameLayout {
 
   private void hideGameControls() {
     hideView(layoutGame, false);
+    hideView(btnChat, true);
+    hideView(viewStatusName, true);
   }
 
   private void showGameControls() {
@@ -551,6 +560,8 @@ public class LiveControlsView extends FrameLayout {
     showBtnGameOff(false);
     imgTriangleCloseGames.setVisibility(View.GONE);
     showView(layoutGame);
+    showView(viewStatusName);
+    showView(btnChat);
   }
 
   private void hideView(View view, boolean top) {
@@ -612,10 +623,20 @@ public class LiveControlsView extends FrameLayout {
           }
         });
     currentGameView.setClickable(true);
-    currentGameView.setOnLongClickListener(v -> {
-      onGameOptions.onNext(gameManager.getCurrentGame());
-      return false;
-    });
+
+    subscriptions.add(RxView.longClicks(currentGameView)
+        .map(aVoid -> gameManager.getCurrentGame())
+        .flatMap(game -> DialogFactory.showBottomSheetForGame(getContext(), game),
+            ((game, labelType) -> {
+              if (labelType.getTypeDef().equals(LabelType.GAME_RE_ROLL)) {
+                onRestartGame.onNext(game);
+              } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
+                onStopGame.onNext(game);
+              }
+
+              return game;
+            }))
+        .subscribe());
 
     currentGameView.setOnClickListener(v -> {
       AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
@@ -850,24 +871,8 @@ public class LiveControlsView extends FrameLayout {
     return onClickFilter;
   }
 
-  public Observable<Game> onStartGame() {
-    return onStartGame;
-  }
-
   public Observable<Void> onLeave() {
     return onLeave;
-  }
-
-  public Observable<Game> onGameOptions() {
-    return onGameOptions;
-  }
-
-  public Observable<Game> onRestartGame() {
-    return onRestartGame;
-  }
-
-  public Observable<View> onGameUIActive() {
-    return onGameUIActive;
   }
 
   public Observable<Boolean> onOpenInvite() {
@@ -910,5 +915,21 @@ public class LiveControlsView extends FrameLayout {
       chatMenuOn = false;
       closeMenuTop(viewToHideTopChat);
     });
+  }
+
+  public Observable<Boolean> onGameMenuOpen() {
+    return onGameMenuOpened;
+  }
+
+  public Observable<Game> onStartGame() {
+    return onStartGame;
+  }
+
+  public Observable<Game> onRestartGame() {
+    return onRestartGame;
+  }
+
+  public Observable<Game> onStopGame() {
+    return onStopGame;
   }
 }

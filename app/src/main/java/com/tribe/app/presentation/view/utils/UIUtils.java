@@ -127,6 +127,12 @@ public class UIUtils {
     v.setLayoutParams(params);
   }
 
+  public static void changeLeftMarginOfView(View v, int margin) {
+    FrameLayout.MarginLayoutParams params = (FrameLayout.MarginLayoutParams) v.getLayoutParams();
+    params.leftMargin = margin;
+    v.setLayoutParams(params);
+  }
+
   public static void showReveal(View v, boolean animate, AnimatorListenerAdapter listenerAdapter) {
     if (!ViewCompat.isAttachedToWindow(v) || v.getVisibility() == View.VISIBLE) return;
 

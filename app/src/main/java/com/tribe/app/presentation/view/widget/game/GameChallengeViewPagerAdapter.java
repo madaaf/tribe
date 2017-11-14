@@ -74,11 +74,11 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
   private void populateView(View itemView) {
     GameChallenge game = (GameChallenge) gameManager.getCurrentGame();
 
-    TextViewFont txtChallenge = (TextViewFont) itemView.findViewById(R.id.txtChallenge);
-    TextViewFont txtName = (TextViewFont) itemView.findViewById(R.id.txtName);
-    TextViewFont txtUsername = (TextViewFont) itemView.findViewById(R.id.txtUsername);
-    AvatarView viewAvatar = (AvatarView) itemView.findViewById(R.id.viewAvatar);
-    CardView card = (CardView) itemView.findViewById(R.id.cardview);
+    TextViewFont txtChallenge = itemView.findViewById(R.id.txtChallenge);
+    TextViewFont txtName = itemView.findViewById(R.id.txtName);
+    TextViewFont txtUsername = itemView.findViewById(R.id.txtUsername);
+    AvatarView viewAvatar = itemView.findViewById(R.id.viewAvatar);
+    CardView card = itemView.findViewById(R.id.cardview);
 
     MoveViewTouchListener moveListener = new MoveViewTouchListener(card);
     card.setOnTouchListener(moveListener);

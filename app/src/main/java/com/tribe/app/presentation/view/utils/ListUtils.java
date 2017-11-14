@@ -46,6 +46,17 @@ public class ListUtils {
     }
   }
 
+  private String listToStringArray(List<String> ids) {
+    StringBuilder result = new StringBuilder();
+
+    for (String string : ids) {
+      result.append("" + string + "\"");
+      result.append(",");
+    }
+
+    return result.length() > 0 ? result.substring(0, result.length() - 1) : "";
+  }
+  
   public static boolean equalLists(List<String> one, List<String> two) {
     if (one == null && two == null) {
       return true;

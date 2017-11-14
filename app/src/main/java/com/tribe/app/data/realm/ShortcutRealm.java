@@ -37,10 +37,10 @@ public class ShortcutRealm extends RealmObject {
   @PrimaryKey @Index private String id;
   private String name;
   private String picture;
-  private boolean pinned;
-  private boolean read;
-  private boolean mute;
-  @Index private boolean single;
+  private boolean pinned = false;
+  private boolean read = true;
+  private boolean mute = false;
+  @Index private boolean single = false;
   @Index private @ShortcutRealm.ShortcutStatus String status;
   private RealmList<ShortcutLastSeenRealm> last_seen;
   private Date created_at;
@@ -49,7 +49,6 @@ public class ShortcutRealm extends RealmObject {
   private String lastMessage;
   private Date leaveOnlineUntil;
   private String membersHash;
-
 
   @Ignore private boolean online;
   @Ignore private boolean live;

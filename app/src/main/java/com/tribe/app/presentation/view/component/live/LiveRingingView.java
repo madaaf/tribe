@@ -245,6 +245,7 @@ public class LiveRingingView extends RelativeLayout {
 
   public void startRinging() {
     subscriptions.add(Observable.interval(2, TimeUnit.SECONDS)
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           if (aLong % 2 == 0) {

@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -18,58 +17,42 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
-import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 01/22/17.
  */
-public class LiveRowView extends FrameLayout {
+public class LiveRowView extends LiveStreamView {
 
   private static final int DURATION = 500;
-
-  @Inject ScreenUtils screenUtils;
-
-  @Inject User user;
-
-  @BindView(R.id.viewPeerOverlay) LivePeerOverlayView viewPeerOverlay;
-
-  @BindView(R.id.layoutStream) ViewGroup layoutStream;
 
   @BindView(R.id.viewBackground) View backgroundView;
 
   // VARIABLES
-  private Unbinder unbinder;
   private RemotePeerView remotePeerView;
   private TribeGuest guest;
   private boolean isWaiting = false;
 
   // OBSERVABLES
-  private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<TribeGuest> onClick = PublishSubject.create();
-  private PublishSubject<Void> onRollTheDice = PublishSubject.create();
+  private PublishSubject<TribeGuest> onClick;
+  private PublishSubject<Void> onRollTheDice;
 
   public LiveRowView(Context context) {
     super(context);
-    init();
   }
 
   public LiveRowView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    init();
   }
 
   public LiveRowView(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    init();
   }
 
   public void init() {
@@ -84,6 +67,11 @@ public class LiveRowView extends FrameLayout {
     if (guest != null) {
       viewPeerOverlay.setGuest(guest);
     }
+
+    onClick = PublishSubject.create();
+    onRollTheDice = PublishSubject.create();
+
+    endInit();
   }
 
   public void guestAppear() {
@@ -156,7 +144,7 @@ public class LiveRowView extends FrameLayout {
       ViewGroup.LayoutParams params =
           new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
               ViewGroup.LayoutParams.MATCH_PARENT);
-      if (remotePeerView.getParent() == null) layoutStream.addView(remotePeerView, params);
+      if (remotePeerView.getParent() == null) layoutStream.addView(remotePeerView, 0, params);
     }
   }
 

@@ -7,9 +7,6 @@ import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.game.GetDataChallengesGame;
-import com.tribe.app.domain.interactor.game.GetNamesDrawGame;
-import com.tribe.app.domain.interactor.game.GetNamesPostItGame;
 import com.tribe.app.domain.interactor.user.FbIdUpdated;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetInvites;
@@ -37,9 +34,6 @@ public class LivePresenter implements Presenter {
   private JobManager jobManager;
   private GetRecipientInfos getRecipientInfos;
   private GetCloudUserInfosList cloudUserInfosList;
-  private GetNamesPostItGame getNamesPostItGame;
-  private GetNamesDrawGame getNamesDrawGame;
-  private GetDataChallengesGame getDataChallengesGame;
   private FbIdUpdated fbIdUpdated;
   private ReportUser reportUser;
   private IncrUserTimeInCall incrUserTimeInCall;
@@ -55,18 +49,16 @@ public class LivePresenter implements Presenter {
       GetCloudUserInfosList cloudUserInfosList, GetNamesPostItGame getNamesPostItGame,
       ReportUser reportUser, FbIdUpdated fbIdUpdated, GetDataChallengesGame getDataChallengesGame,
       IncrUserTimeInCall incrUserTimeInCall, GetNamesDrawGame getNamesDrawGame,
-      GetInvites getInvites, GetRandomBannedUntil getRandomBannedUntil) {
+      GetInvites getInvites, GetRandomBannedUntil getRandomBannedUntil, ReportUser reportUser) {
+
     this.jobManager = jobManager;
     this.shortcutPresenter = shortcutPresenter;
     this.roomPresenter = roomPresenter;
     this.getRecipientInfos = getRecipientInfos;
     this.cloudUserInfosList = cloudUserInfosList;
-    this.getNamesPostItGame = getNamesPostItGame;
     this.reportUser = reportUser;
     this.incrUserTimeInCall = incrUserTimeInCall;
     this.fbIdUpdated = fbIdUpdated;
-    this.getDataChallengesGame = getDataChallengesGame;
-    this.getNamesDrawGame = getNamesDrawGame;
     this.getInvites = getInvites;
     this.getRandomBannedUntil = getRandomBannedUntil;
   }
@@ -76,12 +68,9 @@ public class LivePresenter implements Presenter {
     roomPresenter.onViewDetached();
     cloudUserInfosList.unsubscribe();
     getRecipientInfos.unsubscribe();
-    getNamesPostItGame.unsubscribe();
     reportUser.unsubscribe();
     incrUserTimeInCall.unsubscribe();
     fbIdUpdated.unsubscribe();
-    getDataChallengesGame.unsubscribe();
-    getNamesDrawGame.unsubscribe();
     getInvites.unsubscribe();
     getRandomBannedUntil.unsubscribe();
     liveMVPView = null;
@@ -122,6 +111,7 @@ public class LivePresenter implements Presenter {
       incrUserTimeInCall.execute(new DefaultSubscriber());
     }
   }
+
 
   public void getNamesPostItGame(String lang) {
     getNamesPostItGame.setup(lang);

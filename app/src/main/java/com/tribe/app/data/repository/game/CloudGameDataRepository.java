@@ -30,4 +30,9 @@ import rx.Observable;
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
     return gameDataStore.getNamesForDrawGame();
   }
+
+  @Override public Observable<Void> synchronizeGamesData(String lang) {
+    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
+    return gameDataStore.synchronizeGamesData();
+  }
 }

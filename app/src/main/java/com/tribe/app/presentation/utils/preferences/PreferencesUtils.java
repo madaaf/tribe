@@ -22,6 +22,7 @@ public class PreferencesUtils {
   public static String INVISIBLE_MODE = "INVISIBLE_MODE";
   public static String ADDRESS_BOOK = "ADDRESS_BOOK";
   public static String LAST_SYNC = "LAST_SYNC";
+  public static String LAST_SYNC_GAME_DATA = "LAST_SYNC_GAME_DATA";
   public static String LAST_IM_ONLINE = "LAST_IM_ONLINE";
   public static String PREVIOUS_VERSION_CODE = "PREVIOUS_VERSION_CODE";
   public static String DEBUG_MODE = "DEBUG_MODE";
@@ -44,6 +45,7 @@ public class PreferencesUtils {
   public static String LOOKUP_RESULT = "LOOKUP_RESULT";
   public static String USER_PHONE_NUMBER = "USER_PHONE_NUMBER";
   public static String WALKTHROUGH = "WALKTHROUGH";
+  public static String GAME_DATA = "GAME_DATA";
 
   public static void saveMapAsJson(Map<String, Object> map, Preference<String> preference) {
     GsonBuilder builder = new GsonBuilder();

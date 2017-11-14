@@ -62,7 +62,6 @@ import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
-import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.ShortcutUtil;
@@ -74,7 +73,6 @@ import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
-import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.RuntimePermissionUtil;
@@ -82,21 +80,13 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
-import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
-import com.tribe.app.presentation.view.widget.game.GameChallengesView;
-import com.tribe.app.presentation.view.widget.game.GameDrawView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
-import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GameChallenge;
-import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
-import com.tribe.tribelivesdk.game.GamePostIt;
-import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
@@ -167,7 +157,6 @@ public class LiveActivity extends BaseActivity
   @Inject @RoutingMode Preference<String> routingMode;
   @Inject @CallTagsMap Preference<String> callTagsMap;
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
-  @Inject @DataChallengesGame Preference<Set<String>> dataChallengesGames;
   @Inject MissedCallManager missedCallManager;
   @Inject RxImagePicker rxImagePicker;
   @Inject com.tribe.app.presentation.utils.DateUtils dateUtils;
@@ -175,11 +164,9 @@ public class LiveActivity extends BaseActivity
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
   @BindView(R.id.userInfosNotificationView) UserInfosNotificationView userInfosNotificationView;
   @BindView(R.id.screenShotView) ScreenshotView screenshotView;
-  @BindView(R.id.diceLayoutRoomView) DiceView diceView;
+  //@BindView(R.id.diceLayoutRoomView) DiceView diceView;
   @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
   @BindView(R.id.blockView) FrameLayout blockView;
-  @BindView(R.id.gameDrawView) GameDrawView gameDrawView;
-  @BindView(R.id.gameChallengesView) GameChallengesView gameChallengesView;
   @BindView(R.id.chatview) FrameLayout chatViewContainer;
   @BindView(R.id.viewLiveContainer) LiveContainer viewLiveContainer;
 
@@ -336,8 +323,9 @@ public class LiveActivity extends BaseActivity
 
         if (room.getId().equals(payload.getSessionId())) {
           String action = payload.getAction();
-          if (action != null && (action.equals(NotificationPayload.ACTION_LEFT) || action.equals(
-              NotificationPayload.ACTION_JOINED))) {
+          if (action != null &&
+              (action.equals(NotificationPayload.ACTION_LEFT) ||
+                  action.equals(NotificationPayload.ACTION_JOINED))) {
             shouldDisplay = false;
           }
         }
@@ -618,7 +606,7 @@ public class LiveActivity extends BaseActivity
 
   private void initSubscriptions() {
     initChatView(getShortcut());
-    if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       subscriptions.add(live.onRoomUpdated().subscribe(room -> {
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
@@ -661,54 +649,9 @@ public class LiveActivity extends BaseActivity
       }
     }));
 
-    subscriptions.add(viewLive.onNewChallengeReceived()
-        .subscribeOn(Schedulers.newThread())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(datas -> {
-          List<TribeGuest> guests = viewLive.getUsersInLiveRoom().getPeopleInRoom();
-          TribeGuest guestChallenged = new TribeGuest(datas.get(1));
-          for (TribeGuest guest : guests) {
-            if (guest.getId().equals(datas.get(1))) {
-              guestChallenged = guest;
-            }
-          }
-          gameManager.setCurrentDataGame(datas.get(0), guestChallenged);
-          GameChallenge gameChallenge = (GameChallenge) gameManager.getCurrentGame();
-          if (!gameChallenge.hasNames()) {
-            livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
-          } else {
-            setNextChallengeGame();
-          }
-        }));
-
-    subscriptions.add(viewLive.onNewDrawReceived()
-        .subscribeOn(Schedulers.newThread())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(datas -> {
-          List<TribeGuest> guests = viewLive.getUsersInLiveRoom().getPeopleInRoom();
-          TribeGuest guestChallenged = new TribeGuest(datas.get(1));
-          for (TribeGuest guest : guests) {
-            if (guest.getId().equals(datas.get(1))) {
-              guestChallenged = guest;
-            }
-          }
-          gameManager.setCurrentDataGame(datas.get(0), guestChallenged);
-          GameDraw gameDraw = (GameDraw) gameManager.getCurrentGame();
-          if (!gameDraw.hasNames()) {
-            livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
-          } else {
-            setNextDrawGame();
-          }
-        }));
-
-    subscriptions.add(viewLive.onClearDrawReceived()
-        .subscribeOn(Schedulers.newThread())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aVoid -> gameDrawView.onClearDrawReceived()));
-
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
-      if (live.fromRoom() && (tribeJoinRoom.getSessionList() == null
-          || tribeJoinRoom.getSessionList().size() == 0)) {
+      if (live.fromRoom() &&
+          (tribeJoinRoom.getSessionList() == null || tribeJoinRoom.getSessionList().size() == 0)) {
         Toast.makeText(this,
             getString(R.string.live_other_user_hung_up, room.getInitiator().getDisplayName()),
             Toast.LENGTH_SHORT).show();
@@ -859,50 +802,6 @@ public class LiveActivity extends BaseActivity
           if (o != null) userInfosNotificationView.displayView(o);
         }));
 
-    subscriptions.add(viewLive.onPointsDrawReceived().
-        subscribeOn(Schedulers.newThread()).
-        observeOn(AndroidSchedulers.mainThread()).
-        subscribe(points -> {
-          gameDrawView.onPointsDrawReceived(points);
-        }));
-
-    subscriptions.add(viewLive.onStartGame().
-        subscribeOn(Schedulers.newThread()).
-        observeOn(AndroidSchedulers.mainThread()).
-        subscribe(game -> {
-          if (game != null) {
-            switch (game.getId()) {
-              case Game.GAME_POST_IT:
-                GamePostIt gamePostIt = (GamePostIt) game;
-                if (!gamePostIt.hasNames()) {
-                  livePresenter.getNamesPostItGame(DeviceUtils.getLanguage(this));
-                }
-                break;
-
-              case Game.GAME_DRAW:
-                GameDraw gameDraw = (GameDraw) game;
-                if (game.isUserAction()) {
-                  if (!gameDraw.hasNames()) {
-                    livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
-                  } else {
-                    setNextDrawGame();
-                  }
-                }
-                break;
-              case Game.GAME_CHALLENGE:
-                GameChallenge gameChallenge = (GameChallenge) game;
-                if (game.isUserAction()) {
-                  if (!gameChallenge.hasNames()) {
-                    livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
-                  } else {
-                    setNextChallengeGame();
-                  }
-                }
-                break;
-            }
-          }
-        }));
-
     subscriptions.add(userInfosNotificationView.onClickInvite().
         subscribe(contact -> {
           Bundle bundle = new Bundle();
@@ -943,14 +842,14 @@ public class LiveActivity extends BaseActivity
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 
-    subscriptions.add(diceView.onNextDiceClick().
-        subscribe(aVoid -> {
-          if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-            reRollTheDiceFromCallRoulette(false);
-          } else {
-            reRollTheDiceFromLiveRoom();
-          }
-        }));
+    //subscriptions.add(diceView.onNextDiceClick().
+    //    subscribe(aVoid -> {
+    //      if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+    //        reRollTheDiceFromCallRoulette(false);
+    //      } else {
+    //        reRollTheDiceFromLiveRoom();
+    //      }
+    //    }));
 
     subscriptions.add(viewLive.onChangeCallRouletteRoom().
         subscribe(aVoid -> reRollTheDiceFromCallRoulette(true)));
@@ -982,8 +881,8 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
-        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE &&
+        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -1159,6 +1058,7 @@ public class LiveActivity extends BaseActivity
     setNextChallengeGame();
   }
 
+
   @Override public void onRoomUpdate(Room room) {
     Timber.e("onRoomUpdate on LiveACtivity " + room.getId());
     this.room.update(room, true);
@@ -1330,9 +1230,9 @@ public class LiveActivity extends BaseActivity
     live.setRoom(room);
     viewLive.joinRoom(this.room);
 
-    if (!StringUtils.isEmpty(live.getRoomId())
-        && !StringUtils.isEmpty(room.getName())
-        && !room.getInitiator().getId().equals(getCurrentUser().getId())) {
+    if (!StringUtils.isEmpty(live.getRoomId()) &&
+        !StringUtils.isEmpty(room.getName()) &&
+        !room.getInitiator().getId().equals(getCurrentUser().getId())) {
       NotificationPayload notificationPayload = new NotificationPayload();
       notificationPayload.setBody(EmojiParser.demojizedText(
           getString(R.string.live_notification_initiator_has_been_notified,
