@@ -213,7 +213,6 @@ public class ChatView extends ChatMVPView {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_chat, this, true);
     unbinder = ButterKnife.bind(this);
-    Timber.w("SOEF  INIT VIEW");
     tagMap = new HashMap<>();
 
     initDependencyInjector();
@@ -295,7 +294,6 @@ public class ChatView extends ChatMVPView {
   }
 
   public void onResumeView() {
-    Timber.w(" SOEF SET CHAT ID AND CALL PRESENTER ");
     if (arrIds == null) {
       return;
     }
@@ -309,7 +307,6 @@ public class ChatView extends ChatMVPView {
   }
 
   public void dispose() {
-    Timber.i("dispose chatView " + arrIds);
     if (arrIds != null) {
       context.startService(
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
@@ -1055,11 +1052,9 @@ public class ChatView extends ChatMVPView {
   }
 
   @Override public void errorShortcutUpdate() {
-    Timber.e("errorShortcutUpdateHORTCUT SOEF ");
   }
 
   @Override public void isReadingUpdate(String userId) {
-    Timber.e("IS READING UPDATE " + userId);
     for (ShortcutLastSeen shortcutLastSeen : shortcut.getShortcutLastSeen()) {
       if (shortcutLastSeen.getUserId().equals(userId)) {
         shortcutLastSeen.setDate(dateUtils.getUTCDateAsString());

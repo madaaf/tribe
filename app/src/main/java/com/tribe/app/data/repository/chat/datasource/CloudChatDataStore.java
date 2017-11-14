@@ -47,10 +47,6 @@ public class CloudChatDataStore implements ChatDataStore {
   }
 
   @Override public Observable<UserRealm> loadMessages(String[] userIds, String dateBefore) {
-    Timber.i(" SOEF REQUEST " + context.getString(R.string.messages_details,
-        JsonUtils.arrayToJson(userIds), dateBefore,
-        context.getString(R.string.messagefragment_info)));
-
     return this.tribeApi.getUserMessage(
         context.getString(R.string.messages_details, JsonUtils.arrayToJson(userIds), dateBefore,
             context.getString(R.string.messagefragment_info)))

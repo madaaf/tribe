@@ -910,16 +910,20 @@ public class HomeActivity extends BaseActivity
               getString(R.string.walkthrough_action_step2), null)
               .filter(aBoolean -> aBoolean)
               .subscribe());
-    } else if (user.getRandom_banned_until() != null) {
+      isBannedUser = true;
+      topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
+    } else if (user.getRandom_banned_until() != null && !dateUtils.isBefore(
+        user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
+
       subscriptions.add(
           DialogFactory.dialog(this, getString(R.string.error_just_banned_temporary_title),
               getString(R.string.error_just_banned_temporary_message),
               getString(R.string.walkthrough_action_step2), null)
               .filter(aBoolean -> aBoolean)
               .subscribe());
+      isBannedUser = true;
+      topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
     }
-    isBannedUser = true;
-    topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
   }
 
   @Override public void renderContactsOnApp(List<Contact> contactList) {

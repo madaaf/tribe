@@ -174,13 +174,6 @@ import timber.log.Timber;
   }
 
   public void subscribeChat(String userIds) {
-   /* if (chatSubscriptions.get(userIds + MESSAGE_CREATED_SUFFIX) != null
-        && chatSubscriptions.get(userIds + MESSAGE_IS_TYPING_SUFFIX) != null
-        && chatSubscriptions.get(userIds + MESSAGE_IS_TALKING_SUFFIX) != null
-        && chatSubscriptions.get(userIds + MESSAGE_IS_READING_SUFFIX) != null) {
-      Timber.i("SOEF already subscribe");
-      return;
-    }*/
     if (!chatSubscriptions.isEmpty()) {
       unsubscribeChat(userIds);
     }
@@ -191,7 +184,6 @@ import timber.log.Timber;
     String req = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_messageCreated, suffix, userIds));
 
-    Timber.i("SOEF " + req);
     webSocketConnection.send(req);
 
     String suffix2 = generateHash() + MESSAGE_IS_TYPING_SUFFIX;
@@ -199,42 +191,38 @@ import timber.log.Timber;
     String req2 = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_isTyping, suffix2, userIds));
 
-    Timber.i("SOEF " + req2);
     webSocketConnection.send(req2);
 
     String suffix3 = generateHash() + MESSAGE_IS_TALKING_SUFFIX;
     chatSubscriptions.put(userIds + MESSAGE_IS_TALKING_SUFFIX, suffix3);
     String req3 = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_isTalking, suffix3, userIds));
-    Timber.i("SOEF " + req3);
+
+    webSocketConnection.send(req3);
 
     String suffix4 = generateHash() + MESSAGE_IS_READING_SUFFIX;
     chatSubscriptions.put(userIds + MESSAGE_IS_READING_SUFFIX, suffix4);
     String req4 = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_isReading, suffix4, userIds));
 
-    Timber.i("SOEF " + req4);
     webSocketConnection.send(req4);
   }
 
   public void subscribeImTyping(String userIds) {
     String req = getApplicationContext().getString(R.string.mutation,
         getApplicationContext().getString(R.string.imTyping, userIds));
-    Timber.i("SOEF " + req);
     webSocketConnection.send(req);
   }
 
   public void subscribeImTalking(String userIds) {
     String req = getApplicationContext().getString(R.string.mutation,
         getApplicationContext().getString(R.string.imTalking, userIds));
-    Timber.i("SOEF " + req);
     webSocketConnection.send(req);
   }
 
   public void subscribeImReading(String userIds) {
     String req = getApplicationContext().getString(R.string.mutation,
         getApplicationContext().getString(R.string.imReading, userIds));
-    Timber.i("SOEF " + req);
     webSocketConnection.send(req);
   }
 

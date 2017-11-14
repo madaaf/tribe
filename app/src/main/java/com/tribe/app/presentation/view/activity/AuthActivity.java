@@ -260,14 +260,14 @@ public class AuthActivity extends BaseActivity
     facebookPresenter.onViewAttached(this);
   }
 
+  private void tagLogin() {
+    Bundle properties = new Bundle();
+    properties.putString(TagManagerUtils.TYPE, "login");
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
+  }
+
   private void connectUser(User user) {
     this.currentUser.copy(user);
-    Bundle properties = new Bundle();
-    properties.putString(TagManagerUtils.TYPE, "signup");
-    properties.putString(TagManagerUtils.PLATFORM,
-        loginEntity.getFbAccessToken() != null ? TagManagerUtils.PLATFORM_FACEBOOK
-            : TagManagerUtils.PLATFORM_PHONE);
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
     Timber.d("KPI_Onboarding_AuthenticationSuccess");
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
     if (deepLink != null) {
@@ -278,14 +278,15 @@ public class AuthActivity extends BaseActivity
         navigator.navigateToIntent(this, newIntent);
         deepLink = null;
       }
-    } else if (user == null ||
-        StringUtils.isEmpty(user.getProfilePicture()) ||
-        StringUtils.isEmpty(user.getUsername())) {
+    } else if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
+        user.getUsername())) {
       Timber.d("goToConnected from new user");
+
       navigator.navigateToAuthProfile(this, null, loginEntity);
     } else {
       tagManager.updateUser(user);
       tagManager.setUserId(user.getId());
+      tagLogin();
       Timber.d("goToConnected from " + user.getDisplayName());
       navigator.navigateToHomeFromLogin(this, countryCode, null,
           loginEntity.getFbAccessToken() != null);

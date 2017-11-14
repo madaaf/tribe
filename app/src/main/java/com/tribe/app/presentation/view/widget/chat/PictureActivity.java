@@ -7,9 +7,11 @@ import android.support.v4.view.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.PictureMVPView;
+import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
@@ -21,7 +23,9 @@ import timber.log.Timber;
  * Created by madaaflak on 08/09/2017.
  */
 
-public class PictureActivity extends BaseActivity implements PictureMVPView {
+public class PictureActivity extends BaseActivity implements PictureMVPView, ShortcutMVPView {
+  private static String MESSAGE_ID = "MESSAGEID";
+  private static String ARR_ID = "ARRID";
 
   private String[] arrIds;
   private String messageId;
@@ -33,8 +37,8 @@ public class PictureActivity extends BaseActivity implements PictureMVPView {
 
   public static Intent getCallingIntent(Context context, String messageId, String[] arrIds) {
     Intent intent = new Intent(context, PictureActivity.class);
-    intent.putExtra("SOEF", messageId);
-    intent.putExtra("OK", arrIds);
+    intent.putExtra(MESSAGE_ID, messageId);
+    intent.putExtra(ARR_ID, arrIds);
 
     return intent;
   }
@@ -45,12 +49,12 @@ public class PictureActivity extends BaseActivity implements PictureMVPView {
     ButterKnife.bind(this);
     initDependencyInjector();
 
-    if (getIntent().hasExtra("SOEF")) {
-      this.messageId = getIntent().getStringExtra("SOEF");
+    if (getIntent().hasExtra(MESSAGE_ID)) {
+      this.messageId = getIntent().getStringExtra(MESSAGE_ID);
     }
 
-    if (getIntent().hasExtra("OK")) {
-      this.arrIds = (String[]) getIntent().getExtras().getStringArray("OK");
+    if (getIntent().hasExtra(ARR_ID)) {
+      this.arrIds = (String[]) getIntent().getExtras().getStringArray(ARR_ID);
     }
   }
 
@@ -100,5 +104,37 @@ public class PictureActivity extends BaseActivity implements PictureMVPView {
 
   @Override public void errorGetMessageImageFromDisk() {
     Timber.e("errorGetMessageImageFromDisk ");
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutCreatedError() {
+
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+
+  }
+
+  @Override public void onShortcut(Shortcut shortcut) {
+
   }
 }

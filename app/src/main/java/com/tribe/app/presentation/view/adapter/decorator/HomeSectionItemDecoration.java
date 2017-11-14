@@ -73,7 +73,6 @@ public class HomeSectionItemDecoration extends BaseSectionItemDecoration {
   }
 
   @Override protected View inflateHeaderView(RecyclerView parent) {
-    Timber.e("soef inflateHeaderView");
     View view = LayoutInflater.from(parent.getContext())
         .inflate(R.layout.item_home_list_header, parent, false);
     txtLabel = ButterKnife.findById(view, R.id.txtLabel);

@@ -262,7 +262,6 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void successLoadingMessage(List<Message> messages) {
     successLoadingMessage = true;
-    Timber.w("SOEF successLoadingMessage " + messages.size() + " ");
     if (isDisplayedMessageDisk) {
       messageAdapter.clearItem();
       isDisplayedMessageDisk = false;
@@ -291,7 +290,6 @@ public class RecyclerMessageView extends ChatMVPView {
       if (ok > 0) {
         messageAdapter.setItems(unreadMessage, 0);
         int index = messageAdapter.getIndexOfMessage(unreadMessage.get(unreadMessage.size() - 1));
-        Timber.e("SOEF OK INDEX " + index + " ");
         layoutManager.scrollToPosition(index + 5);
       } else {
         messageAdapter.setItems(unreadMessage, messageAdapter.getItemCount());
@@ -329,7 +327,6 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void errorMessageCreation(int position) {
     counterMessageNotSend++;
-    Timber.i("SOEF errorMessageCreation " + position + " " + counterMessageNotSend);
   }
 
   @Override public void errorLoadingMessage() {
@@ -342,11 +339,9 @@ public class RecyclerMessageView extends ChatMVPView {
     context.startService(WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMREADING,
         JsonUtils.arrayToJson(arrIds)));
     scrollListToBottom();
-    Timber.i("SOOoOOOOOOOOOOOOEF successMessageReceived " + messages);
   }
 
   public void errorMessageReveived() {
-    Timber.i("SOOoOOOOOOOOOOOOEF errorMessageReveived ");
   }
 
   public Observable<Integer> onScrollRecyclerView() {
