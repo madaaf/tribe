@@ -45,6 +45,7 @@ public class GameEngine {
   protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected PublishSubject<String> onPlayerLost = PublishSubject.create();
   protected PublishSubject<String> onPlayerPending = PublishSubject.create();
+  protected PublishSubject<String> onPlayerReady = PublishSubject.create();
   protected PublishSubject<String> onGameOver = PublishSubject.create();
   protected BehaviorSubject<Map<String, Integer>> onPlayerStatusChange = BehaviorSubject.create();
 
@@ -139,8 +140,13 @@ public class GameEngine {
     return mapPlayerStatus;
   }
 
+  public void setUserReady(String userId) {
+    Timber.d("setUserReady : " + userId);
+    onPlayerReady.onNext(userId);
+  }
+
   public void setUserGameOver(String userId) {
-    Timber.d("Set user game over");
+    Timber.d("setUserGameOver : " + userId);
     boolean wasPlaying = mapPlayerStatus.get(userId) == PLAYING;
     mapPlayerStatus.put(userId, GAMEOVER);
     onPlayerStatusChange.onNext(mapPlayerStatus);
@@ -154,5 +160,9 @@ public class GameEngine {
 
   public Observable<Map<String, Integer>> onPlayerStatusChange() {
     return onPlayerStatusChange;
+  }
+
+  public Observable<String> onPlayerReady() {
+    return onPlayerReady;
   }
 }

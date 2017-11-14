@@ -50,6 +50,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   private static final String ACTION_NEW_GAME = "newGame";
   private static final String ACTION_USER_GAME_OVER = "userGameOver";
   private static final String ACTION_USER_WAITING = "userWaiting";
+  private static final String ACTION_USER_READY = "userReady";
   private static final String ACTION_SHOW_USER_LOST = "showUserLost";
   private static final String ACTION_GAME_OVER = "gameOver";
 
@@ -61,9 +62,11 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   protected TextViewFont txtRestart, txtMessage;
   protected String wordingPrefix = "";
   protected boolean pending = false;
+  protected boolean ready = false;
 
   // OBSERVABLES
   protected PublishSubject<Boolean> onPending = PublishSubject.create();
+  protected PublishSubject<Boolean> isGameReady = PublishSubject.create();
   protected PublishSubject<Boolean> onGameReady = PublishSubject.create();
   protected PublishSubject<String> onMessage = PublishSubject.create();
 
@@ -106,8 +109,12 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     startMasterEngine();
 
     Map<String, Integer> mapPlayerStatus = gameEngine.getMapPlayerStatus();
-    long timestamp = startGameTimestamp();
     Set<String> playerIds = mapPlayerStatus.keySet();
+    newGame(playerIds);
+  }
+
+  protected void newGame(Set<String> playerIds) {
+    long timestamp = startGameTimestamp();
     webRTCRoom.sendToPeers(getNewGamePayload(currentUser.getId(), timestamp,
         playerIds.toArray(new String[playerIds.size()])), true);
     setupGameLocally(currentUser.getId(), playerIds, timestamp);
@@ -149,6 +156,10 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
                   playerLost(message.getString(USER_KEY));
                 } else if (actionKey.equals(ACTION_GAME_OVER)) {
                   gameOver(message.getString(USER_KEY));
+                } else if (actionKey.equals(ACTION_USER_READY)) {
+                  if (message.has(USER_KEY)) {
+                    if (gameEngine != null) gameEngine.setUserReady(message.getString(USER_KEY));
+                  }
                 }
               }
             } catch (JSONException e) {
@@ -196,10 +207,16 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
     if (player != null) {
       if (player.getId().equals(currentUser.getId())) {
-        changeMessageStatus(txtRestart, true, true, 100, 0, null);
+        changeMessageStatus(txtRestart, true, true, 100, 0, null, null);
         refactorPending(true);
       }
     }
+  }
+
+  protected void imReady() {
+    Timber.d("imReady");
+    webRTCRoom.sendToPeers(getImReadyPayload(currentUser.getId()), true);
+    gameEngine.setUserReady(currentUser.getId());
   }
 
   protected void iLost() {
@@ -232,8 +249,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
     refactorPending(false);
     onMessage.onNext(null);
-    changeMessageStatus(txtRestart, false, true, DURATION, 0, null);
-    changeMessageStatus(txtMessage, false, true, DURATION, 0, null);
+    changeMessageStatus(txtRestart, false, true, DURATION, 0, null, null);
+    changeMessageStatus(txtMessage, false, true, DURATION, 0, null, null);
 
     TribeGuest player = peerMap.get(winnerId);
 
@@ -242,41 +259,29 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
       if (player.getId().equals(currentUser.getId())) {
         showMessage(getResources().getString(
-            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "you_won")), 250,
-            new LabelListener() {
-              @Override public void onStart() {
-              }
-
-              @Override public void onEnd() {
-                becomeGameMaster();
-              }
-            });
+            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "you_won")), 250, null,
+            () -> becomeGameMaster());
       } else {
         showMessage(getResources().getString(
             StringUtils.stringWithPrefix(getContext(), wordingPrefix, "someone_won"),
-            player.getDisplayName()), 250, null);
+            player.getDisplayName()), 250, null, null);
       }
     } else {
       becomePlayer();
-      showMessage("Game Over", 250, new LabelListener() {
-        @Override public void onStart() {
-
-        }
-
-        @Override public void onEnd() {
-          if (gameEngine != null) {
-            resetScores();
-            becomeGameMaster();
-          }
+      showMessage("Game Over", 250, null, () -> {
+        if (gameEngine != null) {
+          resetScores();
+          becomeGameMaster();
         }
       });
     }
   }
 
   protected void changeMessageStatus(View view, boolean isVisible, boolean isAnimated, int duration,
-      int delay, LabelListener listener) {
+      int delay, LabelListener blockToCall, LabelListener completionListener) {
     if (view == null) {
-      if (listener != null) listener.onEnd();
+      if (blockToCall != null) blockToCall.call();
+      if (completionListener != null) completionListener.call();
       return;
     }
 
@@ -285,10 +290,10 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     float translationX = 0.0f;
 
     if (!isAnimated) {
-      if (listener != null) listener.onStart();
+      if (blockToCall != null) blockToCall.call();
       view.setAlpha(alpha);
       view.setTranslationY(translationY);
-      if (listener != null) listener.onEnd();
+      if (completionListener != null) completionListener.call();
       return;
     }
 
@@ -299,14 +304,14 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
         .setStartDelay(delay)
         .setInterpolator(new OvershootInterpolator());
 
-    if (listener != null) {
+    if (blockToCall != null || completionListener != null) {
       animator.setListener(new AnimatorListenerAdapter() {
         @Override public void onAnimationStart(Animator animation) {
-          listener.onStart();
+          if (blockToCall != null) blockToCall.call();
         }
 
         @Override public void onAnimationEnd(Animator animation) {
-          listener.onEnd();
+          if (completionListener != null) completionListener.call();
         }
       });
     } else {
@@ -316,7 +321,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     animator.setDuration(duration).start();
   }
 
-  protected void showMessage(String text, int duration, LabelListener completionListener) {
+  protected void showMessage(String text, int duration, LabelListener willDisappear,
+      LabelListener completionListener) {
     TextViewFont textViewFont = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsMessage =
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -332,29 +338,16 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
     txtMessage = textViewFont;
 
-    changeMessageStatus(txtMessage, false, false, 100, 0, null);
-    changeMessageStatus(txtMessage, true, true, duration, 0, new LabelListener() {
-      @Override public void onStart() {
-      }
-
-      @Override public void onEnd() {
-        changeMessageStatus(txtMessage, false, true, duration, 1000, new LabelListener() {
-          @Override public void onStart() {
-          }
-
-          @Override public void onEnd() {
-            if (completionListener != null) completionListener.onEnd();
-            removeView(txtMessage);
-          }
-        });
-      }
-    });
+    changeMessageStatus(txtMessage, false, false, 100, 0, null, null);
+    changeMessageStatus(txtMessage, true, true, duration, 0, null,
+        () -> changeMessageStatus(txtMessage, false, true, duration, 1000, willDisappear, () -> {
+          if (txtMessage != null) removeView(txtMessage);
+          if (completionListener != null) completionListener.call();
+        }));
   }
 
   protected interface LabelListener {
-    void onStart();
-
-    void onEnd();
+    void call();
   }
 
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
@@ -363,39 +356,37 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     listenMessages();
     resetStatuses();
     refactorPending(false);
-    showTitle(new LabelListener() {
-      @Override public void onStart() {
+    showTitle(() -> showMessage(getResources().getString(
+        StringUtils.stringWithPrefix(getContext(), wordingPrefix, "lets_go")), 250, () -> {
+      if (GameViewWithEngine.this == null || (GameViewWithEngine.this instanceof GameWebView)) {
+        return;
       }
 
-      @Override public void onEnd() {
-        showMessage(getResources().getString(
-            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "lets_go")), 250,
-            new LabelListener() {
-              @Override public void onStart() {
-
-              }
-
-              @Override public void onEnd() {
-                if (GameViewWithEngine.this == null ||
-                    (GameViewWithEngine.this instanceof GameWebView)) {
-                  return;
-                }
-
-                long now = System.currentTimeMillis();
-                if (timestamp > System.currentTimeMillis()) {
-                  subscriptions.add(Observable.timer(timestamp - now, TimeUnit.MILLISECONDS)
-                      .observeOn(AndroidSchedulers.mainThread())
-                      .subscribe(aLong -> playGame()));
-                } else {
-                  playGame();
-                }
-              }
-            });
+      long now = System.currentTimeMillis();
+      if (timestamp > System.currentTimeMillis()) {
+        subscriptions.add(Observable.timer(timestamp - now, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> playGame()));
+      } else {
+        playGame();
       }
-    });
+    }, null));
+
+    if (this instanceof GameWebView) {
+      subscriptions.add(onGameReady.subscribe(gameReady -> {
+        long now = System.currentTimeMillis();
+        if (timestamp > System.currentTimeMillis()) {
+          subscriptions.add(Observable.timer(timestamp - now, TimeUnit.MILLISECONDS)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(aLong -> playGame()));
+        } else {
+          playGame();
+        }
+      }));
+    }
   }
 
-  private void playGame() {
+  protected void playGame() {
     Timber.d("playGame");
     gameEngine.start();
   }
@@ -424,17 +415,12 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
               merged += str + (count < textList.size() - 1 ? "\\n" : "");
               count++;
             }
-            changeMessageStatus(txtRestart, false, true, duration, 0, null);
-            showMessage(merged, duration, new LabelListener() {
-              @Override public void onStart() {
-              }
-
-              @Override public void onEnd() {
-                changeMessageStatus(txtRestart, isPending, true, duration, 0, null);
-              }
-            });
+            changeMessageStatus(txtRestart, false, true, duration, 0, null, null);
+            showMessage(merged, duration,
+                () -> changeMessageStatus(txtRestart, isPending, true, duration, 0, null, null),
+                null);
           } else {
-            changeMessageStatus(txtRestart, isPending, true, duration, 0, null);
+            changeMessageStatus(txtRestart, isPending, true, duration, 0, null, null);
           }
         }));
   }
@@ -445,7 +431,13 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     this.onPending.onNext(pending);
   }
 
-  private void showTitle(LabelListener listener) {
+  protected void refactorReady(boolean ready) {
+    Timber.d("Refactor ready : " + ready);
+    this.ready = ready;
+    this.onGameReady.onNext(ready);
+  }
+
+  protected void showTitle(LabelListener listener) {
     int translation = screenUtils.dpToPx(30.0f);
 
     int titleResId = StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title");
@@ -483,8 +475,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
     int duration = 250;
 
-    changeMessageStatus(txtTitleBG, true, true, duration, 0, null);
-    changeMessageStatus(txtTitleFront, true, true, duration, 0, null);
+    changeMessageStatus(txtTitleBG, true, true, duration, 0, null, null);
+    changeMessageStatus(txtTitleFront, true, true, duration, 0, null, null);
 
     subscriptions.add(Observable.timer(1500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -510,7 +502,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
                     @Override public void onAnimationEnd(Animator animation) {
                       animation.removeAllListeners();
 
-                      if (listener != null) listener.onEnd();
+                      if (listener != null) listener.call();
 
                       txtTitleBG.animate()
                           .setDuration(0)
@@ -518,18 +510,11 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
                           .setStartDelay(0)
                           .start();
 
-                      changeMessageStatus(txtTitleFront, false, true, duration, 0, null);
-                      changeMessageStatus(txtTitleBG, false, true, duration, 0,
-                          new LabelListener() {
-                            @Override public void onStart() {
-
-                            }
-
-                            @Override public void onEnd() {
-                              removeView(txtTitleBG);
-                              removeView(txtTitleFront);
-                            }
-                          });
+                      changeMessageStatus(txtTitleFront, false, true, duration, 0, null, null);
+                      changeMessageStatus(txtTitleBG, false, true, duration, 0, null, () -> {
+                        removeView(txtTitleBG);
+                        removeView(txtTitleFront);
+                      });
                     }
                   })
                   .start()));
@@ -544,6 +529,15 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     JSONObject obj = new JSONObject();
     JSONObject game = new JSONObject();
     JsonUtils.jsonPut(game, ACTION_KEY, ACTION_SHOW_USER_LOST);
+    JsonUtils.jsonPut(game, USER_KEY, userId);
+    JsonUtils.jsonPut(obj, this.game.getId(), game);
+    return obj;
+  }
+
+  private JSONObject getImReadyPayload(String userId) {
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_USER_READY);
     JsonUtils.jsonPut(game, USER_KEY, userId);
     JsonUtils.jsonPut(obj, this.game.getId(), game);
     return obj;
