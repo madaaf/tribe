@@ -636,12 +636,7 @@ public class HomeActivity extends BaseActivity
                 diffResult =
                     DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
                 homeGridAdapter.setItems(temp);
-                runOnUiThread(new Runnable() {
-                  @Override public void run() {
-
-                    layoutManager.scrollToPositionWithOffset(0, 0);
-                  }
-                });
+                layoutManager.scrollToPositionWithOffset(0, 0);
               }
 
               latestRecipientList.clear();
@@ -652,6 +647,7 @@ public class HomeActivity extends BaseActivity
             diffResult.dispatchUpdatesTo(homeGridAdapter);
           } else {
             homeGridAdapter.setItems(latestRecipientList);
+            layoutManager.scrollToPositionWithOffset(0, 0);
             homeGridAdapter.notifyDataSetChanged();
           }
         }));

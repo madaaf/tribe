@@ -55,7 +55,9 @@ import javax.inject.Singleton;
       user.setIsLive(userRealm.isLive());
       user.setLastSeenAt(userRealm.getLastSeenAt());
       user.setRandom_banned_until(userRealm.getRandom_banned_until());
-      user.setRandom_banned_permanently(userRealm.getRandom_banned_permanently());
+      if (userRealm.getRandom_banned_permanently() != null) {
+        user.setRandom_banned_permanently(userRealm.getRandom_banned_permanently());
+      }
       if (userRealm.getShortcuts() != null) {
         user.setShortcutList(shortcutRealmDataMapper.transform(userRealm.getShortcuts()));
       }

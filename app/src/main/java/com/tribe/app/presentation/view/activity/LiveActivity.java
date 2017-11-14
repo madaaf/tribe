@@ -568,15 +568,20 @@ public class LiveActivity extends BaseActivity
     if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       return;
     }
-
-    if (chatView != null) {
-      chatView.dispose();
-      chatView.destroyDrawingCache();
-      chatView = null;
-      chatViewContainer.removeAllViews();
-      setChatView(shortcut);
+    if (shortcut != null) {
+      if (chatView != null) {
+        chatView.dispose();
+        chatView.destroyDrawingCache();
+        chatView = null;
+        chatViewContainer.removeAllViews();
+        setChatView(shortcut);
+      } else {
+        setChatView(shortcut);
+      }
     } else {
-      setChatView(shortcut);
+      String[] arrids =
+          live.getRoom().getUserIds().toArray(new String[live.getRoom().getUserIds().size()]);
+      livePresenter.createShortcut(arrids);
     }
   }
 
@@ -633,12 +638,7 @@ public class LiveActivity extends BaseActivity
       subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
         isChatViewOpen = open;
         if (open) {
-          if (live.getShortcut() == null) {
-            String[] array = new String[live.getUserIdsOfShortcut().size()];
-            livePresenter.createShortcut(live.getUserIdsOfShortcut().toArray(array));
-          } else {
-            animateChatView();
-          }
+          animateChatView();
         } else {
           chatView.animate()
               .setDuration(300)
@@ -1198,6 +1198,7 @@ public class LiveActivity extends BaseActivity
         getString(R.string.walkthrough_action_step2), null)
         .filter(aBoolean -> aBoolean)
         .subscribe();
+    finish();
   }
 
   private void displayNotification(String txt) {
@@ -1287,12 +1288,12 @@ public class LiveActivity extends BaseActivity
 
   public Shortcut getShortcut() {
     Shortcut shortcut = null;
-    if (chatView != null && chatView.getShortcut() != null) {
-      shortcut = chatView.getShortcut();
+    if (live != null && live.getRoom() != null && live.getRoom().getShortcut() != null) {
+      shortcut = live.getRoom().getShortcut();
     } else if (live != null && live.getShortcut() != null) {
       shortcut = live.getShortcut();
-    } else if (live != null && live.getRoom() != null && live.getRoom().getShortcut() != null) {
-      shortcut = live.getRoom().getShortcut();
+    } else if (chatView != null && chatView.getShortcut() != null) {
+      shortcut = chatView.getShortcut();
     }
     return shortcut;
   }
