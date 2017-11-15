@@ -142,6 +142,7 @@ public abstract class GameViewWithRanking extends GameView {
     Map<String, Object> map = new HashMap<>();
     map.put(SCORES_KEY, new HashMap<String, Integer>());
     sendScore(SCORES_KEY, map);
+    updateLiveScores();
   }
 
   protected void updateLiveScores() {

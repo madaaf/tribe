@@ -34,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
@@ -67,7 +68,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   // OBSERVABLES
   protected PublishSubject<Boolean> onPending = PublishSubject.create();
   protected PublishSubject<Boolean> isGameReady = PublishSubject.create();
-  protected PublishSubject<Boolean> onGameReady = PublishSubject.create();
+  protected BehaviorSubject<Boolean> onGameReady = BehaviorSubject.create();
   protected PublishSubject<String> onMessage = PublishSubject.create();
 
   public GameViewWithEngine(@NonNull Context context) {

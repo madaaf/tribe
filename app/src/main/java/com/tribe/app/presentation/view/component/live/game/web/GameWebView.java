@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.component.live.game.web;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -24,6 +26,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -49,7 +52,7 @@ public class GameWebView extends GameViewWithEngine {
   @BindView(R.id.cardViewProgress) CardView cardViewProgress;
 
   // VARIABLES
-  private boolean didRestartWhenReady = false;
+  private boolean didRestartWhenReady = false, isResetingScores = false;
   private MediaPlayer mediaPlayer;
   private Handler mainHandler;
 
@@ -121,6 +124,7 @@ public class GameWebView extends GameViewWithEngine {
         }
 
         subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+            .onBackpressureDrop()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(aLong -> {
               resetScores();
@@ -131,8 +135,16 @@ public class GameWebView extends GameViewWithEngine {
     }));
   }
 
+  private void playSound() {
+    Timber.d("Play sound");
+  }
+
   private void gameLoaded() {
-    //removeView(layoutProgress);
+    AnimationUtils.fadeOut(layoutProgress, 250, new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        removeView(layoutProgress);
+      }
+    });
 
     imReady();
 
@@ -140,6 +152,7 @@ public class GameWebView extends GameViewWithEngine {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       webView.evaluateJavascript("Tribe.getSoundtrack()", value -> {
+        Timber.d("evaluate getSoundtrack() : " + value);
         mediaPlayer = new MediaPlayer();
         try {
           mediaPlayer.setDataSource(value);
@@ -175,6 +188,7 @@ public class GameWebView extends GameViewWithEngine {
   };
 
   private void executeJavascript(String code) {
+    Timber.d("evaluateJavascript : " + code);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       webView.evaluateJavascript(code, value -> {
         Timber.d("value : " + value);
@@ -183,7 +197,7 @@ public class GameWebView extends GameViewWithEngine {
   }
 
   private String escapeJavascript(String code) {
-    return code.replaceAll("'", "\'").replaceAll("\n", "<br>");
+    return code.replaceAll("\n", "<br>");
   }
 
   @Override protected void showTitle(LabelListener listener) {
@@ -199,7 +213,7 @@ public class GameWebView extends GameViewWithEngine {
   @Override
   protected void showMessage(String text, int duration, LabelListener willDisappearListener,
       LabelListener completionListener) {
-    executeJavascript("Tribe.displayMessage('" + escapeJavascript(text) + "', 1.5);");
+    executeJavascript("Tribe.displayMessage(\"" + escapeJavascript(text) + "\", 1.5);");
 
     subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -217,11 +231,12 @@ public class GameWebView extends GameViewWithEngine {
   @Override
   protected void changeMessageStatus(View view, boolean isVisible, boolean isAnimated, int duration,
       int delay, LabelListener blockToCall, LabelListener completionListener) {
+    Timber.d("changeMessageStatus");
     if (view == txtRestart && isVisible) {
-      executeJavascript("Tribe.displayRestart('" +
+      executeJavascript("Tribe.displayRestart(\"" +
           escapeJavascript(getResources().getString(
               StringUtils.stringWithPrefix(getContext(), wordingPrefix, "pending_instructions"))) +
-          "');");
+          "\");");
     }
 
     if (blockToCall != null) blockToCall.call();
@@ -239,8 +254,14 @@ public class GameWebView extends GameViewWithEngine {
 
   @Override protected void playGame() {
     super.playGame();
-
+    isResetingScores = false;
     executeJavascript("Tribe.startGame()");
+  }
+
+  @Override protected void resetScores() {
+    super.resetScores();
+    Timber.d("resetScores");
+    isResetingScores = true;
   }
 
   private class WebViewGameInterface {
@@ -255,11 +276,15 @@ public class GameWebView extends GameViewWithEngine {
 
     @JavascriptInterface public void gameLoadingProgress(float progress) {
       mainHandler.post(() -> UIUtils.changeWidthOfView(viewProgress,
-          screenUtils.dpToPx(progress * cardViewProgress.getWidth())));
+          (int) (progress * cardViewProgress.getWidth())));
     }
 
     @JavascriptInterface public void gameLoaded() {
       mainHandler.post(() -> GameWebView.this.gameLoaded());
+    }
+
+    @JavascriptInterface public void playSound() {
+      mainHandler.post(() -> GameWebView.this.playSound());
     }
   }
 
@@ -291,6 +316,10 @@ public class GameWebView extends GameViewWithEngine {
 
   @Override public void dispose() {
     super.dispose();
+    webView.loadUrl("about:blank");
+    webView.setWebViewClient(null);
+    webView.setWebChromeClient(null);
+    webView.removeJavascriptInterface("androidInterface");
   }
 
   @Override public void setNextGame() {
@@ -300,5 +329,4 @@ public class GameWebView extends GameViewWithEngine {
   /**
    * OBSERVABLES
    */
-
 }
