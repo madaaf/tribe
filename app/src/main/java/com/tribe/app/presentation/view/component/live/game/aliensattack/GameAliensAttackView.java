@@ -118,7 +118,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
   private void killAlien() {
     if (!pending) {
-      addPoint(currentUser.getId(), true);
+      addPoints(1, currentUser.getId(), true);
     }
   }
 

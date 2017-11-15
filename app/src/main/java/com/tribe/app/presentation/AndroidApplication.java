@@ -207,9 +207,7 @@ public class AndroidApplication extends Application {
                   .addRealmListField("alts", schema.get("ImageRealm"))
                   .addField("action", String.class)
                   .addField("created_at", String.class)
-                  .addField("threadId", String.class)
-                  .addField("random_banned_permanently", Boolean.class)
-                  .addField("random_banned_until", String.class);
+                  .addField("threadId", String.class);
 
               schema.create("ShortcutLastSeenRealm")
                   .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
@@ -236,6 +234,8 @@ public class AndroidApplication extends Application {
 
               schema.get("UserRealm")
                   .addRealmListField("messages", schema.get("MessageRealm"))
+                  .addField("random_banned_until", Date.class)
+                  .addField("random_banned_permanently", Boolean.class)
                   .removeField("friendships")
                   .removeField("memberships");
 
@@ -250,6 +250,7 @@ public class AndroidApplication extends Application {
               schema.remove("GroupMemberRealm");
               schema.remove("FriendshipRealm");
             }
+
             oldVersion++;
           }
         })
