@@ -168,6 +168,7 @@ public class LiveLowConnectionView extends FrameLayout {
 
     int timer = getTimeToHide();
     subscriptions.add(Observable.timer(timer, TimeUnit.MILLISECONDS)
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           Timber.d("Hiding the view");

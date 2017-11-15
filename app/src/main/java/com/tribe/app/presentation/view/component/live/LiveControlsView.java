@@ -164,6 +164,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
   private PublishSubject<Game> onGameOptions = PublishSubject.create();
   private PublishSubject<View> onGameUIActive = PublishSubject.create();
+  private PublishSubject<Boolean> onGameMenuOpened = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -387,8 +388,8 @@ public class LiveControlsView extends FrameLayout {
     filtersMenuOn = true;
 
     int toX =
-        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1)
-            + screenUtils.dpToPx(2.5f);
+        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1) +
+            screenUtils.dpToPx(2.5f);
     int toY = -screenUtils.dpToPx(65);
 
     layoutFilter.animate()
@@ -450,6 +451,7 @@ public class LiveControlsView extends FrameLayout {
 
   private void showGames() {
     gamesMenuOn = true;
+    onGameMenuOpened.onNext(gamesMenuOn);
 
     recyclerViewGames.getRecycledViewPool().clear();
     gamesAdapter.notifyDataSetChanged();
@@ -485,6 +487,7 @@ public class LiveControlsView extends FrameLayout {
 
   private void showActiveGame(boolean shouldDisplayGameTutorialPopup) {
     gamesMenuOn = false;
+    onGameMenuOpened.onNext(gamesMenuOn);
 
     if (shouldDisplayGameTutorialPopup) onGameUIActive.onNext(currentGameView);
 
@@ -503,6 +506,7 @@ public class LiveControlsView extends FrameLayout {
 
   private void hideGames() {
     gamesMenuOn = false;
+    onGameMenuOpened.onNext(gamesMenuOn);
 
     layoutGame.animate()
         .translationX(0)
@@ -544,6 +548,8 @@ public class LiveControlsView extends FrameLayout {
 
   private void hideGameControls() {
     hideView(layoutGame, false);
+    hideView(btnChat, true);
+    hideView(viewStatusName, true);
   }
 
   private void showGameControls() {
@@ -848,6 +854,10 @@ public class LiveControlsView extends FrameLayout {
 
   public Observable<Filter> onClickFilter() {
     return onClickFilter;
+  }
+
+  public Observable<Boolean> onGameMenuOpen() {
+    return onGameMenuOpened;
   }
 
   public Observable<Game> onStartGame() {

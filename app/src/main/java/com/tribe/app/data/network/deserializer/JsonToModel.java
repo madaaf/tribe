@@ -131,11 +131,9 @@ import timber.log.Timber;
               onTyping.onNext(user_id);
             } else if (entry.getKey().contains(WSService.MESSAGE_IS_TALKING_SUFFIX)) {
               String user_id = jo.get("user_id").getAsString();
-              Timber.w("ON TALKING");
               if (!user_id.equals(user.getId())) onTalking.onNext(user_id);
             } else if (entry.getKey().contains(WSService.MESSAGE_IS_READING_SUFFIX)) {
               String user_id = jo.get("user_id").getAsString();
-              Timber.w("ON READING");
               if (!user_id.equals(user.getId())) onReading.onNext(user_id);
             } else if (entry.getKey().contains(WSService.MESSAGE_CREATED_SUFFIX)) {
               Timber.d("onMessageReceived : " + entry.getValue().toString());
@@ -238,18 +236,18 @@ import timber.log.Timber;
               }
 
               if (room.getShortcut() != null) {
-                Timber.e("on room updated received | shortcutId : " + room.getShortcut().getId());
+                Timber.d("on room updated received | shortcutId : " + room.getShortcut().getId());
               }
               if (room.getShortcut() != null) {
-                Timber.e("on room updated received | shortcut : " + room.getShortcut().toString());
+                Timber.d("on room updated received | shortcut : " + room.getShortcut().toString());
               }
               if (room.getShortcut() != null && room.getShortcut().getMembers() != null) {
-                Timber.e("on room updated received | members : " + room.getShortcut()
+                Timber.d("on room updated received | members : " + room.getShortcut()
                     .getMembers()
                     .size());
               }
               if (room != null) {
-                Timber.e("on room updated received | roomId : " + room.getId());
+                Timber.d("on room updated received | roomId : " + room.getId());
               }
 
               onRoomUpdated.onNext(room);

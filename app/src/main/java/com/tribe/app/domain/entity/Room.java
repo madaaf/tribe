@@ -405,7 +405,6 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   /////////////////
 
   public Observable<Room> onRoomUpdated() {
-    Timber.e("onRoomUpdated");
     return onRoomUpdated.onBackpressureDrop().observeOn(AndroidSchedulers.mainThread());
   }
 

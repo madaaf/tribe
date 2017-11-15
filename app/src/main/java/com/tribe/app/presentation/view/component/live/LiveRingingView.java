@@ -203,7 +203,8 @@ public class LiveRingingView extends RelativeLayout {
       } else if (shortcut != null && !StringUtils.isEmpty(shortcut.getName())) {
         name = shortcut.getName();
       } else {
-        name = getResources().getString(R.string.shortcut_members_count, shortcut.getMembersIds().size());
+        name = getResources().getString(R.string.shortcut_members_count,
+            shortcut.getMembersIds().size());
       }
 
       txtRinging.setText(getResources().getString(R.string.live_members_ringing) + " " + name);
@@ -246,6 +247,7 @@ public class LiveRingingView extends RelativeLayout {
   public void startRinging() {
     subscriptions.add(Observable.interval(2, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
+        .onBackpressureDrop()
         .subscribe(aLong -> {
           if (aLong % 2 == 0) {
             activateRinging();

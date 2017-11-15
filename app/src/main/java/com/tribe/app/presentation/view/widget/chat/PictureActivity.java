@@ -82,7 +82,6 @@ public class PictureActivity extends BaseActivity implements PictureMVPView, Sho
   }
 
   @Override public void successGetMessageImageFromDisk(List<Message> messages) {
-    Timber.e("successGetMessageImageFromDisk " + messages.size());
     Message currentmessage = null;
     for (Message m : messages) {
       Timber.i(m.toString());

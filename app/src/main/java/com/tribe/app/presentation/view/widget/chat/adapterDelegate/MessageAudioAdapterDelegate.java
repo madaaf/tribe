@@ -236,7 +236,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     MessageAudioViewHolder vh = (MessageAudioViewHolder) holder;
     MessageAudio m = (MessageAudio) items.get(position);
-    Timber.w("PUT 1f " + m.toString() + ((MessageAudio) payloads.get(0)).toString());
+
     if (m.isPending()) {
       vh.container.setAlpha(0.4f);
     } else {

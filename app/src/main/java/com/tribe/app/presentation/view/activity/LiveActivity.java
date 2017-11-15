@@ -564,7 +564,6 @@ public class LiveActivity extends BaseActivity
   }
 
   private void initChatView(Shortcut shortcut) {
-    Timber.e("INIT CHAT VIEW " + (chatView != null));
     if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       return;
     }
@@ -1160,7 +1159,6 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onRoomUpdate(Room room) {
-    Timber.e("onRoomUpdate on LiveACtivity " + room.getId());
     this.room.update(room, true);
 
     if (this.room.getLiveUsers() != null) {
@@ -1192,7 +1190,6 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onRandomBannedUntil(String date) {
-    Timber.e("onRandomBannedUntil " + date);
     DialogFactory.dialog(this, getString(R.string.error_just_banned_kicked_title),
         getString(R.string.error_just_banned_kicked_message),
         getString(R.string.walkthrough_action_step2), null)

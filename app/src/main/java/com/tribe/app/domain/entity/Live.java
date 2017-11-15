@@ -340,12 +340,10 @@ public class Live implements Serializable {
   /////////////////
 
   public Observable<Room> onRoomUpdated() {
-    Timber.e("onRoomUpdated in live object ");
     return onRoomUpdated.onBackpressureDrop().observeOn(AndroidSchedulers.mainThread());
   }
 
   public Observable<Shortcut> onShortcutUpdated() {
-    Timber.e("onShortcutUpdated in live object ");
     return onShortcutUpdated;
   }
 }
