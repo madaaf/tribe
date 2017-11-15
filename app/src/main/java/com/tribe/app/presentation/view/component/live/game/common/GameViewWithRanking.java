@@ -167,7 +167,28 @@ public abstract class GameViewWithRanking extends GameView {
     }
   }
 
-  protected void addPoint(String userId, boolean shouldBroadcast) {
+  protected void setScore(String userId, int score, boolean shouldBroadcast) {
+    if (shouldBroadcast) {
+      Map<String, Integer> scores = (Map<String, Integer>) game.getContextMap().get(SCORES_KEY);
+      scores.put(userId, score);
+      sendScore(SCORES_KEY, game.getContextMap());
+      return;
+    }
+
+    TribeGuest tribeGuest = null;
+    for (TribeGuest trg : mapRanking.keySet()) {
+      if (trg.getId().equals(userId)) {
+        tribeGuest = trg;
+      }
+    }
+
+    if (tribeGuest != null) {
+      mapRanking.put(tribeGuest, score);
+      mapRankingById.put(tribeGuest.getId(), score);
+    }
+  }
+
+  protected void addPoints(int points, String userId, boolean shouldBroadcast) {
     if (shouldBroadcast) {
       Map<String, Integer> scores = (Map<String, Integer>) game.getContextMap().get(SCORES_KEY);
       int score = scores.get(userId) != null ? scores.get(userId) : 0;
@@ -187,7 +208,7 @@ public abstract class GameViewWithRanking extends GameView {
     if (tribeGuest != null) {
       int newValue = 1;
       if (mapRanking.get(tribeGuest) != null) {
-        newValue = mapRanking.get(tribeGuest) + 1;
+        newValue = mapRanking.get(tribeGuest) + points;
       }
 
       mapRanking.put(tribeGuest, newValue);

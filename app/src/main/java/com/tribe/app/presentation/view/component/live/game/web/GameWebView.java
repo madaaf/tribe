@@ -3,8 +3,10 @@ package com.tribe.app.presentation.view.component.live.game.web;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.webkit.ConsoleMessage;
@@ -15,12 +17,14 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.io.IOException;
@@ -40,10 +44,14 @@ import timber.log.Timber;
 public class GameWebView extends GameViewWithEngine {
 
   @BindView(R.id.webView) WebView webView;
+  @BindView(R.id.layoutProgress) FrameLayout layoutProgress;
+  @BindView(R.id.viewProgress) View viewProgress;
+  @BindView(R.id.cardViewProgress) CardView cardViewProgress;
 
   // VARIABLES
   private boolean didRestartWhenReady = false;
   private MediaPlayer mediaPlayer;
+  private Handler mainHandler;
 
   public GameWebView(@NonNull Context context) {
     super(context);
@@ -58,6 +66,8 @@ public class GameWebView extends GameViewWithEngine {
 
     inflater.inflate(R.layout.view_game_web, this, true);
     unbinder = ButterKnife.bind(this);
+
+    mainHandler = new Handler(context.getMainLooper());
 
     webView.setFocusable(true);
     webView.setFocusableInTouchMode(true);
@@ -122,7 +132,7 @@ public class GameWebView extends GameViewWithEngine {
   }
 
   private void gameLoaded() {
-    // remove loading
+    //removeView(layoutProgress);
 
     imReady();
 
@@ -149,7 +159,6 @@ public class GameWebView extends GameViewWithEngine {
   protected WebChromeClient webChromeClient = new WebChromeClient() {
     @Override public void onProgressChanged(WebView view, int newProgress) {
       super.onProgressChanged(view, newProgress);
-      Timber.d("New Progress : " + newProgress);
     }
 
     @Override public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
@@ -237,19 +246,20 @@ public class GameWebView extends GameViewWithEngine {
   private class WebViewGameInterface {
 
     @JavascriptInterface public void gameEnded() {
-      Timber.d("Game ended");
+      mainHandler.post(() -> GameWebView.this.iLost());
     }
 
-    @JavascriptInterface public void scoreUpdated(int score) {
-      Timber.d("Score updated");
+    @JavascriptInterface public void scoreIncremented(int points) {
+      mainHandler.post(() -> GameWebView.this.addPoints(points, currentUser.getId(), true));
     }
 
     @JavascriptInterface public void gameLoadingProgress(float progress) {
-      Timber.d("Progress : " + (int) (progress * 100));
+      mainHandler.post(() -> UIUtils.changeWidthOfView(viewProgress,
+          screenUtils.dpToPx(progress * cardViewProgress.getWidth())));
     }
 
     @JavascriptInterface public void gameLoaded() {
-      GameWebView.this.gameLoaded();
+      mainHandler.post(() -> GameWebView.this.gameLoaded());
     }
   }
 
