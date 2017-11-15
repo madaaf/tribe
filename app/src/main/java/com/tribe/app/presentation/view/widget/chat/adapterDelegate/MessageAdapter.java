@@ -76,7 +76,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
       Message m = items.get(position);
       m.setPending(false);
       m.setId(newMessage.getId());
-      Timber.w("SOEF PLAYLOAD BINDING " + position + " " + m.toString());
       delegatesManager.onBindViewHolder(items, holder, position, payloads);
     } else {
       delegatesManager.onBindViewHolder(items, position, holder);

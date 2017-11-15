@@ -943,7 +943,6 @@ public class LiveActivity extends BaseActivity
     onAnonymousReceived.onNext(users);
   }
 
-  // TODO MADA
   private void setImageFirebase(String tribeGuestId, BaseNotifViewHolder holder) {
     subscriptions.add(InstaCapture.getInstance((Activity) context())
         .captureRx(userInfosNotificationView, notificationContainerView, screenshotView)

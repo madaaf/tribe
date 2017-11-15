@@ -213,7 +213,6 @@ public class ChatView extends ChatMVPView {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_chat, this, true);
     unbinder = ButterKnife.bind(this);
-    Timber.w("SOEF  INIT VIEW");
     tagMap = new HashMap<>();
 
     initDependencyInjector();
@@ -295,7 +294,6 @@ public class ChatView extends ChatMVPView {
   }
 
   public void onResumeView() {
-    Timber.w(" SOEF SET CHAT ID AND CALL PRESENTER ");
     if (arrIds == null) {
       return;
     }
@@ -359,8 +357,9 @@ public class ChatView extends ChatMVPView {
         pictoVoiceNote.setTranslationX(
             voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
 
-        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) -
-            (pictoVoiceNote.getHeight() / 2) + screenUtils.dpToPx(12));
+        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (
+            pictoVoiceNote.getHeight()
+                / 2) + screenUtils.dpToPx(12));
 
         voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
@@ -478,11 +477,11 @@ public class ChatView extends ChatMVPView {
         uploadTask = riversRef.putStream(inputStream);
       } else if (type.equals(MESSAGE_AUDIO)) {
         Uri file = Uri.fromFile(new File(audioFile));
-        StorageReference riversRef = storageRef.child("app/uploads/" +
-            user.getId() +
-            "/" +
-            dateUtils.getUTCDateAsString() +
-            file.getLastPathSegment());
+        StorageReference riversRef = storageRef.child("app/uploads/"
+            + user.getId()
+            + "/"
+            + dateUtils.getUTCDateAsString()
+            + file.getLastPathSegment());
         uploadTask = riversRef.putFile(file);
       }
 
@@ -1055,11 +1054,9 @@ public class ChatView extends ChatMVPView {
   }
 
   @Override public void errorShortcutUpdate() {
-    Timber.e("errorShortcutUpdateHORTCUT SOEF ");
   }
 
   @Override public void isReadingUpdate(String userId) {
-    Timber.e("IS READING UPDATE " + userId);
     for (ShortcutLastSeen shortcutLastSeen : shortcut.getShortcutLastSeen()) {
       if (shortcutLastSeen.getUserId().equals(userId)) {
         shortcutLastSeen.setDate(dateUtils.getUTCDateAsString());
