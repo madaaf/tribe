@@ -935,7 +935,7 @@ public class HomeActivity extends BaseActivity
               .filter(aBoolean -> aBoolean)
               .subscribe());
       isBannedUser = true;
-      //topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
+      topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
     }
   }
 

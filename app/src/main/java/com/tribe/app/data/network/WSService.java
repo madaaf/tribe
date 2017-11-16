@@ -174,33 +174,30 @@ import timber.log.Timber;
   }
 
   public void subscribeChat(String userIds) {
-   /* if (chatSubscriptions.get(userIds + MESSAGE_CREATED_SUFFIX) != null
-        && chatSubscriptions.get(userIds + MESSAGE_IS_TYPING_SUFFIX) != null
-        && chatSubscriptions.get(userIds + MESSAGE_IS_TALKING_SUFFIX) != null
-        && chatSubscriptions.get(userIds + MESSAGE_IS_READING_SUFFIX) != null) {
-
-      return;
-    }*/
     if (!chatSubscriptions.isEmpty()) {
       unsubscribeChat(userIds);
     }
 
     String suffix = generateHash() + MESSAGE_CREATED_SUFFIX;
     chatSubscriptions.put(userIds + MESSAGE_CREATED_SUFFIX, suffix);
+
     String req = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_messageCreated, suffix, userIds));
+
     webSocketConnection.send(req);
 
     String suffix2 = generateHash() + MESSAGE_IS_TYPING_SUFFIX;
     chatSubscriptions.put(userIds + MESSAGE_IS_TYPING_SUFFIX, suffix2);
     String req2 = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_isTyping, suffix2, userIds));
+
     webSocketConnection.send(req2);
 
     String suffix3 = generateHash() + MESSAGE_IS_TALKING_SUFFIX;
     chatSubscriptions.put(userIds + MESSAGE_IS_TALKING_SUFFIX, suffix3);
     String req3 = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_isTalking, suffix3, userIds));
+
     webSocketConnection.send(req3);
 
     String suffix4 = generateHash() + MESSAGE_IS_READING_SUFFIX;

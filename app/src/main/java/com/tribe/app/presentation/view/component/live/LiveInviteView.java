@@ -300,7 +300,8 @@ public class LiveInviteView extends FrameLayout
 
       if (room.getLiveUsers() != null) {
         for (User user : room.getLiveUsers()) {
-          if (!user.equals(currentUser)) {
+          if (true) {
+            //if (!user.equals(currentUser)) {
             user.setCurrentRoomId(room.getId());
             computeUser(temp, user, alreadyPresent);
           }

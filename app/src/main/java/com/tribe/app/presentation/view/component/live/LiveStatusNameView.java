@@ -132,7 +132,7 @@ public class LiveStatusNameView extends FrameLayout {
   }
 
   private void setPeopleCountTitle(int total) {
-    String str = getContext().getString(R.string.shortcut_members_count, total);
+    String str = getContext().getString(R.string.shortcut_members_count, (total + 1));
     txtName.setText(str);
   }
 
