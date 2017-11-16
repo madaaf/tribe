@@ -310,7 +310,9 @@ public class LiveRoomView extends FrameLayout {
 
   public void setSource(@LiveActivity.Source String source) {
     this.source = source;
-    if (source.equals(SOURCE_CALL_ROULETTE)) {
+    if (!source.equals(SOURCE_CALL_ROULETTE)) {
+      diceView.setVisibility(GONE);
+    } else {
       diceView.setVisibility(VISIBLE);
     }
   }
