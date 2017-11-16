@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.live;
 
 import android.util.Pair;
+import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.live.datasource.CloudLiveDataStore;
 import com.tribe.app.data.repository.live.datasource.LiveDataStoreFactory;
@@ -72,6 +73,12 @@ import rx.Observable;
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
     return cloudDataStore.buzzRoom(roomId);
+  }
+
+  @Override public Observable<RemoveMessageEntity> removeMessage(String messageId) {
+    final CloudLiveDataStore cloudDataStore =
+        (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
+    return cloudDataStore.removeMessage(messageId);
   }
 
   @Override public Observable<String> randomRoomAssigned() {

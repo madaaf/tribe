@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import rx.Observable;
-import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -28,9 +25,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
   private MessageImageAdapterDelegate messageImageAdapterDelegate;
   private MessageEventAdapterDelegate messageEventAdapterDelegate;
   private MessageAudioAdapterDelegate messageAudioAdapterDelegate;
-
-  private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<List<Object>> onClickItem = PublishSubject.create();
 
   public MessageAdapter(Context context, int type) {
     delegatesManager = new RxAdapterDelegatesManager<>();
@@ -87,7 +81,6 @@ public class MessageAdapter extends RecyclerView.Adapter {
   }
 
   public void setItems(Collection<Message> items, int position) {
-    // this.items.clear();
     this.items.addAll(position, items);
     super.notifyDataSetChanged();
   }
@@ -102,14 +95,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
     super.notifyDataSetChanged();
   }
 
-  public void setAllAndClear(Message message) {
-
-  }
-
   public int getIndexOfMessage(Message message) {
-    for (Message m : items) {
-      Timber.i(items.indexOf(m) + " " + m.toString());
-    }
     return items.indexOf(message);
   }
 
@@ -128,6 +114,12 @@ public class MessageAdapter extends RecyclerView.Adapter {
     if (position != -1) notifyItemChanged(position);
   }
 
+  public void removeItem(Message message) {
+    int index = getIndexOfMessage(message);
+    items.remove(message);
+    notifyItemRemoved(index);
+  }
+
   public int getPendingMessage() {
     positionPendingMessage = new ArrayList<>();
     for (Message m : items) {
@@ -144,5 +136,13 @@ public class MessageAdapter extends RecyclerView.Adapter {
         messageImageAdapterDelegate.onPopulateSCLastSeen(),
         messageEmojiAdapterDelegate.onPopulateSCLastSeen(),
         messageAudioAdapterDelegate.onPopulateSCLastSeen());
+  }
+
+  public Observable<Message> onLongClickItem() {
+    return Observable.merge(messageTextAdapterDelegate.onLongClickItem(),
+        messageEventAdapterDelegate.onLongClickItem(),
+        messageImageAdapterDelegate.onLongClickItem(),
+        messageEmojiAdapterDelegate.onLongClickItem(),
+        messageAudioAdapterDelegate.onLongClickItem());
   }
 }

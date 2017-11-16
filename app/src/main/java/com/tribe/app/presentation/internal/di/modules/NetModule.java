@@ -32,6 +32,7 @@ import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
 import com.tribe.app.data.network.deserializer.LookupFBDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
+import com.tribe.app.data.network.deserializer.RemoveMessageDeserializer;
 import com.tribe.app.data.network.deserializer.RoomDeserializer;
 import com.tribe.app.data.network.deserializer.RoomLinkDeserializer;
 import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
@@ -42,6 +43,7 @@ import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RefreshEntity;
+import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.network.interceptor.TribeInterceptor;
 import com.tribe.app.data.network.util.TribeApiUtils;
@@ -168,6 +170,7 @@ import timber.log.Timber;
         .registerTypeAdapter(LookupFBResult.class, new LookupFBDeserializer())
         .registerTypeAdapter(RoomLinkEntity.class, new RoomLinkDeserializer())
         .registerTypeAdapter(BookRoomLinkEntity.class, new BookRoomLinkDeserializer())
+        .registerTypeAdapter(RemoveMessageEntity.class, new RemoveMessageDeserializer())
         .registerTypeAdapter(new TypeToken<List<String>>() {
         }.getType(), dataGameDeserializer)
         .registerTypeAdapter(ShortcutRealm.class, new ShortcutRealmDeserializer())
@@ -385,9 +388,9 @@ import timber.log.Timber;
           clearLock();
         }
 
-        if (responseRefresh != null &&
-            responseRefresh.isSuccessful() &&
-            responseRefresh.body() != null) {
+        if (responseRefresh != null
+            && responseRefresh.isSuccessful()
+            && responseRefresh.body() != null) {
           AccessToken newAccessToken = responseRefresh.body();
           Timber.d("New access_token : " + newAccessToken.getAccessToken());
           Timber.d("New refresh_token : " + newAccessToken.getRefreshToken());
@@ -472,10 +475,10 @@ import timber.log.Timber;
 
     @Override public okhttp3.Response intercept(Chain chain) throws IOException {
 
-      if (tribeAuthorizer != null &&
-          tribeAuthorizer.getAccessToken() != null &&
-          tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null &&
-          tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
+      if (tribeAuthorizer != null
+          && tribeAuthorizer.getAccessToken() != null
+          && tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null
+          && tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
 
         Timber.d(
             "The token has expired, we know it locally, so we automatically launch a refresh before hitting the backend.");
@@ -535,13 +538,12 @@ import timber.log.Timber;
 
       List<String> customAnnotations = original.headers("@");
       if (customAnnotations.contains("UseUserToken")) {
-        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType() +
-            " " +
-            tribeAuthorizer.getAccessToken().getAccessToken());
+        requestBuilder.header("Authorization",
+            tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken()
+                .getAccessToken());
       } else {
-        byte[] data = (tribeAuthorizer.getApiClient() +
-            ":" +
-            DateUtils.unifyDate(tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
+        byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
+            tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
         requestBuilder.header("Authorization", "Basic " + base64);

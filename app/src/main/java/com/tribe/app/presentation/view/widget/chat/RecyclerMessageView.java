@@ -1,6 +1,8 @@
 package com.tribe.app.presentation.view.widget.chat;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,12 +12,14 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.domain.ShortcutLastSeen;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -26,6 +30,7 @@ import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
@@ -148,6 +153,37 @@ public class RecyclerMessageView extends ChatMVPView {
           : lastSeenString.substring(0, (lastSeenString.length() - 2));
       view.setText(lastSeenString);
     }));
+
+    subscriptions.add(messageAdapter.onLongClickItem().subscribe(m -> {
+      Timber.i("on long click message " + dateUtils.getDiffDate(m.getCreationDate(),
+          dateUtils.getUTCDateAsString()));
+      boolean enableUnsendMessage = false;
+      if (dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString()) < 60) {
+        enableUnsendMessage = true;
+      }
+      subscriptions.add(
+          DialogFactory.showBottomSheetForMessageLongClick(context, enableUnsendMessage)
+              .flatMap(labelType -> {
+                if (labelType != null) {
+                  if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_UNSEND)) {
+                    messagePresenter.removeMessage(m);
+                  } else if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_COPY)) {
+                    copyToClipboard(m.getContent());
+                  }
+                }
+                return null;
+              })
+              .subscribe());
+    }));
+  }
+
+  public void copyToClipboard(String copyText) {
+    ClipboardManager clipboard =
+        (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+    ClipData clip = ClipData.newPlainText("text", copyText);
+    clipboard.setPrimaryClip(clip);
+    Toast toast = Toast.makeText(context, "Message is copied : " + copyText, Toast.LENGTH_SHORT);
+    toast.show();
   }
 
   public void notifyDataSetChanged() {
@@ -331,7 +367,7 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void errorLoadingMessage() {
     Timber.w("errorLoadingMessage");
-    //  errorLoadingMessages = true; //TODO DECOMMENT
+    errorLoadingMessages = true;
   }
 
   public void successMessageReceived(List<Message> messages) {
@@ -339,11 +375,19 @@ public class RecyclerMessageView extends ChatMVPView {
     context.startService(WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMREADING,
         JsonUtils.arrayToJson(arrIds)));
     scrollListToBottom();
-    Timber.i("SOOoOOOOOOOOOOOOEF successMessageReceived " + messages);
   }
 
   public void errorMessageReveived() {
-    Timber.i("SOOoOOOOOOOOOOOOEF errorMessageReveived ");
+  }
+
+  @Override public void errorRemovedMessage(Message m) {
+    Toast toast =
+        Toast.makeText(context, R.string.onboarding_code_error_status, Toast.LENGTH_SHORT);
+    toast.show();
+  }
+
+  @Override public void successRemovedMessage(Message m) {
+    messageAdapter.removeItem(m);
   }
 
   public Observable<Integer> onScrollRecyclerView() {

@@ -5,6 +5,7 @@ package com.tribe.app.domain.interactor.live;
  */
 
 import android.util.Pair;
+import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import java.util.List;
@@ -30,6 +31,8 @@ public interface LiveRepository {
   Observable<Boolean> declineInvite(String roomId);
 
   Observable<Boolean> buzzRoom(String roomId);
+
+  Observable<RemoveMessageEntity> removeMessage(String messageId);
 
   Observable<String> randomRoomAssigned();
 

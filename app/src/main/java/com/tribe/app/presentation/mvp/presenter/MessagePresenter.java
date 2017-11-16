@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
+import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
@@ -11,6 +12,7 @@ import com.tribe.app.domain.interactor.chat.IsReadingFromDisk;
 import com.tribe.app.domain.interactor.chat.IsTalkingFromDisk;
 import com.tribe.app.domain.interactor.chat.IsTypingFromDisk;
 import com.tribe.app.domain.interactor.chat.OnMessageReceivedFromDisk;
+import com.tribe.app.domain.interactor.chat.RemoveMessage;
 import com.tribe.app.domain.interactor.chat.UserMessageInfos;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.CreateShortcut;
@@ -53,6 +55,7 @@ public class MessagePresenter implements Presenter {
   protected CreateShortcut createShortcut;
   protected UpdateShortcut updateShortcut;
   protected GetShortcutForUserIds getShortcutForUserIds;
+  protected RemoveMessage removeMessage;
 
   // SUBSCRIBERS
   private UpdateShortcutSubscriber updateShortcutSubscriber;
@@ -65,7 +68,7 @@ public class MessagePresenter implements Presenter {
       OnMessageReceivedFromDisk onMessageReceivedFromDisk, UpdateShortcut updateShortcut,
       GetMessageImageFromDisk getMessageImageFromDisk, GetShortcutForUserIds getShortcutForUserIds,
       CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk,
-      IsReadingFromDisk isReadingFromDisk) {
+      IsReadingFromDisk isReadingFromDisk, RemoveMessage removeMessage) {
     this.shortcutPresenter = shortcutPresenter;
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
@@ -80,11 +83,17 @@ public class MessagePresenter implements Presenter {
     this.getShortcutForUserIds = getShortcutForUserIds;
     this.createShortcut = createShortcut;
     this.isReadingFromDisk = isReadingFromDisk;
+    this.removeMessage = removeMessage;
   }
 
   public void getMessageImage(String[] userIds) {
     getMessageImageFromDisk.setUserIds(userIds);
     getMessageImageFromDisk.execute(new GetDiskMessageImageSubscriber());
+  }
+
+  public void removeMessage(Message m) {
+    removeMessage.setup(m.getId());
+    removeMessage.execute(new RemoveMessageSubscriber(m));
   }
 
   public void onMessageReceivedFromDisk() {
@@ -229,6 +238,30 @@ public class MessagePresenter implements Presenter {
     }
   }
 
+  private class RemoveMessageSubscriber extends DefaultSubscriber<RemoveMessageEntity> {
+    Message m;
+
+    public RemoveMessageSubscriber(Message m) {
+      this.m = m;
+    }
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
+      if (chatMVPView != null) chatMVPView.errorRemovedMessage(m);
+    }
+
+    @Override public void onNext(RemoveMessageEntity removeMessageEntity) {
+      if (removeMessageEntity.isRemoved()) {
+        if (chatMVPView != null) chatMVPView.successRemovedMessage(m);
+      } else {
+        if (chatMVPView != null) chatMVPView.errorRemovedMessage(m);
+      }
+    }
+  }
+
   private class GetDiskMessageReceivedSubscriber extends DefaultSubscriber<List<Message>> {
 
     @Override public void onCompleted() {
@@ -293,7 +326,6 @@ public class MessagePresenter implements Presenter {
       if (chatMVPView != null) chatMVPView.successLoadingMessageDisk(messages);
     }
   }
-
 
   private class CreateMessageSubscriber extends DefaultSubscriber<Message> {
     private int positon;

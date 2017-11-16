@@ -46,6 +46,7 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
   protected LayoutInflater layoutInflater;
 
   private PublishSubject<List<Object>> onPopulateSCLastSeen = PublishSubject.create();
+  private PublishSubject<Message> onLongClickItem = PublishSubject.create();
 
   public BaseMessageAdapterDelegate(Context context, int type) {
     this.type = type;
@@ -123,6 +124,36 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
       onClickItem(position, vh);
     });
 
+    vh.itemView.setOnLongClickListener(view -> {
+      onLongClickItem.onNext(m);
+    /*  vh.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.black_opacity_5));
+      subscriptions.add(
+          DialogFactory.showBottomSheetForMessageLongClick(context).flatMap(labelType -> {
+            if (labelType != null) {
+              if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_UNSEND)) {
+                Timber.e("MESSAGE_OPTION_UNSEND "
+                    + vh.getItemId()
+                    + " "
+                    + m.getId()
+                    + " "
+                    + m.getContent());
+              } else if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_COPY)) {
+                Timber.e("MESSAGE_OPTION_COPY "
+                    + vh.getItemId()
+                    + " "
+                    + m.getId()
+                    + " "
+                    + m.getContent());
+              }
+              vh.itemView.setBackgroundColor(0);
+            }
+
+            return null;
+          }).subscribe());
+*/
+      return true;
+    });
+
     if (position == items.size() - 1) {
       vh.shortcutLastSeen.setVisibility(View.VISIBLE);
     } else {
@@ -188,5 +219,9 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
   public Observable<List<Object>> onPopulateSCLastSeen() {
     return onPopulateSCLastSeen;
+  }
+
+  public Observable<Message> onLongClickItem() {
+    return onLongClickItem;
   }
 }

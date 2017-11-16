@@ -2,6 +2,7 @@ package com.tribe.app.data.network;
 
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
+import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealm;
@@ -94,6 +95,8 @@ public interface TribeApi {
 
   @FormUrlEncoded @POST("/graphql") Observable<Boolean> buzzRoom(@Field("query") String query);
 
+  @FormUrlEncoded @POST("/graphql") Observable<RemoveMessageEntity> removeMessage(@Field("query") String query);
+
   @FormUrlEncoded @POST("/graphql") Observable<List<Invite>> invites(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<LookupFBResult> lookupFacebook(
@@ -118,6 +121,5 @@ public interface TribeApi {
   @Multipart @POST("/graphql") Observable<ShortcutRealm> updateShortcutMedia(
       @Part("query") RequestBody query, @Part MultipartBody.Part file);
 
-  @FormUrlEncoded @POST("/graphql") Observable<Void> removeShortcut(
-      @Field("query") String query);
+  @FormUrlEncoded @POST("/graphql") Observable<Void> removeShortcut(@Field("query") String query);
 }

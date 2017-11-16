@@ -166,6 +166,15 @@ public final class DialogFactory {
     return createBottomSheet(context, generateLabelsForCamera(context));
   }
 
+  public static Observable<LabelType> showBottomSheetForMessageLongClick(Context context,
+      boolean enableUnsendMessage) {
+    if (enableUnsendMessage) {
+      return createBottomSheet(context, generateLabelsForMessage(context));
+    } else {
+      return createBottomSheet(context, generateLabelsForCopyMessage(context));
+    }
+  }
+
   public static Observable<LabelType> showBottomSheetForMoreBtn(Context context,
       String displayName) {
     return createBottomSheet(context, generateLabelsForMoreBtn(context, displayName));
@@ -180,6 +189,25 @@ public final class DialogFactory {
         new LabelType(EmojiParser.demojizedText(context.getString(R.string.image_picker_library)),
             LabelType.OPEN_PHOTOS));
     return cameraTypeList;
+  }
+
+  private static List<LabelType> generateLabelsForMessage(Context context) {
+    List<LabelType> messageOption = new ArrayList<>();
+    messageOption.add(
+        new LabelType(EmojiParser.demojizedText(context.getString(R.string.action_unsend)),
+            LabelType.MESSAGE_OPTION_UNSEND));
+    messageOption.add(
+        new LabelType(EmojiParser.demojizedText(context.getString(R.string.action_copy)),
+            LabelType.MESSAGE_OPTION_COPY));
+    return messageOption;
+  }
+
+  private static List<LabelType> generateLabelsForCopyMessage(Context context) {
+    List<LabelType> messageOption = new ArrayList<>();
+    messageOption.add(
+        new LabelType(EmojiParser.demojizedText(context.getString(R.string.action_copy)),
+            LabelType.MESSAGE_OPTION_COPY));
+    return messageOption;
   }
 
   public static Observable<LabelType> showBottomSheetForRecipient(Context context,

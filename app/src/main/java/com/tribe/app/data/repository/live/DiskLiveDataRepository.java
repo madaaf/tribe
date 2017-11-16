@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.live;
 
 import android.util.Pair;
+import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.live.datasource.DiskLiveDataStore;
 import com.tribe.app.data.repository.live.datasource.LiveDataStoreFactory;
@@ -70,6 +71,10 @@ public class DiskLiveDataRepository implements LiveRepository {
   }
 
   @Override public Observable<Boolean> buzzRoom(String roomId) {
+    return null;
+  }
+
+  @Override public Observable<RemoveMessageEntity> removeMessage(String messageId) {
     return null;
   }
 

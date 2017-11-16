@@ -72,7 +72,13 @@
                   }
                 }
        %4$s
+
     </string>
+
+  <string name="removeMessage" translatable="false">
+    removeMessage(messageId:\"%1$s\")
+  </string>
+
 
   <string name="imTyping" translatable="false">
             imTyping(usersIds:[%1$s])

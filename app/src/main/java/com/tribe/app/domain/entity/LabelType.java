@@ -33,6 +33,9 @@ public class LabelType implements Serializable {
 
   public static final String CLEAR_MESSAGES = "clearMessages";
 
+  public static final String MESSAGE_OPTION_UNSEND = "MESSAGE_OPTION_UNSEND";
+  public static final String MESSAGE_OPTION_COPY = "MESSAGE_OPTION_COPY";
+
   public static final String CHANGE_NAME = "changeName";
   public static final String CHANGE_PICTURE = "changePicture";
   public static final String CUSTOMIZE = "customize";

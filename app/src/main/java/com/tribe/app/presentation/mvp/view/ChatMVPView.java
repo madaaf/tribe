@@ -61,4 +61,12 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView, Shortc
 
   public void isReadingUpdate(String userId) {
   }
+
+  public void errorRemovedMessage(Message m) {
+
+  }
+
+  public void successRemovedMessage(Message m) {
+
+  }
 }

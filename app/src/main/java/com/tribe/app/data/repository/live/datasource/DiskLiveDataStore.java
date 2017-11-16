@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.live.datasource;
 
 import android.util.Pair;
 import com.tribe.app.data.cache.LiveCache;
+import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
@@ -48,6 +49,10 @@ public class DiskLiveDataStore
   }
 
   @Override public Observable<Boolean> buzzRoom(String roomId) {
+    return null;
+  }
+
+  @Override public Observable<RemoveMessageEntity> removeMessage(String messageId) {
     return null;
   }
 
