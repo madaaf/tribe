@@ -30,6 +30,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,7 +92,7 @@ public class LiveRoomView extends FrameLayout {
 
   @BindView(R.id.viewLocalLive) LiveLocalView viewLiveLocal;
 
-  //@BindView(R.id.diceLayoutRoomView) DiceView diceView;
+  @BindView(R.id.diceLayoutRoomView) DiceView diceView;
 
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
@@ -300,8 +301,8 @@ public class LiveRoomView extends FrameLayout {
   public void onRollTheDiceReceived() {
     isCallRouletteMode = true;
     onShouldCloseInvites.onNext(null);
-    //diceView.setVisibility(VISIBLE);
-    //diceView.startDiceAnimation();
+    diceView.setVisibility(VISIBLE);
+    diceView.startDiceAnimation();
     if (source != null && source.equals(SOURCE_CALL_ROULETTE)) {
       onChangeCallRouletteRoom.onNext(null);
     }
@@ -309,14 +310,27 @@ public class LiveRoomView extends FrameLayout {
 
   public void setSource(@LiveActivity.Source String source) {
     this.source = source;
-    //if (source.equals(SOURCE_CALL_ROULETTE)) {
-    //  diceView.setVisibility(VISIBLE);
-    //}
+    if (source.equals(SOURCE_CALL_ROULETTE)) {
+      diceView.setVisibility(VISIBLE);
+    }
   }
 
   /////////////////
   //   PUBLIC    //
   /////////////////
+  public LiveRowView getLiveRowViewFromId(String userId) {
+    LiveRowView row = null;
+
+    for (int i = 0; i < constraintLayout.getChildCount(); i++) {
+      if (constraintLayout.getChildAt(i) instanceof LiveRowView) {
+        LiveRowView v = (LiveRowView) constraintLayout.getChildAt(i);
+        if (v.getGuest().getId().equals(userId)) {
+          row = v;
+        }
+      }
+    }
+    return row;
+  }
 
   public void removeView(String userId, LiveRowView view) {
     int childCount = constraintLayout.getChildCount() - guidelineInUse.size();
@@ -329,6 +343,13 @@ public class LiveRoomView extends FrameLayout {
 
     mapViews.remove(userId);
     onViews.onNext(mapViews);
+
+    if (source != null
+        && source.equals(SOURCE_CALL_ROULETTE)
+        && constraintLayout.getChildCount() < 2) {
+      diceView.setVisibility(VISIBLE);
+      diceView.startDiceAnimation();
+    }
   }
 
   public void setType(@RoomUIType int type) {
@@ -343,6 +364,9 @@ public class LiveRoomView extends FrameLayout {
   }
 
   public void addViewConstraint(String userId, LiveRowView view) {
+    if ((source != null && source.equals(SOURCE_CALL_ROULETTE)) || isCallRouletteMode) {
+      diceView.setNextAnimation();
+    }
     mapViews.put(userId, view);
     onViews.onNext(mapViews);
     int childCount = constraintLayout.getChildCount() - guidelineInUse.size();
@@ -446,7 +470,10 @@ public class LiveRoomView extends FrameLayout {
     LiveStreamView v = null;
 
     for (int i = 0; i < childCount; i++) {
-      v = (LiveStreamView) constraintLayout.getChildAt(i);
+
+      if (constraintLayout.getChildAt(i) instanceof LiveStreamView) {
+        v = (LiveStreamView) constraintLayout.getChildAt(i);
+      }
 
       if (type == TYPE_GRID) {
         set.clear(v.getId());

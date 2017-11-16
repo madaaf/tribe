@@ -80,6 +80,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
+import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
@@ -165,7 +166,7 @@ public class LiveActivity extends BaseActivity
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
   @BindView(R.id.userInfosNotificationView) UserInfosNotificationView userInfosNotificationView;
   @BindView(R.id.screenShotView) ScreenshotView screenshotView;
-  //@BindView(R.id.diceLayoutRoomView) DiceView diceView;
+  @BindView(R.id.diceLayoutRoomView) DiceView diceView;
   @BindView(R.id.notificationContainerView) NotificationContainerView notificationContainerView;
   @BindView(R.id.blockView) FrameLayout blockView;
   @BindView(R.id.chatview) FrameLayout chatViewContainer;
@@ -405,7 +406,7 @@ public class LiveActivity extends BaseActivity
   private void initRoom() {
     livePresenter.onViewAttached(this);
 
-    subscriptions.add(rxPermissions.request(PermissionUtils.PERMISSIONS_LIVE).subscribe(granted -> {
+    rxPermissions.request(PermissionUtils.PERMISSIONS_LIVE).subscribe(granted -> {
       if (granted) {
         Bundle bundle = new Bundle();
         bundle.putBoolean(TagManagerUtils.USER_CAMERA_ENABLED,
@@ -422,7 +423,7 @@ public class LiveActivity extends BaseActivity
       } else {
         finish();
       }
-    }));
+    });
 
     livePresenter.fbidUpdated();
   }
@@ -843,14 +844,14 @@ public class LiveActivity extends BaseActivity
 
     viewLive.initAnonymousSubscription(onAnonymousReceived());
 
-    //subscriptions.add(diceView.onNextDiceClick().
-    //    subscribe(aVoid -> {
-    //      if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-    //        reRollTheDiceFromCallRoulette(false);
-    //      } else {
-    //        reRollTheDiceFromLiveRoom();
-    //      }
-    //    }));
+    subscriptions.add(diceView.onNextDiceClick().
+        subscribe(aVoid -> {
+          if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+            reRollTheDiceFromCallRoulette(false);
+          } else {
+            reRollTheDiceFromLiveRoom();
+          }
+        }));
 
     subscriptions.add(viewLive.onChangeCallRouletteRoom().
         subscribe(aVoid -> reRollTheDiceFromCallRoulette(true)));
