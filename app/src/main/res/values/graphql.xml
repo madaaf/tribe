@@ -6,7 +6,7 @@
                 ...UserInfos
 
                 shortcuts {
-                  recent (max : 10) {
+                  recent %1$s {
                     ...ShortcutInfos
                   }
                   unread {
@@ -25,9 +25,9 @@
             }
         }
 
-        %1$s
         %2$s
         %3$s
+        %4$s
   </string>
 
   <string name="user.infos.sync" translatable="false">

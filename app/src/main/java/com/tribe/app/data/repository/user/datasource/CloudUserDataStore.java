@@ -160,10 +160,18 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<UserRealm> userInfos(String userId) {
-    return this.tribeApi.getUserInfos(
-        context.getString(R.string.user_infos, context.getString(R.string.userfragment_infos),
-            context.getString(R.string.shortcutFragment_infos),
-            context.getString(R.string.roomFragment_infos))).doOnNext(saveToCacheUser);
+    UserRealm userRealm = userCache.userInfosNoObs(accessToken.getUserId());
+    String countShortcutsToUpdate = "";
+
+    if (userRealm != null) {
+      countShortcutsToUpdate =
+          (userRealm.getShortcuts() == null || userRealm.getShortcuts().size() == 0) ? "" : "(max : 10)";
+    }
+
+    return this.tribeApi.getUserInfos(context.getString(R.string.user_infos, countShortcutsToUpdate,
+        context.getString(R.string.userfragment_infos),
+        context.getString(R.string.shortcutFragment_infos),
+        context.getString(R.string.roomFragment_infos))).doOnNext(saveToCacheUser);
   }
 
   @Override public Observable<List<UserRealm>> userInfosList(List<String> userIdsList) {
@@ -226,8 +234,9 @@ public class CloudUserDataStore implements UserDataStore {
       this.installation.setId("");
       return createOrUpdateInstall(token);
     }).flatMap(installationRecent -> {
-      if (installationRecent == null && this.installation != null && !StringUtils.isEmpty(
-          this.installation.getId())) {
+      if (installationRecent == null &&
+          this.installation != null &&
+          !StringUtils.isEmpty(this.installation.getId())) {
         this.installation.setToken("");
         this.installation.setId("");
         return createInstallation(token, this.installation);
@@ -247,13 +256,13 @@ public class CloudUserDataStore implements UserDataStore {
     StringBuilder userInputBuilder = new StringBuilder();
 
     for (Pair<String, String> value : values) {
-      if (value.first.equals(UserRealm.TRIBE_SAVE)
-          || value.first.equals(UserRealm.INVISIBLE_MODE)
-          || value.first.equals(UserRealm.PUSH_NOTIF)) {
+      if (value.first.equals(UserRealm.TRIBE_SAVE) ||
+          value.first.equals(UserRealm.INVISIBLE_MODE) ||
+          value.first.equals(UserRealm.PUSH_NOTIF)) {
         userInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
         userInputBuilder.append(",");
-      } else if (!value.first.equals(UserRealm.FBID) || (!StringUtils.isEmpty(value.second)
-          && !value.second.equals("null"))) {
+      } else if (!value.first.equals(UserRealm.FBID) ||
+          (!StringUtils.isEmpty(value.second) && !value.second.equals("null"))) {
         userInputBuilder.append(value.first + ": \"" + value.second + "\"");
         userInputBuilder.append(",");
       }
@@ -703,11 +712,11 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<String> getHeadDeepLink(String url) {
     return tribeApi.getHeadDeepLink(url).flatMap(response -> {
-      if (response != null
-          && response.raw() != null
-          && response.raw().priorResponse() != null
-          && response.raw().priorResponse().networkResponse() != null
-          && response.raw().priorResponse().networkResponse().request() != null) {
+      if (response != null &&
+          response.raw() != null &&
+          response.raw().priorResponse() != null &&
+          response.raw().priorResponse().networkResponse() != null &&
+          response.raw().priorResponse().networkResponse().request() != null) {
         String result = response.raw().priorResponse().networkResponse().request().url().toString();
         return Observable.just(result);
       }
@@ -749,9 +758,11 @@ public class CloudUserDataStore implements UserDataStore {
 
     String body = context.getString(R.string.createShortcut, params);
 
-    final String request = context.getString(R.string.mutation, body) + "\n" + context.getString(
-        R.string.shortcutFragment_infos) + "\n" + context.getString(
-        R.string.userfragment_infos_light);
+    final String request = context.getString(R.string.mutation, body) +
+        "\n" +
+        context.getString(R.string.shortcutFragment_infos) +
+        "\n" +
+        context.getString(R.string.userfragment_infos_light);
     return this.tribeApi.createShortcut(request).doOnNext(shortcutRealm -> {
       if (shortcutRealm != null) {
         userCache.addShortcut(shortcutRealm);
@@ -797,10 +808,11 @@ public class CloudUserDataStore implements UserDataStore {
       if (!StringUtils.isEmpty(shortcutInput)) {
         String requestBody = context.getString(R.string.updateShortcut, shortcutId, shortcutInput);
 
-        final String request =
-            context.getString(R.string.mutation, requestBody) + "\n" + context.getString(
-                R.string.shortcutFragment_infos) + "\n" + context.getString(
-                R.string.userfragment_infos_light);
+        final String request = context.getString(R.string.mutation, requestBody) +
+            "\n" +
+            context.getString(R.string.shortcutFragment_infos) +
+            "\n" +
+            context.getString(R.string.userfragment_infos_light);
 
         return this.tribeApi.updateShortcut(request)
             .doOnNext(shortcutRealm -> userCache.updateShortcut(shortcutRealm));
@@ -810,10 +822,11 @@ public class CloudUserDataStore implements UserDataStore {
     } else {
       String requestBody = context.getString(R.string.updateShortcut, shortcutId, shortcutInput);
 
-      final String request =
-          context.getString(R.string.mutation, requestBody) + "\n" + context.getString(
-              R.string.shortcutFragment_infos) + "\n" + context.getString(
-              R.string.userfragment_infos_light);
+      final String request = context.getString(R.string.mutation, requestBody) +
+          "\n" +
+          context.getString(R.string.shortcutFragment_infos) +
+          "\n" +
+          context.getString(R.string.userfragment_infos_light);
 
       RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 
