@@ -109,8 +109,8 @@ public class GameWebView extends GameViewWithEngine {
     super.setupGameLocally(userId, players, timestamp);
   }
 
-  @Override protected void gameOver(String winnerId) {
-    super.gameOver(winnerId);
+  @Override protected void gameOver(String winnerId, boolean isLocal) {
+    super.gameOver(winnerId, isLocal);
   }
 
   @Override protected void startMasterEngine() {
@@ -258,7 +258,7 @@ public class GameWebView extends GameViewWithEngine {
     executeJavascript("Tribe.startGame()");
   }
 
-  @Override protected void resetScores() {
+  @Override public void resetScores() {
     super.resetScores();
     Timber.d("resetScores");
     isResetingScores = true;

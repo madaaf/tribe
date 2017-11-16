@@ -23,6 +23,7 @@ import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
+import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
@@ -152,6 +153,12 @@ public class GameManagerView extends FrameLayout {
           currentGameView = null;
           currentGame = null;
         }));
+
+    subscriptions.add(gameManager.onCurrentUserResetScores().subscribe(game -> {
+      if (currentGameView != null && currentGameView instanceof GameViewWithRanking) {
+        ((GameViewWithRanking) currentGameView).resetScores();
+      }
+    }));
   }
 
   public void initPeerGuestObservable(

@@ -56,6 +56,7 @@ import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.game.GameScream;
 import com.tribe.tribelivesdk.game.GameSingAlong;
+import com.tribe.tribelivesdk.game.GameSliceFruit;
 import com.tribe.tribelivesdk.game.GameSpeedRacer;
 import com.tribe.tribelivesdk.game.GameTaboo;
 import io.branch.referral.Branch;
@@ -335,6 +336,9 @@ public class AndroidApplication extends Application {
             R.drawable.icon_game_invaders, true));
     gameManager.addGame(new GameSpeedRacer(this, Game.GAME_SPEED_RACER, "Speed Racer",
         R.drawable.icon_game_speed_racer, "https://static.tribe.pm/games/speedracer/index.html",
+        true));
+    gameManager.addGame(new GameSliceFruit(this, Game.GAME_SLICE_FRUIT, "Slice Fruit",
+        R.drawable.icon_game_slice_fruit, "https://static.tribe.pm/games/slicefruit/index.html",
         true));
     gameManager.addGame(
         new GameDraw(this, Game.GAME_DRAW, getString(R.string.game_draw), R.drawable.icon_game_draw,

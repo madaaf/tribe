@@ -63,7 +63,8 @@ public class LabelType implements Serializable {
   public static final String INVITE_MESSENGER = "inviteMessenger";
   public static final String SEARCH = "search";
 
-  public static final String GAME_RE_ROLL = "gameReRoll";
+  public static final String GAME_PLAY_ANOTHER = "gamePlayAnother";
+  public static final String GAME_RESET_SCORES = "gameResetScores";
   public static final String GAME_STOP = "gameStop";
 
   private @GenericTypeDef String typeDef;

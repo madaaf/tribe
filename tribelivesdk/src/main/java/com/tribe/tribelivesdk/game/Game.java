@@ -35,7 +35,7 @@ public abstract class Game extends GameFilter {
   @StringDef({
       GAME_POST_IT, GAME_CHALLENGE, GAME_DRAW, GAME_BATTLE_MUSIC, GAME_SCREAM, GAME_INVADERS,
       GAME_DROP_IT, GAME_SING_ALONG, GAME_FACESWAP, GAME_HAND_FIGHT, GAME_LAVA_FLOOR, GAME_TABOO,
-      GAME_BACKGAMON, GAME_BEATS, GAME_SPEED_RACER
+      GAME_BACKGAMON, GAME_BEATS, GAME_SPEED_RACER, GAME_SLICE_FRUIT
   }) public @interface GameType {
   }
 
@@ -53,7 +53,8 @@ public abstract class Game extends GameFilter {
   public static final String GAME_TABOO = "taboo";
   public static final String GAME_BACKGAMON = "backgamon";
   public static final String GAME_BEATS = "beats";
-  public static final String GAME_SPEED_RACER = "speed-racer";
+  public static final String GAME_SPEED_RACER = "speedracer";
+  public static final String GAME_SLICE_FRUIT = "slicefruit";
 
   protected boolean localFrameDifferent = false;
   protected boolean hasView = false;
@@ -65,6 +66,7 @@ public abstract class Game extends GameFilter {
   protected String previousGuestId = null;
   protected Map<String, Object> contextMap = null;
   protected String url;
+  protected TribeGuest currentMaster;
 
   // OBSERVABLE / SUBSCRIPTIONS
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -77,8 +79,9 @@ public abstract class Game extends GameFilter {
     super(context, id, name, drawableRes, available);
     this.localFrameDifferent = id.equals(GAME_POST_IT);
     this.hasView = !id.equals(GAME_POST_IT);
-    this.isOverLive = id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER);
-    this.isWeb = id.equals(GAME_SPEED_RACER);
+    this.isOverLive =
+        id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
+    this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
     this.peerList = new ArrayList<>();
     this.dataList = new ArrayList<>();
     this.contextMap = new HashMap<>();
@@ -121,6 +124,14 @@ public abstract class Game extends GameFilter {
 
   public String getUrl() {
     return url;
+  }
+
+  public void setCurrentMaster(TribeGuest currentMaster) {
+    this.currentMaster = currentMaster;
+  }
+
+  public TribeGuest getCurrentMaster() {
+    return currentMaster;
   }
 
   protected TribeGuest getNextGuest() {

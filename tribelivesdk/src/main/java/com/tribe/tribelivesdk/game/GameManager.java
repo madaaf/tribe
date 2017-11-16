@@ -57,6 +57,8 @@ import rx.subscriptions.CompositeSubscription;
       PublishSubject.create();
   private PublishSubject<Game> onCurrentUserStopGame = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, Game>> onRemoteUserStopGame = PublishSubject.create();
+  private PublishSubject<Game> onCurrentUserResetScores = PublishSubject.create();
+  private PublishSubject<Game> onRemoteUserResetScores = PublishSubject.create();
 
   @Inject public GameManager(Context context) {
     gameList = new ArrayList<>();
@@ -107,6 +109,10 @@ import rx.subscriptions.CompositeSubscription;
     subscriptionsUI.add(
         obs.doOnNext(game -> webRTCRoom.sendToPeers(getStopGamePayload(game), false))
             .subscribe(onCurrentUserStopGame));
+  }
+
+  public void initUIControlsResetGame(Observable<Game> obs) {
+    subscriptionsUI.add(obs.subscribe(onCurrentUserResetScores));
   }
 
   public void setWebRTCRoom(WebRTCRoom webRTCRoom) {
@@ -255,5 +261,9 @@ import rx.subscriptions.CompositeSubscription;
 
   public Observable<Pair<TribeSession, Game>> onRemoteUserStopGame() {
     return onRemoteUserStopGame;
+  }
+
+  public Observable<Game> onCurrentUserResetScores() {
+    return onCurrentUserResetScores;
   }
 }

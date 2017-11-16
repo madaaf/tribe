@@ -47,6 +47,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
   @BindView(R.id.viewAliens) FrameLayout viewAliens;
 
   // VARIABLES
+  private boolean startedAsSingle = false, didRestartWhenReady = false;
 
   public GameAliensAttackView(@NonNull Context context) {
     super(context);
@@ -110,9 +111,9 @@ public class GameAliensAttackView extends GameViewWithEngine {
     }));
   }
 
-  @Override protected void gameOver(String winnerId) {
+  @Override protected void gameOver(String winnerId, boolean isLocal) {
     Timber.d("Game over : " + winnerId);
-    super.gameOver(winnerId);
+    super.gameOver(winnerId, isLocal);
     viewAliens.removeAllViews();
   }
 
@@ -211,6 +212,34 @@ public class GameAliensAttackView extends GameViewWithEngine {
         ((GameAliensAttackEngine) gameEngine).onAlien().subscribe(alienView -> {
           webRTCRoom.sendToPeers(getAlienPayload(alienView.asJSON()), true);
           animateAlien(alienView);
+        }));
+
+    subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          didRestartWhenReady = false;
+
+          Map<String, Integer> mapPlayerStatus = gameEngine.getMapPlayerStatus();
+          int countPlaying = 0;
+          for (Integer i : mapPlayerStatus.values()) if (i == GameEngine.PLAYING) countPlaying++;
+
+          startedAsSingle = gameEngine != null && countPlaying == 1;
+
+          subscriptions.add(gameEngine.onPlayerReady().subscribe(userId -> {
+            if (!didRestartWhenReady && startedAsSingle) {
+              if (mapPlayerStatus.size() == 2) {
+                didRestartWhenReady = true;
+                startedAsSingle = false;
+
+                subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(aLong1 -> {
+                      resetScores();
+                      iLost();
+                    }));
+              }
+            }
+          }));
         }));
   }
 

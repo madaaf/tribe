@@ -27,6 +27,7 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -67,6 +68,8 @@ public class LiveControlsView extends FrameLayout {
   @Inject ScreenUtils screenUtils;
 
   @Inject StateManager stateManager;
+
+  @Inject User user;
 
   @BindView(R.id.btnCameraOn) View btnCameraOn;
 
@@ -168,6 +171,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Game> onStopGame = PublishSubject.create();
   private PublishSubject<View> onGameUIActive = PublishSubject.create();
   private PublishSubject<Boolean> onGameMenuOpened = PublishSubject.create();
+  private PublishSubject<Game> onResetScores = PublishSubject.create();
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -624,25 +628,37 @@ public class LiveControlsView extends FrameLayout {
         });
     currentGameView.setClickable(true);
 
-    subscriptions.add(RxView.longClicks(currentGameView)
+    subscriptions.add(RxView.clicks(currentGameView)
+        .doOnNext(aVoid -> AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
+            new OvershootInterpolator(OVERSHOOT_LIGHT)))
         .map(aVoid -> gameManager.getCurrentGame())
+        .filter(game -> {
+          if (game.getCurrentMaster() != null &&
+              game.getCurrentMaster().getId().equals(user.getId())) {
+            return true;
+          } else {
+            Toast.makeText(getContext(), getContext().getString(R.string.game_update_forbidden,
+                game.getCurrentMaster() != null ? game.getCurrentMaster().getDisplayName() : ""),
+                Toast.LENGTH_LONG).show();
+            return false;
+          }
+        })
         .flatMap(game -> DialogFactory.showBottomSheetForGame(getContext(), game),
             ((game, labelType) -> {
-              if (labelType.getTypeDef().equals(LabelType.GAME_RE_ROLL)) {
-                onRestartGame.onNext(game);
+              if (labelType.getTypeDef().equals(LabelType.GAME_PLAY_ANOTHER)) {
+                onStopGame.onNext(game);
+              } else if (labelType.getTypeDef().equals(LabelType.GAME_RESET_SCORES)) {
+                onResetScores.onNext(game);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
                 onStopGame.onNext(game);
               }
 
-              return game;
+              return labelType;
             }))
-        .subscribe());
-
-    currentGameView.setOnClickListener(v -> {
-      AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
-          new OvershootInterpolator(OVERSHOOT_LIGHT));
-      onRestartGame.onNext(gameManager.getCurrentGame());//MADA
-    });
+        .filter(labelType -> labelType.getTypeDef().equals(LabelType.GAME_PLAY_ANOTHER))
+        .delay(1, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(labelType -> showGames()));
 
     layoutContainerParamLive.addView(currentGameView, params);
 
@@ -931,5 +947,9 @@ public class LiveControlsView extends FrameLayout {
 
   public Observable<Game> onStopGame() {
     return onStopGame;
+  }
+
+  public Observable<Game> onResetScores() {
+    return onResetScores;
   }
 }

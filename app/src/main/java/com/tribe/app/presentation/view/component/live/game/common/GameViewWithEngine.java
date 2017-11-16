@@ -156,7 +156,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
                 } else if (actionKey.equals(ACTION_SHOW_USER_LOST)) {
                   playerLost(message.getString(USER_KEY));
                 } else if (actionKey.equals(ACTION_GAME_OVER)) {
-                  gameOver(message.getString(USER_KEY));
+                  gameOver(message.getString(USER_KEY), false);
                 } else if (actionKey.equals(ACTION_USER_READY)) {
                   if (message.has(USER_KEY)) {
                     if (gameEngine != null) gameEngine.setUserReady(message.getString(USER_KEY));
@@ -180,7 +180,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     subscriptions.add(gameEngine.onGameOver.subscribe(winnerId -> {
       stopEngine();
       webRTCRoom.sendToPeers(getGameOverPayload(winnerId), true);
-      gameOver(winnerId);
+      gameOver(winnerId, true);
     }));
   }
 
@@ -243,7 +243,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     }
   }
 
-  protected void gameOver(String winnerId) {
+  protected void gameOver(String winnerId, boolean isLocal) {
     Timber.d("gameOver (winnerId : " + winnerId + " )");
 
     if (subscriptionsSession != null) subscriptionsSession.clear();
@@ -268,10 +268,11 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
             player.getDisplayName()), 250, null, null);
       }
     } else {
-      becomePlayer();
+      resetScores();
+
       showMessage("Game Over", 250, null, () -> {
-        if (gameEngine != null) {
-          resetScores();
+        becomePlayer();
+        if (isLocal) {
           becomeGameMaster();
         }
       });
@@ -354,6 +355,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
     Timber.d("setupGameLocally : " + userId + " / players : " + players);
     currentMasterId = userId;
+    game.setCurrentMaster(peerMap.get(userId));
     listenMessages();
     resetStatuses();
     refactorPending(false);
@@ -616,6 +618,15 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   public void dispose() {
     super.dispose();
+    if (txtMessage != null) {
+      txtMessage.clearAnimation();
+      txtMessage.animate().setDuration(0).setListener(null).start();
+    }
+
+    if (txtRestart != null) {
+      txtRestart.clearAnimation();
+      txtRestart.animate().setDuration(0).setListener(null).start();
+    }
   }
 
   /**

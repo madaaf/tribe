@@ -129,6 +129,8 @@ public abstract class GameViewWithRanking extends GameView {
       }
     });
 
+    game.getContextMap().put(SCORES_KEY, scores);
+
     updateLiveScores();
   }
 
@@ -136,13 +138,6 @@ public abstract class GameViewWithRanking extends GameView {
     for (LiveStreamView view : liveViewsMap.values()) {
       view.updateScoreWithEmoji(0, null);
     }
-  }
-
-  protected void resetScores() {
-    Map<String, Object> map = new HashMap<>();
-    map.put(SCORES_KEY, new HashMap<String, Integer>());
-    sendScore(SCORES_KEY, map);
-    updateLiveScores();
   }
 
   protected void updateLiveScores() {
@@ -190,6 +185,8 @@ public abstract class GameViewWithRanking extends GameView {
   }
 
   protected void addPoints(int points, String userId, boolean shouldBroadcast) {
+    if (game == null) return;
+
     if (shouldBroadcast) {
       Map<String, Integer> scores = (Map<String, Integer>) game.getContextMap().get(SCORES_KEY);
       int score = scores.get(userId) != null ? scores.get(userId) : 0;
@@ -315,6 +312,19 @@ public abstract class GameViewWithRanking extends GameView {
 
     resetLiveScores();
     updateRanking(null);
+  }
+
+  public void resetScores() {
+    Map<String, Object> map = new HashMap<>();
+    Map<String, Integer> newScoresMap = new HashMap<>();
+
+    for (String id : mapRankingById.keySet()) {
+      newScoresMap.put(id, 0);
+    }
+
+    map.put(SCORES_KEY, newScoresMap);
+    sendScore(SCORES_KEY, map);
+    updateLiveScores();
   }
 
   public void stop() {

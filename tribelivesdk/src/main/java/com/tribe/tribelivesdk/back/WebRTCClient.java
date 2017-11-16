@@ -256,6 +256,9 @@ import static android.R.attr.id;
     games.put(Game.GAME_POST_IT);
     games.put(Game.GAME_CHALLENGE);
     games.put(Game.GAME_DRAW);
+    games.put(Game.GAME_SLICE_FRUIT);
+    games.put(Game.GAME_INVADERS);
+    games.put(Game.GAME_SPEED_RACER);
     jsonPut(obj, "canPlayGames", games);
     return obj;
   }
