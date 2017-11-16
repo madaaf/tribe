@@ -7,9 +7,11 @@ import android.support.v4.view.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.PictureMVPView;
+import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ import timber.log.Timber;
  * Created by madaaflak on 08/09/2017.
  */
 
-public class PictureActivity extends BaseActivity implements PictureMVPView {
+public class PictureActivity extends BaseActivity implements PictureMVPView, ShortcutMVPView {
   private static String MESSAGE_ID = "MESSAGEID";
   private static String ARR_ID = "ARRID";
 
@@ -80,7 +82,6 @@ public class PictureActivity extends BaseActivity implements PictureMVPView {
   }
 
   @Override public void successGetMessageImageFromDisk(List<Message> messages) {
-    Timber.e("successGetMessageImageFromDisk " + messages.size());
     Message currentmessage = null;
     for (Message m : messages) {
       Timber.i(m.toString());
@@ -102,5 +103,37 @@ public class PictureActivity extends BaseActivity implements PictureMVPView {
 
   @Override public void errorGetMessageImageFromDisk() {
     Timber.e("errorGetMessageImageFromDisk ");
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutCreatedError() {
+
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+
+  }
+
+  @Override public void onShortcut(Shortcut shortcut) {
+
   }
 }
