@@ -161,6 +161,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   @Override protected void onDetachedFromWindow() {
     searchPresenter.onViewDetached();
+    searchAdapter.releaseSubscriptions();
     recyclerViewContacts.setAdapter(null);
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
     super.onDetachedFromWindow();
@@ -855,13 +856,13 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   public Observable<Recipient> onClickLive() {
-    return searchAdapter.onClickLive()
+    return searchAdapter.onLiveClick()
         .map(view -> (Recipient) searchAdapter.getItemAtPosition(
             recyclerViewContacts.getChildLayoutPosition(view)));
   }
 
   public Observable<Recipient> onClickChat() {
-    return searchAdapter.onClickChat()
+    return searchAdapter.onChatClick()
         .map(view -> (Recipient) searchAdapter.getItemAtPosition(
             recyclerViewContacts.getChildLayoutPosition(view)));
   }

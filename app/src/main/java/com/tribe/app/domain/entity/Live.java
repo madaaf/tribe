@@ -10,7 +10,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 23/02/2017.
@@ -70,7 +69,7 @@ public class Live implements Serializable {
   }
 
   public void dispose() {
-    subscriptions.clear();
+    if (subscriptions != null) subscriptions.clear();
     if (room != null) room.dispose();
   }
 

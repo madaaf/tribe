@@ -294,8 +294,9 @@ import timber.log.Timber;
       }
     }
 
-    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
-        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null &&
+        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
+            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -320,9 +321,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous()
-        || StringUtils.isEmpty(accessToken.getTokenType())
-        || StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous() ||
+        StringUtils.isEmpty(accessToken.getTokenType()) ||
+        StringUtils.isEmpty(accessToken.getAccessToken())) {
 
       webSocketConnection.setShouldReconnect(false);
     } else {
@@ -355,11 +356,12 @@ import timber.log.Timber;
       }
     }));
 
-    persistentSubscriptions.add(webSocketConnection.onMessage().subscribe(message -> {
-      Timber.d("onMessage : " + message);
+    persistentSubscriptions.add(
+        webSocketConnection.onMessage().onBackpressureDrop().subscribe(message -> {
+          Timber.d("onMessage : " + message);
 
-      jsonToModel.convertToSubscriptionResponse(message);
-    }));
+          jsonToModel.convertToSubscriptionResponse(message);
+        }));
 
     persistentSubscriptions.add(webSocketConnection.onConnectError().subscribe(s -> {
       Timber.d("onConnectError setting new headers : " + s);
@@ -534,9 +536,8 @@ import timber.log.Timber;
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment =
-        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
-            R.string.userfragment_infos) : "");
+    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
+        getApplicationContext().getString(R.string.userfragment_infos) : "");
 
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 

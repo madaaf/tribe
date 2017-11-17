@@ -12,6 +12,8 @@ import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteA
 import com.tribe.app.presentation.view.adapter.delegate.contact.EmptyContactAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutChatActiveHomeAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutLiveHomeAdapterDelegate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -30,6 +32,7 @@ public class SearchAdapter extends RecyclerView.Adapter {
   // DELEGATES
   private RxAdapterDelegatesManager delegatesManager;
   private ShortcutAdapterDelegate shortcutAdapterDelegate;
+  private ShortcutChatActiveHomeAdapterDelegate shortcutChatActiveHomeAdapterDelegate;
   private SearchResultGridAdapterDelegate searchResultGridAdapterDelegate;
   private UserToAddAdapterDelegate userToAddAdapterDelegate;
   private ContactToInviteAdapterDelegate contactToInviteAdapterDelegate;
@@ -51,6 +54,9 @@ public class SearchAdapter extends RecyclerView.Adapter {
 
     searchResultGridAdapterDelegate = new SearchResultGridAdapterDelegate(context);
     delegatesManager.addDelegate(searchResultGridAdapterDelegate);
+
+    shortcutChatActiveHomeAdapterDelegate = new ShortcutChatActiveHomeAdapterDelegate(context);
+    delegatesManager.addDelegate(shortcutChatActiveHomeAdapterDelegate);
 
     userToAddAdapterDelegate = new UserToAddAdapterDelegate(context);
     delegatesManager.addDelegate(userToAddAdapterDelegate);
@@ -82,7 +88,7 @@ public class SearchAdapter extends RecyclerView.Adapter {
   }
 
   public void releaseSubscriptions() {
-    if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    if (subscriptions.hasSubscriptions()) subscriptions.clear();
     delegatesManager.releaseSubscriptions();
   }
 
@@ -158,24 +164,28 @@ public class SearchAdapter extends RecyclerView.Adapter {
    * OBSERVABLES
    */
 
-  public Observable<View> onClick() {
-    return Observable.merge(searchResultGridAdapterDelegate.onClick(),
-        userToAddAdapterDelegate.onClick());
-  }
-
   public Observable<View> onInvite() {
     return contactToInviteAdapterDelegate.onInvite();
   }
 
-  public Observable<View> onClickChat() {
-    return shortcutAdapterDelegate.onChatClick();
+  public Observable<View> onClick() {
+    return Observable.merge(searchResultGridAdapterDelegate.onClick(),
+        shortcutChatActiveHomeAdapterDelegate.onClick(), shortcutAdapterDelegate.onClick(),
+        userToAddAdapterDelegate.onClick());
   }
 
-  public Observable<View> onClickLive() {
-    return shortcutAdapterDelegate.onLiveClick();
+  public Observable<View> onChatClick() {
+    return Observable.merge(shortcutAdapterDelegate.onChatClick(),
+        shortcutChatActiveHomeAdapterDelegate.onChatClick());
+  }
+
+  public Observable<View> onLiveClick() {
+    return Observable.merge(shortcutAdapterDelegate.onLiveClick(),
+        shortcutChatActiveHomeAdapterDelegate.onLiveClick());
   }
 
   public Observable<View> onMainClick() {
-    return shortcutAdapterDelegate.onMainClick();
+    return Observable.merge(shortcutAdapterDelegate.onMainClick(),
+        shortcutChatActiveHomeAdapterDelegate.onMainClick());
   }
 }

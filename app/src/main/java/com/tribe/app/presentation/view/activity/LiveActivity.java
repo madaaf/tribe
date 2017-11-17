@@ -336,8 +336,9 @@ public class LiveActivity extends BaseActivity
 
         if (room.getId().equals(payload.getSessionId())) {
           String action = payload.getAction();
-          if (action != null && (action.equals(NotificationPayload.ACTION_LEFT) || action.equals(
-              NotificationPayload.ACTION_JOINED))) {
+          if (action != null &&
+              (action.equals(NotificationPayload.ACTION_LEFT) ||
+                  action.equals(NotificationPayload.ACTION_JOINED))) {
             shouldDisplay = false;
           }
         }
@@ -620,14 +621,16 @@ public class LiveActivity extends BaseActivity
     initChatView(getShortcut());
     if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       subscriptions.add(live.onRoomUpdated().subscribe(room -> {
+        if (room == null) return;
+
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
-        if (chatView.getShortcut().getMembers() != null && !chatView.getShortcut()
-            .getMembers()
-            .isEmpty()) {
+        if (chatView.getShortcut().getMembers() != null &&
+            !chatView.getShortcut().getMembers().isEmpty()) {
 
-          if (!allUsers.isEmpty() && !ShortcutUtil.equalShortcutMembers(
-              chatView.getShortcut().getMembers(), allUsers, user)) {
+          if (!allUsers.isEmpty() &&
+              !ShortcutUtil.equalShortcutMembers(chatView.getShortcut().getMembers(), allUsers,
+                  user)) {
             chatView.dispose();
             Shortcut shortcut = getShortcut();
             if (shortcut != null) {
@@ -710,8 +713,8 @@ public class LiveActivity extends BaseActivity
         .subscribe(aVoid -> gameDrawView.onClearDrawReceived()));
 
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
-      if (live.fromRoom() && (tribeJoinRoom.getSessionList() == null
-          || tribeJoinRoom.getSessionList().size() == 0)) {
+      if (live.fromRoom() &&
+          (tribeJoinRoom.getSessionList() == null || tribeJoinRoom.getSessionList().size() == 0)) {
         Toast.makeText(this,
             getString(R.string.live_other_user_hung_up, room.getInitiator().getDisplayName()),
             Toast.LENGTH_SHORT).show();
@@ -863,6 +866,7 @@ public class LiveActivity extends BaseActivity
         }));
 
     subscriptions.add(viewLive.onPointsDrawReceived().
+        onBackpressureDrop().
         subscribeOn(Schedulers.newThread()).
         observeOn(AndroidSchedulers.mainThread()).
         subscribe(points -> {
@@ -870,6 +874,7 @@ public class LiveActivity extends BaseActivity
         }));
 
     subscriptions.add(viewLive.onStartGame().
+        onBackpressureDrop().
         subscribeOn(Schedulers.newThread()).
         observeOn(AndroidSchedulers.mainThread()).
         subscribe(game -> {
@@ -960,6 +965,8 @@ public class LiveActivity extends BaseActivity
   }
 
   private void share() {
+    if (room == null) return;
+
     Bundle bundle = new Bundle();
     bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
@@ -985,8 +992,8 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
-        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE &&
+        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -1117,11 +1124,11 @@ public class LiveActivity extends BaseActivity
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] data = baos.toByteArray();
-            StorageReference riversRef = storageRef.child("app/uploads/reported-users/"
-                + user.getId()
-                + "/"
-                + dateUtils.getUTCDateAsString()
-                + suffix);
+            StorageReference riversRef = storageRef.child("app/uploads/reported-users/" +
+                user.getId() +
+                "/" +
+                dateUtils.getUTCDateAsString() +
+                suffix);
             UploadTask uploadTask = riversRef.putBytes(data);
             uploadTask.addOnFailureListener(exception -> {
               Timber.e("error fetching image on firebase ");
@@ -1331,9 +1338,9 @@ public class LiveActivity extends BaseActivity
     live.setRoom(room);
     viewLive.joinRoom(this.room);
 
-    if (!StringUtils.isEmpty(live.getRoomId())
-        && !StringUtils.isEmpty(room.getName())
-        && !room.getInitiator().getId().equals(getCurrentUser().getId())) {
+    if (!StringUtils.isEmpty(live.getRoomId()) &&
+        !StringUtils.isEmpty(room.getName()) &&
+        !room.getInitiator().getId().equals(getCurrentUser().getId())) {
       NotificationPayload notificationPayload = new NotificationPayload();
       notificationPayload.setBody(EmojiParser.demojizedText(
           getString(R.string.live_notification_initiator_has_been_notified,

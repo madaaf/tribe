@@ -113,7 +113,9 @@ public class RoomPresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
-
+      JoinRoomException joinRoomException = new JoinRoomException(e);
+      String errorMessage = ErrorMessageFactory.create(roomMVPView.context(), joinRoomException);
+      if (roomMVPView != null) roomMVPView.onRoomInfosError(errorMessage);
     }
 
     @Override public void onNext(Room room) {

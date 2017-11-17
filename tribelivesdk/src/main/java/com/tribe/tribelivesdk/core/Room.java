@@ -149,22 +149,20 @@ public class Room {
       }
     }).subscribe());
 
-    persistentSubscriptions.add(jsonToModel.onRollTheDiceReceived().doOnNext(s -> {
-      onRollTheDiceReceived.onNext(null);
-    }).subscribe());
+    persistentSubscriptions.add(jsonToModel.onRollTheDiceReceived().onBackpressureDrop().doOnNext(s -> onRollTheDiceReceived.onNext(null)).subscribe());
 
-    persistentSubscriptions.add(jsonToModel.unlockRollTheDice().subscribe(unlockRollTheDice));
+    persistentSubscriptions.add(jsonToModel.unlockRollTheDice().onBackpressureDrop().subscribe(unlockRollTheDice));
 
     persistentSubscriptions.add(
-        jsonToModel.onNewChallengeReceived().subscribe(onNewChallengeReceived));
+        jsonToModel.onNewChallengeReceived().onBackpressureDrop().subscribe(onNewChallengeReceived));
 
-    persistentSubscriptions.add(jsonToModel.onNewDrawReceived().subscribe(onNewDrawReceived));
+    persistentSubscriptions.add(jsonToModel.onNewDrawReceived().onBackpressureDrop().subscribe(onNewDrawReceived));
 
-    persistentSubscriptions.add(jsonToModel.unlockedRollTheDice().subscribe(unlockedRollTheDice));
+    persistentSubscriptions.add(jsonToModel.unlockedRollTheDice().onBackpressureDrop().subscribe(unlockedRollTheDice));
 
-    persistentSubscriptions.add(jsonToModel.onClearDrawReceived().subscribe(onClearDrawReceived));
+    persistentSubscriptions.add(jsonToModel.onClearDrawReceived().onBackpressureDrop().subscribe(onClearDrawReceived));
 
-    persistentSubscriptions.add(jsonToModel.onPointsDrawReceived().subscribe(onPointsDrawReceived));
+    persistentSubscriptions.add(jsonToModel.onPointsDrawReceived().onBackpressureDrop().subscribe(onPointsDrawReceived));
 
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
         .subscribe(tribeOffer -> webRTCClient.setRemoteDescription(tribeOffer.getSession(),
@@ -256,6 +254,7 @@ public class Room {
     }).subscribe(onRoomStateChanged));
 
     tempSubscriptions.add(webSocketConnection.onMessage()
+        .onBackpressureDrop()
         .onErrorResumeNext(throwable -> Observable.just(""))
         .subscribe(message -> {
           if (!webSocketConnection.getState().equals(WebSocketConnection.STATE_CONNECTED)) {
