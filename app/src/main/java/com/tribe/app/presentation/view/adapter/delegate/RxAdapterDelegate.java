@@ -11,6 +11,6 @@ public abstract class RxAdapterDelegate<T> implements AdapterDelegate<T> {
   protected CompositeSubscription subscriptions = new CompositeSubscription();
 
   public void releaseSubscriptions() {
-    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
   }
 }

@@ -99,8 +99,6 @@ public class GameChallengeViewPagerAdapter extends PagerAdapter {
         viewAvatar.load(guest.getPicture());
         txtUsername.setText(context.getString(R.string.game_challenges_turn));
       }
-    } else {
-      Timber.e("guest null");
     }
   }
 

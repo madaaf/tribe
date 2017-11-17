@@ -314,6 +314,8 @@ public class HomeWalkthroughView extends FrameLayout {
   }
 
   public void hide() {
+    btnNext.setEnabled(false);
+    btnNext.setClickable(false);
     viewVideo.releasePlayer();
     animate().alpha(0)
         .setDuration(DURATION)

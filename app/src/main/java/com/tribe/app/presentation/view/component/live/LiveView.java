@@ -194,7 +194,7 @@ public class LiveView extends FrameLayout {
   }
 
   public void jump() {
-    webRTCRoom.jump();
+    if (webRTCRoom != null) webRTCRoom.jump();
   }
 
   public double getDuration() {

@@ -69,7 +69,6 @@ public class JsonToModel {
     @WebRTCRoom.WebSocketMessageType String localWebSocketType = getWebSocketMessageFromJson(json);
 
     if (localWebSocketType == null) {
-      Timber.e("WebSocket message unhandled : " + json);
       return;
     }
 

@@ -603,13 +603,12 @@ public abstract class TokenCompleteTextView<T>
   @Override public void performCompletion() {
     if ((getAdapter() == null || getListSelection() == ListView.INVALID_POSITION) &&
         enoughToFilter()) {
-      Object bestGuess;
+      Object bestGuess = null;
       if (getAdapter() != null && getAdapter().getCount() > 0 && performBestGuess) {
         bestGuess = getAdapter().getItem(0);
-      } else {
-        bestGuess = defaultObject(currentCompletionText());
       }
-      replaceText(convertSelectionToString(bestGuess));
+
+      if (bestGuess != null) replaceText(convertSelectionToString(bestGuess));
     } else {
       super.performCompletion();
     }

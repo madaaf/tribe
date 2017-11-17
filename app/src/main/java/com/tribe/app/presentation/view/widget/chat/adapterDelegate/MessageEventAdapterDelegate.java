@@ -41,6 +41,8 @@ public class MessageEventAdapterDelegate extends BaseMessageAdapterDelegate {
     MessageEventViewHolder vh = (MessageEventViewHolder) holder;
     MessageEvent m = (MessageEvent) items.get(position);
 
+    if (m.getUser() == null) return;
+
     vh.notifContent.setText(m.getContent(m.getUser().getDisplayName()));
     vh.avatarNotif.load(m.getUser().getProfilePicture());
     if (m.getAction().equals(MessageEvent.ACTION_JOIN)) {

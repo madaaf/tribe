@@ -150,38 +150,50 @@ public class WebRTCRoom {
       }
     }).subscribe());
 
-    persistentSubscriptions.add(jsonToModel.onRollTheDiceReceived().doOnNext(s -> {
-      onRollTheDiceReceived.onNext(null);
-    }).subscribe());
-
-    persistentSubscriptions.add(jsonToModel.unlockRollTheDice().subscribe(unlockRollTheDice));
+    persistentSubscriptions.add(
+        jsonToModel.onRollTheDiceReceived().onBackpressureDrop().doOnNext(s -> {
+          onRollTheDiceReceived.onNext(null);
+        }).subscribe());
 
     persistentSubscriptions.add(
-        jsonToModel.onNewChallengeReceived().subscribe(onNewChallengeReceived));
+        jsonToModel.unlockRollTheDice().onBackpressureDrop().subscribe(unlockRollTheDice));
 
-    persistentSubscriptions.add(jsonToModel.onNewDrawReceived().subscribe(onNewDrawReceived));
+    persistentSubscriptions.add(jsonToModel.onNewChallengeReceived()
+        .onBackpressureDrop()
+        .subscribe(onNewChallengeReceived));
 
-    persistentSubscriptions.add(jsonToModel.unlockedRollTheDice().subscribe(unlockedRollTheDice));
+    persistentSubscriptions.add(
+        jsonToModel.onNewDrawReceived().onBackpressureDrop().subscribe(onNewDrawReceived));
 
-    persistentSubscriptions.add(jsonToModel.onClearDrawReceived().subscribe(onClearDrawReceived));
+    persistentSubscriptions.add(
+        jsonToModel.unlockedRollTheDice().onBackpressureDrop().subscribe(unlockedRollTheDice));
 
-    persistentSubscriptions.add(jsonToModel.onPointsDrawReceived().subscribe(onPointsDrawReceived));
+    persistentSubscriptions.add(
+        jsonToModel.onClearDrawReceived().onBackpressureDrop().subscribe(onClearDrawReceived));
+
+    persistentSubscriptions.add(
+        jsonToModel.onPointsDrawReceived().onBackpressureDrop().subscribe(onPointsDrawReceived));
 
     persistentSubscriptions.add(jsonToModel.onReceivedOffer()
+        .onBackpressureDrop()
         .subscribe(tribeOffer -> webRTCClient.setRemoteDescription(tribeOffer.getSession(),
             tribeOffer.getSessionDescription())));
 
     persistentSubscriptions.add(jsonToModel.onCandidate()
+        .onBackpressureDrop()
         .subscribe(
             tribeCandidate -> webRTCClient.addIceCandidate(tribeCandidate.getSession().getPeerId(),
                 tribeCandidate.getIceCandidate())));
 
     persistentSubscriptions.add(jsonToModel.onLeaveRoom()
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(tribeSession -> webRTCClient.removePeerConnection(tribeSession)));
 
-    persistentSubscriptions.add(
-        jsonToModel.onError().observeOn(AndroidSchedulers.mainThread()).subscribe(error -> {
+    persistentSubscriptions.add(jsonToModel.onError()
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(error -> {
           onRoomError.onNext(error);
         }));
 
@@ -197,6 +209,7 @@ public class WebRTCRoom {
             tribePeerMediaConfiguration)));
 
     persistentSubscriptions.add(jsonToModel.onTribeMediaConstraints()
+        .onBackpressureDrop()
         .filter(tribeMediaConstraints -> hasJoined)
         .subscribe(
             tribeMediaConstraints -> webRTCClient.updateMediaConstraints(tribeMediaConstraints)));
@@ -204,7 +217,6 @@ public class WebRTCRoom {
     persistentSubscriptions.add(jsonToModel.onShouldSwitchRemoteMediaMode()
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
-        .onBackpressureDrop()
         .subscribe(tribeMediaConfiguration -> webRTCClient.setRemoteMediaConfiguration(
             tribeMediaConfiguration)));
 
@@ -213,8 +225,10 @@ public class WebRTCRoom {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onNewGame));
 
-    persistentSubscriptions.add(
-        jsonToModel.onStopGame().observeOn(AndroidSchedulers.mainThread()).subscribe(onStopGame));
+    persistentSubscriptions.add(jsonToModel.onStopGame()
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(onStopGame));
   }
 
   public void initLocalStream(LocalPeerView localPeerView) {

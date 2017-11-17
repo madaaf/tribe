@@ -270,12 +270,10 @@ public class RecyclerMessageView extends ChatMVPView {
   }
 
   public void sendMessageToNetwork(String[] arrIds, String data, String type, int position) {
-    Timber.w("sendMessageToNetwork " + position + "  " + data);
     messagePresenter.createMessage(arrIds, data, type, position);
   }
 
   public void sendMyMessageToAdapter(Message pendingMessage) {
-    Timber.w("SEND PENDING MESSAGE " + pendingMessage.toString());
     messageAdapter.setItem(pendingMessage);
     scrollListToBottom();
   }
@@ -338,7 +336,6 @@ public class RecyclerMessageView extends ChatMVPView {
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
-    Timber.w("successLoadingMessageDisk " + messages.size() + " ");
     if (errorLoadingMessages || !successLoadingMessage) {
       messageAdapter.setItems(messages, 0);
       scrollListToBottom();
@@ -349,7 +346,6 @@ public class RecyclerMessageView extends ChatMVPView {
   }
 
   @Override public void successMessageCreated(Message message, int position) {
-    Timber.w("successMessageCreated " + position + " " + message.toString());
     messageAdapter.updateItem(messageAdapter.getItemCount() - 1, message);
   }
 

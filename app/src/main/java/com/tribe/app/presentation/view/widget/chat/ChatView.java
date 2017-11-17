@@ -538,14 +538,12 @@ public class ChatView extends ChatMVPView {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(avoid -> {
           if (!editTextString.isEmpty()) {
-            Timber.e("OK  I AM TYPING");
             //  messagePresenter.imTypingMessage(arrIds);// TODO SEE IF YOU SEND THE MESSAGE THREW SIGNALING OR API
             context.startService(WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMTYPING,
                 JsonUtils.arrayToJson(arrIds)));
           }
 
           if (onRecord) {
-            Timber.e("OK  I AM TALKING");
             context.startService(
                 WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMTALKING,
                     JsonUtils.arrayToJson(arrIds)));
@@ -742,7 +740,6 @@ public class ChatView extends ChatMVPView {
   }
 
   protected void sendMessageToAdapter(@Message.Type String type, String content, Uri uri) {
-    Timber.e("sendMessageToAdapter");
     Message message = null;
     String realmType = null;
 
@@ -807,7 +804,6 @@ public class ChatView extends ChatMVPView {
   }
 
   @Override protected void onAttachedToWindow() {
-    Timber.w("onAttachedToWindow");
     super.onAttachedToWindow();
     messagePresenter.onViewAttached(this);
     populateUsersHorizontalList();
@@ -817,7 +813,6 @@ public class ChatView extends ChatMVPView {
 
   @Override protected void onDetachedFromWindow() {
     messagePresenter.onViewDetached();
-    Timber.w("DETACHED SUBSC onDetachedFromWindow");
 
     if (shortcut != null) {
       Map<String, String> list = PreferencesUtils.getMapFromJsonString(chatShortcutData);
@@ -1128,7 +1123,6 @@ public class ChatView extends ChatMVPView {
   }
 
   @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
-    Timber.e(" " + shortcut.isBlocked());
     if (shortcut.isBlocked()) {
       ((Activity) context).finish();
     }

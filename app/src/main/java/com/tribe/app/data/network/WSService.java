@@ -294,8 +294,9 @@ import timber.log.Timber;
       }
     }
 
-    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
-        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null &&
+        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
+            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -320,9 +321,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous()
-        || StringUtils.isEmpty(accessToken.getTokenType())
-        || StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous() ||
+        StringUtils.isEmpty(accessToken.getTokenType()) ||
+        StringUtils.isEmpty(accessToken.getAccessToken())) {
 
       webSocketConnection.setShouldReconnect(false);
     } else {
@@ -355,7 +356,7 @@ import timber.log.Timber;
       }
     }));
 
-    persistentSubscriptions.add(webSocketConnection.onMessage().subscribe(message -> {
+    persistentSubscriptions.add(webSocketConnection.onMessage().onBackpressureDrop().subscribe(message -> {
       Timber.d("onMessage : " + message);
 
       jsonToModel.convertToSubscriptionResponse(message);
@@ -460,11 +461,9 @@ import timber.log.Timber;
     persistentSubscriptions.add(
         jsonToModel.onFbIdUpdated().subscribe(userUpdated -> liveCache.onFbIdUpdated(userUpdated)));
 
-    persistentSubscriptions.add(
-        jsonToModel.onRoomUpdated().observeOn(AndroidSchedulers.mainThread()).subscribe(room -> {
-          Timber.e("PUT ROOM UPDATED ON CASH " + room.getId());
-          liveCache.onRoomUpdated(room);
-        }));
+    persistentSubscriptions.add(jsonToModel.onRoomUpdated()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(room -> liveCache.onRoomUpdated(room)));
 
     persistentSubscriptions.add(jsonToModel.onUserListUpdated()
         .subscribe(userRealmList -> userCache.updateUserRealmList(userRealmList)));
@@ -535,9 +534,8 @@ import timber.log.Timber;
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment =
-        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
-            R.string.userfragment_infos) : "");
+    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
+        getApplicationContext().getString(R.string.userfragment_infos) : "");
 
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 

@@ -91,7 +91,7 @@ public class MessageTextAdapterDelegate extends BaseMessageAdapterDelegate {
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     MessageTextViewHolder vh = (MessageTextViewHolder) holder;
     MessageText m = (MessageText) items.get(position);
-    Timber.w("PUT 1f " + m.toString() + ((MessageText) payloads.get(0)).toString());
+
     linkifyMessage(m, vh);
     if (m.isPending()) {
       vh.container.setAlpha(0.4f);

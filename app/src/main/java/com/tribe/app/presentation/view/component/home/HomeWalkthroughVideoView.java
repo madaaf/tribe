@@ -62,11 +62,12 @@ public class HomeWalkthroughVideoView extends CardView
     setMaxCardElevation(0);
     setCardElevation(0);
     setCardBackgroundColor(Color.TRANSPARENT);
+
+    initPlayer();
   }
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    initPlayer();
   }
 
   @Override protected void onDetachedFromWindow() {

@@ -132,7 +132,6 @@ public class SwipeDetector implements View.OnTouchListener {
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-          Timber.e("on scroll " + isLongTap + " " + isDown);
           if (isLongTap) {
             float x2 = mView.getX() + (mView.getWidth() / 2);
             float x1 = recordingView.getX() + (recordingView.getWidth() / 2);

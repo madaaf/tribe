@@ -11,7 +11,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 23/02/2017.
@@ -71,7 +70,7 @@ public class Live implements Serializable {
   }
 
   public void dispose() {
-    subscriptions.clear();
+    if (subscriptions != null) subscriptions.clear();
     if (room != null) room.dispose();
   }
 
@@ -341,12 +340,10 @@ public class Live implements Serializable {
   /////////////////
 
   public Observable<Room> onRoomUpdated() {
-    Timber.e("onRoomUpdated in live object ");
     return onRoomUpdated.onBackpressureDrop().observeOn(AndroidSchedulers.mainThread());
   }
 
   public Observable<Shortcut> onShortcutUpdated() {
-    Timber.e("onShortcutUpdated in live object ");
     return onShortcutUpdated;
   }
 }

@@ -161,6 +161,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   @Override protected void onDetachedFromWindow() {
     searchPresenter.onViewDetached();
+    searchAdapter.releaseSubscriptions();
     recyclerViewContacts.setAdapter(null);
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
     super.onDetachedFromWindow();
