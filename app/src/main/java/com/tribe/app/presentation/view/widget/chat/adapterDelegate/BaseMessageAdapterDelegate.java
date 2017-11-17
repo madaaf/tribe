@@ -126,31 +126,6 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
 
     vh.itemView.setOnLongClickListener(view -> {
       onLongClickItem.onNext(m);
-    /*  vh.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.black_opacity_5));
-      subscriptions.add(
-          DialogFactory.showBottomSheetForMessageLongClick(context).flatMap(labelType -> {
-            if (labelType != null) {
-              if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_UNSEND)) {
-                Timber.e("MESSAGE_OPTION_UNSEND "
-                    + vh.getItemId()
-                    + " "
-                    + m.getId()
-                    + " "
-                    + m.getContent());
-              } else if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_COPY)) {
-                Timber.e("MESSAGE_OPTION_COPY "
-                    + vh.getItemId()
-                    + " "
-                    + m.getId()
-                    + " "
-                    + m.getContent());
-              }
-              vh.itemView.setBackgroundColor(0);
-            }
-
-            return null;
-          }).subscribe());
-*/
       return true;
     });
 

@@ -430,5 +430,7 @@ public class RecyclerMessageView extends ChatMVPView {
 
   public void onStartRecording() {
     messageAdapter.onStartRecording();
+
+    layoutManager.findViewByPosition(0);
   }
 }

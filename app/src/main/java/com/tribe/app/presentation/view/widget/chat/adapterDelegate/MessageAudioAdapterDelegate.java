@@ -23,6 +23,8 @@ import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import com.wang.avi.AVLoadingIndicatorView;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static android.view.View.VISIBLE;
@@ -40,6 +42,8 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
   private MessageAudioViewHolder playingHolder;
   private ValueAnimator anim;
   private long currentPlayTime;
+  private List<Message> items;
+  private HashMap<Integer, BaseTextViewHolder> itemsView;
 
   public MessageAudioAdapterDelegate(Context context, int type) {
     super(context, type);
@@ -47,6 +51,8 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     currentPlayingPosition = -1;
+    items = new ArrayList<>();
+    itemsView = new HashMap<>();
   }
 
   @Override public boolean isForViewType(@NonNull List<Message> items, int position) {
@@ -62,9 +68,11 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
   @Override public void onBindViewHolder(@NonNull List<Message> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     super.onBindViewHolder(items, position, holder);
+    this.items = items;
 
     MessageAudio m = (MessageAudio) items.get(position);
     MessageAudioViewHolder vh = (MessageAudioViewHolder) holder;
+    itemsView.put(position, vh);
 
     Image o = m.getOriginal();
     String time =
@@ -72,14 +80,31 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     // String time = o.getDurationFormatted();
     vh.timerVoiceNote.setText(time);
 
-    vh.pauseBtn.setOnClickListener(view -> onClickBtn(position, o, vh));
-    vh.playBtn.setOnClickListener(view -> onClickBtn(position, o, vh));
+    vh.pauseBtn.setOnClickListener(view -> {
+      onClickBtn(position);
+    });
+    vh.playBtn.setOnClickListener(view -> onClickBtn(position));
 
     setPendingBehavior(m, vh.container);
   }
 
-  private void onClickBtn(int position, Image o, MessageAudioViewHolder vh) {
+  private void onClickBtn(int position) {
+    MessageAudioViewHolder vh = null;
+    if (position > items.size() - 1) {
+      return;
+    }
 
+    if (itemsView.get(position) instanceof MessageAudioViewHolder) {
+      vh = (MessageAudioViewHolder) itemsView.get(position);
+    }
+
+    if (!(items.get(position) instanceof MessageAudio)) {
+      onClickBtn(position + 1);
+      return;
+    }
+
+    MessageAudio m = (MessageAudio) items.get(position);
+    Image o = m.getOriginal();
     if (position == currentPlayingPosition) {
       if (mediaPlayer.isPlaying()) {
         mediaPlayer.pause();
@@ -89,8 +114,9 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
         mediaPlayer.start();
         startAnimation(vh);
         setEqualizerAnim(vh, true);
+        MessageAudioViewHolder finalVh = vh;
         mediaPlayer.setOnCompletionListener(mediaPlayer1 -> {
-          updateNonPlayingView(vh);
+          updateNonPlayingView(finalVh);
         });
       }
     } else {
@@ -104,15 +130,18 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
       playingHolder = vh;
 
       setEqualizerAnim(vh, true);
-      startMediaPlayer(Uri.parse(o.getUrl()));
+      startMediaPlayer(Uri.parse(o.getUrl()), position);
       animePlayerIndicator(vh, o.getDurationMs());
     }
     updatePlayingView();
   }
 
-  private void startMediaPlayer(Uri audioResId) {
+  private void startMediaPlayer(Uri audioResId, int position) {
     mediaPlayer = MediaPlayer.create(context.getApplicationContext(), audioResId);
-    mediaPlayer.setOnCompletionListener(mp -> releaseMediaPlayer());
+    mediaPlayer.setOnCompletionListener(mp -> {
+      releaseMediaPlayer();
+      onClickBtn(position + 1);
+    });
     mediaPlayer.start();
   }
 
