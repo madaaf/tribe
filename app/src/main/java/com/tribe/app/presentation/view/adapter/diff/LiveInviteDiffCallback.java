@@ -27,7 +27,11 @@ public class LiveInviteDiffCallback extends DiffUtil.Callback {
   }
 
   @Override public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-    return newList.get(newItemPosition).getId().equals(oldList.get(oldItemPosition).getId());
+    if (newList.get(newItemPosition).getId() != null) {
+      return newList.get(newItemPosition).getId().equals(oldList.get(oldItemPosition).getId());
+    } else {
+      return false;
+    }
   }
 
   @Override public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
