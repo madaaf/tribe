@@ -267,10 +267,12 @@ public class GameWebView extends GameViewWithEngine {
   private class WebViewGameInterface {
 
     @JavascriptInterface public void gameEnded() {
+      if (isResetingScores) return;
       mainHandler.post(() -> GameWebView.this.iLost());
     }
 
     @JavascriptInterface public void scoreIncremented(int points) {
+      if (isResetingScores) return;
       mainHandler.post(() -> GameWebView.this.addPoints(points, currentUser.getId(), true));
     }
 
