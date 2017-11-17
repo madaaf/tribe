@@ -234,7 +234,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
                 subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(aLong1 -> {
-                      resetScores();
+                      resetScores(true);
                       iLost();
                     }));
               }

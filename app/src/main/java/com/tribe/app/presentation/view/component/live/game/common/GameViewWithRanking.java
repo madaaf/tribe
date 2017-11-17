@@ -314,7 +314,7 @@ public abstract class GameViewWithRanking extends GameView {
     updateRanking(null);
   }
 
-  public void resetScores() {
+  public void resetScores(boolean shouldSendGameOver) {
     Map<String, Object> map = new HashMap<>();
     Map<String, Integer> newScoresMap = new HashMap<>();
 

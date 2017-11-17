@@ -268,7 +268,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
             player.getDisplayName()), 250, null, null);
       }
     } else {
-      resetScores();
+      resetScores(false);
 
       showMessage("Game Over", 250, null, () -> {
         becomePlayer();
@@ -614,6 +614,14 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     super.stop();
     if (gameEngine != null) gameEngine.stop();
     soundManager.cancelMediaPlayer();
+  }
+
+  @Override public void resetScores(boolean shouldSendGameOver) {
+    super.resetScores(shouldSendGameOver);
+    if (shouldSendGameOver) {
+      webRTCRoom.sendToPeers(getGameOverPayload(""), true);
+      gameOver("", true);
+    }
   }
 
   public void dispose() {

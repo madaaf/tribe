@@ -127,7 +127,7 @@ public class GameWebView extends GameViewWithEngine {
             .onBackpressureDrop()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(aLong -> {
-              resetScores();
+              resetScores(false);
               Set<String> playerIds = mapPlayerStatus.keySet();
               newGame(playerIds);
             }));
@@ -258,8 +258,8 @@ public class GameWebView extends GameViewWithEngine {
     executeJavascript("Tribe.startGame()");
   }
 
-  @Override public void resetScores() {
-    super.resetScores();
+  @Override public void resetScores(boolean shouldSendGameOver) {
+    super.resetScores(shouldSendGameOver);
     Timber.d("resetScores");
     isResetingScores = true;
   }

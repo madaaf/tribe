@@ -156,7 +156,7 @@ public class GameManagerView extends FrameLayout {
 
     subscriptions.add(gameManager.onCurrentUserResetScores().subscribe(game -> {
       if (currentGameView != null && currentGameView instanceof GameViewWithRanking) {
-        ((GameViewWithRanking) currentGameView).resetScores();
+        ((GameViewWithRanking) currentGameView).resetScores(true);
       }
     }));
   }
