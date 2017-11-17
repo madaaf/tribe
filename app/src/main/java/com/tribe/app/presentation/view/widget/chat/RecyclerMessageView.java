@@ -295,6 +295,7 @@ public class RecyclerMessageView extends ChatMVPView {
   private boolean successLoadingMessage = false;
 
   @Override public void successLoadingMessage(List<Message> messages) {
+    Timber.i("successLoadingMessage " + messages.size());
     successLoadingMessage = true;
     if (isDisplayedMessageDisk) {
       messageAdapter.clearItem();
@@ -336,16 +337,17 @@ public class RecyclerMessageView extends ChatMVPView {
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
+    Timber.i("successLoadingMessageDisk " + messages.size());
     if (errorLoadingMessages || !successLoadingMessage) {
+      Timber.i("message disk displayed " + messages.size());
       messageAdapter.setItems(messages, 0);
       scrollListToBottom();
       isDisplayedMessageDisk = true;
     }
-
-    // DO SAME THING THE SUCVCESSLOADING MESSAGE/
   }
 
   @Override public void successMessageCreated(Message message, int position) {
+    Timber.i("successMessageCreated " + message.getId());
     messageAdapter.updateItem(messageAdapter.getItemCount() - 1, message);
   }
 
@@ -394,11 +396,6 @@ public class RecyclerMessageView extends ChatMVPView {
     this.shortcut = shortcut;
   }
 
-  public void refreshLayout() {
-    recyclerView.getLayoutParams().width = RecyclerView.LayoutParams.MATCH_PARENT;
-    recyclerView.getLayoutParams().height = RecyclerView.LayoutParams.MATCH_PARENT;
-  }
-
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
 
   }
@@ -429,5 +426,9 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void onShortcut(Shortcut shortcut) {
 
+  }
+
+  public void onStartRecording() {
+    messageAdapter.onStartRecording();
   }
 }

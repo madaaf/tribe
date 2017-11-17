@@ -1139,4 +1139,8 @@ public class ChatView extends ChatMVPView {
   @Override public void onShortcut(Shortcut shortcut) {
 
   }
+
+  public void onStartRecording() {
+    recyclerView.onStartRecording();
+  }
 }

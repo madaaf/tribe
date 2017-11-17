@@ -24,7 +24,6 @@ import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import com.wang.avi.AVLoadingIndicatorView;
 import java.util.List;
-import timber.log.Timber;
 
 import static android.view.View.VISIBLE;
 
@@ -121,7 +120,9 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     if (null != playingHolder) {
       updateNonPlayingView(playingHolder);
     }
-    mediaPlayer.release();
+    if (mediaPlayer != null) {
+      mediaPlayer.release();
+    }
     mediaPlayer = null;
     currentPlayingPosition = -1;
   }
@@ -282,6 +283,10 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     anim.setCurrentPlayTime(currentPlayTime);
   }
 
+  public void stopListenVoiceNote() {
+    releaseMediaPlayer();
+  }
+
   static class MessageAudioViewHolder extends BaseTextViewHolder {
 
     @BindView(R.id.container) public RelativeLayout container;
@@ -293,7 +298,6 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     @BindView(R.id.recordingView) public FrameLayout recordingView;
     @BindView(R.id.loadingRecordView) public AVLoadingIndicatorView loadingRecordView;
     @BindView(R.id.equalizer) ImageView equalizer;
-
 
     MessageAudioViewHolder(View itemView) {
       super(itemView);

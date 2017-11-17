@@ -87,6 +87,7 @@ public class SwipeDetector implements View.OnTouchListener {
                 onSingleLongTap = true;
                 Timber.i("LONG CLICK " + isLongTap);
                 onActionDown(mView);
+                context.onStartRecording();
               }
             });
         context.subscriptions.add(subscribe);
@@ -448,7 +449,7 @@ public class SwipeDetector implements View.OnTouchListener {
     recorder = null;
   }
 
-  private void startRecording() {
+  private void startRecording() { //MADA
 
     context.fileName = context.getContext().getExternalCacheDir().getAbsolutePath()
         + File.separator

@@ -145,4 +145,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
         messageEmojiAdapterDelegate.onLongClickItem(),
         messageAudioAdapterDelegate.onLongClickItem());
   }
+
+  public void onStartRecording() {
+    messageAudioAdapterDelegate.stopListenVoiceNote();
+  }
 }
+
