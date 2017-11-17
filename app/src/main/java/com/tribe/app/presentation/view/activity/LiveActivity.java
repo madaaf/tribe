@@ -564,6 +564,7 @@ public class LiveActivity extends BaseActivity
   }
 
   private void initChatView(Shortcut shortcut) {
+    Timber.i("init chat view from live activity");
     if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       return;
     }
@@ -628,8 +629,11 @@ public class LiveActivity extends BaseActivity
           if (!allUsers.isEmpty() && !ShortcutUtil.equalShortcutMembers(
               chatView.getShortcut().getMembers(), allUsers, user)) {
             chatView.dispose();
-            room.getShortcut().setMembers(allUsers);
-            initChatView(room.getShortcut());
+            Shortcut shortcut = getShortcut();
+            if (shortcut != null) {
+              shortcut.setMembers(allUsers);
+              initChatView(shortcut);
+            }
           }
         }
       }));

@@ -15,7 +15,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 30/01/2017.
@@ -329,7 +328,9 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
       memberIds.add(user.getId());
     }
 
-    if (!memberIds.contains(initiator.getId())) memberIds.add(initiator.getId());
+    if (initiator != null) {
+      if (!memberIds.contains(initiator.getId())) memberIds.add(initiator.getId());
+    }
 
     return memberIds;
   }

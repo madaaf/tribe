@@ -31,8 +31,10 @@ public class TextViewUtils {
                 if (count < userList.size() - 1) buffer.append(", ");
                 count++;
               } else {
-                buffer.replace(buffer.length() - 2, buffer.length() - 1, "");
-                shouldEllipsize = true;
+                if (buffer.length() >= 2) {
+                  buffer.replace(buffer.length() - 2, buffer.length() - 1, "");
+                  shouldEllipsize = true;
+                }
                 break;
               }
             }
