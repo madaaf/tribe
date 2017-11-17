@@ -621,7 +621,7 @@ public class LiveActivity extends BaseActivity
     initChatView(getShortcut());
     if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       subscriptions.add(live.onRoomUpdated().subscribe(room -> {
-        if (room == null) return;
+        if (room == null && chatView == null) return;
 
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 

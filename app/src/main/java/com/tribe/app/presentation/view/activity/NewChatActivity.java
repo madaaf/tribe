@@ -283,7 +283,7 @@ public class NewChatActivity extends BaseActivity
   }
 
   @Override public void onTokenAdded(Shortcut token) {
-    if (token == null) return;
+    if (token == null || token.getSingleFriend() == null) return;
     count++;
     selectedIds.add(token.getSingleFriend().getId());
     token.setSelected(true);
