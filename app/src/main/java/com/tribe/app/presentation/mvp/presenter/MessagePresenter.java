@@ -294,7 +294,6 @@ public class MessagePresenter implements Presenter {
     }
   }
 
-
   private class CreateMessageSubscriber extends DefaultSubscriber<Message> {
     private int positon;
 
@@ -316,6 +315,10 @@ public class MessagePresenter implements Presenter {
   }
 
   public void createShortcut(boolean onQuickChat, String... userIds) {
+    Timber.e("CREATE SHORTCUT " + userIds.length);
+    for (String id : userIds) {
+      Timber.e(id);
+    }
     createShortcut.setup(userIds);
     createShortcut.execute(new ShortcutForUserIdsSubscriber(onQuickChat, userIds));
   }

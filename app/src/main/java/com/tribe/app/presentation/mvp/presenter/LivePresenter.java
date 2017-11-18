@@ -23,6 +23,7 @@ import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import java.util.List;
 import javax.inject.Inject;
+import timber.log.Timber;
 
 public class LivePresenter implements Presenter {
 
@@ -266,7 +267,12 @@ public class LivePresenter implements Presenter {
   }
 
   public void createShortcut(String... userIds) {
-    shortcutPresenter.createShortcut(userIds);
+    if (userIds != null && userIds.length > 0) {
+      Timber.e("CREATE SHORTCUT " + userIds.length);
+      shortcutPresenter.createShortcut(userIds);
+    } else {
+      Timber.e("CREATE SHORTCUT USERIDS NULL");
+    }
   }
 
   public void muteShortcut(String shortcutId, boolean mute) {

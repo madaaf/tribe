@@ -6,6 +6,7 @@ import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import javax.inject.Inject;
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 04/05/2016.
