@@ -582,7 +582,6 @@ public class LiveActivity extends BaseActivity
     } else {
       String[] arrids =
           live.getRoom().getUserIds().toArray(new String[live.getRoom().getUserIds().size()]);
-      Timber.e("initChatView null => create shortcut");
       if (arrids.length > 0) {
         livePresenter.createShortcut(arrids);
       }

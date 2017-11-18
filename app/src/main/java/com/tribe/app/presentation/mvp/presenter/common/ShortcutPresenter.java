@@ -70,10 +70,6 @@ public class ShortcutPresenter implements Presenter {
   }
 
   public void createShortcut(String... userIds) {
-    Timber.e("CREATE SHORTCUT " + userIds.length);
-    for (String id : userIds) {
-      Timber.e(id);
-    }
     if (createShortcutSubscriber != null) createShortcutSubscriber.unsubscribe();
     createShortcutSubscriber = new CreateShortcutSubscriber();
     createShortcut.setup(userIds);

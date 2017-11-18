@@ -268,10 +268,7 @@ public class LivePresenter implements Presenter {
 
   public void createShortcut(String... userIds) {
     if (userIds != null && userIds.length > 0) {
-      Timber.e("CREATE SHORTCUT " + userIds.length);
       shortcutPresenter.createShortcut(userIds);
-    } else {
-      Timber.e("CREATE SHORTCUT USERIDS NULL");
     }
   }
 
