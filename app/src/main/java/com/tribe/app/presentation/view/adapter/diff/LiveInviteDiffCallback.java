@@ -27,7 +27,9 @@ public class LiveInviteDiffCallback extends DiffUtil.Callback {
   }
 
   @Override public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-    if (newList.get(newItemPosition).getId() != null) {
+    if (newList != null &&
+        newList.get(newItemPosition) != null &&
+        newList.get(newItemPosition).getId() != null) {
       return newList.get(newItemPosition).getId().equals(oldList.get(oldItemPosition).getId());
     } else {
       return false;
