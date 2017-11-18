@@ -115,6 +115,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void newGame(Set<String> playerIds) {
+    Timber.d("newGame");
     long timestamp = startGameTimestamp();
     webRTCRoom.sendToPeers(getNewGamePayload(currentUser.getId(), timestamp,
         playerIds.toArray(new String[playerIds.size()])), true);
@@ -569,7 +570,9 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     JSONObject game = new JSONObject();
     JsonUtils.jsonPut(game, ACTION_KEY, ACTION_NEW_GAME);
     JsonUtils.jsonPut(game, FROM_KEY, userId);
-    JsonUtils.jsonPut(game, PLAYERS, playerIds);
+    JSONArray jsonArray = new JSONArray();
+    for (String id : playerIds) jsonArray.put(id);
+    JsonUtils.jsonPut(game, PLAYERS, jsonArray);
     JsonUtils.jsonPut(game, TIMESTAMP, timestamp);
     JsonUtils.jsonPut(obj, this.game.getId(), game);
     return obj;

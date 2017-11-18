@@ -34,8 +34,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import org.json.JSONException;
-import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
@@ -89,26 +87,6 @@ public class GameWebView extends GameViewWithEngine {
     return -1;
   }
 
-  @Override protected void initWebRTCRoomSubscriptions() {
-    super.initWebRTCRoomSubscriptions();
-    subscriptionsRoom.add(webRTCRoom.onGameMessage()
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(jsonObject -> {
-          if (jsonObject.has(game.getId())) {
-            try {
-              JSONObject message = jsonObject.getJSONObject(game.getId());
-            } catch (JSONException e) {
-              e.printStackTrace();
-            }
-          }
-        }));
-  }
-
-  protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
-    super.setupGameLocally(userId, players, timestamp);
-  }
-
   @Override protected void gameOver(String winnerId, boolean isLocal) {
     super.gameOver(winnerId, isLocal);
   }
@@ -116,21 +94,23 @@ public class GameWebView extends GameViewWithEngine {
   @Override protected void startMasterEngine() {
     super.startMasterEngine();
 
+    didRestartWhenReady = false;
+
     subscriptions.add(gameEngine.onPlayerReady().subscribe(s -> {
       if (!didRestartWhenReady) {
         Map<String, Integer> mapPlayerStatus = gameEngine.getMapPlayerStatus();
         if (mapPlayerStatus.size() == 2) {
           didRestartWhenReady = true;
-        }
 
-        subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
-            .onBackpressureDrop()
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(aLong -> {
-              resetScores(false);
-              Set<String> playerIds = mapPlayerStatus.keySet();
-              newGame(playerIds);
-            }));
+          subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+              .onBackpressureDrop()
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(aLong -> {
+                resetScores(false);
+                Set<String> playerIds = mapPlayerStatus.keySet();
+                newGame(playerIds);
+              }));
+        }
       }
     }));
   }
@@ -151,6 +131,7 @@ public class GameWebView extends GameViewWithEngine {
     refactorReady(true);
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      Timber.d("Trying getSoundtrack()");
       webView.evaluateJavascript("Tribe.getSoundtrack()", value -> {
         Timber.d("evaluate getSoundtrack() : " + value);
         mediaPlayer = new MediaPlayer();
@@ -302,7 +283,7 @@ public class GameWebView extends GameViewWithEngine {
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     wordingPrefix = "game_webv1_";
     super.start(game, mapObservable, liveViewsObservable, userId);
-    webView.loadUrl(game.getUrl());
+    if (!StringUtils.isEmpty(game.getUrl())) webView.loadUrl(game.getUrl());
   }
 
   @Override public void stop() {
