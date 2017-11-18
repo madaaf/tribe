@@ -6,7 +6,6 @@ import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.JsonUtils;
-import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.ArrayList;
@@ -117,11 +116,15 @@ import rx.subscriptions.CompositeSubscription;
 
   public void setWebRTCRoom(WebRTCRoom webRTCRoom) {
     this.webRTCRoom = webRTCRoom;
-    subscriptionsRoom.add(webRTCRoom.onPointsDrawReceived().subscribe(onPointsDrawReceived));
-    subscriptionsRoom.add(webRTCRoom.onNewChallengeReceived().subscribe(onNewChallengeReceived));
-    subscriptionsRoom.add(webRTCRoom.onNewDrawReceived().subscribe(onNewDrawReceived));
-    subscriptionsRoom.add(webRTCRoom.onClearDrawReceived().subscribe(onClearDrawReceived));
-    subscriptionsRoom.add(webRTCRoom.onNewGame().subscribe(pairSessionGame -> {
+    subscriptionsRoom.add(
+        webRTCRoom.onPointsDrawReceived().onBackpressureDrop().subscribe(onPointsDrawReceived));
+    subscriptionsRoom.add(
+        webRTCRoom.onNewChallengeReceived().onBackpressureDrop().subscribe(onNewChallengeReceived));
+    subscriptionsRoom.add(
+        webRTCRoom.onNewDrawReceived().onBackpressureDrop().subscribe(onNewDrawReceived));
+    subscriptionsRoom.add(
+        webRTCRoom.onClearDrawReceived().onBackpressureDrop().subscribe(onClearDrawReceived));
+    subscriptionsRoom.add(webRTCRoom.onNewGame().onBackpressureDrop().subscribe(pairSessionGame -> {
       Game game = getGameById(pairSessionGame.second);
       if (game != null) {
         if (currentGame == null) {
@@ -132,12 +135,13 @@ import rx.subscriptions.CompositeSubscription;
       }
     }));
 
-    subscriptionsRoom.add(webRTCRoom.onStopGame().subscribe(pairSessionGame -> {
-      Game game = getGameById(pairSessionGame.second);
-      if (game != null) {
-        onRemoteUserStopGame.onNext(Pair.create(pairSessionGame.first, game));
-      }
-    }));
+    subscriptionsRoom.add(
+        webRTCRoom.onStopGame().onBackpressureDrop().subscribe(pairSessionGame -> {
+          Game game = getGameById(pairSessionGame.second);
+          if (game != null) {
+            onRemoteUserStopGame.onNext(Pair.create(pairSessionGame.first, game));
+          }
+        }));
   }
 
   public List<Game> getGames() {

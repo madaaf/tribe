@@ -614,7 +614,7 @@ public class LiveActivity extends BaseActivity
 
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
-        if (chatView.getShortcut().getMembers() != null &&
+        if (chatView.getShortcut() != null && chatView.getShortcut().getMembers() != null &&
             !chatView.getShortcut().getMembers().isEmpty()) {
 
           if (!allUsers.isEmpty() &&

@@ -197,11 +197,13 @@ public class WebRTCRoom {
           onRoomError.onNext(error);
         }));
 
-    persistentSubscriptions.add(
-        jsonToModel.onInvitedTribeGuestList().subscribe(onInvitedTribeGuestList));
+    persistentSubscriptions.add(jsonToModel.onInvitedTribeGuestList()
+        .onBackpressureDrop()
+        .subscribe(onInvitedTribeGuestList));
 
-    persistentSubscriptions.add(
-        jsonToModel.onRemovedTribeGuestList().subscribe(onRemovedTribeGuestList));
+    persistentSubscriptions.add(jsonToModel.onRemovedTribeGuestList()
+        .onBackpressureDrop()
+        .subscribe(onRemovedTribeGuestList));
 
     persistentSubscriptions.add(jsonToModel.onTribePeerMediaConfiguration()
         .onBackpressureDrop()
