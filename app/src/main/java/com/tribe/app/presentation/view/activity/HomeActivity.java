@@ -1154,6 +1154,7 @@ public class HomeActivity extends BaseActivity
   private SectionCallback getSectionCallback(final List<HomeAdapterInterface> recipientList) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
+        if (position < 0 || position > recipientList.size() - 1) return false;
         return position == 0 ||
             recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE &&
                 recipientList.get(position).getHomeSectionType() !=

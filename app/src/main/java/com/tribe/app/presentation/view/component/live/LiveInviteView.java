@@ -240,7 +240,7 @@ public class LiveInviteView extends FrameLayout
   private SectionCallback getSectionCallback(final List<LiveInviteAdapterSectionInterface> list) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
-        if (position > list.size() - 1) return false;
+        if (position < 0 || position > list.size() - 1) return false;
         return list.get(position) instanceof Header &&
             (list.get(position).getId().equals(Header.HEADER_NAME));
       }
