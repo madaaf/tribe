@@ -581,17 +581,23 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    tempSubscriptions.add(webRTCRoom.unlockRollTheDice().subscribe(unlockRollTheDice));
+    tempSubscriptions.add(
+        webRTCRoom.unlockRollTheDice().onBackpressureDrop().subscribe(unlockRollTheDice));
 
-    tempSubscriptions.add(webRTCRoom.onPointsDrawReceived().subscribe(onPointsDrawReceived));
+    tempSubscriptions.add(
+        webRTCRoom.onPointsDrawReceived().onBackpressureDrop().subscribe(onPointsDrawReceived));
 
-    tempSubscriptions.add(webRTCRoom.onNewChallengeReceived().subscribe(onNewChallengeReceived));
+    tempSubscriptions.add(
+        webRTCRoom.onNewChallengeReceived().onBackpressureDrop().subscribe(onNewChallengeReceived));
 
-    tempSubscriptions.add(webRTCRoom.onNewDrawReceived().subscribe(onNewDrawReceived));
+    tempSubscriptions.add(
+        webRTCRoom.onNewDrawReceived().onBackpressureDrop().subscribe(onNewDrawReceived));
 
-    tempSubscriptions.add(webRTCRoom.onClearDrawReceived().subscribe(onClearDrawReceived));
+    tempSubscriptions.add(
+        webRTCRoom.onClearDrawReceived().onBackpressureDrop().subscribe(onClearDrawReceived));
 
-    tempSubscriptions.add(webRTCRoom.unlockedRollTheDice().subscribe(unlockedRollTheDice));
+    tempSubscriptions.add(
+        webRTCRoom.unlockedRollTheDice().onBackpressureDrop().subscribe(unlockedRollTheDice));
 
     tempSubscriptions.add(webRTCRoom.onJoined()
         .observeOn(AndroidSchedulers.mainThread())
@@ -600,32 +606,34 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().subscribe(onLeave));
 
-    tempSubscriptions.add(webRTCRoom.onRoomError().subscribe(onRoomError));
+    tempSubscriptions.add(webRTCRoom.onRoomError().onBackpressureDrop().subscribe(onRoomError));
 
-    tempSubscriptions.add(webRTCRoom.onNewGame().subscribe(pairSessionGame -> {//OEF
-      Game currentGame = gameManager.getCurrentGame();
-      Game game = gameManager.getGameById(pairSessionGame.second);
-      if (game != null) {
+    tempSubscriptions.add(
+        webRTCRoom.onNewGame().onBackpressureDrop().subscribe(pairSessionGame -> {//OEF
+          Game currentGame = gameManager.getCurrentGame();
+          Game game = gameManager.getGameById(pairSessionGame.second);
+          if (game != null) {
 
-        String displayName = getDisplayNameFromSession(pairSessionGame.first);
+            String displayName = getDisplayNameFromSession(pairSessionGame.first);
 
-        if (currentGame == null) {
-          displayStartGameNotification(game.getName(), displayName);
-        } else {
-          displayReRollGameNotification(game.getId(), displayName);
-        }
+            if (currentGame == null) {
+              displayStartGameNotification(game.getName(), displayName);
+            } else {
+              displayReRollGameNotification(game.getId(), displayName);
+            }
 
-        startGame(game, false);
-      }
-    }));
+            startGame(game, false);
+          }
+        }));
 
-    tempSubscriptions.add(webRTCRoom.onStopGame().subscribe(pairSessionGame -> {
-      Game game = gameManager.getGameById(pairSessionGame.second);
-      if (game == null) return;
-      String displayName = getDisplayNameFromSession(pairSessionGame.first);
-      displayStopGameNotification(game.getName(), displayName);
-      stopGame(false, game.getId());
-    }));
+    tempSubscriptions.add(
+        webRTCRoom.onStopGame().onBackpressureDrop().subscribe(pairSessionGame -> {
+          Game game = gameManager.getGameById(pairSessionGame.second);
+          if (game == null) return;
+          String displayName = getDisplayNameFromSession(pairSessionGame.first);
+          displayStopGameNotification(game.getName(), displayName);
+          stopGame(false, game.getId());
+        }));
 
     tempSubscriptions.add(webRTCRoom.onRemotePeerAdded()
         .observeOn(AndroidSchedulers.mainThread())
