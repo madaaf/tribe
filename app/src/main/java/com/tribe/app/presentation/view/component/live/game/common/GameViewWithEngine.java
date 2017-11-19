@@ -153,7 +153,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
                   }
 
                   if (subscriptionsSession != null) subscriptionsSession.clear();
-                  setupGameLocally(fromUserId, players, message.getLong(TIMESTAMP));
+                  setupGameLocally(fromUserId, players, message.getLong(TIMESTAMP) * 1000);
                 } else if (actionKey.equals(ACTION_SHOW_USER_LOST)) {
                   playerLost(message.getString(USER_KEY));
                 } else if (actionKey.equals(ACTION_GAME_OVER)) {
@@ -573,7 +573,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     JSONArray jsonArray = new JSONArray();
     for (String id : playerIds) jsonArray.put(id);
     JsonUtils.jsonPut(game, PLAYERS, jsonArray);
-    JsonUtils.jsonPut(game, TIMESTAMP, timestamp);
+    JsonUtils.jsonPut(game, TIMESTAMP, Long.valueOf(timestamp).doubleValue() / 1000);
     JsonUtils.jsonPut(obj, this.game.getId(), game);
     return obj;
   }
