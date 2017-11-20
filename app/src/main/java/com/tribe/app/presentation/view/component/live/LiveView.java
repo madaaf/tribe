@@ -197,14 +197,6 @@ public class LiveView extends FrameLayout {
     if (webRTCRoom != null) webRTCRoom.jump();
   }
 
-  public int getRowsInLive() {
-    return viewRoom.getRowsInLive();
-  }
-
-  public void removeUserFromGrid(String userId) {
-    viewRoom.removeGuest(userId);
-  }
-
   public double getDuration() {
     return duration;
   }
@@ -555,26 +547,9 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    tempSubscriptions.add(
-        webRTCRoom.unlockRollTheDice().onBackpressureDrop().subscribe(unlockRollTheDice));
+    tempSubscriptions.add(webRTCRoom.unlockRollTheDice().subscribe(unlockRollTheDice));
 
     tempSubscriptions.add(webRTCRoom.unlockedRollTheDice().subscribe(unlockedRollTheDice));
-
-    tempSubscriptions.add(
-        webRTCRoom.onPointsDrawReceived().onBackpressureDrop().subscribe(onPointsDrawReceived));
-
-    tempSubscriptions.add(
-        webRTCRoom.onNewChallengeReceived().onBackpressureDrop().subscribe(onNewChallengeReceived));
-
-    tempSubscriptions.add(
-        webRTCRoom.onNewDrawReceived().onBackpressureDrop().subscribe(onNewDrawReceived));
-
-    tempSubscriptions.add(
-        webRTCRoom.onClearDrawReceived().onBackpressureDrop().subscribe(onClearDrawReceived));
-
-    tempSubscriptions.add(
-        webRTCRoom.unlockedRollTheDice().onBackpressureDrop().subscribe(unlockedRollTheDice));
-
 
     tempSubscriptions.add(webRTCRoom.onJoined()
         .observeOn(AndroidSchedulers.mainThread())
@@ -583,35 +558,7 @@ public class LiveView extends FrameLayout {
 
     tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().subscribe(onLeave));
 
-    tempSubscriptions.add(webRTCRoom.onRoomError().onBackpressureDrop().subscribe(onRoomError));
-
-    tempSubscriptions.add(
-        webRTCRoom.onNewGame().onBackpressureDrop().subscribe(pairSessionGame -> {//OEF
-          Game currentGame = gameManager.getCurrentGame();
-          Game game = gameManager.getGameById(pairSessionGame.second);
-          if (game != null) {
-
-            String displayName = getDisplayNameFromSession(pairSessionGame.first);
-
-            if (currentGame == null) {
-              displayStartGameNotification(game.getName(), displayName);
-            } else {
-              displayReRollGameNotification(game.getId(), displayName);
-            }
-
-            startGame(game, false);
-          }
-        }));
-
-    tempSubscriptions.add(
-        webRTCRoom.onStopGame().onBackpressureDrop().subscribe(pairSessionGame -> {
-          Game game = gameManager.getGameById(pairSessionGame.second);
-          if (game == null) return;
-          String displayName = getDisplayNameFromSession(pairSessionGame.first);
-          displayStopGameNotification(game.getName(), displayName);
-          stopGame(false, game.getId());
-        }));
-
+    tempSubscriptions.add(webRTCRoom.onRoomError().subscribe(onRoomError));
 
     tempSubscriptions.add(webRTCRoom.onRemotePeerAdded()
         .observeOn(AndroidSchedulers.mainThread())
@@ -634,10 +581,10 @@ public class LiveView extends FrameLayout {
             onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
           }
 
-          Timber.d("Remote peer added with id : " +
-              remotePeer.getSession().getPeerId() +
-              " & view : " +
-              remotePeer.getPeerView());
+          Timber.d("Remote peer added with id : "
+              + remotePeer.getSession().getPeerId()
+              + " & view : "
+              + remotePeer.getPeerView());
           addView(remotePeer);
           onNotificationRemoteWaiting.onNext(getDisplayNameFromSession(remotePeer.getSession()));
 
@@ -822,9 +769,8 @@ public class LiveView extends FrameLayout {
   }
 
   public boolean shouldLeave() {
-    return liveRowViewMap.size() == 0 &&
-        live != null &&
-        !live.getSource().equals(SOURCE_CALL_ROULETTE);
+    return liveRowViewMap.size() == 0 && live != null && !live.getSource()
+        .equals(SOURCE_CALL_ROULETTE);
   }
 
   public @LiveActivity.Source String getSource() {
@@ -1104,24 +1050,8 @@ public class LiveView extends FrameLayout {
     startGame(game, true);
   }
 
-// TODO SOEF 
- /* private void stopGame() {
+  private void stopGame() {
     onTouchEnabled.onNext(true);
-    webRTCRoom.sendToPeers(getNewGamePayload(game), false);
-  }*/
-
-  private void stopGame(boolean isCurrentUserAction, String gameId) {
-    onTouchEnabled.onNext(true);
-    switch (gameId) {
-      case Game.GAME_CHALLENGE:
-        gameChallengesView.setVisibility(GONE);
-        gameChallengesView.close();
-        break;
-      case Game.GAME_DRAW:
-        gameDrawView.setVisibility(GONE);
-        gameDrawView.close();
-        break;
-    }
     gameManager.setCurrentGame(null);
     removeView(viewGameManager);
     viewGameManager.disposeGame();
@@ -1188,14 +1118,6 @@ public class LiveView extends FrameLayout {
 
   public Observable<TribeJoinRoom> onJoined() {
     return onJoined;
-  }
-
-  public Observable<Boolean> onGameMenuOpen() {
-    return viewControlsLive.onGameMenuOpen();
-  }
-
-  public Observable<Boolean> onTouchEnabled() {
-    return onTouchEnabled;
   }
 
   public Observable<Void> onNotify() {

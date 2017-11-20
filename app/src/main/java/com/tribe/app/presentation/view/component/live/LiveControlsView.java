@@ -396,8 +396,8 @@ public class LiveControlsView extends FrameLayout {
     filtersMenuOn = true;
 
     int toX =
-        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1) +
-            screenUtils.dpToPx(2.5f);
+        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1)
+            + screenUtils.dpToPx(2.5f);
     int toY = -screenUtils.dpToPx(65);
 
     layoutFilter.animate()
@@ -636,8 +636,9 @@ public class LiveControlsView extends FrameLayout {
             new OvershootInterpolator(OVERSHOOT_LIGHT)))
         .map(aVoid -> gameManager.getCurrentGame())
         .filter(game -> {
-          if (game.getCurrentMaster() != null &&
-              game.getCurrentMaster().getId().equals(user.getId())) {
+          if (game.getCurrentMaster() != null && game.getCurrentMaster()
+              .getId()
+              .equals(user.getId())) {
             return true;
           } else {
             Toast.makeText(getContext(), getContext().getString(R.string.game_update_forbidden,
@@ -890,7 +891,6 @@ public class LiveControlsView extends FrameLayout {
     return onClickFilter;
   }
 
-
   public Observable<Boolean> onGameMenuOpen() {
     return onGameMenuOpened;
   }
@@ -943,14 +943,6 @@ public class LiveControlsView extends FrameLayout {
       chatMenuOn = false;
       closeMenuTop(viewToHideTopChat);
     });
-  }
-
-  public Observable<Boolean> onGameMenuOpen() {
-    return onGameMenuOpened;
-  }
-
-  public Observable<Game> onStartGame() {
-    return onStartGame;
   }
 
   public Observable<Game> onRestartGame() {

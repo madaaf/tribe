@@ -73,6 +73,7 @@ import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.RuntimePermissionUtil;
@@ -87,7 +88,11 @@ import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameChallenge;
+import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
+import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
@@ -818,52 +823,6 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.onRemotePeerClick().
         subscribe(o -> {
           if (o != null) userInfosNotificationView.displayView(o);
-        }));
-
-    subscriptions.add(viewLive.onPointsDrawReceived().
-        onBackpressureDrop().
-        subscribeOn(Schedulers.newThread()).
-        observeOn(AndroidSchedulers.mainThread()).
-        subscribe(points -> {
-          gameDrawView.onPointsDrawReceived(points);
-        }));
-
-    subscriptions.add(viewLive.onStartGame().
-        onBackpressureDrop().
-        subscribeOn(Schedulers.newThread()).
-        observeOn(AndroidSchedulers.mainThread()).
-        subscribe(game -> {
-          if (game != null) {
-            switch (game.getId()) {
-              case Game.GAME_POST_IT:
-                GamePostIt gamePostIt = (GamePostIt) game;
-                if (!gamePostIt.hasNames()) {
-                  livePresenter.getNamesPostItGame(DeviceUtils.getLanguage(this));
-                }
-                break;
-
-              case Game.GAME_DRAW:
-                GameDraw gameDraw = (GameDraw) game;
-                if (game.isUserAction()) {
-                  if (!gameDraw.hasNames()) {
-                    livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
-                  } else {
-                    setNextDrawGame();
-                  }
-                }
-                break;
-              case Game.GAME_CHALLENGE:
-                GameChallenge gameChallenge = (GameChallenge) game;
-                if (game.isUserAction()) {
-                  if (!gameChallenge.hasNames()) {
-                    livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
-                  } else {
-                    setNextChallengeGame();
-                  }
-                }
-                break;
-            }
-          }
         }));
 
     subscriptions.add(userInfosNotificationView.onClickInvite().

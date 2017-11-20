@@ -13,7 +13,6 @@ import com.tribe.app.presentation.view.adapter.delegate.contact.EmptyContactAdap
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutChatActiveHomeAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutLiveHomeAdapterDelegate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -177,15 +176,10 @@ public class SearchAdapter extends RecyclerView.Adapter {
         userToAddAdapterDelegate.onClick());
   }
 
-  public Observable<View> onInvite() {
-    return contactToInviteAdapterDelegate.onInvite();
-  }
-
   public Observable<View> onClickChat() {
     return Observable.merge(shortcutAdapterDelegate.onChatClick(),
         shortcutChatActiveHomeAdapterDelegate.onChatClick());
   }
-
 
   public Observable<View> onLiveClick() {
     return Observable.merge(shortcutAdapterDelegate.onLiveClick(),
