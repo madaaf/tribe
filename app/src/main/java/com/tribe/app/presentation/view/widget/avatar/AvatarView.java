@@ -61,6 +61,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
   private int avatarSize;
   private String noUrl;
   private boolean isAttached = false;
+  private GlideUtils.Builder pendingBuilder = null;
 
   // SUBSCRIPTIONS
   private Subscription createImageSubscription;
@@ -114,12 +115,18 @@ public class AvatarView extends RelativeLayout implements Avatar {
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     isAttached = true;
+
+    if (pendingBuilder != null) {
+      pendingBuilder.load();
+      pendingBuilder = null;
+    }
   }
 
   @Override protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     isAttached = false;
     if (createImageSubscription != null) createImageSubscription.unsubscribe();
+    pendingBuilder = null;
   }
 
   @Override public void load(Recipient recipient) {
@@ -152,11 +159,15 @@ public class AvatarView extends RelativeLayout implements Avatar {
       if ((StringUtils.isEmpty(previousUrl) ||
           !previousUrl.equals(groupAvatarFile.getAbsolutePath())) && groupAvatarFile.exists()) {
         setTag(R.id.profile_picture, groupAvatarFile.getAbsolutePath());
+
+        GlideUtils.Builder builder = new GlideUtils.Builder(getContext()).file(groupAvatarFile)
+            .target(imgAvatar)
+            .size(avatarSize);
+
         if (isAttached) {
-          new GlideUtils.Builder(getContext()).file(groupAvatarFile)
-              .target(imgAvatar)
-              .size(avatarSize)
-              .load();
+          builder.load();
+        } else {
+          pendingBuilder = builder;
         }
       } else if (!groupAvatarFile.exists()) {
         if (!groupAvatarFile.exists() && membersPic != null && membersPic.size() > 0) {
@@ -165,11 +176,14 @@ public class AvatarView extends RelativeLayout implements Avatar {
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribeOn(Schedulers.io())
                   .subscribe(bitmap -> {
+                    GlideUtils.Builder builder =
+                        new GlideUtils.Builder(getContext()).file(groupAvatarFile)
+                            .size(avatarSize)
+                            .target(imgAvatar);
                     if (isAttached) {
-                      new GlideUtils.Builder(getContext()).file(groupAvatarFile)
-                          .size(avatarSize)
-                          .target(imgAvatar)
-                          .load();
+                      builder.load();
+                    } else {
+                      pendingBuilder = builder;
                     }
                   });
         }
@@ -185,8 +199,12 @@ public class AvatarView extends RelativeLayout implements Avatar {
     if (!StringUtils.isEmpty(url) && !url.equals(noUrl)) {
       setTag(R.id.profile_picture, url);
 
+      GlideUtils.Builder builder =
+          new GlideUtils.Builder(getContext()).url(url).size(avatarSize).target(imgAvatar);
       if (isAttached) {
-        new GlideUtils.Builder(getContext()).url(url).size(avatarSize).target(imgAvatar).load();
+        builder.load();
+      } else {
+        pendingBuilder = builder;
       }
     } else {
       loadPlaceholder();
@@ -195,12 +213,16 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   @Override public void load(int drawableId) {
     this.drawableId = drawableId;
+
+    GlideUtils.Builder glideBuilder = new GlideUtils.Builder(getContext()).resourceId(drawableId)
+        .size(avatarSize)
+        .target(imgAvatar)
+        .hasPlaceholder(false);
+
     if (isAttached) {
-      new GlideUtils.Builder(getContext()).resourceId(drawableId)
-          .size(avatarSize)
-          .target(imgAvatar)
-          .hasPlaceholder(false)
-          .load();
+      glideBuilder.load();
+    } else {
+      pendingBuilder = glideBuilder;
     }
   }
 
@@ -221,9 +243,15 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   private void loadPlaceholder() {
     if (avatarSize == 0) return;
-    if (isAttached) new GlideUtils.Builder(getContext()).size(avatarSize).target(imgAvatar).load();
+    GlideUtils.Builder builder =
+        new GlideUtils.Builder(getContext()).size(avatarSize).target(imgAvatar);
+    if (isAttached) {
+      builder.load();
+    } else {
+      pendingBuilder = builder;
+    }
   }
-  
+
   public float getShadowRatio() {
     return SHADOW_RATIO;
   }
