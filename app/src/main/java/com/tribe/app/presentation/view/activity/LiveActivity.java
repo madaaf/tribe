@@ -652,7 +652,7 @@ public class LiveActivity extends BaseActivity
 
       subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
         isChatViewOpen = open;
-        if (open) {
+        if (open && chatView != null) {
           animateChatView();
         } else if (chatView != null) {
           chatView.animate()
