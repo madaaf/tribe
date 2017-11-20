@@ -53,6 +53,9 @@
 	<string name="image_picker_library">Open camera roll :arrow_up:</string>
 	<string name="image_picker_documents">Documents :file_folder:</string>
 	
+	<!-- Invite -->
+	<string name="invite_generating_link">Generating a link to share...</string>
+	
 	<!-- Contacts -->
 	<string name="contacts_search_new">NEW</string>
 	<string name="contacts_search_new_tooltip">Find your friends already on Tribe!</string>
