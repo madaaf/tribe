@@ -24,7 +24,6 @@ import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import com.wang.avi.AVLoadingIndicatorView;
 import java.util.List;
-import timber.log.Timber;
 
 import static android.view.View.VISIBLE;
 
@@ -113,8 +112,10 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
 
   private void startMediaPlayer(Uri audioResId) {
     mediaPlayer = MediaPlayer.create(context.getApplicationContext(), audioResId);
-    mediaPlayer.setOnCompletionListener(mp -> releaseMediaPlayer());
-    mediaPlayer.start();
+    if (mediaPlayer != null) {
+      mediaPlayer.setOnCompletionListener(mp -> releaseMediaPlayer());
+      mediaPlayer.start();
+    }
   }
 
   private void releaseMediaPlayer() {
@@ -293,7 +294,6 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     @BindView(R.id.recordingView) public FrameLayout recordingView;
     @BindView(R.id.loadingRecordView) public AVLoadingIndicatorView loadingRecordView;
     @BindView(R.id.equalizer) ImageView equalizer;
-
 
     MessageAudioViewHolder(View itemView) {
       super(itemView);
