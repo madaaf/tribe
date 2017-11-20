@@ -60,6 +60,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
   // RESOURCES
   private int avatarSize;
   private String noUrl;
+  private boolean isAttached = false;
 
   // SUBSCRIPTIONS
   private Subscription createImageSubscription;
@@ -110,6 +111,17 @@ public class AvatarView extends RelativeLayout implements Avatar {
     }
   }
 
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    isAttached = true;
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    isAttached = false;
+    if (createImageSubscription != null) createImageSubscription.unsubscribe();
+  }
+
   @Override public void load(Recipient recipient) {
     this.recipient = recipient;
 
@@ -140,20 +152,26 @@ public class AvatarView extends RelativeLayout implements Avatar {
       if ((StringUtils.isEmpty(previousUrl) ||
           !previousUrl.equals(groupAvatarFile.getAbsolutePath())) && groupAvatarFile.exists()) {
         setTag(R.id.profile_picture, groupAvatarFile.getAbsolutePath());
-        new GlideUtils.Builder(getContext()).file(groupAvatarFile)
-            .target(imgAvatar)
-            .size(avatarSize)
-            .load();
+        if (isAttached) {
+          new GlideUtils.Builder(getContext()).file(groupAvatarFile)
+              .target(imgAvatar)
+              .size(avatarSize)
+              .load();
+        }
       } else if (!groupAvatarFile.exists()) {
         if (!groupAvatarFile.exists() && membersPic != null && membersPic.size() > 0) {
           createImageSubscription =
               ImageUtils.createGroupAvatar(getContext(), groupId, membersPic, avatarSize)
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribeOn(Schedulers.io())
-                  .subscribe(bitmap -> new GlideUtils.Builder(getContext()).file(groupAvatarFile)
-                      .size(avatarSize)
-                      .target(imgAvatar)
-                      .load());
+                  .subscribe(bitmap -> {
+                    if (isAttached) {
+                      new GlideUtils.Builder(getContext()).file(groupAvatarFile)
+                          .size(avatarSize)
+                          .target(imgAvatar)
+                          .load();
+                    }
+                  });
         }
       }
     } else {
@@ -167,7 +185,9 @@ public class AvatarView extends RelativeLayout implements Avatar {
     if (!StringUtils.isEmpty(url) && !url.equals(noUrl)) {
       setTag(R.id.profile_picture, url);
 
-      new GlideUtils.Builder(getContext()).url(url).size(avatarSize).target(imgAvatar).load();
+      if (isAttached) {
+        new GlideUtils.Builder(getContext()).url(url).size(avatarSize).target(imgAvatar).load();
+      }
     } else {
       loadPlaceholder();
     }
@@ -175,11 +195,13 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   @Override public void load(int drawableId) {
     this.drawableId = drawableId;
-    new GlideUtils.Builder(getContext()).resourceId(drawableId)
-        .size(avatarSize)
-        .target(imgAvatar)
-        .hasPlaceholder(false)
-        .load();
+    if (isAttached) {
+      new GlideUtils.Builder(getContext()).resourceId(drawableId)
+          .size(avatarSize)
+          .target(imgAvatar)
+          .hasPlaceholder(false)
+          .load();
+    }
   }
 
   public void changeSize(int size, boolean shouldChangeLP) {
@@ -199,12 +221,9 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   private void loadPlaceholder() {
     if (avatarSize == 0) return;
-    Runnable r = () -> {
-      new GlideUtils.Builder(getContext()).size(avatarSize).target(imgAvatar).load();
-    };
-    r.run();
+    if (isAttached) new GlideUtils.Builder(getContext()).size(avatarSize).target(imgAvatar).load();
   }
-
+  
   public float getShadowRatio() {
     return SHADOW_RATIO;
   }

@@ -34,7 +34,7 @@ ext {
   rxBindingsVersion = '0.4.0'
   picassoVersion = '2.5.2'
   picassoDownloaderVersion = '1.0.2'
-  glideVersion = '3.7.0'
+  glideVersion = '4.3.1'
   glideOKHttpVersion = '1.4.0@aar'
   byteUnitsVersion = '0.9.1'
   reboundVersion = '0.3.8'
@@ -151,8 +151,7 @@ ext {
                               jodatime                : "net.danlew:android.joda:${jodatimeVersion}",
                               shortcutBadget          : "me.leolin:shortcutbadger:${shortcutBadgerVersion}",
                               constraintLayout        : "com.android.support.constraint:constraint-layout:${constraintLayoutVersion}",
-                              AVLoadingIndicatorView  : "com.wang.avi:library:${loadingIndicatorVersion}"
-  ]
+                              AVLoadingIndicatorView  : "com.wang.avi:library:${loadingIndicatorVersion}"]
 
 
   presentationTestDependencies = [mockito           : "org.mockito:mockito-core:${mockitoVersion}",
