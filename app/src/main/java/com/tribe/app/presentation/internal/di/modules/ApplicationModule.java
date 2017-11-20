@@ -11,6 +11,8 @@ import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.ChatCacheImpl;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.ContactCacheImpl;
+import com.tribe.app.data.cache.GameCache;
+import com.tribe.app.data.cache.GameCacheImpl;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.LiveCacheImpl;
 import com.tribe.app.data.cache.UserCache;
@@ -140,6 +142,10 @@ import timber.log.Timber;
 
   @Provides @Singleton ContactCache provideContactCache(ContactCacheImpl contactCache) {
     return contactCache;
+  }
+
+  @Provides @Singleton GameCache provideGameCache(GameCacheImpl gameCache) {
+    return gameCache;
   }
 
   @Provides @Singleton RxContacts provideRxContacts(Context context,

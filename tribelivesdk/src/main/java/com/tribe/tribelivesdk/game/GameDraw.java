@@ -15,9 +15,8 @@ public class GameDraw extends Game {
   private String currentDrawName = "";
   private TribeGuest currentDrawer = null;
 
-  public GameDraw(Context context, @GameType String id, String name, int drawableRes,
-      boolean available) {
-    super(context, id, name, drawableRes, null, available);
+  public GameDraw(Context context, String id) {
+    super(context, id);
   }
 
   @Override public void apply(Frame frame) {

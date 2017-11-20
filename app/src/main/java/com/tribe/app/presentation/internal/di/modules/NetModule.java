@@ -27,6 +27,7 @@ import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.CreateMessageDeserializer;
 import com.tribe.app.data.network.deserializer.DataGameDeserializer;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
+import com.tribe.app.data.network.deserializer.GameListDeserializer;
 import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
@@ -48,6 +49,7 @@ import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.network.interceptor.TribeInterceptor;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
@@ -174,6 +176,8 @@ import timber.log.Timber;
         .registerTypeAdapter(new TypeToken<List<String>>() {
         }.getType(), dataGameDeserializer)
         .registerTypeAdapter(ShortcutRealm.class, new ShortcutRealmDeserializer())
+        .registerTypeAdapter(new TypeToken<List<GameRealm>>() {
+        }.getType(), new GameListDeserializer())
         .create();
   }
 
@@ -388,9 +392,9 @@ import timber.log.Timber;
           clearLock();
         }
 
-        if (responseRefresh != null
-            && responseRefresh.isSuccessful()
-            && responseRefresh.body() != null) {
+        if (responseRefresh != null &&
+            responseRefresh.isSuccessful() &&
+            responseRefresh.body() != null) {
           AccessToken newAccessToken = responseRefresh.body();
           Timber.d("New access_token : " + newAccessToken.getAccessToken());
           Timber.d("New refresh_token : " + newAccessToken.getRefreshToken());
@@ -475,10 +479,10 @@ import timber.log.Timber;
 
     @Override public okhttp3.Response intercept(Chain chain) throws IOException {
 
-      if (tribeAuthorizer != null
-          && tribeAuthorizer.getAccessToken() != null
-          && tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null
-          && tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
+      if (tribeAuthorizer != null &&
+          tribeAuthorizer.getAccessToken() != null &&
+          tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null &&
+          tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
 
         Timber.d(
             "The token has expired, we know it locally, so we automatically launch a refresh before hitting the backend.");
@@ -538,12 +542,13 @@ import timber.log.Timber;
 
       List<String> customAnnotations = original.headers("@");
       if (customAnnotations.contains("UseUserToken")) {
-        requestBuilder.header("Authorization",
-            tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken()
-                .getAccessToken());
+        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType() +
+            " " +
+            tribeAuthorizer.getAccessToken().getAccessToken());
       } else {
-        byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
-            tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
+        byte[] data = (tribeAuthorizer.getApiClient() +
+            ":" +
+            DateUtils.unifyDate(tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
         requestBuilder.header("Authorization", "Basic " + base64);

@@ -17,6 +17,7 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.activity.NewChatActivity;
+import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
@@ -193,6 +194,8 @@ import dagger.Component;
   void inject(ShortcutCompletionTokenView shortcutCompletionTokenView);
 
   void inject(TileInviteView tileInviteView);
+
+  void inject(NewGameActivity newGameActivity);
 
   /**
    * GAMES

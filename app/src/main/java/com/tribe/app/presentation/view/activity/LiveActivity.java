@@ -614,7 +614,9 @@ public class LiveActivity extends BaseActivity
 
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
-        if (chatView.getShortcut() != null && chatView.getShortcut().getMembers() != null &&
+        if (chatView != null &&
+            chatView.getShortcut() != null &&
+            chatView.getShortcut().getMembers() != null &&
             !chatView.getShortcut().getMembers().isEmpty()) {
 
           if (!allUsers.isEmpty() &&
@@ -631,7 +633,7 @@ public class LiveActivity extends BaseActivity
         isChatViewOpen = open;
         if (open) {
           animateChatView();
-        } else {
+        } else if (chatView != null) {
           chatView.animate()
               .setDuration(300)
               .alpha(0f)

@@ -448,7 +448,7 @@ public class LiveView extends FrameLayout {
     gameManager.initUIControlsResetGame(viewControlsLive.onResetScores());
 
     persistentSubscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
-      displayStartGameNotification(game.getName(), user.getDisplayName());
+      displayStartGameNotification(game.getTitle(), user.getDisplayName());
       restartGame(game);
     }));
 
@@ -467,20 +467,20 @@ public class LiveView extends FrameLayout {
     persistentSubscriptions.add(gameManager.onRemoteUserStartGame().subscribe(pairSessionGame -> {
       if (pairSessionGame.second != null) {
         String displayName = getDisplayNameFromSession(pairSessionGame.first);
-        displayStartGameNotification(pairSessionGame.second.getName(), displayName);
+        displayStartGameNotification(pairSessionGame.second.getTitle(), displayName);
         startGame(pairSessionGame.second, false);
       }
     }));
 
     persistentSubscriptions.add(gameManager.onCurrentUserStopGame().subscribe(game -> {
       stopGame();
-      displayStopGameNotification(game.getName(), user.getDisplayName());
+      displayStopGameNotification(game.getTitle(), user.getDisplayName());
     }));
 
     persistentSubscriptions.add(gameManager.onRemoteUserStopGame().subscribe(pairSessionGame -> {
       Game game = pairSessionGame.second;
       String displayName = getDisplayNameFromSession(pairSessionGame.first);
-      displayStopGameNotification(game.getName(), displayName);
+      displayStopGameNotification(game.getTitle(), displayName);
       stopGame();
     }));
   }
@@ -529,7 +529,7 @@ public class LiveView extends FrameLayout {
         .frontCamera(viewLocalLive.isFrontFacing())
         .build();
 
-    tempSubscriptions.add(webRTCRoom.onRoomStateChanged().subscribe(state -> {
+    tempSubscriptions.add(webRTCRoom.onRoomStateChanged().onBackpressureDrop().subscribe(state -> {
       Timber.d("Room state change : " + state);
       if (state == WebRTCRoom.STATE_CONNECTED) {
         timeStart = System.currentTimeMillis();
@@ -547,18 +547,20 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    tempSubscriptions.add(webRTCRoom.unlockRollTheDice().subscribe(unlockRollTheDice));
+    tempSubscriptions.add(
+        webRTCRoom.unlockRollTheDice().onBackpressureDrop().subscribe(unlockRollTheDice));
 
-    tempSubscriptions.add(webRTCRoom.unlockedRollTheDice().subscribe(unlockedRollTheDice));
+    tempSubscriptions.add(
+        webRTCRoom.unlockedRollTheDice().onBackpressureDrop().subscribe(unlockedRollTheDice));
 
     tempSubscriptions.add(webRTCRoom.onJoined()
         .observeOn(AndroidSchedulers.mainThread())
         .doOnNext(tribeJoinRoom -> hasJoined = true)
         .subscribe(onJoined));
 
-    tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().subscribe(onLeave));
+    tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().onBackpressureDrop().subscribe(onLeave));
 
-    tempSubscriptions.add(webRTCRoom.onRoomError().subscribe(onRoomError));
+    tempSubscriptions.add(webRTCRoom.onRoomError().onBackpressureDrop().subscribe(onRoomError));
 
     tempSubscriptions.add(webRTCRoom.onRemotePeerAdded()
         .observeOn(AndroidSchedulers.mainThread())
@@ -640,6 +642,7 @@ public class LiveView extends FrameLayout {
     }));
 
     tempSubscriptions.add(webRTCRoom.onRollTheDiceReceived()
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(s -> {
           Timber.d("rollTheDice received");
@@ -652,7 +655,9 @@ public class LiveView extends FrameLayout {
           }
         }));
 
-    tempSubscriptions.add(viewRoom.onChangeCallRouletteRoom().subscribe(onChangeCallRouletteRoom));
+    tempSubscriptions.add(viewRoom.onChangeCallRouletteRoom()
+        .onBackpressureDrop()
+        .subscribe(onChangeCallRouletteRoom));
     Timber.d("Initiating Room");
 
     // We just want to trigger the updates to update the UI

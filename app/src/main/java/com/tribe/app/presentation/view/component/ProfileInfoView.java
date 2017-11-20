@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.text.InputFilter;
@@ -274,13 +275,13 @@ public class ProfileInfoView extends LinearLayout {
 
     Glide.with(getContext())
         .load(facebookEntity.getProfilePicture())
+        .asBitmap()
         .override(ImageUtils.IMG_SIZE, ImageUtils.IMG_SIZE)
-        .into(new SimpleTarget<GlideDrawable>() {
-          @Override public void onResourceReady(GlideDrawable resource,
-              GlideAnimation<? super GlideDrawable> glideAnimation) {
-            imgUri = Uri.fromFile(FileUtils.bitmapToFile("avatar",
-                ((GlideBitmapDrawable) resource.getCurrent()).getBitmap(), getContext()))
-                .toString();
+        .into(new SimpleTarget<Bitmap>() {
+          @Override public void onResourceReady(Bitmap resource,
+              GlideAnimation<? super Bitmap> glideAnimation) {
+            imgUri =
+                Uri.fromFile(FileUtils.bitmapToFile("avatar", resource, getContext())).toString();
           }
         });
 

@@ -8,24 +8,19 @@ import javax.inject.Inject;
 import rx.Observable;
 
 /**
- * Created by tiago on 04/05/2016.
+ * Created by tiago on 11/20/2017
  */
-public class GetDataChallengesGame extends UseCase {
+public class GetCloudGames extends UseCase {
 
-  private String lang;
   private GameRepository gameRepository;
 
-  @Inject public GetDataChallengesGame(CloudGameDataRepository gameRepository,
-      ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
+  @Inject public GetCloudGames(CloudGameDataRepository gameRepository, ThreadExecutor threadExecutor,
+      PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
     this.gameRepository = gameRepository;
   }
 
-  public void setup(String lang) {
-    this.lang = lang;
-  }
-
   @Override protected Observable buildUseCaseObservable() {
-    return this.gameRepository.getDataForChallengeGame(lang);
+    return this.gameRepository.getGames();
   }
 }

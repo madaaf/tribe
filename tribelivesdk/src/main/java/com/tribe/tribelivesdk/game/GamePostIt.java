@@ -46,9 +46,8 @@ public class GamePostIt extends Game {
   private VisionAPIManager visionAPIManager;
   private float newFaceWidth, currentPostItScale = SCALE_POST_IT;
 
-  public GamePostIt(Context context, @GameType String id, String name, int drawableRes,
-      boolean isAvailable) {
-    super(context, id, name, drawableRes, null, isAvailable);
+  public GamePostIt(Context context, String id) {
+    super(context, id);
     openCVWrapper = new OpenCVWrapper();
     libYuvConverter = new LibYuvConverter();
     visionAPIManager = VisionAPIManager.getInstance(context);

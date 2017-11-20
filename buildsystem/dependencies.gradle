@@ -34,7 +34,7 @@ ext {
   rxBindingsVersion = '0.4.0'
   picassoVersion = '2.5.2'
   picassoDownloaderVersion = '1.0.2'
-  glideVersion = '4.3.1'
+  glideVersion = '3.7.0'
   glideOKHttpVersion = '1.4.0@aar'
   byteUnitsVersion = '0.9.1'
   reboundVersion = '0.3.8'

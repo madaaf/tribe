@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.game.datasource;
 
+import com.tribe.app.data.realm.GameRealm;
 import java.util.List;
 import rx.Observable;
 
@@ -8,11 +9,7 @@ import rx.Observable;
  */
 public interface GameDataStore {
 
-  Observable<List<String>> getNamesForPostItGame();
-
-  Observable<List<String>> getDataForChallengeGame();
-
-  Observable<List<String>> getNamesForDrawGame();
-
   Observable<Void> synchronizeGamesData();
+
+  Observable<List<GameRealm>> getGames();
 }

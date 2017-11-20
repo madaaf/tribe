@@ -41,24 +41,7 @@ import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.filters.Filter;
 import com.tribe.tribelivesdk.filters.lut3d.FilterManager;
 import com.tribe.tribelivesdk.filters.lut3d.LUT3DFilter;
-import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GameAlienAttack;
-import com.tribe.tribelivesdk.game.GameBackgamon;
-import com.tribe.tribelivesdk.game.GameBattleMusic;
-import com.tribe.tribelivesdk.game.GameBeats;
-import com.tribe.tribelivesdk.game.GameChallenge;
-import com.tribe.tribelivesdk.game.GameDraw;
-import com.tribe.tribelivesdk.game.GameDropIt;
-import com.tribe.tribelivesdk.game.GameFaceswap;
-import com.tribe.tribelivesdk.game.GameHandFight;
-import com.tribe.tribelivesdk.game.GameLavaFloor;
 import com.tribe.tribelivesdk.game.GameManager;
-import com.tribe.tribelivesdk.game.GamePostIt;
-import com.tribe.tribelivesdk.game.GameScream;
-import com.tribe.tribelivesdk.game.GameSingAlong;
-import com.tribe.tribelivesdk.game.GameSliceFruit;
-import com.tribe.tribelivesdk.game.GameSpeedRacer;
-import com.tribe.tribelivesdk.game.GameTaboo;
 import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
 import io.realm.FieldAttribute;
@@ -330,50 +313,7 @@ public class AndroidApplication extends Application {
   }
 
   private void initGameManager() {
-    GameManager gameManager = GameManager.getInstance(this);
-    gameManager.addGame(
-        new GameAlienAttack(this, Game.GAME_INVADERS, getString(R.string.game_invaders),
-            R.drawable.icon_game_invaders, true));
-    gameManager.addGame(new GameSpeedRacer(this, Game.GAME_SPEED_RACER, "Speed Racer",
-        R.drawable.icon_game_speed_racer, "https://static.tribe.pm/games/speedracer/index.html",
-        true));
-    gameManager.addGame(new GameSliceFruit(this, Game.GAME_SLICE_FRUIT, "Slice Fruit",
-        R.drawable.icon_game_slice_fruit, "https://static.tribe.pm/games/slicefruit/index.html",
-        true));
-    gameManager.addGame(
-        new GameDraw(this, Game.GAME_DRAW, getString(R.string.game_draw), R.drawable.icon_game_draw,
-            true));
-    gameManager.addGame(new GamePostIt(this, Game.GAME_POST_IT, getString(R.string.game_post_it),
-        R.drawable.picto_game_post_it, true));
-    gameManager.addGame(
-        new GameChallenge(this, Game.GAME_CHALLENGE, getString(R.string.game_challenges),
-            R.drawable.icon_game_challenge, true));
-    gameManager.addGame(
-        new GameBattleMusic(this, Game.GAME_BATTLE_MUSIC, getString(R.string.game_song_pop),
-            R.drawable.icon_game_battle_music, false));
-    gameManager.addGame(new GameScream(this, Game.GAME_SCREAM, getString(R.string.game_scream),
-        R.drawable.icon_game_scream, false));
-    gameManager.addGame(new GameDropIt(this, Game.GAME_DROP_IT, getString(R.string.game_drop_it),
-        R.drawable.icon_game_drop_it, false));
-    gameManager.addGame(
-        new GameSingAlong(this, Game.GAME_SING_ALONG, getString(R.string.game_sing_along),
-            R.drawable.icon_game_sing_along, false));
-    gameManager.addGame(
-        new GameFaceswap(this, Game.GAME_FACESWAP, getString(R.string.game_faceswap),
-            R.drawable.icon_game_faceswap, false));
-    gameManager.addGame(
-        new GameHandFight(this, Game.GAME_HAND_FIGHT, getString(R.string.game_hand_fight),
-            R.drawable.icon_game_handfight, false));
-    gameManager.addGame(
-        new GameLavaFloor(this, Game.GAME_LAVA_FLOOR, getString(R.string.game_lava_floor),
-            R.drawable.icon_game_lava, false));
-    gameManager.addGame(new GameTaboo(this, Game.GAME_TABOO, getString(R.string.game_taboo),
-        R.drawable.icon_game_taboo, false));
-    gameManager.addGame(
-        new GameBackgamon(this, Game.GAME_BACKGAMON, getString(R.string.game_backgam),
-            R.drawable.icon_game_backgamon, false));
-    gameManager.addGame(new GameBeats(this, Game.GAME_BEATS, getString(R.string.game_beats),
-        R.drawable.icon_game_beats, false));
+    GameManager.getInstance(this);
   }
 
   private class SampleAppStateListener implements AppStateListener {
