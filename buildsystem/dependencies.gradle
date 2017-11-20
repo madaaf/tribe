@@ -151,8 +151,7 @@ ext {
                               jodatime                : "net.danlew:android.joda:${jodatimeVersion}",
                               shortcutBadget          : "me.leolin:shortcutbadger:${shortcutBadgerVersion}",
                               constraintLayout        : "com.android.support.constraint:constraint-layout:${constraintLayoutVersion}",
-                              AVLoadingIndicatorView  : "com.wang.avi:library:${loadingIndicatorVersion}"
-  ]
+                              AVLoadingIndicatorView  : "com.wang.avi:library:${loadingIndicatorVersion}"]
 
 
   presentationTestDependencies = [mockito           : "org.mockito:mockito-core:${mockitoVersion}",

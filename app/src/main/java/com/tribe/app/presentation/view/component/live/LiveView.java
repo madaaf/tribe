@@ -556,7 +556,7 @@ public class LiveView extends FrameLayout {
         .doOnNext(tribeJoinRoom -> hasJoined = true)
         .subscribe(onJoined));
 
-    tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().subscribe(onLeave));
+    tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().onBackpressureDrop().subscribe(onLeave));
 
     tempSubscriptions.add(webRTCRoom.onRoomError().subscribe(onRoomError));
 
@@ -581,10 +581,10 @@ public class LiveView extends FrameLayout {
             onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
           }
 
-          Timber.d("Remote peer added with id : "
-              + remotePeer.getSession().getPeerId()
-              + " & view : "
-              + remotePeer.getPeerView());
+          Timber.d("Remote peer added with id : " +
+              remotePeer.getSession().getPeerId() +
+              " & view : " +
+              remotePeer.getPeerView());
           addView(remotePeer);
           onNotificationRemoteWaiting.onNext(getDisplayNameFromSession(remotePeer.getSession()));
 
@@ -769,8 +769,9 @@ public class LiveView extends FrameLayout {
   }
 
   public boolean shouldLeave() {
-    return liveRowViewMap.size() == 0 && live != null && !live.getSource()
-        .equals(SOURCE_CALL_ROULETTE);
+    return liveRowViewMap.size() == 0 &&
+        live != null &&
+        !live.getSource().equals(SOURCE_CALL_ROULETTE);
   }
 
   public @LiveActivity.Source String getSource() {
@@ -1000,10 +1001,6 @@ public class LiveView extends FrameLayout {
   public User getUser() {
     return user;
   }
-
-  //////////////////////
-  //      GAMES       //
-  //////////////////////
 
   private void onRestartGame(Game game) {
     if (game == null) return;

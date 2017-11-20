@@ -627,9 +627,12 @@ public class LiveActivity extends BaseActivity
 
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
-        if (chatView.getShortcut() != null 
-          && chatView.getShortcut().getMembers() != null
-          && !chatView.getShortcut().getMembers().isEmpty()) {
+
+       if (chatView != null &&
+            chatView.getShortcut() != null &&
+            chatView.getShortcut().getMembers() != null &&
+            !chatView.getShortcut().getMembers().isEmpty()) {
+
           if (!allUsers.isEmpty() &&
               !ShortcutUtil.equalShortcutMembers(chatView.getShortcut().getMembers(), allUsers,
                   user)) {
@@ -645,9 +648,9 @@ public class LiveActivity extends BaseActivity
 
       subscriptions.add(viewLive.onOpenChat().subscribe(open -> {
         isChatViewOpen = open;
-        if (open) {
+        if (open && chatView != null) {
           animateChatView();
-        } else {
+        } else if (chatView != null) {
           chatView.animate()
               .setDuration(300)
               .alpha(0f)
@@ -674,6 +677,7 @@ public class LiveActivity extends BaseActivity
       if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
         if (live.fromRoom() && 
           (tribeJoinRoom.getSessionList() == null  || tribeJoinRoom.getSessionList().size() == 0)) {
+
           Toast.makeText(this,
               getString(R.string.live_other_user_hung_up, room.getInitiator().getDisplayName()),
               Toast.LENGTH_SHORT).show();
