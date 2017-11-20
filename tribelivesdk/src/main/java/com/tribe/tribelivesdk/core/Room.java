@@ -187,6 +187,9 @@ public class Room {
     persistentSubscriptions.add(jsonToModel.onLeaveRoom()
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
+        .doOnError(error -> {
+          Timber.e("error on onLeaveRoom :" + error.toString());
+        })
         .subscribe(tribeSession -> webRTCClient.removePeerConnection(tribeSession)));
 
     persistentSubscriptions.add(jsonToModel.onError()
@@ -392,9 +395,9 @@ public class Room {
   public void sendToUser(String userId, JSONObject obj, boolean isAppMessage) {
 
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
-      if (tpc != null &&
-          !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID) &&
-          tpc.getSession().getUserId().equals(userId)) {
+      if (tpc != null
+          && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
+          && tpc.getSession().getUserId().equals(userId)) {
 
         webSocketConnection.send(
             getSendMessagePayload(tpc.getSession().getPeerId(), obj, isAppMessage).toString());
@@ -405,8 +408,9 @@ public class Room {
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
     if (webSocketConnection == null) return;
 
-    if (remotePeer != null &&
-        !remotePeer.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+    if (remotePeer != null && !remotePeer.getSession()
+        .getPeerId()
+        .equals(TribeSession.PUBLISHER_ID)) {
       webSocketConnection.send(
           getSendMessagePayload(remotePeer.getSession().getPeerId(), obj, isAppMessage).toString());
     }

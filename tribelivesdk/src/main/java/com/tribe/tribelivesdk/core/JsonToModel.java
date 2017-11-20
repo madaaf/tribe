@@ -366,7 +366,7 @@ public class JsonToModel {
   }
 
   public Observable<TribeSession> onLeaveRoom() {
-    return onLeaveRoom;
+    return onLeaveRoom.onBackpressureBuffer();
   }
 
   public Observable<Void> onRollTheDiceReceived() {
