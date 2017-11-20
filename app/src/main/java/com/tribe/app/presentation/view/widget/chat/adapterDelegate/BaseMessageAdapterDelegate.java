@@ -150,7 +150,9 @@ public abstract class BaseMessageAdapterDelegate extends RxAdapterDelegate<List<
         vh.daySeparatorContainer.setVisibility(View.VISIBLE);
       }
 
-      if (previous.getAuthor().getId().equals(m.getAuthor().getId())) {
+      if (previous.getAuthor() != null && m.getAuthor() != null && previous.getAuthor()
+          .getId()
+          .equals(m.getAuthor().getId())) {
         if (dateUtils.getDiffDate(previous.getCreationDate(), time) > DIFF_TIMING_ALLOWED_MINUTE) {
           vh.time2.setText(dateUtils.getHourAndMinuteInLocal(time));
           vh.time2.setVisibility(View.VISIBLE);
