@@ -554,6 +554,7 @@ public class LiveActivity extends BaseActivity
   }
 
   private void initChatView(Shortcut shortcut) {
+    Timber.i("init chat view from live activity");
     if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       return;
     }
@@ -570,11 +571,18 @@ public class LiveActivity extends BaseActivity
     } else {
       String[] arrids =
           live.getRoom().getUserIds().toArray(new String[live.getRoom().getUserIds().size()]);
-      livePresenter.createShortcut(arrids);
+      if (arrids.length > 0) {
+        livePresenter.createShortcut(arrids);
+      }
     }
   }
 
   private void setChatView(Shortcut shortcut) {
+    if (shortcut.getMembers().isEmpty()) {
+      String source = (live != null) ? live.getSource() : "";
+      Timber.e("try to set chat view, but members is empty " + source);
+      return;
+    }
     chatView = new ChatView(context(), ChatView.FROM_LIVE);
     chatView.setChatId(shortcut, null);
     chatView.onResumeView();
@@ -614,15 +622,18 @@ public class LiveActivity extends BaseActivity
 
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
-        if (chatView.getShortcut() != null && chatView.getShortcut().getMembers() != null &&
-            !chatView.getShortcut().getMembers().isEmpty()) {
-
+        if (chatView.getShortcut() != null 
+          && chatView.getShortcut().getMembers() != null
+          && !chatView.getShortcut().getMembers().isEmpty()) {
           if (!allUsers.isEmpty() &&
               !ShortcutUtil.equalShortcutMembers(chatView.getShortcut().getMembers(), allUsers,
                   user)) {
             chatView.dispose();
-            room.getShortcut().setMembers(allUsers);
-            initChatView(room.getShortcut());
+            Shortcut shortcut = getShortcut();
+            if (shortcut != null) {
+              shortcut.setMembers(allUsers);
+              initChatView(shortcut);
+            }
           }
         }
       }));
@@ -654,15 +665,18 @@ public class LiveActivity extends BaseActivity
     }));
 
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
-      if (live.fromRoom() &&
-          (tribeJoinRoom.getSessionList() == null || tribeJoinRoom.getSessionList().size() == 0)) {
-        Toast.makeText(this,
-            getString(R.string.live_other_user_hung_up, room.getInitiator().getDisplayName()),
-            Toast.LENGTH_SHORT).show();
-        livePresenter.createInvite(room.getId(), room.getInitiator().getId());
-      } else if (!live.fromRoom()) {
-        for (String userId : live.getUserIdsOfShortcut()) {
-          livePresenter.createInvite(this.room.getId(), userId);
+      // TODO TIAGO
+      if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+        if (live.fromRoom() && 
+          (tribeJoinRoom.getSessionList() == null  || tribeJoinRoom.getSessionList().size() == 0)) {
+          Toast.makeText(this,
+              getString(R.string.live_other_user_hung_up, room.getInitiator().getDisplayName()),
+              Toast.LENGTH_SHORT).show();
+          livePresenter.createInvite(room.getId(), room.getInitiator().getId());
+        } else if (!live.fromRoom()) {
+          for (String userId : live.getUserIdsOfShortcut()) {
+            livePresenter.createInvite(this.room.getId(), userId);
+          }
         }
       }
     }).subscribe(tribeJoinRoom -> initRoomSubscription()));
@@ -804,6 +818,52 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.onRemotePeerClick().
         subscribe(o -> {
           if (o != null) userInfosNotificationView.displayView(o);
+        }));
+
+    subscriptions.add(viewLive.onPointsDrawReceived().
+        onBackpressureDrop().
+        subscribeOn(Schedulers.newThread()).
+        observeOn(AndroidSchedulers.mainThread()).
+        subscribe(points -> {
+          gameDrawView.onPointsDrawReceived(points);
+        }));
+
+    subscriptions.add(viewLive.onStartGame().
+        onBackpressureDrop().
+        subscribeOn(Schedulers.newThread()).
+        observeOn(AndroidSchedulers.mainThread()).
+        subscribe(game -> {
+          if (game != null) {
+            switch (game.getId()) {
+              case Game.GAME_POST_IT:
+                GamePostIt gamePostIt = (GamePostIt) game;
+                if (!gamePostIt.hasNames()) {
+                  livePresenter.getNamesPostItGame(DeviceUtils.getLanguage(this));
+                }
+                break;
+
+              case Game.GAME_DRAW:
+                GameDraw gameDraw = (GameDraw) game;
+                if (game.isUserAction()) {
+                  if (!gameDraw.hasNames()) {
+                    livePresenter.getNamesDrawGame(DeviceUtils.getLanguage(this));
+                  } else {
+                    setNextDrawGame();
+                  }
+                }
+                break;
+              case Game.GAME_CHALLENGE:
+                GameChallenge gameChallenge = (GameChallenge) game;
+                if (game.isUserAction()) {
+                  if (!gameChallenge.hasNames()) {
+                    livePresenter.getDataChallengesGame(DeviceUtils.getLanguage(this));
+                  } else {
+                    setNextChallengeGame();
+                  }
+                }
+                break;
+            }
+          }
         }));
 
     subscriptions.add(userInfosNotificationView.onClickInvite().

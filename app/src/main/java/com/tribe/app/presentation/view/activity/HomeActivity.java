@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.activity;
+subpackage com.tribe.app.presentation.view.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -659,7 +659,7 @@ public class HomeActivity extends BaseActivity
           } else {
             homeGridAdapter.setItems(latestRecipientList);
             homeGridAdapter.notifyDataSetChanged();
-            layoutManager.scrollToPositionWithOffset(0, 0);
+            if (latestRecipientList.size() != 0) layoutManager.scrollToPositionWithOffset(0, 0);
           }
         }));
   }
@@ -1167,6 +1167,7 @@ public class HomeActivity extends BaseActivity
   private SectionCallback getSectionCallback(final List<HomeAdapterInterface> recipientList) {
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
+        if (position < 0 || position > recipientList.size() - 1) return false; // TODO SOEF
         return position == 0 ||
             recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE &&
                 recipientList.get(position).getHomeSectionType() !=

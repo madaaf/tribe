@@ -195,6 +195,8 @@ public class LiveView extends FrameLayout {
 
   public void jump() {
     if (webRTCRoom != null) webRTCRoom.jump();
+<<<<<<< HEAD
+=======
   }
 
   public int getRowsInLive() {
@@ -203,6 +205,7 @@ public class LiveView extends FrameLayout {
 
   public void removeUserFromGrid(String userId) {
     viewRoom.removeGuest(userId);
+>>>>>>> stable_version
   }
 
   public double getDuration() {
@@ -1055,9 +1058,21 @@ public class LiveView extends FrameLayout {
     return user;
   }
 
+<<<<<<< HEAD
   //////////////////////
   //      GAMES       //
   //////////////////////
+=======
+    if (game instanceof GameChallenge) {
+      GameChallenge challenge = (GameChallenge) game;
+      if (challenge.getCurrentChallenger() != null && challenge.getCurrentChallenger()
+          .getId()
+          .equals(user.getId())) {
+        gameChallengesView.displayPopup(txtTooltipFirstGame.getTranslationY());
+        return;
+      }
+    }
+>>>>>>> stable_version
 
   private void onRestartGame(Game game) {
     if (game == null) return;
@@ -1102,13 +1117,14 @@ public class LiveView extends FrameLayout {
 
   private void restartGame(Game game) {
     startGame(game, true);
+<<<<<<< HEAD
   }
 
-// TODO SOEF 
- /* private void stopGame() {
+  private void stopGame() {
     onTouchEnabled.onNext(true);
+=======
     webRTCRoom.sendToPeers(getNewGamePayload(game), false);
-  }*/
+  }
 
   private void stopGame(boolean isCurrentUserAction, String gameId) {
     onTouchEnabled.onNext(true);
@@ -1122,6 +1138,7 @@ public class LiveView extends FrameLayout {
         gameDrawView.close();
         break;
     }
+>>>>>>> stable_version
     gameManager.setCurrentGame(null);
     removeView(viewGameManager);
     viewGameManager.disposeGame();

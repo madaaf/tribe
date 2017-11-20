@@ -375,9 +375,6 @@ public class RecyclerMessageView extends ChatMVPView {
     scrollListToBottom();
   }
 
-  public void errorMessageReveived() {
-  }
-
   @Override public void errorRemovedMessage(Message m) {
     Toast toast =
         Toast.makeText(context, R.string.onboarding_code_error_status, Toast.LENGTH_SHORT);

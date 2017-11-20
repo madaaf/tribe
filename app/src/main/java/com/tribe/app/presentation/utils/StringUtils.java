@@ -149,7 +149,7 @@ public class StringUtils {
         buffer.append(label);
         count++;
         if (i < users.size() - 1 && buffer.length() <= availableWidth) buffer.append(", ");
-      } else {
+      } else if (buffer.length() > 0) {
         buffer.replace(buffer.length() - 2, buffer.length() - 1, "");
         break;
       }

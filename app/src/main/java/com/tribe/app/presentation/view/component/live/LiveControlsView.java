@@ -172,6 +172,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<View> onGameUIActive = PublishSubject.create();
   private PublishSubject<Boolean> onGameMenuOpened = PublishSubject.create();
   private PublishSubject<Game> onResetScores = PublishSubject.create();
+
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -496,6 +497,7 @@ public class LiveControlsView extends FrameLayout {
 
   private void showActiveGame(boolean shouldDisplayGameTutorialPopup) {
     gamesMenuOn = false;
+    onGameMenuOpened.onNext(gamesMenuOn);
 
     onGameMenuOpened.onNext(false);
 
@@ -512,6 +514,7 @@ public class LiveControlsView extends FrameLayout {
 
   private void hideGames() {
     gamesMenuOn = false;
+    onGameMenuOpened.onNext(gamesMenuOn);
 
     onGameMenuOpened.onNext(gamesMenuOn);
 
@@ -885,6 +888,15 @@ public class LiveControlsView extends FrameLayout {
 
   public Observable<Filter> onClickFilter() {
     return onClickFilter;
+  }
+
+
+  public Observable<Boolean> onGameMenuOpen() {
+    return onGameMenuOpened;
+  }
+
+  public Observable<Game> onStartGame() {
+    return onStartGame;
   }
 
   public Observable<Void> onLeave() {

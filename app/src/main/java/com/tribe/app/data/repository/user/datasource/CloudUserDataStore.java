@@ -169,6 +169,7 @@ public class CloudUserDataStore implements UserDataStore {
               : "(max : 10)";
     }
 
+
     return this.tribeApi.getUserInfos(context.getString(R.string.user_infos, countShortcutsToUpdate,
         context.getString(R.string.userfragment_infos),
         context.getString(R.string.shortcutFragment_infos),

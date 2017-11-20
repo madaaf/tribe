@@ -307,7 +307,6 @@ public class ChatView extends ChatMVPView {
   }
 
   public void dispose() {
-    Timber.i("dispose chatView " + arrIds);
     if (arrIds != null) {
       context.startService(
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));

@@ -17,6 +17,7 @@ import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import timber.log.Timber;
 
 public class ShortcutPresenter implements Presenter {
 
@@ -75,18 +76,18 @@ public class ShortcutPresenter implements Presenter {
     createShortcut.execute(createShortcutSubscriber);
   }
 
-  private class CreateShortcutSubscriber extends DefaultSubscriber<Shortcut> {
+  private class CreateShortcutSubscriber extends DefaultSubscriber<Shortcut> { // TODO SOEF
 
     @Override public void onCompleted() {
     }
 
     @Override public void onError(Throwable e) {
       e.printStackTrace();
-      shortcutView.onShortcutCreatedError();
+      if (shortcutView != null) shortcutView.onShortcutCreatedError();
     }
 
     @Override public void onNext(Shortcut shortcut) {
-      shortcutView.onShortcutCreatedSuccess(shortcut);
+      if (shortcutView != null) shortcutView.onShortcutCreatedSuccess(shortcut);
     }
   }
 

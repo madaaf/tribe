@@ -13,6 +13,7 @@ import com.tribe.app.presentation.view.adapter.delegate.contact.EmptyContactAdap
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutChatActiveHomeAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutLiveHomeAdapterDelegate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -56,6 +57,9 @@ public class SearchAdapter extends RecyclerView.Adapter {
 
     searchResultGridAdapterDelegate = new SearchResultGridAdapterDelegate(context);
     delegatesManager.addDelegate(searchResultGridAdapterDelegate);
+
+    shortcutChatActiveHomeAdapterDelegate = new ShortcutChatActiveHomeAdapterDelegate(context);
+    delegatesManager.addDelegate(shortcutChatActiveHomeAdapterDelegate);
 
     userToAddAdapterDelegate = new UserToAddAdapterDelegate(context);
     delegatesManager.addDelegate(userToAddAdapterDelegate);
@@ -163,6 +167,10 @@ public class SearchAdapter extends RecyclerView.Adapter {
    * OBSERVABLES
    */
 
+  public Observable<View> onInvite() {
+    return contactToInviteAdapterDelegate.onInvite();
+  }
+
   public Observable<View> onClick() {
     return Observable.merge(searchResultGridAdapterDelegate.onClick(),
         shortcutChatActiveHomeAdapterDelegate.onClick(), shortcutAdapterDelegate.onClick(),
@@ -178,7 +186,8 @@ public class SearchAdapter extends RecyclerView.Adapter {
         shortcutChatActiveHomeAdapterDelegate.onChatClick());
   }
 
-  public Observable<View> onClickLive() {
+
+  public Observable<View> onLiveClick() {
     return Observable.merge(shortcutAdapterDelegate.onLiveClick(),
         shortcutChatActiveHomeAdapterDelegate.onLiveClick());
   }

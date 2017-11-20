@@ -236,7 +236,25 @@ import timber.log.Timber;
                 Timber.d("invited_users : " + invited_users);
                 room.setInvitedUsers(invited_users);
               }
-              
+
+<<<<<<< HEAD
+=======
+              if (room.getShortcut() != null) {
+                Timber.d("on room updated received | shortcutId : " + room.getShortcut().getId());
+              }
+              if (room.getShortcut() != null) {
+                Timber.d("on room updated received | shortcut : " + room.getShortcut().toString());
+              }
+              if (room.getShortcut() != null && room.getShortcut().getMembers() != null) {
+                Timber.d("on room updated received | members : " + room.getShortcut()
+                    .getMembers()
+                    .size());
+              }
+              if (room != null) {
+                Timber.d("on room updated received | roomId : " + room.getId());
+              }
+
+>>>>>>> stable_version
               onRoomUpdated.onNext(room);
             } else if (entry.getKey().contains(WSService.SHORTCUT_CREATED_SUFFIX)) {
               Timber.d("Shortcut created : " + entry.getValue().toString());

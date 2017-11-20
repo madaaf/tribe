@@ -53,6 +53,9 @@
 	<string name="image_picker_library">Ouvrir ma bibliothèque :arrow_up:</string>
 	<string name="image_picker_documents">Documents :file_folder:</string>
 	
+	<!-- Invite -->
+	<string name="invite_generating_link">Création d\'un lien de partage...</string>
+	
 	<!-- Contacts -->
 	<string name="contacts_search_new">NEW</string>
 	<string name="contacts_search_new_tooltip">Retrouvez vos amis déjà sur Tribe !</string>

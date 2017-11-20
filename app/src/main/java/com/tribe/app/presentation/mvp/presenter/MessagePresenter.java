@@ -387,8 +387,6 @@ public class MessagePresenter implements Presenter {
           } else {
             chatMVPView.onShortcutUpdate(shortcut);
           }
-        } else {
-          Timber.e("chatMVPView NULL " + shortcut);
         }
       }
       if (shortcutForUserIdsSubscriber != null) shortcutForUserIdsSubscriber.unsubscribe();

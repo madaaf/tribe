@@ -138,6 +138,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
 
   private void startMediaPlayer(Uri audioResId, int position) {
     mediaPlayer = MediaPlayer.create(context.getApplicationContext(), audioResId);
+
     mediaPlayer.setOnCompletionListener(mp -> {
       releaseMediaPlayer();
       onClickBtn(position + 1);

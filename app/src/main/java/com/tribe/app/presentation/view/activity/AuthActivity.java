@@ -264,7 +264,6 @@ public class AuthActivity extends BaseActivity
     facebookPresenter.onViewAttached(this);
   }
 
-
   private void tagLogin() {
     Bundle properties = new Bundle();
     properties.putString(TagManagerUtils.TYPE, "login");

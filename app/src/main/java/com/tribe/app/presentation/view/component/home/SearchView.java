@@ -856,13 +856,13 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   public Observable<Recipient> onClickLive() {
-    return searchAdapter.onClickLive()
+    return searchAdapter.onLiveClick()
         .map(view -> (Recipient) searchAdapter.getItemAtPosition(
             recyclerViewContacts.getChildLayoutPosition(view)));
   }
 
   public Observable<Recipient> onClickChat() {
-    return searchAdapter.onClickChat()
+    return searchAdapter.onChatClick()
         .map(view -> (Recipient) searchAdapter.getItemAtPosition(
             recyclerViewContacts.getChildLayoutPosition(view)));
   }

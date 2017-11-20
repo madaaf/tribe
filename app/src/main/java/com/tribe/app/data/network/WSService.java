@@ -358,9 +358,8 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(webSocketConnection.onMessage().onBackpressureDrop().subscribe(message -> {
       Timber.d("onMessage : " + message);
-
-      jsonToModel.convertToSubscriptionResponse(message);
-    }));
+          jsonToModel.convertToSubscriptionResponse(message);
+        }));
 
     persistentSubscriptions.add(webSocketConnection.onConnectError().subscribe(s -> {
       Timber.d("onConnectError setting new headers : " + s);
@@ -461,9 +460,11 @@ import timber.log.Timber;
     persistentSubscriptions.add(
         jsonToModel.onFbIdUpdated().subscribe(userUpdated -> liveCache.onFbIdUpdated(userUpdated)));
 
+
     persistentSubscriptions.add(jsonToModel.onRoomUpdated()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(room -> liveCache.onRoomUpdated(room)));
+        .subscribe(room -> { liveCache.onRoomUpdated(room);
+        }));
 
     persistentSubscriptions.add(jsonToModel.onUserListUpdated()
         .subscribe(userRealmList -> userCache.updateUserRealmList(userRealmList)));

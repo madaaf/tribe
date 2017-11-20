@@ -33,7 +33,6 @@ public class SendboxActivity extends Activity {
 
   @OnClick(R.id.btnEnable) void enableSendboxAction() {
     if (sendboxEditText.getText().toString().equals(PASS)) {
-     // Digits.enableSandbox();
       Toast toast = Toast.makeText(getApplicationContext(), "enable Sandbox", Toast.LENGTH_SHORT);
       toast.show();
       finish();
@@ -46,8 +45,6 @@ public class SendboxActivity extends Activity {
   }
 
   @OnClick(R.id.btnDisable) void disableSendboxAction() {
-   // Digits.disableSandbox();
-    Timber.w("diable sendbox");
     Toast toast = Toast.makeText(getApplicationContext(), "disable Sandbox", Toast.LENGTH_SHORT);
     toast.show();
     finish();
