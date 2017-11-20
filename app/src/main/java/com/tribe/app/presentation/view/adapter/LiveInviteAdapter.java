@@ -76,7 +76,10 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
 
   @Override public long getItemId(int position) {
     LiveInviteAdapterSectionInterface object = getItemAtPosition(position);
-    return object.hashCode();
+    if (object != null) {
+      return object.hashCode();
+    }
+    return 0L;
   }
 
   @Override public int getItemViewType(int position) {
