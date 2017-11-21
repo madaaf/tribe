@@ -12,6 +12,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
@@ -150,16 +151,16 @@ public class UserCacheImpl implements UserCache {
     if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.FBID)) {
       to.setFbid(from.getFbid());
     }
-    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
-        .has(UserRealm.TRIBE_SAVE)) {
+    if (from.getJsonPayloadUpdate() == null ||
+        from.getJsonPayloadUpdate().has(UserRealm.TRIBE_SAVE)) {
       to.setTribeSave(from.isTribeSave());
     }
-    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
-        .has(UserRealm.INVISIBLE_MODE)) {
+    if (from.getJsonPayloadUpdate() == null ||
+        from.getJsonPayloadUpdate().has(UserRealm.INVISIBLE_MODE)) {
       to.setInvisibleMode(from.isInvisibleMode());
     }
-    if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate()
-        .has(UserRealm.PUSH_NOTIF)) {
+    if (from.getJsonPayloadUpdate() == null ||
+        from.getJsonPayloadUpdate().has(UserRealm.PUSH_NOTIF)) {
       to.setPushNotif(from.isPushNotif());
     }
     if (from.getLastSeenAt() != null) to.setLastSeenAt(from.getLastSeenAt());
@@ -229,7 +230,8 @@ public class UserCacheImpl implements UserCache {
   @Override public Observable<List<ShortcutRealm>> shortcuts() {
     return realm.where(ShortcutRealm.class)
         .equalTo(ShortcutRealm.STATUS, ShortcutRealm.DEFAULT)
-        .findAll()
+        .findAllSorted(new String[] { "pinned", "last_activity_at" },
+            new Sort[] { Sort.DESCENDING, Sort.DESCENDING })
         .asObservable()
         .filter(singleShortcutList -> singleShortcutList.isLoaded())
         .map(singleShortcutList -> realm.copyFromRealm(singleShortcutList))

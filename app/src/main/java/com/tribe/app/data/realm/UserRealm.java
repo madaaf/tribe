@@ -15,6 +15,8 @@ import java.util.List;
  */
 public class UserRealm extends RealmObject {
 
+  private static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
+
   @StringDef({ UPDATED_AT }) public @interface UserRealmAttributes {
   }
 
@@ -197,7 +199,11 @@ public class UserRealm extends RealmObject {
   }
 
   public boolean isOnline() {
-    return is_online;
+    if (is_online) return is_online;
+    if (last_seen_at == null) return false;
+
+    // We consider that somebody that was online less than fifteen minutes ago is still online
+    return System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES;
   }
 
   public void setIsOnline(boolean isOnline) {
