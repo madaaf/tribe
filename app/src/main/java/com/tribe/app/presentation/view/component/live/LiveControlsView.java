@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +34,6 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.adapter.GamesFiltersAdapter;
 import com.tribe.app.presentation.view.adapter.manager.GamesFiltersLayoutManager;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
-import com.tribe.app.presentation.view.utils.BitmapUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -87,12 +85,6 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.btnNewGameOff) ImageView btnNewGameOff;
 
-  @BindView(R.id.btnNewGameOn) ImageView btnNewGameOn;
-
-  @BindView(R.id.btnNewGame) FrameLayout btnNewGame;
-
-  @BindView(R.id.imgTriangleCloseGames) ImageView imgTriangleCloseGames;
-
   @BindView(R.id.btnExpand) ImageView btnExpand;
 
   @BindView(R.id.btnOrientationCamera) View btnOrientationCamera;
@@ -113,10 +105,6 @@ public class LiveControlsView extends FrameLayout {
 
   @BindViews({ R.id.btnChat, R.id.viewStatusName }) List<View> viewToHideTopFilters;
 
-  @BindViews({
-      R.id.btnExpand, R.id.layoutFilter
-  }) List<View> viewToHideBottomGames;
-
   @BindViews({ R.id.btnChat, R.id.viewStatusName }) List<View> viewToHideTopGames;
 
   @BindViews({
@@ -135,8 +123,6 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.recyclerViewFilters) RecyclerView recyclerViewFilters;
 
-  @BindView(R.id.recyclerViewGames) RecyclerView recyclerViewGames;
-
   // VARIABLES
   private Unbinder unbinder;
   private boolean cameraEnabled = true, microEnabled = true, isParamExpanded = false,
@@ -145,11 +131,8 @@ public class LiveControlsView extends FrameLayout {
   private GameManager gameManager;
   private FilterManager filterManager;
   private GamesFiltersLayoutManager filtersLayoutManager;
-  private GamesFiltersLayoutManager gamesLayoutManager;
   private List<GameFilter> filterList;
   private GamesFiltersAdapter filtersAdapter;
-  private List<GameFilter> gameList;
-  private GamesFiltersAdapter gamesAdapter;
   private int[] btnFilterLocation;
   private ImageView currentGameView;
   private @LiveContainer.Event int drawerState = LiveContainer.CLOSED;
@@ -204,11 +187,11 @@ public class LiveControlsView extends FrameLayout {
   }
 
   public void hideGamesBtn() {
-    btnNewGame.setVisibility(INVISIBLE);
+    btnNewGameOff.setVisibility(INVISIBLE);
   }
 
   public void displayGamesBtn() {
-    btnNewGame.setVisibility(VISIBLE);
+    btnNewGameOff.setVisibility(VISIBLE);
   }
 
   private void init() {
@@ -279,43 +262,29 @@ public class LiveControlsView extends FrameLayout {
   private void initGames() {
     gameManager = GameManager.getInstance(getContext());
 
-    gameList = new ArrayList<>();
-    gamesLayoutManager = new GamesFiltersLayoutManager(getContext());
-    recyclerViewGames.setLayoutManager(gamesLayoutManager);
-    recyclerViewGames.setItemAnimator(null);
-
-    gamesAdapter = new GamesFiltersAdapter(getContext());
-    gameList.addAll(gameManager.getGames());
-    gamesAdapter.setItems(gameList);
-
-    recyclerViewGames.setAdapter(gamesAdapter);
-    recyclerViewGames.getRecycledViewPool().setMaxRecycledViews(0, 50);
-
-    recyclerViewGames.setTranslationY(screenUtils.getHeightPx() >> 1);
-
-    subscriptions.add(gamesAdapter.onClick()
-        .map(view -> {
-          Game game =
-              (Game) gamesAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view));
-          return new Pair<>(view, game);
-        })
-        .observeOn(AndroidSchedulers.mainThread())
-        .filter(viewGamePair -> {
-          if (!viewGamePair.second.isAvailable()) {
-            Toast.makeText(getContext().getApplicationContext(), R.string.live_mask_available_soon,
-                Toast.LENGTH_LONG).show();
-          }
-
-          return viewGamePair.second.isAvailable();
-        })
-        .doOnNext(pairViewGame -> {
-          gamesAdapter.updateSelected(pairViewGame.second);
-          gameManager.setCurrentGame(pairViewGame.second);
-          onStartGame.onNext(pairViewGame.second);
-        })
-        .delay(400, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(pairViewGame -> setupCurrentGameView(pairViewGame.second, pairViewGame.first)));
+    //subscriptions.add(gamesAdapter.onClick()
+    //    .map(view -> {
+    //      Game game =
+    //          (Game) gamesAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view));
+    //      return new Pair<>(view, game);
+    //    })
+    //    .observeOn(AndroidSchedulers.mainThread())
+    //    .filter(viewGamePair -> {
+    //      if (!viewGamePair.second.isAvailable()) {
+    //        Toast.makeText(getContext().getApplicationContext(), R.string.live_mask_available_soon,
+    //            Toast.LENGTH_LONG).show();
+    //      }
+    //
+    //      return viewGamePair.second.isAvailable();
+    //    })
+    //    .doOnNext(pairViewGame -> {
+    //      gamesAdapter.updateSelected(pairViewGame.second);
+    //      gameManager.setCurrentGame(pairViewGame.second);
+    //      onStartGame.onNext(pairViewGame.second);
+    //    })
+    //    .delay(400, TimeUnit.MILLISECONDS)
+    //    .observeOn(AndroidSchedulers.mainThread())
+    //    .subscribe(pairViewGame -> setupCurrentGameView(pairViewGame.second, pairViewGame.first)));
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -347,7 +316,6 @@ public class LiveControlsView extends FrameLayout {
   }
 
   private void clickOnParam() {
-    if (gamesMenuOn) hideGames();
     if (filtersMenuOn) hideFilters();
 
     if (!isParamExpanded) {
@@ -459,42 +427,6 @@ public class LiveControlsView extends FrameLayout {
     hideRecyclerView(recyclerViewFilters);
   }
 
-  private void showGames() {
-    gamesMenuOn = true;
-    onGameMenuOpened.onNext(gamesMenuOn);
-
-    recyclerViewGames.getRecycledViewPool().clear();
-    gamesAdapter.notifyDataSetChanged();
-
-    int toY = -screenUtils.dpToPx(85);
-
-    layoutGame.animate()
-        .translationY(toY)
-        .setDuration(DURATION_GAMES_FILTERS)
-        .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
-        .start();
-
-    showBtnGameOn();
-
-    imgTriangleCloseGames.setAlpha(0f);
-    imgTriangleCloseGames.setVisibility(View.VISIBLE);
-    imgTriangleCloseGames.animate()
-        .setDuration(DURATION_GAMES_FILTERS)
-        .alpha(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .start();
-
-    for (View v : viewToHideBottomGames) {
-      hideView(v, false);
-    }
-
-    for (View v : viewToHideTopGames) {
-      hideView(v, true);
-    }
-
-    showRecyclerView(recyclerViewGames);
-  }
-
   private void showActiveGame(boolean shouldDisplayGameTutorialPopup) {
     gamesMenuOn = false;
     onGameMenuOpened.onNext(gamesMenuOn);
@@ -503,41 +435,7 @@ public class LiveControlsView extends FrameLayout {
 
     if (shouldDisplayGameTutorialPopup) onGameUIActive.onNext(currentGameView);
 
-    hideRecyclerView(recyclerViewGames);
-
-    for (View v : viewToHideBottomGames) {
-      if (v != btnExpand || !filtersMenuOn) showView(v);
-    }
-
     hideGameControls();
-  }
-
-  private void hideGames() {
-    gamesMenuOn = false;
-    onGameMenuOpened.onNext(gamesMenuOn);
-
-    onGameMenuOpened.onNext(gamesMenuOn);
-
-    layoutGame.animate()
-        .translationX(0)
-        .translationY(0)
-        .setDuration(DURATION_GAMES_FILTERS)
-        .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
-        .start();
-
-    showBtnGameOff(true);
-
-    imgTriangleCloseGames.setVisibility(View.GONE);
-
-    for (View v : viewToHideBottomGames) {
-      showView(v);
-    }
-
-    for (View v : viewToHideTopGames) {
-      showView(v);
-    }
-
-    hideRecyclerView(recyclerViewGames);
   }
 
   private void hideRecyclerView(RecyclerView recyclerView) {
@@ -564,8 +462,6 @@ public class LiveControlsView extends FrameLayout {
 
   private void showGameControls() {
     gamesMenuOn = false;
-    showBtnGameOff(false);
-    imgTriangleCloseGames.setVisibility(View.GONE);
     showView(layoutGame);
     showView(viewStatusName);
     showView(btnChat);
@@ -585,16 +481,6 @@ public class LiveControlsView extends FrameLayout {
         .setDuration(DURATION_GAMES_FILTERS)
         .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
         .start();
-  }
-
-  private void showBtnGameOn() {
-    AnimationUtils.fadeIn(btnNewGameOn, DURATION_GAMES_FILTERS);
-    AnimationUtils.fadeOut(btnNewGameOff, DURATION_GAMES_FILTERS);
-  }
-
-  private void showBtnGameOff(boolean animate) {
-    AnimationUtils.fadeIn(btnNewGameOff, animate ? DURATION_GAMES_FILTERS : 0);
-    AnimationUtils.fadeOut(btnNewGameOn, animate ? DURATION_GAMES_FILTERS : 0);
   }
 
   private void showBtnFilterOn() {
@@ -662,7 +548,10 @@ public class LiveControlsView extends FrameLayout {
         .filter(labelType -> labelType.getTypeDef().equals(LabelType.GAME_PLAY_ANOTHER))
         .delay(1, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(labelType -> showGames()));
+        .subscribe(labelType -> {
+          // TODO CHANGE
+          // showGames();
+        }));
 
     layoutContainerParamLive.addView(currentGameView, params);
 
@@ -775,12 +664,8 @@ public class LiveControlsView extends FrameLayout {
     onClickCameraDisable.onNext(null);
   }
 
-  @OnClick({ R.id.btnNewGameOff, R.id.btnNewGameOn }) void clickNewGame() {
-    if (!gamesMenuOn) {
-      showGames();
-    } else {
-      hideGames();
-    }
+  @OnClick({ R.id.btnNewGameOff }) void clickNewGame() {
+    // TODO NEW GAMES
   }
 
   @OnClick({ R.id.btnFilterOn, R.id.btnFilterOff }) void clickFilter() {
@@ -845,11 +730,12 @@ public class LiveControlsView extends FrameLayout {
   }
 
   public void setupCurrentGameView(Game game, View viewFrom) {
-    if (currentGameView == null) { // TODO will have to change with other games
+    if (currentGameView == null) {
       currentGameView = addGameToView(viewFrom);
-      currentGameView.setImageBitmap(BitmapUtils.generateGameIconWithBorder(
-          BitmapUtils.bitmapFromResources(getResources(), game.getDrawableRes()),
-          screenUtils.dpToPx(10)));
+      // TODO LOAD BMP
+      //currentGameView.setImageBitmap(BitmapUtils.generateGameIconWithBorder(
+      //    BitmapUtils.bitmapFromResources(getResources(), game.getDrawableRes()),
+      //    screenUtils.dpToPx(10)));
     }
   }
 

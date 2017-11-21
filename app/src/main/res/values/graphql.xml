@@ -577,4 +577,34 @@
   <string name="imOnline" translatable="false">
             imOnline
   </string>
+
+  <string name="games.infos" translatable="false">
+    games {
+      id
+      online
+      playable
+      featured
+      new
+      title
+      baseline
+      icon
+      banner
+      primary_color
+      secondary_color
+      plays_count
+      __typename
+
+      ...on GameWebV1 {
+        url
+      }
+
+      ...on GameNative {
+        data
+      }
+
+      ...on GameWebRoom {
+        url
+      }
+    }
+  </string>
 </resources>

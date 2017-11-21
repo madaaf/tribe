@@ -8,25 +8,19 @@ import javax.inject.Inject;
 import rx.Observable;
 
 /**
- * Created by tiago on 04/05/2016.
+ * Created by tiago on 11/20/2017
  */
-public class GetNamesPostItGame extends UseCase {
+public class GetDiskGames extends UseCase {
 
-  private String lang;
   private GameRepository gameRepository;
 
-  @Inject
-  public GetNamesPostItGame(CloudGameDataRepository gameRepository, ThreadExecutor threadExecutor,
+  @Inject public GetDiskGames(CloudGameDataRepository gameRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
     this.gameRepository = gameRepository;
   }
 
-  public void setup(String lang) {
-    this.lang = lang;
-  }
-
   @Override protected Observable buildUseCaseObservable() {
-    return this.gameRepository.getNamesForPostItGame(lang);
+    return this.gameRepository.getGames();
   }
 }

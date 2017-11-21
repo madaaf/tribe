@@ -4,6 +4,7 @@ import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
+import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
@@ -95,7 +96,8 @@ public interface TribeApi {
 
   @FormUrlEncoded @POST("/graphql") Observable<Boolean> buzzRoom(@Field("query") String query);
 
-  @FormUrlEncoded @POST("/graphql") Observable<RemoveMessageEntity> removeMessage(@Field("query") String query);
+  @FormUrlEncoded @POST("/graphql") Observable<RemoveMessageEntity> removeMessage(
+      @Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<List<Invite>> invites(@Field("query") String query);
 
@@ -122,4 +124,7 @@ public interface TribeApi {
       @Part("query") RequestBody query, @Part MultipartBody.Part file);
 
   @FormUrlEncoded @POST("/graphql") Observable<Void> removeShortcut(@Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<List<GameRealm>> getGames(
+      @Field("query") String query);
 }

@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.content.Context;
 import com.birbit.android.jobqueue.JobManager;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
@@ -13,6 +14,7 @@ import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.exception.ErrorBundle;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.game.GetCloudGames;
 import com.tribe.app.domain.interactor.game.GetGamesData;
 import com.tribe.app.domain.interactor.live.CreateRoom;
 import com.tribe.app.domain.interactor.live.DeclineInvite;
@@ -29,6 +31,8 @@ import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -58,6 +62,8 @@ public class HomePresenter implements Presenter {
   private GetDiskContactInviteList getDiskContactInviteList;
   private GetDiskFBContactInviteList getDiskFBContactInviteList;
   private GetGamesData getGamesData;
+  private GetCloudGames getGames;
+  private GameManager gameManager;
 
   private DeclineInvite declineInvite;
   private SendInvitations sendInvitations;
@@ -71,7 +77,8 @@ public class HomePresenter implements Presenter {
   private ContactListInviteSubscriber contactListInviteSubscriber;
   private FBContactListInviteSubscriber fbContactListInviteSubscriber;
 
-  @Inject public HomePresenter(ShortcutPresenter shortcutPresenter, JobManager jobManager,
+  @Inject
+  public HomePresenter(Context context, ShortcutPresenter shortcutPresenter, JobManager jobManager,
       @Named("diskUserInfos") GetDiskUserInfos diskUserInfos,
       @Named("sendToken") SendToken sendToken, @Named("cloudUserInfos") UseCase cloudUserInfos,
       UpdateUserFacebook updateUserFacebook, RxFacebook rxFacebook,
@@ -79,7 +86,8 @@ public class HomePresenter implements Presenter {
       GetDiskContactOnAppList getDiskContactOnAppList,
       GetDiskContactInviteList getDiskContactInviteList, DeclineInvite declineInvite,
       SendInvitations sendInvitations, CreateRoom createRoom,
-      GetDiskFBContactInviteList getDiskFBContactInviteList, GetGamesData getGamesData) {
+      GetDiskFBContactInviteList getDiskFBContactInviteList, GetGamesData getGamesData,
+      GetCloudGames getGames) {
     this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
@@ -95,6 +103,8 @@ public class HomePresenter implements Presenter {
     this.createRoom = createRoom;
     this.getDiskFBContactInviteList = getDiskFBContactInviteList;
     this.getGamesData = getGamesData;
+    this.getGames = getGames;
+    this.gameManager = GameManager.getInstance(context);
   }
 
   @Override public void onViewDetached() {
@@ -110,6 +120,7 @@ public class HomePresenter implements Presenter {
     sendInvitations.unsubscribe();
     createRoom.unsubscribe();
     getGamesData.unsubscribe();
+    getGames.unsubscribe();
     homeGridView = null;
   }
 
@@ -366,6 +377,14 @@ public class HomePresenter implements Presenter {
     @Override public void onNext(Room room) {
       homeGridView.onCreateRoom(room, feature, phone, shouldOpenSMS);
     }
+  }
+
+  public void getGames() {
+    getGames.execute(new DefaultSubscriber<List<Game>>() {
+      @Override public void onNext(List<Game> gameList) {
+        gameManager.addGames(gameList);
+      }
+    });
   }
 
   public void synchronizeGamesData(String lang, Preference<Long> lastSyncGameData) {

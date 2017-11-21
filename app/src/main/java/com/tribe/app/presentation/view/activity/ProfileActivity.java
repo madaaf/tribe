@@ -491,8 +491,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-                    .equals(LabelType.BLOCK_HIDE)) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
                   Shortcut shortcut = (Shortcut) recipient;
                   profilePresenter.updateShortcutStatus(shortcut.getId(),
                       labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? ShortcutRealm.BLOCKED
@@ -536,7 +536,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
       setupTitle(title, forward);
       txtAction.setVisibility(GONE);
     } else if (to instanceof SettingsManageShortcutsView) {
-      setupTitle(getString(R.string.manage_friendships_title), forward);
+      setupTitle(EmojiParser.demojizedText(getString(R.string.manage_friendships_title)), forward);
       txtAction.setVisibility(View.GONE);
     } else if (to instanceof SettingsPhoneNumberView) {
       setupTitle(getString(R.string.profile_change_phone_title), forward);
@@ -620,8 +620,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
     if (viewStack.getTopView() instanceof SettingsProfileView) {
-      viewSettingsProfile.setUsernameValid(usernameValid || viewSettingsProfile.getUsername()
-          .equals(getCurrentUser().getUsername()));
+      viewSettingsProfile.setUsernameValid(usernameValid ||
+          viewSettingsProfile.getUsername().equals(getCurrentUser().getUsername()));
     }
   }
 
@@ -700,11 +700,11 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   }
 
   @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
-    if (viewSettingsManageFriendships != null && ViewCompat.isAttachedToWindow(
-        viewSettingsManageFriendships)) {
+    if (viewSettingsManageFriendships != null &&
+        ViewCompat.isAttachedToWindow(viewSettingsManageFriendships)) {
       viewSettingsManageFriendships.renderUnblockedShortcutList(singleShortcutList);
-    } else if (viewSettingsBlockedFriends != null && ViewCompat.isAttachedToWindow(
-        viewSettingsBlockedFriends)) {
+    } else if (viewSettingsBlockedFriends != null &&
+        ViewCompat.isAttachedToWindow(viewSettingsBlockedFriends)) {
       viewSettingsBlockedFriends.renderBlockedShortcutList(singleShortcutList);
     }
 

@@ -75,6 +75,11 @@ import rx.subscriptions.CompositeSubscription;
     gameList.add(game);
   }
 
+  public void addGames(List<Game> games) {
+    gameList.clear();
+    gameList.addAll(games);
+  }
+
   public void initSubscriptions() {
     for (Game game : gameList) {
       subscriptions.add(game.onLocalFrame().subscribe(onLocalFrame));

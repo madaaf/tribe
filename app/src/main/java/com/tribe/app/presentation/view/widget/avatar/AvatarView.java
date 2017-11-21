@@ -104,6 +104,23 @@ public class AvatarView extends RelativeLayout implements Avatar {
     });
   }
 
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    isAttached = true;
+
+    if (pendingBuilder != null) {
+      pendingBuilder.load();
+      pendingBuilder = null;
+    }
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    isAttached = false;
+    if (createImageSubscription != null) createImageSubscription.unsubscribe();
+    pendingBuilder = null;
+  }
+
   @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
@@ -180,6 +197,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
                         new GlideUtils.Builder(getContext()).file(groupAvatarFile)
                             .size(avatarSize)
                             .target(imgAvatar);
+
                     if (isAttached) {
                       builder.load();
                     } else {
@@ -201,6 +219,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
       GlideUtils.Builder builder =
           new GlideUtils.Builder(getContext()).url(url).size(avatarSize).target(imgAvatar);
+
       if (isAttached) {
         builder.load();
       } else {
@@ -243,8 +262,10 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
   private void loadPlaceholder() {
     if (avatarSize == 0) return;
+
     GlideUtils.Builder builder =
         new GlideUtils.Builder(getContext()).size(avatarSize).target(imgAvatar);
+        
     if (isAttached) {
       builder.load();
     } else {

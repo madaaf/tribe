@@ -10,24 +10,22 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
 
-@Singleton public class CloudGameDataRepository implements GameRepository {
+@Singleton public class DiskGameDataRepository implements GameRepository {
 
   private final GameDataStoreFactory dataStoreFactory;
   private final GameRealmDataMapper gameRealmDataMapper;
 
-  @Inject public CloudGameDataRepository(GameDataStoreFactory dataStoreFactory,
-      GameRealmDataMapper gameRealmDataMapper) {
+  @Inject public DiskGameDataRepository(GameDataStoreFactory dataStoreFactory, GameRealmDataMapper gameRealmDataMapper) {
     this.dataStoreFactory = dataStoreFactory;
     this.gameRealmDataMapper = gameRealmDataMapper;
   }
 
   @Override public Observable<Void> synchronizeGamesData(String lang) {
-    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
-    return gameDataStore.synchronizeGamesData();
+    return null;
   }
 
   @Override public Observable<List<Game>> getGames() {
-    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
+    GameDataStore gameDataStore = dataStoreFactory.createDiskDataStore();
     return gameDataStore.getGames().map(gameRealm -> gameRealmDataMapper.transform(gameRealm));
   }
 }

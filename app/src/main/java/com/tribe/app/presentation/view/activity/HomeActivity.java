@@ -292,6 +292,8 @@ public class HomeActivity extends BaseActivity
 
     if (System.currentTimeMillis() - lastSyncGameData.get() > TWENTY_FOUR_HOURS) {
       homeGridPresenter.synchronizeGamesData(DeviceUtils.getLanguage(this), lastSyncGameData);
+    } else {
+      homeGridPresenter.getGames();
     }
   }
 

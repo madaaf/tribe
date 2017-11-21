@@ -15,9 +15,8 @@ public class GameChallenge extends Game {
   private String currentChallenge;
   private TribeGuest currentChallenger;
 
-  public GameChallenge(Context context, @GameType String id, String name, int drawableRes,
-      boolean available) {
-    super(context, id, name, drawableRes, null, available);
+  public GameChallenge(Context context, String id) {
+    super(context, id);
   }
 
   public void generateNewDatas() {
