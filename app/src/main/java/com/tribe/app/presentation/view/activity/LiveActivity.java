@@ -72,7 +72,6 @@ import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
-import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -83,7 +82,6 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
-import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.game.GameChallengesView;
@@ -728,7 +726,6 @@ public class LiveActivity extends BaseActivity
         .subscribe(aVoid -> gameDrawView.onClearDrawReceived()));
 
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
-      // TODO TIAGO
       if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
         if (live.fromRoom() &&
             (tribeJoinRoom.getSessionList() == null ||
@@ -1351,21 +1348,6 @@ public class LiveActivity extends BaseActivity
 
     live.setRoom(room);
     viewLive.joinRoom(this.room);
-
-    if (!StringUtils.isEmpty(live.getRoomId()) &&
-        !StringUtils.isEmpty(room.getName()) &&
-        !room.getInitiator().getId().equals(getCurrentUser().getId())) {
-      NotificationPayload notificationPayload = new NotificationPayload();
-      notificationPayload.setBody(EmojiParser.demojizedText(
-          getString(R.string.live_notification_initiator_has_been_notified,
-              room.getInitiator().getDisplayName())));
-      LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(this, notificationPayload);
-
-      if (liveNotificationView != null) {
-        Alerter.create(LiveActivity.this, liveNotificationView).show();
-      }
-    }
   }
 
   @Override public void onRoomFull(String message) {
@@ -1373,18 +1355,8 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onRoomInfosError(String message) {
-    /**
-     * TODO handle better the error cases based on the backend solutions
-     * for now, if there is an error, we just create the room
-     */
-
-    if (createRoomErrorCount == 0) {
-      createRoom();
-      createRoomErrorCount++;
-    } else {
-      Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-      finish();
-    }
+    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    finish();
   }
 
   @Override public void onShortcut(Shortcut shortcut) {
