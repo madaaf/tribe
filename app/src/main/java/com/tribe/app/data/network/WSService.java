@@ -372,6 +372,7 @@ import timber.log.Timber;
 
   private void initModel() {
     persistentSubscriptions.add(jsonToModel.onInviteCreated()
+        .onBackpressureDrop()
         // we wait to have a correct response with the live_users array
         // in the room correctly updated
         .delay(2000, TimeUnit.MILLISECONDS)
@@ -419,76 +420,89 @@ import timber.log.Timber;
         .subscribe());
 
     persistentSubscriptions.add(jsonToModel.onInviteRemoved()
+        .onBackpressureDrop()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
         .subscribe(invite -> {
           //if (invite.getRoom() != null) unsubscribeRoomUpdate(invite.getRoom().getId());
           liveCache.removeInvite(invite);
         }));
 
-    persistentSubscriptions.add(jsonToModel.onAddedOnline().subscribe(s -> liveCache.putOnline(s)));
+    persistentSubscriptions.add(
+        jsonToModel.onAddedOnline().onBackpressureDrop().subscribe(s -> liveCache.putOnline(s)));
+
+    persistentSubscriptions.add(jsonToModel.onRemovedOnline()
+        .onBackpressureDrop()
+        .subscribe(s -> liveCache.removeOnline(s)));
 
     persistentSubscriptions.add(
-        jsonToModel.onRemovedOnline().subscribe(s -> liveCache.removeOnline(s)));
+        jsonToModel.onRandomRoomAssigned().onBackpressureDrop().subscribe(assignedRoomId -> {
+          Timber.d("onRandomRoomAssigned assignedRoomId " + assignedRoomId);
+          liveCache.putRandomRoomAssigned(assignedRoomId);
+        }));
 
-    persistentSubscriptions.add(jsonToModel.onRandomRoomAssigned().subscribe(assignedRoomId -> {
-      Timber.d("onRandomRoomAssigned assignedRoomId " + assignedRoomId);
-      liveCache.putRandomRoomAssigned(assignedRoomId);
-    }));
+    persistentSubscriptions.add(
+        jsonToModel.onRandomBannedUntil().onBackpressureDrop().subscribe(date -> {
+          userCache.putRandomBannedUntil(date);
+        }));
+    persistentSubscriptions.add(
+        jsonToModel.onMessageCreated().onBackpressureDrop().subscribe(messagRealm -> {
+          RealmList<MessageRealm> messages = new RealmList<>();
+          messages.add(messagRealm);
+          if (!messagRealm.getAuthor().getId().equals(user.getId())) {
+            chatCache.setOnMessageReceived(messages);
+          }
+          chatCache.putMessages(messages, messagRealm.getThreadId());
+        }));
 
-    persistentSubscriptions.add(jsonToModel.onRandomBannedUntil().subscribe(date -> {
-      userCache.putRandomBannedUntil(date);
-    }));
-    persistentSubscriptions.add(jsonToModel.onMessageCreated().subscribe(messagRealm -> {
-      RealmList<MessageRealm> messages = new RealmList<>();
-      messages.add(messagRealm);
-      if (!messagRealm.getAuthor().getId().equals(user.getId())) {
-        chatCache.setOnMessageReceived(messages);
-      }
-      chatCache.putMessages(messages, messagRealm.getThreadId());
-    }));
-
-    persistentSubscriptions.add(jsonToModel.onTyping().subscribe(userID -> {
+    persistentSubscriptions.add(jsonToModel.onTyping().onBackpressureDrop().subscribe(userID -> {
       chatCache.onTyping(userID);
     }));
 
-    persistentSubscriptions.add(jsonToModel.onTalking().subscribe(userID -> {
+    persistentSubscriptions.add(jsonToModel.onTalking().onBackpressureDrop().subscribe(userID -> {
       chatCache.onTalking(userID);
     }));
 
-    persistentSubscriptions.add(jsonToModel.onReading().subscribe(userID -> {
+    persistentSubscriptions.add(jsonToModel.onReading().onBackpressureDrop().subscribe(userID -> {
       chatCache.onReading(userID);
     }));
 
-    persistentSubscriptions.add(
-        jsonToModel.onFbIdUpdated().subscribe(userUpdated -> liveCache.onFbIdUpdated(userUpdated)));
+    persistentSubscriptions.add(jsonToModel.onFbIdUpdated()
+        .onBackpressureDrop()
+        .subscribe(userUpdated -> liveCache.onFbIdUpdated(userUpdated)));
 
-    persistentSubscriptions.add(
-        jsonToModel.onRoomUpdated().observeOn(AndroidSchedulers.mainThread()).subscribe(room -> {
+    persistentSubscriptions.add(jsonToModel.onRoomUpdated()
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(room -> {
           liveCache.onRoomUpdated(room);
         }));
 
     persistentSubscriptions.add(jsonToModel.onUserListUpdated()
+        .onBackpressureDrop()
         .subscribe(userRealmList -> userCache.updateUserRealmList(userRealmList)));
 
-    persistentSubscriptions.add(jsonToModel.onShortcutCreated().subscribe(shortcutRealm -> {
-      for (UserRealm userRealm : shortcutRealm.getMembers()) {
-        if (!userSubscribed.contains(userRealm.getId())) {
-          sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
-              generateHash() + USER_SUFFIX + userSubscribed.size(), user.getId()));
-        }
-      }
+    persistentSubscriptions.add(
+        jsonToModel.onShortcutCreated().onBackpressureDrop().subscribe(shortcutRealm -> {
+          for (UserRealm userRealm : shortcutRealm.getMembers()) {
+            if (!userSubscribed.contains(userRealm.getId())) {
+              sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
+                  generateHash() + USER_SUFFIX + userSubscribed.size(), user.getId()));
+            }
+          }
 
-      userCache.addShortcut(shortcutRealm);
-    }));
+          userCache.addShortcut(shortcutRealm);
+        }));
 
-    persistentSubscriptions.add(jsonToModel.onShortcutUpdated().subscribe(shortcutRealm -> {
-      if (!shortcutRealm.isOnline()) {
-        liveCache.removeOnline(shortcutRealm.getId());
-      } else if (shortcutRealm.isOnline()) liveCache.putOnline(shortcutRealm.getId());
-      userCache.updateShortcut(shortcutRealm);
-    }));
+    persistentSubscriptions.add(
+        jsonToModel.onShortcutUpdated().onBackpressureDrop().subscribe(shortcutRealm -> {
+          if (!shortcutRealm.isOnline()) {
+            liveCache.removeOnline(shortcutRealm.getId());
+          } else if (shortcutRealm.isOnline()) liveCache.putOnline(shortcutRealm.getId());
+          userCache.updateShortcut(shortcutRealm);
+        }));
 
     persistentSubscriptions.add(jsonToModel.onShortcutRemoved()
+        .onBackpressureDrop()
         .subscribe(shortcutRealm -> userCache.removeShortcut(shortcutRealm)));
   }
 

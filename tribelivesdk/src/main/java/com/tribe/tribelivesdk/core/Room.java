@@ -122,7 +122,7 @@ public class Room {
   private void initJsonToModel() {
     jsonToModel = new JsonToModel();
 
-    persistentSubscriptions.add(jsonToModel.onJoinRoom().doOnNext(joinedRoom -> {
+    persistentSubscriptions.add(jsonToModel.onJoinRoom().onBackpressureDrop().doOnNext(joinedRoom -> {
       onJoined.onNext(joinedRoom);
 
       initCPUInfo();

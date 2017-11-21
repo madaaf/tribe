@@ -6,6 +6,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
@@ -20,13 +21,15 @@ public class CloudLiveDataStore implements LiveDataStore {
   private final Context context;
   private LiveCache liveCache;
   private UserCache userCache;
+  private final AccessToken accessToken;
 
-  public CloudLiveDataStore(Context context, TribeApi tribeApi, LiveCache liveCache,
-      UserCache userCache) {
+  public CloudLiveDataStore(Context context, AccessToken accessToken, TribeApi tribeApi,
+      LiveCache liveCache, UserCache userCache) {
     this.context = context;
     this.tribeApi = tribeApi;
     this.liveCache = liveCache;
     this.userCache = userCache;
+    this.accessToken = accessToken;
   }
 
   @Override public Observable<Room> getRoom(Live live) {
@@ -107,6 +110,8 @@ public class CloudLiveDataStore implements LiveDataStore {
   }
 
   @Override public Observable<Boolean> createInvite(String roomId, String userId) {
+    if (userId.equals(accessToken.getAccessToken())) return Observable.just(false);
+
     final String request = context.getString(R.string.mutation,
         context.getString(R.string.createInvite, roomId, userId));
 

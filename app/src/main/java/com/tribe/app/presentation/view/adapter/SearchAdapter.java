@@ -10,6 +10,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.common.ShortcutAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.EmptyContactAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.FallbackAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutChatActiveHomeAdapterDelegate;
@@ -66,6 +67,8 @@ public class SearchAdapter extends RecyclerView.Adapter {
 
     emptyContactAdapterDelegate = new EmptyContactAdapterDelegate(context);
     delegatesManager.addDelegate(EMPTY_VIEW_TYPE, emptyContactAdapterDelegate);
+
+    delegatesManager.setFallbackDelegate(new FallbackAdapterDelegate(context));
 
     setHasStableIds(true);
   }

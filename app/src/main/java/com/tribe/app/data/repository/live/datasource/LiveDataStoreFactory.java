@@ -34,7 +34,7 @@ import javax.inject.Singleton;
   }
 
   public LiveDataStore createCloudDataStore() {
-    return new CloudLiveDataStore(context, tribeApi, liveCache, userCache);
+    return new CloudLiveDataStore(context, accessToken, tribeApi, liveCache, userCache);
   }
 
   public LiveDataStore createDiskDataStore() {

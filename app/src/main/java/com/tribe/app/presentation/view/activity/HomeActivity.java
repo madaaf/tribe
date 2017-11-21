@@ -212,7 +212,7 @@ public class HomeActivity extends BaseActivity
   private TribeBroadcastReceiver notificationReceiver;
   private boolean shouldOverridePendingTransactions = false, receiverRegistered = false, hasSynced =
       false, canEndRefresh = false, finish = false, searchViewDisplayed = false, isSwipingChat =
-      false;
+      false, shouldNavigateToChat = false;
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
   private FirebaseRemoteConfig firebaseRemoteConfig;
@@ -312,9 +312,6 @@ public class HomeActivity extends BaseActivity
 
       registerReceiver(notificationReceiver,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
-
-      subscriptions.add(notificationReceiver.onCreateShortcut()
-          .subscribe(userId -> homeGridPresenter.createShortcut(userId)));
 
       subscriptions.add(notificationReceiver.onDeclineInvitation()
           .subscribe(roomId -> homeGridPresenter.declineInvite(roomId)));
@@ -971,13 +968,17 @@ public class HomeActivity extends BaseActivity
       } else {
         List<String> list = ((Invite) recipient).getRoomUserIds();
         String[] array = new String[list.size()];
+        shouldNavigateToChat = true;
         homeGridPresenter.createShortcut(list.toArray(array));
       }
     }
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
-    navigator.navigateToChat(this, shortcut, null, gesture, shortcut.getSectionTag(), false);
+    if (shouldNavigateToChat) {
+      navigator.navigateToChat(this, shortcut, null, gesture, shortcut.getSectionTag(), false);
+      shouldNavigateToChat = false;
+    }
   }
 
   private void syncContacts() {

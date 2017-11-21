@@ -630,6 +630,12 @@ public class LiveActivity extends BaseActivity
       subscriptions.add(live.onRoomUpdated().subscribe(room -> {
         if (room == null && chatView == null) return;
 
+        if (room != null && room.getLiveUsers() != null) {
+          for (User user : room.getLiveUsers()) {
+            if (!user.equals(getCurrentUser())) usersThatWereLive.add(user.getId());
+          }
+        }
+
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
         if (chatView != null &&
@@ -1183,13 +1189,6 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onRoomUpdate(Room room) {
-    this.room.update(room, true);
-
-    if (this.room.getLiveUsers() != null) {
-      for (User user : this.room.getLiveUsers()) {
-        if (!user.equals(getCurrentUser())) usersThatWereLive.add(user.getId());
-      }
-    }
   }
 
   @Override public void onInvites(List<Invite> invites) {
@@ -1275,7 +1274,9 @@ public class LiveActivity extends BaseActivity
   }
 
   private void setExtraForShortcut() {
-    if (usersThatWereLive.size() > 0) {
+    if (usersThatWereLive.size() > 0 &&
+        !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
+        !room.acceptsRandom()) {
       returnIntent.putExtra(USER_IDS_FOR_NEW_SHORTCUT, usersThatWereLive);
       setResult(Activity.RESULT_OK, returnIntent);
     }
