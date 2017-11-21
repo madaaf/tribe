@@ -53,17 +53,30 @@
         %2$s
   </string>
 
-  <string name="messages.details" translatable="false">
+  <string name="messages.details.before" translatable="false">
                 {
                   user {
                     id
-                    messages(usersIds: [%1$s], before: \"%2$s\", limit:20) {
+                    messages(usersIds: [%1$s], before: \"%2$s\", after: null , limit:20) {
                       ...MessagePayload
                     }
                   }
                 }
-    %3$s
+    %4$s
     </string>
+
+  <string name="messages.details.between" translatable="false">
+                {
+                  user {
+                    id
+                    messages(usersIds: [%1$s], before: \"%2$s\", after: \"%3$s\") {
+                      ...MessagePayload
+                    }
+                  }
+                }
+    %4$s
+    </string>
+
 
   <string name="messages.create" translatable="false">
         mutation {
@@ -363,6 +376,11 @@
   <string name="subscription.messageCreated" translatable="false">
         %1$s : messageCreated ( usersIds : [%2$s] )
   </string>
+
+  <string name="subscription.messageRemoved" translatable="false">
+        %1$s : messageRemoved ( usersIds : [%2$s] )
+  </string>
+
 
   <string name="subscription.isTyping" translatable="false">
         %1$s : isTyping ( usersIds : [%2$s] )

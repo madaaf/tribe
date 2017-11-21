@@ -13,7 +13,8 @@ import rx.Observable;
 public class GetMessageFromDisk extends UseCaseDisk {
 
   private String[] userIds;
-  private String date;
+  private String dateBefore;
+  private String dateAfter;
   private ChatRepository chatRepository;
 
   @Inject public GetMessageFromDisk(DiskChatDataRepository chatRepository,
@@ -22,12 +23,13 @@ public class GetMessageFromDisk extends UseCaseDisk {
     this.chatRepository = chatRepository;
   }
 
-  public void setUserIds(String[] userIds, String date) {
+  public void setUserIds(String[] userIds, String dateBefore, String dateAfter) {
     this.userIds = userIds;
-    this.date = date;
+    this.dateBefore = dateBefore;
+    this.dateAfter = dateAfter;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return chatRepository.loadMessages(userIds, date);
+    return chatRepository.loadMessages(userIds, dateBefore, dateAfter);
   }
 }

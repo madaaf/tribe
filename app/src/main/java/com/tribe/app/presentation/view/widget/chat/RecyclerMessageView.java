@@ -56,6 +56,9 @@ import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMREADING;
 
 public class RecyclerMessageView extends ChatMVPView {
 
+  private static final int MAX_DURATION_MIN_DELETE_MESSAGE = 60;
+  private static final long ONE_HOUR_DURATION = 1000 * 60 * 60; //1000 ms * 60 secondes * 60
+
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private Context context;
@@ -158,7 +161,8 @@ public class RecyclerMessageView extends ChatMVPView {
       Timber.i("on long click message " + dateUtils.getDiffDate(m.getCreationDate(),
           dateUtils.getUTCDateAsString()));
       boolean enableUnsendMessage = false;
-      if (dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString()) < 60) {
+      if (dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString())
+          < MAX_DURATION_MIN_DELETE_MESSAGE) {
         enableUnsendMessage = true;
       }
       subscriptions.add(
@@ -234,7 +238,7 @@ public class RecyclerMessageView extends ChatMVPView {
         if (dy < 0) {
           if (layoutManager.findFirstVisibleItemPosition() < 5 && !load) {
             String lasteDate = messageAdapter.getMessage(0).getCreationDate();
-            messagePresenter.loadMessage(arrIds, lasteDate);
+            messagePresenter.loadMessage(arrIds, lasteDate, null);
             load = true;
           }
         }
@@ -264,8 +268,12 @@ public class RecyclerMessageView extends ChatMVPView {
   public void setArrIds(String[] arrIds) {
     this.arrIds = arrIds;
     messageAdapter.setArrIds(arrIds);
-    messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString());
-    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString());
+
+    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString(),
+        dateUtils.getUTCDateWithDeltaAsString(-(2 * ONE_HOUR_DURATION)));
+    messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString(), null);
+    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString(), null);
+
     messagePresenter.onMessageReceivedFromDisk();
   }
 
@@ -294,8 +302,15 @@ public class RecyclerMessageView extends ChatMVPView {
   private boolean isDisplayedMessageDisk = false;
   private boolean successLoadingMessage = false;
 
+  @Override public void successLoadingBetweenTwoDateMessage(List<Message> messages) {
+    Timber.i("successLoadingBetweenTwoDateMessage " + messages.size());
+  }
+
   @Override public void successLoadingMessage(List<Message> messages) {
     Timber.i("successLoadingMessage " + messages.size());
+    for (Message m : messages) {
+      Timber.i("SOEF " + m.getId());
+    }
     successLoadingMessage = true;
     if (isDisplayedMessageDisk) {
       messageAdapter.clearItem();
@@ -338,6 +353,9 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.i("successLoadingMessageDisk " + messages.size());
+    for (Message m : messages) {
+      Timber.i("SOEF " + m.getId());
+    }
     if (errorLoadingMessages || !successLoadingMessage) {
       Timber.i("message disk displayed " + messages.size());
       messageAdapter.setItems(messages, 0);

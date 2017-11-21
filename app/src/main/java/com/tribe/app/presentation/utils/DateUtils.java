@@ -39,6 +39,13 @@ public class DateUtils {
     return utcTime;
   }
 
+  public String getUTCDateWithDeltaAsString(long delta) {
+    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+    Date d1 = new Date();
+    Date d2 = new Date(d1.getTime() + delta);
+    return sdf.format(d2);
+  }
+
   public Date stringDateToDate(String StrDate) {
     Date dateToReturn = null;
 
@@ -53,6 +60,21 @@ public class DateUtils {
 
   public boolean isBefore(Date date1, Date date2) {
     return date1.before(date2);
+  }
+
+  public boolean isAfter(Date date1, Date date2) {
+    return date1.after(date2);
+  }
+
+  public boolean isBetween(Date o, Date date1, Date date2) {
+    return (o.before(date1) && o.after(date2));
+  }
+
+  public boolean isBetween(String o, String date1, String date2) {
+    Date oS = stringDateToDate(o);
+    Date date1S = stringDateToDate(date1);
+    Date date2S = stringDateToDate(date2);
+    return isBetween(oS, date1S, date2S);
   }
 
   public boolean isBefore(String date1, String date2) {

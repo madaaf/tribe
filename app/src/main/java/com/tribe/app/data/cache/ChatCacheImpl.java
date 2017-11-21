@@ -4,12 +4,14 @@ import android.content.Context;
 import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -25,14 +27,16 @@ public class ChatCacheImpl implements ChatCache {
 
   private Context context;
   private Realm realm;
+  private DateUtils dateUtils;
   private PublishSubject<String> onTyping = PublishSubject.create();
   private PublishSubject<String> onTalking = PublishSubject.create();
   private PublishSubject<String> onReading = PublishSubject.create();
   private PublishSubject<List<MessageRealm>> onMessageReceived = PublishSubject.create();
 
-  @Inject public ChatCacheImpl(Context context, Realm realm) {
+  @Inject public ChatCacheImpl(Context context, Realm realm, DateUtils dateUtils) {
     this.context = context;
     this.realm = realm;
+    this.dateUtils = dateUtils;
   }
 
   @Override public Observable<List<MessageRealm>> onMessageReceived() {
@@ -41,6 +45,104 @@ public class ChatCacheImpl implements ChatCache {
 
   @Override public void setOnMessageReceived(RealmList<MessageRealm> messages) {
     onMessageReceived.onNext(messages);
+  }
+
+  public void ok(RealmList<MessageRealm> messages, String userIds, String dateBefore,
+      String dateAfter) {
+    Realm obsRealm = Realm.getDefaultInstance();
+    try {
+      obsRealm.beginTransaction();
+
+      ArrayList<String> remoteMessageIds = new ArrayList<>();
+      ArrayList<String> cacheRefactoredList = new ArrayList<>();
+
+      for (MessageRealm message : messages) {
+        remoteMessageIds.add(message.getId());
+      }
+
+      RealmResults<MessageRealm> cacheMessage =
+          obsRealm.where(MessageRealm.class).equalTo("localId", userIds).findAll();
+
+      for (MessageRealm message : cacheMessage) {
+        String creationDate = message.getCreated_at();
+        if (dateUtils.isBetween(creationDate, dateBefore, dateAfter)) {
+          cacheRefactoredList.add(message.getId());
+        }
+      }
+
+      Timber.e(
+          "MESSAGE CACHE BETWEEN FINAL BEFORE " + cacheMessage.size() + cacheRefactoredList.size());
+
+      for (String messageId : cacheRefactoredList) {
+        if (!remoteMessageIds.contains(messageId)) {
+          MessageRealm messageRealmDB =
+              obsRealm.where(MessageRealm.class).equalTo("id", messageId).findFirst();
+          if (messageRealmDB != null) {
+            Timber.i("removed message from ");
+            messageRealmDB.deleteFromRealm();
+          }
+        }
+      }
+
+      obsRealm.commitTransaction();
+    } catch (IllegalStateException ex) {
+      ex.printStackTrace();
+    } finally {
+      obsRealm.close();
+    }
+  }
+
+  @Override
+  public void deleteInCacheRemovedMessage(RealmList<MessageRealm> messages, String userIds,
+      String dateBefore, String dateAfter) {
+    ok(messages, userIds, dateBefore, dateAfter);
+/*    Realm obsRealm = Realm.getDefaultInstance();
+    try {
+      obsRealm.executeTransaction(realm1 -> {
+        ArrayList<String> remoteMessageIds = new ArrayList<>();
+        ArrayList<String> cacheRefactoredList = new ArrayList<>();
+
+        for (MessageRealm message : messages) {
+          remoteMessageIds.add(message.getId());
+        }
+
+        RealmResults<MessageRealm> cacheMessage =
+            obsRealm.where(MessageRealm.class).equalTo("localId", userIds).findAll();
+
+        for (MessageRealm message : cacheMessage) {
+          String creationDate = message.getCreated_at();
+          if (dateUtils.isBetween(creationDate, dateBefore, dateAfter)) {
+            cacheRefactoredList.add(message.getId());
+          }
+        }
+
+        Timber.e("MESSAGE CACHE BETWEEN FINAL BEFORE "
+            + cacheMessage.size()
+            + cacheRefactoredList.size());
+
+        for (String messageId : cacheRefactoredList) {
+          if (remoteMessageIds.contains(messageId)) {
+            MessageRealm messageRealmDB =
+                realm1.where(MessageRealm.class).equalTo("id", messageId).findFirst();
+            if (messageRealmDB != null) {
+              Timber.i("removed message from ");
+              messageRealmDB.deleteFromRealm();
+            }
+          }
+        }
+
+        obsRealm.commitTransaction();
+
+       *//* RealmResults<MessageRealm> list2 =
+            obsRealm.where(MessageRealm.class).equalTo("localId", userIds).findAll();
+        Timber.e("MESSAGE CACHE BETWEEN  FINAL REZSULT " + list2.size());*//*
+      });
+    } catch (Exception ex) {
+      if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
+      Timber.e(ex.toString());
+    } finally {
+      obsRealm.close();
+    }*/
   }
 
   @Override public void putMessages(RealmList<MessageRealm> messages, String userIds) {

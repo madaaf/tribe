@@ -32,7 +32,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Message>> loadMessages(String[] userIds, String date) {
+  @Override public Observable<List<Message>> loadMessages(String[] userIds, String o1, String o2) {
     final DiskChatDataStore chatDataStore =
         (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
     return chatDataStore.getMessages(userIds)

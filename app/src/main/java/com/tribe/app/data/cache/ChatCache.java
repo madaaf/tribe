@@ -35,5 +35,7 @@ import rx.Observable;
   Observable<List<MessageRealm>> getMessagesImage(String[] userIds);
 
   void setOnMessageReceived(RealmList<MessageRealm> messages);
+
+  void deleteInCacheRemovedMessage(RealmList<MessageRealm> messages, String s,  String dateBefore, String dateAfter);
 }
 

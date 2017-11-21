@@ -132,14 +132,14 @@ public class MessagePresenter implements Presenter {
     isReadingFromDisk.execute(new isReadingSubscriber());
   }
 
-  public void loadMessagesDisk(String[] userIds, String date) {
-    getMessageFromDisk.setUserIds(userIds, date);
+  public void loadMessagesDisk(String[] userIds, String dateBefore, String dateAfter) {
+    getMessageFromDisk.setUserIds(userIds, dateBefore, dateAfter);
     getMessageFromDisk.execute(new LoadMessageDiskSubscriber());
   }
 
-  public void loadMessage(String[] userIds, String date) {
-    userMessageInfos.setUserIds(userIds, date);
-    userMessageInfos.execute(new LoadMessageSubscriber());
+  public void loadMessage(String[] userIds, String dateBefore, String dateAfter) {
+    userMessageInfos.setUserIds(userIds, dateBefore, dateAfter);
+    userMessageInfos.execute(new LoadMessageSubscriber(dateAfter != null));
   }
 
   public void createMessage(String[] userIds, String data, String type, int positon) {
@@ -209,6 +209,11 @@ public class MessagePresenter implements Presenter {
   }
 
   private class LoadMessageSubscriber extends DefaultSubscriber<List<Message>> {
+    private boolean betweenTwoDate;
+
+    public LoadMessageSubscriber(boolean betweenTwoDate) {
+      this.betweenTwoDate = betweenTwoDate;
+    }
 
     @Override public void onCompleted() {
     }
@@ -219,7 +224,13 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onNext(List<Message> messages) {
-      if (chatMVPView != null) chatMVPView.successLoadingMessage(messages);
+      if (chatMVPView != null) {
+        if (!betweenTwoDate) {
+          chatMVPView.successLoadingMessage(messages);
+        } else {
+          chatMVPView.successLoadingBetweenTwoDateMessage(messages);
+        }
+      }
     }
   }
 

@@ -46,13 +46,26 @@ public class CloudChatDataStore implements ChatDataStore {
     }).doOnNext(messageRealm -> refactorMessages.call(userIds));
   }
 
-  @Override public Observable<UserRealm> loadMessages(String[] userIds, String dateBefore) {
-    return this.tribeApi.getUserMessage(
-        context.getString(R.string.messages_details, JsonUtils.arrayToJson(userIds), dateBefore,
-            context.getString(R.string.messagefragment_info)))
-        .doOnNext(userRealm -> chatCache.putMessages(userRealm.getMessages(),
-            JsonUtils.arrayToJson(userIds)))
-        .doOnNext(messageRealm -> refactorMessages.call(userIds));
+  @Override
+  public Observable<UserRealm> loadMessages(String[] userIds, String dateBefore, String dateAfter) {
+    String req;
+    if (dateAfter == null) {
+      req = context.getString(R.string.messages_details_before, JsonUtils.arrayToJson(userIds),
+          dateBefore, null, context.getString(R.string.messagefragment_info));
+      Timber.i("request : " + req);
+      return this.tribeApi.getUserMessage(req)
+          .doOnNext(userRealm -> chatCache.putMessages(userRealm.getMessages(),
+              JsonUtils.arrayToJson(userIds)))
+          .doOnNext(messageRealm -> refactorMessages.call(userIds));
+    } else {
+      req = context.getString(R.string.messages_details_between, JsonUtils.arrayToJson(userIds),
+          dateBefore, dateAfter, context.getString(R.string.messagefragment_info));
+      Timber.i("request : " + req);
+      return this.tribeApi.getUserMessage(req)
+          .doOnNext(userRealm -> chatCache.deleteInCacheRemovedMessage(userRealm.getMessages(),
+              JsonUtils.arrayToJson(userIds), dateBefore, dateAfter))
+          .doOnNext(messageRealm -> refactorMessages.call(userIds));
+    }
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
