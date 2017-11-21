@@ -638,6 +638,7 @@ public class LiveView extends FrameLayout {
         }));
 
     tempSubscriptions.add(webRTCRoom.onRemotePeerAdded()
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(remotePeer -> {
           if (isFirstToJoin) {
@@ -677,9 +678,9 @@ public class LiveView extends FrameLayout {
         }));
 
     tempSubscriptions.add(webRTCRoom.onRemotePeerRemoved()
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(remotePeer -> {
-
           soundManager.playSound(SoundManager.QUIT_CALL, SoundManager.SOUND_MAX);
 
           Timber.d("Remote peer removed with id : " + remotePeer.getSession().getPeerId());
@@ -695,23 +696,25 @@ public class LiveView extends FrameLayout {
               getDisplayNameFromSession(remotePeer.getSession()));
         }));
 
-    tempSubscriptions.add(webRTCRoom.onReceivedStream().subscribe(remotePeer -> {
-      LiveRowView row = liveRowViewMap.get(remotePeer.getSession().getUserId());
+    tempSubscriptions.add(
+        webRTCRoom.onReceivedStream().onBackpressureDrop().subscribe(remotePeer -> {
+          LiveRowView row = liveRowViewMap.get(remotePeer.getSession().getUserId());
 
-      if (row != null) {
-        row.setPeerView(remotePeer.getPeerView());
-      }
+          if (row != null) {
+            row.setPeerView(remotePeer.getPeerView());
+          }
 
-      live.getRoom().userJoinedStream(remotePeer.getSession().getUserId());
+          live.getRoom().userJoinedStream(remotePeer.getSession().getUserId());
 
-      tempSubscriptions.add(remotePeer.getPeerView()
-          .onNotificationRemoteJoined()
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aVoid -> onNotificationRemoteJoined.onNext(
-              getDisplayNameFromSession(remotePeer.getSession()))));
-    }));
+          tempSubscriptions.add(remotePeer.getPeerView()
+              .onNotificationRemoteJoined()
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(aVoid -> onNotificationRemoteJoined.onNext(
+                  getDisplayNameFromSession(remotePeer.getSession()))));
+        }));
 
     tempSubscriptions.add(webRTCRoom.onRollTheDiceReceived()
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(s -> {
           Timber.d("rollTheDice received");
@@ -724,7 +727,9 @@ public class LiveView extends FrameLayout {
           }
         }));
 
-    tempSubscriptions.add(viewRoom.onChangeCallRouletteRoom().subscribe(onChangeCallRouletteRoom));
+    tempSubscriptions.add(viewRoom.onChangeCallRouletteRoom()
+        .onBackpressureDrop()
+        .subscribe(onChangeCallRouletteRoom));
     Timber.d("Initiating Room");
 
     // We just want to trigger the updates to update the UI
