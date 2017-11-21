@@ -32,7 +32,7 @@ import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
-import com.tribe.app.presentation.view.activity.NewChatActivity;
+import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
@@ -134,9 +134,9 @@ public class Navigator {
         intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
       }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-          | Intent.FLAG_ACTIVITY_CLEAR_TASK
-          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+          Intent.FLAG_ACTIVITY_CLEAR_TASK |
+          Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
       if (linkRoomId != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -284,9 +284,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToNewChat(Activity activity) {
+  public void navigateToNewGame(Activity activity) {
     if (activity != null) {
-      Intent intent = NewChatActivity.getCallingIntent(activity);
+      Intent intent = NewGameActivity.getCallingIntent(activity);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
@@ -395,8 +395,8 @@ public class Navigator {
 
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
-    } else if (activity.getIntent() != null && activity.getIntent()
-        .hasExtra(Extras.IS_FROM_FACEBOOK)) {
+    } else if (activity.getIntent() != null &&
+        activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
       openFacebookAppInvites(activity, url);
     } else {
       openDefaultMessagingApp(activity, text);

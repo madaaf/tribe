@@ -247,7 +247,11 @@ public class HomeActivity extends BaseActivity
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
-    if (!hasSynced) hasSynced = true;
+    if (!hasSynced) {
+      // We reload the games data only once
+      homeGridPresenter.getGames();
+      hasSynced = true;
+    }
 
     subscriptions.add(Observable.
         from(PermissionUtils.PERMISSIONS_CAMERA)
@@ -292,8 +296,6 @@ public class HomeActivity extends BaseActivity
 
     if (System.currentTimeMillis() - lastSyncGameData.get() > TWENTY_FOUR_HOURS) {
       homeGridPresenter.synchronizeGamesData(DeviceUtils.getLanguage(this), lastSyncGameData);
-    } else {
-      homeGridPresenter.getGames();
     }
   }
 
@@ -667,7 +669,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initNewCall() {
-    subscriptions.add(btnNewGame.onNewGame().subscribe(aVoid -> navigateToNewChat()));
+    subscriptions.add(btnNewGame.onNewGame().subscribe(aVoid -> navigateToNewGame()));
 
     subscriptions.add(
         btnNewGame.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
@@ -971,8 +973,8 @@ public class HomeActivity extends BaseActivity
     HomeActivity.this.navigator.navigateToNewCall(this, source);
   }
 
-  private void navigateToNewChat() {
-    HomeActivity.this.navigator.navigateToNewChat(this);
+  private void navigateToNewGame() {
+    HomeActivity.this.navigator.navigateToNewGame(this);
   }
 
   private void navigateToChat(Recipient recipient, String gesture) {

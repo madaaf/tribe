@@ -87,7 +87,7 @@ public class NewGameActivity extends BaseActivity {
   }
 
   private void init(Bundle savedInstanceState) {
-    txtTitle.setText(R.string.profile_title);
+    txtTitle.setText(R.string.new_game_title);
 
     txtTitleTwo.setTranslationX(screenUtils.getWidthPx());
 
@@ -100,7 +100,7 @@ public class NewGameActivity extends BaseActivity {
     }
 
     txtAction.setOnClickListener(v -> {
-      if (viewStack.getTopView() instanceof SettingsProfileView) {
+      if (viewStack.getTopView() instanceof GamesStoreView) {
 
       }
     });

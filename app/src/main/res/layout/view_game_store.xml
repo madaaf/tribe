@@ -1,195 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.tribe.app.presentation.view.component.profile.ProfileView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<com.tribe.app.presentation.view.component.games.GamesStoreView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@null"
     android:fillViewport="true"
-    tools:context=".presentation.view.activity.ProfileActivity"
+    tools:context=".presentation.view.activity.NewGameActivity"
     >
 
-  <LinearLayout
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerViewGames"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="match_parent"
       android:background="@null"
-      android:orientation="vertical"
-      >
+      android:fadingEdgeLength="0dp"
+      android:overScrollMode="never"
+      android:requiresFadingEdge="none"
+      android:scrollbars="none"
+      />
 
-    <FrameLayout
-        android:id="@+id/viewShareProfile"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/view_share_profile_height"
-        android:background="@null"
-        android:clickable="true"
-        android:foreground="@drawable/selectable_button"
-        android:orientation="horizontal"
-        >
-
-      <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
-          android:id="@+id/avatar"
-          android:layout_width="@dimen/avatar_size_small"
-          android:layout_height="@dimen/avatar_size_small"
-          android:layout_gravity="left|center_vertical"
-          android:layout_margin="@dimen/horizontal_margin_small"
-          android:background="@null"
-          app:newAvatarType="online"
-          />
-
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical"
-          android:layout_marginEnd="@dimen/nav_icon_size_with_margin_end"
-          android:layout_marginStart="@dimen/nav_icon_size_with_margin_start"
-          android:orientation="vertical"
-          >
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:singleLine="true"
-            style="@style/Title.Regular.Black"
-            />
-
-        <com.tribe.app.presentation.view.widget.TextViewFont
-            android:id="@+id/txtUsername"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:singleLine="true"
-            style="@style/Body.One.Blue.New"
-            />
-      </LinearLayout>
-
-      <ImageView
-          android:id="@+id/btnShare"
-          android:layout_width="40dp"
-          android:layout_height="40dp"
-          android:layout_gravity="right|center_vertical"
-          android:layout_marginEnd="@dimen/horizontal_margin_small"
-          android:background="@drawable/selectable_button_oval_light"
-          android:clickable="true"
-          android:scaleType="centerInside"
-          android:src="@drawable/picto_more_friends"
-          />
-    </FrameLayout>
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <com.tribe.app.presentation.view.component.ActionView
-        android:id="@+id/viewActionProfile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:actionTitle="@string/profile_user_infos"
-        app:actionType="hierarchy"
-        />
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <com.tribe.app.presentation.view.component.ActionView
-        android:id="@+id/viewActionManageFriendships"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:actionTitle="@string/profile_manage_friendships"
-        app:actionType="hierarchy"
-        />
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <com.tribe.app.presentation.view.component.ActionView
-        android:id="@+id/viewActionBlocked"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:actionTitle="@string/profile_blocked_friends"
-        app:actionType="hierarchy"
-        />
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <com.tribe.app.presentation.view.component.ActionView
-        android:id="@+id/viewActionVisible"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:actionTitle="@string/profile_invisible_mode"
-        app:actionType="toggle"
-        />
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <com.tribe.app.presentation.view.component.ActionView
-        android:id="@+id/viewActionPhoneIntegration"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:actionTitle="@string/profile_fullscreen_notifications_android"
-        app:actionType="toggle"
-        />
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <com.tribe.app.presentation.view.component.ActionView
-        android:id="@+id/viewActionChangePhoneNumber"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:actionTitle="@string/profile_change_phone"
-        app:actionType="hierarchy"
-        />
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <com.tribe.app.presentation.view.component.ActionView
-        android:id="@+id/viewActionFacebookAccount"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:actionTitle="@string/profile_facebook_account"
-        app:actionType="hierarchy"
-        />
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <com.tribe.app.presentation.view.component.ActionView
-        android:id="@+id/viewActionRateUs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:actionTitle="@string/profile_rate_us"
-        app:actionType="regular"
-        />
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <com.tribe.app.presentation.view.component.ActionView
-        android:id="@+id/viewActionFollow"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:actionTitle="@string/profile_follow_us"
-        app:actionType="regular"
-        />
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <com.tribe.app.presentation.view.component.ActionView
-        android:id="@+id/viewActionLogout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:actionTitle="@string/profile_logout"
-        app:actionType="regular"
-        />
-
-    <include layout="@layout/view_separator_simple"/>
-
-    <include layout="@layout/view_profile_footer"/>
-
-  </LinearLayout>
-</com.tribe.app.presentation.view.component.profile.ProfileView>
+</com.tribe.app.presentation.view.component.games.GamesStoreView>
