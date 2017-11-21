@@ -300,6 +300,7 @@ public class LiveView extends FrameLayout {
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
     }
+
     liveRowViewMap.clear();
 
     if (webRTCRoom != null && !isJump) {
@@ -307,12 +308,13 @@ public class LiveView extends FrameLayout {
       webRTCRoom.leaveRoom();
     }
 
-    tempSubscriptions.clear();
-
     if (!isJump) {
       Timber.d("dispose !isJump");
-      persistentSubscriptions.clear();
+      persistentSubscriptions.unsubscribe();
       viewLocalLive.dispose();
+      tempSubscriptions.unsubscribe();
+    } else {
+      tempSubscriptions.clear();
     }
   }
 
@@ -866,12 +868,9 @@ public class LiveView extends FrameLayout {
   //  PRIVATE   //
   ////////////////
 
-  private void addView(LiveRowView liveRowView, TribeGuest guest) {
-    liveRowView.setGuest(guest);
-    viewRoom.addView(liveRowView);
-  }
-
   private void addView(RemotePeer remotePeer) {
+    if (viewRoom == null) return;
+
     LiveRowView liveRowView = null;
 
     if (liveRowViewMap.getMap()
