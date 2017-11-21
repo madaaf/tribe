@@ -53,7 +53,7 @@ public class TopBarContainer extends FrameLayout {
 
   @BindView(R.id.txtNewContacts) TextViewFont txtNewContacts;
 
-  @BindView(R.id.btnNewChat) NewChatView btnNewCall;
+  @BindView(R.id.btnNewGame) NewGameView btnNewGame;
 
   // VARIABLES
   private ScreenUtils screenUtils;
@@ -157,9 +157,9 @@ public class TopBarContainer extends FrameLayout {
         }
 
         if (overallYScroll > scrollThresholdFloatingButton) {
-          btnNewCall.showBackToTop();
+          btnNewGame.showBackToTop();
         } else {
-          btnNewCall.showNewChat();
+          btnNewGame.showNewGame();
         }
       }
     });
@@ -169,7 +169,7 @@ public class TopBarContainer extends FrameLayout {
 
   }
 
-  public View getDiceViewBtn(){
+  public View getDiceViewBtn() {
     return topBarView.getDiceViewBtn();
   }
 

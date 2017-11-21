@@ -18,11 +18,13 @@ import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivit
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.activity.NewChatActivity;
 import com.tribe.app.presentation.view.activity.NewGameActivity;
+import com.tribe.app.presentation.view.activity.NewGameActivityToDelete;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionTokenView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
+import com.tribe.app.presentation.view.component.games.GamesStoreView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
 import com.tribe.app.presentation.view.component.live.ChasingDotsView;
@@ -195,8 +197,6 @@ import dagger.Component;
 
   void inject(TileInviteView tileInviteView);
 
-  void inject(NewGameActivity newGameActivity);
-
   /**
    * GAMES
    */
@@ -214,4 +214,8 @@ import dagger.Component;
   void inject(GameAliensAttackAlienView gameAliensAttackAlienView);
 
   void inject(GameEngine gameEngine);
+
+  void inject(NewGameActivity newGameActivity);
+
+  void inject(GamesStoreView gamesStoreView);
 }

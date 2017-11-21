@@ -131,7 +131,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(9)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(10)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -233,6 +233,29 @@ public class AndroidApplication extends Application {
               schema.remove("GroupRealm");
               schema.remove("GroupMemberRealm");
               schema.remove("FriendshipRealm");
+            }
+
+            oldVersion++;
+          }
+
+          if (oldVersion == 9) {
+            if (schema.get("GameRealm") == null) {
+              schema.create("GameRealm")
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
+                  .addField("online", boolean.class)
+                  .addField("playable", boolean.class)
+                  .addField("featured", boolean.class)
+                  .addField("isNew", boolean.class)
+                  .addField("title", String.class)
+                  .addField("baseline", String.class)
+                  .addField("icon", String.class)
+                  .addField("banner", String.class)
+                  .addField("primary_color", String.class)
+                  .addField("secondary_color", String.class)
+                  .addField("plays_count", int.class)
+                  .addField("__typename", String.class)
+                  .addField("url", String.class)
+                  .addField("dataUrl", String.class);
             }
 
             oldVersion++;

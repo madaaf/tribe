@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     >
   <LinearLayout
-      android:id="@+id/layoutNewChat"
+      android:id="@+id/layoutNewGame"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
@@ -24,7 +24,7 @@
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtNewChat"
+        android:id="@+id/txtNewGame"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -34,7 +34,7 @@
         android:gravity="center"
         android:maxLines="1"
         android:singleLine="true"
-        android:text="@string/home_action_new_chat"
+        android:text="@string/home_action_new_game"
         style="@style/Headline.Black.2"
         />
   </LinearLayout>

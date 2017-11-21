@@ -98,7 +98,7 @@ import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.common.ShortcutListView;
 import com.tribe.app.presentation.view.component.home.HomeWalkthroughVideoView;
 import com.tribe.app.presentation.view.component.home.HomeWalkthroughView;
-import com.tribe.app.presentation.view.component.home.NewChatView;
+import com.tribe.app.presentation.view.component.home.NewGameView;
 import com.tribe.app.presentation.view.component.home.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.TopBarLogoView;
 import com.tribe.app.presentation.view.component.home.TopBarView;
@@ -138,7 +138,6 @@ import dagger.Component;
 import io.realm.Realm;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Map;
 import java.util.Set;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -208,7 +207,7 @@ public interface ApplicationComponent {
 
   void inject(TooltipView tooltipView);
 
-  void inject(NewChatView newChatButton);
+  void inject(NewGameView newChatButton);
 
   void inject(ManageShortcutListAdapterDelegate manageFriendshipListAdapterDelegate);
 

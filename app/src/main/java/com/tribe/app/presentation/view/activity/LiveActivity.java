@@ -73,7 +73,6 @@ import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
-import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.RuntimePermissionUtil;
@@ -88,11 +87,7 @@ import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView;
-import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GameChallenge;
-import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
-import com.tribe.tribelivesdk.game.GamePostIt;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.error.WebSocketError;
@@ -627,8 +622,7 @@ public class LiveActivity extends BaseActivity
 
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
-
-       if (chatView != null &&
+        if (chatView != null &&
             chatView.getShortcut() != null &&
             chatView.getShortcut().getMembers() != null &&
             !chatView.getShortcut().getMembers().isEmpty()) {
@@ -673,10 +667,10 @@ public class LiveActivity extends BaseActivity
     }));
 
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
-      // TODO TIAGO
       if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-        if (live.fromRoom() && 
-          (tribeJoinRoom.getSessionList() == null  || tribeJoinRoom.getSessionList().size() == 0)) {
+        if (live.fromRoom() &&
+            (tribeJoinRoom.getSessionList() == null ||
+                tribeJoinRoom.getSessionList().size() == 0)) {
 
           Toast.makeText(this,
               getString(R.string.live_other_user_hung_up, room.getInitiator().getDisplayName()),
@@ -1185,21 +1179,6 @@ public class LiveActivity extends BaseActivity
 
     live.setRoom(room);
     viewLive.joinRoom(this.room);
-
-    if (!StringUtils.isEmpty(live.getRoomId()) &&
-        !StringUtils.isEmpty(room.getName()) &&
-        !room.getInitiator().getId().equals(getCurrentUser().getId())) {
-      NotificationPayload notificationPayload = new NotificationPayload();
-      notificationPayload.setBody(EmojiParser.demojizedText(
-          getString(R.string.live_notification_initiator_has_been_notified,
-              room.getInitiator().getDisplayName())));
-      LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(this, notificationPayload);
-
-      if (liveNotificationView != null) {
-        Alerter.create(LiveActivity.this, liveNotificationView).show();
-      }
-    }
   }
 
   @Override public void onRoomFull(String message) {
@@ -1207,18 +1186,8 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onRoomInfosError(String message) {
-    /**
-     * TODO handle better the error cases based on the backend solutions
-     * for now, if there is an error, we just create the room
-     */
-
-    if (createRoomErrorCount == 0) {
-      createRoom();
-      createRoomErrorCount++;
-    } else {
-      Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-      finish();
-    }
+    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    finish();
   }
 
   @Override public void onShortcut(Shortcut shortcut) {

@@ -25,19 +25,19 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 05/08/2017.
  */
-public class NewChatView extends FrameLayout {
+public class NewGameView extends FrameLayout {
 
   private static final int DURATION = 150;
   private static final float OVERSHOOT = 3f;
 
   @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.layoutNewChat) ViewGroup layoutNewChat;
+  @BindView(R.id.layoutNewGame) ViewGroup layoutNewGame;
 
   @BindView(R.id.imgBackToTop) ImageView imgBackToTop;
 
   // VARIABLES
-  private boolean isNewChat = true;
+  private boolean isNewGame = true;
 
   // RESOURCES
   int sizeInit, sizeHeight, translationY;
@@ -45,15 +45,15 @@ public class NewChatView extends FrameLayout {
   // OBSERVABLES
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Void> onNewChat = PublishSubject.create();
+  private PublishSubject<Void> onNewGame = PublishSubject.create();
   private PublishSubject<Void> onGoBackToTop = PublishSubject.create();
 
-  public NewChatView(Context context) {
+  public NewGameView(Context context) {
     super(context);
     init(context, null);
   }
 
-  public NewChatView(Context context, AttributeSet attrs) {
+  public NewGameView(Context context, AttributeSet attrs) {
     super(context, attrs);
     init(context, attrs);
   }
@@ -69,7 +69,7 @@ public class NewChatView extends FrameLayout {
   }
 
   @Override protected void onFinishInflate() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_new_chat, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_new_game, this);
     unbinder = ButterKnife.bind(this);
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
@@ -96,8 +96,8 @@ public class NewChatView extends FrameLayout {
     });
 
     setOnClickListener(v -> {
-      if (isNewChat) {
-        onNewChat.onNext(null);
+      if (isNewGame) {
+        onNewGame.onNext(null);
       } else {
         onGoBackToTop.onNext(null);
       }
@@ -120,9 +120,9 @@ public class NewChatView extends FrameLayout {
   //  PUBLIC  //
   //////////////
 
-  public void showNewChat() {
-    if (isNewChat) return;
-    isNewChat = true;
+  public void showNewGame() {
+    if (isNewGame) return;
+    isNewGame = true;
 
     imgBackToTop.animate()
         .alpha(0f)
@@ -131,7 +131,7 @@ public class NewChatView extends FrameLayout {
         .setInterpolator(new DecelerateInterpolator())
         .start();
 
-    layoutNewChat.animate()
+    layoutNewGame.animate()
         .alpha(1f)
         .setDuration(DURATION)
         .setInterpolator(new DecelerateInterpolator())
@@ -141,8 +141,8 @@ public class NewChatView extends FrameLayout {
   }
 
   public void showBackToTop() {
-    if (!isNewChat) return;
-    isNewChat = false;
+    if (!isNewGame) return;
+    isNewGame = false;
 
     imgBackToTop.animate()
         .alpha(1f)
@@ -151,7 +151,7 @@ public class NewChatView extends FrameLayout {
         .setInterpolator(new OvershootInterpolator(OVERSHOOT))
         .start();
 
-    layoutNewChat.animate()
+    layoutNewGame.animate()
         .alpha(0f)
         .setDuration(DURATION)
         .setInterpolator(new DecelerateInterpolator())
@@ -164,8 +164,8 @@ public class NewChatView extends FrameLayout {
   //   OBSERVABLES    //
   //////////////////////
 
-  public Observable<Void> onNewChat() {
-    return onNewChat;
+  public Observable<Void> onNewGame() {
+    return onNewGame;
   }
 
   public Observable<Void> onBackToTop() {

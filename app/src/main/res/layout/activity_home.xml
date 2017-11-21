@@ -49,8 +49,8 @@
         android:scrollbars="none"
         />
 
-    <com.tribe.app.presentation.view.component.home.NewChatView
-        android:id="@+id/btnNewChat"
+    <com.tribe.app.presentation.view.component.home.NewGameView
+        android:id="@+id/btnNewGame"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/bottom_bar_height"
         android:layout_gravity="center_horizontal|bottom"

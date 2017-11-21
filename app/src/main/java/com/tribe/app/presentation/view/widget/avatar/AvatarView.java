@@ -129,23 +129,6 @@ public class AvatarView extends RelativeLayout implements Avatar {
     }
   }
 
-  @Override protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
-    isAttached = true;
-
-    if (pendingBuilder != null) {
-      pendingBuilder.load();
-      pendingBuilder = null;
-    }
-  }
-
-  @Override protected void onDetachedFromWindow() {
-    super.onDetachedFromWindow();
-    isAttached = false;
-    if (createImageSubscription != null) createImageSubscription.unsubscribe();
-    pendingBuilder = null;
-  }
-
   @Override public void load(Recipient recipient) {
     this.recipient = recipient;
 
@@ -265,7 +248,7 @@ public class AvatarView extends RelativeLayout implements Avatar {
 
     GlideUtils.Builder builder =
         new GlideUtils.Builder(getContext()).size(avatarSize).target(imgAvatar);
-        
+
     if (isAttached) {
       builder.load();
     } else {
