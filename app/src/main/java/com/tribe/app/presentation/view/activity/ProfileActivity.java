@@ -90,6 +90,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
 
   @Inject ScreenUtils screenUtils;
 
+  @Inject User user;
+
   @Inject ProfilePresenter profilePresenter;
 
   @Inject MissedCallManager missedCallManager;
@@ -694,10 +696,16 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   }
 
   @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
-    Timber.i("ok");
     viewHolder.progressView.setVisibility(View.INVISIBLE);
     viewHolder.btnAdd.setVisibility(View.VISIBLE);
     viewHolder.btnAdd.setImageResource(R.drawable.picto_added);
+    viewHolder.btnAdd.setClickable(false);
+
+    for (Shortcut s : user.getShortcutList()) {
+      if (s.getId().equals(shortcut.getId())) {
+        s.setStatus(shortcut.getStatus());
+      }
+    }
   }
 
   @Override public void onShortcutUpdatedError() {

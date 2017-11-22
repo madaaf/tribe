@@ -161,7 +161,7 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
     if (buttonModelFrom.getImageRessource() != 0) {
       vh.progressView.setVisibility(View.VISIBLE);
       vh.btnAdd.setVisibility(View.GONE);
-      // vh.btnAdd.setImageResource(buttonModelFrom.getImageRessource());
+      vh.btnAdd.setClickable(false);
     } else {
       vh.gradientDrawable.setColor(buttonModelFrom.getBackgroundColor());
     }

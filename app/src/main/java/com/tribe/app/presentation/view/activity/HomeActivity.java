@@ -155,6 +155,8 @@ public class HomeActivity extends BaseActivity
 
   @Inject DateUtils dateUtils;
 
+  @Inject User user;
+
   @Inject @AddressBook Preference<Boolean> addressBook;
 
   @Inject @LastVersionCode Preference<Integer> lastVersion;
@@ -1203,7 +1205,12 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
-
+    Timber.e("OK " + shortcut.getStatus());
+    for (Shortcut s : user.getShortcutList()) {
+      if (s.getId().equals(shortcut.getId())) {
+        s.setStatus(shortcut.getStatus());
+      }
+    }
   }
 
   @Override public void onShortcutUpdatedError() {
