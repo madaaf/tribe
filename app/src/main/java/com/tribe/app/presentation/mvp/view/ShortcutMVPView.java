@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.view;
 
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ public interface ShortcutMVPView extends MVPView {
 
   void onShortcutRemovedError();
 
-  void onShortcutUpdatedSuccess(Shortcut shortcut);
+  void onShortcutUpdatedSuccess(Shortcut shortcutn, BaseListViewHolder viewHolder);
 
   void onShortcutUpdatedError();
 

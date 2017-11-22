@@ -14,10 +14,10 @@ import com.tribe.app.domain.interactor.user.UpdateShortcut;
 import com.tribe.app.presentation.mvp.presenter.Presenter;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 public class ShortcutPresenter implements Presenter {
 
@@ -94,53 +94,60 @@ public class ShortcutPresenter implements Presenter {
   public void muteShortcut(String shortcutId, boolean mute) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(ShortcutRealm.MUTE, String.valueOf(mute)));
-    updateShortcut(shortcutId, values);
+    updateShortcut(shortcutId, values, null);
   }
 
-  public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status) {
+  public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status,
+      BaseListViewHolder viewHolder) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(ShortcutRealm.STATUS, status));
-    updateShortcut(shortcutId, values);
+    updateShortcut(shortcutId, values, viewHolder);
   }
 
   public void updateShortcutName(String shortcutId, String name) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(ShortcutRealm.NAME, name));
-    updateShortcut(shortcutId, values);
+    updateShortcut(shortcutId, values, null);
   }
 
   public void updateShortcutPicture(String shortcutId, String imageUri) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(ShortcutRealm.PICTURE, imageUri));
-    updateShortcut(shortcutId, values);
+    updateShortcut(shortcutId, values, null);
   }
 
   public void readShortcut(String shortcutId) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(ShortcutRealm.READ, String.valueOf(true)));
-    updateShortcut(shortcutId, values);
+    updateShortcut(shortcutId, values, null);
   }
 
   public void pinShortcut(String shortcutId, boolean pinned) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(ShortcutRealm.PINNED, String.valueOf(pinned)));
-    updateShortcut(shortcutId, values);
+    updateShortcut(shortcutId, values, null);
   }
 
   public void leaveOnline(String shortcutId, long leaveOnlineDate) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(ShortcutRealm.LEAVE_ONLINE_UNTIL, String.valueOf(leaveOnlineDate)));
-    updateShortcut(shortcutId, values);
+    updateShortcut(shortcutId, values, null);
   }
 
-  private void updateShortcut(String shortcutId, List<Pair<String, String>> values) {
+  private void updateShortcut(String shortcutId, List<Pair<String, String>> values,
+      BaseListViewHolder viewHolder) {
     if (updateShortcutSubscriber != null) updateShortcutSubscriber.unsubscribe();
-    updateShortcutSubscriber = new UpdateShortcutSubscriber();
+    updateShortcutSubscriber = new UpdateShortcutSubscriber(viewHolder);
     updateShortcut.setup(shortcutId, values);
     updateShortcut.execute(updateShortcutSubscriber);
   }
 
   private class UpdateShortcutSubscriber extends DefaultSubscriber<Shortcut> {
+    BaseListViewHolder viewHolder;
+
+    public UpdateShortcutSubscriber(BaseListViewHolder viewHolder) {
+      this.viewHolder = viewHolder;
+    }
 
     @Override public void onCompleted() {
     }
@@ -151,7 +158,7 @@ public class ShortcutPresenter implements Presenter {
     }
 
     @Override public void onNext(Shortcut shortcut) {
-      shortcutView.onShortcutUpdatedSuccess(shortcut);
+      shortcutView.onShortcutUpdatedSuccess(shortcut, viewHolder);
     }
   }
 

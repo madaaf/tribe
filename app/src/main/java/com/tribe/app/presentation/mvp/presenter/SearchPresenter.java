@@ -248,7 +248,7 @@ public class SearchPresenter extends UpdateUserPresenter {
   }
 
   public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status) {
-    shortcutPresenter.updateShortcutStatus(shortcutId, status);
+    shortcutPresenter.updateShortcutStatus(shortcutId, status, null);
   }
 
   public void removeShortcut(String shortcutId) {

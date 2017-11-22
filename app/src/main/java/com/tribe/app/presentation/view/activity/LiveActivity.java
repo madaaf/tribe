@@ -65,6 +65,7 @@ import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.ShortcutUtil;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveView;
@@ -1208,7 +1209,7 @@ public class LiveActivity extends BaseActivity
 
   }
 
-  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
 
   }
 

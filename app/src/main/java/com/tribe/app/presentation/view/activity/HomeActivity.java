@@ -83,6 +83,7 @@ import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.helper.HomeListTouchHelperCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.component.home.HomeWalkthroughView;
 import com.tribe.app.presentation.view.component.home.NewGameView;
 import com.tribe.app.presentation.view.component.home.SearchView;
@@ -1201,7 +1202,7 @@ public class HomeActivity extends BaseActivity
 
   }
 
-  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
 
   }
 
