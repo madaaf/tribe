@@ -25,7 +25,8 @@ public class DiskChatDataStore implements ChatDataStore {
     return null;
   }
 
-  @Override public Observable<UserRealm> loadMessages(String[] userIds, String dateBefore) {
+  @Override
+  public Observable<UserRealm> loadMessages(String[] userIds, String dateBefore, String dateAfter) {
     return null;
   }
 
@@ -51,6 +52,10 @@ public class DiskChatDataStore implements ChatDataStore {
 
   @Override public Observable<List<MessageRealm>> onMessageReceived() {
     return chatCache.onMessageReceived();
+  }
+
+  @Override public Observable<MessageRealm> onMessageRemoved() {
+    return chatCache.onMessageRemoved();
   }
 
   @Override

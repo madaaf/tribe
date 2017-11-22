@@ -131,4 +131,33 @@ public class MessageRealm extends RealmObject {
   public void setCreated_at(String created_at) {
     this.created_at = created_at;
   }
+
+  @Override public String toString() {
+    return "MessageRealm{"
+        + "localId='"
+        + localId
+        + '\''
+        + ", id='"
+        + id
+        + '\''
+        + ", author="
+        + author
+        + ", user="
+        + user
+        + ", data='"
+        + data
+        + '\''
+        + ", __typename='"
+        + __typename
+        + '\''
+        + ", original="
+        + '\''
+        + ", created_at='"
+        + created_at
+        + '\''
+        + ", threadId='"
+        + threadId
+        + '\''
+        + '}';
+  }
 }

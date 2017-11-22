@@ -74,6 +74,7 @@ import timber.log.Timber;
   public static final String MESSAGE_IS_TYPING_SUFFIX = "___mit";
   public static final String MESSAGE_IS_TALKING_SUFFIX = "___mtalking";
   public static final String MESSAGE_IS_READING_SUFFIX = "___mReading";
+  public static final String MESSAGE_IS_REMOVED_SUFFIX = "___mRemoved";
 
   public static Intent getCallingSubscribeChat(Context context, String type,
       String usersFromatedIds) {
@@ -204,8 +205,14 @@ import timber.log.Timber;
     chatSubscriptions.put(userIds + MESSAGE_IS_READING_SUFFIX, suffix4);
     String req4 = getApplicationContext().getString(R.string.subscription,
         getApplicationContext().getString(R.string.subscription_isReading, suffix4, userIds));
-
     webSocketConnection.send(req4);
+
+    String suffix5 = generateHash() + MESSAGE_IS_REMOVED_SUFFIX;
+    chatSubscriptions.put(userIds + MESSAGE_IS_REMOVED_SUFFIX, suffix5);
+    String req5 = getApplicationContext().getString(R.string.subscription,
+        getApplicationContext().getString(R.string.subscription_messageRemoved, suffix5, userIds));
+
+    webSocketConnection.send(req5);
   }
 
   public void subscribeImTyping(String userIds) {
@@ -294,9 +301,8 @@ import timber.log.Timber;
       }
     }
 
-    if (webSocketState != null &&
-        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
-            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
+        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -321,9 +327,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous() ||
-        StringUtils.isEmpty(accessToken.getTokenType()) ||
-        StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous()
+        || StringUtils.isEmpty(accessToken.getTokenType())
+        || StringUtils.isEmpty(accessToken.getAccessToken())) {
 
       webSocketConnection.setShouldReconnect(false);
     } else {
@@ -356,8 +362,9 @@ import timber.log.Timber;
       }
     }));
 
-    persistentSubscriptions.add(webSocketConnection.onMessage().onBackpressureDrop().subscribe(message -> {
-      Timber.d("onMessage : " + message);
+    persistentSubscriptions.add(
+        webSocketConnection.onMessage().onBackpressureDrop().subscribe(message -> {
+          Timber.d("onMessage : " + message);
           jsonToModel.convertToSubscriptionResponse(message);
         }));
 
@@ -445,6 +452,10 @@ import timber.log.Timber;
       chatCache.putMessages(messages, messagRealm.getThreadId());
     }));
 
+    persistentSubscriptions.add(jsonToModel.onMessageRemoved().subscribe(messageRealm -> {
+      chatCache.setOnMessageRemoved(messageRealm);
+    }));
+
     persistentSubscriptions.add(jsonToModel.onTyping().subscribe(userID -> {
       chatCache.onTyping(userID);
     }));
@@ -460,10 +471,9 @@ import timber.log.Timber;
     persistentSubscriptions.add(
         jsonToModel.onFbIdUpdated().subscribe(userUpdated -> liveCache.onFbIdUpdated(userUpdated)));
 
-
-    persistentSubscriptions.add(jsonToModel.onRoomUpdated()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(room -> { liveCache.onRoomUpdated(room);
+    persistentSubscriptions.add(
+        jsonToModel.onRoomUpdated().observeOn(AndroidSchedulers.mainThread()).subscribe(room -> {
+          liveCache.onRoomUpdated(room);
         }));
 
     persistentSubscriptions.add(jsonToModel.onUserListUpdated()
@@ -535,8 +545,9 @@ import timber.log.Timber;
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
-        getApplicationContext().getString(R.string.userfragment_infos) : "");
+    String userInfosFragment =
+        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
+            R.string.userfragment_infos) : "");
 
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 

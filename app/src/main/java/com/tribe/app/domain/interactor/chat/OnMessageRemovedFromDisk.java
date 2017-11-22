@@ -10,26 +10,17 @@ import rx.Observable;
  * Created by madaaflak on 14/09/2017.
  */
 
-public class GetMessageFromDisk extends UseCaseDisk {
+public class OnMessageRemovedFromDisk extends UseCaseDisk {
 
-  private String[] userIds;
-  private String dateBefore;
-  private String dateAfter;
   private ChatRepository chatRepository;
 
-  @Inject public GetMessageFromDisk(DiskChatDataRepository chatRepository,
+  @Inject public OnMessageRemovedFromDisk(DiskChatDataRepository chatRepository,
       PostExecutionThread postExecutionThread) {
     super(postExecutionThread);
     this.chatRepository = chatRepository;
   }
 
-  public void setUserIds(String[] userIds, String dateBefore, String dateAfter) {
-    this.userIds = userIds;
-    this.dateBefore = dateBefore;
-    this.dateAfter = dateAfter;
-  }
-
   @Override protected Observable buildUseCaseObservable() {
-    return chatRepository.loadMessages(userIds, dateBefore, dateAfter);
+    return chatRepository.onMessageRemoved();
   }
 }

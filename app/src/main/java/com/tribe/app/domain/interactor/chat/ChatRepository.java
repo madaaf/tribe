@@ -12,11 +12,14 @@ public interface ChatRepository {
 
   Observable<Message> createMessage(final String[] userIds, String type, String data);
 
-  Observable<List<Message>> loadMessages(final String[] userIds, String date);
+  Observable<List<Message>> loadMessages(final String[] userIds, String dateBefore,
+      String dateAfter);
 
   Observable<List<Message>> getMessagesImage(final String[] userIds);
 
   Observable<List<Message>> onMessageReceived();
+
+  Observable<Message> onMessageRemoved();
 
   Observable<String> isTyping();
 

@@ -40,9 +40,9 @@ import rx.Observable;
         .map(this.messageRealmDataMapper::transform);
   }
 
-  @Override public Observable<List<Message>> loadMessages(String[] userIds, String date) {
+  @Override public Observable<List<Message>> loadMessages(String[] userIds, String dateBefore, String dateAfter) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
-    return userDataStore.loadMessages(userIds, date)
+    return userDataStore.loadMessages(userIds, dateBefore, dateAfter)
         .doOnError(Throwable::printStackTrace)
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm).getMessages());
   }
@@ -52,6 +52,10 @@ import rx.Observable;
   }
 
   @Override public Observable<List<Message>> onMessageReceived() {
+    return null;
+  }
+
+  @Override public Observable<Message> onMessageRemoved() {
     return null;
   }
 

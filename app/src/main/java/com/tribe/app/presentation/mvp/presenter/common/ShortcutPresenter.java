@@ -76,7 +76,7 @@ public class ShortcutPresenter implements Presenter {
     createShortcut.execute(createShortcutSubscriber);
   }
 
-  private class CreateShortcutSubscriber extends DefaultSubscriber<Shortcut> { // TODO SOEF
+  private class CreateShortcutSubscriber extends DefaultSubscriber<Shortcut> {
 
     @Override public void onCompleted() {
     }
