@@ -3,7 +3,6 @@ package com.tribe.app.data.network.deserializer;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
@@ -51,6 +50,7 @@ import timber.log.Timber;
   private PublishSubject<Invite> onInviteRemoved = PublishSubject.create();
   private PublishSubject<String> onRandomRoomAssigned = PublishSubject.create();
   private PublishSubject<MessageRealm> onMessageCreated = PublishSubject.create();
+  private PublishSubject<MessageRealm> onMessageRemoved = PublishSubject.create();
   private PublishSubject<Room> onRoomUpdated = PublishSubject.create();
   private PublishSubject<ShortcutRealm> onShortcutCreated = PublishSubject.create();
   private PublishSubject<ShortcutRealm> onShortcutUpdated = PublishSubject.create();
@@ -95,7 +95,7 @@ import timber.log.Timber;
               UserRealm userRealm = gson.fromJson(entry.getValue().toString(), UserRealm.class);
               userRealm.setJsonPayloadUpdate(jo);
 
-              if(jo.has("random_banned_until")){
+              if (jo.has("random_banned_until")) {
                 String date = jo.get("random_banned_until").getAsString();
                 onRandomBannedUntil.onNext(date);
               }
@@ -136,26 +136,12 @@ import timber.log.Timber;
             } else if (entry.getKey().contains(WSService.MESSAGE_IS_READING_SUFFIX)) {
               String user_id = jo.get("user_id").getAsString();
               if (!user_id.equals(user.getId())) onReading.onNext(user_id);
+            } else if (entry.getKey().contains(WSService.MESSAGE_IS_REMOVED_SUFFIX)) {
+              Timber.d("setOnMessageRemoved: " + entry.getValue().toString());
+              onMessageRemoved.onNext(getMessage(entry, jo));
             } else if (entry.getKey().contains(WSService.MESSAGE_CREATED_SUFFIX)) {
               Timber.d("onMessageReceived : " + entry.getValue().toString());
-              MessageRealm messageRealm =
-                  gson.fromJson(entry.getValue().toString(), MessageRealm.class);
-
-              UserRealm userRealm =
-                  gson.fromJson(entry.getValue().getAsJsonObject().get("user"), UserRealm.class);
-              if (userRealm != null) {
-                messageRealm.setUser(userRealm);
-              }
-              JsonArray jsonElements = jo.get("thread_id").getAsJsonArray();
-
-              ArrayList<String> list = new ArrayList<>();
-              for (int i = 0; i < jsonElements.size(); i++) {
-                String el = jsonElements.get(i).getAsString();
-                if (!el.equals(user.getId())) list.add(el);
-              }
-              String formatedString = list.toString().replace("[", "\"").replace("]", "\"");
-              messageRealm.setThreadId(formatedString);
-              onMessageCreated.onNext(messageRealm);
+              onMessageCreated.onNext(getMessage(entry, jo));
             } else if (entry.getKey().contains(WSService.ROOM_UDPATED_SUFFIX)) {
               Timber.d("onRoomUpdate : " + entry.getValue().toString());
               JsonObject roomJson = entry.getValue().getAsJsonObject();
@@ -236,7 +222,7 @@ import timber.log.Timber;
                 Timber.d("invited_users : " + invited_users);
                 room.setInvitedUsers(invited_users);
               }
-              
+
               onRoomUpdated.onNext(room);
             } else if (entry.getKey().contains(WSService.SHORTCUT_CREATED_SUFFIX)) {
               Timber.d("Shortcut created : " + entry.getValue().toString());
@@ -264,6 +250,26 @@ import timber.log.Timber;
     }
   }
 
+  private MessageRealm getMessage(Map.Entry<String, JsonElement> entry, JsonObject jo) {
+    MessageRealm messageRealm = gson.fromJson(entry.getValue().toString(), MessageRealm.class);
+
+    UserRealm userRealm =
+        gson.fromJson(entry.getValue().getAsJsonObject().get("user"), UserRealm.class);
+    if (userRealm != null) {
+      messageRealm.setUser(userRealm);
+    }
+    JsonArray jsonElements = jo.get("thread_id").getAsJsonArray();
+
+    ArrayList<String> list = new ArrayList<>();
+    for (int i = 0; i < jsonElements.size(); i++) {
+      String el = jsonElements.get(i).getAsString();
+      if (!el.equals(user.getId())) list.add(el);
+    }
+    String formatedString = list.toString().replace("[", "\"").replace("]", "\"");
+    messageRealm.setThreadId(formatedString);
+    return messageRealm;
+  }
+
   public Observable<List<UserRealm>> onUserListUpdated() {
     return onUserListUpdated;
   }
@@ -274,6 +280,10 @@ import timber.log.Timber;
 
   public Observable<String> onRandomRoomAssigned() {
     return onRandomRoomAssigned;
+  }
+
+  public Observable<MessageRealm> onMessageRemoved() {
+    return onMessageRemoved;
   }
 
   public Observable<MessageRealm> onMessageCreated() {

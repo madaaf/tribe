@@ -55,6 +55,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<Message> onMessageRemoved() {
+    return null;
+  }
+
   @Override public Observable<String> isTyping() {
     return null;
   }

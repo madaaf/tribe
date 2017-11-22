@@ -32,6 +32,7 @@ public class ChatCacheImpl implements ChatCache {
   private PublishSubject<String> onTalking = PublishSubject.create();
   private PublishSubject<String> onReading = PublishSubject.create();
   private PublishSubject<List<MessageRealm>> onMessageReceived = PublishSubject.create();
+  private PublishSubject<MessageRealm> onMessageRemoved = PublishSubject.create();
 
   @Inject public ChatCacheImpl(Context context, Realm realm, DateUtils dateUtils) {
     this.context = context;
@@ -47,8 +48,17 @@ public class ChatCacheImpl implements ChatCache {
     onMessageReceived.onNext(messages);
   }
 
-  public void ok(RealmList<MessageRealm> messages, String userIds, String dateBefore,
-      String dateAfter) {
+  @Override public void setOnMessageRemoved(MessageRealm messageRealm) {
+    onMessageRemoved.onNext(messageRealm);
+  }
+
+  @Override public Observable<MessageRealm> onMessageRemoved() {
+    return onMessageRemoved;
+  }
+
+  @Override
+  public void deleteRemovedMessageFromCache(RealmList<MessageRealm> messages, String userIds,
+      String dateBefore, String dateAfter) {
     Realm obsRealm = Realm.getDefaultInstance();
     try {
       obsRealm.beginTransaction();
@@ -70,15 +80,12 @@ public class ChatCacheImpl implements ChatCache {
         }
       }
 
-      Timber.e(
-          "MESSAGE CACHE BETWEEN FINAL BEFORE " + cacheMessage.size() + cacheRefactoredList.size());
-
       for (String messageId : cacheRefactoredList) {
         if (!remoteMessageIds.contains(messageId)) {
           MessageRealm messageRealmDB =
               obsRealm.where(MessageRealm.class).equalTo("id", messageId).findFirst();
           if (messageRealmDB != null) {
-            Timber.i("removed message from ");
+            Timber.i("removed message from cache ");
             messageRealmDB.deleteFromRealm();
           }
         }
@@ -90,59 +97,6 @@ public class ChatCacheImpl implements ChatCache {
     } finally {
       obsRealm.close();
     }
-  }
-
-  @Override
-  public void deleteInCacheRemovedMessage(RealmList<MessageRealm> messages, String userIds,
-      String dateBefore, String dateAfter) {
-    ok(messages, userIds, dateBefore, dateAfter);
-/*    Realm obsRealm = Realm.getDefaultInstance();
-    try {
-      obsRealm.executeTransaction(realm1 -> {
-        ArrayList<String> remoteMessageIds = new ArrayList<>();
-        ArrayList<String> cacheRefactoredList = new ArrayList<>();
-
-        for (MessageRealm message : messages) {
-          remoteMessageIds.add(message.getId());
-        }
-
-        RealmResults<MessageRealm> cacheMessage =
-            obsRealm.where(MessageRealm.class).equalTo("localId", userIds).findAll();
-
-        for (MessageRealm message : cacheMessage) {
-          String creationDate = message.getCreated_at();
-          if (dateUtils.isBetween(creationDate, dateBefore, dateAfter)) {
-            cacheRefactoredList.add(message.getId());
-          }
-        }
-
-        Timber.e("MESSAGE CACHE BETWEEN FINAL BEFORE "
-            + cacheMessage.size()
-            + cacheRefactoredList.size());
-
-        for (String messageId : cacheRefactoredList) {
-          if (remoteMessageIds.contains(messageId)) {
-            MessageRealm messageRealmDB =
-                realm1.where(MessageRealm.class).equalTo("id", messageId).findFirst();
-            if (messageRealmDB != null) {
-              Timber.i("removed message from ");
-              messageRealmDB.deleteFromRealm();
-            }
-          }
-        }
-
-        obsRealm.commitTransaction();
-
-       *//* RealmResults<MessageRealm> list2 =
-            obsRealm.where(MessageRealm.class).equalTo("localId", userIds).findAll();
-        Timber.e("MESSAGE CACHE BETWEEN  FINAL REZSULT " + list2.size());*//*
-      });
-    } catch (Exception ex) {
-      if (obsRealm.isInTransaction()) obsRealm.cancelTransaction();
-      Timber.e(ex.toString());
-    } finally {
-      obsRealm.close();
-    }*/
   }
 
   @Override public void putMessages(RealmList<MessageRealm> messages, String userIds) {

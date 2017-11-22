@@ -36,6 +36,12 @@ import rx.Observable;
 
   void setOnMessageReceived(RealmList<MessageRealm> messages);
 
-  void deleteInCacheRemovedMessage(RealmList<MessageRealm> messages, String s,  String dateBefore, String dateAfter);
+  void setOnMessageRemoved(MessageRealm messageRealm);
+
+  Observable<MessageRealm> onMessageRemoved();
+
+  void deleteRemovedMessageFromCache(RealmList<MessageRealm> messages, String s, String dateBefore,
+      String dateAfter);
+
 }
 

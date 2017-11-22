@@ -49,6 +49,7 @@ import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMREADING;
+import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_EVENT;
 
 /**
  * Created by madaaflak on 03/10/2017.
@@ -161,7 +162,9 @@ public class RecyclerMessageView extends ChatMVPView {
       Timber.i("on long click message " + dateUtils.getDiffDate(m.getCreationDate(),
           dateUtils.getUTCDateAsString()));
       boolean enableUnsendMessage = false;
-      if (dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString())
+      if (!m.getType().equals(MESSAGE_EVENT)
+          && m.getAuthor().getId().equals(user.getId())
+          && dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString())
           < MAX_DURATION_MIN_DELETE_MESSAGE) {
         enableUnsendMessage = true;
       }
@@ -275,6 +278,7 @@ public class RecyclerMessageView extends ChatMVPView {
     messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString(), null);
 
     messagePresenter.onMessageReceivedFromDisk();
+    messagePresenter.onMessageRemovedFromDisk();
   }
 
   public void sendMessageToNetwork(String[] arrIds, String data, String type, int position) {
@@ -308,9 +312,6 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void successLoadingMessage(List<Message> messages) {
     Timber.i("successLoadingMessage " + messages.size());
-    for (Message m : messages) {
-      Timber.i("SOEF " + m.getId());
-    }
     successLoadingMessage = true;
     if (isDisplayedMessageDisk) {
       messageAdapter.clearItem();
@@ -353,9 +354,6 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.i("successLoadingMessageDisk " + messages.size());
-    for (Message m : messages) {
-      Timber.i("SOEF " + m.getId());
-    }
     if (errorLoadingMessages || !successLoadingMessage) {
       Timber.i("message disk displayed " + messages.size());
       messageAdapter.setItems(messages, 0);

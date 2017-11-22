@@ -62,7 +62,7 @@ public class CloudChatDataStore implements ChatDataStore {
           dateBefore, dateAfter, context.getString(R.string.messagefragment_info));
       Timber.i("request : " + req);
       return this.tribeApi.getUserMessage(req)
-          .doOnNext(userRealm -> chatCache.deleteInCacheRemovedMessage(userRealm.getMessages(),
+          .doOnNext(userRealm -> chatCache.deleteRemovedMessageFromCache(userRealm.getMessages(),
               JsonUtils.arrayToJson(userIds), dateBefore, dateAfter))
           .doOnNext(messageRealm -> refactorMessages.call(userIds));
     }
@@ -89,6 +89,10 @@ public class CloudChatDataStore implements ChatDataStore {
   }
 
   @Override public Observable<List<MessageRealm>> onMessageReceived() {
+    return null;
+  }
+
+  @Override public Observable<MessageRealm> onMessageRemoved() {
     return null;
   }
 

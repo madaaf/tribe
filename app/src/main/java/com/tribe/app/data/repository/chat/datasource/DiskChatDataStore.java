@@ -54,6 +54,10 @@ public class DiskChatDataStore implements ChatDataStore {
     return chatCache.onMessageReceived();
   }
 
+  @Override public Observable<MessageRealm> onMessageRemoved() {
+    return chatCache.onMessageRemoved();
+  }
+
   @Override
 
   public Observable<Boolean> imTyping(String[] userIds) {

@@ -12,6 +12,7 @@ import com.tribe.app.domain.interactor.chat.IsReadingFromDisk;
 import com.tribe.app.domain.interactor.chat.IsTalkingFromDisk;
 import com.tribe.app.domain.interactor.chat.IsTypingFromDisk;
 import com.tribe.app.domain.interactor.chat.OnMessageReceivedFromDisk;
+import com.tribe.app.domain.interactor.chat.OnMessageRemovedFromDisk;
 import com.tribe.app.domain.interactor.chat.RemoveMessage;
 import com.tribe.app.domain.interactor.chat.UserMessageInfos;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
@@ -51,6 +52,7 @@ public class MessagePresenter implements Presenter {
   protected IsTalkingFromDisk isTalkingFromDisk;
   protected IsReadingFromDisk isReadingFromDisk;
   protected OnMessageReceivedFromDisk onMessageReceivedFromDisk;
+  protected OnMessageRemovedFromDisk onMessageRemovedFromDisk;
   protected ImTyping imTyping;
   protected CreateShortcut createShortcut;
   protected UpdateShortcut updateShortcut;
@@ -68,7 +70,8 @@ public class MessagePresenter implements Presenter {
       OnMessageReceivedFromDisk onMessageReceivedFromDisk, UpdateShortcut updateShortcut,
       GetMessageImageFromDisk getMessageImageFromDisk, GetShortcutForUserIds getShortcutForUserIds,
       CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk,
-      IsReadingFromDisk isReadingFromDisk, RemoveMessage removeMessage) {
+      IsReadingFromDisk isReadingFromDisk, RemoveMessage removeMessage,
+      OnMessageRemovedFromDisk onMessageRemovedFromDisk) {
     this.shortcutPresenter = shortcutPresenter;
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
@@ -84,6 +87,7 @@ public class MessagePresenter implements Presenter {
     this.createShortcut = createShortcut;
     this.isReadingFromDisk = isReadingFromDisk;
     this.removeMessage = removeMessage;
+    this.onMessageRemovedFromDisk = onMessageRemovedFromDisk;
   }
 
   public void getMessageImage(String[] userIds) {
@@ -98,6 +102,10 @@ public class MessagePresenter implements Presenter {
 
   public void onMessageReceivedFromDisk() {
     onMessageReceivedFromDisk.execute(new GetDiskMessageReceivedSubscriber());
+  }
+
+  public void onMessageRemovedFromDisk() {
+    onMessageRemovedFromDisk.execute(new GetDiskMessageRemovedSubscriber());
   }
 
   public void quickShortcutForUserIds(String userIds) {
@@ -269,6 +277,23 @@ public class MessagePresenter implements Presenter {
         if (chatMVPView != null) chatMVPView.successRemovedMessage(m);
       } else {
         if (chatMVPView != null) chatMVPView.errorRemovedMessage(m);
+      }
+    }
+  }
+
+  private class GetDiskMessageRemovedSubscriber extends DefaultSubscriber<Message> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
+      //if (chatMVPView != null) chatMVPView.errorRemovedMessage();
+    }
+
+    @Override public void onNext(Message message) {
+      if (chatMVPView != null) {
+        chatMVPView.successRemovedMessage(message);
       }
     }
   }

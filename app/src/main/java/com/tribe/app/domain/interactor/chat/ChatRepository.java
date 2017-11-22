@@ -19,6 +19,8 @@ public interface ChatRepository {
 
   Observable<List<Message>> onMessageReceived();
 
+  Observable<Message> onMessageRemoved();
+
   Observable<String> isTyping();
 
   Observable<String> isTalking();

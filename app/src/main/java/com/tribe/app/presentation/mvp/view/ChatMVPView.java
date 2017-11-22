@@ -75,4 +75,6 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView, Shortc
   public void successLoadingBetweenTwoDateMessage(List<Message> messages) {
 
   }
+
+
 }

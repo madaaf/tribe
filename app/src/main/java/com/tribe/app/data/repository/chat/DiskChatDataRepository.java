@@ -74,6 +74,14 @@ import rx.Observable;
         .map(messageRealmDataMapper::transform);
   }
 
+  @Override public Observable<Message> onMessageRemoved() {
+    final DiskChatDataStore chatDataStore =
+        (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
+    return chatDataStore.onMessageRemoved()
+        .doOnError(Throwable::printStackTrace)
+        .map(messageRealmDataMapper::transform);
+  }
+
   public Observable<Boolean> imTyping(String[] userIds) {
     return null;
   }

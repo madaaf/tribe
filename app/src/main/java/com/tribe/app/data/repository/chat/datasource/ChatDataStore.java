@@ -28,5 +28,7 @@ public interface ChatDataStore {
 
   Observable<List<MessageRealm>> onMessageReceived();
 
+  Observable<MessageRealm> onMessageRemoved();
+
   Observable<Boolean> imTyping(String[] userIds);
 }
