@@ -11,6 +11,7 @@
       android:layout_width="@dimen/filter_game_size_container"
       android:layout_height="@dimen/filter_game_size_container"
       android:layout_centerHorizontal="true">
+
     <View
         android:id="@+id/bgSelected"
         android:layout_width="@dimen/filter_game_size"

@@ -395,6 +395,11 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     return waitingIds.contains(id);
   }
 
+  public boolean isUserInitiator(String id) {
+    if (initiator == null) return false;
+    else return initiator.getId().equals(id);
+  }
+
   @Override public int hashCode() {
     int result = super.hashCode();
     result = 31 * result + (getId() != null ? getId().hashCode() : 0);

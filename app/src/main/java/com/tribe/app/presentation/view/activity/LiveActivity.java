@@ -1198,7 +1198,9 @@ public class LiveActivity extends BaseActivity
         String hashMembersInvite = ShortcutUtils.hashShortcut(getCurrentUser().getId(),
             usersInviteList.toArray(new String[usersInviteList.size()]));
 
-        if (hashMembersShortcut.equals(hashMembersInvite)) {
+        if (hashMembersShortcut.equals(hashMembersInvite) &&
+            invite.getRoom() != null &&
+            !invite.getRoom().isUserInitiator(getCurrentUser().getId())) {
           Live.Builder builder = new Live.Builder(Live.FRIEND_CALL).source(live.getSource());
           live = builder.room(invite.getRoom()).build();
           getRoomInfos();

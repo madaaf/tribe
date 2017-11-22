@@ -110,7 +110,7 @@ public class CloudLiveDataStore implements LiveDataStore {
   }
 
   @Override public Observable<Boolean> createInvite(String roomId, String userId) {
-    if (userId.equals(accessToken.getAccessToken())) return Observable.just(false);
+    if (userId.equals(accessToken.getUserId())) return Observable.just(false);
 
     final String request = context.getString(R.string.mutation,
         context.getString(R.string.createInvite, roomId, userId));
