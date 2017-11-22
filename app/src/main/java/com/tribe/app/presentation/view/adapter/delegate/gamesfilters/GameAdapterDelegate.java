@@ -15,7 +15,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
@@ -99,8 +98,7 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     Glide.with(context)
         .load(game.getBanner())
         .thumbnail(0.25f)
-        .bitmapTransform(new CenterCrop(context),
-            new RoundedCornersTransformation(context, radius, 0))
+        .bitmapTransform(new RoundedCornersTransformation(context, radius, 0))
         .crossFade()
         .diskCacheStrategy(DiskCacheStrategy.RESULT)
         .into(vh.imgBanner);
