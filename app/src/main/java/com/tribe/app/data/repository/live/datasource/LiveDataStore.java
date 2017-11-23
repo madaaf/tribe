@@ -19,7 +19,7 @@ public interface LiveDataStore {
 
   Observable<Void> deleteRoom(String roomId);
 
-  Observable<Boolean> createInvite(String roomId, String userId);
+  Observable<Boolean> createInvite(String roomId, String... userId);
 
   Observable<Boolean> removeInvite(String roomId, String userId);
 

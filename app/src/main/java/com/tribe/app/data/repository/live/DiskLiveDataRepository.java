@@ -57,7 +57,7 @@ public class DiskLiveDataRepository implements LiveRepository {
     return null;
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String userId) {
+  @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {
     return null;
   }
 

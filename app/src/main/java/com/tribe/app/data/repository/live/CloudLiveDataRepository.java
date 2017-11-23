@@ -50,10 +50,10 @@ import rx.Observable;
     return cloudDataStore.deleteRoom(roomId);
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String userId) {
+  @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.createInvite(roomId, userId);
+    return cloudDataStore.createInvite(roomId, userIds);
   }
 
   @Override public Observable<Boolean> removeInvite(String roomId, String userId) {

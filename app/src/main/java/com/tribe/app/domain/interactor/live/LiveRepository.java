@@ -23,7 +23,7 @@ public interface LiveRepository {
 
   Observable<Void> deleteRoom(String roomId);
 
-  Observable<Boolean> createInvite(String roomId, String userId);
+  Observable<Boolean> createInvite(String roomId, String... userIds);
 
   Observable<Boolean> removeInvite(String roomId, String userId);
 

@@ -222,7 +222,11 @@ public class LiveRingingView extends RelativeLayout {
     } else if (shortcut != null && !StringUtils.isEmpty(shortcut.getName())) {
       name = shortcut.getName();
     } else if (room != null) {
-      name = getResources().getString(R.string.shortcut_members_count, nbUsersWithoutMe);
+      if (nbUsersWithoutMe > 0) {
+        name = getResources().getString(R.string.shortcut_members_count, nbUsersWithoutMe);
+      } else {
+        name = "";
+      }
     }
 
     txtRinging.setText(getResources().getString(R.string.live_members_ringing) + " " + name);

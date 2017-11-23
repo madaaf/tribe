@@ -109,12 +109,25 @@ public class CloudLiveDataStore implements LiveDataStore {
         .map(aBoolean -> null);
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String userId) {
-    if (userId.equals(accessToken.getUserId())) return Observable.just(false);
+  @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {
+    StringBuffer buffer = new StringBuffer();
 
-    final String request = context.getString(R.string.mutation,
-        context.getString(R.string.createInvite, roomId, userId));
+    if (userIds.length > 0) {
+      int count = 0;
+      for (String id : userIds) {
+        if (!id.equals(accessToken.getUserId())) {
+          buffer.append(context.getString(R.string.createInvite, count, roomId, id));
+        }
 
+        count++;
+      }
+    }
+
+    String createInviteReqs = buffer.toString();
+
+    if (StringUtils.isEmpty(createInviteReqs)) return Observable.just(false);
+
+    final String request = context.getString(R.string.mutation, createInviteReqs);
     return this.tribeApi.createInvite(request);
   }
 

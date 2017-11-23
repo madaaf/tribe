@@ -3,7 +3,6 @@ package com.tribe.app.presentation.mvp.presenter.common;
 import android.util.Pair;
 import com.tribe.app.data.exception.JoinRoomException;
 import com.tribe.app.domain.entity.Live;
-import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.live.BuzzRoom;
@@ -135,9 +134,8 @@ public class RoomPresenter implements Presenter {
     buzzRoom.execute(new DefaultSubscriber());
   }
 
-  public void createInvite(String roomId, String userId) {
-    if (userId.equals(Recipient.ID_CALL_ROULETTE)) return;
-    createInvite.setup(roomId, userId);
+  public void createInvite(String roomId, String... userIds) {
+    createInvite.setup(roomId, userIds);
     createInvite.execute(new DefaultSubscriber());
   }
 

@@ -13,7 +13,16 @@ import java.util.List;
 public class Invite extends Recipient {
 
   private Room room;
+  private User inviter;
   private Shortcut shortcut;
+
+  public void setInviter(User inviter) {
+    this.inviter = inviter;
+  }
+
+  public User getInviter() {
+    return inviter;
+  }
 
   public void setRoom(Room room) {
     this.room = room;

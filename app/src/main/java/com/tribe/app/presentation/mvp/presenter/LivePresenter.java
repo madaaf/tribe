@@ -242,8 +242,8 @@ public class LivePresenter implements Presenter {
     roomPresenter.removeInvite(roomId, userId);
   }
 
-  public void createInvite(String roomId, String userId) {
-    roomPresenter.createInvite(roomId, userId);
+  public void createInvite(String roomId, String... userIds) {
+    roomPresenter.createInvite(roomId, userIds);
   }
 
   public void createRoom(Live live) {

@@ -15,6 +15,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 30/01/2017.
@@ -33,6 +34,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   private RoomCoordinates coordinates;
   private boolean accept_random;
   private User initiator;
+  private User inviter;
   private List<User> live_users;
   private List<User> invited_users;
   private List<User> all_users;
@@ -181,6 +183,14 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
     this.updated_at = updatedAt;
   }
 
+  public User getInviter() {
+    return inviter;
+  }
+
+  public void setInviter(User inviter) {
+    this.inviter = inviter;
+  }
+
   public void setShortcut(Shortcut shortcut) {
     this.shortcut = shortcut;
     onRoomUpdated.onNext(this);
@@ -288,33 +298,33 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   */
 
   @Override public String toString() {
-    return "Room{"
-        + "id='"
-        + id
-        + '\''
-        + ", name='"
-        + name
-        + ", initiator="
-        + initiator
-        + ", live_users="
-        + live_users
-        + ", invited_users="
-        + invited_users
-        + ", all_users="
-        + all_users
-        + ", shortcut "
-        + shortcut
-        + ", onAddedInvitedUser="
-        + onAddedInvitedUser
-        + ", onRemovedInvitedUser="
-        + onRemovedInvitedUser
-        + ", onAddedLiveUser="
-        + onAddedLiveUser
-        + ", onRemovedLiveUser="
-        + onRemovedLiveUser
-        + ", onRoomUpdated="
-        + onRoomUpdated
-        + '}';
+    return "Room{" +
+        "id='" +
+        id +
+        '\'' +
+        ", name='" +
+        name +
+        ", initiator=" +
+        initiator +
+        ", live_users=" +
+        live_users +
+        ", invited_users=" +
+        invited_users +
+        ", all_users=" +
+        all_users +
+        ", shortcut " +
+        shortcut +
+        ", onAddedInvitedUser=" +
+        onAddedInvitedUser +
+        ", onRemovedInvitedUser=" +
+        onRemovedInvitedUser +
+        ", onAddedLiveUser=" +
+        onAddedLiveUser +
+        ", onRemovedLiveUser=" +
+        onRemovedLiveUser +
+        ", onRoomUpdated=" +
+        onRoomUpdated +
+        '}';
   }
 
   public List<String> getUserIds() {
@@ -396,8 +406,11 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   }
 
   public boolean isUserInitiator(String id) {
-    if (initiator == null) return false;
-    else return initiator.getId().equals(id);
+    if (initiator == null) {
+      return false;
+    } else {
+      return initiator.getId().equals(id);
+    }
   }
 
   @Override public int hashCode() {

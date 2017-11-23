@@ -94,7 +94,7 @@ import timber.log.Timber;
               UserRealm userRealm = gson.fromJson(entry.getValue().toString(), UserRealm.class);
               userRealm.setJsonPayloadUpdate(jo);
 
-              if(jo.has("random_banned_until")){
+              if (jo.has("random_banned_until")) {
                 String date = jo.get("random_banned_until").getAsString();
                 onRandomBannedUntil.onNext(date);
               }
@@ -163,9 +163,8 @@ import timber.log.Timber;
                   (!roomJson.get("name").isJsonNull()) ? roomJson.get("name").getAsString() : null;
               room.setName(roomName);
 
-              Boolean accept_random =
-                  !roomJson.get("accept_random").isJsonNull() && roomJson.get("accept_random")
-                      .getAsBoolean();
+              Boolean accept_random = !roomJson.get("accept_random").isJsonNull() &&
+                  roomJson.get("accept_random").getAsBoolean();
               room.setAcceptRandom(accept_random);
 
               JsonArray live_users_json =
@@ -242,9 +241,8 @@ import timber.log.Timber;
                 Timber.d("on room updated received | shortcut : " + room.getShortcut().toString());
               }
               if (room.getShortcut() != null && room.getShortcut().getMembers() != null) {
-                Timber.d("on room updated received | members : " + room.getShortcut()
-                    .getMembers()
-                    .size());
+                Timber.d("on room updated received | members : " +
+                    room.getShortcut().getMembers().size());
               }
               if (room != null) {
                 Timber.d("on room updated received | roomId : " + room.getId());
