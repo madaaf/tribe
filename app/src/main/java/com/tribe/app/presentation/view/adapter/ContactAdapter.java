@@ -13,6 +13,7 @@ import com.tribe.app.presentation.view.adapter.delegate.contact.ContactsHeaderAd
 import com.tribe.app.presentation.view.adapter.delegate.contact.TribeGuestAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -166,11 +167,11 @@ public class ContactAdapter extends RecyclerView.Adapter {
         contactsGridAdapterDelegate.onClickInvite());
   }
 
-  public Observable<View> onHangLive() {
+  public Observable<BaseListViewHolder> onHangLive() {
     return recipientListAdapterDelegate.onHangLive();
   }
 
-  public Observable<View> onUnblock() {
+  public Observable<BaseListViewHolder> onUnblock() {
     return recipientListAdapterDelegate.onUnblock();
   }
 }

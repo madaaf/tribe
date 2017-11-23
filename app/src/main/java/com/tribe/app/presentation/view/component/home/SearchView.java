@@ -56,6 +56,7 @@ import com.tribe.app.presentation.view.adapter.decorator.DividerHeadersItemDecor
 import com.tribe.app.presentation.view.adapter.decorator.SearchSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.SearchViewDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
@@ -745,7 +746,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   }
 
-  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
 
   }
 

@@ -16,6 +16,7 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import javax.inject.Inject;
 
 /**
@@ -108,8 +109,8 @@ public class ProfilePresenter extends UpdateUserPresenter {
     shortcutPresenter.muteShortcut(shortcutId, mute);
   }
 
-  public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status) {
-    shortcutPresenter.updateShortcutStatus(shortcutId, status);
+  public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status, BaseListViewHolder viewHolder) {
+    shortcutPresenter.updateShortcutStatus(shortcutId, status, viewHolder);
   }
 
   public void loadSingleShortcuts() {

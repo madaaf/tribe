@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.presentation.view.adapter.delegate.friend.MissedCallActionDelegate;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.notification.MissedCallAction;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +62,7 @@ public class MissedCallActionAdapter extends RecyclerView.Adapter {
 
   // OBSERVABLES
 
-  public Observable<View> onHangLive() {
+  public Observable<BaseListViewHolder> onHangLive() {
     return missedCallActionDelegate.onHangLive();
   }
 }

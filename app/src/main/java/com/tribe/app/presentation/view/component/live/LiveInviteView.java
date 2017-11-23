@@ -34,6 +34,7 @@ import com.tribe.app.presentation.view.adapter.diff.LiveInviteDiffCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
 import com.tribe.app.presentation.view.adapter.model.Header;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewUtils;
@@ -440,7 +441,7 @@ public class LiveInviteView extends FrameLayout
 
   }
 
-  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
 
   }
 

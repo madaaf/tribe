@@ -50,15 +50,14 @@ public class UserListAdapterDelegate extends BaseListAdapterDelegate {
   }
 
   private ButtonModel getHangLiveButton() {
-    return new ButtonModel(context.getString(R.string.action_hang_live),
-        ContextCompat.getColor(context, R.color.red), Color.WHITE);
+    return new ButtonModel(context.getString(R.string.action_add_friend),
+        ContextCompat.getColor(context, R.color.blue_new), Color.WHITE);
   }
 
   @Override protected void setClicks(BaseListInterface baseListItem, BaseListViewHolder vh) {
     User user = (User) baseListItem;
     if (!user.isFriend() && !user.isInvisibleMode()) {
       vh.btnAdd.setOnClickListener(v -> {
-        animations.put(vh, animateProgressBar(vh));
         user.setAnimateAdd(true);
         clickAdd.onNext(vh.itemView);
       });

@@ -55,6 +55,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
 import com.tribe.app.presentation.view.component.settings.SettingsFacebookAccountView;
@@ -88,6 +89,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   @Inject @UserPhoneNumber Preference<String> userPhoneNumber;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject User user;
 
   @Inject ProfilePresenter profilePresenter;
 
@@ -468,10 +471,11 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
     viewSettingsBlockedFriends =
         (SettingsBlockedFriendsView) viewStack.push(R.layout.view_settings_blocked_friends);
 
-    subscriptions.add(viewSettingsBlockedFriends.onUnblock().subscribe(recipient -> {
-      if (recipient instanceof Shortcut) {
-        Shortcut fr = (Shortcut) recipient;
-        profilePresenter.updateShortcutStatus(fr.getId(), ShortcutRealm.DEFAULT);
+    subscriptions.add(viewSettingsBlockedFriends.onUnblock().subscribe(pair -> {
+      if (pair.first instanceof Shortcut) {
+        Shortcut fr = (Shortcut) pair.first;
+        profilePresenter.updateShortcutStatus(fr.getId(), ShortcutRealm.DEFAULT,
+            (BaseListViewHolder) pair.second);
       }
     }));
 
@@ -491,12 +495,12 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
-                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
+                    .equals(LabelType.BLOCK_HIDE)) {
                   Shortcut shortcut = (Shortcut) recipient;
                   profilePresenter.updateShortcutStatus(shortcut.getId(),
                       labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? ShortcutRealm.BLOCKED
-                          : ShortcutRealm.HIDDEN);
+                          : ShortcutRealm.HIDDEN, null);
                 }
               }
 
@@ -620,8 +624,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
     if (viewStack.getTopView() instanceof SettingsProfileView) {
-      viewSettingsProfile.setUsernameValid(usernameValid ||
-          viewSettingsProfile.getUsername().equals(getCurrentUser().getUsername()));
+      viewSettingsProfile.setUsernameValid(usernameValid || viewSettingsProfile.getUsername()
+          .equals(getCurrentUser().getUsername()));
     }
   }
 
@@ -691,8 +695,17 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
 
   }
 
-  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
+    viewHolder.progressView.setVisibility(View.INVISIBLE);
+    viewHolder.btnAdd.setVisibility(View.VISIBLE);
+    viewHolder.btnAdd.setImageResource(R.drawable.picto_added);
+    viewHolder.btnAdd.setClickable(false);
 
+    for (Shortcut s : user.getShortcutList()) {
+      if (s.getId().equals(shortcut.getId())) {
+        s.setStatus(shortcut.getStatus());
+      }
+    }
   }
 
   @Override public void onShortcutUpdatedError() {
@@ -700,11 +713,11 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   }
 
   @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
-    if (viewSettingsManageFriendships != null &&
-        ViewCompat.isAttachedToWindow(viewSettingsManageFriendships)) {
+    if (viewSettingsManageFriendships != null && ViewCompat.isAttachedToWindow(
+        viewSettingsManageFriendships)) {
       viewSettingsManageFriendships.renderUnblockedShortcutList(singleShortcutList);
-    } else if (viewSettingsBlockedFriends != null &&
-        ViewCompat.isAttachedToWindow(viewSettingsBlockedFriends)) {
+    } else if (viewSettingsBlockedFriends != null && ViewCompat.isAttachedToWindow(
+        viewSettingsBlockedFriends)) {
       viewSettingsBlockedFriends.renderBlockedShortcutList(singleShortcutList);
     }
 

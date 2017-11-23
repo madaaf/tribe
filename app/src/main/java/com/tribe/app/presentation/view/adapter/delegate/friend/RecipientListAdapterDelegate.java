@@ -51,18 +51,15 @@ public class RecipientListAdapterDelegate extends BaseListAdapterDelegate {
   }
 
   private ButtonModel getHangLiveButton() {
-    return new ButtonModel(context.getString(R.string.action_hang_live),
-        ContextCompat.getColor(context, R.color.red), Color.WHITE);
+    return new ButtonModel(R.drawable.picto_added);
   }
 
   private ButtonModel getUnblockButton() {
-    return new ButtonModel(context.getString(R.string.action_unblock),
-        ContextCompat.getColor(context, R.color.grey_unblock), Color.WHITE);
+    return new ButtonModel(R.drawable.picto_add);
   }
 
   private ButtonModel getUnhideButton() {
-    return new ButtonModel(context.getString(R.string.action_unhide),
-        ContextCompat.getColor(context, R.color.blue_new), Color.WHITE);
+    return new ButtonModel(R.drawable.picto_add);
   }
 
   @Override protected void setClicks(BaseListInterface baseList, BaseListViewHolder vh) {
@@ -73,10 +70,11 @@ public class RecipientListAdapterDelegate extends BaseListAdapterDelegate {
       isBlockedOrHidden = sh.isBlockedOrHidden();
     }
 
+
     if (isBlockedOrHidden) {
-      vh.btnAdd.setOnClickListener(v -> clickUnblock.onNext(vh.itemView));
+      vh.btnAdd.setOnClickListener(v -> clickUnblock.onNext(vh));
     } else {
-      vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
+      vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh));
     }
   }
 }

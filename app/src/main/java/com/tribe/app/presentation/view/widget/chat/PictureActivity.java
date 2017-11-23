@@ -13,6 +13,7 @@ import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.PictureMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +122,7 @@ public class PictureActivity extends BaseActivity implements PictureMVPView, Sho
 
   }
 
-  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
 
   }
 

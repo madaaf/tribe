@@ -27,6 +27,7 @@ import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.adapter.NewChatAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerHeadersItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.NewChatLayoutManager;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -263,7 +264,7 @@ public class NewChatActivity extends BaseActivity
 
   }
 
-  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
 
   }
 

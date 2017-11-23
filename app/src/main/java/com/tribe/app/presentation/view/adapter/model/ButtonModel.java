@@ -9,11 +9,20 @@ public class ButtonModel {
   private String text;
   private int backgroundColor;
   private int textColor;
+  private int imageRessource = 0;
 
   public ButtonModel(String text, int backgroundColor, int textColor) {
     this.text = text;
     this.backgroundColor = backgroundColor;
     this.textColor = textColor;
+  }
+
+  public ButtonModel(int imageRessource) {
+    this.imageRessource = imageRessource;
+  }
+
+  public int getImageRessource() {
+    return imageRessource;
   }
 
   public int getTextColor() {
