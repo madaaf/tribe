@@ -586,7 +586,7 @@ public class LiveActivity extends BaseActivity
   }
 
   private void setChatView(Shortcut shortcut) {
-    if (shortcut.getMembers().isEmpty()) {
+    if (shortcut == null || shortcut.getMembers() == null || shortcut.getMembers().isEmpty()) {
       String source = (live != null) ? live.getSource() : "";
       Timber.e("try to set chat view, but members is empty " + source);
       return;
