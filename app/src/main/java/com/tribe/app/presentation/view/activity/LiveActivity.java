@@ -579,7 +579,7 @@ public class LiveActivity extends BaseActivity
     } else {
       String[] arrids =
           live.getRoom().getUserIds().toArray(new String[live.getRoom().getUserIds().size()]);
-      if (arrids.length > 0) {
+      if (arrids != null && arrids.length > 0) {
         livePresenter.createShortcut(arrids);
       }
     }
