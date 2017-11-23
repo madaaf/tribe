@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_base_list_height"
     android:background="@android:color/white"
@@ -69,6 +70,19 @@
         />
 
   </LinearLayout>
+
+  <com.github.rahatarmanahmed.cpv.CircularProgressView
+      android:id="@+id/progressView"
+      android:layout_width="25dp"
+      android:layout_height="25dp"
+      android:layout_gravity="end|center_vertical"
+      android:layout_marginEnd="28dp"
+      android:visibility="invisible"
+      app:cpv_animAutostart="true"
+      app:cpv_color="@android:color/black"
+      app:cpv_indeterminate="true"
+      app:cpv_thickness="2dp"
+      />
 
   <ImageView
       android:id="@+id/btnAdd"

@@ -3,7 +3,9 @@ package com.tribe.app.presentation.mvp.view;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import java.util.List;
 
 public interface HomeGridMVPView extends LoadDataMVPView {
@@ -33,4 +35,6 @@ public interface HomeGridMVPView extends LoadDataMVPView {
   void onSyncError();
 
   void onBannedUser(User user);
+
+  void onShortcutCreatedFromSuggestedFriendSuccess(Shortcut shortcut,  UserToAddAdapterDelegate.UserToAddViewHolder vh);
 }

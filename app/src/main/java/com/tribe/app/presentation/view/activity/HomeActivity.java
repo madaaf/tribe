@@ -78,6 +78,7 @@ import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.HomeListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.HomeSectionItemDecoration;
+import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
 import com.tribe.app.presentation.view.adapter.helper.HomeListTouchHelperCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
@@ -468,6 +469,20 @@ public class HomeActivity extends BaseActivity
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(item -> onClickItem(item)));
 
+    subscriptions.add(homeGridAdapter.onAddUser() // TODO MADA
+        .map(view -> {
+          HomeAdapterInterface user = (User) homeGridAdapter.getItemAtPosition(
+              recyclerViewFriends.getChildLayoutPosition(view));
+          int position = recyclerViewFriends.getChildAdapterPosition(view);
+          return new Pair(position, user);
+        }).doOnError(throwable -> throwable.printStackTrace()).subscribe(pair -> {
+          UserToAddAdapterDelegate.UserToAddViewHolder vh =
+              (UserToAddAdapterDelegate.UserToAddViewHolder) recyclerViewFriends.findViewHolderForAdapterPosition(
+                  (Integer) pair.first);
+          User user = (User) pair.second;
+          homeGridPresenter.createShortcutFromSuggestedFriend(vh, user.getId());
+        }));
+
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
@@ -493,8 +508,9 @@ public class HomeActivity extends BaseActivity
 
               return Pair.create(labelType, recipient);
             }))
-        .filter(pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) ||
-            pair.first.getTypeDef().equals(LabelType.BLOCK_HIDE))
+        .filter(
+            pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) || pair.first.getTypeDef()
+                .equals(LabelType.BLOCK_HIDE))
         .flatMap(pair -> {
           if (pair.first.getTypeDef().equals(LabelType.CUSTOMIZE)) {
             return DialogFactory.showBottomSheetForCustomizeShortcut(this, (Shortcut) pair.second);
@@ -554,10 +570,9 @@ public class HomeActivity extends BaseActivity
         })
         .subscribe());
 
-    subscriptions.add(homeGridAdapter.onClick()
+    subscriptions.add(homeGridAdapter.onClick() // TODO MADA
         .map(view -> homeGridAdapter.getItemAtPosition(
-            recyclerViewFriends.getChildLayoutPosition(view)))
-        .subscribe(item -> {
+            recyclerViewFriends.getChildLayoutPosition(view))).subscribe(item -> {
           Recipient recipient = (Recipient) item;
           boolean displayPermissionNotif = notificationContainerView.
               showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);
@@ -630,7 +645,6 @@ public class HomeActivity extends BaseActivity
               List<HomeAdapterInterface> temp = new ArrayList<>();
               temp.addAll(recipientList);
               ListUtils.addEmptyItemsHome(temp);
-
               if (latestRecipientList.size() != 0) {
                 diffResult =
                     DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
@@ -638,7 +652,7 @@ public class HomeActivity extends BaseActivity
               }
 
               latestRecipientList.clear();
-              latestRecipientList.addAll(temp);
+              latestRecipientList.addAll(temp); // TODO #2
               return diffResult;
             }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
           if (diffResult != null) {
@@ -910,8 +924,8 @@ public class HomeActivity extends BaseActivity
               .subscribe());
       isBannedUser = true;
       topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
-    } else if (user.getRandom_banned_until() != null &&
-        !dateUtils.isBefore(user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
+    } else if (user.getRandom_banned_until() != null && !dateUtils.isBefore(
+        user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
 
       subscriptions.add(
           DialogFactory.dialog(this, getString(R.string.error_just_banned_temporary_title),
@@ -977,6 +991,17 @@ public class HomeActivity extends BaseActivity
     }
   }
 
+  @Override public void onShortcutCreatedFromSuggestedFriendSuccess(Shortcut shortcut,
+      UserToAddAdapterDelegate.UserToAddViewHolder vh) {
+    if (vh != null) {
+      vh.progressView.setVisibility(View.INVISIBLE);
+      vh.btnAdd.setImageResource(R.drawable.picto_added);
+      vh.btnAdd.setVisibility(View.VISIBLE);
+      // TODO TIAGO
+      // block UI 1s before to delete the line ( vs : TODO #2 )
+    }
+  }
+
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
     if (shouldNavigateToChat) {
       navigator.navigateToChat(this, shortcut, null, gesture, shortcut.getSectionTag(), false);
@@ -1004,8 +1029,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) &&
-        !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
+        && !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(
@@ -1037,14 +1062,12 @@ public class HomeActivity extends BaseActivity
 
     if (requestCode == Navigator.FROM_PROFILE) {
       topBarContainer.reloadUserUI();
-    } else if (requestCode == Navigator.FROM_CHAT &&
-        data != null &&
-        data.hasExtra(ChatActivity.EXTRA_SHORTCUT_ID)) {
+    } else if (requestCode == Navigator.FROM_CHAT && data != null && data.hasExtra(
+        ChatActivity.EXTRA_SHORTCUT_ID)) {
       homeGridPresenter.updateShortcutLeaveOnlineUntil(
           data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
-    } else if (requestCode == Navigator.FROM_LIVE &&
-        data != null &&
-        data.hasExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
+    } else if (requestCode == Navigator.FROM_LIVE && data != null && data.hasExtra(
+        LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
       HashSet<String> userIds =
           (HashSet<String>) data.getSerializableExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT);
       homeGridPresenter.createShortcut(userIds.toArray(new String[userIds.size()]));
@@ -1159,10 +1182,10 @@ public class HomeActivity extends BaseActivity
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
         if (position < 0 || position > recipientList.size() - 1) return false;
-        return position == 0 ||
-            recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE &&
-                recipientList.get(position).getHomeSectionType() !=
-                    recipientList.get(position - 1).getHomeSectionType();
+        return position == 0
+            || recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE
+            && recipientList.get(position).getHomeSectionType() != recipientList.get(position - 1)
+            .getHomeSectionType();
       }
 
       @Override public int getSectionType(int position) {
