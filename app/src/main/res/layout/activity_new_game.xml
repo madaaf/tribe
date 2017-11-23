@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
@@ -48,14 +49,14 @@
 
     <ImageView
         android:id="@+id/btnBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_gravity="left|center_vertical"
-        android:layout_marginStart="@dimen/horizontal_margin"
+        android:layout_marginStart="8dp"
         android:background="@drawable/selectable_button_oval"
         android:clickable="true"
         android:scaleType="centerInside"
-        android:src="@drawable/picto_btn_back"
+        android:src="@drawable/picto_btn_close"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -63,10 +64,15 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="right|center_vertical"
-        android:layout_marginEnd="@dimen/horizontal_margin"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:enabled="false"
         android:gravity="end|center_vertical"
+        android:text="@string/action_create"
+        android:textAllCaps="true"
+        android:textColor="@color/color_new_chat_action_selector"
+        android:textSize="15dp"
         android:visibility="gone"
-        style="@style/Title.2.Blue"
+        app:customFont="ProximaNovaSoft-Bold.ttf"
         />
 
     <ImageView
@@ -74,7 +80,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="@dimen/horizontal_margin"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/selectable_button_oval"
         android:clickable="true"
         android:scaleType="centerInside"

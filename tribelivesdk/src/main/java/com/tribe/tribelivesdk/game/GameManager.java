@@ -9,6 +9,7 @@ import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -32,6 +33,11 @@ import rx.subscriptions.CompositeSubscription;
 
     return instance;
   }
+
+  public static final String[] playableGames = {
+      Game.GAME_SLICE_FRUIT, Game.GAME_DRAW, Game.GAME_SPEED_RACER, Game.GAME_CHALLENGE,
+      Game.GAME_INVADERS, Game.GAME_POST_IT
+  };
 
   // VARIABLES
   private List<Game> gameList;
@@ -77,7 +83,12 @@ import rx.subscriptions.CompositeSubscription;
 
   public void addGames(List<Game> games) {
     gameList.clear();
-    gameList.addAll(games);
+
+    if (games != null) {
+      for (Game game : games) {
+        if (Arrays.asList(playableGames).contains(game.getId())) gameList.add(game);
+      }
+    }
   }
 
   public void initSubscriptions() {

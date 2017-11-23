@@ -8,7 +8,6 @@ import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeAnswer;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeMediaConstraints;
-import com.tribe.tribelivesdk.model.TribeMediaStream;
 import com.tribe.tribelivesdk.model.TribeOffer;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -253,12 +252,9 @@ import static android.R.attr.id;
     jsonPut(obj, "isVideoEnabled", mediaConfiguration.isVideoEnabled());
     jsonPut(obj, "videoChangeReason", mediaConfiguration.getType());
     JSONArray games = new JSONArray();
-    games.put(Game.GAME_POST_IT);
-    games.put(Game.GAME_CHALLENGE);
-    games.put(Game.GAME_DRAW);
-    games.put(Game.GAME_SLICE_FRUIT);
-    games.put(Game.GAME_INVADERS);
-    games.put(Game.GAME_SPEED_RACER);
+    for (String str : GameManager.playableGames) {
+      games.put(str);
+    }
     jsonPut(obj, "canPlayGames", games);
     return obj;
   }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -14,6 +15,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.solera.defrag.AnimationHandler;
 import com.solera.defrag.TraversalAnimation;
 import com.solera.defrag.TraversingOperation;
@@ -21,17 +24,13 @@ import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
-import com.tribe.app.presentation.view.component.profile.ProfileView;
-import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
-import com.tribe.app.presentation.view.component.settings.SettingsFacebookAccountView;
-import com.tribe.app.presentation.view.component.settings.SettingsManageShortcutsView;
-import com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberView;
-import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
+import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.tribelivesdk.game.Game;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -62,9 +61,11 @@ public class NewGameActivity extends BaseActivity {
 
   // VIEWS
   private GamesStoreView viewGamesStore;
+  private GamesMembersView viewGamesMembers;
 
   // VARIABLES
   private boolean disableUI = false;
+  private Game selectedGame = null;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -100,8 +101,14 @@ public class NewGameActivity extends BaseActivity {
     }
 
     txtAction.setOnClickListener(v -> {
-      if (viewStack.getTopView() instanceof GamesStoreView) {
+      if (viewStack.getTopView() instanceof GamesMembersView) {
+        viewGamesMembers.create();
+      }
+    });
 
+    btnForward.setOnClickListener(v -> {
+      if (viewStack.getTopView() instanceof GamesStoreView) {
+        setupMembersView(null);
       }
     });
   }
@@ -177,35 +184,57 @@ public class NewGameActivity extends BaseActivity {
 
   private void setupMainView() {
     viewGamesStore = (GamesStoreView) viewStack.push(R.layout.view_game_store);
+
+    subscriptions.add(viewGamesStore.onGameClick().subscribe(game -> {
+      setupMembersView(game);
+    }));
+  }
+
+  private void setupMembersView(Game game) {
+    selectedGame = game;
+
+    viewGamesMembers = (GamesMembersView) viewStack.push(R.layout.view_game_members);
+
+    subscriptions.add(viewGamesMembers.onFinish().subscribe(s -> finish()));
+
+    subscriptions.add(
+        viewGamesMembers.onHasMembers().subscribe(aBoolean -> txtAction.setEnabled(aBoolean)));
   }
 
   private void computeTitle(boolean forward, View to) {
     if (to instanceof GamesStoreView) {
-      btnBack.setImageResource(R.drawable.picto_close);
-    } else {
-      btnBack.setImageResource(R.drawable.picto_back);
+      ViewCompat.setElevation(btnBack, 0);
+      btnBack.setImageResource(R.drawable.picto_btn_close);
+    } else if (to instanceof GamesMembersView) {
+      if (selectedGame == null) {
+        ViewCompat.setElevation(btnBack, 0);
+        btnBack.setImageResource(R.drawable.picto_btn_back);
+      } else {
+        Glide.with(this)
+            .load(selectedGame.getIcon())
+            .thumbnail(0.25f)
+            .bitmapTransform(new CropCircleTransformation(this))
+            .crossFade()
+            .diskCacheStrategy(DiskCacheStrategy.RESULT)
+            .into(btnBack);
+        ViewCompat.setElevation(btnBack, screenUtils.dpToPx(5));
+      }
     }
 
-    if (to instanceof ProfileView) {
-      setupTitle(getString(R.string.profile_title), forward);
+    if (to instanceof GamesStoreView) {
+      setupTitle(getString(R.string.new_game_title), forward);
       txtAction.setVisibility(GONE);
-    } else if (to instanceof SettingsProfileView) {
-      setupTitle(getString(R.string.settings_profile_title), forward);
+      btnForward.setVisibility(View.VISIBLE);
+    } else if (to instanceof GamesMembersView) {
+      if (selectedGame == null) {
+        setupTitle(getString(R.string.home_action_new_chat), forward);
+      } else {
+        setupTitle(selectedGame.getTitle(), forward);
+      }
+
+      btnForward.setVisibility(View.GONE);
       txtAction.setVisibility(View.VISIBLE);
-      txtAction.setText(getString(R.string.action_save));
-    } else if (to instanceof SettingsBlockedFriendsView) {
-      String title = EmojiParser.demojizedText(getString(R.string.profile_blocked_friends));
-      setupTitle(title, forward);
-      txtAction.setVisibility(GONE);
-    } else if (to instanceof SettingsManageShortcutsView) {
-      setupTitle(EmojiParser.demojizedText(getString(R.string.manage_friendships_title)), forward);
-      txtAction.setVisibility(View.GONE);
-    } else if (to instanceof SettingsPhoneNumberView) {
-      setupTitle(getString(R.string.profile_change_phone_title), forward);
-      txtAction.setVisibility(View.GONE);
-    } else if (to instanceof SettingsFacebookAccountView) {
-      setupTitle(getString(R.string.profile_facebook_account_title), forward);
-      txtAction.setVisibility(View.GONE);
+      txtAction.setText(getString(R.string.action_create));
     }
   }
 

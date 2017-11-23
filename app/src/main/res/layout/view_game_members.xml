@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.tribe.app.presentation.view.component.games.GamesMembersView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@null"
+    android:fillViewport="true"
+    tools:context=".presentation.view.activity.NewGameActivity"
+    >
+
+  <com.tribe.app.presentation.view.component.chat.ShortcutCompletionView
+      android:id="@+id/viewShortcutCompletion"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="15dp"
+      android:background="@null"
+      android:focusableInTouchMode="true"
+      android:imeOptions="actionDone"
+      android:inputType="text|textNoSuggestions|textMultiLine"
+      android:textColor="@android:color/black"
+      android:textSize="11dp"
+      />
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/divider_size"
+      android:background="@color/grey.light"
+      />
+
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerViewShortcuts"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@null"
+      android:scrollbars="vertical"
+      />
+
+</com.tribe.app.presentation.view.component.games.GamesMembersView>

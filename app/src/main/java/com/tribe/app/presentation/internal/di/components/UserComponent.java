@@ -24,6 +24,7 @@ import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionTokenView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
+import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
@@ -218,4 +219,6 @@ import dagger.Component;
   void inject(NewGameActivity newGameActivity);
 
   void inject(GamesStoreView gamesStoreView);
+
+  void inject(GamesMembersView gamesMembersView);
 }
