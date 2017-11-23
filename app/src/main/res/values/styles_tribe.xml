@@ -332,6 +332,11 @@
     <item name="customFont">ProximaNovaSoft-Regular.otf</item>
   </style>
 
+  <style name="Title.Medium.Black40" parent="@style/Title.1.Black40">
+    <item name="android:textSize">14dp</item>
+    <item name="customFont">ProximaNovaSoft-Medium.otf</item>
+  </style>
+
   <style name="BiggerTitle">
     <item name="android:textSize">17sp</item>
   </style>

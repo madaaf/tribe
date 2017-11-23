@@ -52,6 +52,7 @@ public class Navigator {
   public static int FROM_LIVE = 1001;
   public static int FROM_PROFILE = 1002;
   public static int FROM_CHAT = 1003;
+  public static int FROM_NEW_GAME = 1004;
   public static String SNAPCHAT = "com.snapchat.android";
   public static String INSTAGRAM = "com.instagram.android";
   public static String TWITTER = "com.twitter.android";
@@ -205,11 +206,11 @@ public class Navigator {
    * @param recipient recipient to go live with
    */
   public void navigateToLive(Activity activity, Recipient recipient,
-      @LiveActivity.Source String source, String section) {
+      @LiveActivity.Source String source, String section, String gameId) {
     if (activity != null) {
       Intent intent =
           LiveActivity.getCallingIntent(activity, recipient, source, TagManagerUtils.GESTURE_TAP,
-              section);
+              section, gameId);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       if (activity instanceof LiveActivity) {
         activity.startActivity(intent);
@@ -249,7 +250,7 @@ public class Navigator {
     if (activity != null) {
       Intent intent =
           LiveActivity.getCallingIntent(activity, recipient, source, TagManagerUtils.GESTURE_SWIPE,
-              section);
+              section, null);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(0, 0);
@@ -276,9 +277,10 @@ public class Navigator {
     }
   }
 
-  public void navigateToNewCall(Activity activity, @LiveActivity.Source String source) {
+  public void navigateToNewCall(Activity activity, @LiveActivity.Source String source,
+      String gameId) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, source);
+      Intent intent = LiveActivity.getCallingIntent(activity, source, gameId);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
@@ -287,7 +289,7 @@ public class Navigator {
   public void navigateToNewGame(Activity activity) {
     if (activity != null) {
       Intent intent = NewGameActivity.getCallingIntent(activity);
-      activity.startActivity(intent);
+      activity.startActivityForResult(intent, FROM_NEW_GAME);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
   }

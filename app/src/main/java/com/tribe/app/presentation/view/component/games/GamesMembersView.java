@@ -18,6 +18,7 @@ import butterknife.Unbinder;
 import com.tokenautocomplete.FilteredArrayAdapter;
 import com.tokenautocomplete.TokenCompleteTextView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -32,6 +33,7 @@ import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.adapter.NewChatAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerHeadersItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.NewChatLayoutManager;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.tribelivesdk.game.Game;
@@ -74,8 +76,9 @@ public class GamesMembersView extends LinearLayout
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Void> onFinish = PublishSubject.create();
+  private PublishSubject<Shortcut> onFinish = PublishSubject.create();
   private PublishSubject<Boolean> onHasMembers = PublishSubject.create();
+  private PublishSubject<Void> onCallRouletteSelected = PublishSubject.create();
 
   public GamesMembersView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -126,7 +129,8 @@ public class GamesMembersView extends LinearLayout
 
       @Override protected boolean keepObject(Shortcut shortcut, String mask) {
         mask = mask.toLowerCase();
-        return !selectedIds.contains(shortcut.getSingleFriend().getId()) &&
+        return shortcut.getSingleFriend() != null &&
+            !selectedIds.contains(shortcut.getSingleFriend().getId()) &&
             (StringUtils.isEmpty(mask) || shortcut.getDisplayName().toLowerCase().startsWith(mask));
       }
     };
@@ -172,18 +176,22 @@ public class GamesMembersView extends LinearLayout
         .map(view -> newChatAdapter.getItemAtPosition(
             recyclerViewShortcuts.getChildLayoutPosition(view)))
         .subscribe(shortcut -> {
-          shortcut.setSelected(!shortcut.isSelected());
-          newChatAdapter.update(shortcut);
-
-          if (shortcut.isSelected()) {
-            selectedIds.add(shortcut.getSingleFriend().getId());
-            viewShortcutCompletion.addObject(shortcut, shortcut.getDisplayName());
+          if (shortcut.getId().equals(Shortcut.ID_CALL_ROULETTE)) {
+            onCallRouletteSelected.onNext(null);
           } else {
-            selectedIds.remove(shortcut.getSingleFriend().getId());
-            viewShortcutCompletion.removeObject(shortcut);
-          }
+            shortcut.setSelected(!shortcut.isSelected());
+            newChatAdapter.update(shortcut);
 
-          refactorAction();
+            if (shortcut.isSelected()) {
+              selectedIds.add(shortcut.getSingleFriend().getId());
+              viewShortcutCompletion.addObject(shortcut, shortcut.getDisplayName());
+            } else {
+              selectedIds.remove(shortcut.getSingleFriend().getId());
+              viewShortcutCompletion.removeObject(shortcut);
+            }
+
+            refactorAction();
+          }
         }));
 
     subscriptions.add(viewShortcutCompletion.onFiltering().subscribe(s -> filter(s)));
@@ -206,26 +214,6 @@ public class GamesMembersView extends LinearLayout
     onHasMembers.onNext(count > 0);
   }
 
-  public void close() {
-    if (selectedIds.size() == 0) {
-      Bundle bundle = new Bundle();
-      bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.CANCEL);
-      bundle.putInt(TagManagerUtils.MEMBERS, selectedIds.size());
-      tagManager.trackEvent(TagManagerUtils.NewChat, bundle);
-    }
-
-    onFinish.onNext(null);
-  }
-
-  public void create() {
-    if (selectedIds.size() > 0) {
-      newChatPresenter.createShortcut(selectedIds.toArray(new String[selectedIds.size()]));
-    } else {
-      Toast.makeText(getContext().getApplicationContext(),
-          R.string.newchat_create_error_noone_selected, Toast.LENGTH_LONG).show();
-    }
-  }
-
   protected ApplicationComponent getApplicationComponent() {
     return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
   }
@@ -242,12 +230,29 @@ public class GamesMembersView extends LinearLayout
         .inject(this);
   }
 
+  /**
+   * PUBLIC
+   */
+
+  public void setGame(Game game) {
+    this.game = game;
+  }
+
+  public void create() {
+    if (selectedIds.size() > 0) {
+      newChatPresenter.createShortcut(selectedIds.toArray(new String[selectedIds.size()]));
+    } else {
+      Toast.makeText(getContext().getApplicationContext(),
+          R.string.newchat_create_error_noone_selected, Toast.LENGTH_LONG).show();
+    }
+  }
+
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
     Bundle bundle = new Bundle();
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.SAVE);
     bundle.putInt(TagManagerUtils.MEMBERS, selectedIds.size());
     tagManager.trackEvent(TagManagerUtils.NewChat, bundle);
-    onFinish.onNext(null);
+    onFinish.onNext(shortcut);
   }
 
   @Override public void onShortcutCreatedError() {
@@ -262,7 +267,7 @@ public class GamesMembersView extends LinearLayout
 
   }
 
-  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut) {
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
 
   }
 
@@ -272,6 +277,7 @@ public class GamesMembersView extends LinearLayout
 
   @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
     this.items.clear();
+    if (game != null) this.items.add(new Shortcut(Recipient.ID_CALL_ROULETTE));
     this.items.addAll(singleShortcutList);
     newChatAdapter.setItems(items);
     newChatAdapter.notifyDataSetChanged();
@@ -302,11 +308,15 @@ public class GamesMembersView extends LinearLayout
    * OBSERVABLES
    */
 
-  public Observable<Void> onFinish() {
+  public Observable<Shortcut> onFinish() {
     return onFinish;
   }
 
   public Observable<Boolean> onHasMembers() {
     return onHasMembers;
+  }
+
+  public Observable<Void> onCallRouletteSelected() {
+    return onCallRouletteSelected;
   }
 }

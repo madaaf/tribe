@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,11 +72,7 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     sd.setCornerRadii(radiusMatrix);
     ViewCompat.setBackground(vh.viewBackgroundBottom, sd);
 
-    vh.itemView.setOnClickListener(new View.OnClickListener() {
-      @Override public void onClick(View v) {
-        click.onNext(vh.itemView);
-      }
-    });
+    vh.cardView.setOnClickListener(v -> click.onNext(vh.itemView));
 
     return vh;
   }
@@ -146,6 +143,7 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     @BindView(R.id.txtBaseline) TextViewFont txtBaseline;
     @BindView(R.id.txtInfo) TextViewFont txtInfo;
     @BindView(R.id.txtPlayCount) TextViewFont txtPlayCount;
+    @BindView(R.id.cardView) CardView cardView;
 
     public GameViewHolder(View itemView) {
       super(itemView);

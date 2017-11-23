@@ -21,6 +21,7 @@ import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
@@ -749,9 +750,17 @@ public class LiveView extends FrameLayout {
     viewRinging.setLive(live);
     viewRinging.startRinging();
 
+    if (!StringUtils.isEmpty(live.getGameId())) {
+      viewControlsLive.startGame(gameManager.getGameById(live.getGameId()));
+    }
+
     tempSubscriptions.add(Observable.timer(3000, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> onShouldJoinRoom.onNext(null)));
+  }
+
+  public void startGame(String gameId) {
+    viewControlsLive.startGame(gameManager.getGameById(gameId));
   }
 
   public WebRTCRoom getWebRTCRoom() {
@@ -1216,6 +1225,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> onInviteMoreClick() {
     return viewLiveInvite.onClickBottom();
+  }
+
+  public Observable<Void> openGameStore() {
+    return viewControlsLive.openGameStore();
   }
 }
 

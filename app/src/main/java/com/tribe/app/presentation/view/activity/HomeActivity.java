@@ -467,7 +467,7 @@ public class HomeActivity extends BaseActivity
   private void onClickItem(Recipient recipient) {
     navigator.navigateToLive(this, recipient,
         recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-            : LiveActivity.SOURCE_GRID, recipient.getSectionTag());
+            : LiveActivity.SOURCE_GRID, recipient.getSectionTag(), null);
   }
 
   private void initRecyclerView() {
@@ -512,9 +512,8 @@ public class HomeActivity extends BaseActivity
 
               return Pair.create(labelType, recipient);
             }))
-        .filter(
-            pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) || pair.first.getTypeDef()
-                .equals(LabelType.BLOCK_HIDE))
+        .filter(pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) ||
+            pair.first.getTypeDef().equals(LabelType.BLOCK_HIDE))
         .flatMap(pair -> {
           if (pair.first.getTypeDef().equals(LabelType.CUSTOMIZE)) {
             return DialogFactory.showBottomSheetForCustomizeShortcut(this, (Shortcut) pair.second);
@@ -709,9 +708,8 @@ public class HomeActivity extends BaseActivity
   private void initTopBar() {
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> navigateToProfile()));
 
-    subscriptions.add(topBarContainer.onClickCallRoulette().subscribe(aVoid -> {
-      navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE);
-    }));
+    subscriptions.add(topBarContainer.onClickCallRoulette()
+        .subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, null)));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch()
         .doOnNext(open -> {
@@ -749,7 +747,7 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(searchView.onHangLive()
         .subscribe(
             recipient -> navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_SEARCH,
-                recipient.getSectionTag())));
+                recipient.getSectionTag(), null)));
 
     subscriptions.add(searchView.onInvite().subscribe(contact -> invite(contact)));
 
@@ -931,8 +929,8 @@ public class HomeActivity extends BaseActivity
               .subscribe());
       isBannedUser = true;
       topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
-    } else if (user.getRandom_banned_until() != null && !dateUtils.isBefore(
-        user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
+    } else if (user.getRandom_banned_until() != null &&
+        !dateUtils.isBefore(user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
 
       subscriptions.add(
           DialogFactory.dialog(this, getString(R.string.error_just_banned_temporary_title),
@@ -973,8 +971,8 @@ public class HomeActivity extends BaseActivity
     navigator.navigateToProfile(HomeActivity.this);
   }
 
-  private void navigateToNewCall(@LiveActivity.Source String source) {
-    HomeActivity.this.navigator.navigateToNewCall(this, source);
+  private void navigateToNewCall(@LiveActivity.Source String source, String gameId) {
+    HomeActivity.this.navigator.navigateToNewCall(this, source, gameId);
   }
 
   private void navigateToNewGame() {
@@ -1021,8 +1019,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
-        && !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) &&
+        !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(
@@ -1054,12 +1052,28 @@ public class HomeActivity extends BaseActivity
 
     if (requestCode == Navigator.FROM_PROFILE) {
       topBarContainer.reloadUserUI();
-    } else if (requestCode == Navigator.FROM_CHAT && data != null && data.hasExtra(
-        ChatActivity.EXTRA_SHORTCUT_ID)) {
+    } else if (requestCode == Navigator.FROM_CHAT &&
+        data != null &&
+        data.hasExtra(ChatActivity.EXTRA_SHORTCUT_ID)) {
       homeGridPresenter.updateShortcutLeaveOnlineUntil(
           data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
-    } else if (requestCode == Navigator.FROM_LIVE && data != null && data.hasExtra(
-        LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
+    } else if (requestCode == Navigator.FROM_NEW_GAME) {
+      String gameId = data.getStringExtra(NewGameActivity.GAME_ID);
+      boolean callRoulette = data.getBooleanExtra(NewGameActivity.CALL_ROULETTE, false);
+      Shortcut shortcut = (Shortcut) data.getSerializableExtra(NewGameActivity.SHORTCUT);
+      if (callRoulette) {
+        navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, gameId);
+      } else if (shortcut != null) {
+        if (!StringUtils.isEmpty(gameId)) {
+          navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
+              TagManagerUtils.SECTION_SHORTCUT, gameId);
+        } else {
+          navigateToChat(shortcut, TagManagerUtils.GESTURE_TAP);
+        }
+      }
+    } else if (requestCode == Navigator.FROM_LIVE &&
+        data != null &&
+        data.hasExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
       HashSet<String> userIds =
           (HashSet<String>) data.getSerializableExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT);
       homeGridPresenter.createShortcut(userIds.toArray(new String[userIds.size()]));
@@ -1174,10 +1188,10 @@ public class HomeActivity extends BaseActivity
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
         if (position < 0 || position > recipientList.size() - 1) return false;
-        return position == 0
-            || recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE
-            && recipientList.get(position).getHomeSectionType() != recipientList.get(position - 1)
-            .getHomeSectionType();
+        return position == 0 ||
+            recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE &&
+                recipientList.get(position).getHomeSectionType() !=
+                    recipientList.get(position - 1).getHomeSectionType();
       }
 
       @Override public int getSectionType(int position) {

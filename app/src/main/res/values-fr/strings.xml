@@ -443,8 +443,8 @@
 	<string name="profile_title">Profil</string>
 	<string name="profile_user_infos">Nom, avatar et plus :pencil2:</string>
 	<string name="profile_invisible_mode">Autoriser les personnes à m\'ajouter en ami :mag:</string>
-	<string name="profile_video_demo_title">Démo vidéo :vhs:</string>
-	<string name="profile_video_demo_subtitle">Apprenez Tribe en 30 secondes !</string>
+	<string name="profile_video_demo_title">Démo vidéo :video_camera:</string>
+	<string name="profile_video_demo_subtitle"></string>
 	<string name="profile_fullscreen_notifications_android">Notifications d\'appels en plein écran :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">Intégration au téléphone :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_title">Dégradation de l\'expérience :warning:</string>

@@ -53,6 +53,7 @@ import com.tribe.app.presentation.mvp.presenter.LivePresenter;
 import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.RoomMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
@@ -72,7 +73,6 @@ import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
-import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
@@ -82,7 +82,6 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
-import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
@@ -197,18 +196,18 @@ public class LiveActivity extends BaseActivity
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
 
   public static Live getLive(Recipient recipient, @Source String source) {
-    return computeLive(recipient, source);
+    return computeLive(recipient, source, null);
   }
 
   public static Intent getCallingIntent(Context context, Recipient recipient, @Source String source,
-      String gesture, String section) {
+      String gesture, String section, String gameId) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    intent.putExtra(EXTRA_LIVE, computeLive(recipient, source));
+    intent.putExtra(EXTRA_LIVE, computeLive(recipient, source, gameId));
     return intent;
   }
 
-  private static Live computeLive(Recipient recipient, @Source String source) {
+  private static Live computeLive(Recipient recipient, @Source String source, String gameId) {
     Live.Builder builder =
         new Live.Builder(Live.FRIEND_CALL).countdown(!recipient.isLive()).source(source);
 
@@ -219,6 +218,8 @@ public class LiveActivity extends BaseActivity
       Invite invite = (Invite) recipient;
       builder.room(invite.getRoom());
     }
+
+    if (!StringUtils.isEmpty(gameId)) builder.gameId(gameId);
 
     return builder.build();
   }
@@ -239,8 +240,6 @@ public class LiveActivity extends BaseActivity
             .intent(true)
             .source(source);
 
-    // Live live = new Live();
-
     intent.putExtra(EXTRA_LIVE, builder.build());
 
     return intent;
@@ -257,10 +256,10 @@ public class LiveActivity extends BaseActivity
     return intent;
   }
 
-  public static Intent getCallingIntent(Context context, @Source String source) {
+  public static Intent getCallingIntent(Context context, @Source String source, String gameId) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    Live live = new Live.Builder(Live.NEW_CALL).source(source).build();
+    Live live = new Live.Builder(Live.NEW_CALL).source(source).gameId(gameId).build();
 
     intent.putExtra(EXTRA_LIVE, live);
 
@@ -375,6 +374,14 @@ public class LiveActivity extends BaseActivity
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     super.onDestroy();
+  }
+
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == Navigator.FROM_NEW_GAME) {
+      String gameId = data.getStringExtra(NewGameActivity.GAME_ID);
+      viewLive.startGame(gameId);
+    }
   }
 
   private void initParams(Intent intent) {
@@ -875,6 +882,9 @@ public class LiveActivity extends BaseActivity
 
     subscriptions.add(viewLive.onChangeCallRouletteRoom().
         subscribe(aVoid -> reRollTheDiceFromCallRoulette(true)));
+
+    subscriptions.add(
+        viewLive.openGameStore().subscribe(aVoid -> navigator.navigateToNewGame(this)));
   }
 
   private void share() {

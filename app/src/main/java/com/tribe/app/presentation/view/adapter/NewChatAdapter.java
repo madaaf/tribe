@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.presentation.view.adapter.delegate.newchat.ShortcutCallRouletteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.newchat.ShortcutNewChatAdapterDelegate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class NewChatAdapter extends RecyclerView.Adapter {
   // DELEGATES
   private RxAdapterDelegatesManager delegatesManager;
   private ShortcutNewChatAdapterDelegate shortcutAdapterDelegate;
+  private ShortcutCallRouletteAdapterDelegate shortcutCallRouletteAdapterDelegate;
 
   // VARIABLES
   private List<Shortcut> items;
@@ -34,6 +36,9 @@ public class NewChatAdapter extends RecyclerView.Adapter {
 
     shortcutAdapterDelegate = new ShortcutNewChatAdapterDelegate(context);
     delegatesManager.addDelegate(shortcutAdapterDelegate);
+
+    shortcutCallRouletteAdapterDelegate = new ShortcutCallRouletteAdapterDelegate(context);
+    delegatesManager.addDelegate(shortcutCallRouletteAdapterDelegate);
 
     setHasStableIds(true);
   }
@@ -98,6 +103,7 @@ public class NewChatAdapter extends RecyclerView.Adapter {
    */
 
   public Observable<View> onClick() {
-    return shortcutAdapterDelegate.onClick();
+    return Observable.merge(shortcutAdapterDelegate.onClick(),
+        shortcutCallRouletteAdapterDelegate.onClick());
   }
 }

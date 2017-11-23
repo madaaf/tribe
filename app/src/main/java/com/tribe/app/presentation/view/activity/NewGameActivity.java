@@ -2,7 +2,7 @@ package com.tribe.app.presentation.view.activity;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -38,10 +38,16 @@ import static android.view.View.GONE;
 
 public class NewGameActivity extends BaseActivity {
 
+  public static final String SHORTCUT = "shortcut";
+  public static final String CALL_ROULETTE = "call_roulette";
+  public static final String GAME_ID = "game_id";
+  public static final String FROM_HOME = "from_home";
+
   private static final int DURATION = 200;
 
-  public static Intent getCallingIntent(Context context) {
-    Intent intent = new Intent(context, NewGameActivity.class);
+  public static Intent getCallingIntent(Activity activity) {
+    Intent intent = new Intent(activity, NewGameActivity.class);
+    intent.putExtra(FROM_HOME, activity instanceof HomeActivity);
     return intent;
   }
 
@@ -64,7 +70,7 @@ public class NewGameActivity extends BaseActivity {
   private GamesMembersView viewGamesMembers;
 
   // VARIABLES
-  private boolean disableUI = false;
+  private boolean disableUI = false, isFromHome = false;
   private Game selectedGame = null;
 
   // OBSERVABLES
@@ -74,6 +80,8 @@ public class NewGameActivity extends BaseActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_new_game);
+
+    isFromHome = getIntent().getBooleanExtra(FROM_HOME, false);
 
     unbinder = ButterKnife.bind(this);
 
@@ -111,6 +119,11 @@ public class NewGameActivity extends BaseActivity {
         setupMembersView(null);
       }
     });
+
+    if (!isFromHome) {
+      txtAction.setVisibility(View.GONE);
+      btnForward.setVisibility(View.GONE);
+    }
   }
 
   private void initDependencyInjector() {
@@ -186,7 +199,14 @@ public class NewGameActivity extends BaseActivity {
     viewGamesStore = (GamesStoreView) viewStack.push(R.layout.view_game_store);
 
     subscriptions.add(viewGamesStore.onGameClick().subscribe(game -> {
-      setupMembersView(game);
+      if (isFromHome) {
+        setupMembersView(game);
+      } else {
+        Intent intent = new Intent();
+        if (game != null) intent.putExtra(GAME_ID, game.getId());
+        setResult(RESULT_OK, intent);
+        finish();
+      }
     }));
   }
 
@@ -194,11 +214,30 @@ public class NewGameActivity extends BaseActivity {
     selectedGame = game;
 
     viewGamesMembers = (GamesMembersView) viewStack.push(R.layout.view_game_members);
+    viewGamesMembers.setGame(selectedGame);
 
-    subscriptions.add(viewGamesMembers.onFinish().subscribe(s -> finish()));
+    subscriptions.add(viewGamesMembers.onFinish().subscribe(shortcut -> {
+      if (shortcut == null) {
+        finish();
+      } else {
+        Intent intent = new Intent();
+        intent.putExtra(SHORTCUT, shortcut);
+        if (game != null) intent.putExtra(GAME_ID, selectedGame.getId());
+        setResult(RESULT_OK, intent);
+        finish();
+      }
+    }));
 
     subscriptions.add(
         viewGamesMembers.onHasMembers().subscribe(aBoolean -> txtAction.setEnabled(aBoolean)));
+
+    subscriptions.add(viewGamesMembers.onCallRouletteSelected().subscribe(aVoid -> {
+      Intent intent = new Intent();
+      intent.putExtra(CALL_ROULETTE, true);
+      intent.putExtra(GAME_ID, selectedGame.getId());
+      setResult(RESULT_OK, intent);
+      finish();
+    }));
   }
 
   private void computeTitle(boolean forward, View to) {

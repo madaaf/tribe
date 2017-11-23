@@ -60,6 +60,7 @@ public class LiveRingingView extends RelativeLayout {
   private List<View> views;
   private boolean ringing;
   private Live live;
+  private Shortcut shortcut;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -196,6 +197,7 @@ public class LiveRingingView extends RelativeLayout {
 
   private void setShortcut(Shortcut shortcut) {
     if (shortcut != null) {
+      this.shortcut = shortcut;
       String name = "";
 
       if (shortcut != null && shortcut.isSingle()) {
@@ -213,7 +215,6 @@ public class LiveRingingView extends RelativeLayout {
 
   private void setRoom(Room room) {
     String name = "";
-    Shortcut shortcut = room.getShortcut();
 
     int nbUsersWithoutMe = room.nbUsersTotalWithoutMe(currentUser.getId());
 

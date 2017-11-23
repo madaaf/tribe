@@ -922,7 +922,7 @@ public class ChatView extends ChatMVPView {
 
   @OnClick(R.id.videoCallBtn) void onClickVideoCall() {
     navigator.navigateToLive((Activity) context, recipient, LiveActivity.SOURCE_GRID,
-        TagManagerUtils.SECTION_SHORTCUT);
+        TagManagerUtils.SECTION_SHORTCUT, null);
   }
 
   private void sendEventEditGroupName() {

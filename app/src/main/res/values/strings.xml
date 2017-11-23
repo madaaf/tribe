@@ -443,8 +443,8 @@
 	<string name="profile_title">Profile</string>
 	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
 	<string name="profile_invisible_mode">Allow people to add me :mag:</string>
-	<string name="profile_video_demo_title">Video Demo :vhs:</string>
-	<string name="profile_video_demo_subtitle">Master Tribe in 30 seconds!</string>
+	<string name="profile_video_demo_title">Watch a quick demo :video_camera:</string>
+	<string name="profile_video_demo_subtitle"></string>
 	<string name="profile_fullscreen_notifications_android">Fullscreen call notifications :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">"Phone" integration :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience :warning:</string>

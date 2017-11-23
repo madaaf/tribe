@@ -22,6 +22,8 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.LabelType;
@@ -33,6 +35,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.adapter.GamesFiltersAdapter;
 import com.tribe.app.presentation.view.adapter.manager.GamesFiltersLayoutManager;
+import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -155,6 +158,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<View> onGameUIActive = PublishSubject.create();
   private PublishSubject<Boolean> onGameMenuOpened = PublishSubject.create();
   private PublishSubject<Game> onResetScores = PublishSubject.create();
+  private PublishSubject<Void> openGameStore = PublishSubject.create();
 
   private Subscription timerSubscription;
 
@@ -261,30 +265,6 @@ public class LiveControlsView extends FrameLayout {
 
   private void initGames() {
     gameManager = GameManager.getInstance(getContext());
-
-    //subscriptions.add(gamesAdapter.onClick()
-    //    .map(view -> {
-    //      Game game =
-    //          (Game) gamesAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view));
-    //      return new Pair<>(view, game);
-    //    })
-    //    .observeOn(AndroidSchedulers.mainThread())
-    //    .filter(viewGamePair -> {
-    //      if (!viewGamePair.second.isAvailable()) {
-    //        Toast.makeText(getContext().getApplicationContext(), R.string.live_mask_available_soon,
-    //            Toast.LENGTH_LONG).show();
-    //      }
-    //
-    //      return viewGamePair.second.isAvailable();
-    //    })
-    //    .doOnNext(pairViewGame -> {
-    //      gamesAdapter.updateSelected(pairViewGame.second);
-    //      gameManager.setCurrentGame(pairViewGame.second);
-    //      onStartGame.onNext(pairViewGame.second);
-    //    })
-    //    .delay(400, TimeUnit.MILLISECONDS)
-    //    .observeOn(AndroidSchedulers.mainThread())
-    //    .subscribe(pairViewGame -> setupCurrentGameView(pairViewGame.second, pairViewGame.first)));
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -364,8 +344,8 @@ public class LiveControlsView extends FrameLayout {
     filtersMenuOn = true;
 
     int toX =
-        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1)
-            + screenUtils.dpToPx(2.5f);
+        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1) +
+            screenUtils.dpToPx(2.5f);
     int toY = -screenUtils.dpToPx(65);
 
     layoutFilter.animate()
@@ -522,9 +502,8 @@ public class LiveControlsView extends FrameLayout {
             new OvershootInterpolator(OVERSHOOT_LIGHT)))
         .map(aVoid -> gameManager.getCurrentGame())
         .filter(game -> {
-          if (game.getCurrentMaster() != null && game.getCurrentMaster()
-              .getId()
-              .equals(user.getId())) {
+          if (game.getCurrentMaster() != null &&
+              game.getCurrentMaster().getId().equals(user.getId())) {
             return true;
           } else {
             Toast.makeText(getContext(), getContext().getString(R.string.game_update_forbidden,
@@ -548,10 +527,7 @@ public class LiveControlsView extends FrameLayout {
         .filter(labelType -> labelType.getTypeDef().equals(LabelType.GAME_PLAY_ANOTHER))
         .delay(1, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(labelType -> {
-          // TODO CHANGE
-          // showGames();
-        }));
+        .subscribe(labelType -> openGameStore.onNext(null)));
 
     layoutContainerParamLive.addView(currentGameView, params);
 
@@ -665,7 +641,7 @@ public class LiveControlsView extends FrameLayout {
   }
 
   @OnClick({ R.id.btnNewGameOff }) void clickNewGame() {
-    // TODO NEW GAMES
+    openGameStore.onNext(null);
   }
 
   @OnClick({ R.id.btnFilterOn, R.id.btnFilterOff }) void clickFilter() {
@@ -729,13 +705,25 @@ public class LiveControlsView extends FrameLayout {
     setupCurrentGameView(game, null);
   }
 
+  public void startGame(Game game) {
+    gameManager.setCurrentGame(game);
+    onStartGame.onNext(game);
+    subscriptions.add(Observable.timer(400, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(pairViewGame -> setupCurrentGameView(game, null)));
+  }
+
   public void setupCurrentGameView(Game game, View viewFrom) {
     if (currentGameView == null) {
       currentGameView = addGameToView(viewFrom);
-      // TODO LOAD BMP
-      //currentGameView.setImageBitmap(BitmapUtils.generateGameIconWithBorder(
-      //    BitmapUtils.bitmapFromResources(getResources(), game.getDrawableRes()),
-      //    screenUtils.dpToPx(10)));
+
+      Glide.with(getContext())
+          .load(game.getIcon())
+          .thumbnail(0.25f)
+          .bitmapTransform(new CropCircleTransformation(getContext()))
+          .crossFade()
+          .diskCacheStrategy(DiskCacheStrategy.RESULT)
+          .into(currentGameView);
     }
   }
 
@@ -841,5 +829,10 @@ public class LiveControlsView extends FrameLayout {
 
   public Observable<Game> onResetScores() {
     return onResetScores;
+  }
+
+  public Observable<Void> openGameStore() {
+    return openGameStore.debounce(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread());
   }
 }

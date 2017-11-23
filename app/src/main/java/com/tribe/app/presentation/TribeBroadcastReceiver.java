@@ -76,7 +76,7 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
         invite.setShortcut(shortcut);
         invite.setRoom(room);
         navigator.navigateToLive((Activity) context, invite,
-            LiveActivity.SOURCE_IN_APP_NOTIFICATION, null);
+            LiveActivity.SOURCE_IN_APP_NOTIFICATION, null, null);
       });
     }
 
