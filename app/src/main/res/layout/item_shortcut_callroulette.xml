@@ -15,26 +15,30 @@
       app:diceType="homeGrid"
       />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtName"
-      android:layout_width="wrap_content"
+  <LinearLayout
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_centerVertical="true"
       android:layout_marginStart="7.5dp"
       android:layout_toEndOf="@id/viewDice"
-      style="@style/Content.Three.Black"
-      />
+      android:orientation="vertical"
+      >
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_game_dice_title"
+        style="@style/Content.Three.Black"
+        />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtLabel"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_centerVertical="true"
-      android:layout_marginStart="7.5dp"
-      android:layout_toEndOf="@id/viewDice"
-      android:text="@string/new_game_dice_subtitle"
-      style="@style/Title.Medium.Black40"
-      />
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_game_dice_subtitle"
+        style="@style/Title.Medium.Black40"
+        />
+  </LinearLayout>
 
   <View
       android:layout_width="match_parent"

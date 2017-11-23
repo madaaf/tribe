@@ -557,6 +557,11 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(webRTCRoom.onJoined()
         .observeOn(AndroidSchedulers.mainThread())
         .doOnNext(tribeJoinRoom -> hasJoined = true)
+        .doOnNext(tribeJoinRoom -> {
+          if (!StringUtils.isEmpty(live.getGameId())) {
+            viewControlsLive.startGame(gameManager.getGameById(live.getGameId()));
+          }
+        })
         .subscribe(onJoined));
 
     tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().onBackpressureDrop().subscribe(onLeave));
@@ -750,13 +755,13 @@ public class LiveView extends FrameLayout {
     viewRinging.setLive(live);
     viewRinging.startRinging();
 
-    if (!StringUtils.isEmpty(live.getGameId())) {
-      viewControlsLive.startGame(gameManager.getGameById(live.getGameId()));
+    if (StringUtils.isEmpty(live.getGameId())) {
+      tempSubscriptions.add(Observable.timer(3000, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> onShouldJoinRoom.onNext(null)));
+    } else {
+      onShouldJoinRoom.onNext(null);
     }
-
-    tempSubscriptions.add(Observable.timer(3000, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> onShouldJoinRoom.onNext(null)));
   }
 
   public void startGame(String gameId) {
