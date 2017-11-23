@@ -14,8 +14,8 @@ import com.tribe.app.presentation.view.adapter.delegate.contact.FallbackAdapterD
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutChatActiveHomeAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutLiveHomeAdapterDelegate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -112,6 +112,8 @@ public class SearchAdapter extends RecyclerView.Adapter {
   }
 
   public void setItems(List<Object> items) {
+    if (items != null) items.removeAll(Collections.singleton(null));
+
     this.items.clear();
     this.items.addAll(items);
 
@@ -129,6 +131,8 @@ public class SearchAdapter extends RecyclerView.Adapter {
   }
 
   public void updateSearch(SearchResult searchResult, List<Object> contactList) {
+    if (searchResult == null) return;
+
     this.items.clear();
     this.items.add(searchResult);
 
