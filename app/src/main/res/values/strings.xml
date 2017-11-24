@@ -756,7 +756,7 @@
 	<string name="fallback_invitation_more">More</string>
 	
 	<!-- Unlock Roll the dice -->
-	<string name="unlock_roll_the_dice_title">"Roll the dice" to meet new people in group!</string>
+	<string name="unlock_roll_the_dice_title">"Roll the dice" to play with random players!</string>
 	<string name="unlock_roll_the_dice_description">Facebook is required to keep this place safe, warm and get matches based on common interests and friends.</string>
 	<string name="unlock_roll_the_dice_facebook_action">Unlock with Facebook</string>
 	<string name="unlock_roll_the_dice_locked">You need to be 13 years old\nor over to roll the dice.</string>
