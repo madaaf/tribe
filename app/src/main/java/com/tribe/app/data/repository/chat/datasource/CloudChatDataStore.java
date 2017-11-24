@@ -40,7 +40,7 @@ public class CloudChatDataStore implements ChatDataStore {
     String req =
         context.getString(R.string.messages_create, JsonUtils.arrayToJson(userIds), type, data,
             context.getString(R.string.messagefragment_info));
-    Timber.e("req : " + req);
+    Timber.i("req : " + req);
     return this.tribeApi.createMessage(req).doOnNext(messageRealm -> {
       RealmList<MessageRealm> list = new RealmList<>();
       list.add(messageRealm);
@@ -49,9 +49,11 @@ public class CloudChatDataStore implements ChatDataStore {
   }
 
   @Override public Observable<UserRealm> loadMessages(String[] userIds, String dateBefore) {
-    return this.tribeApi.getUserMessage(
+    String req =
         context.getString(R.string.messages_details, JsonUtils.arrayToJson(userIds), dateBefore,
-            context.getString(R.string.messagefragment_info)))
+            context.getString(R.string.messagefragment_info));
+    Timber.i("req : " + req);
+    return this.tribeApi.getUserMessage(req)
         .doOnNext(userRealm -> chatCache.putMessages(userRealm.getMessages(),
             JsonUtils.arrayToJson(userIds)))
         .doOnNext(messageRealm -> refactorMessages.call(userIds));

@@ -756,7 +756,7 @@
 	<string name="fallback_invitation_more">Autre</string>
 	
 	<!-- Unlock Roll the dice -->
-	<string name="unlock_roll_the_dice_title">"Lancez le dé" pour de nouvelles rencontres en groupe!</string>
+	<string name="unlock_roll_the_dice_title">"Lancez le dé" pour jouer avec de nouvelles personnes !</string>
 	<string name="unlock_roll_the_dice_description">Facebook est nécessaire afin de conserver cet endroit sûr, accueillant et vous permettre de faire des rencontres basées sur vos intérêts et vos amis en commun.</string>
 	<string name="unlock_roll_the_dice_facebook_action">Débloquer avec Facebook</string>
 	<string name="unlock_roll_the_dice_locked">Vous devez avoir 13 ans\nou plus pour lancer le dé!</string>

@@ -35,8 +35,13 @@ public class DateUtils {
   public String getUTCDateAsString() {
     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     final String utcTime = sdf.format(new Date());
-
     return utcTime;
+  }
+
+  public String getUTCDateForMessage() {
+    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    sdf2.setTimeZone(TimeZone.getTimeZone("UTC"));
+    return sdf2.format(new Date());
   }
 
   public Date stringDateToDate(String StrDate) {
