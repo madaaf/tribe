@@ -21,6 +21,9 @@
                   room {
                     ...RoomInfos
                   }
+                  inviter {
+                    ...UserInfos
+                  }
                 }
             }
         }
@@ -489,7 +492,7 @@
   </string>
 
   <string name="createInvite" translatable="false">
-    createInvite(roomId : \"%1$s\", userId : \"%2$s\")
+    createInvite%1$d : createInvite (roomId : \"%2$s\", userId : \"%3$s\")
   </string>
 
   <string name="removeInvite" translatable="false">
@@ -506,6 +509,9 @@
                 invites {
                   room {
                     ...RoomInfos
+                  }
+                  inviter {
+                    ...UserInfos
                   }
                 }
             }

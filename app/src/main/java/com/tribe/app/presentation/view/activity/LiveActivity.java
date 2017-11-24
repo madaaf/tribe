@@ -216,7 +216,9 @@ public class LiveActivity extends BaseActivity
       builder.shortcut(shortcut);
     } else if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;
-      builder.room(invite.getRoom());
+      Room room = invite.getRoom();
+      room.setInviter(invite.getInviter());
+      builder.room(room);
     }
 
     if (!StringUtils.isEmpty(gameId)) builder.gameId(gameId);
@@ -579,14 +581,14 @@ public class LiveActivity extends BaseActivity
     } else {
       String[] arrids =
           live.getRoom().getUserIds().toArray(new String[live.getRoom().getUserIds().size()]);
-      if (arrids.length > 0) {
+      if (arrids != null && arrids.length > 0) {
         livePresenter.createShortcut(arrids);
       }
     }
   }
 
   private void setChatView(Shortcut shortcut) {
-    if (shortcut.getMembers().isEmpty()) {
+    if (shortcut == null || shortcut.getMembers() == null || shortcut.getMembers().isEmpty()) {
       String source = (live != null) ? live.getSource() : "";
       Timber.e("try to set chat view, but members is empty " + source);
       return;
@@ -627,6 +629,12 @@ public class LiveActivity extends BaseActivity
     if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       subscriptions.add(live.onRoomUpdated().subscribe(room -> {
         if (room == null && chatView == null) return;
+
+        if (room != null && room.getLiveUsers() != null) {
+          for (User user : room.getLiveUsers()) {
+            if (!user.equals(getCurrentUser())) usersThatWereLive.add(user.getId());
+          }
+        }
 
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
@@ -679,15 +687,15 @@ public class LiveActivity extends BaseActivity
         if (live.fromRoom() &&
             (tribeJoinRoom.getSessionList() == null ||
                 tribeJoinRoom.getSessionList().size() == 0)) {
-
-          Toast.makeText(this,
-              getString(R.string.live_other_user_hung_up, room.getInitiator().getDisplayName()),
-              Toast.LENGTH_SHORT).show();
-          livePresenter.createInvite(room.getId(), room.getInitiator().getId());
-        } else if (!live.fromRoom()) {
-          for (String userId : live.getUserIdsOfShortcut()) {
-            livePresenter.createInvite(this.room.getId(), userId);
+          if (room.getInviter() != null) {
+            Toast.makeText(this, getString(R.string.live_other_user_hung_up, room.getInviter().getDisplayName()),
+                Toast.LENGTH_SHORT).show();
+            livePresenter.createInvite(room.getId(), room.getInviter().getId());
           }
+        } else if (!live.fromRoom()) {
+          List<String> userIds = live.getUserIdsOfShortcut();
+          livePresenter.createInvite(this.room.getId(),
+              userIds.toArray(new String[userIds.size()]));
         }
       }
     }).subscribe(tribeJoinRoom -> initRoomSubscription()));
@@ -1025,13 +1033,6 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onRoomUpdate(Room room) {
-    this.room.update(room, true);
-
-    if (this.room.getLiveUsers() != null) {
-      for (User user : this.room.getLiveUsers()) {
-        if (!user.equals(getCurrentUser())) usersThatWereLive.add(user.getId());
-      }
-    }
   }
 
   @Override public void onInvites(List<Invite> invites) {
@@ -1044,7 +1045,9 @@ public class LiveActivity extends BaseActivity
         String hashMembersInvite = ShortcutUtils.hashShortcut(getCurrentUser().getId(),
             usersInviteList.toArray(new String[usersInviteList.size()]));
 
-        if (hashMembersShortcut.equals(hashMembersInvite)) {
+        if (hashMembersShortcut.equals(hashMembersInvite) &&
+            invite.getRoom() != null &&
+            !invite.getRoom().isUserInitiator(getCurrentUser().getId())) {
           Live.Builder builder = new Live.Builder(Live.FRIEND_CALL).source(live.getSource());
           live = builder.room(invite.getRoom()).build();
           getRoomInfos();
@@ -1117,7 +1120,9 @@ public class LiveActivity extends BaseActivity
   }
 
   private void setExtraForShortcut() {
-    if (usersThatWereLive.size() > 0) {
+    if (usersThatWereLive.size() > 0 &&
+        !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
+        !room.acceptsRandom()) {
       returnIntent.putExtra(USER_IDS_FOR_NEW_SHORTCUT, usersThatWereLive);
       setResult(Activity.RESULT_OK, returnIntent);
     }
@@ -1184,6 +1189,7 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onRoomInfos(Room room) {
+    if (live.fromRoom()) room.setInviter(live.getRoom().getInviter());
     this.room = room;
 
     if (this.room.getShortcut() == null) {
@@ -1243,6 +1249,9 @@ public class LiveActivity extends BaseActivity
     if (viewLive != null) {
       viewLive.setCameraEnabled(false, TribePeerMediaConfiguration.APP_IN_BACKGROUND);
     }
+  }
+
+  @Override public void onBackPressed() {
   }
 }
 

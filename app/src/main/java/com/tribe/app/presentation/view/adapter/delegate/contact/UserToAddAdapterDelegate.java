@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -40,7 +41,12 @@ public class UserToAddAdapterDelegate extends RxAdapterDelegate<List<Object>> {
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     UserToAddViewHolder vh =
         new UserToAddViewHolder(layoutInflater.inflate(R.layout.item_user_to_add, parent, false));
-    vh.btnAdd.setOnClickListener(view -> onClick.onNext(vh.itemView));
+
+    vh.btnAdd.setOnClickListener(view -> {
+      onClick.onNext(vh.itemView);
+      vh.progressView.setVisibility(View.VISIBLE);
+      vh.btnAdd.setVisibility(View.INVISIBLE);
+    });
     return vh;
   }
 
@@ -64,11 +70,10 @@ public class UserToAddAdapterDelegate extends RxAdapterDelegate<List<Object>> {
     vh.txtUsername.setText(user.getUsername());
     vh.viewNewAvatar.load(user.getProfilePicture());
     vh.viewNew.setVisibility(user.isNew() ? View.VISIBLE : View.GONE);
-
     vh.btnAdd.setImageResource(user.isFriend() ? R.drawable.picto_added : R.drawable.picto_add);
   }
 
-  class UserToAddViewHolder extends RecyclerView.ViewHolder {
+  public class UserToAddViewHolder extends RecyclerView.ViewHolder {
 
     public UserToAddViewHolder(View itemView) {
       super(itemView);
@@ -84,6 +89,8 @@ public class UserToAddAdapterDelegate extends RxAdapterDelegate<List<Object>> {
     @BindView(R.id.viewNew) public View viewNew;
 
     @BindView(R.id.btnAdd) public ImageView btnAdd;
+
+    @BindView(R.id.progressView) public CircularProgressView progressView;
   }
 
   /**

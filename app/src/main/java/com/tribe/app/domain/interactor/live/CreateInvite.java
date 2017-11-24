@@ -13,7 +13,7 @@ import timber.log.Timber;
  */
 public class CreateInvite extends UseCase {
 
-  private String userId;
+  private String[] userIds;
   private String roomId;
   private LiveRepository liveRepository;
 
@@ -23,12 +23,12 @@ public class CreateInvite extends UseCase {
     this.liveRepository = liveRepository;
   }
 
-  public void setup(String roomId, String userId) {
+  public void setup(String roomId, String... userIds) {
     this.roomId = roomId;
-    this.userId = userId;
+    this.userIds = userIds;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.liveRepository.createInvite(roomId, userId);
+    return this.liveRepository.createInvite(roomId, userIds);
   }
 }

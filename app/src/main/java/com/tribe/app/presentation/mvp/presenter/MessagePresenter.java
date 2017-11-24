@@ -113,6 +113,7 @@ public class MessagePresenter implements Presenter {
       shortcutForUserIdsSubscriber.unsubscribe();
       shortcutForUserIdsSubscriber = null;
     }
+
     shortcutForUserIdsSubscriber = new ShortcutForUserIdsSubscriber(true, userIds);
     getShortcutForUserIds.setup(userIds);
     getShortcutForUserIds.execute(shortcutForUserIdsSubscriber);
@@ -425,7 +426,9 @@ public class MessagePresenter implements Presenter {
           }
         }
       }
+
       if (shortcutForUserIdsSubscriber != null) shortcutForUserIdsSubscriber.unsubscribe();
+      unsubscribe();
     }
   }
 }

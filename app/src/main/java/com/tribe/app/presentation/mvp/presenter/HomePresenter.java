@@ -9,6 +9,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.exception.DefaultErrorBundle;
 import com.tribe.app.domain.exception.ErrorBundle;
@@ -18,6 +19,7 @@ import com.tribe.app.domain.interactor.game.GetCloudGames;
 import com.tribe.app.domain.interactor.game.GetGamesData;
 import com.tribe.app.domain.interactor.live.CreateRoom;
 import com.tribe.app.domain.interactor.live.DeclineInvite;
+import com.tribe.app.domain.interactor.user.CreateShortcut;
 import com.tribe.app.domain.interactor.user.GetDiskContactInviteList;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskFBContactInviteList;
@@ -33,11 +35,13 @@ import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
+import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
+import timber.log.Timber;
 
 public class HomePresenter implements Presenter {
 
@@ -68,8 +72,10 @@ public class HomePresenter implements Presenter {
   private DeclineInvite declineInvite;
   private SendInvitations sendInvitations;
   private CreateRoom createRoom;
+  private CreateShortcut createShortcut;
 
   // SUBSCRIBERS
+  private CreateShortcutSubscriber createShortcutSubscriber;
   private RecipientListSubscriber diskRecipientListSubscriber;
   private RecipientListSubscriber cloudRecipientListSubscriber;
   private LookupContactsSubscriber lookupContactsSubscriber;
@@ -87,7 +93,8 @@ public class HomePresenter implements Presenter {
       GetDiskContactInviteList getDiskContactInviteList, DeclineInvite declineInvite,
       SendInvitations sendInvitations, CreateRoom createRoom,
       GetDiskFBContactInviteList getDiskFBContactInviteList, GetGamesData getGamesData,
-      GetCloudGames getGames) {
+      GetCloudGames getGames, CreateShortcut createShortcut) {
+     
     this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
@@ -105,6 +112,7 @@ public class HomePresenter implements Presenter {
     this.getGamesData = getGamesData;
     this.getGames = getGames;
     this.gameManager = GameManager.getInstance(context);
+    this.createShortcut = createShortcut;
   }
 
   @Override public void onViewDetached() {
@@ -121,6 +129,7 @@ public class HomePresenter implements Presenter {
     createRoom.unsubscribe();
     getGamesData.unsubscribe();
     getGames.unsubscribe();
+    createShortcut.unsubscribe();
     homeGridView = null;
   }
 
@@ -398,6 +407,35 @@ public class HomePresenter implements Presenter {
 
   public void createShortcut(String... userIds) {
     shortcutPresenter.createShortcut(userIds);
+  }
+
+  private class CreateShortcutSubscriber extends DefaultSubscriber<Shortcut> {
+    UserToAddAdapterDelegate.UserToAddViewHolder vh;
+
+    public CreateShortcutSubscriber(UserToAddAdapterDelegate.UserToAddViewHolder vh) {
+      this.vh = vh;
+    }
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e(e.toString());
+    }
+
+    @Override public void onNext(Shortcut shortcut) {
+      if (homeGridView != null) {
+        homeGridView.onShortcutCreatedFromSuggestedFriendSuccess(shortcut, vh);
+      }
+    }
+  }
+
+  public void createShortcutFromSuggestedFriend(UserToAddAdapterDelegate.UserToAddViewHolder vh,
+      String... userIds) {
+    if (createShortcutSubscriber != null) createShortcutSubscriber.unsubscribe();
+    createShortcutSubscriber = new CreateShortcutSubscriber(vh);
+    createShortcut.setup(userIds);
+    createShortcut.execute(createShortcutSubscriber);
   }
 
   public void muteShortcut(String shortcutId, boolean mute) {

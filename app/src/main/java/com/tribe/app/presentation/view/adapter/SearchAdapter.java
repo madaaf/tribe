@@ -10,10 +10,12 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.common.ShortcutAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.EmptyContactAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.contact.FallbackAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.SearchResultGridAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutChatActiveHomeAdapterDelegate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -69,6 +71,8 @@ public class SearchAdapter extends RecyclerView.Adapter {
     emptyContactAdapterDelegate = new EmptyContactAdapterDelegate(context);
     delegatesManager.addDelegate(EMPTY_VIEW_TYPE, emptyContactAdapterDelegate);
 
+    delegatesManager.setFallbackDelegate(new FallbackAdapterDelegate(context));
+
     setHasStableIds(true);
   }
 
@@ -111,6 +115,8 @@ public class SearchAdapter extends RecyclerView.Adapter {
   }
 
   public void setItems(List<Object> items) {
+    if (items != null) items.removeAll(Collections.singleton(null));
+
     this.items.clear();
     this.items.addAll(items);
 
@@ -128,6 +134,8 @@ public class SearchAdapter extends RecyclerView.Adapter {
   }
 
   public void updateSearch(SearchResult searchResult, List<Object> contactList) {
+    if (searchResult == null) return;
+
     this.items.clear();
     this.items.add(searchResult);
 

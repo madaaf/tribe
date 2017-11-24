@@ -7,6 +7,7 @@ import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
@@ -21,13 +22,15 @@ public class CloudLiveDataStore implements LiveDataStore {
   private final Context context;
   private LiveCache liveCache;
   private UserCache userCache;
+  private final AccessToken accessToken;
 
-  public CloudLiveDataStore(Context context, TribeApi tribeApi, LiveCache liveCache,
-      UserCache userCache) {
+  public CloudLiveDataStore(Context context, AccessToken accessToken, TribeApi tribeApi,
+      LiveCache liveCache, UserCache userCache) {
     this.context = context;
     this.tribeApi = tribeApi;
     this.liveCache = liveCache;
     this.userCache = userCache;
+    this.accessToken = accessToken;
   }
 
   @Override public Observable<Room> getRoom(Live live) {
@@ -98,10 +101,25 @@ public class CloudLiveDataStore implements LiveDataStore {
         .map(aBoolean -> null);
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String userId) {
-    final String request = context.getString(R.string.mutation,
-        context.getString(R.string.createInvite, roomId, userId));
+  @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {
+    StringBuffer buffer = new StringBuffer();
 
+    if (userIds.length > 0) {
+      int count = 0;
+      for (String id : userIds) {
+        if (!id.equals(accessToken.getUserId())) {
+          buffer.append(context.getString(R.string.createInvite, count, roomId, id));
+        }
+
+        count++;
+      }
+    }
+
+    String createInviteReqs = buffer.toString();
+
+    if (StringUtils.isEmpty(createInviteReqs)) return Observable.just(false);
+
+    final String request = context.getString(R.string.mutation, createInviteReqs);
     return this.tribeApi.createInvite(request);
   }
 

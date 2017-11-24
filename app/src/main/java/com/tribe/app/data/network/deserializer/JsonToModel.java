@@ -151,9 +151,8 @@ import timber.log.Timber;
                   (!roomJson.get("name").isJsonNull()) ? roomJson.get("name").getAsString() : null;
               room.setName(roomName);
 
-              Boolean accept_random =
-                  !roomJson.get("accept_random").isJsonNull() && roomJson.get("accept_random")
-                      .getAsBoolean();
+              Boolean accept_random = !roomJson.get("accept_random").isJsonNull() &&
+                  roomJson.get("accept_random").getAsBoolean();
               room.setAcceptRandom(accept_random);
 
               JsonArray live_users_json =

@@ -262,10 +262,15 @@ public class ChatView extends ChatMVPView {
   public void setChatId(Shortcut shortcut, Recipient recipient) {
     this.recipient = recipient;
     this.shortcut = shortcut;
-    this.members = shortcut.getMembers();
-
     recyclerView.setShortcut(shortcut);
-    avatarView.load(members.get(0).getProfilePicture());
+
+    if (shortcut.getMembers() != null) {
+      this.members = shortcut.getMembers();
+      avatarView.load(members.get(0).getProfilePicture());
+    } else {
+      Timber.e("MEMBERS NULL IN SHORTCUT");
+    }
+
     List<String> userIds = new ArrayList<>();
     for (User friend : members) {
       userIds.add(friend.getId());
