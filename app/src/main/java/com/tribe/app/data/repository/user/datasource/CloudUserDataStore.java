@@ -52,8 +52,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -168,7 +170,6 @@ public class CloudUserDataStore implements UserDataStore {
           (userRealm.getShortcuts() == null || userRealm.getShortcuts().size() == 0) ? ""
               : "(max : 10)";
     }
-
 
     return this.tribeApi.getUserInfos(context.getString(R.string.user_infos, countShortcutsToUpdate,
         context.getString(R.string.userfragment_infos),
@@ -468,10 +469,14 @@ public class CloudUserDataStore implements UserDataStore {
       StringBuilder resultLookupUserIds = new StringBuilder();
 
       if (lookupHolder != null) {
+        Set<String> userIdSet = new HashSet<>();
         for (LookupObject lookupObject : lookupHolder.getLookupObjectList()) {
-          if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
-            resultLookupUserIds.append("\"" + lookupObject.getUserId() + "\"");
-            resultLookupUserIds.append(",");
+          if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId()) && lookupObject.getHowManyFriends() == 0) {
+            if (!userIdSet.contains(lookupObject.getUserId())) {
+              resultLookupUserIds.append("\"" + lookupObject.getUserId() + "\"");
+              resultLookupUserIds.append(",");
+              userIdSet.add(lookupObject.getUserId());
+            }
           }
         }
       }
