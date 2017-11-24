@@ -142,17 +142,10 @@ public class HomeListAdapter extends RecyclerView.Adapter
   public Observable<View> onInvite() {
     return contactToInviteAdapterDelegate.onInvite();
   }
-
+  
   public void setItems(List<HomeAdapterInterface> list) {
     this.items.clear();
-
-    for (HomeAdapterInterface u : list) {
-      if (!items.contains(u)) {
-        items.add(u);
-      }
-    }
-
-    this.items.addAll(items);
+    this.items.addAll(list);
   }
 
   public HomeAdapterInterface getItemAtPosition(int position) {
