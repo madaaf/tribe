@@ -142,7 +142,7 @@ public class HomeListAdapter extends RecyclerView.Adapter
   public Observable<View> onInvite() {
     return contactToInviteAdapterDelegate.onInvite();
   }
-  
+
   public void setItems(List<HomeAdapterInterface> list) {
     this.items.clear();
     this.items.addAll(list);
