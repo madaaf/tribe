@@ -468,7 +468,7 @@
   </string>
 
   <string name="createInvite" translatable="false">
-    createInvite%1$d : createInvite (roomId : \"%2$s\", userId : \"%3$s\")
+    createInvite%1$s : createInvite (roomId : \"%2$s\", userId : \"%3$s\")
   </string>
 
   <string name="removeInvite" translatable="false">

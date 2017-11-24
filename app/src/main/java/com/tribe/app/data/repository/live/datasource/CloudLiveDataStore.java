@@ -13,6 +13,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import rx.Observable;
 
 public class CloudLiveDataStore implements LiveDataStore {
@@ -113,13 +114,11 @@ public class CloudLiveDataStore implements LiveDataStore {
     StringBuffer buffer = new StringBuffer();
 
     if (userIds.length > 0) {
-      int count = 0;
       for (String id : userIds) {
         if (!id.equals(accessToken.getUserId())) {
-          buffer.append(context.getString(R.string.createInvite, count, roomId, id));
+          buffer.append(context.getString(R.string.createInvite,
+              UUID.randomUUID().toString().replace("-", ""), roomId, id));
         }
-
-        count++;
       }
     }
 
