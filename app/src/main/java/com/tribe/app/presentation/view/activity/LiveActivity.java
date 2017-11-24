@@ -378,7 +378,7 @@ public class LiveActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == Navigator.FROM_NEW_GAME) {
+    if (requestCode == Navigator.FROM_NEW_GAME && data != null) {
       String gameId = data.getStringExtra(NewGameActivity.GAME_ID);
       viewLive.startGame(gameId);
     }
@@ -873,6 +873,8 @@ public class LiveActivity extends BaseActivity
 
     subscriptions.add(diceView.onNextDiceClick().
         subscribe(aVoid -> {
+          viewLive.stopGameDice();
+
           if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
             reRollTheDiceFromCallRoulette(false);
           } else {

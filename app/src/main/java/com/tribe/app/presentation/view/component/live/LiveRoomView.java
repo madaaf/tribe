@@ -346,9 +346,9 @@ public class LiveRoomView extends FrameLayout {
     mapViews.remove(userId);
     onViews.onNext(mapViews);
 
-    if (source != null
-        && source.equals(SOURCE_CALL_ROULETTE)
-        && constraintLayout.getChildCount() < 2) {
+    if (source != null &&
+        source.equals(SOURCE_CALL_ROULETTE) &&
+        constraintLayout.getChildCount() < 2) {
       diceView.setVisibility(VISIBLE);
       diceView.startDiceAnimation();
     }
@@ -356,12 +356,20 @@ public class LiveRoomView extends FrameLayout {
 
   public void setType(@RoomUIType int type) {
     if (this.type == type) return;
+
     this.type = type;
+
+    int translation = 0;
+
     if (type == TYPE_GRID) {
       setBackgroundColor(Color.BLACK);
     } else {
+      translation = (getMeasuredHeight() >> 1) - screenUtils.dpToPx(60);
       setBackgroundColor(Color.TRANSPARENT);
     }
+
+    diceView.translateDice(translation);
+
     refactorConstraintsOnChilds();
   }
 

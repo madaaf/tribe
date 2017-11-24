@@ -159,11 +159,10 @@ public class GameAliensAttackView extends GameViewWithEngine {
             animatorRotation.start();
 
             alienView.animate()
-                .translationY(screenUtils.getHeightPx() -
+                .translationY(getMeasuredHeight() -
                     params.topMargin -
                     alienView.getHeight() -
-                    viewBackground.getRoadBottomMargin() -
-                    screenUtils.dpToPx(30))
+                    viewBackground.getRoadBottomMargin())
                 .setDuration((long) (alienView.getSpeed() * 1000))
                 .setStartDelay(0)
                 .setInterpolator(new LinearInterpolator())

@@ -38,6 +38,7 @@ import com.tribe.app.presentation.view.adapter.manager.GamesFiltersLayoutManager
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.tribelivesdk.entity.GameFilter;
@@ -411,8 +412,6 @@ public class LiveControlsView extends FrameLayout {
     gamesMenuOn = false;
     onGameMenuOpened.onNext(gamesMenuOn);
 
-    onGameMenuOpened.onNext(false);
-
     if (shouldDisplayGameTutorialPopup) onGameUIActive.onNext(currentGameView);
 
     hideGameControls();
@@ -493,6 +492,17 @@ public class LiveControlsView extends FrameLayout {
             }
 
             showActiveGame(viewFrom != null);
+
+            Glide.with(getContext())
+                .load(gameManager.getCurrentGame().getIcon())
+                .thumbnail(0.25f)
+                .bitmapTransform(new CropCircleTransformation(getContext()),
+                    new RoundedCornersTransformation(getContext(),
+                        currentGameView.getMeasuredWidth() >> 1, screenUtils.dpToPx(4), "#FFFFFF",
+                        screenUtils.dpToPx(4)))
+                .crossFade()
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .into(currentGameView);
           }
         });
     currentGameView.setClickable(true);
@@ -716,14 +726,6 @@ public class LiveControlsView extends FrameLayout {
   public void setupCurrentGameView(Game game, View viewFrom) {
     if (currentGameView == null) {
       currentGameView = addGameToView(viewFrom);
-
-      Glide.with(getContext())
-          .load(game.getIcon())
-          .thumbnail(0.25f)
-          .bitmapTransform(new CropCircleTransformation(getContext()))
-          .crossFade()
-          .diskCacheStrategy(DiskCacheStrategy.RESULT)
-          .into(currentGameView);
     }
   }
 

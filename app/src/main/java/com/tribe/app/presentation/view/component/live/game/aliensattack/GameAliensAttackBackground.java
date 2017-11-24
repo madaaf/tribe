@@ -40,7 +40,7 @@ public class GameAliensAttackBackground extends FrameLayout {
   private static final int CLOUDS_COUNT = 4;
   private static final int STARS_COUNT = 5;
 
-  private static final int MARGIN_BOTTOM_CAR = 120;
+  private static final float MARGIN_BOTTOM_CAR = 86;
   private static final int MARGIN_LEFT_CAR = 50;
   private static final int MARGIN_LEFT_CLOUD = 30;
   private static final int Y_LIMIT_SKY = 220;
@@ -107,8 +107,6 @@ public class GameAliensAttackBackground extends FrameLayout {
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_game_aliens_attack_background, this, true);
     unbinder = ButterKnife.bind(this);
-
-    setBackgroundResource(R.drawable.game_aliens_attack_bg);
 
     positionCars();
     positionSky();
@@ -208,19 +206,22 @@ public class GameAliensAttackBackground extends FrameLayout {
   private void initAnimations() {
     subscriptionsAnimation.add(Observable.interval(0,
         DURATION_CARS * CARS_COUNT - ((int) (DURATION_CARS * 0.10f) * (CARS_COUNT - 1)),
-        TimeUnit.MILLISECONDS).onBackpressureDrop().observeOn(AndroidSchedulers.mainThread()).subscribe(aLong -> {
-      for (int i = 0; i < CARS_COUNT; i++) {
-        ImageView car = viewsCar.get(i);
-        car.clearAnimation();
-        car.setTranslationX(0);
-        car.animate()
-            .translationX(screenUtils.getWidthPx() + marginLeftCar)
-            .setDuration(DURATION_CARS)
-            .setStartDelay(i * (int) (DURATION_CARS * 0.90f))
-            .setInterpolator(new LinearInterpolator())
-            .start();
-      }
-    }));
+        TimeUnit.MILLISECONDS)
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          for (int i = 0; i < CARS_COUNT; i++) {
+            ImageView car = viewsCar.get(i);
+            car.clearAnimation();
+            car.setTranslationX(0);
+            car.animate()
+                .translationX(screenUtils.getWidthPx() + marginLeftCar)
+                .setDuration(DURATION_CARS)
+                .setStartDelay(i * (int) (DURATION_CARS * 0.90f))
+                .setInterpolator(new LinearInterpolator())
+                .start();
+          }
+        }));
 
     for (int i = 0; i < CLOUDS_COUNT; i++) {
       animateCloud(viewsCloud.get(i));

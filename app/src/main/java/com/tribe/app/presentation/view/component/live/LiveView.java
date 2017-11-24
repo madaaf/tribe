@@ -290,10 +290,9 @@ public class LiveView extends FrameLayout {
       Timber.d("dispose !isJump");
       persistentSubscriptions.clear();
       viewLocalLive.dispose();
+      gameManager.disposeLive();
+      if (viewGameManager != null) viewGameManager.dispose();
     }
-
-    gameManager.disposeLive();
-    if (viewGameManager != null) viewGameManager.dispose();
   }
 
   public void dispose(boolean isJump) {
@@ -622,7 +621,11 @@ public class LiveView extends FrameLayout {
               viewRoom.getLiveRowViewFromId(remotePeer.getSession().getUserId()));
 
           if (shouldLeave()) {
-            onLeave.onNext(null);
+            if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+              onLeave.onNext(null);
+            } else {
+              stopGame();
+            }
           }
 
           live.getRoom().userLeftWebRTC(remotePeer.getSession().getUserId());
@@ -768,6 +771,10 @@ public class LiveView extends FrameLayout {
     viewControlsLive.startGame(gameManager.getGameById(gameId));
   }
 
+  public void stopGameDice() {
+    stopGame();
+  }
+
   public WebRTCRoom getWebRTCRoom() {
     return webRTCRoom;
   }
@@ -788,9 +795,7 @@ public class LiveView extends FrameLayout {
   }
 
   public boolean shouldLeave() {
-    return liveRowViewMap.size() == 0 &&
-        live != null &&
-        !live.getSource().equals(SOURCE_CALL_ROULETTE);
+    return liveRowViewMap.size() == 0 && live != null;
   }
 
   public @LiveActivity.Source String getSource() {

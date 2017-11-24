@@ -45,7 +45,6 @@
         />
   </FrameLayout>
 
-
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtLabel"
       android:layout_width="wrap_content"

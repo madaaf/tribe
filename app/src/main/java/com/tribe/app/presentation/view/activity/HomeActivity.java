@@ -1057,7 +1057,7 @@ public class HomeActivity extends BaseActivity
         data.hasExtra(ChatActivity.EXTRA_SHORTCUT_ID)) {
       homeGridPresenter.updateShortcutLeaveOnlineUntil(
           data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
-    } else if (requestCode == Navigator.FROM_NEW_GAME) {
+    } else if (requestCode == Navigator.FROM_NEW_GAME && data != null) {
       String gameId = data.getStringExtra(NewGameActivity.GAME_ID);
       boolean callRoulette = data.getBooleanExtra(NewGameActivity.CALL_ROULETTE, false);
       Shortcut shortcut = (Shortcut) data.getSerializableExtra(NewGameActivity.SHORTCUT);

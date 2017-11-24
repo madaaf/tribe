@@ -232,6 +232,7 @@ public class GameManagerView extends FrameLayout {
     subscriptionsGame.clear();
     if (currentGameView != null) {
       currentGameView.stop();
+      removeView(currentGameView);
       currentGameView = null;
     }
   }

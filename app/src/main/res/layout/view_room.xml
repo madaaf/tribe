@@ -13,41 +13,37 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
-  <FrameLayout
+
+  <android.support.constraint.ConstraintLayout
+      android:id="@+id/layoutConstraint"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:background="@null"
+      android:orientation="vertical"
       >
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/layoutConstraint"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@null"
-        android:orientation="vertical"
-        >
 
-      <com.tribe.app.presentation.view.component.live.LiveLocalView
-          android:id="@+id/viewLocalLive"
-          android:layout_width="0dp"
-          android:layout_height="0dp"
-          android:clickable="true"
-          app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toTopOf="parent"
-          />
-
-
-    </android.support.constraint.ConstraintLayout>
-
-    <com.tribe.app.presentation.view.widget.DiceView
-        android:id="@+id/diceLayoutRoomView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:visibility="gone"
-        app:diceType="roomView"
+    <com.tribe.app.presentation.view.component.live.LiveLocalView
+        android:id="@+id/viewLocalLive"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         />
-  </FrameLayout>
+
+
+  </android.support.constraint.ConstraintLayout>
+
+  <com.tribe.app.presentation.view.widget.DiceView
+      android:id="@+id/diceLayoutRoomView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:gravity="center"
+      android:visibility="gone"
+      app:diceType="roomView"
+      />
 
 </merge>
