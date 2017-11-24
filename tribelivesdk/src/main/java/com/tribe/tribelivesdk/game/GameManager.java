@@ -86,7 +86,9 @@ import rx.subscriptions.CompositeSubscription;
 
     if (games != null) {
       for (Game game : games) {
-        if (Arrays.asList(playableGames).contains(game.getId())) gameList.add(game);
+        if (Arrays.asList(playableGames).contains(game.getId())) {
+          gameList.add(game);
+        }
       }
     }
   }

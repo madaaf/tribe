@@ -3,6 +3,9 @@ package com.tribe.app.data.realm.mapper;
 import android.content.Context;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameChallenge;
+import com.tribe.tribelivesdk.game.GameDraw;
+import com.tribe.tribelivesdk.game.GamePostIt;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +36,16 @@ import javax.inject.Singleton;
     Game game = null;
 
     if (gameRealm != null) {
-      game = new Game(context, gameRealm.getId());
+      if (gameRealm.getId().equals(Game.GAME_DRAW)) {
+        game = new GameDraw(context, gameRealm.getId());
+      } else if (gameRealm.getId().equals(Game.GAME_CHALLENGE)) {
+        game = new GameChallenge(context, gameRealm.getId());
+      } else if (gameRealm.getId().equals(Game.GAME_POST_IT)) {
+        game = new GamePostIt(context, gameRealm.getId());
+      } else {
+        game = new Game(context, gameRealm.getId());
+      }
+
       game.set__typename(gameRealm.get__typename());
       game.setBanner(gameRealm.getBanner());
       game.setTitle(gameRealm.getTitle());
