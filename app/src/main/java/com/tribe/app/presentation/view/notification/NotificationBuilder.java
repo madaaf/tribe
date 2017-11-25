@@ -239,15 +239,15 @@ import javax.inject.Singleton;
   }
 
   private Class getClassFromPayload(NotificationPayload payload) {
-    if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
-        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)
+    if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)
         || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
       return HomeActivity.class;
     } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
         || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)
         || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
       return LiveActivity.class;
-    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_MESSAGE)) {
+    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_MESSAGE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)) {
       return ChatActivity.class;
     }
 
