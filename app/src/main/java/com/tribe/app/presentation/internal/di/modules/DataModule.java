@@ -34,10 +34,9 @@ import com.tribe.app.presentation.utils.preferences.Walkthrough;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import dagger.Module;
 import dagger.Provides;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -47,11 +46,22 @@ import static android.content.Context.MODE_PRIVATE;
  */
 @Module public class DataModule {
 
-  @Provides @Singleton SharedPreferences provideSharedPreferences(Context context) {
+  @Provides @Singleton SharedPreferences provideTempSharedPreferences(Context context) {
     return context.getSharedPreferences("TRIBE", MODE_PRIVATE);
   }
 
-  @Provides @Singleton RxSharedPreferences provideRxSharedPreferences(SharedPreferences prefs) {
+  @Provides @Singleton @Named("persistentPreferences")
+  SharedPreferences providePersistentSharedPreferences(Context context) {
+    return context.getSharedPreferences("PERSISTENT_TRIBE", MODE_PRIVATE);
+  }
+
+  @Provides @Singleton RxSharedPreferences provideTempRxSharedPreferences(SharedPreferences prefs) {
+    return RxSharedPreferences.create(prefs);
+  }
+
+  @Provides @Singleton @Named("persistentRxPreferences")
+  RxSharedPreferences providePersistentRxSharedPreferences(
+      @Named("persistentPreferences") SharedPreferences prefs) {
     return RxSharedPreferences.create(prefs);
   }
 
@@ -128,8 +138,12 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getBoolean(PreferencesUtils.DEBUG_MODE, false);
   }
 
+  // We add the previous preferences, in case the user has already seen the
+  // walkthrough with the previous preferences
   @Provides @Singleton @Walkthrough Preference<Boolean> provideWalkthrough(
-      RxSharedPreferences prefs) {
+      @Named("persistentRxPreferences") RxSharedPreferences prefs, RxSharedPreferences oldPrefs) {
+    prefs.getBoolean(PreferencesUtils.WALKTHROUGH, false)
+        .set(oldPrefs.getBoolean(PreferencesUtils.WALKTHROUGH, false).get());
     return prefs.getBoolean(PreferencesUtils.WALKTHROUGH, false);
   }
 

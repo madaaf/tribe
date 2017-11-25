@@ -358,6 +358,8 @@ public interface ApplicationComponent {
 
   SharedPreferences sharedPreferences();
 
+  @Named("persistentPreferences") SharedPreferences persistentSharedPreferences();
+
   BadgeRealm badgeRealm();
 
   FileUtils fileUtils();
