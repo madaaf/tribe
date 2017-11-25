@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.live;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -79,7 +80,7 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.layoutFilter) ViewGroup layoutFilter;
 
-  @BindView(R.id.btnFilterOn) ImageView btnFilterOn;
+  @Nullable @BindView(R.id.btnFilterOn) ImageView btnFilterOn;
 
   @BindView(R.id.btnFilterOff) ImageView btnFilterOff;
 
