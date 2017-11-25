@@ -226,18 +226,23 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForRecipient(Context context, Recipient recipient) {
     List<LabelType> moreTypeList = new ArrayList<>();
 
-    if (recipient instanceof Shortcut) {
-      Shortcut shortcut = (Shortcut) recipient;
+    Shortcut shortcut = null;
 
+    if (recipient instanceof Shortcut) {
+      shortcut = (Shortcut) recipient;
+    } else if (recipient instanceof Invite) {
+      Invite invite = (Invite) recipient;
+      shortcut = invite.getShortcut();
+      moreTypeList.add(
+          new LabelType(context.getString(R.string.grid_menu_invite_decline), LabelType.DECLINE));
+    }
+
+    if (shortcut != null) {
       if (!shortcut.isSingle()) {
         moreTypeList.add(new LabelType(
             EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_customize)),
             LabelType.CUSTOMIZE));
       }
-
-/*      moreTypeList.add(new LabelType(
-          EmojiParser.demojizedText(context.getString(R.string.home_block_group_shortcut_title)),
-          LabelType.BLOCK_GROUP));*/
 
       if (!shortcut.isMute()) {
         moreTypeList.add(new LabelType(
@@ -250,17 +255,12 @@ public final class DialogFactory {
       }
 
       moreTypeList.add(new LabelType(
-          context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()),
+          EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_hide)),
           LabelType.HIDE));
 
-      // if (shortcut.isSingle()) {
-      if (true) {
-        moreTypeList.add(new LabelType(context.getString(R.string.home_block_shortcut_validate),
-            LabelType.BLOCK_HIDE));
-      }
-    } else if (recipient instanceof Invite) {
-      moreTypeList.add(
-          new LabelType(context.getString(R.string.grid_menu_invite_decline), LabelType.DECLINE));
+      moreTypeList.add(new LabelType(EmojiParser.demojizedText(context.getString(
+          shortcut.isSingle() ? R.string.home_menu_shortcut_block
+              : R.string.home_menu_shortcut_block_group)), LabelType.BLOCK_HIDE));
     }
 
     return moreTypeList;
@@ -353,13 +353,11 @@ public final class DialogFactory {
     return gameLabels;
   }
 
-  public static Observable<LabelType> showBottomSheetForCustomizeShortcut(Context context,
-      Shortcut shortcut) {
-    return createBottomSheet(context, generateLabelsForCustomizeShortcut(context, shortcut));
+  public static Observable<LabelType> showBottomSheetForCustomizeShortcut(Context context) {
+    return createBottomSheet(context, generateLabelsForCustomizeShortcut(context));
   }
 
-  private static List<LabelType> generateLabelsForCustomizeShortcut(Context context,
-      Shortcut shortcut) {
+  private static List<LabelType> generateLabelsForCustomizeShortcut(Context context) {
     List<LabelType> moreTypeList = new ArrayList<>();
 
     moreTypeList.add(new LabelType(

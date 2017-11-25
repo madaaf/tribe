@@ -883,7 +883,7 @@ public class ChatView extends ChatMVPView {
   @OnClick(R.id.txtTitle) void onClickTitle() {
     if (members.size() < 2) return;
 
-    subscriptions.add(DialogFactory.showBottomSheetForCustomizeShortcut(getContext(), shortcut)
+    subscriptions.add(DialogFactory.showBottomSheetForCustomizeShortcut(getContext())
         .flatMap(labelType -> {
           if (labelType != null) {
             if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {

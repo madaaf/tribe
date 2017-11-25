@@ -61,6 +61,7 @@ import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.Triplet;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -506,59 +507,81 @@ public class HomeActivity extends BaseActivity
             recyclerViewFriends.getChildLayoutPosition(view)))
         .flatMap(item -> DialogFactory.showBottomSheetForRecipient(this, (Recipient) item),
             ((recipient, labelType) -> {
+              Shortcut shortcut = null;
+
+              if (recipient instanceof Shortcut) {
+                shortcut = (Shortcut) recipient;
+              } else if (recipient instanceof Invite) {
+                Invite invite = (Invite) recipient;
+                shortcut = invite.getShortcut();
+              }
+
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE)) {
-                  Shortcut shortcut = (Shortcut) recipient;
-                  homeGridPresenter.updateShortcutStatus(shortcut.getId(), ShortcutRealm.HIDDEN);
-                } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
-                  Shortcut shortcut = (Shortcut) recipient;
-                  shortcut.setMute(true);
-                  homeGridPresenter.muteShortcut(shortcut.getId(), true);
-                } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
-                  Shortcut shortcut = (Shortcut) recipient;
-                  shortcut.setMute(false);
-                  homeGridPresenter.muteShortcut(shortcut.getId(), false);
-                } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
+                if (shortcut != null) {
+                  if (labelType.getTypeDef().equals(LabelType.HIDE)) {
+                    homeGridPresenter.updateShortcutStatus(shortcut.getId(), ShortcutRealm.HIDDEN);
+                  } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
+                    shortcut.setMute(true);
+                    homeGridPresenter.muteShortcut(shortcut.getId(), true);
+                  } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
+                    shortcut.setMute(false);
+                    homeGridPresenter.muteShortcut(shortcut.getId(), false);
+                  }
+                }
+
+                if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
                   Invite invite = (Invite) recipient;
                   homeGridPresenter.declineInvite(invite.getId());
                 }
               }
 
-              return Pair.create(labelType, recipient);
+              return new Triplet<LabelType, Shortcut, HomeAdapterInterface>(labelType, shortcut,
+                  recipient);
             }))
         .filter(pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) ||
             pair.first.getTypeDef().equals(LabelType.BLOCK_HIDE))
         .flatMap(pair -> {
           if (pair.first.getTypeDef().equals(LabelType.CUSTOMIZE)) {
-            return DialogFactory.showBottomSheetForCustomizeShortcut(this, (Shortcut) pair.second);
+            return DialogFactory.showBottomSheetForCustomizeShortcut(this);
           } else {
-            if (((Shortcut) pair.second).isSingle()) {
+            if (pair.second != null && pair.second.isSingle()) {
               subscriptions.add(DialogFactory.dialog(this,
                   getString(R.string.home_block_shortcut_title, pair.second.getDisplayName()),
                   getString(R.string.home_block_shortcut_message),
                   getString(R.string.home_block_shortcut_validate),
                   getString(R.string.action_cancel))
                   .filter(aBoolean -> aBoolean)
-                  .subscribe(aBoolean -> homeGridPresenter.updateShortcutStatus(pair.second.getId(),
-                      ShortcutRealm.BLOCKED)));
-            } else {
+                  .subscribe(aBoolean -> {
+                    homeGridPresenter.updateShortcutStatus(pair.second.getId(),
+                        ShortcutRealm.BLOCKED);
+                    if (pair.third instanceof Invite) {
+                      Invite invite = (Invite) pair.third;
+                      homeGridPresenter.declineInvite(invite.getId());
+                    }
+                  }));
+            } else if (pair.second != null) {
               subscriptions.add(
                   DialogFactory.dialog(this, getString(R.string.home_block_group_shortcut_title),
                       getString(R.string.home_block_group_shortcut_message),
                       getString(R.string.home_block_group_shortcut_validate),
                       getString(R.string.action_cancel))
                       .filter(aBoolean -> aBoolean)
-                      .subscribe(
-                          aBoolean -> homeGridPresenter.updateShortcutStatus(pair.second.getId(),
-                              ShortcutRealm.BLOCKED)));
+                      .subscribe(aBoolean -> {
+                        homeGridPresenter.updateShortcutStatus(pair.second.getId(),
+                            ShortcutRealm.BLOCKED);
+                        if (pair.third instanceof Invite) {
+                          Invite invite = (Invite) pair.third;
+                          homeGridPresenter.declineInvite(invite.getId());
+                        }
+                      }));
             }
 
             return Observable.empty();
           }
         }, (pair, labelType) -> {
-          Shortcut shortcut = (Shortcut) pair.second;
+          Shortcut shortcut = pair.second;
 
-          if (labelType != null) {
+          if (labelType != null && shortcut != null) {
             if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
               subscriptions.add(
                   DialogFactory.inputDialog(this, getString(R.string.shortcut_update_name_title),

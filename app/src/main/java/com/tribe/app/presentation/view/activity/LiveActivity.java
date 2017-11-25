@@ -716,7 +716,7 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.onEdit()
         .filter(aVoid -> !StringUtils.isEmpty(live.getShortcutId()))
         .flatMap(
-            view -> DialogFactory.showBottomSheetForCustomizeShortcut(this, live.getShortcut()),
+            view -> DialogFactory.showBottomSheetForCustomizeShortcut(this),
             (pair, labelType) -> {
               if (labelType != null) {
                 if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {

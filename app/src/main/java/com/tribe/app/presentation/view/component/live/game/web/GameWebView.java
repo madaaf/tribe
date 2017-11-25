@@ -20,6 +20,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
@@ -214,10 +215,10 @@ public class GameWebView extends GameViewWithEngine {
       int delay, LabelListener blockToCall, LabelListener completionListener) {
     Timber.d("changeMessageStatus");
     if (view == txtRestart && isVisible) {
-      executeJavascript("Tribe.displayRestart(\"" +
-          escapeJavascript(getResources().getString(
-              StringUtils.stringWithPrefix(getContext(), wordingPrefix, "pending_instructions"))) +
-          "\");");
+      String restartText = ((TextView) view).getText().toString();
+      if (!StringUtils.isEmpty(restartText)) {
+        executeJavascript("Tribe.displayRestart(\"" + escapeJavascript(restartText) + "\");");
+      }
     }
 
     if (blockToCall != null) blockToCall.call();

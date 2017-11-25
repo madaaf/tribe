@@ -392,7 +392,21 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void playGame() {
     Timber.d("playGame");
-    gameEngine.start();
+
+    if (gameEngine != null) {
+      gameEngine.start();
+
+      if (gameEngine.mapPlayerStatus.size() <= 1) {
+        if (txtRestart != null) {
+          txtRestart.setText(
+              StringUtils.stringWithPrefix(getContext(), wordingPrefix, "waiting_instructions"));
+          changeMessageStatus(txtRestart, true, true, DURATION, 0, null, null);
+        }
+      } else {
+        txtRestart.setText(
+            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "pending_instructions"));
+      }
+    }
   }
 
   private void listenMessages() {
