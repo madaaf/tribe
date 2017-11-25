@@ -706,6 +706,7 @@
 	<string name="game_aliens_attack_you_lost">TU AS PERDU</string>
 	<string name="game_aliens_attack_someone_lost">%1$s A PERDU !</string>
 	<string name="game_aliens_attack_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
+	<string name="game_aliens_attack_waiting_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE</string>
 	<string name="game_bird_rush">Bird Rush!</string>
 	<string name="game_bird_rush_title">BIRD\nRUSH</string>
 	<string name="game_bird_rush_lets_go">TAP, TAP, TAP POUR VOLER !</string>
@@ -714,12 +715,14 @@
 	<string name="game_bird_rush_you_lost">TU AS PERDU</string>
 	<string name="game_bird_rush_someone_lost">%1$s A PERDU !</string>
 	<string name="game_bird_rush_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
+	<string name="game_bird_rush_waiting_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE</string>
 	<string name="game_webv1_lets_go">C\'EST PARTI !</string>
 	<string name="game_webv1_you_won">TU AS GAGNÉ !</string>
 	<string name="game_webv1_someone_won">%1$s A GAGNÉ !</string>
 	<string name="game_webv1_you_lost">TU AS PERDU</string>
 	<string name="game_webv1_someone_lost">%1$s A PERDU !</string>
 	<string name="game_webv1_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
+	<string name="game_webv1_waiting_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>
