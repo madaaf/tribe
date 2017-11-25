@@ -87,5 +87,21 @@
         android:src="@drawable/picto_btn_forward"
         />
 
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/progressView"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:background="@drawable/selectable_button_oval"
+        android:clickable="true"
+        android:scaleType="centerInside"
+        android:visibility="gone"
+        app:cpv_animAutostart="true"
+        app:cpv_color="@color/blue.new"
+        app:cpv_indeterminate="true"
+        app:cpv_thickness="2dp"
+        />
+
   </FrameLayout>
 </FrameLayout>

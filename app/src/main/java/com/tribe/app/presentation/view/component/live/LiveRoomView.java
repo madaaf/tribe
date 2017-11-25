@@ -368,7 +368,7 @@ public class LiveRoomView extends FrameLayout {
       setBackgroundColor(Color.TRANSPARENT);
     }
 
-    diceView.translateDice(translation);
+    diceView.translateDice(translation, true);
 
     refactorConstraintsOnChilds();
   }

@@ -293,4 +293,8 @@ public class AvatarView extends RelativeLayout implements Avatar {
       load(drawableId);
     }
   }
+
+  public void setAttached(boolean attached) {
+    isAttached = attached;
+  }
 }

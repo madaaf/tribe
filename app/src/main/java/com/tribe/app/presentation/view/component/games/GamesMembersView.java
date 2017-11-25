@@ -10,6 +10,7 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import butterknife.BindView;
@@ -102,6 +103,7 @@ public class GamesMembersView extends LinearLayout
 
   @Override protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
+    screenUtils.hideKeyboard(viewShortcutCompletion);
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
   }
 
@@ -160,6 +162,14 @@ public class GamesMembersView extends LinearLayout
 
       }
     });
+
+    viewShortcutCompletion.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            viewShortcutCompletion.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            screenUtils.showKeyboard(viewShortcutCompletion, 200);
+          }
+        });
   }
 
   private void initRecyclerView() {
@@ -240,6 +250,7 @@ public class GamesMembersView extends LinearLayout
 
   public void create() {
     if (selectedIds.size() > 0) {
+      screenUtils.hideKeyboard(viewShortcutCompletion);
       newChatPresenter.createShortcut(selectedIds.toArray(new String[selectedIds.size()]));
     } else {
       Toast.makeText(getContext().getApplicationContext(),
@@ -276,6 +287,7 @@ public class GamesMembersView extends LinearLayout
   }
 
   @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+    if (this.items.size() > 0) return;
     this.items.clear();
     if (game != null) this.items.add(new Shortcut(Recipient.ID_CALL_ROULETTE));
     this.items.addAll(singleShortcutList);

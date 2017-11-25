@@ -558,7 +558,10 @@ public class LiveView extends FrameLayout {
         .observeOn(AndroidSchedulers.mainThread())
         .doOnNext(tribeJoinRoom -> hasJoined = true)
         .doOnNext(tribeJoinRoom -> {
-          if (!StringUtils.isEmpty(live.getGameId())) {
+          // TODO SEE WITH #backend solution to launch game in call roulette
+          if (!StringUtils.isEmpty(live.getGameId()) &&
+              !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
+              StringUtils.isEmpty(room.getGameId())) {
             viewControlsLive.startGame(gameManager.getGameById(live.getGameId()));
           }
         })

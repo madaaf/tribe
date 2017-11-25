@@ -39,6 +39,7 @@ import com.tribe.app.presentation.view.adapter.manager.GamesFiltersLayoutManager
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -494,16 +495,13 @@ public class LiveControlsView extends FrameLayout {
 
             showActiveGame(viewFrom != null);
 
-            Glide.with(getContext())
-                .load(gameManager.getCurrentGame().getIcon())
-                .thumbnail(0.25f)
-                .bitmapTransform(new CropCircleTransformation(getContext()),
-                    new RoundedCornersTransformation(getContext(),
-                        currentGameView.getMeasuredWidth() >> 1, screenUtils.dpToPx(4), "#FFFFFF",
-                        screenUtils.dpToPx(4)))
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                .into(currentGameView);
+            new GlideUtils.GameImageBuilder(getContext(), screenUtils).url(
+                gameManager.getCurrentGame().getIcon())
+                .hasBorder(false)
+                .hasPlaceholder(true)
+                .rounded(true)
+                .target(currentGameView)
+                .load();
           }
         });
     currentGameView.setClickable(true);

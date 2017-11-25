@@ -114,4 +114,80 @@ public class GlideUtils {
       drawableRequestBuilder.crossFade().diskCacheStrategy(DiskCacheStrategy.RESULT).into(target);
     }
   }
+
+  public static class GameImageBuilder {
+
+    private final Context context;
+    private final ScreenUtils screenUtils;
+    private String url;
+    private ImageView target;
+    private boolean hasPlaceholder = true;
+    private boolean rounded = true;
+    private boolean hasBorder = false;
+
+    public GameImageBuilder(Context context, ScreenUtils screenUtils) {
+      this.context = context;
+      this.screenUtils = screenUtils;
+    }
+
+    public GameImageBuilder url(String url) {
+      this.url = url;
+      return this;
+    }
+
+    public GameImageBuilder target(ImageView target) {
+      this.target = target;
+      return this;
+    }
+
+    public GameImageBuilder hasPlaceholder(boolean hasPlaceholder) {
+      this.hasPlaceholder = hasPlaceholder;
+      return this;
+    }
+
+    public GameImageBuilder rounded(boolean rounded) {
+      this.rounded = rounded;
+      return this;
+    }
+
+    public GameImageBuilder hasBorder(boolean hasBorder) {
+      this.hasBorder = hasBorder;
+      return this;
+    }
+
+    public void load() {
+      DrawableRequestBuilder drawableRequestBuilder;
+
+      int randomPlaceholder = R.drawable.picto_avatar_placeholder;
+
+      if (StringUtils.isEmpty(url)) {
+        drawableRequestBuilder = Glide.with(context).load(randomPlaceholder);
+      } else {
+        drawableRequestBuilder = Glide.with(context).load(url).error(randomPlaceholder);
+      }
+
+      if (hasPlaceholder) {
+        drawableRequestBuilder = drawableRequestBuilder.thumbnail(0.25f)
+            .error(randomPlaceholder)
+            .placeholder(randomPlaceholder);
+      }
+
+      if (rounded && !hasBorder) {
+        drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context));
+      } else if (rounded && hasBorder) {
+        drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context),
+            new RoundedCornersTransformation(context, screenUtils.dpToPx(400),
+                screenUtils.dpToPx(3), "#FFFFFF", screenUtils.dpToPx(2)));
+      } else if (!rounded && hasBorder) {
+        drawableRequestBuilder.bitmapTransform(
+            new RoundedCornersTransformation(context, screenUtils.dpToPx(400),
+                screenUtils.dpToPx(3), "#FFFFFF", screenUtils.dpToPx(2)));
+      }
+
+      drawableRequestBuilder.override(screenUtils.dpToPx(100), screenUtils.dpToPx(100))
+          .crossFade()
+          .diskCacheStrategy(DiskCacheStrategy.RESULT)
+          .into(target);
+    }
+  }
 }

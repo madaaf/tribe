@@ -1,5 +1,6 @@
 package com.tribe.app.domain.entity;
 
+import com.google.gson.annotations.SerializedName;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
@@ -15,7 +16,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 30/01/2017.
@@ -45,6 +45,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
   private transient ObservableRxHashMap<String, User> invitedUsersMap;
   private Set<String> waitingIds;
   private Shortcut shortcut;
+  @SerializedName("game_id") private String gameId;
 
   private transient CompositeSubscription subscriptions;
   private transient PublishSubject<User> onAddedInvitedUser = PublishSubject.create();
@@ -199,6 +200,14 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
 
   public Shortcut getShortcut() {
     return shortcut;
+  }
+
+  public void setGameId(String gameId) {
+    this.gameId = gameId;
+  }
+
+  public String getGameId() {
+    return gameId;
   }
 
   public String getUserNames() {

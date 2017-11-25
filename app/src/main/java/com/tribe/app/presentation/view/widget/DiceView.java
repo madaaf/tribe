@@ -121,7 +121,11 @@ public class DiceView extends FrameLayout {
     }, 1000);
   }
 
-  public void translateDice(int translation) {
+  public void translateDice(int translation, boolean shouldHideBG) {
+    if (shouldHideBG) {
+      bgView.setVisibility(View.GONE);
+    }
+
     animate().translationY(translation > 0 ? translation - dice.getMeasuredHeight() : translation)
         .scaleX(translation > 0 ? 0.8f : 1f)
         .scaleY(translation > 0 ? 0.8f : 1f)
@@ -131,12 +135,13 @@ public class DiceView extends FrameLayout {
   }
 
   @OnClick(R.id.diceView) public void onNextClick() {
+    bgView.setVisibility(View.VISIBLE);
     startDiceAnimation();
     onNextDiceClick.onNext(null);
   }
 
   public void startDiceAnimation() {
-    translateDice(0);
+    translateDice(0, false);
     dice.setEnabled(false);
     setAlphaBackground(1f);
     if (type == TYPE_FROM_ROOM) {

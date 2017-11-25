@@ -1109,16 +1109,20 @@ public class HomeActivity extends BaseActivity
       String gameId = data.getStringExtra(NewGameActivity.GAME_ID);
       boolean callRoulette = data.getBooleanExtra(NewGameActivity.CALL_ROULETTE, false);
       Shortcut shortcut = (Shortcut) data.getSerializableExtra(NewGameActivity.SHORTCUT);
-      if (callRoulette) {
-        navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, gameId);
-      } else if (shortcut != null) {
-        if (!StringUtils.isEmpty(gameId)) {
-          navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
-              TagManagerUtils.SECTION_SHORTCUT, gameId);
-        } else {
-          navigateToChat(shortcut, TagManagerUtils.GESTURE_TAP);
-        }
-      }
+      subscriptions.add(Observable.timer(250, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            if (callRoulette) {
+              navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, gameId);
+            } else if (shortcut != null) {
+              if (!StringUtils.isEmpty(gameId)) {
+                navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
+                    TagManagerUtils.SECTION_SHORTCUT, gameId);
+              } else {
+                navigateToChat(shortcut, TagManagerUtils.GESTURE_TAP);
+              }
+            }
+          }));
     } else if (requestCode == Navigator.FROM_LIVE &&
         data != null &&
         data.hasExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {

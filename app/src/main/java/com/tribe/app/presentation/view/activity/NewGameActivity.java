@@ -15,8 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.solera.defrag.AnimationHandler;
 import com.solera.defrag.TraversalAnimation;
 import com.solera.defrag.TraversingOperation;
@@ -26,7 +25,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -63,6 +62,8 @@ public class NewGameActivity extends BaseActivity {
 
   @BindView(R.id.btnForward) ImageView btnForward;
 
+  @BindView(R.id.progressView) CircularProgressView progressView;
+
   @BindView(R.id.viewNavigatorStack) ViewStack viewStack;
 
   // VIEWS
@@ -89,6 +90,11 @@ public class NewGameActivity extends BaseActivity {
     init(savedInstanceState);
   }
 
+  @Override protected void onPause() {
+    super.onPause();
+    screenUtils.hideKeyboard(this);
+  }
+
   @Override protected void onDestroy() {
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
@@ -110,6 +116,8 @@ public class NewGameActivity extends BaseActivity {
 
     txtAction.setOnClickListener(v -> {
       if (viewStack.getTopView() instanceof GamesMembersView) {
+        progressView.setVisibility(View.VISIBLE);
+        txtAction.setVisibility(View.GONE);
         viewGamesMembers.create();
       }
     });
@@ -249,13 +257,13 @@ public class NewGameActivity extends BaseActivity {
         ViewCompat.setElevation(btnBack, 0);
         btnBack.setImageResource(R.drawable.picto_btn_back);
       } else {
-        Glide.with(this)
-            .load(selectedGame.getIcon())
-            .thumbnail(0.25f)
-            .bitmapTransform(new CropCircleTransformation(this))
-            .crossFade()
-            .diskCacheStrategy(DiskCacheStrategy.RESULT)
-            .into(btnBack);
+        new GlideUtils.GameImageBuilder(this, screenUtils).url(selectedGame.getIcon())
+            .hasBorder(false)
+            .hasPlaceholder(true)
+            .rounded(true)
+            .target(btnBack)
+            .load();
+
         ViewCompat.setElevation(btnBack, screenUtils.dpToPx(5));
       }
     }

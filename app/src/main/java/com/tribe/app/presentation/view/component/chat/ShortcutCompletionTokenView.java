@@ -115,6 +115,7 @@ public class ShortcutCompletionTokenView extends FrameLayout {
   public void setShortcut(Shortcut shortcut) {
     this.shortcut = shortcut;
 
+    viewAvatar.setAttached(true);
     viewAvatar.load(shortcut);
     txtName.setText(shortcut.getDisplayName());
   }

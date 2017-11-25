@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,8 +19,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.game.Game;
@@ -93,26 +91,16 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     vh.txtBaseline.setText(game.getBaseline());
     vh.txtTitle.setText(game.getTitle());
 
-    vh.imgIcon.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            vh.imgIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            Glide.with(context)
-                .load(game.getIcon())
-                .thumbnail(0.25f)
-                .bitmapTransform(new CropCircleTransformation(context),
-                    new RoundedCornersTransformation(context, vh.imgIcon.getMeasuredWidth() >> 1,
-                        screenUtils.dpToPx(4), "#FFFFFF", screenUtils.dpToPx(4)))
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                .into(vh.imgIcon);
-          }
-        });
+    new GlideUtils.GameImageBuilder(context, screenUtils).url(game.getIcon())
+        .hasBorder(true)
+        .hasPlaceholder(true)
+        .rounded(true)
+        .target(vh.imgIcon)
+        .load();
 
     Glide.with(context)
         .load(game.getBanner())
         .thumbnail(0.25f)
-        .crossFade()
         .diskCacheStrategy(DiskCacheStrategy.RESULT)
         .into(vh.imgBanner);
 
