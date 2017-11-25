@@ -720,6 +720,7 @@
 	<string name="game_webv1_you_lost">TU AS PERDU</string>
 	<string name="game_webv1_someone_lost">%1$s A PERDU !</string>
 	<string name="game_webv1_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
+	<string name="game_webv1_waiting_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>
