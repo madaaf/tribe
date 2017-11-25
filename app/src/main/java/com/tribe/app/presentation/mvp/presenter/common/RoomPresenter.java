@@ -201,4 +201,12 @@ public class RoomPresenter implements Presenter {
       roomMVPView.onRoomUpdate(room);
     }
   }
+
+  public void roomSetGame(String roomId, String gameId) {
+    Pair<String, String> pair = Pair.create(Room.GAME_ID, gameId);
+    List<Pair<String, String>> pairList = new ArrayList<>();
+    pairList.add(pair);
+    updateRoom.setup(roomId, pairList);
+    updateRoom.execute(new DefaultSubscriber());
+  }
 }

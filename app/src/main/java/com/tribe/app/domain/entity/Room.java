@@ -27,6 +27,7 @@ public class Room implements Serializable, LiveInviteAdapterSectionInterface {
 
   public static final String NAME = "name";
   public static final String ACCEPT_RANDOM = "accept_random";
+  public static final String GAME_ID = "game_id";
 
   private String id;
   private String name;

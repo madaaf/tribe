@@ -37,6 +37,9 @@ public class RoomDeserializer implements JsonDeserializer<Room> {
     } else if (results != null && results.has("createRoom")) {
       JsonElement toParse = results.getAsJsonObject("createRoom");
       return new Gson().fromJson(toParse, typeOfT);
+    } else if (results != null && results.has("updateRoom")) {
+      JsonElement toParse = results.getAsJsonObject("updateRoom");
+      return new Gson().fromJson(toParse, typeOfT);
     }
 
     return null;

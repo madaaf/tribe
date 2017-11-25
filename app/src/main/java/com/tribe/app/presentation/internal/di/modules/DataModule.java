@@ -142,8 +142,10 @@ import static android.content.Context.MODE_PRIVATE;
   // walkthrough with the previous preferences
   @Provides @Singleton @Walkthrough Preference<Boolean> provideWalkthrough(
       @Named("persistentRxPreferences") RxSharedPreferences prefs, RxSharedPreferences oldPrefs) {
-    prefs.getBoolean(PreferencesUtils.WALKTHROUGH, false)
-        .set(oldPrefs.getBoolean(PreferencesUtils.WALKTHROUGH, false).get());
+    if (oldPrefs.getBoolean(PreferencesUtils.WALKTHROUGH).get()) {
+      prefs.getBoolean(PreferencesUtils.WALKTHROUGH, false).set(true);
+    }
+
     return prefs.getBoolean(PreferencesUtils.WALKTHROUGH, false);
   }
 

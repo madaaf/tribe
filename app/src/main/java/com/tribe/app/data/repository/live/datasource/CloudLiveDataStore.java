@@ -43,8 +43,11 @@ public class CloudLiveDataStore implements LiveDataStore {
       body = context.getString(R.string.getRoom_roomId, live.getRoomId());
     }
 
-    final String request = context.getString(R.string.query, body) + "\n" + context.getString(
-        R.string.roomFragment_infos) + "\n" + context.getString(R.string.userfragment_infos_light);
+    final String request = context.getString(R.string.query, body) +
+        "\n" +
+        context.getString(R.string.roomFragment_infos) +
+        "\n" +
+        context.getString(R.string.userfragment_infos_light);
 
     return this.tribeApi.room(request)
         .doOnNext(room -> liveCache.putRoom(room))
@@ -61,8 +64,11 @@ public class CloudLiveDataStore implements LiveDataStore {
 
     String body = context.getString(R.string.createRoom, params);
 
-    final String request = context.getString(R.string.mutation, body) + "\n" + context.getString(
-        R.string.roomFragment_infos) + "\n" + context.getString(R.string.userfragment_infos_light);
+    final String request = context.getString(R.string.mutation, body) +
+        "\n" +
+        context.getString(R.string.roomFragment_infos) +
+        "\n" +
+        context.getString(R.string.userfragment_infos_light);
 
     return this.tribeApi.createRoom(request)
         .doOnNext(room -> liveCache.putRoom(room))
@@ -79,6 +85,14 @@ public class CloudLiveDataStore implements LiveDataStore {
       } else if (value.first.equals(Room.NAME)) {
         roomInputBuilder.append(value.first + ": " + value.second);
         roomInputBuilder.append(",");
+      } else if (value.first.equals(Room.GAME_ID)) {
+        if (!StringUtils.isEmpty(value.second)) {
+          roomInputBuilder.append(value.first + ": \"" + value.second + "\"");
+          roomInputBuilder.append(",");
+        } else {
+          roomInputBuilder.append(value.first + ": " + value.second);
+          roomInputBuilder.append(",");
+        }
       }
     }
 
@@ -87,8 +101,11 @@ public class CloudLiveDataStore implements LiveDataStore {
             : "";
 
     final String request = context.getString(R.string.mutation,
-        context.getString(R.string.updateRoom, roomId, roomInput)) + "\n" + context.getString(
-        R.string.roomFragment_infos) + "\n" + context.getString(R.string.userfragment_infos_light);
+        context.getString(R.string.updateRoom, roomId, roomInput)) +
+        "\n" +
+        context.getString(R.string.roomFragment_infos) +
+        "\n" +
+        context.getString(R.string.userfragment_infos_light);
 
     return this.tribeApi.updateRoom(request).compose(onlineLiveTransformer);
   }
@@ -108,7 +125,8 @@ public class CloudLiveDataStore implements LiveDataStore {
     if (userIds.length > 0) {
       for (String id : userIds) {
         if (!id.equals(accessToken.getUserId())) {
-          buffer.append(context.getString(R.string.createInvite, UUID.randomUUID().toString().replace("-", ""), roomId, id));
+          buffer.append(context.getString(R.string.createInvite,
+              UUID.randomUUID().toString().replace("-", ""), roomId, id));
         }
       }
     }

@@ -20,7 +20,6 @@ import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import java.util.List;
 import javax.inject.Inject;
-import timber.log.Timber;
 
 public class LivePresenter implements Presenter {
 
@@ -254,5 +253,13 @@ public class LivePresenter implements Presenter {
 
   public void getInvites() {
     getInvites.execute(new GetInvitesSubscriber());
+  }
+
+  public void roomStartGame(String roomId, String gameId) {
+    roomPresenter.roomSetGame(roomId, gameId);
+  }
+
+  public void roomStopGame(String roomId) {
+    roomPresenter.roomSetGame(roomId, null);
   }
 }

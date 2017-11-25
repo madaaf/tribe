@@ -276,12 +276,12 @@ public class LiveActivity extends BaseActivity
 
     initDependencyInjector();
     initParams(getIntent());
+    initGameManager();
     init();
     initResources();
     initRemoteConfig();
     manageClickNotification(getIntent());
     initAppState();
-    initGameManager();
     initBrightness();
   }
 
@@ -688,7 +688,8 @@ public class LiveActivity extends BaseActivity
             (tribeJoinRoom.getSessionList() == null ||
                 tribeJoinRoom.getSessionList().size() == 0)) {
           if (room.getInviter() != null) {
-            Toast.makeText(this, getString(R.string.live_other_user_hung_up, room.getInviter().getDisplayName()),
+            Toast.makeText(this,
+                getString(R.string.live_other_user_hung_up, room.getInviter().getDisplayName()),
                 Toast.LENGTH_SHORT).show();
             livePresenter.createInvite(room.getId(), room.getInviter().getId());
           }
@@ -715,8 +716,7 @@ public class LiveActivity extends BaseActivity
 
     subscriptions.add(viewLive.onEdit()
         .filter(aVoid -> !StringUtils.isEmpty(live.getShortcutId()))
-        .flatMap(
-            view -> DialogFactory.showBottomSheetForCustomizeShortcut(this),
+        .flatMap(view -> DialogFactory.showBottomSheetForCustomizeShortcut(this),
             (pair, labelType) -> {
               if (labelType != null) {
                 if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
@@ -895,6 +895,12 @@ public class LiveActivity extends BaseActivity
 
     subscriptions.add(
         viewLive.openGameStore().subscribe(aVoid -> navigator.navigateToNewGame(this)));
+
+    subscriptions.add(gameManager.onCurrentUserStartGame()
+        .subscribe(game -> livePresenter.roomStartGame(room.getId(), game.getId())));
+
+    subscriptions.add(gameManager.onCurrentUserStopGame()
+        .subscribe(game -> livePresenter.roomStopGame(room.getId())));
   }
 
   private void share() {
