@@ -37,8 +37,6 @@ public class LiveLowConnectionView extends FrameLayout {
 
   @BindView(R.id.viewBG) View viewBG;
 
-  @BindView(R.id.viewLiveWave) View viewLiveWave;
-
   @BindView(R.id.layoutLabels) ViewGroup layoutLabels;
 
   // RESOURCES
@@ -109,7 +107,6 @@ public class LiveLowConnectionView extends FrameLayout {
     if (getVisibility() == View.VISIBLE) return;
 
     viewBG.setAlpha(0f);
-    viewLiveWave.setAlpha(0f);
     layoutLabels.setAlpha(0f);
     layoutLabels.setTranslationY(-translationY);
     setVisibility(View.VISIBLE);
@@ -117,13 +114,6 @@ public class LiveLowConnectionView extends FrameLayout {
     viewBG.animate()
         .alpha(1)
         .setDuration(DURATION_FADE)
-        .setInterpolator(new DecelerateInterpolator())
-        .start();
-
-    viewLiveWave.animate()
-        .alpha(1)
-        .setDuration(DURATION_FADE)
-        .setStartDelay(DURATION_FADE + DELAY)
         .setInterpolator(new DecelerateInterpolator())
         .start();
 
@@ -142,7 +132,6 @@ public class LiveLowConnectionView extends FrameLayout {
     Timber.d("Preparing hide");
 
     viewBG.setAlpha(1f);
-    viewLiveWave.setAlpha(1f);
     layoutLabels.setAlpha(1f);
     layoutLabels.setTranslationY(0);
 
@@ -150,12 +139,6 @@ public class LiveLowConnectionView extends FrameLayout {
         .alpha(0)
         .setDuration(DURATION_FADE)
         .setStartDelay(DURATION_FADE + DELAY)
-        .setInterpolator(new DecelerateInterpolator())
-        .start();
-
-    viewLiveWave.animate()
-        .alpha(0)
-        .setDuration(DURATION_FADE)
         .setInterpolator(new DecelerateInterpolator())
         .start();
 

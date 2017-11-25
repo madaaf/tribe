@@ -11,15 +11,6 @@
       android:background="@color/black.opacity.40"
       />
 
-  <com.tribe.app.presentation.view.component.live.LiveWaveView
-      android:id="@+id/viewLiveWave"
-      android:layout_width="match_parent"
-      android:layout_height="100dp"
-      android:layout_gravity="top"
-      android:layout_marginTop="@dimen/vertical_margin_small"
-      android:alpha="0"
-      />
-
   <LinearLayout
       android:id="@+id/layoutLabels"
       android:layout_width="match_parent"
