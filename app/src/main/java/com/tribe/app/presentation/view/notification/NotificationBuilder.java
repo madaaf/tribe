@@ -32,6 +32,7 @@ import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
+import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
@@ -73,6 +74,8 @@ import javax.inject.Singleton;
       if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
         if (application.getAppState() != null) {
           missedCallManager.setMissedNotificationPlayload(notificationPayload);
+          notificationPayload.setMissedCallActionList(missedCallManager.getMissedCallAction());
+          //notificationPayload = missedCallManager.buildNotificationBuilderFromMissedCallList();
         }
 
         PreferencesUtils.removeFromSet(fullScreenNotificationState,
@@ -232,6 +235,8 @@ import javax.inject.Singleton;
         return getPendingIntentForUserRegistered(payload);
       } else if (pendingClass.equals(ChatActivity.class)) {
         return getPendingIntentForChat(payload);
+      } else if (pendingClass.equals(MissedCallDetailActivity.class)) {
+        return getPendingIntentForMissedCall(payload);
       }
     }
 
@@ -249,6 +254,8 @@ import javax.inject.Singleton;
         || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
         || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
       return ChatActivity.class;
+    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+      return MissedCallDetailActivity.class;
     }
 
     return HomeActivity.class;
@@ -285,6 +292,18 @@ import javax.inject.Singleton;
 
     PendingIntent pendingIntent =
         PendingIntent.getActivity(application, (int) System.currentTimeMillis(), notificationIntent,
+            PendingIntent.FLAG_ONE_SHOT);
+
+    return pendingIntent;
+  }
+
+  private PendingIntent getPendingIntentForMissedCall(NotificationPayload payload) {
+    List<MissedCallAction> missedCallAction = payload.getMissedCallList();
+    Intent intent =
+        MissedCallDetailActivity.getIntentForMissedCallDetail(application, missedCallAction);
+
+    PendingIntent pendingIntent =
+        PendingIntent.getActivity(application, (int) System.currentTimeMillis(), intent,
             PendingIntent.FLAG_ONE_SHOT);
 
     return pendingIntent;

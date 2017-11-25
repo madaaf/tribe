@@ -1,9 +1,7 @@
 package com.tribe.app.presentation.view.adapter.delegate.friend;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
@@ -61,7 +59,6 @@ public class MissedCallActionDelegate extends BaseListAdapterDelegate {
   }
 
   private ButtonModel getHangLiveButton() {
-    return new ButtonModel(context.getString(R.string.action_hang_live),
-        ContextCompat.getColor(context, R.color.red), Color.WHITE);
+    return new ButtonModel(R.drawable.picto_live_inactive, false);
   }
 }

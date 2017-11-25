@@ -99,12 +99,13 @@ public class MissedCallDetailActivity extends BaseActivity {
     recyclerView.setAdapter(adapter);
 
     subscriptions.add(adapter.onHangLive().map(view -> {
-      MissedCallAction missedCallAction =
-          (MissedCallAction) adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view.itemView));
+      MissedCallAction missedCallAction = (MissedCallAction) adapter.getItemAtPosition(
+          recyclerView.getChildLayoutPosition(view.itemView));
       return missedCallAction;
     }).subscribe(missedCallAction -> {
       Intent intent =
-          NotificationUtils.getIntentForLive(this, missedCallAction.getNotificationPayload(), false, user);
+          NotificationUtils.getIntentForLive(this, missedCallAction.getNotificationPayload(), false,
+              user);
       startActivity(intent);
       finish();
     }));

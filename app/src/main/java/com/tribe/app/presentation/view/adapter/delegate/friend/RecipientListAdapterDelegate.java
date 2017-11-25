@@ -1,9 +1,7 @@
 package com.tribe.app.presentation.view.adapter.delegate.friend;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
@@ -51,15 +49,15 @@ public class RecipientListAdapterDelegate extends BaseListAdapterDelegate {
   }
 
   private ButtonModel getHangLiveButton() {
-    return new ButtonModel(R.drawable.picto_added);
+    return new ButtonModel(R.drawable.picto_added, false);
   }
 
   private ButtonModel getUnblockButton() {
-    return new ButtonModel(R.drawable.picto_add);
+    return new ButtonModel(R.drawable.picto_add, true);
   }
 
   private ButtonModel getUnhideButton() {
-    return new ButtonModel(R.drawable.picto_add);
+    return new ButtonModel(R.drawable.picto_add, true);
   }
 
   @Override protected void setClicks(BaseListInterface baseList, BaseListViewHolder vh) {
@@ -69,7 +67,6 @@ public class RecipientListAdapterDelegate extends BaseListAdapterDelegate {
       Shortcut sh = (Shortcut) baseList;
       isBlockedOrHidden = sh.isBlockedOrHidden();
     }
-
 
     if (isBlockedOrHidden) {
       vh.btnAdd.setOnClickListener(v -> clickUnblock.onNext(vh));
