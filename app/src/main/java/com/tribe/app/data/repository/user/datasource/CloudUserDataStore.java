@@ -45,6 +45,7 @@ import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
+import com.tribe.tribelivesdk.model.TribeSession;
 import io.realm.RealmList;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -471,7 +472,9 @@ public class CloudUserDataStore implements UserDataStore {
       if (lookupHolder != null) {
         Set<String> userIdSet = new HashSet<>();
         for (LookupObject lookupObject : lookupHolder.getLookupObjectList()) {
-          if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId()) && lookupObject.getHowManyFriends() == 0) {
+          if (lookupObject != null &&
+              !StringUtils.isEmpty(lookupObject.getUserId()) &&
+              lookupObject.getHowManyFriends() == 0) {
             if (!userIdSet.contains(lookupObject.getUserId())) {
               resultLookupUserIds.append("\"" + lookupObject.getUserId() + "\"");
               resultLookupUserIds.append(",");
@@ -756,10 +759,21 @@ public class CloudUserDataStore implements UserDataStore {
   @Override public Observable<ShortcutRealm> createShortcut(String[] userIds) {
     String params = "";
 
-    if (userIds == null || userIds.length == 0) return Observable.empty();
+    List<String> filteredUserIds = new ArrayList<>();
+
+    if (userIds.length > 0) {
+      for (String id : userIds) {
+        if (!id.equals(accessToken.getUserId()) && !id.startsWith(TribeSession.WEB_ID)) {
+          filteredUserIds.add(id);
+        }
+      }
+    }
+
+    if (filteredUserIds.size() == 0) return Observable.empty();
 
     params += params.length() == 0 ? "( " : "";
-    params += context.getString(R.string.createShortcut_userIds, StringUtils.arrayToJson(userIds));
+    params += context.getString(R.string.createShortcut_userIds,
+        StringUtils.arrayToJson(filteredUserIds.toArray(new String[filteredUserIds.size()])));
 
     if (params.length() > 0) params += " )";
 
