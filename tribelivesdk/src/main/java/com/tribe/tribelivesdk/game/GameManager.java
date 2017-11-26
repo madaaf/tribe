@@ -60,6 +60,7 @@ import rx.subscriptions.CompositeSubscription;
   private PublishSubject<Game> onCurrentUserNewSessionGame = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, Game>> onRemoteUserNewSessionGame =
       PublishSubject.create();
+  private PublishSubject<Void> onGamePlayedNotAvailable = PublishSubject.create();
   private PublishSubject<Game> onCurrentUserStopGame = PublishSubject.create();
   private PublishSubject<Pair<TribeSession, Game>> onRemoteUserStopGame = PublishSubject.create();
   private PublishSubject<Game> onCurrentUserResetScores = PublishSubject.create();
@@ -150,6 +151,8 @@ import rx.subscriptions.CompositeSubscription;
         } else {
           onRemoteUserNewSessionGame.onNext(Pair.create(pairSessionGame.first, game));
         }
+      } else {
+        onGamePlayedNotAvailable.onNext(null);
       }
     }));
 
@@ -287,5 +290,9 @@ import rx.subscriptions.CompositeSubscription;
 
   public Observable<Game> onCurrentUserResetScores() {
     return onCurrentUserResetScores;
+  }
+
+  public Observable<Void> onGamePlayedNotAvailable() {
+    return onGamePlayedNotAvailable;
   }
 }

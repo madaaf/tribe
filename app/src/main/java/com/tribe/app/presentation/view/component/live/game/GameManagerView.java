@@ -8,11 +8,13 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -159,6 +161,11 @@ public class GameManagerView extends FrameLayout {
         ((GameViewWithRanking) currentGameView).resetScores(true);
       }
     }));
+    
+    subscriptions.add(gameManager.onGamePlayedNotAvailable()
+        .subscribe(
+            aVoid -> Toast.makeText(getContext(), R.string.game_unavailable, Toast.LENGTH_SHORT)
+                .show()));
   }
 
   public void initPeerGuestObservable(
