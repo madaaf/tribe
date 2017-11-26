@@ -184,11 +184,13 @@ public class GameDrawView extends GameView {
    */
 
   @Override protected void initWebRTCRoomSubscriptions() {
-    subscriptionsRoom.add(
-        webRTCRoom.onPointsDrawReceived().subscribe(s -> onPointsDrawReceived(s)));
+    subscriptionsRoom.add(webRTCRoom.onPointsDrawReceived()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(s -> onPointsDrawReceived(s)));
 
-    subscriptionsRoom.add(
-        webRTCRoom.onClearDrawReceived().subscribe(aVoid -> onClearDrawReceived()));
+    subscriptionsRoom.add(webRTCRoom.onClearDrawReceived()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aVoid -> onClearDrawReceived()));
 
     subscriptionsRoom.add(webRTCRoom.onNewDrawReceived()
         .observeOn(AndroidSchedulers.mainThread())
@@ -202,9 +204,8 @@ public class GameDrawView extends GameView {
           }
 
           gameManager.setCurrentDataGame(datas.get(0), guestChallenged);
-
-          GameChallenge gameChallenge = (GameChallenge) gameManager.getCurrentGame();
-          if (gameChallenge.hasDatas()) setNextGame();
+          GameDraw gameDraw = (GameDraw) gameManager.getCurrentGame();
+          if (gameDraw.hasDatas()) setNextGame();
         }));
   }
 

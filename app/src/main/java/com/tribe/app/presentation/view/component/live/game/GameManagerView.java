@@ -196,23 +196,25 @@ public class GameManagerView extends FrameLayout {
     if (game.getId().equals(Game.GAME_CHALLENGE)) {
       GameChallengesView gameChallengesView = new GameChallengesView(getContext());
       gameView = gameChallengesView;
-      subscriptionsGame.add(gameChallengesView.onNextChallenge().subscribe(onRestartGame));
+      subscriptionsGame.add(gameChallengesView.onNextChallenge()
+          .doOnNext(game1 -> gameChallengesView.setNextGame())
+          .subscribe(onRestartGame));
     } else if (game.getId().equals(Game.GAME_DRAW)) {
       GameDrawView gameDrawView = new GameDrawView(getContext());
       gameView = gameDrawView;
       subscriptionsGame.add(gameDrawView.onNextDraw()
           .map(aBoolean -> gameManager.getCurrentGame())
+          .doOnNext(game1 -> gameDrawView.setNextGame())
           .subscribe(onRestartGame));
     } else if (game.getId().equals(Game.GAME_INVADERS)) {
       GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
       gameView = gameAlienAttacksView;
-      gameView.start(game, onPeerMapChange, onLiveViewsChange, userId);
     } else if (game.isWeb()) {
       GameWebView gameWebView = new GameWebView(getContext());
       gameView = gameWebView;
-      gameView.start(game, onPeerMapChange, onLiveViewsChange, userId);
     }
 
+    gameView.start(game, onPeerMapChange, onLiveViewsChange, userId);
     gameView.setWebRTCRoom(webRTCRoom);
     game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));

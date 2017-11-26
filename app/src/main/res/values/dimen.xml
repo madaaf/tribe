@@ -115,7 +115,7 @@
   <dimen name="view_dice_dot_size">15dp</dimen>
   <dimen name="view_dice_dot_margin">1.5dp</dimen>
   <dimen name="filter_game_size">50dp</dimen>
-  <dimen name="filter_game_size_with_border">70dp</dimen>
+  <dimen name="filter_game_size_with_border">60dp</dimen>
   <dimen name="filter_game_size_container">60dp</dimen>
   <dimen name="picto_chat_size">50dp</dimen>
   <dimen name="picto_live_size">70dp</dimen>

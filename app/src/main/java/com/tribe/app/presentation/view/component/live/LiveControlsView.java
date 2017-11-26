@@ -23,8 +23,6 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.LabelType;
@@ -36,11 +34,9 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.adapter.GamesFiltersAdapter;
 import com.tribe.app.presentation.view.adapter.manager.GamesFiltersLayoutManager;
-import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.GlideUtils;
-import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.tribelivesdk.entity.GameFilter;
@@ -497,7 +493,7 @@ public class LiveControlsView extends FrameLayout {
 
             new GlideUtils.GameImageBuilder(getContext(), screenUtils).url(
                 gameManager.getCurrentGame().getIcon())
-                .hasBorder(false)
+                .hasBorder(true)
                 .hasPlaceholder(true)
                 .rounded(true)
                 .target(currentGameView)
