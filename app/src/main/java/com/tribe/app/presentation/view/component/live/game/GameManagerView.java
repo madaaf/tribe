@@ -161,7 +161,7 @@ public class GameManagerView extends FrameLayout {
         ((GameViewWithRanking) currentGameView).resetScores(true);
       }
     }));
-    
+
     subscriptions.add(gameManager.onGamePlayedNotAvailable()
         .subscribe(
             aVoid -> Toast.makeText(getContext(), R.string.game_unavailable, Toast.LENGTH_SHORT)

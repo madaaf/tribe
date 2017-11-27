@@ -125,11 +125,14 @@ public class GameEngine {
           }
         }
 
+        List<String> playersToRemove = new ArrayList<>();
         for (String playerId : mapPlayerStatus.keySet()) {
           if (!peerMap.containsKey(playerId) && !playerId.equals(currentUser.getId())) {
-            mapPlayerStatus.remove(playerId);
+            playersToRemove.add(playerId);
           }
         }
+
+        playersToRemove.forEach(s -> mapPlayerStatus.remove(s));
       }
 
       isFirst = false;

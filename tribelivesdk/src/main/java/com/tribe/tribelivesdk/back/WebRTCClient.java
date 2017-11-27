@@ -235,6 +235,12 @@ import static android.R.attr.id;
     jsonPut(obj, "isVideoEnabled", mediaConfiguration.isVideoEnabled());
     jsonPut(obj, "videoChangeReason", mediaConfiguration.getType());
 
+    JSONArray games = new JSONArray();
+    for (String str : GameManager.playableGames) {
+      games.put(str);
+    }
+    jsonPut(obj, "canPlayGames", games);
+
     Game currentGame = gameManager.getCurrentGame();
 
     if (currentGame != null) {

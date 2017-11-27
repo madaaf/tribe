@@ -167,6 +167,8 @@ public abstract class GameView extends FrameLayout {
   public void userLeft(String userId) {
     if (userId.equals(currentMasterId)) {
       subscriptions.add(generateNewMasterId().subscribe(newMasterId -> {
+        currentMasterId = newMasterId;
+
         if (newMasterId.equals(currentUser.getId())) {
           takeOverGame();
         }
