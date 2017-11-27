@@ -29,7 +29,6 @@ import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
-import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.app.presentation.view.utils.Degrees;
@@ -53,6 +52,7 @@ import com.tribe.tribelivesdk.model.error.WebSocketError;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,9 +128,9 @@ public class LiveView extends FrameLayout {
   private ObservableRxHashMap<String, TribeGuest> tribeGuestMap;
   private boolean hiddenControls = false;
   private Map<String, Object> tagMap;
-  private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0, interval = 0,
-      postItGameCount = 0;
-  private double averageCountLive = 0.0D;
+  private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0,
+      totalSizeGameLive = 0, interval = 0, intervalGame = 0;
+  private double averageCountLive = 0.0D, averageCountGameLive = 0.0D;
   private boolean hasJoined = false;
   private long timeStart = 0L, timeEnd = 0L;
   private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true,
@@ -144,13 +144,13 @@ public class LiveView extends FrameLayout {
   private GameManagerView viewGameManager;
 
   // RESOURCES
-  private int timeJoinRoom, statusBarHeight, tooltipFirstGameHeight;
+  private int statusBarHeight;
 
   // OBSERVABLES
   private Unbinder unbinder;
   private CompositeSubscription persistentSubscriptions = new CompositeSubscription();
   private CompositeSubscription tempSubscriptions = new CompositeSubscription();
-  private Subscription callDurationSubscription;
+  private Subscription callGameDurationSubscription, callGameAverageSubscription;
 
   private PublishSubject<String> onBuzzPopup = PublishSubject.create();
   private PublishSubject<Void> onShouldJoinRoom = PublishSubject.create();
@@ -259,15 +259,9 @@ public class LiveView extends FrameLayout {
       tagMap.put(TagManagerUtils.MEMBERS_INVITED, invitedCount);
       tagMap.put(TagManagerUtils.WIZZ_COUNT, wizzCount);
       tagMap.put(TagManagerUtils.SCREENSHOT_COUNT, screenshotCount);
-      tagMap.put(TagManagerUtils.POST_IT_GAME_COUNT, postItGameCount);
       tagMap.put(TagManagerUtils.TYPE, TagManagerUtils.DIRECT);
-      // We are entering another call, so we send the tags regarless
-      // else we are pushing the tags only after the call rating popup so we save them
-      if (isJump) {
-        TagManagerUtils.manageTags(tagManager, tagMap);
-      } else {
-        PreferencesUtils.saveMapAsJson(tagMap, callTagsMap);
-      }
+
+      TagManagerUtils.manageTags(tagManager, tagMap);
     }
 
     for (LiveRowView liveRowView : liveRowViewMap.getMap().values()) {
@@ -362,10 +356,6 @@ public class LiveView extends FrameLayout {
   }
 
   private void initResources() {
-    timeJoinRoom = getResources().getInteger(R.integer.time_join_room);
-    tooltipFirstGameHeight =
-        getContext().getResources().getDimensionPixelSize(R.dimen.game_tooltip_first_height);
-
     statusBarHeight = 0;
     int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
     if (resourceId > 0) {
@@ -449,6 +439,7 @@ public class LiveView extends FrameLayout {
     gameManager.initUIControlsResetGame(viewControlsLive.onResetScores());
 
     persistentSubscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
+      startGameStats(game.getId());
       displayStartGameNotification(game.getTitle(), user.getDisplayName());
       restartGame(game);
     }));
@@ -467,6 +458,7 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(gameManager.onRemoteUserStartGame().subscribe(pairSessionGame -> {
       if (pairSessionGame.second != null) {
+        startGameStats(pairSessionGame.second.getId());
         String displayName = getDisplayNameFromSession(pairSessionGame.first);
         displayStartGameNotification(pairSessionGame.second.getTitle(), displayName);
         startGame(pairSessionGame.second, false);
@@ -539,7 +531,7 @@ public class LiveView extends FrameLayout {
             .onBackpressureDrop()
             .subscribe(intervalCount -> {
               interval++;
-              totalSizeLive += nbLiveInRoom() + 1;
+              totalSizeLive += nbLiveInRoom();
               averageCountLive = (double) totalSizeLive / interval;
               averageCountLive = DoubleUtils.round(averageCountLive, 2);
 
@@ -1075,6 +1067,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void stopGame() {
+    endGameStats(gameManager.getCurrentGame().getId());
     onTouchEnabled.onNext(true);
     gameManager.setCurrentGame(null);
     removeView(viewGameManager);
@@ -1106,6 +1099,94 @@ public class LiveView extends FrameLayout {
   private void displayStopGameNotification(String gameName, String userDisplayName) {
     onNotificationGameStopped.onNext(EmojiParser.demojizedText(
         getResources().getString(R.string.game_event_stopped, userDisplayName, gameName)));
+  }
+
+  private void startGameStats(String gameId) {
+    String tagCount = gameId + TagManagerUtils.tagGameCountSuffix;
+
+    int count = (int) tagMap.getOrDefault(tagCount, 0) + 1;
+    tagMap.put(tagCount, count);
+    tagManager.increment(tagCount, 1);
+
+    startGameTimerSubscription(gameId);
+  }
+
+  private void endGameStats(String gameId) {
+    endGameTimerSubscription(gameId);
+  }
+
+  private void startGameTimerSubscription(String gameId) {
+    if (callGameAverageSubscription == null) {
+      String tagAverage = gameId + TagManagerUtils.tagGameAverageMembersSuffix;
+
+      callGameAverageSubscription =
+          Observable.interval(10, TimeUnit.SECONDS, Schedulers.computation())
+              .onBackpressureDrop()
+              .doOnUnsubscribe(() -> {
+                if (!tagMap.containsKey(tagAverage)) {
+                  tagMap.put(tagAverage, averageCountGameLive);
+                } else {
+                  tagMap.put(tagAverage,
+                      (averageCountGameLive + (double) tagMap.get(tagAverage)) / 2);
+                }
+              })
+              .subscribe(intervalCount -> {
+                intervalGame++;
+                totalSizeGameLive += nbLiveInRoom();
+                averageCountGameLive = (double) totalSizeGameLive / intervalGame;
+                averageCountGameLive = DoubleUtils.round(averageCountGameLive, 2);
+              });
+
+      tempSubscriptions.add(callGameAverageSubscription);
+    }
+
+    if (callGameDurationSubscription == null) {
+      Date startedAt = new Date();
+      String tagDuration = gameId + TagManagerUtils.tagGameDurationSuffix;
+
+      callGameDurationSubscription = Observable.interval(1, TimeUnit.SECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .doOnUnsubscribe(() -> {
+            double durationGame = getDuration(startedAt);
+            double totalGameDuration =
+                (double) tagMap.getOrDefault(TagManagerUtils.GAME_DURATION, 0.0D) + durationGame;
+            tagMap.put(TagManagerUtils.GAME_DURATION, totalGameDuration);
+            tagManager.increment(TagManagerUtils.GAME_DURATION, totalGameDuration);
+          })
+          .subscribe(tick -> {
+            double durationGame = getDuration(startedAt);
+            tagMap.put(tagDuration, durationGame);
+            tagManager.increment(tagDuration, durationGame);
+          });
+
+      tempSubscriptions.add(callGameDurationSubscription);
+    }
+  }
+
+  private double getDuration(Date startDate) {
+    long delta = new Date().getTime() - startDate.getTime();
+    double durationGame = (double) delta / 60000.0;
+    return DoubleUtils.round(durationGame, 2);
+  }
+
+  private void endGameTimerSubscription(String gameId) {
+    if (callGameDurationSubscription != null) {
+      tempSubscriptions.remove(callGameDurationSubscription);
+      callGameDurationSubscription.unsubscribe();
+      callGameDurationSubscription = null;
+    }
+
+    if (callGameAverageSubscription != null) {
+      tempSubscriptions.remove(callGameAverageSubscription);
+      callGameAverageSubscription.unsubscribe();
+      callGameAverageSubscription = null;
+    }
+
+    String tagCount = gameId + TagManagerUtils.tagGameCountSuffix;
+    int totalGameCount = (int) tagMap.getOrDefault(TagManagerUtils.GAME_COUNT, 0) +
+        (int) tagMap.getOrDefault(tagCount, 0);
+    tagMap.put(TagManagerUtils.GAME_COUNT, totalGameCount);
+    tagManager.increment(tagCount, totalGameCount);
   }
 
   //////////////////////

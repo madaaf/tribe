@@ -42,6 +42,7 @@ public class TagManagerUtils {
   public static final String EditGroupName = "EditGroupName";
   public static final String Shortcut = "Shortcut";
   public static final String Chats = "Chats";
+  public static final String Game = "Game";
 
   /**
    * ERRORS
@@ -65,9 +66,11 @@ public class TagManagerUtils {
   public static final String CALL = "call";
   public static final String SEARCH = "search";
   public static final String INVITE = "invite";
+  public static final String CHAT = "chat";
   public static final String ONBOARDING = "onboarding";
   public static final String PROFILE = "profile";
   public static final String ACTION = "action";
+  public static final String GAME = "game";
   public static final String UNKNOWN = "unknown";
   public static final String CANCELLED = "cancelled";
   public static final String CANCEL = "cancel";
@@ -100,6 +103,12 @@ public class TagManagerUtils {
   public static final String TEXT_COUNT = "text_count";
   public static final String AUDIO_COUNT = "audio_count";
   public static final String IMAGE_COUNT = "image_count";
+  public static final String GAME_COUNT = "game_count";
+  public static final String GAME_DURATION = "game_duration";
+
+  public static final String tagGameCountSuffix = "_game_count";
+  public static final String tagGameDurationSuffix = "_game_duration";
+  public static final String tagGameAverageMembersSuffix = "_members_count";
 
   /**
    * USER PROPERTIES

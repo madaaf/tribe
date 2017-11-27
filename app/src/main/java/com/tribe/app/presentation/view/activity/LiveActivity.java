@@ -58,6 +58,7 @@ import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
@@ -894,7 +895,7 @@ public class LiveActivity extends BaseActivity
         subscribe(aVoid -> reRollTheDiceFromCallRoulette(true)));
 
     subscriptions.add(
-        viewLive.openGameStore().subscribe(aVoid -> navigator.navigateToNewGame(this)));
+        viewLive.openGameStore().subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
 
     subscriptions.add(gameManager.onCurrentUserStartGame()
         .subscribe(game -> livePresenter.roomStartGame(room.getId(), game.getId())));

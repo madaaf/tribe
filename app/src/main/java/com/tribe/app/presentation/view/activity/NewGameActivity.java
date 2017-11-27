@@ -23,6 +23,7 @@ import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
 import com.tribe.app.presentation.view.utils.GlideUtils;
@@ -41,12 +42,14 @@ public class NewGameActivity extends BaseActivity {
   public static final String CALL_ROULETTE = "call_roulette";
   public static final String GAME_ID = "game_id";
   public static final String FROM_HOME = "from_home";
+  public static final String SOURCE = "source";
 
   private static final int DURATION = 200;
 
-  public static Intent getCallingIntent(Activity activity) {
+  public static Intent getCallingIntent(Activity activity, String source) {
     Intent intent = new Intent(activity, NewGameActivity.class);
     intent.putExtra(FROM_HOME, activity instanceof HomeActivity);
+    intent.putExtra(SOURCE, source);
     return intent;
   }
 
@@ -73,6 +76,7 @@ public class NewGameActivity extends BaseActivity {
   // VARIABLES
   private boolean disableUI = false, isFromHome = false;
   private Game selectedGame = null;
+  private String source;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -82,7 +86,10 @@ public class NewGameActivity extends BaseActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_new_game);
 
-    isFromHome = getIntent().getBooleanExtra(FROM_HOME, false);
+    if (getIntent() != null && getIntent().getExtras() != null) {
+      isFromHome = getIntent().getBooleanExtra(FROM_HOME, false);
+      source = getIntent().getStringExtra(SOURCE);
+    }
 
     unbinder = ButterKnife.bind(this);
 
@@ -119,6 +126,12 @@ public class NewGameActivity extends BaseActivity {
         progressView.setVisibility(View.VISIBLE);
         txtAction.setVisibility(View.GONE);
         viewGamesMembers.create();
+
+        Bundle bundle = new Bundle();
+        bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.GAME);
+        bundle.putString(TagManagerUtils.SOURCE, source);
+        bundle.putString(TagManagerUtils.GAME, selectedGame.getId());
+        tagManager.trackEvent(TagManagerUtils.Game, bundle);
       }
     });
 
@@ -147,6 +160,15 @@ public class NewGameActivity extends BaseActivity {
   }
 
   @Override public void onBackPressed() {
+    if (viewStack.getTopView() instanceof GamesStoreView) {
+      Bundle bundle = new Bundle();
+      bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.CANCEL);
+      bundle.putString(TagManagerUtils.SOURCE, source);
+      tagManager.trackEvent(TagManagerUtils.Game, bundle);
+    }
+
+    finish();
+
     screenUtils.hideKeyboard(this);
 
     if (disableUI) {

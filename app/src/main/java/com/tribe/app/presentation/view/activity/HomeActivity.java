@@ -1011,7 +1011,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void navigateToNewGame() {
-    HomeActivity.this.navigator.navigateToNewGame(this);
+    HomeActivity.this.navigator.navigateToNewGame(this, TagManagerUtils.HOME);
   }
 
   private void navigateToChat(Recipient recipient, String gesture) {
@@ -1138,17 +1138,7 @@ public class HomeActivity extends BaseActivity
         }
       } else if (data.getBooleanExtra(ErrorNotificationView.DISPLAY_ERROR_NOTIF, false)) {
         errorNotificationView.displayView();
-      } else if (!notificationContainerView.showNotification(data, null)) {
-        displayRatingNotifView(data);
       }
-    }
-  }
-
-  private void displayRatingNotifView(Intent data) {
-    if (data.getBooleanExtra(RatingNotificationView.DISPLAY_RATING_NOTIF, false)) {
-      long timeout = data.getLongExtra(LiveActivity.TIMEOUT_RATING_NOTIFICATON, 0);
-      String roomId = data.getStringExtra(LiveActivity.ROOM_ID);
-      ratingNotificationView.displayView(timeout, roomId);
     }
   }
 

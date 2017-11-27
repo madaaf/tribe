@@ -40,7 +40,7 @@ ext {
   reboundVersion = '0.3.8'
   rxSharedPreferencesVersion = '1.0.1'
   libPhoneNumberVersion = '8.4.0'
-  exoPlayerVersion = 'r1.5.10'
+  exoPlayerVersion = 'r2.6.0'
   vlcPlayerVersion = '1.9.8'
   circularProgressViewVersion = '2.5.0'
   rxLocationVersion = '0.9@aar'

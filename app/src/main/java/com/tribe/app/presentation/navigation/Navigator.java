@@ -286,9 +286,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToNewGame(Activity activity) {
+  public void navigateToNewGame(Activity activity, String source) {
     if (activity != null) {
-      Intent intent = NewGameActivity.getCallingIntent(activity);
+      Intent intent = NewGameActivity.getCallingIntent(activity, source);
       activity.startActivityForResult(intent, FROM_NEW_GAME);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }

@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live.game.web;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
@@ -138,10 +139,17 @@ public class GameWebView extends GameViewWithEngine {
         mediaPlayer = new MediaPlayer();
         try {
           mediaPlayer.setDataSource(value);
-          mediaPlayer.prepare();
-          mediaPlayer.start();
+          mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+          mediaPlayer.prepareAsync();
+          mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+            @Override public void onPrepared(MediaPlayer mp) {
+              mediaPlayer.start();
+            }
+          });
         } catch (IOException e) {
-          Timber.e("Soundtrack prepare() failed");
+          e.printStackTrace();
+          Timber.e("Soundtrack prepare() failed", e);
         }
       });
     }
