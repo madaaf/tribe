@@ -545,6 +545,9 @@ import timber.log.Timber;
         requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType() +
             " " +
             tribeAuthorizer.getAccessToken().getAccessToken());
+
+        TribeApiUtils.appendTribeHeaders(context, tribeAuthorizer.getAccessToken().getUserId(), requestBuilder);
+
       } else {
         byte[] data = (tribeAuthorizer.getApiClient() +
             ":" +
@@ -552,9 +555,10 @@ import timber.log.Timber;
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
         requestBuilder.header("Authorization", "Basic " + base64);
+
+        TribeApiUtils.appendTribeHeaders(context, null, requestBuilder);
       }
 
-      TribeApiUtils.appendUserAgent(context, requestBuilder);
       requestBuilder.method(original.method(), original.body());
 
       Request request = requestBuilder.build();

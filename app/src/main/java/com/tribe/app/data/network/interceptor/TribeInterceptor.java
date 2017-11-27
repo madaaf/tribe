@@ -47,7 +47,7 @@ public class TribeInterceptor implements Interceptor {
     requestBuilder.header("Authorization",
         tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken()
             .getAccessToken());
-    TribeApiUtils.appendUserAgent(context, requestBuilder);
+    TribeApiUtils.appendTribeHeaders(context, tribeAuthorizer.getAccessToken().getUserId(), requestBuilder);
     requestBuilder.method(original.method(), original.body());
 
     Request request = requestBuilder.build();
