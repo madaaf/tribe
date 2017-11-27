@@ -20,8 +20,13 @@ buildscript {
 allprojects {
   ext {
     androidApplicationId = 'com.tribe.app'
+<<<<<<< HEAD
     androidVersionCode = 132
     androidVersionName = "4.0.1"
+=======
+    androidVersionCode = 131
+    androidVersionName = "4.0"
+>>>>>>> stable_version
     testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     testApplicationId = 'com.tribe.app.test'
   }
