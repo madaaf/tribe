@@ -207,7 +207,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   //  PRIVATE   ///
   /////////////////
 
-  private void hide() {
+  public void hide() {
     if (screen != null) screen.setEnabled(false);
 
     soundManager.cancelMediaPlayer();
