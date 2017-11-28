@@ -184,7 +184,7 @@ public class NewGameActivity extends BaseActivity {
 
   @Override public void finish() {
     super.finish();
-    overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
+    overridePendingTransition(R.anim.activity_in_scale, R.anim.slide_out_down);
   }
 
   @Override public boolean dispatchTouchEvent(@NonNull MotionEvent ev) {

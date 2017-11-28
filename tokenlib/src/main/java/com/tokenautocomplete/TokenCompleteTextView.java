@@ -1358,18 +1358,23 @@ public abstract class TokenCompleteTextView<T>
         int spanStart = text.getSpanStart(token);
         int spanEnd = text.getSpanEnd(token);
 
-        removeToken(token, text);
+        if (token.view.isSelected()) {
+          removeToken(token, text);
 
-        //The end of the span is the character index after it
-        spanEnd--;
+          //The end of the span is the character index after it
+          spanEnd--;
 
-        //Delete any extra split chars
-        if (spanEnd >= 0 && isSplitChar(text.charAt(spanEnd))) {
-          text.delete(spanEnd, spanEnd + 1);
-        }
+          //Delete any extra split chars
+          if (spanEnd >= 0 && isSplitChar(text.charAt(spanEnd))) {
+            text.delete(spanEnd, spanEnd + 1);
+          }
 
-        if (spanStart >= 0 && isSplitChar(text.charAt(spanStart))) {
-          text.delete(spanStart, spanStart + 1);
+          if (spanStart >= 0 && isSplitChar(text.charAt(spanStart))) {
+            text.delete(spanStart, spanStart + 1);
+          }
+        } else {
+          token.view.setSelected(true);
+          invalidate();
         }
       }
 

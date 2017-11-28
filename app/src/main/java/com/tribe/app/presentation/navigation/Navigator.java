@@ -290,7 +290,7 @@ public class Navigator {
     if (activity != null) {
       Intent intent = NewGameActivity.getCallingIntent(activity, source);
       activity.startActivityForResult(intent, FROM_NEW_GAME);
-      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.activity_out_scale_down);
     }
   }
 
