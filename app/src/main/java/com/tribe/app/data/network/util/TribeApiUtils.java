@@ -26,7 +26,22 @@ public class TribeApiUtils {
         + agent;
   }
 
-  public static void appendUserAgent(Context context, Request.Builder requestBuilder) {
+  public static void appendTribeHeaders(Context context, String userId, Request.Builder requestBuilder) {
+
+    // User-Agent
     requestBuilder.header("User-Agent", TribeApiUtils.getUserAgent(context));
+
+    // Platform
+    requestBuilder.header("X-Tribe-Platform", "Android");
+
+    // AppVersion
+    requestBuilder.header("X-Tribe-AppVersion", "" + DeviceUtils.getVersionCode(context));
+
+    // UserId
+    if (userId != null) {
+      requestBuilder.header("X-Tribe-UserId", userId);
+    }
+
+
   }
 }

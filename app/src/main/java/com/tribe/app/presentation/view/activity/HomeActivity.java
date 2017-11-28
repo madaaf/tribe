@@ -678,7 +678,15 @@ public class HomeActivity extends BaseActivity
               finalList.addAll(contactsInvite);
               finalList.addAll(contactsFBInvite);
 
-              return finalList;
+              List<HomeAdapterInterface> refactordList = new ArrayList<>();
+
+              for (HomeAdapterInterface u : finalList) {
+                if (!refactordList.contains(u)) {
+                  refactordList.add(u);
+                }
+              }
+
+              return refactordList;
             }).subscribeOn(singleThreadExecutor).
             map(recipientList -> {
               DiffUtil.DiffResult diffResult = null;

@@ -788,7 +788,8 @@ public class ChatView extends ChatMVPView {
     if (type.equals(MESSAGE_IMAGE) || type.equals(MESSAGE_AUDIO)) {
       sendMedia(uri, fileName, 0, type);
     } else {
-      recyclerView.sendMessageToNetwork(arrIds, content, realmType, 0);
+      String replaced = content.replace("\"", "“");
+      recyclerView.sendMessageToNetwork(arrIds, replaced, realmType, 0);
     }
   }
 

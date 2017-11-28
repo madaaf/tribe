@@ -276,10 +276,9 @@ public class RecyclerMessageView extends ChatMVPView {
     messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString(),
         dateUtils.getUTCDateWithDeltaAsString(-(2 * ONE_HOUR_DURATION)));
     messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString(), null);
-    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString(), null);
-
     messagePresenter.onMessageReceivedFromDisk();
     messagePresenter.onMessageRemovedFromDisk();
+    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateForMessage(), null);
   }
 
   public void sendMessageToNetwork(String[] arrIds, String data, String type, int position) {
