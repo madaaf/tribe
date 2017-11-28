@@ -528,6 +528,14 @@
 	<string name="tips_waiting60sec_message">You can video call with up to 8 people in a room.</string>
 	<string name="tips_waiting60sec_action1">Drag guests in!</string>
 	<string name="tips_waiting60sec_action2">Later</string>
+	<string name="tips_report_title">Report this user?</string>
+	<string name="tips_report_message">Don\'t hesitate to report this user to the team if this user is stream inappropriate content.</string>
+	<string name="tips_report_action1">Report</string>
+	<string name="tips_report_action2">Cancel</string>
+	<string name="tips_addfriend_title">Add as friend?</string>
+	<string name="tips_addfriend_message">Follow-up with this user directly from your home.</string>
+	<string name="tips_addfriend_action1">Add as friend</string>
+	<string name="tips_addfriend_action2">Cancel</string>
 	
 	<!-- Live Rating -->
 	<string name="live_rating_title">Rate the quality of your video call! :metal:</string>

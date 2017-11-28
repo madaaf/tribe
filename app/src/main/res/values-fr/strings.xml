@@ -528,6 +528,14 @@
 	<string name="tips_waiting60sec_message">Vous pouvez être en appel avec plus de 8 personnes simultanément.</string>
 	<string name="tips_waiting60sec_action1">Invitez des amis !</string>
 	<string name="tips_waiting60sec_action2">Plus tard</string>
+	<string name="tips_report_title">Signaler cet utilisateur ?</string>
+	<string name="tips_report_message">N\'hésitez pas à signaler cet utilisateur à notre équipe si celui-ci diffuse un contenu inapproprié ou offensant.</string>
+	<string name="tips_report_action1">Signaler</string>
+	<string name="tips_report_action2">Annuler</string>
+	<string name="tips_addfriend_title">Ajouter en ami ?</string>
+	<string name="tips_addfriend_message">Gardez contact avec cet utilisateur directement depuis votre écran d\'accueil.</string>
+	<string name="tips_addfriend_action1">Ajouter en ami</string>
+	<string name="tips_addfriend_action2">Annuler</string>
 	
 	<!-- Live Rating -->
 	<string name="live_rating_title">Notez la qualité de votre appel ! :metal:</string>

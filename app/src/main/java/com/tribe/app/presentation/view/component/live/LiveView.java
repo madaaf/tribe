@@ -1104,7 +1104,10 @@ public class LiveView extends FrameLayout {
   private void startGameStats(String gameId) {
     String tagCount = gameId + TagManagerUtils.tagGameCountSuffix;
 
-    int count = (int) tagMap.getOrDefault(tagCount, 0) + 1;
+    int count = 0;
+    if (tagMap.containsKey(tagCount)) tagMap.get(tagCount);
+    count += 1;
+
     tagMap.put(tagCount, count);
     tagManager.increment(tagCount, 1);
 
@@ -1148,8 +1151,14 @@ public class LiveView extends FrameLayout {
           .observeOn(AndroidSchedulers.mainThread())
           .doOnUnsubscribe(() -> {
             double durationGame = getDuration(startedAt);
-            double totalGameDuration =
-                (double) tagMap.getOrDefault(TagManagerUtils.GAME_DURATION, 0.0D) + durationGame;
+            double totalGameDuration = 0.0D;
+
+            if (tagMap.containsKey(TagManagerUtils.GAME_DURATION)) {
+              totalGameDuration = (double) tagMap.get(TagManagerUtils.GAME_DURATION);
+            }
+
+            totalGameDuration += durationGame;
+
             tagMap.put(TagManagerUtils.GAME_DURATION, totalGameDuration);
             tagManager.increment(TagManagerUtils.GAME_DURATION, totalGameDuration);
           })
@@ -1183,8 +1192,18 @@ public class LiveView extends FrameLayout {
     }
 
     String tagCount = gameId + TagManagerUtils.tagGameCountSuffix;
-    int totalGameCount = (int) tagMap.getOrDefault(TagManagerUtils.GAME_COUNT, 0) +
-        (int) tagMap.getOrDefault(tagCount, 0);
+
+    int totalGameCount = 0;
+    if (tagMap.containsKey(TagManagerUtils.GAME_COUNT)) {
+      totalGameCount = (int) tagMap.get(TagManagerUtils.GAME_COUNT);
+    }
+
+    int gameCount = 0;
+
+    if (tagMap.containsKey(tagCount)) gameCount = (int) tagMap.get(tagCount);
+
+    totalGameCount += gameCount;
+
     tagMap.put(TagManagerUtils.GAME_COUNT, totalGameCount);
     tagManager.increment(tagCount, totalGameCount);
   }
