@@ -158,6 +158,7 @@
             picture
             created_at
             push_notif
+            mute_online_notif
             is_online
             last_seen_at
             time_in_call

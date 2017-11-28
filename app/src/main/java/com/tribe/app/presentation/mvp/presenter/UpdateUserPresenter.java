@@ -91,7 +91,7 @@ public abstract class UpdateUserPresenter implements Presenter {
 
   public void updateUserPushNotif(boolean pushNotif) {
     List<Pair<String, String>> values = new ArrayList<>();
-    values.add(new Pair<>(UserRealm.PUSH_NOTIF, String.valueOf(pushNotif)));
+    values.add(new Pair<>(UserRealm.MUTE_ONLINE_NOTIF, String.valueOf(pushNotif)));
     updateUser.prepare(values);
     updateUser.execute(new UpdateUserSubscriber());
   }

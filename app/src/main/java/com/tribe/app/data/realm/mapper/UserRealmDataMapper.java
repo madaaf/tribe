@@ -55,6 +55,7 @@ import javax.inject.Singleton;
       user.setIsLive(userRealm.isLive());
       user.setLastSeenAt(userRealm.getLastSeenAt());
       user.setRandom_banned_until(userRealm.getRandom_banned_until());
+      user.setMute_online_notif(userRealm.isMute_online_notif());
       if (userRealm.getRandom_banned_permanently() != null) {
         user.setRandom_banned_permanently(userRealm.getRandom_banned_permanently());
       }
@@ -171,6 +172,7 @@ import javax.inject.Singleton;
       userRealm.setFbid(user.getFbid());
       userRealm.setPhone(user.getPhone());
       userRealm.setPushNotif(user.isPushNotif());
+      userRealm.setMute_online_notif(user.isMute_online_notif());
       userRealm.setIsOnline(user.isOnline());
       userRealm.setIsLive(user.isLive());
       userRealm.setTimeInCall(user.getTimeInCall());

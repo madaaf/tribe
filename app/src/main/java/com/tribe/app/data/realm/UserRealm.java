@@ -28,6 +28,7 @@ public class UserRealm extends RealmObject {
   public static final String TRIBE_SAVE = "tribe_save";
   public static final String UPDATED_AT = "updated_at";
   public static final String PUSH_NOTIF = "push_notif";
+  public static final String MUTE_ONLINE_NOTIF = "mute_online_notif";
   public static final String TIME_IN_CALL = "time_in_call";
 
   @PrimaryKey private String id;
@@ -44,6 +45,7 @@ public class UserRealm extends RealmObject {
   private RealmList<MessageRealm> messages;
   private boolean invisible_mode;
   private boolean push_notif = true;
+  private boolean mute_online_notif = false;
   private Date last_seen_at;
   private long time_in_call = 0;
   private Boolean random_banned_permanently;
@@ -184,6 +186,14 @@ public class UserRealm extends RealmObject {
 
   public void setInvites(List<Invite> invites) {
     this.invites = invites;
+  }
+
+  public void setMute_online_notif(boolean mute_online_notif) {
+    this.mute_online_notif = mute_online_notif;
+  }
+
+  public boolean isMute_online_notif() {
+    return mute_online_notif;
   }
 
   public List<Invite> getInvites() {

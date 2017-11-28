@@ -514,8 +514,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
     }).subscribe());
 
     subscriptions.add(viewSettingsManageFriendships.onClickMuteAll().doOnNext(aVoid -> {
-      profilePresenter.updateUserPushNotif(!getCurrentUser().isPushNotif());
-      getCurrentUser().setPushNotif(!getCurrentUser().isPushNotif());
+      profilePresenter.updateUserPushNotif(!getCurrentUser().isMute_online_notif());
+      getCurrentUser().setMute_online_notif(!getCurrentUser().isMute_online_notif());
     }).subscribe());
 
     profilePresenter.loadSingleShortcuts();

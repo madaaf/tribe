@@ -131,7 +131,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(10)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(11)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -257,6 +257,12 @@ public class AndroidApplication extends Application {
                   .addField("url", String.class)
                   .addField("dataUrl", String.class);
             }
+
+            oldVersion++;
+          }
+
+          if (oldVersion == 10) {
+            schema.get("UserRealm").addField("mute_online_notif", boolean.class);
 
             oldVersion++;
           }

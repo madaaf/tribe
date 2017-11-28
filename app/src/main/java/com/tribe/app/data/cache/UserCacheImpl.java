@@ -142,27 +142,41 @@ public class UserCacheImpl implements UserCache {
 
   private void updateUser(UserRealm from, UserRealm to) {
     if (!StringUtils.isEmpty(from.getUsername())) to.setUsername(from.getUsername());
+
     if (!StringUtils.isEmpty(from.getPhone())) to.setPhone(from.getPhone());
+
     if (!StringUtils.isEmpty(from.getDisplayName())) to.setDisplayName(from.getDisplayName());
+
     if (from.getTimeInCall() > 0) to.setTimeInCall(from.getTimeInCall());
+
     if (!StringUtils.isEmpty(from.getProfilePicture())) {
       to.setProfilePicture(from.getProfilePicture());
     }
+
     if (from.getJsonPayloadUpdate() == null || from.getJsonPayloadUpdate().has(UserRealm.FBID)) {
       to.setFbid(from.getFbid());
     }
+
     if (from.getJsonPayloadUpdate() == null ||
         from.getJsonPayloadUpdate().has(UserRealm.TRIBE_SAVE)) {
       to.setTribeSave(from.isTribeSave());
     }
+
     if (from.getJsonPayloadUpdate() == null ||
         from.getJsonPayloadUpdate().has(UserRealm.INVISIBLE_MODE)) {
       to.setInvisibleMode(from.isInvisibleMode());
     }
+
     if (from.getJsonPayloadUpdate() == null ||
         from.getJsonPayloadUpdate().has(UserRealm.PUSH_NOTIF)) {
       to.setPushNotif(from.isPushNotif());
     }
+
+    if (from.getJsonPayloadUpdate() == null ||
+        from.getJsonPayloadUpdate().has(UserRealm.MUTE_ONLINE_NOTIF)) {
+      to.setMute_online_notif(from.isMute_online_notif());
+    }
+
     if (from.getLastSeenAt() != null) to.setLastSeenAt(from.getLastSeenAt());
 
     if (from.getRandom_banned_until() != null) {

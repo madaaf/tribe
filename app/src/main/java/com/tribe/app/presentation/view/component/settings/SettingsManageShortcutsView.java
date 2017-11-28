@@ -114,7 +114,7 @@ public class SettingsManageShortcutsView extends LinearLayout {
         .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
         .subscribe(onClickRemove));
 
-    switchMute.setChecked(!user.isPushNotif());
+    switchMute.setChecked(user.isMute_online_notif());
     switchMute.setOnClickListener(v -> onClickMuteAll.onNext(null));
   }
 

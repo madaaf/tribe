@@ -48,6 +48,7 @@ public class User
   private String fbid;
   private boolean invisible_mode;
   private boolean push_notif;
+  private boolean mute_online_notif;
   private boolean is_online = false;
   private boolean is_live = false;
   private boolean isActive = false;
@@ -215,6 +216,14 @@ public class User
 
   public boolean isPushNotif() {
     return push_notif;
+  }
+
+  public void setMute_online_notif(boolean mute_online_notif) {
+    this.mute_online_notif = mute_online_notif;
+  }
+
+  public boolean isMute_online_notif() {
+    return mute_online_notif;
   }
 
   @Override public boolean isOnline() {
@@ -389,6 +398,7 @@ public class User
       setTimeInCall(user.getTimeInCall());
       setLastSeenAt(user.getLastSeenAt());
       setRandom_banned_until(user.getRandom_banned_until());
+      setMute_online_notif(user.isMute_online_notif());
     }
   }
 
@@ -406,6 +416,7 @@ public class User
     setTimeInCall(0);
     setLastSeenAt(null);
     setRandom_banned_until(null);
+    setMute_online_notif(false);
   }
 
   public boolean isEmpty() {
@@ -431,17 +442,17 @@ public class User
   }
 
   @Override public String toString() {
-    return "User{"
-        + "id='"
-        + id
-        + '\''
-        + ", display_name='"
-        + display_name
-        + '\''
-        + ", is_online="
-        + isOnline()
-        + ", isActive="
-        + isActive()
-        + '}';
+    return "User{" +
+        "id='" +
+        id +
+        '\'' +
+        ", display_name='" +
+        display_name +
+        '\'' +
+        ", is_online=" +
+        isOnline() +
+        ", isActive=" +
+        isActive() +
+        '}';
   }
 }

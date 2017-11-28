@@ -80,6 +80,10 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       userRealm.setPushNotif(result.get("push_notif").getAsBoolean());
     }
 
+    if (result.get("mute_online_notif") != null) {
+      userRealm.setMute_online_notif(result.get("mute_online_notif").getAsBoolean());
+    }
+
     try {
       if (result.get("created_at") != null) {
         userRealm.setCreatedAt(simpleDateFormat.parse(result.get("created_at").getAsString()));
@@ -160,10 +164,10 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
         if (!(obj instanceof JsonNull)) {
           ShortcutRealm shortcut = gson.fromJson(obj, ShortcutRealm.class);
           if (category.equals("online")) shortcut.setOnline(true);
-          if (shortcut != null
-              && !shortcutSet.contains(shortcut.getId())
-              && shortcut.getMembers() != null
-              && shortcut.getMembers().size() > 0) {
+          if (shortcut != null &&
+              !shortcutSet.contains(shortcut.getId()) &&
+              shortcut.getMembers() != null &&
+              shortcut.getMembers().size() > 0) {
             listShortcuts.add(shortcut);
             shortcutSet.add(shortcut.getId());
           }
