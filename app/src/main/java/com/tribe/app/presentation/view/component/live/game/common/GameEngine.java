@@ -132,7 +132,7 @@ public class GameEngine {
           }
         }
 
-        playersToRemove.forEach(s -> mapPlayerStatus.remove(s));
+        for (String s : playersToRemove) mapPlayerStatus.remove(s);
       }
 
       isFirst = false;

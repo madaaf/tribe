@@ -87,7 +87,9 @@ import rx.subscriptions.CompositeSubscription;
 
     if (games != null) {
       for (Game game : games) {
-        if (Arrays.asList(playableGames).contains(game.getId())) {
+        if (Arrays.asList(playableGames).contains(game.getId()) &&
+            (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N ||
+                !game.isWeb())) {
           gameList.add(game);
         }
       }

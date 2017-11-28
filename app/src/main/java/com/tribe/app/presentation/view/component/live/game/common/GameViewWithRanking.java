@@ -122,12 +122,12 @@ public abstract class GameViewWithRanking extends GameView {
   protected void updateRanking(Map<String, Integer> scores) {
     if (scores == null) return;
 
-    scores.keySet().forEach(tribeGuestId -> {
+    for (String tribeGuestId : scores.keySet()) {
       if (scores.containsKey(tribeGuestId) && peerMap.containsKey(tribeGuestId)) {
         mapRanking.put(peerMap.get(tribeGuestId), scores.get(tribeGuestId));
         mapRankingById.put(tribeGuestId, scores.get(tribeGuestId));
       }
-    });
+    }
 
     game.getContextMap().put(SCORES_KEY, scores);
 
@@ -289,21 +289,21 @@ public abstract class GameViewWithRanking extends GameView {
           playerList.add(currentUser.asTribeGuest());
 
           List<TribeGuest> newPlayerList = new ArrayList<>();
-          playerList.forEach(tribeGuest -> {
+          for (TribeGuest tribeGuest : playerList) {
             if (!rankedPlayers.contains(tribeGuest)) newPlayerList.add(tribeGuest);
-          });
+          }
 
           List<TribeGuest> leftPlayerList = new ArrayList<>();
-          rankedPlayers.forEach(tribeGuest -> {
+          for (TribeGuest tribeGuest : rankedPlayers) {
             if (!playerList.contains(tribeGuest)) leftPlayerList.add(tribeGuest);
-          });
+          }
 
-          leftPlayerList.forEach(tribeGuest -> {
+          for (TribeGuest tribeGuest : leftPlayerList) {
             mapRanking.remove(tribeGuest);
             mapRankingById.remove(tribeGuest.getId());
             mapStatuses.remove(tribeGuest);
             mapStatusesById.remove(tribeGuest.getId());
-          });
+          }
 
           if (game.getContextMap().get(SCORES_KEY) != null) {
             sendScore(SCORES_KEY, game.getContextMap());

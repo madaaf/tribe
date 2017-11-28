@@ -88,9 +88,11 @@ import rx.android.schedulers.AndroidSchedulers;
       if (mediaPlayer != null) cancelMediaPlayer();
 
       mediaPlayer = MediaPlayer.create(context, soundsRawIds.get(index));
-      mediaPlayer.setVolume(volumeRate, volumeRate);
-      mediaPlayer.setLooping(true);
-      mediaPlayer.start();
+      if (mediaPlayer != null) {
+        mediaPlayer.setVolume(volumeRate, volumeRate);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+      }
     } else {
       if (availaibleSounds.contains(index) && uiSounds.get()) {
         int streamVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);

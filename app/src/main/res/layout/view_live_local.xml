@@ -38,7 +38,6 @@
       android:layout_marginStart="@dimen/horizontal_margin_smaller"
       android:gravity="center"
       android:maxLines="1"
-      android:text="\uD83D\uDCA9"
       android:visibility="gone"
       style="@style/Headline.White.2"
       />
