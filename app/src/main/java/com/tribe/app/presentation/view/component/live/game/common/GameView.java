@@ -2,13 +2,17 @@ package com.tribe.app.presentation.view.component.live.game.common;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 import butterknife.Unbinder;
+import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -26,8 +30,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -53,11 +60,13 @@ public abstract class GameView extends FrameLayout {
   protected Map<String, TribeGuest> peerMap;
   protected Map<String, LiveStreamView> liveViewsMap;
   protected String currentMasterId;
+  protected boolean landscapeMode = false;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected CompositeSubscription subscriptionsRoom = new CompositeSubscription();
   protected Observable<Map<String, TribeGuest>> peerMapObservable;
+  protected Subscription timerSubscription;
 
   public GameView(@NonNull Context context) {
     super(context);
@@ -77,6 +86,12 @@ public abstract class GameView extends FrameLayout {
 
     peerMap = new HashMap<>();
     liveViewsMap = new HashMap<>();
+
+    if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      landscapeMode = true;
+    } else {
+      landscapeMode = false;
+    }
   }
 
   protected void initDependencyInjector() {
@@ -93,6 +108,22 @@ public abstract class GameView extends FrameLayout {
 
   protected ActivityModule getActivityModule() {
     return new ActivityModule(((Activity) getContext()));
+  }
+
+  @Override public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+
+    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      landscapeMode = true;
+
+      if (timerSubscription != null) {
+        timerSubscription.unsubscribe();
+        timerSubscription = null;
+      }
+    } else {
+      if (game != null && game.needsLandscape()) showLandscapeToast();
+      landscapeMode = false;
+    }
   }
 
   /**
@@ -121,6 +152,20 @@ public abstract class GameView extends FrameLayout {
 
   protected abstract void takeOverGame();
 
+  private void showLandscapeToast() {
+    if (timerSubscription != null) return;
+
+    final Toast tag =
+        Toast.makeText(getContext(), R.string.game_rotate_landscape, Toast.LENGTH_LONG);
+    tag.setGravity(Gravity.CENTER, 0, 0);
+    tag.show();
+
+    timerSubscription = Observable.interval(0, 3, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .doOnUnsubscribe(() -> tag.cancel())
+        .subscribe(tick -> tag.show());
+  }
+
   /**
    * PUBLIC
    */
@@ -141,6 +186,10 @@ public abstract class GameView extends FrameLayout {
       this.peerMap.clear();
       this.peerMap.putAll(peerMap);
     }));
+
+    if (game.needsLandscape() && !landscapeMode) {
+      showLandscapeToast();
+    }
   }
 
   public void stop() {
@@ -162,6 +211,7 @@ public abstract class GameView extends FrameLayout {
     game = null;
     subscriptionsRoom.unsubscribe();
     subscriptions.unsubscribe();
+    if (timerSubscription != null) timerSubscription.unsubscribe();
   }
 
   public void userLeft(String userId) {

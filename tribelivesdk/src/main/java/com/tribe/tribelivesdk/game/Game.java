@@ -63,11 +63,8 @@ public class Game {
   protected int plays_count;
   protected String __typename;
   protected String url;
-  protected boolean localFrameDifferent = false;
-  protected boolean hasView = false;
-  protected boolean isOverLive = false;
-  protected boolean isWeb = false;
-  protected boolean isUserAction = false;
+  protected boolean localFrameDifferent = false, hasView = false, isOverLive = false, isWeb = false,
+      isUserAction = false, needsLandscape = false;
   protected List<TribeGuest> peerList;
   protected List<String> dataList;
   protected String previousGuestId = null;
@@ -88,6 +85,7 @@ public class Game {
     this.isOverLive =
         id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
     this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
+    this.needsLandscape = id.equals(GAME_SLICE_FRUIT);
     this.peerList = new ArrayList<>();
     this.dataList = new ArrayList<>();
     this.contextMap = new HashMap<>();
@@ -111,6 +109,10 @@ public class Game {
 
   public boolean isWeb() {
     return isWeb;
+  }
+
+  public boolean needsLandscape() {
+    return needsLandscape;
   }
 
   public boolean hasDatas() {
