@@ -301,6 +301,10 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
 
     subscriptions.add(viewProfile.onProfileClick().subscribe(aVoid -> setupProfileDetailView()));
 
+    subscriptions.add(viewProfile.onVideoClick()
+        .subscribe(aVoid -> navigator.navigateToUrl(this,
+            "https://www.facebook.com/Cyrilpaglino/posts/10210983466165378")));
+
     subscriptions.add(viewProfile.onFollowClick()
         .flatMap(aVoid -> DialogFactory.showBottomSheetForFollow(this), ((aVoid, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.INSTAGRAM)) {

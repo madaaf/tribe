@@ -53,6 +53,8 @@ public class ProfileView extends ScrollView {
 
   @BindView(R.id.viewShareProfile) View viewShareProfile;
 
+  @BindView(R.id.viewActionVideo) ActionView viewActionVideo;
+
   @BindView(R.id.viewActionProfile) ActionView viewActionProfile;
 
   @BindView(R.id.viewActionManageFriendships) ActionView viewActionManageFriendships;
@@ -231,6 +233,10 @@ public class ProfileView extends ScrollView {
 
   public Observable<Void> onProfileClick() {
     return viewActionProfile.onClick();
+  }
+
+  public Observable<Void> onVideoClick() {
+    return viewActionVideo.onClick();
   }
 
   public Observable<Void> onFollowClick() {

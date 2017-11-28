@@ -347,8 +347,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToUrl(Context context, String url) {
-    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+  public void navigateToUrl(Activity activity, String url) {
+    activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
   }
 
   /**
