@@ -127,11 +127,13 @@ public class NewGameActivity extends BaseActivity {
         txtAction.setVisibility(View.GONE);
         viewGamesMembers.create();
 
-        Bundle bundle = new Bundle();
-        bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.GAME);
-        bundle.putString(TagManagerUtils.SOURCE, source);
-        bundle.putString(TagManagerUtils.GAME, selectedGame.getId());
-        tagManager.trackEvent(TagManagerUtils.Game, bundle);
+        if (selectedGame != null) {
+          Bundle bundle = new Bundle();
+          bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.GAME);
+          bundle.putString(TagManagerUtils.SOURCE, source);
+          bundle.putString(TagManagerUtils.GAME, selectedGame.getId());
+          tagManager.trackEvent(TagManagerUtils.Game, bundle);
+        }
       }
     });
 

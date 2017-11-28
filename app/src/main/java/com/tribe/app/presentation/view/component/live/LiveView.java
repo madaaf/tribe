@@ -1067,7 +1067,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void stopGame() {
-    endGameStats(gameManager.getCurrentGame().getId());
+    endGameStats();
     onTouchEnabled.onNext(true);
     gameManager.setCurrentGame(null);
     removeView(viewGameManager);
@@ -1114,8 +1114,8 @@ public class LiveView extends FrameLayout {
     startGameTimerSubscription(gameId);
   }
 
-  private void endGameStats(String gameId) {
-    endGameTimerSubscription(gameId);
+  private void endGameStats() {
+    endGameTimerSubscription();
   }
 
   private void startGameTimerSubscription(String gameId) {
@@ -1178,7 +1178,7 @@ public class LiveView extends FrameLayout {
     return DoubleUtils.round(durationGame, 2);
   }
 
-  private void endGameTimerSubscription(String gameId) {
+  private void endGameTimerSubscription() {
     if (callGameDurationSubscription != null) {
       tempSubscriptions.remove(callGameDurationSubscription);
       callGameDurationSubscription.unsubscribe();
@@ -1191,21 +1191,24 @@ public class LiveView extends FrameLayout {
       callGameAverageSubscription = null;
     }
 
-    String tagCount = gameId + TagManagerUtils.tagGameCountSuffix;
+    if (gameManager.getCurrentGame() != null) {
+      String gameId = gameManager.getCurrentGame().getId();
+      String tagCount = gameId + TagManagerUtils.tagGameCountSuffix;
 
-    int totalGameCount = 0;
-    if (tagMap.containsKey(TagManagerUtils.GAME_COUNT)) {
-      totalGameCount = (int) tagMap.get(TagManagerUtils.GAME_COUNT);
+      int totalGameCount = 0;
+      if (tagMap.containsKey(TagManagerUtils.GAME_COUNT)) {
+        totalGameCount = (int) tagMap.get(TagManagerUtils.GAME_COUNT);
+      }
+
+      int gameCount = 0;
+
+      if (tagMap.containsKey(tagCount)) gameCount = (int) tagMap.get(tagCount);
+
+      totalGameCount += gameCount;
+
+      tagMap.put(TagManagerUtils.GAME_COUNT, totalGameCount);
+      tagManager.increment(tagCount, totalGameCount);
     }
-
-    int gameCount = 0;
-
-    if (tagMap.containsKey(tagCount)) gameCount = (int) tagMap.get(tagCount);
-
-    totalGameCount += gameCount;
-
-    tagMap.put(TagManagerUtils.GAME_COUNT, totalGameCount);
-    tagManager.increment(tagCount, totalGameCount);
   }
 
   //////////////////////
