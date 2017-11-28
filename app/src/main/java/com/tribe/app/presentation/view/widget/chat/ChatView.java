@@ -884,42 +884,43 @@ public class ChatView extends ChatMVPView {
   @OnClick(R.id.txtTitle) void onClickTitle() {
     if (members.size() < 2) return;
 
-    subscriptions.add(DialogFactory.showBottomSheetForCustomizeShortcut(getContext())
-        .flatMap(labelType -> {
-          if (labelType != null) {
-            if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
-              subscriptions.add(DialogFactory.inputDialog(getContext(),
-                  getContext().getString(R.string.shortcut_update_name_title),
-                  getContext().getString(R.string.shortcut_update_name_description),
-                  getContext().getString(R.string.shortcut_update_name_validate),
-                  getContext().getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT)
-                  .subscribe(s -> {
-                    sendEventEditGroupName();
-                    messagePresenter.updateShortcutName(shortcut.getId(), s);
-                  }));
-            }
-          }
-
-          return Observable.just(labelType);
-        })
-        .filter(labelType -> labelType.getTypeDef().equals(LabelType.CHANGE_PICTURE))
-        .flatMap(pair -> DialogFactory.showBottomSheetForCamera(getContext()),
-            (pair, labelType) -> {
-              if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-                subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
-                  sendEventEditGroupName();
-                  messagePresenter.updateShortcutPicture(shortcut.getId(), uri.toString());
-                }));
-              } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-                subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
-                  sendEventEditGroupName();
-                  messagePresenter.updateShortcutPicture(shortcut.getId(), uri.toString());
-                }));
+    subscriptions.add(
+        DialogFactory.showBottomSheetForCustomizeShortcut(getContext())
+            .flatMap(labelType -> {
+              if (labelType != null) {
+                if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
+                  subscriptions.add(DialogFactory.inputDialog(getContext(),
+                      getContext().getString(R.string.shortcut_update_name_title),
+                      getContext().getString(R.string.shortcut_update_name_description),
+                      getContext().getString(R.string.shortcut_update_name_validate),
+                      getContext().getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT)
+                      .subscribe(s -> {
+                        sendEventEditGroupName();
+                        messagePresenter.updateShortcutName(shortcut.getId(), s);
+                      }));
+                }
               }
 
-              return null;
+              return Observable.just(labelType);
             })
-        .subscribe());
+            .filter(labelType -> labelType.getTypeDef().equals(LabelType.CHANGE_PICTURE))
+            .flatMap(pair -> DialogFactory.showBottomSheetForCamera(getContext()),
+                (pair, labelType) -> {
+                  if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+                    subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+                      sendEventEditGroupName();
+                      messagePresenter.updateShortcutPicture(shortcut.getId(), uri.toString());
+                    }));
+                  } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+                    subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+                      sendEventEditGroupName();
+                      messagePresenter.updateShortcutPicture(shortcut.getId(), uri.toString());
+                    }));
+                  }
+
+                  return null;
+                })
+            .subscribe());
   }
 
   public Shortcut getShortcut() {

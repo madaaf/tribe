@@ -63,6 +63,28 @@ public class ShortcutUtil {
     return ListUtils.equalLists(oneIds, twoIds);
   }
 
+  public static void removeMyId(List<String> list, User user) {
+    if (list.contains(user.getId())) {
+      list.remove(user.getId());
+    }
+  }
+
+
+  /*public static List<String> removeMyId(List<String> one, User me) {
+    List<String> tempId = new ArrayList<>();
+    List<String> tempUser = new ArrayList<>();
+    tempUser.addAll(one);
+
+    for (String id : one) {
+      tempId.add(id);
+    }
+
+    if (tempId.contains(me.getId())) {
+      tempUser.remove(me.getId());
+    }
+    return tempUser;
+  }*/
+
   public static List<User> removeMe(List<User> one, User me) {
     List<String> tempId = new ArrayList<>();
     List<User> tempUser = new ArrayList<>();
@@ -86,12 +108,6 @@ public class ShortcutUtil {
       two.remove(user.getId());
     }
     return ListUtils.equalLists(one, two);
-  }
-
-  private static void removeMyId(List<String> list, User user) {
-    if (list.contains(user.getId())) {
-      list.remove(user.getId());
-    }
   }
 
   public static Shortcut getShortcut(User friend, User user) {
