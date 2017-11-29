@@ -1024,7 +1024,19 @@ public class HomeActivity extends BaseActivity
 
   private void navigateToChat(Recipient recipient, String gesture) {
     this.gesture = gesture;
-    if (!recipient.isRead()) homeGridPresenter.readShortcut(recipient.getId());
+    if (!recipient.isRead()) {
+      String shortcutId = "";
+
+      if (recipient instanceof Invite) {
+        Invite invite = (Invite) recipient;
+        if (invite.getShortcut() != null) shortcutId = invite.getShortcut().getId();
+      } else {
+        shortcutId = recipient.getId();
+      }
+
+      if (!StringUtils.isEmpty(shortcutId)) homeGridPresenter.readShortcut(shortcutId);
+    }
+
     if (recipient instanceof Shortcut) {
       navigator.navigateToChat(this, recipient, null, gesture, recipient.getSectionTag(), false);
     } else {

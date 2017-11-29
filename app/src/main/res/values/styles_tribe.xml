@@ -21,12 +21,20 @@
     <item name="android:textColor">@color/grey.text.profile_info</item>
   </style>
 
+  <style name="BiggerBody.One.White" parent="BiggerBody.One">
+    <item name="android:textColor">@android:color/white</item>
+  </style>
+
   <style name="BiggerBody.One.Black40" parent="BiggerBody.One">
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>
 
   <style name="BiggerBody.One.Blue" parent="BiggerBody.One">
     <item name="android:textColor">@color/blue.text</item>
+  </style>
+
+  <style name="BiggerBody.One.BlueNew" parent="BiggerBody.One">
+    <item name="android:textColor">@color/blue.new</item>
   </style>
 
   <style name="BiggerBody.One.Red" parent="BiggerBody.One">
@@ -355,6 +363,10 @@
 
   <style name="BiggerTitle.2.Black" parent="@style/BiggerTitle.2">
     <item name="android:textColor">@android:color/black</item>
+  </style>
+
+  <style name="BiggerTitle.2.White" parent="@style/BiggerTitle.2">
+    <item name="android:textColor">@android:color/white</item>
   </style>
 
   <style name="Headline">

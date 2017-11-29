@@ -5,12 +5,13 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
@@ -18,9 +19,11 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
@@ -30,11 +33,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -61,12 +61,12 @@ public abstract class GameView extends FrameLayout {
   protected Map<String, LiveStreamView> liveViewsMap;
   protected String currentMasterId;
   protected boolean landscapeMode = false;
+  protected TextViewFont txtViewLandscape;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected CompositeSubscription subscriptionsRoom = new CompositeSubscription();
   protected Observable<Map<String, TribeGuest>> peerMapObservable;
-  protected Subscription timerSubscription;
 
   public GameView(@NonNull Context context) {
     super(context);
@@ -116,9 +116,9 @@ public abstract class GameView extends FrameLayout {
     if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
       landscapeMode = true;
 
-      if (timerSubscription != null) {
-        timerSubscription.unsubscribe();
-        timerSubscription = null;
+      if (txtViewLandscape != null) {
+        removeView(txtViewLandscape);
+        txtViewLandscape = null;
       }
     } else {
       if (game != null && game.needsLandscape()) showLandscapeToast();
@@ -153,17 +153,23 @@ public abstract class GameView extends FrameLayout {
   protected abstract void takeOverGame();
 
   private void showLandscapeToast() {
-    if (timerSubscription != null) return;
+    if (txtViewLandscape != null) return;
 
-    final Toast tag =
-        Toast.makeText(getContext(), R.string.game_rotate_landscape, Toast.LENGTH_LONG);
-    tag.setGravity(Gravity.CENTER, 0, 0);
-    tag.show();
+    txtViewLandscape = new TextViewFont(getContext());
+    FrameLayout.LayoutParams paramsLandscape =
+        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+    paramsLandscape.gravity = Gravity.CENTER;
 
-    timerSubscription = Observable.interval(0, 3, TimeUnit.SECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnUnsubscribe(() -> tag.cancel())
-        .subscribe(tick -> tag.show());
+    TextViewCompat.setTextAppearance(txtViewLandscape, R.style.BiggerTitle_2_White);
+    txtViewLandscape.setBackgroundResource(R.drawable.shape_rect_rounded_5_black_70);
+    txtViewLandscape.setCustomFont(context, FontUtils.PROXIMA_BOLD);
+    txtViewLandscape.setText(R.string.game_rotate_landscape);
+    txtViewLandscape.setGravity(Gravity.CENTER);
+    txtViewLandscape.setPadding(screenUtils.dpToPx(10), screenUtils.dpToPx(10),
+        screenUtils.dpToPx(10), screenUtils.dpToPx(10));
+    ViewCompat.setElevation(txtViewLandscape, screenUtils.dpToPx(10));
+    addView(txtViewLandscape, paramsLandscape);
   }
 
   /**
@@ -211,7 +217,10 @@ public abstract class GameView extends FrameLayout {
     game = null;
     subscriptionsRoom.unsubscribe();
     subscriptions.unsubscribe();
-    if (timerSubscription != null) timerSubscription.unsubscribe();
+    if (txtViewLandscape != null) {
+      removeView(txtViewLandscape);
+      txtViewLandscape = null;
+    }
   }
 
   public void userLeft(String userId) {

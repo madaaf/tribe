@@ -46,6 +46,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 11/28/2016.
@@ -74,6 +75,7 @@ public class GamesMembersView extends LinearLayout
   private Set<String> selectedIds;
   private int count = 0;
   private Game game;
+  private String previousFilter = "";
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -190,6 +192,8 @@ public class GamesMembersView extends LinearLayout
             onCallRouletteSelected.onNext(null);
           } else {
             shortcut.setSelected(!shortcut.isSelected());
+            shortcut.setAnimateAdd(true);
+
             newChatAdapter.update(shortcut);
 
             if (shortcut.isSelected()) {
@@ -208,7 +212,15 @@ public class GamesMembersView extends LinearLayout
   }
 
   private void filter(String text) {
-    if (StringUtils.isEmpty(text)) newChatAdapter.setItems(items);
+    if (text.equals(previousFilter)) return;
+
+    previousFilter = text;
+
+    if (StringUtils.isEmpty(text)) {
+      Timber.d("Empty filter : " + text);
+      newChatAdapter.setItems(items);
+      return;
+    }
 
     List<Shortcut> temp = new ArrayList();
     for (Shortcut shortcut : items) {
@@ -217,7 +229,9 @@ public class GamesMembersView extends LinearLayout
       }
     }
 
+    Timber.d("Filter : " + text);
     newChatAdapter.setItems(temp);
+    previousFilter = text;
   }
 
   private void refactorAction() {
@@ -301,18 +315,26 @@ public class GamesMembersView extends LinearLayout
 
   @Override public void onTokenAdded(Shortcut token) {
     if (token == null || token.getSingleFriend() == null) return;
+    Timber.d("Token Added");
     count++;
     selectedIds.add(token.getSingleFriend().getId());
-    token.setSelected(true);
-    newChatAdapter.update(token);
+    if (!token.isSelected()) {
+      token.setSelected(true);
+      token.setAnimateAdd(true);
+      newChatAdapter.update(token);
+    }
     refactorAction();
   }
 
   @Override public void onTokenRemoved(Shortcut token) {
     count--;
+    Timber.d("Token removed");
     selectedIds.remove(token.getSingleFriend().getId());
-    token.setSelected(false);
-    newChatAdapter.update(token);
+    if (token.isSelected()) {
+      token.setSelected(false);
+      token.setAnimateAdd(true);
+      newChatAdapter.update(token);
+    }
     refactorAction();
   }
 

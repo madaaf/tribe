@@ -169,8 +169,6 @@ public class NewGameActivity extends BaseActivity {
       tagManager.trackEvent(TagManagerUtils.Game, bundle);
     }
 
-    finish();
-
     screenUtils.hideKeyboard(this);
 
     if (disableUI) {
