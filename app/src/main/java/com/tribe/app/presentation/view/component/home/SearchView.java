@@ -513,6 +513,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
     });
   }
 
+
   private boolean isContactsViewOpen() {
     return layoutBottom.getTranslationY() == 0;
   }

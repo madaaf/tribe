@@ -629,12 +629,14 @@ public class HomeActivity extends BaseActivity
         }));
 
     subscriptions.add(homeGridAdapter.onClickFb().subscribe(aVoid -> {
-      //homeGridPresenter.loginFacebook();
+      homeGridPresenter.loginFacebook();
       Timber.e("onClickFb");
+      popupAccessFacebookContact();
     }));
 
     subscriptions.add(homeGridAdapter.onClickAddressBook().subscribe(aVoid -> {
       Timber.e("onClickAddressBook");
+      syncContacts();
     }));
 
     subscriptions.add(homeGridAdapter.onInvite()
@@ -685,8 +687,14 @@ public class HomeActivity extends BaseActivity
                 }
               }
 
-              finalList.add(new Contact(Contact.FACEBOOK_ID));
-              finalList.add(new Contact(Contact.ADDRESS_BOOK_ID));
+              if (!FacebookUtils.isLoggedIn()) {
+                finalList.add(new Contact(Contact.FACEBOOK_ID));
+              }
+
+              if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
+                finalList.add(new Contact(Contact.ADDRESS_BOOK_ID));
+              }
+
               finalList.addAll(contactsInvite);
               finalList.addAll(contactsFBInvite);
               List<HomeAdapterInterface> refactordList = new ArrayList<>();
