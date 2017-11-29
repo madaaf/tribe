@@ -39,6 +39,7 @@ import static com.tribe.app.presentation.view.widget.chat.ChatView.ANIM_DURATION
 
 public class SwipeDetector implements View.OnTouchListener {
 
+  private static float MIN_AUDIO_DURATION = 0.1f;
   private static float VOICE_NOTE_SCALE_RATIO = 0.75f;
   private static final int SWIPE_MIN_DISTANCE = 1;
 
@@ -480,7 +481,7 @@ public class SwipeDetector implements View.OnTouchListener {
     String time = String.valueOf(context.timerVoiceNote.getText());
     context.timerVoiceNote.setText("0:01");
 
-    if (sendMessage && context.audioDuration > 0) {
+    if (sendMessage && context.audioDuration > MIN_AUDIO_DURATION) {
       context.audioCount++;
       context.sendMessageToAdapter(Message.MESSAGE_AUDIO, time, null);
     }
