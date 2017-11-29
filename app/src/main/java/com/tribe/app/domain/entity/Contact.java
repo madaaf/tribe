@@ -9,6 +9,8 @@ import java.util.List;
  * Created by tiago on 02/09/2016.
  */
 public class Contact implements Comparable<Contact>, HomeAdapterInterface {
+  public static final String FACEBOOK_ID = "FACEBOOK_ID";
+  public static final String ADDRESS_BOOK_ID = "ADDRESS_BOOK_ID";
 
   protected String id;
   protected String name;

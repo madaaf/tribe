@@ -79,12 +79,12 @@ public abstract class Recipient implements Serializable, BaseListInterface, Home
 
     Recipient recipient = (Recipient) obj;
 
-    return ObjectUtils.nullSafeEquals(getDisplayName(), recipient.getDisplayName()) &&
-        ObjectUtils.nullSafeEquals(getLastSeenAt(), recipient.getLastSeenAt()) &&
-        ObjectUtils.nullSafeEquals(getProfilePicture(), recipient.getProfilePicture()) &&
-        ObjectUtils.nullSafeEquals(isLive(), recipient.isLive()) &&
-        ObjectUtils.nullSafeEquals(isOnline(), recipient.isOnline()) &&
-        ObjectUtils.nullSafeEquals(getLastSeenAt(), recipient.getLastSeenAt());
+    return ObjectUtils.nullSafeEquals(getDisplayName(), recipient.getDisplayName())
+        && ObjectUtils.nullSafeEquals(getLastSeenAt(), recipient.getLastSeenAt())
+        && ObjectUtils.nullSafeEquals(getProfilePicture(), recipient.getProfilePicture())
+        && ObjectUtils.nullSafeEquals(isLive(), recipient.isLive())
+        && ObjectUtils.nullSafeEquals(isOnline(), recipient.isOnline())
+        && ObjectUtils.nullSafeEquals(getLastSeenAt(), recipient.getLastSeenAt());
   }
 
   public abstract String getDisplayName();
@@ -104,11 +104,11 @@ public abstract class Recipient implements Serializable, BaseListInterface, Home
   public abstract boolean isRead();
 
   public boolean isFake() {
-    return (getId().equals(Recipient.ID_EMPTY) ||
-        getId().equals(Recipient.ID_HEADER) ||
-        getId().equals(Recipient.ID_MORE) ||
-        getId().equals(Recipient.ID_VIDEO) ||
-        getId().equals(Recipient.ID_CALL_ROULETTE));
+    return (getId().equals(Recipient.ID_EMPTY)
+        || getId().equals(Recipient.ID_HEADER)
+        || getId().equals(Recipient.ID_MORE)
+        || getId().equals(Recipient.ID_VIDEO)
+        || getId().equals(Recipient.ID_CALL_ROULETTE));
   }
 
   public @BaseSectionItemDecoration.HeaderType int getHomeSectionType() {

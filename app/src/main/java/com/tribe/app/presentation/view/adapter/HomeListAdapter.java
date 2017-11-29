@@ -1,9 +1,11 @@
 package com.tribe.app.presentation.view.adapter;
 
 import android.content.Context;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.presentation.view.adapter.delegate.common.ShortcutAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
@@ -66,6 +68,14 @@ public class HomeListAdapter extends RecyclerView.Adapter
     items = new ArrayList<>();
 
     setHasStableIds(true);
+
+    subscriptions.add(Observable.merge(contactToInviteAdapterDelegate.onClickFb(),
+        contactToInviteAdapterDelegate.onClickAddressBook()).subscribe(pair -> {
+      int postion = (Integer) pair.first;
+      Contact c = (Contact) pair.second;
+      items.remove(c);
+      notifyItemRemoved(postion);
+    }));
   }
 
   @Override public long getItemId(int position) {
@@ -141,6 +151,14 @@ public class HomeListAdapter extends RecyclerView.Adapter
 
   public Observable<View> onInvite() {
     return contactToInviteAdapterDelegate.onInvite();
+  }
+
+  public Observable<Pair> onClickFb() {
+    return contactToInviteAdapterDelegate.onClickFb();
+  }
+
+  public Observable<Pair> onClickAddressBook() {
+    return contactToInviteAdapterDelegate.onClickAddressBook();
   }
 
   public void setItems(List<HomeAdapterInterface> list) {
