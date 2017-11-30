@@ -117,7 +117,9 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewLiveInvite) LiveInviteView viewLiveInvite;
 
-  @BindView(R.id.viewShadow) View viewShadow;
+  @BindView(R.id.viewShadowRight) View viewShadowRight;
+
+  @BindView(R.id.viewShadowLeft) View viewShadowLeft;
 
   @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
 
@@ -678,8 +680,8 @@ public class LiveView extends FrameLayout {
     viewControlsLive.initDrawerEventChangeObservable(obs);
   }
 
-  public void initOnShouldOpenChat(Observable<Boolean> obs) {
-    viewControlsLive.initOnShouldOpenChat(obs);
+  public void initDrawerEndCallObservable(Observable<Void> obs) {
+    persistentSubscriptions.add(obs.subscribe(aVoid -> onLeave.onNext(null)));
   }
 
   public void initAnonymousSubscription(Observable<List<User>> obs) {
@@ -711,15 +713,21 @@ public class LiveView extends FrameLayout {
     return live;
   }
 
-  public void applyTranslateX(float value) {
+  public void applyTranslateX(float value, boolean right) {
+    Timber.d("Translation : " + value);
     viewControlsLive.setTranslationX(value);
     viewRoom.setTranslationX(value);
     viewRinging.applyTranslationX(value);
     viewDarkOverlay.setTranslationX(value);
-    viewShadow.setTranslationX(value);
 
-    if (Math.abs(value) >= getLiveInviteViewPartialWidth()) {
-      updateInviteViewWidth((int) Math.abs(value));
+    if (right) {
+      viewShadowRight.setTranslationX(value);
+
+      if (Math.abs(value) >= getLiveInviteViewPartialWidth()) {
+        updateInviteViewWidth((int) Math.abs(value));
+      }
+    } else {
+      viewShadowLeft.setTranslationX(value);
     }
   }
 

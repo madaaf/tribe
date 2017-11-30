@@ -104,6 +104,7 @@ import com.tribe.app.presentation.view.component.home.TopBarLogoView;
 import com.tribe.app.presentation.view.component.home.TopBarView;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
 import com.tribe.app.presentation.view.component.live.LiveDropZoneView;
+import com.tribe.app.presentation.view.component.live.LiveHangUpView;
 import com.tribe.app.presentation.view.component.live.LiveInviteBottomView;
 import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveRowView;
@@ -266,6 +267,8 @@ public interface ApplicationComponent {
   void inject(HomeWalkthroughVideoView homeWalkthroughVideoView);
 
   void inject(GameAdapterDelegate gameAdapterDelegate);
+
+  void inject(LiveHangUpView liveHangUpView);
 
   // JOBS
   void inject(BaseJob baseJob);

@@ -105,6 +105,7 @@
   <color name="red.new.contacts">#FD2448</color>
   <color name="red.gradient.live.opacity.5">#0DF8143A</color>
   <color name="red.pulse">#80F9474C</color>
+  <color name="red.hangup">#F61D47</color>
 
   <!-- ORANGES -->
   <color name="orange.recent">#FFA496</color>

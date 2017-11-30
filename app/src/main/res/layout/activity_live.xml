@@ -11,12 +11,12 @@
       tools:context=".presentation.view.activity.LiveActivity"
       >
 
-
     <com.tribe.app.presentation.view.component.live.LiveContainer
         android:id="@+id/viewLiveContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
+
       <com.tribe.app.presentation.view.component.live.LiveView
           android:id="@+id/viewLive"
           android:layout_width="match_parent"

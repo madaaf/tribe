@@ -125,6 +125,7 @@
   <dimen name="threshold_dismiss">100dp</dimen>
   <dimen name="threshold_open_live_invite">100dp</dimen>
   <dimen name="threshold_open_notification">50dp</dimen>
+  <dimen name="threshold_end_call">200dp</dimen>
 
   <!-- TRANSLATIONS -->
   <dimen name="transition_grid_back_to_top">150dp</dimen>
