@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
   <FrameLayout
       android:id="@+id/layoutCameras"
       android:layout_width="50dp"
@@ -22,7 +24,7 @@
       android:shadowDx="3"
       android:shadowDy="3"
       android:shadowRadius="10"
-      android:text="@string/live_ringing"
+      tools:text="@string/live_ringing"
       style="@style/Title.2.White"
       />
 </merge>
