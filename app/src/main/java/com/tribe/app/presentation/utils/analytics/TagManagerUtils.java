@@ -43,6 +43,9 @@ public class TagManagerUtils {
   public static final String Shortcut = "Shortcut";
   public static final String Chats = "Chats";
   public static final String Game = "Game";
+  public static final String Searched = "Searched";
+  public static final String KPI_Onboarding_WalkthroughCompleted =
+      "KPI_Onboarding_WalkthroughCompleted";
 
   /**
    * ERRORS
@@ -105,6 +108,9 @@ public class TagManagerUtils {
   public static final String IMAGE_COUNT = "image_count";
   public static final String GAME_COUNT = "game_count";
   public static final String GAME_DURATION = "game_duration";
+  public static final String SIGNUP = "signup";
+  public static final String CONTENT_TYPE = "contentType";
+  public static final String SEARCH_STRING = "searchString";
 
   public static final String tagGameCountSuffix = "_game_count";
   public static final String tagGameDurationSuffix = "_game_duration";

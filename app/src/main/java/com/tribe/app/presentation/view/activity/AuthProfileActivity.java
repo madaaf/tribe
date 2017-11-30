@@ -336,7 +336,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   private void tagSignUp() {
     Bundle properties = new Bundle();
-    properties.putString(TagManagerUtils.TYPE, "signup");
+    properties.putString(TagManagerUtils.TYPE, TagManagerUtils.SIGNUP);
     properties.putString(TagManagerUtils.PLATFORM,
         loginEntity.getFbAccessToken() != null ? TagManagerUtils.PLATFORM_FACEBOOK
             : TagManagerUtils.PLATFORM_PHONE);
@@ -383,9 +383,10 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
-    profileInfoView.setUsernameValid(usernameValid || (user != null
-        && !StringUtils.isEmpty(profileInfoView.getUsername())
-        && profileInfoView.getUsername().equals(user.getUsername())));
+    profileInfoView.setUsernameValid(usernameValid ||
+        (user != null &&
+            !StringUtils.isEmpty(profileInfoView.getUsername()) &&
+            profileInfoView.getUsername().equals(user.getUsername())));
   }
 
   @Override public void showLoading() {

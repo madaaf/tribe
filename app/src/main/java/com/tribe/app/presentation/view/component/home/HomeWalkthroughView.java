@@ -22,6 +22,8 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -42,6 +44,8 @@ public class HomeWalkthroughView extends FrameLayout {
   private static final int STEP_HAVE_FUN_GAMES = 3;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject TagManager tagManager;
 
   @BindView(R.id.layoutVideo) FrameLayout layoutVideo;
 
@@ -323,6 +327,7 @@ public class HomeWalkthroughView extends FrameLayout {
         .setListener(new AnimatorListenerAdapter() {
           @Override public void onAnimationEnd(Animator animation) {
             setVisibility(View.GONE);
+            tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_WalkthroughCompleted);
           }
         })
         .start();

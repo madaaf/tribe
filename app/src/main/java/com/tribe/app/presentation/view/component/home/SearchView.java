@@ -238,8 +238,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
                   .filter(x -> x == true)
                   .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
             } else if (shortcut == null) {
-              if (searchResult.getUsername() != null && !searchResult.getUsername()
-                  .equals(user.getUsername())) {
+              if (searchResult.getUsername() != null &&
+                  !searchResult.getUsername().equals(user.getUsername())) {
                 searchPresenter.createShortcut(searchResult.getId());
               }
             } else if (!shortcut.getStatus().equals(ShortcutRealm.DEFAULT)) {
@@ -295,9 +295,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
               if (isSearchMode) {
                 searchResult.setAnimateAdd(this.searchResult.isAnimateAdd());
                 this.searchResult = searchResult;
-                this.searchResult.setMyself(
-                    searchResult.getUsername() != null && searchResult.getUsername()
-                        .equals(user.getUsername()));
+                this.searchResult.setMyself(searchResult.getUsername() != null &&
+                    searchResult.getUsername().equals(user.getUsername()));
                 updateSearch();
               }
 
@@ -391,18 +390,17 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
       boolean shouldAdd = false;
       if (obj instanceof Contact) {
         Contact contact = (Contact) obj;
-        if (!StringUtils.isEmpty(contact.getName()) && contact.getName()
-            .toLowerCase()
-            .startsWith(search)) {
+        if (!StringUtils.isEmpty(contact.getName()) &&
+            contact.getName().toLowerCase().startsWith(search)) {
           shouldAdd = true;
         }
       } else if (obj instanceof Shortcut) {
         Shortcut shortcut = (Shortcut) obj;
-        if (!StringUtils.isEmpty(search) && ((!StringUtils.isEmpty(shortcut.getDisplayName())
-            && shortcut.getDisplayName().toLowerCase().startsWith(search))
-            || (shortcut.getUsername() != null && shortcut.getUsername()
-            .toLowerCase()
-            .startsWith(search)))) {
+        if (!StringUtils.isEmpty(search) &&
+            ((!StringUtils.isEmpty(shortcut.getDisplayName()) &&
+                shortcut.getDisplayName().toLowerCase().startsWith(search)) ||
+                (shortcut.getUsername() != null &&
+                    shortcut.getUsername().toLowerCase().startsWith(search)))) {
           shouldAdd = true;
         }
       }
@@ -461,9 +459,9 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   public void refactorActions() {
     boolean permissionsFB = FacebookUtils.isLoggedIn();
-    boolean permissionsContact = PermissionUtils.hasPermissionsContact(rxPermissions)
-        && addressBook.get()
-        && !StringUtils.isEmpty(user.getPhone());
+    boolean permissionsContact = PermissionUtils.hasPermissionsContact(rxPermissions) &&
+        addressBook.get() &&
+        !StringUtils.isEmpty(user.getPhone());
 
     layoutBottom.removeAllViews();
 
@@ -513,16 +511,15 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
     });
   }
 
-
   private boolean isContactsViewOpen() {
     return layoutBottom.getTranslationY() == 0;
   }
 
   private void openCloseContactsView(boolean open, boolean animate) {
     int rotation = open ? 180 : 0;
-    int translation = open ? 0 : (viewFriendsFBLoad.getHeight()
-        + viewFriendsAddressBookLoad.getHeight()
-        + screenUtils.dpToPx(1));
+    int translation = open ? 0 : (viewFriendsFBLoad.getHeight() +
+        viewFriendsAddressBookLoad.getHeight() +
+        screenUtils.dpToPx(1));
     // + 1 because of the dividers 2 * 0.5dp
 
     if (animate) {
@@ -780,7 +777,13 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
       searchResult = new SearchResult();
       searchResult.setUsername(s);
       updateSearch();
-    }).debounce(500, TimeUnit.MILLISECONDS).subscribe(s -> searchPresenter.findByUsername(s)));
+    }).debounce(500, TimeUnit.MILLISECONDS).subscribe(s -> {
+      Bundle bundle = new Bundle();
+      bundle.putString(TagManagerUtils.CONTENT_TYPE, "user");
+      bundle.putString(TagManagerUtils.SEARCH_STRING, s);
+      tagManager.trackEvent(TagManagerUtils.Searched, bundle);
+      searchPresenter.findByUsername(s);
+    }));
   }
 
   public void show() {
