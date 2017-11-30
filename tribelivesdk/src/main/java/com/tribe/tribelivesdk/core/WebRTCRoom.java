@@ -193,9 +193,7 @@ public class WebRTCRoom {
     persistentSubscriptions.add(jsonToModel.onError()
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(error -> {
-          onRoomError.onNext(error);
-        }));
+        .subscribe(error -> onRoomError.onNext(error)));
 
     persistentSubscriptions.add(jsonToModel.onInvitedTribeGuestList()
         .onBackpressureDrop()

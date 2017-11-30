@@ -46,6 +46,7 @@ public class TagManagerUtils {
   public static final String Searched = "Searched";
   public static final String KPI_Onboarding_WalkthroughCompleted =
       "KPI_Onboarding_WalkthroughCompleted";
+  public static final String Technical_Error = "Technical_Error";
 
   /**
    * ERRORS
@@ -141,6 +142,24 @@ public class TagManagerUtils {
   public static final String FB_ACTION_FAILED = "failed";
   public static final String FB_ACTION_SUCCESS = "succeeded";
   public static final String FB_ACTION = "action";
+
+  /**
+   * ERRORS
+   */
+
+  public static final String DESCRIPTION = "Description";
+  public static final String FEATURE = "Feature";
+  public static final String REASON = "Reason";
+  public static final String SERVER = "Server";
+  public static final String SIGNALING_ERROR_CODE = "SignalingErrorCode";
+  public static final String SIGNALING_ERROR = "SignalingError";
+
+  public static final String ROOM_STATUS = "Room Status";
+  public static final String ONBOARDING_FB = "Onboarding - Facebook";
+  public static final String ONBOARDING_PHONE = "Onboarding - Phone";
+  public static final String NO_SOCKET = "No Socket";
+  public static final String NOT_URL = "Not an URL";
+  public static final String WEB_SIGNALING = "WebSignaling";
 
   /**
    * MIXPANEL PROPERTIES

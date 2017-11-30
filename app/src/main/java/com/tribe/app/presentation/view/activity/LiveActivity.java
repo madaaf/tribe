@@ -1103,7 +1103,15 @@ public class LiveActivity extends BaseActivity
   }
 
   private void roomError(WebSocketError error) {
-    if (error.getId() == WebSocketError.ERROR_ROOM_FULL) {
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.FEATURE, TagManagerUtils.ROOM_STATUS);
+    bundle.putInt(TagManagerUtils.SIGNALING_ERROR_CODE, error.getId());
+    bundle.putString(TagManagerUtils.SIGNALING_ERROR, error.getStringId());
+    bundle.putString(TagManagerUtils.REASON, TagManagerUtils.WEB_SIGNALING);
+    bundle.putString(TagManagerUtils.DESCRIPTION, error.getMessage());
+    if (room != null) bundle.putString(TagManagerUtils.SERVER, room.getRoomCoordinates().getUrl());
+
+    if (error.getId() == WebSocketError.ERROR_CODE_ROOM_IS_FULL) {
       roomFull();
     } else {
       Toast.makeText(getApplicationContext(), ErrorMessageFactory.create(getBaseContext(), null),
