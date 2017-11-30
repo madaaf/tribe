@@ -22,9 +22,10 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
 
   protected LayoutInflater layoutInflater;
   private Context context;
+  private boolean callRoulette;
 
   // OBSERVABLES
-  protected PublishSubject<View> onClickAdd = PublishSubject.create();
+  protected PublishSubject<BaseNotifViewHolder> onClickAdd = PublishSubject.create();
   protected PublishSubject<View> onUnblock = PublishSubject.create();
   protected PublishSubject<BaseNotifViewHolder> clickMore = PublishSubject.create();
 
@@ -32,6 +33,10 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
     this.context = context;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+  }
+
+  public void setCallRoulette(boolean callRoulette) {
+    this.callRoulette = callRoulette;
   }
 
   protected RecyclerView.ViewHolder onCreateViewHolderNotif(ViewGroup parent) {
@@ -47,23 +52,30 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
     vh.txtName.setText(friend.getDisplayName());
     vh.txtDescription.setText("@" + friend.getUsername());
     vh.viewAvatar.load("");
-    vh.btnMore.setOnClickListener(v -> {
-      clickMore.onNext(vh); // TODO MADA
-      vh.progressView.setScaleX(0);
-      vh.progressView.setScaleY(0);
-      vh.progressView.setVisibility(View.VISIBLE);
-      vh.btnMore.animate().scaleX(0).scaleY(0).setDuration(300).withEndAction(new Runnable() {
-        @Override public void run() {
-          vh.progressView.animate().scaleX(1).scaleY(1).setDuration(300).start();
-        }
-      }).start();
-    });
+
+    if (callRoulette) {
+      vh.btnMore.setOnClickListener(v -> {
+        clickMore.onNext(vh); // TODO MADA
+        vh.progressView.setScaleX(0);
+        vh.progressView.setScaleY(0);
+        vh.progressView.setVisibility(View.VISIBLE);
+        vh.btnMore.animate()
+            .scaleX(0)
+            .scaleY(0)
+            .setDuration(300)
+            .withEndAction(
+                () -> vh.progressView.animate().scaleX(1).scaleY(1).setDuration(300).start())
+            .start();
+      });
+    } else {
+      vh.btnMore.setVisibility(View.GONE);
+    }
 
     Shortcut s = ShortcutUtil.getShortcut(friend, user);
     if (s == null) {
       vh.btnAdd.setOnClickListener(v -> {
         vh.btnAdd.setImageResource(R.drawable.done_btn);
-        onClickAdd.onNext(vh.itemView);
+        onClickAdd.onNext(vh);
       });
     } else {
       vh.btnAdd.setImageResource(R.drawable.done_btn);

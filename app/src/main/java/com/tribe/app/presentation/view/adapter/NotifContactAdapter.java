@@ -126,6 +126,10 @@ public class NotifContactAdapter extends RecyclerView.Adapter {
     }
   }
 
+  public void setCallRoulette(boolean callRoulette) {
+    userListAdapterDelegate.setCallRoulette(callRoulette);
+  }
+
   public Observable<View> onUnblock() {
     return friendshiptNotifAdapterDelegate.onUnblock();
   }
@@ -134,7 +138,7 @@ public class NotifContactAdapter extends RecyclerView.Adapter {
     return tribeGuestAdapterDelegate.onClickInvite();
   }
 
-  public Observable<View> onClickAdd() {
+  public Observable<BaseNotifViewHolder> onClickAdd() {
     return userListAdapterDelegate.onClickAdd();
   }
 

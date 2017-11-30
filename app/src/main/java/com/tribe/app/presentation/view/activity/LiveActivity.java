@@ -58,6 +58,7 @@ import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.Triplet;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
@@ -428,7 +429,10 @@ public class LiveActivity extends BaseActivity
 
         initSubscriptions();
 
-        if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) launchCallRoulette();
+        boolean isCallRoulette = live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) ||
+            (live.getRoom() != null && live.getRoom().acceptsRandom());
+        if (isCallRoulette) launchCallRoulette();
+        userInfosNotificationView.setCallRoulette(isCallRoulette);
 
         viewLive.start(live);
       } else {
@@ -670,6 +674,12 @@ public class LiveActivity extends BaseActivity
               .setListener(null);
         }
       }));
+    } else {
+      subscriptions.add(live.onRoomUpdated().subscribe(room1 -> {
+        boolean isCallRoulette = live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) ||
+            (live.getRoom() != null && live.getRoom().acceptsRandom());
+        userInfosNotificationView.setCallRoulette(isCallRoulette);
+      }));
     }
 
     subscriptions.add(viewLive.onShouldJoinRoom().subscribe(shouldJoin -> {
@@ -850,25 +860,54 @@ public class LiveActivity extends BaseActivity
               live.getLinkId(), room.getId(), false);
         }));
 
-    subscriptions.add(userInfosNotificationView.onClickMore().subscribe(list -> {
-      TribeGuest tribeGuest = (TribeGuest) list.get(0);
-      BaseNotifViewHolder holder = (BaseNotifViewHolder) list.get(1);
-      userInfosNotificationView.setVisibility(View.GONE);
-      setImageFirebase(tribeGuest.getId(), holder);
-    }));
+    subscriptions.add(userInfosNotificationView.onClickMore()
+        .flatMap(pairGuestView -> DialogFactory.dialog(this, getString(R.string.tips_report_title),
+            getString(R.string.tips_report_message), getString(R.string.tips_report_action1),
+            getString(R.string.tips_report_action2))
+            .map(aBoolean -> new Triplet<TribeGuest, BaseNotifViewHolder, Boolean>(
+                pairGuestView.first, pairGuestView.second, aBoolean)))
+        .filter(triplet -> {
+          if (!triplet.third) {
+            triplet.second.btnMore.setScaleX(1);
+            triplet.second.btnMore.setScaleY(1);
+            triplet.second.progressView.setVisibility(View.GONE);
+          }
 
-    subscriptions.add(userInfosNotificationView.onAdd().
-        subscribe(user -> {
-          if (user != null) {
-            if (user.isInvisible()) {
-              DialogFactory.dialog(context(), user.getDisplayName(), EmojiParser.demojizedText(
-                  context().getString(R.string.add_friend_error_invisible)),
+          return triplet.third == true;
+        })
+        .subscribe(triplet -> {
+          TribeGuest tribeGuest = triplet.first;
+          BaseNotifViewHolder holder = triplet.second;
+          userInfosNotificationView.setVisibility(View.GONE);
+          setImageFirebase(tribeGuest.getId(), holder);
+        }));
+
+    subscriptions.add(userInfosNotificationView.onAdd()
+        .flatMap(pair -> DialogFactory.dialog(this, getString(R.string.tips_addfriend_title),
+            getString(R.string.tips_addfriend_message), getString(R.string.tips_addfriend_action1),
+            getString(R.string.tips_addfriend_action2))
+            .map(
+                aBoolean -> new Triplet<User, BaseNotifViewHolder, Boolean>(pair.first, pair.second,
+                    aBoolean)))
+        .filter(triplet -> {
+          if (!triplet.third) {
+            triplet.second.btnAdd.setImageResource(R.drawable.btn_add);
+          }
+
+          return triplet.third == true;
+        })
+        .subscribe(triplet -> {
+          if (triplet.first != null) {
+            if (triplet.first.isInvisible()) {
+              subscriptions.add(DialogFactory.dialog(context(), triplet.first.getDisplayName(),
+                  EmojiParser.demojizedText(
+                      context().getString(R.string.add_friend_error_invisible)),
                   context().getString(R.string.add_friend_error_invisible_invite_android),
                   context().getString(R.string.add_friend_error_invisible_cancel))
                   .filter(x -> x == true)
-                  .subscribe(a -> share());
+                  .subscribe(a -> share()));
             } else {
-              livePresenter.createShortcut(user.getId());
+              livePresenter.createShortcut(triplet.first.getId());
             }
           }
         }));

@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.adapter.delegate.friend;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseNotifAdapterDelegate;
@@ -47,7 +46,7 @@ public class UserNotifAdapterDelegate extends BaseNotifAdapterDelegate {
 
   }
 
-  public Observable<View> onClickAdd() {
+  public Observable<BaseNotifViewHolder> onClickAdd() {
     return onClickAdd;
   }
 
