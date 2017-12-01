@@ -695,9 +695,7 @@ public class HomeActivity extends BaseActivity
                 finalList.add(new Contact(Contact.ADDRESS_BOOK_ID));
               }
 
-              Shortcut shortcutSupport = new Shortcut(Shortcut.SUPPORT);
-              shortcutSupport.setName("Live Support");
-              finalList.add(shortcutSupport);
+              finalList.add(createShortcutSupport());
 
               finalList.addAll(contactsInvite);
               finalList.addAll(contactsFBInvite);
@@ -735,6 +733,18 @@ public class HomeActivity extends BaseActivity
             if (latestRecipientList.size() != 0) layoutManager.scrollToPositionWithOffset(0, 0);
           }
         }));
+  }
+
+  private Shortcut createShortcutSupport() {
+    Shortcut shortcutSupport = new Shortcut(Shortcut.SUPPORT);
+    List<User> members = new ArrayList<User>();
+    User u = new User(Shortcut.SUPPORT);
+    u.setDisplayName("Live Support");
+    u.setProfilePicture("https://static.tribe.pm/assets/support-avatar-love.png");
+    members.add(u);
+    shortcutSupport.setMembers(members);
+    shortcutSupport.setName("Live Support");
+    return shortcutSupport;
   }
 
   private void initNewCall() {
