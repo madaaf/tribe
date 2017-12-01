@@ -27,12 +27,15 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
-import com.tribe.app.presentation.mvp.view.ChatMVPView;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
@@ -40,11 +43,14 @@ import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -56,7 +62,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
  * Created by madaaflak on 03/10/2017.
  */
 
-public class RecyclerMessageView extends ChatMVPView {
+public class RecyclerMessageView extends IChat {
 
   private static final int MAX_DURATION_MIN_DELETE_MESSAGE = 60;
   private static final long ONE_HOUR_DURATION = 1000 * 60 * 60; //1000 ms * 60 secondes * 60
@@ -69,7 +75,7 @@ public class RecyclerMessageView extends ChatMVPView {
 
   private Shortcut shortcut;
 
-  private int counterMessageNotSend, type;
+  private int type;
   private boolean load = false, errorLoadingMessages = false;
   private List<Message> unreadMessage = new ArrayList<>();
   private String[] arrIds = null;
@@ -80,13 +86,16 @@ public class RecyclerMessageView extends ChatMVPView {
   @Inject MessagePresenter messagePresenter;
   @Inject DateUtils dateUtils;
   @Inject ScreenUtils screenUtils;
+  @Inject StateManager stateManager;
+  @Inject TagManager tagManager;
+  @Inject Navigator navigator;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Integer> onScrollRecyclerView = PublishSubject.create();
   private PublishSubject<Boolean> shortcutLastSeenUpdated = PublishSubject.create();
 
   public RecyclerMessageView(@NonNull Context context) {
-    super(context);
+    super(context, null);
     this.context = context;
     initView();
   }
@@ -183,6 +192,8 @@ public class RecyclerMessageView extends ChatMVPView {
               })
               .subscribe());
     }));
+
+
   }
 
   public void copyToClipboard(String copyText) {
@@ -202,6 +213,12 @@ public class RecyclerMessageView extends ChatMVPView {
     if (!messagePresenter.isAttached()) {
       messagePresenter.onViewAttached(this);
     }
+    context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
+        JsonUtils.arrayToJson(arrIds)));
+    messagePresenter.updateShortcutForUserIds(arrIds);
+    messagePresenter.getIsTyping();
+    messagePresenter.getIsTalking();
+    messagePresenter.getIsReading();
   }
 
   @Override protected void onAttachedToWindow() {
@@ -299,6 +316,16 @@ public class RecyclerMessageView extends ChatMVPView {
     });
   }
 
+  public void onStartRecording() {
+    messageAdapter.onStartRecording();
+
+    layoutManager.findViewByPosition(0);
+  }
+
+  public void setShortcut(Shortcut shortcut) {
+    this.shortcut = shortcut;
+  }
+
   /**
    * MESSAGE RECEPTION
    */
@@ -376,7 +403,7 @@ public class RecyclerMessageView extends ChatMVPView {
   }
 
   @Override public void errorMessageCreation(int position) {
-    counterMessageNotSend++;
+
   }
 
   @Override public void errorLoadingMessage() {
@@ -399,14 +426,6 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void successRemovedMessage(Message m) {
     messageAdapter.removeItem(m);
-  }
-
-  public Observable<Integer> onScrollRecyclerView() {
-    return onScrollRecyclerView;
-  }
-
-  public void setShortcut(Shortcut shortcut) {
-    this.shortcut = shortcut;
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
@@ -441,9 +460,71 @@ public class RecyclerMessageView extends ChatMVPView {
 
   }
 
-  public void onStartRecording() {
-    messageAdapter.onStartRecording();
+  @Override public void isTypingEvent(String userId, boolean typeEvent) {
+    if (userId.equals(user.getId())) {
+      return;
+    }
+    for (User u : members) {
+      if (u.getId().equals(userId)) {
+        if (!u.isActive()) {
+          u.setActive(true);
+          u.setTyping(typeEvent);
+          u.setIsOnline(true);
+          if (showOnlineUsers()) {
+            expendRecyclerViewGrp();
+          }
+          int pos = chatUserAdapter.getIndexOfUser(u);
+          chatUserAdapter.notifyItemChanged(pos, u);
+        }
 
-    layoutManager.findViewByPosition(0);
+        if (subscriptionList.get(userId) == null) {
+          Subscription subscribe = Observable.interval(10, TimeUnit.SECONDS)
+              .timeInterval()
+              .observeOn(AndroidSchedulers.mainThread())
+              .onBackpressureDrop()
+              .subscribe(avoid -> {
+                // Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
+                if (u.isActive()) {
+                  u.setActive(false);
+                  if (showOnlineUsers()) {
+                    shrankRecyclerViewGrp();
+                  }
+                  int i = chatUserAdapter.getIndexOfUser(u);
+                  chatUserAdapter.notifyItemChanged(i, u);
+                }
+              });
+
+          subscriptionList.put(userId, subscribe);
+          subscriptions.add(subscribe);
+        }
+      }
+    }
+  }
+
+  @Override public void isReadingUpdate(String userId) {
+    for (ShortcutLastSeen shortcutLastSeen : shortcut.getShortcutLastSeen()) {
+      if (shortcutLastSeen.getUserId().equals(userId)) {
+        shortcutLastSeen.setDate(dateUtils.getUTCDateAsString());
+      }
+    }
+    setShortcut(shortcut);
+    notifyDataSetChanged();
+  }
+
+
+  private void shrankRecyclerViewGrp() {
+    //   containerUsers.setVisibility(GONE);
+  }
+
+  private void expendRecyclerViewGrp() {
+    //  containerUsers.setVisibility(VISIBLE);
+  }
+
+  private boolean showOnlineUsers() {
+    return members.size() < 2 && fromShortcut == null;
+  }
+
+  public Observable<Integer> onScrollRecyclerView() {
+    return onScrollRecyclerView;
   }
 }
