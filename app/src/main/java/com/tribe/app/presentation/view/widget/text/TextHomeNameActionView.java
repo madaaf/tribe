@@ -112,6 +112,7 @@ public class TextHomeNameActionView extends LinearLayout {
 
     if (recipient instanceof Shortcut) {
       Shortcut shortcut = (Shortcut) recipient;
+
       if (!StringUtils.isEmpty(shortcut.getName())) {
         txtName.setText(shortcut.getName());
       } else if (shortcut.isSingle()) {

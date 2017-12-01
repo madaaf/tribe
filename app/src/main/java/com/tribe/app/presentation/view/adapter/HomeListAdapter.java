@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.view.adapter.delegate.common.ShortcutAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
@@ -105,6 +106,18 @@ public class HomeListAdapter extends RecyclerView.Adapter
   public void releaseSubscriptions() {
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     delegatesManager.releaseSubscriptions();
+  }
+
+  public int getSupportPosition() {
+    for (int i = 0; i < items.size(); i++) {
+      HomeAdapterInterface item = items.get(i);
+      if (item instanceof Shortcut) {
+        if (item.getId().equals(Shortcut.SUPPORT)) {
+          return i;
+        }
+      }
+    }
+    return -1;
   }
 
   @Override public int getItemCount() {

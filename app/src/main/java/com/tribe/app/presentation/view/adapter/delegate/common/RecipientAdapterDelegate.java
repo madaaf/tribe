@@ -66,7 +66,7 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
   }
 
   private void bind(RecipientHomeViewHolder vh, Recipient recipient) {
-    vh.viewListItem.setRecipient(recipient);
+    vh.viewListItem.setRecipient(recipient, vh);
   }
 
   public Observable<View> onClickMore() {

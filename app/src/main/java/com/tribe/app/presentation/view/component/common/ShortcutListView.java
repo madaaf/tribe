@@ -15,6 +15,7 @@ import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.adapter.viewholder.RecipientHomeViewHolder;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
@@ -22,6 +23,7 @@ import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 09/04/2017.
@@ -137,7 +139,7 @@ public class ShortcutListView extends RelativeLayout {
     viewPictoLive.setOnClickListener(v -> onLive.onNext(v));
   }
 
-  public void setRecipient(Recipient recipient) {
+  public void setRecipient(Recipient recipient, RecipientHomeViewHolder vh) {
     subscriptions.clear();
 
     this.recipient = recipient;
@@ -161,6 +163,24 @@ public class ShortcutListView extends RelativeLayout {
     //else {
     viewAvatar.load(recipient);
     //}
+
+    if (recipient.getId().equals(Shortcut.SUPPORT)) {
+      viewPictoLive.setVisibility(GONE);
+      vh.itemView.setOnTouchListener((view, motionEvent) -> {
+        Timber.e("OK");
+        return true;
+      });
+
+      vh.itemView.setOnClickListener(new OnClickListener() {
+        @Override public void onClick(View view) {
+          Timber.e("OK");
+        }
+      });
+
+
+    } else {
+      viewPictoLive.setVisibility(VISIBLE);
+    }
 
     if (!recipient.isRead()) {
       viewPictoChat.setStatus(PictoChatView.ACTIVE);

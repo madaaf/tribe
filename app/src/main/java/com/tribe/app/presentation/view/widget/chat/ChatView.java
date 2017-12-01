@@ -294,7 +294,7 @@ public class ChatView extends ChatMVPView {
       }
       title.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_edit_chat, 0);
     } else {
-      title.setText(members.get(0).getDisplayName());
+      if (!members.isEmpty()) title.setText(members.get(0).getDisplayName());
       title.setTextColor(Color.BLACK);
     }
   }

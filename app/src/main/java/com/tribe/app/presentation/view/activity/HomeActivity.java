@@ -688,12 +688,16 @@ public class HomeActivity extends BaseActivity
               }
 
               if (!FacebookUtils.isLoggedIn()) {
-                finalList.add(new Contact(Contact.FACEBOOK_ID));
+                finalList.add(new Contact(Contact.FACEBOOK_ID)); // TODO SOEF
               }
 
               if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
                 finalList.add(new Contact(Contact.ADDRESS_BOOK_ID));
               }
+
+              Shortcut shortcutSupport = new Shortcut(Shortcut.SUPPORT);
+              shortcutSupport.setName("Live Support");
+              finalList.add(shortcutSupport);
 
               finalList.addAll(contactsInvite);
               finalList.addAll(contactsFBInvite);
@@ -720,7 +724,6 @@ public class HomeActivity extends BaseActivity
 
               latestRecipientList.clear();
               latestRecipientList.addAll(temp); // TODO #2
-
               return diffResult;
             }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
           if (diffResult != null) {
@@ -1212,7 +1215,7 @@ public class HomeActivity extends BaseActivity
     viewFadeInSwipe.setAlpha(0);
     viewLiveFake.setTranslationX(screenUtils.getWidthPx());
 
-    HomeListTouchHelperCallback callback = new HomeListTouchHelperCallback(homeGridAdapter);
+    HomeListTouchHelperCallback callback = new HomeListTouchHelperCallback(0, 0, homeGridAdapter);
 
     if (itemTouchHelper == null) {
       itemTouchHelper = new ItemTouchHelper(callback);
@@ -1222,6 +1225,10 @@ public class HomeActivity extends BaseActivity
     itemTouchHelper.attachToRecyclerView(recyclerViewFriends);
 
     subscriptions.add(callback.onDxChange().subscribe(pairPosDx -> {
+      if (pairPosDx.first == homeGridAdapter.getSupportPosition()) {
+        return;
+      }
+
       if (pairPosDx.second == 0) {
         viewFadeInSwipe.setVisibility(View.GONE);
         viewFadeInSwipe.setAlpha(0);
@@ -1253,7 +1260,7 @@ public class HomeActivity extends BaseActivity
       if (homeGridAdapter.getItemAtPosition(position) instanceof Recipient) {
         Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(position);
 
-        if (!isSwipingChat) {
+        if (!isSwipingChat && !recipient.isSupport()) {
           navigator.navigateToLiveFromSwipe(this, recipient,
               recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
                   : LiveActivity.SOURCE_GRID, recipient.getSectionTag());
@@ -1299,7 +1306,6 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
-    Timber.e("OK " + shortcut.getStatus());
     for (Shortcut s : user.getShortcutList()) {
       if (s.getId().equals(shortcut.getId())) {
         s.setStatus(shortcut.getStatus());
