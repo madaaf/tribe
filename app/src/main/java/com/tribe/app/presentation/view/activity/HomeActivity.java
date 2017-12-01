@@ -688,7 +688,7 @@ public class HomeActivity extends BaseActivity
               }
 
               if (!FacebookUtils.isLoggedIn()) {
-                finalList.add(new Contact(Contact.FACEBOOK_ID)); // TODO SOEF
+                finalList.add(new Contact(Contact.FACEBOOK_ID));
               }
 
               if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {

@@ -8,7 +8,6 @@ import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.viewholder.RecipientHomeViewHolder;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 public class HomeListTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
 
@@ -24,13 +23,7 @@ public class HomeListTouchHelperCallback extends ItemTouchHelper.SimpleCallback 
     super(dragDirs, swipeDirs);
     this.adapter = adapter;
   }
-
-  /*
-  public HomeListTouchHelperCallback(ItemTouchHelperAdapter adapter) {
-    this.adapter = adapter;
-  }
-  */
-
+  
   @Override public boolean isLongPressDragEnabled() {
     return false;
   }
@@ -38,19 +31,6 @@ public class HomeListTouchHelperCallback extends ItemTouchHelper.SimpleCallback 
   @Override public boolean isItemViewSwipeEnabled() {
     return true;
   }
-
-  /*
-  @Override public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-    Timber.e("SOEF SXIPE DIRECT "
-        + viewHolder.getAdapterPosition()
-        + " "
-        + adapter.getSupportPosition());
-    if (viewHolder.getAdapterPosition() == adapter.getSupportPosition()) {
-      return 0;
-    }
-    return super.getSwipeDirs(recyclerView, viewHolder);
-  }
-  */
 
   @Override
   public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
