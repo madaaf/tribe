@@ -298,7 +298,9 @@ public class ChatView extends IChat {
     if (arrIds == null) {
       return;
     }
-    recyclerView.onResumeView();
+    if(!shortcut.isSupport()){
+      recyclerView.onResumeView();
+    }
   }
 
   public void dispose() {

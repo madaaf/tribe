@@ -32,7 +32,7 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   private boolean single;
   private @ShortcutRealm.ShortcutStatus String status;
   private Date last_activity_at;
-  private List<ShortcutLastSeen> shortcutLastSeen;
+  private List<ShortcutLastSeen> shortcutLastSeen = new ArrayList<>();
   private List<User> members;
   private String lastMessage;
   private Date leaveOnlineUntil;

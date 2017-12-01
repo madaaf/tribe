@@ -30,7 +30,6 @@ import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -192,8 +191,6 @@ public class RecyclerMessageView extends IChat {
               })
               .subscribe());
     }));
-
-
   }
 
   public void copyToClipboard(String copyText) {
@@ -510,7 +507,6 @@ public class RecyclerMessageView extends IChat {
     setShortcut(shortcut);
     notifyDataSetChanged();
   }
-
 
   private void shrankRecyclerViewGrp() {
     //   containerUsers.setVisibility(GONE);
