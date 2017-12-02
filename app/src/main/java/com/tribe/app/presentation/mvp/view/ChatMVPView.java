@@ -23,7 +23,6 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView, Shortc
     super(context, attrs);
   }
 
-
   public void errorLoadingMessage() {
   }
 
@@ -71,10 +70,11 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView, Shortc
   public void successLoadingMessage(List<Message> messages) {
   }
 
-
   public void successLoadingBetweenTwoDateMessage(List<Message> messages) {
 
   }
 
+  public void successMessageSupport(List<Message> messages) {
 
+  }
 }

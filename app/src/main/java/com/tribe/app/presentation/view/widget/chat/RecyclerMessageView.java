@@ -38,6 +38,7 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
+import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -210,12 +211,17 @@ public class RecyclerMessageView extends IChat {
     if (!messagePresenter.isAttached()) {
       messagePresenter.onViewAttached(this);
     }
-    context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
-        JsonUtils.arrayToJson(arrIds)));
-    messagePresenter.updateShortcutForUserIds(arrIds);
-    messagePresenter.getIsTyping();
-    messagePresenter.getIsTalking();
-    messagePresenter.getIsReading();
+
+    if (!shortcut.isSupport()) {
+      context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
+          JsonUtils.arrayToJson(arrIds)));
+      messagePresenter.updateShortcutForUserIds(arrIds);
+      messagePresenter.getIsTyping();
+      messagePresenter.getIsTalking();
+      messagePresenter.getIsReading();
+    } else {
+      messagePresenter.getMessageSupport();
+    }
   }
 
   @Override protected void onAttachedToWindow() {
@@ -256,7 +262,7 @@ public class RecyclerMessageView extends IChat {
         if (dy < 0) {
           if (layoutManager.findFirstVisibleItemPosition() < 5 && !load) {
             String lasteDate = messageAdapter.getMessage(0).getCreationDate();
-            messagePresenter.loadMessage(arrIds, lasteDate, null);
+            if (!shortcut.isSupport()) messagePresenter.loadMessage(arrIds, lasteDate, null);
             load = true;
           }
         }
@@ -287,16 +293,18 @@ public class RecyclerMessageView extends IChat {
     this.arrIds = arrIds;
     messageAdapter.setArrIds(arrIds);
 
-    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString(),
-        dateUtils.getUTCDateWithDeltaAsString(-(2 * ONE_HOUR_DURATION)));
-    messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString(), null);
-    messagePresenter.onMessageReceivedFromDisk();
-    messagePresenter.onMessageRemovedFromDisk();
-    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateForMessage(), null);
+    if (!shortcut.isSupport()) {
+      messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString(),
+          dateUtils.getUTCDateWithDeltaAsString(-(2 * ONE_HOUR_DURATION)));
+      messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString(), null);
+      messagePresenter.onMessageReceivedFromDisk();
+      messagePresenter.onMessageRemovedFromDisk();
+      messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateForMessage(), null);
+    }
   }
 
   public void sendMessageToNetwork(String[] arrIds, String data, String type, int position) {
-    messagePresenter.createMessage(arrIds, data, type, position);
+    if (!shortcut.isSupport()) messagePresenter.createMessage(arrIds, data, type, position);
   }
 
   public void sendMyMessageToAdapter(Message pendingMessage) {
@@ -332,6 +340,23 @@ public class RecyclerMessageView extends IChat {
 
   @Override public void successLoadingBetweenTwoDateMessage(List<Message> messages) {
     Timber.i("successLoadingBetweenTwoDateMessage " + messages.size());
+  }
+
+  @Override public void successMessageSupport(List<Message> messages) {
+    List<Message> list = new ArrayList<>();
+    User u = new User(Shortcut.SUPPORT);
+    u.setDisplayName("Live Support");
+    u.setProfilePicture("https://static.tribe.pm/assets/support-avatar-love.png");
+
+    for (Message message : messages) {
+      MessageText m = new MessageText("SUPPORT");
+      m.setAuthor(u);
+      m.setCreationDate(dateUtils.getUTCDateForMessage());
+      m.setMessage(message.getContent());
+      list.add(m);
+    }
+    messageAdapter.setItems(list, 0);
+    scrollListToBottom();
   }
 
   @Override public void successLoadingMessage(List<Message> messages) {

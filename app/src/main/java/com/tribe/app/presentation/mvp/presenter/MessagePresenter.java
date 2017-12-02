@@ -300,8 +300,9 @@ public class MessagePresenter implements Presenter {
       //if (chatMVPView != null) chatMVPView.errorRemovedMessage();
     }
 
-    @Override public void onNext(List<Conversation> message) {
-      Timber.e("message support " + message);
+    @Override public void onNext(List<Conversation> conversations) {
+      Timber.e("message support " );
+      if (chatMVPView != null) chatMVPView.successMessageSupport(conversations.get(0).getMessages());
     }
   }
 

@@ -298,11 +298,7 @@ public class ChatView extends IChat {
     if (arrIds == null) {
       return;
     }
-    if (!shortcut.isSupport()) {
-      recyclerView.onResumeView();
-    } else {
-      messagePresenter.getMessageSupport();
-    }
+    recyclerView.onResumeView();
   }
 
   public void dispose() {

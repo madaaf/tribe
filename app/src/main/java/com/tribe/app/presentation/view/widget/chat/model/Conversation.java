@@ -8,6 +8,9 @@ import java.util.List;
 
 public class Conversation {
 
+  private final String ID_HOME = "home";
+  private final String ID_SUGGEST_GAME = "suggest_game";
+
   private String id;
   private List<Message> messages;
 
@@ -30,9 +33,5 @@ public class Conversation {
 
   public void setMessages(List<Message> messages) {
     this.messages = messages;
-  }
-
-  @Override public String toString() {
-    return "Conversation{" + "id='" + id + '\'' + ", messages=" + messages + '}';
   }
 }
