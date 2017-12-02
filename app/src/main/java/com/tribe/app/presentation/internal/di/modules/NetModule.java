@@ -26,6 +26,7 @@ import com.tribe.app.data.network.deserializer.BooleanTypeAdapter;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
 import com.tribe.app.data.network.deserializer.CreateMessageDeserializer;
 import com.tribe.app.data.network.deserializer.DataGameDeserializer;
+import com.tribe.app.data.network.deserializer.DataSupportMessageDeserializer;
 import com.tribe.app.data.network.deserializer.DateDeserializer;
 import com.tribe.app.data.network.deserializer.GameListDeserializer;
 import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
@@ -63,6 +64,7 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
 import dagger.Module;
 import dagger.Provides;
@@ -141,6 +143,8 @@ import timber.log.Timber;
       @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull) {
 
     DataGameDeserializer dataGameDeserializer = new DataGameDeserializer(context);
+    DataSupportMessageDeserializer dataSupportMessageDeserializer =
+        new DataSupportMessageDeserializer(context);
 
     return new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
       @Override public boolean shouldSkipField(FieldAttributes f) {
@@ -175,6 +179,8 @@ import timber.log.Timber;
         .registerTypeAdapter(RemoveMessageEntity.class, new RemoveMessageDeserializer())
         .registerTypeAdapter(new TypeToken<List<String>>() {
         }.getType(), dataGameDeserializer)
+        .registerTypeAdapter(new TypeToken<List<Conversation>>() {
+        }.getType(), dataSupportMessageDeserializer)
         .registerTypeAdapter(ShortcutRealm.class, new ShortcutRealmDeserializer())
         .registerTypeAdapter(new TypeToken<List<GameRealm>>() {
         }.getType(), new GameListDeserializer())
@@ -392,9 +398,9 @@ import timber.log.Timber;
           clearLock();
         }
 
-        if (responseRefresh != null &&
-            responseRefresh.isSuccessful() &&
-            responseRefresh.body() != null) {
+        if (responseRefresh != null
+            && responseRefresh.isSuccessful()
+            && responseRefresh.body() != null) {
           AccessToken newAccessToken = responseRefresh.body();
           Timber.d("New access_token : " + newAccessToken.getAccessToken());
           Timber.d("New refresh_token : " + newAccessToken.getRefreshToken());
@@ -479,10 +485,10 @@ import timber.log.Timber;
 
     @Override public okhttp3.Response intercept(Chain chain) throws IOException {
 
-      if (tribeAuthorizer != null &&
-          tribeAuthorizer.getAccessToken() != null &&
-          tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null &&
-          tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
+      if (tribeAuthorizer != null
+          && tribeAuthorizer.getAccessToken() != null
+          && tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null
+          && tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
 
         Timber.d(
             "The token has expired, we know it locally, so we automatically launch a refresh before hitting the backend.");
@@ -542,16 +548,15 @@ import timber.log.Timber;
 
       List<String> customAnnotations = original.headers("@");
       if (customAnnotations.contains("UseUserToken")) {
-        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType() +
-            " " +
-            tribeAuthorizer.getAccessToken().getAccessToken());
+        requestBuilder.header("Authorization",
+            tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken()
+                .getAccessToken());
 
-        TribeApiUtils.appendTribeHeaders(context, tribeAuthorizer.getAccessToken().getUserId(), requestBuilder);
-
+        TribeApiUtils.appendTribeHeaders(context, tribeAuthorizer.getAccessToken().getUserId(),
+            requestBuilder);
       } else {
-        byte[] data = (tribeAuthorizer.getApiClient() +
-            ":" +
-            DateUtils.unifyDate(tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
+        byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
+            tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
         requestBuilder.header("Authorization", "Basic " + base64);

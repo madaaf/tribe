@@ -4,10 +4,12 @@ import android.content.Context;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.RealmList;
 import java.util.List;
@@ -25,13 +27,19 @@ public class CloudChatDataStore implements ChatDataStore {
   private final TribeApi tribeApi;
   private ChatCache chatCache;
   private UserCache userCache;
+  private FileApi fileApi;
 
-  public CloudChatDataStore(Context context, TribeApi tribeApi, ChatCache chatCache,
-      UserCache userCache) {
+  public CloudChatDataStore(Context context, TribeApi tribeApi, FileApi fileApi,
+      ChatCache chatCache, UserCache userCache) {
     this.context = context;
     this.tribeApi = tribeApi;
     this.chatCache = chatCache;
     this.userCache = userCache;
+    this.fileApi = fileApi;
+  }
+
+  @Override public Observable<List<Conversation>> getMessageSupport() {
+    return fileApi.getMessageSupport();
   }
 
   @Override

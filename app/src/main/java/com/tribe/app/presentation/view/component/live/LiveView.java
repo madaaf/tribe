@@ -243,8 +243,9 @@ public class LiveView extends FrameLayout {
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
 
         onEndCall.onNext(durationInSeconds);
-      } else if ((hasJoined && averageCountLive <= 1 && !live.getType().equals(Live.NEW_CALL)) ||
-          (live.getType().equals(Live.NEW_CALL) && (invitedCount > 0 || hasShared))) {
+      } else if ((hasJoined && averageCountLive <= 1 && !live.getType().equals(Live.NEW_CALL)) || (
+          live.getType().equals(Live.NEW_CALL)
+              && (invitedCount > 0 || hasShared))) {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
@@ -551,9 +552,8 @@ public class LiveView extends FrameLayout {
         .doOnNext(tribeJoinRoom -> hasJoined = true)
         .doOnNext(tribeJoinRoom -> {
           // TODO SEE WITH #backend solution to launch game in call roulette
-          if (!StringUtils.isEmpty(live.getGameId()) &&
-              !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
-              StringUtils.isEmpty(room.getGameId())) {
+          if (!StringUtils.isEmpty(live.getGameId()) && !live.getSource()
+              .equals(SOURCE_CALL_ROULETTE) && StringUtils.isEmpty(room.getGameId())) {
             viewControlsLive.startGame(gameManager.getGameById(live.getGameId()));
           }
         })
@@ -585,10 +585,10 @@ public class LiveView extends FrameLayout {
             onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
           }
 
-          Timber.d("Remote peer added with id : " +
-              remotePeer.getSession().getPeerId() +
-              " & view : " +
-              remotePeer.getPeerView());
+          Timber.d("Remote peer added with id : "
+              + remotePeer.getSession().getPeerId()
+              + " & view : "
+              + remotePeer.getPeerView());
           addView(remotePeer);
           onNotificationRemoteWaiting.onNext(getDisplayNameFromSession(remotePeer.getSession()));
 
@@ -959,7 +959,10 @@ public class LiveView extends FrameLayout {
   }
 
   private int nbLiveInRoom() {
-    return live.getRoom().nbUsersLive();
+    if (live != null && live.getRoom() != null) {
+      return live.getRoom().nbUsersLive();
+    }
+    return 0;
   }
 
   private String getDisplayNameFromSession(TribeSession tribeSession) {

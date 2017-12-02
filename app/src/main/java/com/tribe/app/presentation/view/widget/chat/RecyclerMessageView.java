@@ -184,7 +184,7 @@ public class RecyclerMessageView extends IChat {
                   if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_UNSEND)) {
                     messagePresenter.removeMessage(m);
                   } else if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_COPY)) {
-                    copyToClipboard(m.getContent());
+                    copyToClipboard(m.getMessageContent());
                   }
                 }
                 return null;

@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.chat.datasource;
 
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import java.util.List;
 import rx.Observable;
 
@@ -31,4 +32,7 @@ public interface ChatDataStore {
   Observable<MessageRealm> onMessageRemoved();
 
   Observable<Boolean> imTyping(String[] userIds);
+
+
+  Observable<List<Conversation>> getMessageSupport();
 }

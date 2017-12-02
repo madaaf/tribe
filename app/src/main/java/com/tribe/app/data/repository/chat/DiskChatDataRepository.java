@@ -5,6 +5,7 @@ import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory;
 import com.tribe.app.data.repository.chat.datasource.DiskChatDataStore;
 import com.tribe.app.domain.interactor.chat.ChatRepository;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 import javax.inject.Inject;
@@ -83,6 +84,10 @@ import rx.Observable;
   }
 
   public Observable<Boolean> imTyping(String[] userIds) {
+    return null;
+  }
+
+  @Override public Observable<List<Conversation>> getMessageSupport(String lang) {
     return null;
   }
 }

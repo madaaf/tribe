@@ -1,5 +1,6 @@
 package com.tribe.app.domain.interactor.chat;
 
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 import rx.Observable;
@@ -28,4 +29,6 @@ public interface ChatRepository {
   Observable<String> isReading();
 
   Observable<Boolean> imTyping(String[] userIds);
+
+  Observable<List<Conversation>> getMessageSupport(String lang);
 }

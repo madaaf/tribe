@@ -6,6 +6,7 @@ import com.tribe.app.data.repository.chat.datasource.ChatDataStore;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory;
 import com.tribe.app.domain.interactor.chat.ChatRepository;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 import javax.inject.Inject;
@@ -40,7 +41,13 @@ import rx.Observable;
         .map(this.messageRealmDataMapper::transform);
   }
 
-  @Override public Observable<List<Message>> loadMessages(String[] userIds, String dateBefore, String dateAfter) {
+  @Override public Observable<List<Conversation>> getMessageSupport(String lang) {
+    final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
+    return userDataStore.getMessageSupport();
+  }
+
+  @Override public Observable<List<Message>> loadMessages(String[] userIds, String dateBefore,
+      String dateAfter) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
     return userDataStore.loadMessages(userIds, dateBefore, dateAfter)
         .doOnError(Throwable::printStackTrace)

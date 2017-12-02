@@ -4,10 +4,10 @@ import android.util.Pair;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Shortcut;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
 import com.tribe.app.domain.interactor.chat.GetMessageImageFromDisk;
+import com.tribe.app.domain.interactor.chat.GetMessageSupport;
 import com.tribe.app.domain.interactor.chat.ImTyping;
 import com.tribe.app.domain.interactor.chat.IsReadingFromDisk;
 import com.tribe.app.domain.interactor.chat.IsTalkingFromDisk;
@@ -25,6 +25,7 @@ import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.PictureMVPView;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,7 @@ public class MessagePresenter implements Presenter {
   protected IsReadingFromDisk isReadingFromDisk;
   protected OnMessageReceivedFromDisk onMessageReceivedFromDisk;
   protected OnMessageRemovedFromDisk onMessageRemovedFromDisk;
+  protected GetMessageSupport getMessageSupport;
   protected ImTyping imTyping;
   protected CreateShortcut createShortcut;
   protected UpdateShortcut updateShortcut;
@@ -72,7 +74,7 @@ public class MessagePresenter implements Presenter {
       GetMessageImageFromDisk getMessageImageFromDisk, GetShortcutForUserIds getShortcutForUserIds,
       CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk,
       IsReadingFromDisk isReadingFromDisk, RemoveMessage removeMessage,
-      OnMessageRemovedFromDisk onMessageRemovedFromDisk) {
+      OnMessageRemovedFromDisk onMessageRemovedFromDisk, GetMessageSupport getMessageSupport) {
     this.shortcutPresenter = shortcutPresenter;
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
@@ -89,6 +91,7 @@ public class MessagePresenter implements Presenter {
     this.isReadingFromDisk = isReadingFromDisk;
     this.removeMessage = removeMessage;
     this.onMessageRemovedFromDisk = onMessageRemovedFromDisk;
+    this.getMessageSupport = getMessageSupport;
   }
 
   public void getMessageImage(String[] userIds) {
@@ -107,6 +110,10 @@ public class MessagePresenter implements Presenter {
 
   public void onMessageRemovedFromDisk() {
     onMessageRemovedFromDisk.execute(new GetDiskMessageRemovedSubscriber());
+  }
+
+  public void getMessageSupport() {
+    getMessageSupport.execute(new GetDiskMessageSupportSubscriber());
   }
 
   public void quickShortcutForUserIds(String userIds) {
@@ -280,6 +287,21 @@ public class MessagePresenter implements Presenter {
       } else {
         if (chatMVPView != null) chatMVPView.errorRemovedMessage(m);
       }
+    }
+  }
+
+  private class GetDiskMessageSupportSubscriber extends DefaultSubscriber<List<Conversation>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
+      //if (chatMVPView != null) chatMVPView.errorRemovedMessage();
+    }
+
+    @Override public void onNext(List<Conversation> message) {
+      Timber.e("message support " + message);
     }
   }
 
