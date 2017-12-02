@@ -193,6 +193,10 @@ def generateStrings() {
   }
 }
 
+repositories {
+  maven { url 'https://zendesk.jfrog.io/zendesk/repo' }
+}
+
 dependencies {
   def presentationDependencies = rootProject.ext.presentationDependencies
   def presentationTestDependencies = rootProject.ext.presentationTestDependencies
@@ -246,6 +250,7 @@ dependencies {
   compile "me.leolin:ShortcutBadger:1.1.18@aar"
   compile presentationDependencies.constraintLayout
   compile presentationDependencies.AVLoadingIndicatorView
+  compile group: 'com.zendesk', name: 'sdk', version: '1.10.0.1'
 
   //androidTestCompile presentationTestDependencies.mockito
   //androidTestCompile presentationTestDependencies.dexmaker

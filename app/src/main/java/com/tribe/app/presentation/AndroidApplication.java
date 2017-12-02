@@ -42,6 +42,7 @@ import com.tribe.tribelivesdk.filters.Filter;
 import com.tribe.tribelivesdk.filters.lut3d.FilterManager;
 import com.tribe.tribelivesdk.filters.lut3d.LUT3DFilter;
 import com.tribe.tribelivesdk.game.GameManager;
+import com.zendesk.sdk.network.impl.ZendeskConfig;
 import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
 import io.realm.FieldAttribute;
@@ -87,6 +88,13 @@ public class AndroidApplication extends Application {
     initFilters();
     initGameManager();
     JodaTimeAndroid.init(this);
+    initZendesk();
+  }
+
+  private void initZendesk() {
+    ZendeskConfig.INSTANCE.init(this, "https://heytribe.zendesk.com",
+        "be1b539ac3ad6095d312d9a6e2732ae4c6f333496dc5d2f6",
+        "mobile_sdk_client_94f2987ca018d588bebf");
   }
 
   @Override protected void attachBaseContext(Context base) {
