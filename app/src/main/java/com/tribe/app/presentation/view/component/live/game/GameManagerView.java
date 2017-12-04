@@ -150,8 +150,11 @@ public class GameManagerView extends FrameLayout {
         gameManager.onRemoteUserStopGame().map(tribeSessionGamePair -> tribeSessionGamePair.second))
         .filter(game -> game.hasView())
         .subscribe(game -> {
-          currentGameView.stop();
-          removeView(currentGameView);
+          if (currentGameView != null) {
+            currentGameView.stop();
+            removeView(currentGameView);
+          }
+
           currentGameView = null;
           currentGame = null;
         }));

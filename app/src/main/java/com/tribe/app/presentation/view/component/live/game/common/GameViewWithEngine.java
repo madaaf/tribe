@@ -218,7 +218,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   protected void imReady() {
     Timber.d("imReady");
     webRTCRoom.sendToPeers(getImReadyPayload(currentUser.getId()), true);
-    gameEngine.setUserReady(currentUser.getId());
+    if (gameEngine != null) gameEngine.setUserReady(currentUser.getId());
   }
 
   protected void iLost() {
