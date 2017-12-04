@@ -181,6 +181,10 @@ public class TopBarContainer extends FrameLayout {
     return topBarView.isSearchMode();
   }
 
+  public void openSearch() {
+    topBarView.animateSearch();
+  }
+
   public void closeSearch() {
     topBarView.closeSearch();
   }

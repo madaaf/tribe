@@ -179,7 +179,7 @@ public class LiveInviteView extends FrameLayout
     recyclerViewInvite.addItemDecoration(new InviteListDividerDecoration(getContext(),
         ContextCompat.getColor(getContext(), R.color.grey_divider), screenUtils.dpToPx(0.5f),
         getSectionCallback(itemsList)));
-    adapter.setItems(new ArrayList<>());
+    adapter.setItems(itemsList);
     recyclerViewInvite.setAdapter(adapter);
 
     // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
@@ -326,7 +326,8 @@ public class LiveInviteView extends FrameLayout
       for (Shortcut shortcut : listShortcut) {
         User user = shortcut.getSingleFriend();
         user.setSelected(selected != null && selected.getId().equals(shortcut.getId()));
-        if (!alreadyPresent.contains(user.getId()) && !usersAtBeginningOfCall.contains(user.getId())) {
+        if (!alreadyPresent.contains(user.getId()) &&
+            !usersAtBeginningOfCall.contains(user.getId())) {
           temp.add(shortcut);
         }
       }

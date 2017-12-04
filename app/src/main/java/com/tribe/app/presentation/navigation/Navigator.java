@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Settings;
+import android.widget.Toast;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
@@ -439,6 +440,50 @@ public class Navigator {
 
               openMessageAppForInviteWithUrl(activity, firebaseRemoteConfig, finalUrl, phoneNumber,
                   shouldOpenDefaultSms);
+            });
+
+    return link;
+  }
+
+  public String sendInviteToMessenger(BaseActivity activity,
+      FirebaseRemoteConfig firebaseRemoteConfig, String feature, String link) {
+    String title = activity.getString(R.string.onboarding_user_alert_call_link_metadata_title,
+        activity.getCurrentUser().getDisplayName());
+    String description =
+        activity.getString(R.string.onboarding_user_alert_call_link_metadata_description,
+            activity.getCurrentUser().getDisplayName());
+
+    activity.getTagManager()
+        .generateBranchLink(activity, link, title, description, feature, "SMS",
+            (generatedUrl, error) -> {
+              String finalUrl;
+
+              if (error == null && !StringUtils.isEmpty(generatedUrl)) {
+                finalUrl = generatedUrl;
+              } else {
+                finalUrl = link;
+              }
+
+              String text = firebaseRemoteConfig.getString("invite_message");
+
+              if (StringUtils.isEmpty(text)) {
+                text =
+                    activity.getString(R.string.onboarding_user_alert_call_link_content, finalUrl);
+              } else {
+                text = text.replace("%LINK%", finalUrl);
+              }
+
+              Intent sendIntent = new Intent();
+              sendIntent.setAction(Intent.ACTION_SEND);
+              sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+              sendIntent.setType("text/plain");
+              sendIntent.setPackage("com.facebook.orca");
+              try {
+                activity.startActivity(sendIntent);
+              } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(activity, "Please Install Facebook Messenger", Toast.LENGTH_LONG)
+                    .show();
+              }
             });
 
     return link;

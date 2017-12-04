@@ -740,6 +740,8 @@
 	<string name="game_taboo">Taboo</string>
 	<string name="game_backgam">Backgam\'</string>
 	<string name="game_beats">Beats</string>
+	<string name="game_trivia_status_pick_category">Choisis une catégorie !</string>
+	<string name="game_trivia_status_guess">Répond le premier !</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -825,6 +827,7 @@
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Marquer comme lu</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Marquer comme non-lu</string>
 	<string name="home_menu_invite_decline">:phone: Rejeter l\'appel</string>
+	<string name="home_menu_user_leaderboard">:trophy: Scores</string>
 	<string name="home_block_shortcut_title">Bloquer %1$s ?</string>
 	<string name="home_block_shortcut_message">Masquer les nouveaux messages, appels et autres notifications venant de cette personne. Vous pourrez débloquer cette personne depuis votre profil.</string>
 	<string name="home_block_shortcut_validate">Bloquer</string>
@@ -932,4 +935,13 @@
 	<string name="facebook_invite_popup_message">Vous avez tout compris ! Vous avez juste à sélectionner un(e) ami(e) pour lui envoyer une notification.</string>
 	<string name="facebook_invite_popup_validate">Super :love_letter:</string>
 	<string name="facebook_invite_confirmation">Notifié(e) sur Facebook ! :love_letter:</string>
+	
+	<!-- Leaderboards -->
+	<string name="leaderboards_title">Classements</string>
+	<string name="leaderboards_score">Meilleur score</string>
+	<string name="leaderboards_friends">Amis</string>
+	<string name="leaderboards_overall">Global</string>
+	<string name="leaderboards_point">pt</string>
+	<string name="leaderboards_points">pts</string>
+	<string name="leaderboards_you">Vous</string>
 </resources>

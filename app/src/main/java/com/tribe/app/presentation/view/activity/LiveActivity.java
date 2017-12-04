@@ -144,8 +144,10 @@ public class LiveActivity extends BaseActivity
 
   public static final String ROOM_ID = "ROOM_ID";
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
-  public static String UNKNOWN_USER_FROM_DEEPLINK = "UNKNOWN_USER_FROM_DEEPLINK";
-  public static String USER_IDS_FOR_NEW_SHORTCUT = "USER_IDS_FOR_NEW_SHORTCUT";
+  public static final String UNKNOWN_USER_FROM_DEEPLINK = "UNKNOWN_USER_FROM_DEEPLINK";
+  public static final String USER_IDS_FOR_NEW_SHORTCUT = "USER_IDS_FOR_NEW_SHORTCUT";
+  public static final String LAUNCH_DICE = "LAUNCH_DICE";
+  public static final String LAUNCH_SEARCH = "LAUNCH_SEARCH";
 
   private final int MAX_DURATION_WAITING_LIVE = 8;
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
@@ -757,7 +759,7 @@ public class LiveActivity extends BaseActivity
         })
         .subscribe());
 
-    subscriptions.add(viewLive.onShareLink().subscribe(aVoid -> share()));
+    subscriptions.add(viewLive.onShareLink().subscribe(aVoid -> share(false)));
 
     subscriptions.add(viewLive.unlockRollTheDice().
         subscribeOn(Schedulers.newThread()).
@@ -798,6 +800,24 @@ public class LiveActivity extends BaseActivity
     //  notificationContainerView.
     //      showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
     //}));
+
+    subscriptions.add(viewLiveContainer.onStopAndLaunchDice().subscribe(aVoid -> {
+      returnIntent.putExtra(LAUNCH_DICE, true);
+      setResult(RESULT_OK, returnIntent);
+      leave();
+    }));
+
+    subscriptions.add(viewLiveContainer.onInviteMessenger()
+        .subscribe(aVoid -> navigator.sendInviteToMessenger(this, firebaseRemoteConfig,
+            TagManagerUtils.CALL, room.getLink())));
+
+    subscriptions.add(viewLiveContainer.onInviteSms().subscribe(aVoid -> share(true)));
+
+    subscriptions.add(viewLiveContainer.onLaunchSearch().subscribe(aVoid -> {
+      returnIntent.putExtra(LAUNCH_SEARCH, true);
+      setResult(RESULT_OK, returnIntent);
+      leave();
+    }));
 
     subscriptions.add(viewLive.onNotificationRemotePeerInvited().
         subscribe(userName -> displayNotification(
@@ -905,7 +925,7 @@ public class LiveActivity extends BaseActivity
                   context().getString(R.string.add_friend_error_invisible_invite_android),
                   context().getString(R.string.add_friend_error_invisible_cancel))
                   .filter(x -> x == true)
-                  .subscribe(a -> share()));
+                  .subscribe(a -> share(false)));
             } else {
               livePresenter.createShortcut(triplet.first.getId());
             }
@@ -947,7 +967,7 @@ public class LiveActivity extends BaseActivity
         .subscribe(game -> livePresenter.roomStopGame(room.getId())));
   }
 
-  private void share() {
+  private void share(boolean shouldOpenSMSDefault) {
     if (room == null) return;
 
     Bundle bundle = new Bundle();
@@ -955,7 +975,7 @@ public class LiveActivity extends BaseActivity
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
     tagManager.trackEvent(TagManagerUtils.Invites, bundle);
     navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, room.getLink(),
-        null, false);
+        null, shouldOpenSMSDefault);
   }
 
   private void reRollTheDiceFromCallRoulette(boolean isFromOthers) {

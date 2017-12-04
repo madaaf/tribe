@@ -714,7 +714,6 @@ public class LiveView extends FrameLayout {
   }
 
   public void applyTranslateX(float value, boolean right) {
-    Timber.d("Translation : " + value);
     viewControlsLive.setTranslationX(value);
     viewRoom.setTranslationX(value);
     viewRinging.applyTranslationX(value);
@@ -797,6 +796,7 @@ public class LiveView extends FrameLayout {
   }
 
   public int nbInRoom() {
+    if (live.getRoom() == null) return 0;
     return live.getRoom().nbUsersTotal();
   }
 

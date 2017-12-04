@@ -35,7 +35,7 @@ public class ListUtils {
   }
 
   public static void addEmptyItemsInvite(List<LiveInviteAdapterSectionInterface> items) {
-    double minItems = 5;
+    double minItems = 10;
 
     if (items.size() < minItems) {
       for (int i = items.size(); i < minItems; i++) {
@@ -56,7 +56,7 @@ public class ListUtils {
 
     return result.length() > 0 ? result.substring(0, result.length() - 1) : "";
   }
-  
+
   public static boolean equalLists(List<String> one, List<String> two) {
     if (one == null && two == null) {
       return true;

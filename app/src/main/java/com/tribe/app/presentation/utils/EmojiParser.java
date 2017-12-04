@@ -123,6 +123,8 @@ public class EmojiParser {
     IEmojiMap.put(":arrow_left:", "\u2B05");
     IEmojiMap.put(":no_entry:", "\u26D4");
     IEmojiMap.put(":video_camera:", "\uD83D\uDCF9");
+    IEmojiMap.put(":game_die:", "\uD83C\uDFB2");
+    IEmojiMap.put(":speech_balloon:", "\uD83D\uDCAC");
   }
 
   /**

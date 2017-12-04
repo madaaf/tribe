@@ -95,11 +95,9 @@ public class LiveHangUpView extends FrameLayout {
 
   public void applyTranslationX(float x) {
     float value = Math.max(x, minWidth);
-    Timber.d("Value translate : " + value);
     int rotation = Math.min(
         (int) SpringUtil.mapValueFromRangeToRange(value, minWidth, maxWidthRotation, MAX_ROTATION,
             0), 0);
-    Timber.d("Value rotation : " + rotation);
     imgPhone.setRotation(rotation);
     UIUtils.changeWidthOfView(this, (int) value);
   }

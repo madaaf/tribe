@@ -131,6 +131,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
     subscriptions.add(obs.subscribe(width -> {
       shortcutInviteAdapterDelegate.updateWidth(width);
       shortcutInviteFullAdapterDelegate.updateWidth(width);
+      shortcutEmptyInviteAdapterDelegate.updateWidth(width);
     }));
   }
 
