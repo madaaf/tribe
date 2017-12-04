@@ -17,6 +17,8 @@ import timber.log.Timber;
 
 public class RemotePeerView extends PeerView {
 
+  private TribePeerMediaConfiguration mediaConfiguration;
+
   // OBSERVABLES
   private PublishSubject<TribePeerMediaConfiguration> onMediaConfiguration =
       PublishSubject.create();
@@ -115,13 +117,19 @@ public class RemotePeerView extends PeerView {
   }
 
   public void setMediaConfiguration(TribePeerMediaConfiguration mediaConfiguration) {
-    Timber.d("New media configuration for : "
-        + mediaConfiguration.getSession().getUserId()
-        + " : isAudioEnabled : "
-        + mediaConfiguration.isAudioEnabled()
-        + " isVideoEnabled : "
-        + mediaConfiguration.isVideoEnabled());
+    this.mediaConfiguration = mediaConfiguration;
+
+    Timber.d("New media configuration for : " +
+        mediaConfiguration.getSession().getUserId() +
+        " : isAudioEnabled : " +
+        mediaConfiguration.isAudioEnabled() +
+        " isVideoEnabled : " +
+        mediaConfiguration.isVideoEnabled());
     onMediaConfiguration.onNext(mediaConfiguration);
+  }
+
+  public TribePeerMediaConfiguration getMediaConfiguration() {
+    return mediaConfiguration;
   }
 
   // OBSERVABLES

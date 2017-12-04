@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Recipient;
@@ -19,11 +18,13 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 01/22/17.
@@ -38,6 +39,7 @@ public class LiveRowView extends LiveStreamView {
   private RemotePeerView remotePeerView;
   private TribeGuest guest;
   private boolean isWaiting = false;
+  private TribePeerMediaConfiguration tribePeerMediaConfiguration;
 
   // OBSERVABLES
   private PublishSubject<TribeGuest> onClick;
@@ -110,6 +112,11 @@ public class LiveRowView extends LiveStreamView {
     } else {
       remotePeerView = (RemotePeerView) peerView;
 
+      if (remotePeerView.getMediaConfiguration() != null) {
+        Timber.d("Pending mediaConfiguration");
+        setMediaConfiguration(remotePeerView.getMediaConfiguration());
+      }
+
       subscriptions.add(this.remotePeerView.onNotificationRemoteJoined()
           .observeOn(AndroidSchedulers.mainThread())
           .doOnNext(peerView1 -> layoutStream.setVisibility(View.VISIBLE))
@@ -119,26 +126,8 @@ public class LiveRowView extends LiveStreamView {
           .onBackpressureDrop()
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(tribePeerMediaConfiguration -> {
-            if (!tribePeerMediaConfiguration.isVideoEnabled()) {
-              UIUtils.hideReveal(layoutStream, true, new AnimatorListenerAdapter() {
-                @Override public void onAnimationEnd(Animator animation) {
-                  if (animation != null) animation.removeAllListeners();
-                  layoutStream.setVisibility(View.GONE);
-                }
-              });
-            } else {
-              UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
-                @Override public void onAnimationStart(Animator animation) {
-                  layoutStream.setVisibility(View.VISIBLE);
-                }
-
-                @Override public void onAnimationEnd(Animator animation) {
-                  if (animation != null) animation.removeAllListeners();
-                }
-              });
-            }
-
-            viewPeerOverlay.setMediaConfiguration(tribePeerMediaConfiguration);
+            Timber.d("onMediaConfiguration");
+            setMediaConfiguration(tribePeerMediaConfiguration);
           }));
 
       ViewGroup.LayoutParams params =
@@ -146,6 +135,32 @@ public class LiveRowView extends LiveStreamView {
               ViewGroup.LayoutParams.MATCH_PARENT);
       if (remotePeerView.getParent() == null) layoutStream.addView(remotePeerView, 0, params);
     }
+  }
+
+  private void setMediaConfiguration(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
+    Timber.d("setMediaConfiguration");
+    this.tribePeerMediaConfiguration = tribePeerMediaConfiguration;
+
+    if (!tribePeerMediaConfiguration.isVideoEnabled()) {
+      UIUtils.hideReveal(layoutStream, true, new AnimatorListenerAdapter() {
+        @Override public void onAnimationEnd(Animator animation) {
+          if (animation != null) animation.removeAllListeners();
+          layoutStream.setVisibility(View.GONE);
+        }
+      });
+    } else {
+      UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
+        @Override public void onAnimationStart(Animator animation) {
+          layoutStream.setVisibility(View.VISIBLE);
+        }
+
+        @Override public void onAnimationEnd(Animator animation) {
+          if (animation != null) animation.removeAllListeners();
+        }
+      });
+    }
+
+    viewPeerOverlay.setMediaConfiguration(tribePeerMediaConfiguration);
   }
 
   public TribeGuest getGuest() {
