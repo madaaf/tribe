@@ -220,7 +220,7 @@
         android:configChanges="orientation|screenSize"
         android:keepScreenOn="true"
         android:launchMode="singleTask"
-        android:theme="@style/AppTheme.Black"/>
+        android:theme="@style/AppTheme.Transparent"/>
 
     <activity
         android:name=".presentation.view.activity.VideoActivity"

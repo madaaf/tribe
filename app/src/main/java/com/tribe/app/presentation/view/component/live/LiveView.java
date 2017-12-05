@@ -3,6 +3,8 @@ package com.tribe.app.presentation.view.component.live;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -354,7 +356,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void initUI() {
-    setBackgroundColor(Color.BLACK);
+    ViewCompat.setBackground(this, null);
   }
 
   private void initResources() {

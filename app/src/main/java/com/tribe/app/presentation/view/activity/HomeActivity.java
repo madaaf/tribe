@@ -1273,6 +1273,10 @@ public class HomeActivity extends BaseActivity
         } else {
           navigateToChat(recipient, TagManagerUtils.GESTURE_SWIPE);
         }
+
+        subscriptions.add(Observable.timer(3, TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> viewLiveFake.setTranslationX(screenUtils.getWidthPx())));
       }
     }));
   }

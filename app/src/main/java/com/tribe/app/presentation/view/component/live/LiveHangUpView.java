@@ -17,7 +17,6 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 10/05/2017.
@@ -26,7 +25,6 @@ public class LiveHangUpView extends FrameLayout {
 
   public static final int MIN_WIDTH = 75;
   public static final int MAX_WIDTH = 800;
-  public static final int MAX_WIDTH_ROTATION = 100;
   public static final int MAX_ROTATION = -100;
 
   @Inject ScreenUtils screenUtils;
@@ -82,7 +80,7 @@ public class LiveHangUpView extends FrameLayout {
   private void initResources() {
     maxWidth = screenUtils.dpToPx(MAX_WIDTH);
     minWidth = screenUtils.dpToPx(MIN_WIDTH);
-    maxWidthRotation = screenUtils.dpToPx(MAX_WIDTH_ROTATION);
+    maxWidthRotation = screenUtils.getWidthPx() >> 1;
   }
 
   private void initSubscriptions() {

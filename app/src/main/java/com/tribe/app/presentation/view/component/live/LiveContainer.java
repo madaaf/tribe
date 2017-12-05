@@ -24,9 +24,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
-import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import java.util.concurrent.TimeUnit;
@@ -176,8 +174,7 @@ public class LiveContainer extends FrameLayout {
   private void initResources() {
     thresholdEnd =
         getContext().getResources().getDimensionPixelSize(R.dimen.threshold_open_live_invite);
-    thresholdEndCall =
-        getContext().getResources().getDimensionPixelOffset(R.dimen.threshold_end_call);
+    thresholdEndCall = screenUtils.getWidthPx() >> 1;
   }
 
   private void initSubscriptions() {
@@ -699,7 +696,7 @@ public class LiveContainer extends FrameLayout {
   }
 
   private float getTotalDragDistanceHangUp() {
-    return screenUtils.dpToPx(LiveHangUpView.MAX_WIDTH);
+    return screenUtils.getWidthPx();
   }
 
   private int computeOffsetWithTension(float scrollDist, float totalDragDistance) {
@@ -719,8 +716,7 @@ public class LiveContainer extends FrameLayout {
     @Override public void onSpringUpdate(Spring spring) {
       if (ViewCompat.isAttachedToWindow(LiveContainer.this)) {
         float value = (float) spring.getCurrentValue();
-        float appliedValue =
-            Math.min(Math.max(value, 0), screenUtils.dpToPx(LiveHangUpView.MAX_WIDTH));
+        float appliedValue = Math.min(Math.max(value, 0), screenUtils.getWidthPx());
         applyLeft(appliedValue);
       }
     }
@@ -733,25 +729,21 @@ public class LiveContainer extends FrameLayout {
   private void applyLeft(float value) {
     viewLiveHangUp.applyTranslationX(value);
     viewLive.applyTranslateX(value, false);
+    viewLiveInvite.setTranslationX(value);
   }
 
   private boolean applyOffsetLeftWithTension(float offsetX) {
-    float totalDragDistance = getTotalDragDistanceHangUp();
-    final float scrollLeft = offsetX * DRAG_RATE_HANG_UP;
-    currentDragPercent = scrollLeft / totalDragDistance;
-
-    if (currentDragPercent < 0) {
-      return false;
-    }
-
-    currentOffsetLeft = computeOffsetWithTension(scrollLeft, totalDragDistance);
+    final float scrollLeft = offsetX;
+    currentOffsetLeft = (int) scrollLeft;
     applyLeft(currentOffsetLeft);
 
     return true;
   }
 
   private void endCall() {
-    int endValue = screenUtils.getWidthPx() - viewLive.getLiveInviteViewPartialWidth();
+    AnimationUtils.fadeOut(viewLiveHangUp, DURATION);
+
+    int endValue = screenUtils.getWidthPx();
     if (velocityTracker != null) {
       springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(endValue);
     } else {

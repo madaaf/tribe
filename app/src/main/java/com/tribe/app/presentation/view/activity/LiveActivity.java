@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -196,6 +197,7 @@ public class LiveActivity extends BaseActivity
   private int createRoomErrorCount = 0;
   private HashSet<String> usersThatWereLive = new HashSet<>();
   private ChatView chatView;
+
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
@@ -776,7 +778,6 @@ public class LiveActivity extends BaseActivity
         }));
 
     subscriptions.add(viewLive.onEndCall().
-        subscribeOn(Schedulers.newThread()).
         observeOn(AndroidSchedulers.mainThread()).
         subscribe(duration -> livePresenter.incrementTimeInCall(user.getId(), duration)));
 
