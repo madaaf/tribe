@@ -43,8 +43,6 @@ import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.tribelivesdk.model.TribeGuest;
-import java.util.ArrayList;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -59,12 +57,11 @@ import rx.subscriptions.CompositeSubscription;
 public class NotificationContainerView extends FrameLayout {
 
   @StringDef({
-      DISPLAY_CREATE_GRP_NOTIF, DISPLAY_PERMISSION_NOTIF, DISPLAY_ENJOYING_NOTIF,
-      DISPLAY_INVITE_NOTIF, DISPLAY_SHARING_NOTIF, DISPLAY_FB_CALL_ROULETTE
+      DISPLAY_PERMISSION_NOTIF, DISPLAY_ENJOYING_NOTIF, DISPLAY_INVITE_NOTIF, DISPLAY_SHARING_NOTIF,
+      DISPLAY_FB_CALL_ROULETTE
   }) public @interface NotifType {
   }
 
-  public static final String DISPLAY_CREATE_GRP_NOTIF = "DISPLAY_CREATE_FRP_NOTIF";
   public static final String DISPLAY_PERMISSION_NOTIF = "DISPLAY_PERMISSION_NOTIF";
   public static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
   public static final String DISPLAY_INVITE_NOTIF = "DISPLAY_INVITE_NOTIF";
@@ -174,8 +171,8 @@ public class NotificationContainerView extends FrameLayout {
 
   private boolean displayPermissionNotification() {
     RxPermissions rxPermissions = new RxPermissions((Activity) getContext());
-    if (!PermissionUtils.hasPermissionsCameraOnly(rxPermissions)
-        || !PermissionUtils.hasPermissionsMicroOnly(rxPermissions)) {
+    if (!PermissionUtils.hasPermissionsCameraOnly(rxPermissions) ||
+        !PermissionUtils.hasPermissionsMicroOnly(rxPermissions)) {
       viewToDisplay = new PermissionNotificationView(context);
       addViewInContainer(viewToDisplay);
       animateView();
@@ -301,25 +298,14 @@ public class NotificationContainerView extends FrameLayout {
     Bundle extra = data.getExtras();
     boolean displayEnjoyingTribeView = false;
 
-    if (numberOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_COUNT
-        && minutesOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_MINUTES) {
+    if (numberOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_COUNT &&
+        minutesOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_MINUTES) {
       displayEnjoyingTribeView = true;
       numberOfCalls.set(0);
       minutesOfCalls.set(0f);
     }
 
-    if (data.getBooleanExtra(DISPLAY_CREATE_GRP_NOTIF, false) && extra != null) {
-      ArrayList<TribeGuest> members = (ArrayList<TribeGuest>) extra.getSerializable(
-          CreateGroupNotificationView.PREFILLED_GRP_MEMBERS);
-      viewToDisplay = new CreateGroupNotificationView(context, members);
-    } else if (data.getBooleanExtra(DISPLAY_SHARING_NOTIF, false) && extra != null) {
-      bgView.setVisibility(INVISIBLE);
-      textDismiss.setAlpha(0);
-      ArrayList<TribeGuest> members = (ArrayList<TribeGuest>) extra.getSerializable(
-          SharingCardNotificationView.CALL_GRP_MEMBERS);
-      double durationCall = extra.getDouble(SharingCardNotificationView.DURATION_CALL);
-      viewToDisplay = new SharingCardNotificationView(context, members, durationCall);
-    } else if (displayEnjoyingTribeView) {
+    if (displayEnjoyingTribeView) {
       viewToDisplay = new EnjoyingTribeNotificationView(context);
     }
     return viewToDisplay;

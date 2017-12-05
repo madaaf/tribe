@@ -43,11 +43,8 @@ public class LauncherActivity extends BaseActivity {
     if (currentUser == null || StringUtils.isEmpty(currentUser.getUsername())) {
       navigator.navigateToLogin(this, deepLink);
     } else if (TribeGCMReceiver.ACTION_CALLROULETTE.equals(action)) {
-      navigator.navigateToNewCall(this, LiveActivity.SOURCE_CALL_ROULETTE);
+      navigator.navigateToNewCall(this, LiveActivity.SOURCE_CALL_ROULETTE, null);
     } else {
-      Bundle properties = new Bundle();
-      properties.putString(TagManagerUtils.TYPE, "login");
-      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
       navigator.navigateToHomeFromStart(this, deepLink);
     }
 

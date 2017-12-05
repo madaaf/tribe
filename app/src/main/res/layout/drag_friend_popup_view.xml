@@ -27,7 +27,8 @@
 
       <com.tribe.app.presentation.view.component.live.TooltipVideoView
           android:layout_width="match_parent"
-          android:layout_height="143dp"/>
+          android:layout_height="143dp"
+          />
 
       <!--
       <ImageView

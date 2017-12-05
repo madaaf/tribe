@@ -8,43 +8,43 @@ import java.io.Serializable;
 
 public class LinkIdResult implements Serializable {
 
-    private boolean unlinked;
+  private boolean unlinked;
 
-    private boolean linked;
+  private boolean linked;
 
-    private boolean verified;
+  private boolean verified;
 
-    private String error;
+  private String error;
 
-    public boolean isUnlinked() {
-        return unlinked;
-    }
+  public boolean isUnlinked() {
+    return unlinked;
+  }
 
-    public void setUnlinked(boolean unlinked) {
-        this.unlinked = unlinked;
-    }
+  public void setUnlinked(boolean unlinked) {
+    this.unlinked = unlinked;
+  }
 
-    public boolean isLinked() {
-        return linked;
-    }
+  public boolean isLinked() {
+    return linked;
+  }
 
-    public void setLinked(boolean linked) {
-        this.linked = linked;
-    }
+  public void setLinked(boolean linked) {
+    this.linked = linked;
+  }
 
-    public boolean isVerified() {
-        return verified;
-    }
+  public boolean isVerified() {
+    return verified;
+  }
 
-    public void setVerified(boolean verified) {
-        this.verified = verified;
-    }
+  public void setVerified(boolean verified) {
+    this.verified = verified;
+  }
 
-    public String getError() {
-        return error;
-    }
+  public String getError() {
+    return error;
+  }
 
-    public void setError(String error) {
-        this.error = error;
-    }
+  public void setError(String error) {
+    this.error = error;
+  }
 }

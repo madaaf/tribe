@@ -12,7 +12,7 @@ buildscript {
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     classpath 'me.tatarka:gradle-retrolambda:3.2.3'
     classpath 'com.fernandocejas.frodo:frodo-plugin:0.8.1'
-    classpath 'io.realm:realm-gradle-plugin:2.3.1'
+    classpath 'io.realm:realm-gradle-plugin:3.7.1'
     classpath 'com.google.gms:google-services:3.0.0'
   }
 }
@@ -20,8 +20,8 @@ buildscript {
 allprojects {
   ext {
     androidApplicationId = 'com.tribe.app'
-    androidVersionCode = 116
-    androidVersionName = "3.0.15"
+    androidVersionCode = 134
+    androidVersionName = "4.0.1"
     testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     testApplicationId = 'com.tribe.app.test'
   }
@@ -29,6 +29,7 @@ allprojects {
   repositories {
     maven { url "http://appboy.github.io/appboy-android-sdk/sdk" }
     maven { url "https://jitpack.io" }
+    maven { url "https://maven.google.com" }
   }
 }
 

@@ -18,7 +18,6 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   private String displayName;
   private String userName;
   private String picture;
-  private boolean isGroup;
   private boolean isInvite;
   private List<String> memberPics;
   private boolean canRemove;
@@ -30,14 +29,12 @@ public class TribeGuest extends GroupJoiner implements Serializable {
     this.id = id;
   }
 
-  public TribeGuest(String id, String displayName, String picture, boolean isGroup,
-      boolean isInvite, List<String> memberPics, boolean canRemove, String userName) {
+  public TribeGuest(String id, String displayName, String picture, boolean isInvite,
+      boolean canRemove, String userName) {
     this.id = id;
     this.displayName = displayName;
     this.picture = picture;
-    this.isGroup = isGroup;
     this.isInvite = isInvite;
-    this.memberPics = memberPics;
     this.canRemove = canRemove;
     this.userName = userName;
   }
@@ -78,14 +75,6 @@ public class TribeGuest extends GroupJoiner implements Serializable {
     return id;
   }
 
-  public boolean isGroup() {
-    return isGroup;
-  }
-
-  public void setGroup(boolean group) {
-    isGroup = group;
-  }
-
   public void setMemberPics(List<String> memberPics) {
     this.memberPics = memberPics;
   }
@@ -124,5 +113,9 @@ public class TribeGuest extends GroupJoiner implements Serializable {
 
   public boolean isExternal() {
     return isExternal;
+  }
+
+  public boolean canPlayGames(String gameId) {
+    return true;
   }
 }

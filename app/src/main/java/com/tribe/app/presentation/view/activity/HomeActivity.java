@@ -1,18 +1,18 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,47 +35,69 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
-import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.domain.entity.ContactAB;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
-import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.internal.di.scope.HasComponent;
-import com.tribe.app.presentation.mvp.presenter.HomeGridPresenter;
+import com.tribe.app.presentation.mvp.presenter.HomePresenter;
 import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
+import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
+import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.Triplet;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.LastSync;
+import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
-import com.tribe.app.presentation.view.adapter.HomeGridAdapter;
+import com.tribe.app.presentation.utils.preferences.Walkthrough;
+import com.tribe.app.presentation.view.adapter.HomeListAdapter;
+import com.tribe.app.presentation.view.adapter.SectionCallback;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.HomeListDividerDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.HomeSectionItemDecoration;
+import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
+import com.tribe.app.presentation.view.adapter.helper.HomeListTouchHelperCallback;
+import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
-import com.tribe.app.presentation.view.component.TopBarContainer;
-import com.tribe.app.presentation.view.component.home.NewCallView;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
+import com.tribe.app.presentation.view.component.home.HomeWalkthroughView;
+import com.tribe.app.presentation.view.component.home.NewGameView;
 import com.tribe.app.presentation.view.component.home.SearchView;
+import com.tribe.app.presentation.view.component.home.TopBarContainer;
+import com.tribe.app.presentation.view.component.live.LiveViewFake;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
-import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -84,6 +106,7 @@ import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
@@ -99,6 +122,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -107,7 +131,7 @@ import timber.log.Timber;
 import static android.view.View.VISIBLE;
 
 public class HomeActivity extends BaseActivity
-    implements HasComponent<UserComponent>, HomeGridMVPView,
+    implements HasComponent<UserComponent>, ShortcutMVPView, HomeGridMVPView,
     GoogleApiClient.OnConnectionFailedListener, AppStateListener {
 
   private static final long TWENTY_FOUR_HOURS = 86400000;
@@ -119,9 +143,9 @@ public class HomeActivity extends BaseActivity
 
   @Inject NotificationManagerCompat notificationManager;
 
-  @Inject HomeGridPresenter homeGridPresenter;
+  @Inject HomePresenter homeGridPresenter;
 
-  @Inject HomeGridAdapter homeGridAdapter;
+  @Inject HomeListAdapter homeGridAdapter;
 
   @Inject ScreenUtils screenUtils;
 
@@ -131,7 +155,9 @@ public class HomeActivity extends BaseActivity
 
   @Inject SoundManager soundManager;
 
-  @Inject MissedCallManager missedCallManager;
+  @Inject DateUtils dateUtils;
+
+  @Inject User user;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 
@@ -139,9 +165,17 @@ public class HomeActivity extends BaseActivity
 
   @Inject @LastSync Preference<Long> lastSync;
 
+  @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
+
   @Inject @CallTagsMap Preference<String> callTagsMap;
 
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
+
+  @Inject @Walkthrough Preference<Boolean> walkthrough;
+
+  @Inject RxImagePicker rxImagePicker;
+
+  @Inject RxFacebook rxFacebook;
 
   @BindView(R.id.recyclerViewFriends) RecyclerView recyclerViewFriends;
 
@@ -157,9 +191,7 @@ public class HomeActivity extends BaseActivity
 
   @BindView(R.id.errorNotificationView) ErrorNotificationView errorNotificationView;
 
-  @BindView(R.id.btnNewCall) NewCallView btnNewCall;
-
-  @BindView(R.id.btnInvite) View btnInvite;
+  @BindView(R.id.btnNewGame) NewGameView btnNewGame;
 
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
@@ -167,29 +199,34 @@ public class HomeActivity extends BaseActivity
 
   @BindView(R.id.txtSyncedContacts) TextViewFont txtSyncedContacts;
 
+  @BindView(R.id.viewFadeInSwipe) View viewFadeInSwipe;
+
+  @BindView(R.id.viewLiveFake) LiveViewFake viewLiveFake;
+
+  @BindView(R.id.viewWalkthrough) HomeWalkthroughView viewWalkthrough;
+
   // OBSERVABLES
   private UserComponent userComponent;
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Scheduler singleThreadExecutor;
   private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
-  private PublishSubject<List<Contact>> onNewContacts = PublishSubject.create();
+  private PublishSubject<List<Contact>> onNewContactsOnApp = PublishSubject.create();
+  private PublishSubject<List<Contact>> onNewContactsInvite = PublishSubject.create();
+  private PublishSubject<List<Contact>> onNewContactsFBInvite = PublishSubject.create();
   private PublishSubject<Pair<Integer, Boolean>> onNewContactsInfos = PublishSubject.create();
 
   // VARIABLES
   private HomeLayoutManager layoutManager;
-  private List<Recipient> latestRecipientList;
-  private boolean shouldOverridePendingTransactions = false;
-  private NotificationReceiver notificationReceiver;
-  private boolean receiverRegistered = false;
-  private boolean hasSynced = false;
-  private boolean canEndRefresh = false;
-  private boolean finish = false;
+  private ItemTouchHelper itemTouchHelper;
+  private List<HomeAdapterInterface> latestRecipientList;
+  private TribeBroadcastReceiver notificationReceiver;
+  private boolean shouldOverridePendingTransactions = false, receiverRegistered = false, hasSynced =
+      false, canEndRefresh = false, finish = false, searchViewDisplayed = false, isSwipingChat =
+      false, shouldNavigateToChat = false;
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
-  private boolean searchViewDisplayed = false;
   private FirebaseRemoteConfig firebaseRemoteConfig;
-
-  // DIMEN
+  private String gesture;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     getWindow().setBackgroundDrawableResource(android.R.color.black);
@@ -211,9 +248,15 @@ public class HomeActivity extends BaseActivity
     manageLogin(getIntent());
     manageIntent(getIntent());
 
+    RxJavaHooks.enableAssemblyTracking();
+
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
-    if (!hasSynced) hasSynced = true;
+    if (!hasSynced) {
+      // We reload the games data only once
+      homeGridPresenter.getGames();
+      hasSynced = true;
+    }
 
     subscriptions.add(Observable.
         from(PermissionUtils.PERMISSIONS_CAMERA)
@@ -240,6 +283,8 @@ public class HomeActivity extends BaseActivity
         }));
 
     popupAccessFacebookContact();
+
+    RxJavaHooks.enableAssemblyTracking();
   }
 
   @Override protected void onNewIntent(Intent intent) {
@@ -251,8 +296,13 @@ public class HomeActivity extends BaseActivity
     super.onStart();
     tagManager.onStart(this);
     fullScreenNotificationState.set(new HashSet<>());
+
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       lookupContacts();
+    }
+
+    if (System.currentTimeMillis() - lastSyncGameData.get() > TWENTY_FOUR_HOURS) {
+      homeGridPresenter.synchronizeGamesData(DeviceUtils.getLanguage(this), lastSyncGameData);
     }
   }
 
@@ -270,12 +320,10 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onResume() {
     super.onResume();
-
     if (finish) return;
 
-    homeGridPresenter.loadContactsOnApp();
-
-    startService(WSService.getCallingIntent(this, null));
+    startService(WSService.
+        getCallingIntent(this, null, null));
 
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
@@ -283,24 +331,27 @@ public class HomeActivity extends BaseActivity
     }
 
     if (!receiverRegistered) {
-      if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
+      if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
 
       registerReceiver(notificationReceiver,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
+
+      subscriptions.add(notificationReceiver.onDeclineInvitation()
+          .subscribe(roomId -> homeGridPresenter.declineInvite(roomId)));
+
       receiverRegistered = true;
     }
 
-    if (stateManager.shouldDisplay(StateManager.NEW_CALL_POPUP)) {
-      stateManager.addTutorialKey(StateManager.NEW_CALL_POPUP);
-      popupContainerView.displayPopup(btnNewCall, PopupContainerView.DISPLAY_NEW_CALL_POPUP,
-          getResources().getString(R.string.grid_tutorial_new_call));
-    } else if (stateManager.shouldDisplay(StateManager.PROFILE_POPUP)) {
-      stateManager.addTutorialKey(StateManager.PROFILE_POPUP);
-      popupContainerView.displayPopup(viewAvatar, PopupContainerView.DISPLAY_PROFILE_POPUP,
-          getString(R.string.grid_tutorial_profile));
-    }
+    homeGridPresenter.reload(hasSynced);
 
-    initMissedCall();
+    initRecyclerViewCallback();
+
+    if (!walkthrough.get()) {
+      walkthrough.set(true);
+      subscriptions.add(Observable.timer(1500, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> viewWalkthrough.show()));
+    }
   }
 
   @Override protected void onPause() {
@@ -347,11 +398,11 @@ public class HomeActivity extends BaseActivity
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     latestRecipientList = new ArrayList<>();
 
-    subscriptions.add(onNewContacts.observeOn(Schedulers.computation()).map(contactList -> {
+    subscriptions.add(onNewContactsOnApp.observeOn(Schedulers.computation()).map(contactList -> {
       List<Contact> result = new ArrayList<>();
       Map<String, Contact> mapContact = new HashMap<>();
 
-      if (getCurrentUser().getFriendships() == null) {
+      if (getCurrentUser().getShortcutList() == null) {
         result.addAll(contactList);
       } else {
         for (Contact contact : contactList) {
@@ -360,8 +411,8 @@ public class HomeActivity extends BaseActivity
           if (contact.getUserList() != null && contact.getUserList().size() > 0) {
             User linkedUser = contact.getUserList().get(0);
 
-            for (Friendship friendship : getCurrentUser().getFriendships()) {
-              if (friendship.getFriend().equals(linkedUser)) shouldAdd = false;
+            for (Shortcut shortcut : getCurrentUser().getShortcutList()) {
+              if (shortcut.isSingle() && shortcut.isFriend(linkedUser)) shouldAdd = false;
             }
 
             if (mapContact.containsKey(linkedUser.getId())) {
@@ -388,20 +439,10 @@ public class HomeActivity extends BaseActivity
     }).subscribe(onNewContactsInfos));
   }
 
-  private void initMissedCall() {
-    if (missedCallManager != null &&
-        missedCallManager.getNotificationPayloadList() != null &&
-        missedCallManager.getNbrOfMissedCall() > 0) {
-      Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
-      intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD,
-          missedCallManager.buildNotificationBuilderFromMissedCallList());
-      sendBroadcast(intentUnique);
-    }
-  }
-
   private void initUi() {
     setContentView(R.layout.activity_home);
     ButterKnife.bind(this);
+    viewLiveFake.setTranslationX(screenUtils.getWidthPx());
   }
 
   private void initDimensions() {
@@ -416,6 +457,7 @@ public class HomeActivity extends BaseActivity
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(bool -> {
           if (canEndRefresh) {
+            topBarContainer.endRefresh();
             latestRecipientList.clear();
             homeGridPresenter.reload(false);
             canEndRefresh = false;
@@ -424,68 +466,155 @@ public class HomeActivity extends BaseActivity
   }
 
   private void onClickItem(Recipient recipient) {
-    if (recipient.getId().equals(Recipient.ID_MORE)) {
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
-              false);
-      homeGridPresenter.bookRoomLink(linkId);
-    } else if (recipient.getId().equals(Recipient.ID_VIDEO)) {
-      navigator.navigateToVideo(this);
-    } else {
-      navigator.navigateToLive(this, recipient, PaletteGrid.get(recipient.getPosition()),
-          recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-              : LiveActivity.SOURCE_GRID);
-    }
+    navigator.navigateToLive(this, recipient,
+        recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+            : LiveActivity.SOURCE_GRID, recipient.getSectionTag(), null);
   }
 
   private void initRecyclerView() {
     initUIRecyclerView();
+    subscriptions.add(Observable.merge(homeGridAdapter.onChatClick()
+            .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
+                recyclerViewFriends.getChildLayoutPosition(view))), homeGridAdapter.onMainClick()
+            .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
+                recyclerViewFriends.getChildLayoutPosition(view))), searchView.onClickChat(),
+        searchView.onMainClick())
+        .subscribe(item -> navigateToChat(item, TagManagerUtils.GESTURE_TAP)));
+
+    subscriptions.add(Observable.merge(homeGridAdapter.onLiveClick()
+        .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
+            recyclerViewFriends.getChildLayoutPosition(view))), searchView.onClickLive())
+        .debounce(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(item -> onClickItem(item)));
+
+    subscriptions.add(homeGridAdapter.onAddUser() // TODO MADA
+        .map(view -> {
+          HomeAdapterInterface user = (User) homeGridAdapter.getItemAtPosition(
+              recyclerViewFriends.getChildLayoutPosition(view));
+          int position = recyclerViewFriends.getChildAdapterPosition(view);
+          return new Pair(position, user);
+        }).doOnError(throwable -> throwable.printStackTrace()).subscribe(pair -> {
+          UserToAddAdapterDelegate.UserToAddViewHolder vh =
+              (UserToAddAdapterDelegate.UserToAddViewHolder) recyclerViewFriends.findViewHolderForAdapterPosition(
+                  (Integer) pair.first);
+          User user = (User) pair.second;
+          homeGridPresenter.createShortcutFromSuggestedFriend(vh, user.getId());
+        }));
+
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view)))
-        .flatMap(recipient -> {
-          if (recipient instanceof Membership) {
-            Membership membership = (Membership) recipient;
-            navigator.navigateToGroupDetails(this, membership);
-            return Observable.empty();
+        .flatMap(item -> DialogFactory.showBottomSheetForRecipient(this, (Recipient) item),
+            ((recipient, labelType) -> {
+              Shortcut shortcut = null;
+
+              if (recipient instanceof Shortcut) {
+                shortcut = (Shortcut) recipient;
+              } else if (recipient instanceof Invite) {
+                Invite invite = (Invite) recipient;
+                shortcut = invite.getShortcut();
+              }
+
+              if (labelType != null) {
+                if (shortcut != null) {
+                  if (labelType.getTypeDef().equals(LabelType.HIDE)) {
+                    homeGridPresenter.updateShortcutStatus(shortcut.getId(), ShortcutRealm.HIDDEN);
+                  } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
+                    shortcut.setMute(true);
+                    homeGridPresenter.muteShortcut(shortcut.getId(), true);
+                  } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
+                    shortcut.setMute(false);
+                    homeGridPresenter.muteShortcut(shortcut.getId(), false);
+                  }
+                }
+
+                if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
+                  Invite invite = (Invite) recipient;
+                  homeGridPresenter.declineInvite(invite.getId());
+                }
+              }
+
+              return new Triplet<LabelType, Shortcut, HomeAdapterInterface>(labelType, shortcut,
+                  recipient);
+            }))
+        .filter(
+            pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) || pair.first.getTypeDef()
+                .equals(LabelType.BLOCK_HIDE))
+        .flatMap(pair -> {
+          if (pair.first.getTypeDef().equals(LabelType.CUSTOMIZE)) {
+            return DialogFactory.showBottomSheetForCustomizeShortcut(this);
           } else {
-            return DialogFactory.showBottomSheetForRecipient(this, recipient);
+            if (pair.second != null && pair.second.isSingle()) {
+              subscriptions.add(DialogFactory.dialog(this,
+                  getString(R.string.home_block_shortcut_title, pair.second.getDisplayName()),
+                  getString(R.string.home_block_shortcut_message),
+                  getString(R.string.home_block_shortcut_validate),
+                  getString(R.string.action_cancel))
+                  .filter(aBoolean -> aBoolean)
+                  .subscribe(aBoolean -> {
+                    homeGridPresenter.updateShortcutStatus(pair.second.getId(),
+                        ShortcutRealm.BLOCKED);
+                    if (pair.third instanceof Invite) {
+                      Invite invite = (Invite) pair.third;
+                      homeGridPresenter.declineInvite(invite.getId());
+                    }
+                  }));
+            } else if (pair.second != null) {
+              subscriptions.add(
+                  DialogFactory.dialog(this, getString(R.string.home_block_group_shortcut_title),
+                      getString(R.string.home_block_group_shortcut_message),
+                      getString(R.string.home_block_group_shortcut_validate),
+                      getString(R.string.action_cancel))
+                      .filter(aBoolean -> aBoolean)
+                      .subscribe(aBoolean -> {
+                        homeGridPresenter.updateShortcutStatus(pair.second.getId(),
+                            ShortcutRealm.BLOCKED);
+                        if (pair.third instanceof Invite) {
+                          Invite invite = (Invite) pair.third;
+                          homeGridPresenter.declineInvite(invite.getId());
+                        }
+                      }));
+            }
+
+            return Observable.empty();
           }
-        }, ((recipient, labelType) -> {
-          if (labelType != null) {
-            if (labelType.getTypeDef().equals(LabelType.HIDE) ||
-                labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
-              Friendship friendship = (Friendship) recipient;
-              homeGridPresenter.updateFriendship(friendship.getId(), friendship.isMute(),
-                  labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
-                      : FriendshipRealm.HIDDEN);
-            } else if (labelType.getTypeDef().equals(LabelType.MUTE)) {
-              Friendship friendship = (Friendship) recipient;
-              friendship.setMute(true);
-              homeGridPresenter.updateFriendship(friendship.getId(), true, friendship.getStatus());
-            } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
-              Friendship friendship = (Friendship) recipient;
-              friendship.setMute(false);
-              homeGridPresenter.updateFriendship(friendship.getId(), false, friendship.getStatus());
-            } else if (labelType.getTypeDef().equals(LabelType.GROUP_INFO)) {
-              Membership membership = (Membership) recipient;
-              navigator.navigateToGroupDetails(this, membership);
-            } else if (labelType.getTypeDef().equals(LabelType.GROUP_LEAVE)) {
-              homeGridPresenter.leaveGroup(recipient.getId());
-            } else if (labelType.getTypeDef().equals(LabelType.DECLINE)) {
-              Invite invite = (Invite) recipient;
-              homeGridPresenter.declineInvite(invite.getRoomId());
+        }, (pair, labelType) -> {
+          Shortcut shortcut = pair.second;
+
+          if (labelType != null && shortcut != null) {
+            if (labelType.getTypeDef().equals(LabelType.CHANGE_NAME)) {
+              subscriptions.add(
+                  DialogFactory.inputDialog(this, getString(R.string.shortcut_update_name_title),
+                      getString(R.string.shortcut_update_name_description),
+                      getString(R.string.shortcut_update_name_validate),
+                      getString(R.string.action_cancel), InputType.TYPE_CLASS_TEXT)
+                      .subscribe(s -> homeGridPresenter.updateShortcutName(shortcut.getId(), s)));
             }
           }
 
-          return recipient;
-        }))
+          return Pair.create(labelType, shortcut);
+        })
+        .filter(pair -> pair.first.getTypeDef().equals(LabelType.CHANGE_PICTURE))
+        .flatMap(pair -> DialogFactory.showBottomSheetForCamera(this), (pair, labelType) -> {
+          if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+                .subscribe(uri -> homeGridPresenter.updateShortcutPicture(pair.second.getId(),
+                    uri.toString())));
+          } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+                .subscribe(uri -> homeGridPresenter.updateShortcutPicture(pair.second.getId(),
+                    uri.toString())));
+          }
+
+          return null;
+        })
         .subscribe());
 
-    subscriptions.add(homeGridAdapter.onClick()
+    subscriptions.add(homeGridAdapter.onClick() // TODO MADA
         .map(view -> homeGridAdapter.getItemAtPosition(
-            recyclerViewFriends.getChildLayoutPosition(view)))
-        .subscribe(recipient -> {
+            recyclerViewFriends.getChildLayoutPosition(view))).subscribe(item -> {
+          Recipient recipient = (Recipient) item;
           boolean displayPermissionNotif = notificationContainerView.
               showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);
           if (displayPermissionNotif) {
@@ -499,40 +628,117 @@ public class HomeActivity extends BaseActivity
           }
         }));
 
-    subscriptions.add(onRecipientUpdates.onBackpressureBuffer().subscribeOn(singleThreadExecutor).
-        map(recipientList -> {
-          DiffUtil.DiffResult diffResult = null;
-          List<Recipient> temp = new ArrayList<>();
-          temp.add(new Friendship(Recipient.ID_HEADER));
-          temp.addAll(recipientList);
-          temp.add(new Friendship(Recipient.ID_MORE));
-          // temp.add(new Friendship(Recipient.ID_VIDEO));
-          ListUtils.addEmptyItems(screenUtils, temp);
-
-          if (latestRecipientList.size() != 0) {
-            diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
-            homeGridAdapter.setItems(temp);
-          }
-
-          latestRecipientList.clear();
-          latestRecipientList.addAll(temp);
-          return diffResult;
-        }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
-      if (diffResult != null) {
-        diffResult.dispatchUpdatesTo(homeGridAdapter);
-      } else {
-        homeGridAdapter.setItems(latestRecipientList);
-        homeGridAdapter.notifyDataSetChanged();
-      }
+    subscriptions.add(homeGridAdapter.onClickFb().subscribe(aVoid -> {
+      homeGridPresenter.loginFacebook();
+      Timber.e("onClickFb");
+      popupAccessFacebookContact();
     }));
+
+    subscriptions.add(homeGridAdapter.onClickAddressBook().subscribe(aVoid -> {
+      Timber.e("onClickAddressBook");
+      syncContacts();
+    }));
+
+    subscriptions.add(homeGridAdapter.onInvite()
+        .map(view -> homeGridAdapter.getItemAtPosition(
+            recyclerViewFriends.getChildLayoutPosition(view)))
+        .doOnError(throwable -> throwable.printStackTrace())
+        .subscribe(o -> {
+          if (o instanceof ContactAB) {
+            ContactAB contact = (ContactAB) o;
+            invite(contact);
+          } else if (o instanceof ContactFB) {
+            ContactFB contactFB = (ContactFB) o;
+            subscriptions.add(rxFacebook.requestGameInvite(contactFB.getId()).subscribe());
+          }
+        }));
+
+    subscriptions.add(
+        Observable.combineLatest(onRecipientUpdates.onBackpressureBuffer(), onNewContactsOnApp,
+            onNewContactsInvite, onNewContactsFBInvite,
+            (recipientList, contactsOnApp, contactsInvite, contactsFBInvite) -> {
+              List<HomeAdapterInterface> finalList = new ArrayList<>();
+              Set<String> addedUsers = new HashSet<>();
+
+              int realFriendsCount = 0;
+
+              for (Recipient recipient : recipientList) {
+                if (recipient instanceof Invite || !recipient.isLive()) {
+                  finalList.add(recipient);
+                }
+
+                if (recipient instanceof Shortcut) {
+                  Shortcut shortcut = (Shortcut) recipient;
+                  if (shortcut.isSingle()) {
+                    realFriendsCount++;
+                    addedUsers.add(shortcut.getSingleFriend().getId());
+                  }
+                }
+              }
+
+              Bundle bundle = new Bundle();
+              bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, realFriendsCount);
+              tagManager.setProperty(bundle);
+
+              for (Contact contact : contactsOnApp) {
+                if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+                  User user = contact.getUserList().get(0);
+                  if (!addedUsers.contains(user.getId())) finalList.add(user);
+                }
+              }
+
+              if (!FacebookUtils.isLoggedIn()) {
+                finalList.add(new Contact(Contact.FACEBOOK_ID));
+              }
+
+              if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
+                finalList.add(new Contact(Contact.ADDRESS_BOOK_ID));
+              }
+
+              finalList.addAll(contactsInvite);
+              finalList.addAll(contactsFBInvite);
+              List<HomeAdapterInterface> refactordList = new ArrayList<>();
+
+              for (HomeAdapterInterface u : finalList) {
+                if (!refactordList.contains(u)) {
+                  refactordList.add(u);
+                }
+              }
+
+              return refactordList;
+            }).subscribeOn(singleThreadExecutor).
+            map(recipientList -> {
+              DiffUtil.DiffResult diffResult = null;
+              List<HomeAdapterInterface> temp = new ArrayList<>();
+              temp.addAll(recipientList);
+              ListUtils.addEmptyItemsHome(temp);
+              if (latestRecipientList.size() != 0) {
+                diffResult =
+                    DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
+                homeGridAdapter.setItems(temp);
+              }
+
+              latestRecipientList.clear();
+              latestRecipientList.addAll(temp); // TODO #2
+
+              return diffResult;
+            }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
+          if (diffResult != null) {
+            diffResult.dispatchUpdatesTo(homeGridAdapter);
+            layoutManager.scrollToPositionWithOffset(0, 0);
+          } else {
+            homeGridAdapter.setItems(latestRecipientList);
+            homeGridAdapter.notifyDataSetChanged();
+            if (latestRecipientList.size() != 0) layoutManager.scrollToPositionWithOffset(0, 0);
+          }
+        }));
   }
 
   private void initNewCall() {
-    subscriptions.add(
-        btnNewCall.onNewCall().subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_NEW_CALL)));
+    subscriptions.add(btnNewGame.onNewGame().subscribe(aVoid -> navigateToNewGame()));
 
     subscriptions.add(
-        btnNewCall.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
+        btnNewGame.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
   }
 
   private void initRemoteConfig() {
@@ -565,20 +771,8 @@ public class HomeActivity extends BaseActivity
   private void initTopBar() {
     subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> navigateToProfile()));
 
-    subscriptions.add(topBarContainer.onClickCallroulette().subscribe(aVoid -> {
-      navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE);
-    }));
-
-    subscriptions.add(topBarContainer.onClickInvite().subscribe(aVoid -> {
-      Bundle bundle = new Bundle();
-      bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.HOME);
-      bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
-      tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
-              false);
-      homeGridPresenter.bookRoomLink(linkId);
-    }));
+    subscriptions.add(topBarContainer.onClickCallRoulette()
+        .subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, null)));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch()
         .doOnNext(open -> {
@@ -589,11 +783,6 @@ public class HomeActivity extends BaseActivity
             searchView.refactorActions();
             searchView.show();
           } else {
-            if (stateManager.shouldDisplay(StateManager.INVITE_POPUP)) {
-              stateManager.addTutorialKey(StateManager.INVITE_POPUP);
-              popupContainerView.displayPopup(btnInvite, PopupContainerView.DISPLAY_INVITE_POPUP,
-                  getString(R.string.grid_tutorial_invite));
-            }
             recyclerViewFriends.requestDisallowInterceptTouchEvent(false);
             layoutManager.setScrollEnabled(true);
             searchViewDisplayed = false;
@@ -611,10 +800,7 @@ public class HomeActivity extends BaseActivity
 
   private void initSearch() {
     subscriptions.add(searchView.onNavigateToSmsForInvites().subscribe(aVoid -> {
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, null, null,
-              false);
-      homeGridPresenter.bookRoomLink(linkId);
+      homeGridPresenter.createRoom(TagManagerUtils.INVITE, null, false);
     }));
 
     subscriptions.add(searchView.onShow().subscribe(aVoid -> searchView.setVisibility(VISIBLE)));
@@ -622,25 +808,16 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(searchView.onGone().subscribe(aVoid -> searchView.setVisibility(View.GONE)));
 
     subscriptions.add(searchView.onHangLive()
-        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0),
-            LiveActivity.SOURCE_SEARCH)));
+        .subscribe(
+            recipient -> navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_SEARCH,
+                recipient.getSectionTag(), null)));
 
-    subscriptions.add(searchView.onInvite().subscribe(contact -> {
-      Bundle bundle = new Bundle();
-      bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.SEARCH);
-      bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
-      tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-      shouldOverridePendingTransactions = true;
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.SEARCH, null,
-              contact.getPhone(), false);
-      homeGridPresenter.bookRoomLink(linkId);
-    }));
+    subscriptions.add(searchView.onInvite().subscribe(contact -> invite(contact)));
 
     subscriptions.add(searchView.onUnblock().subscribe(recipient -> {
-      if (recipient instanceof Friendship) {
-        Friendship fr = (Friendship) recipient;
-        homeGridPresenter.updateFriendship(fr.getId(), fr.isMute(), FriendshipRealm.DEFAULT);
+      if (recipient instanceof Shortcut) {
+        Shortcut shortcut = (Shortcut) recipient;
+        homeGridPresenter.updateShortcutStatus(shortcut.getId(), ShortcutRealm.DEFAULT);
       }
     }));
 
@@ -668,6 +845,15 @@ public class HomeActivity extends BaseActivity
     homeGridPresenter.declineInvite(sessionId);
   }
 
+  private void invite(ContactAB contact) {
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.SEARCH);
+    bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
+    tagManager.trackEvent(TagManagerUtils.Invites, bundle);
+    shouldOverridePendingTransactions = true;
+    homeGridPresenter.createRoom(TagManagerUtils.SEARCH, contact.getPhone(), false);
+  }
+
   @Override public void onDeepLink(String url) {
     if (!StringUtils.isEmpty(url)) {
       Uri uri = Uri.parse(url);
@@ -675,8 +861,6 @@ public class HomeActivity extends BaseActivity
       if (uri != null && !StringUtils.isEmpty(uri.getPath())) {
         if (uri.getPath().startsWith("/u/")) {
           searchView.show();
-        } else if (uri.getPath().startsWith("/g/")) {
-          homeGridPresenter.createMembership(StringUtils.getLastBitFromUrl(url));
         }
       }
     }
@@ -684,20 +868,12 @@ public class HomeActivity extends BaseActivity
 
   @Override public void renderRecipientList(List<Recipient> recipientList) {
     if (recipientList != null) {
-      Bundle bundle = new Bundle();
-      bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, getCurrentUser().getFriendships().size());
-      bundle.putInt(TagManagerUtils.USER_GROUPS_COUNT, getCurrentUser().getMembershipList().size());
-      tagManager.setProperty(bundle);
       onRecipientUpdates.onNext(recipientList);
       canEndRefresh = false;
     }
   }
 
   @Override public void refreshGrid() {
-
-  }
-
-  @Override public void onFriendshipUpdated(Friendship friendship) {
 
   }
 
@@ -708,10 +884,6 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void errorFacebookLogin() {
-  }
-
-  @Override public void onMembershipCreated(Membership membership) {
-
   }
 
   private void initRegistrationToken() {
@@ -734,7 +906,7 @@ public class HomeActivity extends BaseActivity
         tagManager.trackEvent(TagManagerUtils.Notification_AppOpen, bundle);
 
         if (intent.hasExtra(IntentUtils.USER_REGISTERED)) {
-          homeGridPresenter.createFriendship(intent.getStringExtra(IntentUtils.USER_REGISTERED));
+          homeGridPresenter.createShortcut(intent.getStringExtra(IntentUtils.USER_REGISTERED));
         }
       } else if (intent.getData() != null) {
         Intent newIntent =
@@ -746,13 +918,7 @@ public class HomeActivity extends BaseActivity
 
   private void openSmsApp(Intent intent) {
     if (intent != null && intent.hasExtra(Extras.ROOM_LINK_ID)) {
-      if (stateManager.shouldDisplay(StateManager.OPEN_SMS)) {
-        stateManager.addTutorialKey(StateManager.OPEN_SMS);
-        String linkId =
-            navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.ONBOARDING, null,
-                null, true);
-        homeGridPresenter.bookRoomLink(linkId);
-      }
+      homeGridPresenter.createRoom(TagManagerUtils.ONBOARDING, null, true);
     }
   }
 
@@ -811,12 +977,51 @@ public class HomeActivity extends BaseActivity
     topBarContainer.onSyncError();
   }
 
-  @Override public void renderContactsOnApp(List<Contact> contactList) {
-    onNewContacts.onNext(contactList);
+  boolean isBannedUser = false;
+
+  @Override public void onBannedUser(User user) {
+    if (isBannedUser) {
+      return;
+    }
+    if (user.isRandom_banned_permanently()) {
+      subscriptions.add(
+          DialogFactory.dialog(this, getString(R.string.error_just_banned_permanently_title),
+              getString(R.string.error_just_banned_permanently_message),
+              getString(R.string.walkthrough_action_step2), null)
+              .filter(aBoolean -> aBoolean)
+              .subscribe());
+      isBannedUser = true;
+      topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
+    } else if (user.getRandom_banned_until() != null && !dateUtils.isBefore(
+        user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
+
+      subscriptions.add(
+          DialogFactory.dialog(this, getString(R.string.error_just_banned_temporary_title),
+              getString(R.string.error_just_banned_temporary_message),
+              getString(R.string.walkthrough_action_step2), null)
+              .filter(aBoolean -> aBoolean)
+              .subscribe());
+      isBannedUser = true;
+      topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
+    }
   }
 
-  @Override public void onBookLink(Boolean isBookLink) {
+  @Override public void renderContactsOnApp(List<Contact> contactList) {
+    onNewContactsOnApp.onNext(contactList);
+  }
 
+  @Override public void renderContactsInvite(List<Contact> contactList) {
+    onNewContactsInvite.onNext(contactList);
+  }
+
+  @Override public void renderContactsFBInvite(List<Contact> contactList) {
+    onNewContactsFBInvite.onNext(contactList);
+  }
+
+  @Override
+  public void onCreateRoom(Room room, String feature, String phone, boolean shouldOpenSMS) {
+    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, room.getLink(),
+        phone, shouldOpenSMS);
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -829,8 +1034,59 @@ public class HomeActivity extends BaseActivity
     navigator.navigateToProfile(HomeActivity.this);
   }
 
-  private void navigateToNewCall(@LiveActivity.Source String source) {
-    HomeActivity.this.navigator.navigateToNewCall(this, source);
+  private void navigateToNewCall(@LiveActivity.Source String source, String gameId) {
+    HomeActivity.this.navigator.navigateToNewCall(this, source, gameId);
+  }
+
+  private void navigateToNewGame() {
+    HomeActivity.this.navigator.navigateToNewGame(this, TagManagerUtils.HOME);
+  }
+
+  private void navigateToChat(Recipient recipient, String gesture) {
+    this.gesture = gesture;
+    if (!recipient.isRead()) {
+      String shortcutId = "";
+
+      if (recipient instanceof Invite) {
+        Invite invite = (Invite) recipient;
+        if (invite.getShortcut() != null) shortcutId = invite.getShortcut().getId();
+      } else {
+        shortcutId = recipient.getId();
+      }
+
+      if (!StringUtils.isEmpty(shortcutId)) homeGridPresenter.readShortcut(shortcutId);
+    }
+
+    if (recipient instanceof Shortcut) {
+      navigator.navigateToChat(this, recipient, null, gesture, recipient.getSectionTag(), false);
+    } else {
+      if (((Invite) recipient).getShortcut() != null) {
+        navigator.navigateToChat(this, recipient, null, gesture, recipient.getSectionTag(), false);
+      } else {
+        List<String> list = ((Invite) recipient).getRoomUserIds();
+        String[] array = new String[list.size()];
+        shouldNavigateToChat = true;
+        homeGridPresenter.createShortcut(list.toArray(array));
+      }
+    }
+  }
+
+  @Override public void onShortcutCreatedFromSuggestedFriendSuccess(Shortcut shortcut,
+      UserToAddAdapterDelegate.UserToAddViewHolder vh) {
+    if (vh != null) {
+      vh.progressView.setVisibility(View.INVISIBLE);
+      vh.btnAdd.setImageResource(R.drawable.picto_added);
+      vh.btnAdd.setVisibility(View.VISIBLE);
+      // TODO TIAGO
+      // block UI 1s before to delete the line ( vs : TODO #2 )
+    }
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+    if (shouldNavigateToChat) {
+      navigator.navigateToChat(this, shortcut, null, gesture, shortcut.getSectionTag(), false);
+      shouldNavigateToChat = false;
+    }
   }
 
   private void syncContacts() {
@@ -853,8 +1109,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) &&
-        !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
+        && !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(
@@ -862,18 +1118,13 @@ public class HomeActivity extends BaseActivity
           context().getString(R.string.permission_facebook_popup_ok),
           context().getString(R.string.permission_facebook_popup_ko))
           .filter(x -> x == true)
-          .subscribe(a -> {
-            homeGridPresenter.loginFacebook();
-          }));
+          .subscribe(a -> homeGridPresenter.loginFacebook()));
       stateManager.addTutorialKey(StateManager.FACEBOOK_CONTACT_PERMISSION);
     }
   }
 
   private void lookupContacts() {
-    if (stateManager.shouldDisplay(StateManager.PERMISSION_CONTACT)) {
-      stateManager.addTutorialKey(StateManager.PERMISSION_CONTACT);
-      syncContacts();
-    }
+    syncContacts();
   }
 
   @Override public void onAppDidEnterForeground() {
@@ -887,10 +1138,36 @@ public class HomeActivity extends BaseActivity
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    if (requestCode == Navigator.FROM_LIVE) topBarContainer.displayTooltip();
-    if (requestCode == Navigator.FROM_PROFILE) topBarContainer.reloadUserUI();
-
-    if (data != null) {
+    if (requestCode == Navigator.FROM_PROFILE) {
+      topBarContainer.reloadUserUI();
+    } else if (requestCode == Navigator.FROM_CHAT && data != null && data.hasExtra(
+        ChatActivity.EXTRA_SHORTCUT_ID)) {
+      homeGridPresenter.updateShortcutLeaveOnlineUntil(
+          data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
+    } else if (requestCode == Navigator.FROM_NEW_GAME && data != null) {
+      String gameId = data.getStringExtra(NewGameActivity.GAME_ID);
+      boolean callRoulette = data.getBooleanExtra(NewGameActivity.CALL_ROULETTE, false);
+      Shortcut shortcut = (Shortcut) data.getSerializableExtra(NewGameActivity.SHORTCUT);
+      subscriptions.add(Observable.timer(250, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            if (callRoulette) {
+              navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, gameId);
+            } else if (shortcut != null) {
+              if (!StringUtils.isEmpty(gameId)) {
+                navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
+                    TagManagerUtils.SECTION_SHORTCUT, gameId);
+              } else {
+                navigateToChat(shortcut, TagManagerUtils.GESTURE_TAP);
+              }
+            }
+          }));
+    } else if (requestCode == Navigator.FROM_LIVE && data != null && data.hasExtra(
+        LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
+      HashSet<String> userIds =
+          (HashSet<String>) data.getSerializableExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT);
+      homeGridPresenter.createShortcut(userIds.toArray(new String[userIds.size()]));
+    } else if (data != null) {
       if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {
         NotificationPayload notificationPayload = (NotificationPayload) data.getSerializableExtra(
             NotificationPayload.CLICK_ACTION_DECLINE);
@@ -899,30 +1176,19 @@ public class HomeActivity extends BaseActivity
         }
       } else if (data.getBooleanExtra(ErrorNotificationView.DISPLAY_ERROR_NOTIF, false)) {
         errorNotificationView.displayView();
-      } else if (!notificationContainerView.showNotification(data, null)) {
-        displayRatingNotifView(data);
       }
     }
   }
 
-  private void displayRatingNotifView(Intent data) {
-    if (data.getBooleanExtra(RatingNotificationView.DISPLAY_RATING_NOTIF, false)) {
-      long timeout = data.getLongExtra(LiveActivity.TIMEOUT_RATING_NOTIFICATON, 0);
-      String roomId = data.getStringExtra(LiveActivity.ROOM_ID);
-      ratingNotificationView.displayView(timeout, roomId);
-    }
-  }
-
-  /////////////////
-  //  BROADCAST  //
-  /////////////////
   private void initUIRecyclerView() {
-    layoutManager =
-        new HomeLayoutManager(context(), getResources().getInteger(R.integer.columnNumber));
+    layoutManager = new HomeLayoutManager(context());
     layoutManager.setAutoMeasureEnabled(false);
     recyclerViewFriends.setHasFixedSize(true);
     recyclerViewFriends.setLayoutManager(layoutManager);
     recyclerViewFriends.setItemAnimator(null);
+    recyclerViewFriends.addItemDecoration(new HomeListDividerDecoration(context(),
+        ContextCompat.getColor(context(), R.color.grey_divider), screenUtils.dpToPx(0.5f),
+        getSectionCallback(homeGridAdapter.getItems())));
     homeGridAdapter.setItems(new ArrayList<>());
     recyclerViewFriends.setAdapter(homeGridAdapter);
 
@@ -935,85 +1201,121 @@ public class HomeActivity extends BaseActivity
     recyclerViewFriends.setDrawingCacheEnabled(true);
     recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
 
-    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-      @Override public int getSpanSize(int position) {
-        switch (homeGridAdapter.getItemViewType(position)) {
-          case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
-            return layoutManager.getSpanCount();
-          default:
-            return 1;
-        }
-      }
-    });
+    HomeSectionItemDecoration sectionItemDecoration = new HomeSectionItemDecoration(
+        getResources().getDimensionPixelSize(R.dimen.list_home_header_height), true,
+        getSectionCallback(homeGridAdapter.getItems()), screenUtils);
+    recyclerViewFriends.addItemDecoration(sectionItemDecoration);
   }
 
-  @Override public void onConfigurationChanged(Configuration newConfig) {
-    super.onConfigurationChanged(newConfig);
-    layoutManager =
-        new HomeLayoutManager(context(), getResources().getInteger(R.integer.columnNumber));
-    layoutManager.setAutoMeasureEnabled(true);
-    recyclerViewFriends.setHasFixedSize(false);
-    recyclerViewFriends.setLayoutManager(layoutManager);
-    recyclerViewFriends.setItemAnimator(null);
-    recyclerViewFriends.setAdapter(homeGridAdapter);
+  private void initRecyclerViewCallback() {
+    viewFadeInSwipe.setVisibility(View.GONE);
+    viewFadeInSwipe.setAlpha(0);
+    viewLiveFake.setTranslationX(screenUtils.getWidthPx());
 
-    // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(0, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(1, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(2, 50);
-    recyclerViewFriends.getRecycledViewPool().setMaxRecycledViews(3, 50);
+    HomeListTouchHelperCallback callback = new HomeListTouchHelperCallback(homeGridAdapter);
 
-    recyclerViewFriends.setItemViewCacheSize(30);
-    recyclerViewFriends.setDrawingCacheEnabled(true);
-    recyclerViewFriends.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+    if (itemTouchHelper == null) {
+      itemTouchHelper = new ItemTouchHelper(callback);
+    }
 
-    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-      @Override public int getSpanSize(int position) {
-        switch (homeGridAdapter.getItemViewType(position)) {
-          case HomeGridAdapter.EMPTY_HEADER_VIEW_TYPE:
-            return layoutManager.getSpanCount();
-          default:
-            return 1;
+    itemTouchHelper.attachToRecyclerView(null);
+    itemTouchHelper.attachToRecyclerView(recyclerViewFriends);
+
+    subscriptions.add(callback.onDxChange().subscribe(pairPosDx -> {
+      if (pairPosDx.second == 0) {
+        viewFadeInSwipe.setVisibility(View.GONE);
+        viewFadeInSwipe.setAlpha(0);
+      } else if (homeGridAdapter.getItemAtPosition(pairPosDx.first) instanceof Recipient) {
+        Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(pairPosDx.first);
+
+        if (pairPosDx.second < 0) {
+          isSwipingChat = false;
+          Live live = LiveActivity.getLive(recipient,
+              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+                  : LiveActivity.SOURCE_GRID);
+          if (recipient instanceof Shortcut) {
+            Shortcut shortcut = (Shortcut) recipient;
+            live.setShortcut(shortcut);
+          }
+
+          viewLiveFake.setLive(live, recipient);
+          viewLiveFake.setTranslationX(screenUtils.getWidthPx() + pairPosDx.second);
+          viewFadeInSwipe.setVisibility(View.VISIBLE);
+          viewFadeInSwipe.setTranslationX(pairPosDx.second);
+          viewFadeInSwipe.setAlpha(Math.abs(pairPosDx.second) / (float) screenUtils.getWidthPx());
+        } else {
+          isSwipingChat = true;
         }
       }
-    });
+    }));
 
-    homeGridAdapter.notifyDataSetChanged();
+    subscriptions.add(callback.onSwipedItem().subscribe(position -> {
+      if (homeGridAdapter.getItemAtPosition(position) instanceof Recipient) {
+        Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(position);
+
+        if (!isSwipingChat) {
+          navigator.navigateToLiveFromSwipe(this, recipient,
+              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+                  : LiveActivity.SOURCE_GRID, recipient.getSectionTag());
+        } else {
+          navigateToChat(recipient, TagManagerUtils.GESTURE_SWIPE);
+        }
+      }
+    }));
+  }
+
+  private SectionCallback getSectionCallback(final List<HomeAdapterInterface> recipientList) {
+    return new SectionCallback() {
+      @Override public boolean isSection(int position) {
+        if (position < 0 || position > recipientList.size() - 1) return false;
+        return position == 0
+            || recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE
+            && recipientList.get(position).getHomeSectionType() != recipientList.get(position - 1)
+            .getHomeSectionType();
+      }
+
+      @Override public int getSectionType(int position) {
+        return recipientList.get(position).getHomeSectionType();
+      }
+    };
   }
 
   private void displayDeclinedCallNotification(NotificationPayload notificationPayload) {
     LiveNotificationView liveNotificationView =
-        NotificationUtils.getNotificationViewFromPayload(this, notificationPayload,
-            missedCallManager);
+        NotificationUtils.getNotificationViewFromPayload(this, notificationPayload);
     Alerter.create(HomeActivity.this, liveNotificationView).show();
   }
 
-  class NotificationReceiver extends BroadcastReceiver {
+  @Override public void onShortcutCreatedError() {
 
-    @Override public void onReceive(Context context, Intent intent) {
-      NotificationPayload notificationPayload =
-          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+  }
 
-      LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
-              missedCallManager);
+  @Override public void onShortcutRemovedSuccess() {
 
-      if (liveNotificationView != null) {
-        subscriptions.add(liveNotificationView.onClickAction()
-            .delay(500, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(action -> {
-              if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
-                declineInvitation(action.getSessionId());
-              } else if (action.getId().equals(NotificationUtils.ACTION_ADD_FRIEND)) {
-                homeGridPresenter.createFriendship(action.getUserId());
-              } else if (action.getIntent() != null) {
-                navigator.navigateToIntent(HomeActivity.this, action.getIntent());
-              }
-            }));
+  }
 
-        Alerter.create(HomeActivity.this, liveNotificationView).show();
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
+    Timber.e("OK " + shortcut.getStatus());
+    for (Shortcut s : user.getShortcutList()) {
+      if (s.getId().equals(shortcut.getId())) {
+        s.setStatus(shortcut.getStatus());
       }
     }
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+
+  }
+
+  @Override public void onShortcut(Shortcut shortcut) {
+
   }
 }

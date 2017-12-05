@@ -15,8 +15,8 @@ public class SearchResult implements Serializable, BaseListInterface {
   private String display_name;
   private String username;
   private String picture;
+  private Shortcut shortcut;
   private boolean invisible_mode = false;
-  private Friendship friendship;
   private boolean searchDone = false;
   private boolean animateAdd = false;
   private boolean isMyself = false;
@@ -58,13 +58,13 @@ public class SearchResult implements Serializable, BaseListInterface {
   }
 
   @Override public boolean isFriend() {
-    return friendship != null;
+    if (shortcut == null) return false;
+    return shortcut.isFriend();
   }
 
   @Override public AvatarModel getAvatar() {
     return new AvatarModel(picture,
-        friendship != null && friendship.getFriend().isOnline() ? AvatarView.ONLINE
-            : AvatarView.REGULAR);
+        shortcut != null && shortcut.isOnline() ? AvatarView.ONLINE : AvatarView.REGULAR);
   }
 
   @Override public boolean isReverse() {
@@ -81,14 +81,6 @@ public class SearchResult implements Serializable, BaseListInterface {
 
   public void setPicture(String picture) {
     this.picture = picture;
-  }
-
-  public Friendship getFriendship() {
-    return friendship;
-  }
-
-  public void setFriendship(Friendship friendship) {
-    this.friendship = friendship;
   }
 
   public boolean isSearchDone() {
@@ -109,6 +101,14 @@ public class SearchResult implements Serializable, BaseListInterface {
 
   public void setMyself(boolean myself) {
     isMyself = myself;
+  }
+
+  public Shortcut getShortcut() {
+    return shortcut;
+  }
+
+  public void setShortcut(Shortcut shortcut) {
+    this.shortcut = shortcut;
   }
 
   @Override public int hashCode() {

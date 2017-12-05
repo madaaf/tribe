@@ -24,6 +24,7 @@
   <dimen name="vertical_margin_smaller">10dp</dimen>
   <dimen name="horizontal_margin_smaller">10dp</dimen>
   <dimen name="horizontal_margin_small">15dp</dimen>
+  <dimen name="horizontal_margin_medium">20dp</dimen>
   <dimen name="horizontal_margin_xsmall">5dp</dimen>
   <dimen name="vertical_margin_small">15dp</dimen>
   <dimen name="vertical_margin_xsmall">5dp</dimen>
@@ -63,21 +64,29 @@
   <dimen name="games_list_height">80dp</dimen>
   <dimen name="game_tooltip_first_height">40dp</dimen>
   <dimen name="dice_size">100dp</dimen>
+  <dimen name="list_home_height">70dp</dimen>
+  <dimen name="list_home_header_height">40dp</dimen>
+  <dimen name="list_live_invite_header_height">45dp</dimen>
+  <dimen name="list_search_header_height">40dp</dimen>
 
   <!-- WIDTHS -->
   <dimen name="live_invite_view_width">106dp</dimen>
   <dimen name="live_room_view_dropped_bar_height">30dp</dimen>
+  <dimen name="live_invite_bottom_arrow_width_small">16dp</dimen>
+  <dimen name="live_invite_bottom_arrow_width_large">26dp</dimen>
 
   <!-- SIZES -->
   <dimen name="avatar_size_big">80dp</dimen>
   <dimen name="avatar_size_big_shadow">95dp</dimen>
   <dimen name="avatar_size">75dp</dimen>
+  <dimen name="image_size">175dp</dimen>
   <dimen name="avatar_size_with_shadow">82dp</dimen>
   <dimen name="avatar_size_scaled">110dp</dimen>
   <!-- CHANGE AVATAR_SIZE_INTERMEDIATE_HALF ACCORDINGLY -->
-  <dimen name="avatar_size_small">41dp</dimen>
+  <dimen name="avatar_size_small">43dp</dimen>
   <dimen name="avatar_size_small_margin_start">55dp</dimen>
   <dimen name="avatar_size_smaller">35dp</dimen>
+  <dimen name="avatar_size_chat">25dp</dimen>
   <dimen name="avatar_size_medium">60dp</dimen>
   <dimen name="camera_height_settings">111.5dp</dimen>
   <dimen name="camera_width_settings">80dp</dimen>
@@ -92,7 +101,7 @@
   <dimen name="nav_icon_little_size">33dp</dimen>
   <dimen name="nav_icon_size_with_shadow">60dp</dimen>
   <dimen name="nav_icon_size_with_margin_end">55dp</dimen>
-  <dimen name="nav_icon_size_with_margin_start">80dp</dimen>
+  <dimen name="nav_icon_size_with_margin_start">70dp</dimen>
   <dimen name="filter_letter_size">35dp</dimen>
   <dimen name="filter_letter_container_size">50dp</dimen>
   <dimen name="cards_icon_size">15dp</dimen>
@@ -102,11 +111,15 @@
   <dimen name="waiting_view_progress_bar_size">95dp</dimen>
   <dimen name="waiting_view_avatar_size">100dp</dimen>
   <dimen name="waiting_view_dot_size">7dp</dimen>
+  <dimen name="view_dot_size_chat">5dp</dimen>
   <dimen name="view_dice_dot_size">15dp</dimen>
   <dimen name="view_dice_dot_margin">1.5dp</dimen>
   <dimen name="filter_game_size">50dp</dimen>
-  <dimen name="filter_game_size_with_border">55dp</dimen>
+  <dimen name="filter_game_size_with_border">60dp</dimen>
   <dimen name="filter_game_size_container">60dp</dimen>
+  <dimen name="picto_chat_size">50dp</dimen>
+  <dimen name="picto_live_size">70dp</dimen>
+  <dimen name="avatar_size_shortcut_completion">16dp</dimen>
 
   <!-- THRESHOLDS -->
   <dimen name="threshold_dismiss">100dp</dimen>
@@ -128,11 +141,11 @@
 
   <!--ALERTS-->
   <dimen name="alerter_alert_min_height">64dp</dimen>
-  <dimen name="alerter_alert_max_height">84dp</dimen>
+  <dimen name="alerter_alert_max_height">150dp</dimen>
   <dimen name="alerter_alert_icn_size">38dp</dimen>
 
   <dimen name="alerter_padding_small">4dp</dimen>
   <dimen name="alerter_padding_default">16dp</dimen>
-  <dimen name="alerter_alert_padding">26dp</dimen>
+  <dimen name="alerter_alert_padding">10dp</dimen>
 
 </resources>

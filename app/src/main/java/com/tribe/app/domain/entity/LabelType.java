@@ -11,9 +11,9 @@ import java.lang.annotation.RetentionPolicy;
 public class LabelType implements Serializable {
 
   @StringDef({
-      SET_AS_ADMIN, REMOVE_FROM_GROUP, REMOVE_FROM_ADMIN, BLOCK, CANCEL, OPEN_CAMERA, OPEN_PHOTOS,
-      CLEAR_MESSAGES, HIDE, BLOCK_HIDE, GROUP_INFO, GROUP_LEAVE, TRIBE_SAVE, TRIBE_INCREASE_SPEED,
-      TRIBE_DECREASE_SPEED, UNHIDE
+      SET_AS_ADMIN, REMOVE_FROM_GROUP, REMOVE_FROM_ADMIN, BLOCK, BLOCK_GROUP, CANCEL, OPEN_CAMERA, OPEN_PHOTOS,
+      CLEAR_MESSAGES, HIDE, BLOCK_HIDE, TRIBE_SAVE, TRIBE_INCREASE_SPEED, TRIBE_DECREASE_SPEED,
+      UNHIDE
   }) @Retention(RetentionPolicy.SOURCE) public @interface GenericTypeDef {
   }
 
@@ -22,6 +22,7 @@ public class LabelType implements Serializable {
   public static final String REMOVE_FROM_ADMIN = "removeFromAdmin";
 
   public static final String BLOCK = "block";
+  public static final String BLOCK_GROUP = "blockGroup";
   public static final String CANCELBTN = "cancelbtn";
 
   public static final String OPEN_CAMERA = "openCamera";
@@ -32,14 +33,19 @@ public class LabelType implements Serializable {
 
   public static final String CLEAR_MESSAGES = "clearMessages";
 
+  public static final String MESSAGE_OPTION_UNSEND = "MESSAGE_OPTION_UNSEND";
+  public static final String MESSAGE_OPTION_COPY = "MESSAGE_OPTION_COPY";
+
+  public static final String CHANGE_NAME = "changeName";
+  public static final String CHANGE_PICTURE = "changePicture";
+  public static final String CUSTOMIZE = "customize";
+  public static final String MARK_AS_READ = "markAsRead";
   public static final String HIDE = "hide";
   public static final String MUTE = "mute";
   public static final String UNMUTE = "unmute";
   public static final String UNHIDE = "unhide";
   public static final String DECLINE = "decline";
   public static final String BLOCK_HIDE = "blockHide";
-  public static final String GROUP_INFO = "groupInfo";
-  public static final String GROUP_LEAVE = "groupLeave";
   public static final String TRIBE_SAVE = "tribeSave";
   public static final String TRIBE_INCREASE_SPEED = "tribeIncreaseSpeed";
   public static final String TRIBE_DECREASE_SPEED = "tribeDecreaseSpeed";
@@ -60,7 +66,8 @@ public class LabelType implements Serializable {
   public static final String INVITE_MESSENGER = "inviteMessenger";
   public static final String SEARCH = "search";
 
-  public static final String GAME_RE_ROLL = "gameReRoll";
+  public static final String GAME_PLAY_ANOTHER = "gamePlayAnother";
+  public static final String GAME_RESET_SCORES = "gameResetScores";
   public static final String GAME_STOP = "gameStop";
 
   private @GenericTypeDef String typeDef;

@@ -1,47 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layoutContent"
-    android:layout_width="@dimen/games_list_height"
-    android:layout_height="@dimen/games_list_height"
-    android:background="@null"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="156dp"
     >
 
-  <FrameLayout
-      android:id="@+id/frameLayout"
-      android:layout_width="@dimen/filter_game_size_container"
-      android:layout_height="@dimen/filter_game_size_container"
-      android:layout_centerHorizontal="true">
-    <View
-        android:id="@+id/bgSelected"
-        android:layout_width="@dimen/filter_game_size"
-        android:layout_height="@dimen/filter_game_size"
-        android:layout_gravity="center"
-        android:background="@drawable/shape_oval_white"
-        android:elevation="5dp"
-        />
-
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="@dimen/filter_game_size"
-        android:layout_height="@dimen/filter_game_size"
-        android:layout_gravity="center"
-        android:clickable="true"
-        android:elevation="5dp"
-        android:foreground="@drawable/selectable_button_oval"
-        android:scaleType="centerCrop"
-        />
-  </FrameLayout>
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/name"
+  <android.support.v7.widget.CardView
+      android:id="@+id/cardView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_below="@+id/frameLayout"
-      android:gravity="center"
-      android:shadowColor="@color/black.opacity.50"
-      android:shadowDx="3"
-      android:shadowDy="3"
-      android:shadowRadius="10"
-      style="@style/Caption.Two.White" />
+      android:layout_margin="@dimen/horizontal_margin_small"
+      android:background="@null"
+      android:clickable="true"
+      android:clipChildren="true"
+      android:elevation="0dp"
+      android:foreground="@drawable/selectable_button_all_rounded_5_black_5"
+      app:cardBackgroundColor="@android:color/transparent"
+      app:cardCornerRadius="6dp"
+      app:cardElevation="5dp"
+      app:cardPreventCornerOverlap="false"
+      >
 
-</RelativeLayout>
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/layoutContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        >
+
+      <View
+          android:id="@+id/viewBackground"
+          android:layout_width="0dp"
+          android:layout_height="0dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          />
+
+      <ImageView
+          android:id="@+id/imgBanner"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:scaleType="fitEnd"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          />
+
+      <ImageView
+          android:id="@+id/imgIcon"
+          android:layout_width="65dp"
+          android:layout_height="65dp"
+          android:layout_marginStart="@dimen/horizontal_margin_large"
+          android:scaleType="fitXY"
+          app:layout_constraintBottom_toTopOf="@+id/viewBackgroundBottom"
+          app:layout_constraintStart_toStartOf="@id/viewBackground"
+          app:layout_constraintTop_toTopOf="parent"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtTitle"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="@dimen/horizontal_margin"
+          android:layout_marginStart="@dimen/horizontal_margin"
+          android:layout_marginTop="7.5dp"
+          android:ellipsize="end"
+          android:textAllCaps="true"
+          app:layout_constraintStart_toEndOf="@id/imgIcon"
+          app:layout_constraintTop_toTopOf="@id/imgIcon"
+          style="@style/Headline.White.2"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtBaseline"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="75dp"
+          android:layout_marginStart="@dimen/horizontal_margin"
+          android:layout_marginTop="7dp"
+          android:ellipsize="end"
+          android:gravity="start"
+          android:maxLines="1"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toEndOf="@id/imgIcon"
+          app:layout_constraintTop_toBottomOf="@id/txtTitle"
+          style="@style/Title.Regular.Black40"
+          />
+
+      <View
+          android:id="@+id/viewBackgroundBottom"
+          android:layout_width="0dp"
+          android:layout_height="26dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtInfo"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="@dimen/horizontal_margin_smaller"
+          android:textAllCaps="true"
+          app:layout_constraintBottom_toBottomOf="@id/viewBackgroundBottom"
+          app:layout_constraintStart_toStartOf="@id/viewBackgroundBottom"
+          app:layout_constraintTop_toTopOf="@id/viewBackgroundBottom"
+          style="@style/Caption.Two.White"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtPlayCount"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="@dimen/horizontal_margin_smaller"
+          android:textAllCaps="true"
+          app:layout_constraintBottom_toBottomOf="@id/viewBackgroundBottom"
+          app:layout_constraintEnd_toEndOf="@id/viewBackgroundBottom"
+          app:layout_constraintTop_toTopOf="@id/viewBackgroundBottom"
+          style="@style/Caption.Two.White"
+          />
+    </android.support.constraint.ConstraintLayout>
+  </android.support.v7.widget.CardView>
+</LinearLayout>

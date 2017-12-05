@@ -1,59 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtName"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="top|center_horizontal"
-      android:background="@null"
-      android:drawablePadding="8.6dp"
-      android:shadowColor="@color/black.opacity.50"
-      android:shadowDx="3"
-      android:shadowDy="3"
-      android:shadowRadius="10"
-      android:singleLine="true"
-      style="@style/Headline.White.2"
-      />
-
   <LinearLayout
+      android:id="@+id/layoutBG"
       android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      android:layout_gravity="top|center_horizontal"
-      android:layout_marginTop="30dp"
+      android:layout_height="45dp"
+      android:layout_gravity="center"
+      android:background="@drawable/bg_live_name"
+      android:gravity="center"
       >
 
     <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtStatus1"
+        android:id="@+id/txtName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@null"
-        android:layout_gravity="top|center_horizontal"
+        android:layout_marginEnd="12.5dp"
+        android:layout_marginStart="17.5dp"
+        android:clickable="true"
+        android:drawableEnd="@drawable/picto_drawer_inactive"
+        android:drawablePadding="5dp"
+        android:gravity="center"
+        android:maxLines="1"
         android:shadowColor="@color/black.opacity.50"
         android:shadowDx="3"
         android:shadowDy="3"
         android:shadowRadius="10"
-        android:singleLine="true"
-        android:visibility="visible"
+        android:text="@string/action_back"
+        android:textAllCaps="true"
         style="@style/Body.Two.White"
         />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtStatus2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
-        android:background="@null"
-        android:shadowColor="@color/black.opacity.50"
-        android:shadowDx="3"
-        android:shadowDy="3"
-        android:shadowRadius="10"
-        android:singleLine="true"
-        android:visibility="visible"
-        style="@style/Body.Two.White40"
-        />
-
   </LinearLayout>
-
 </merge>

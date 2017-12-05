@@ -9,15 +9,13 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
-import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
-import com.tribe.app.domain.entity.GroupEntity;
-import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.SearchResult;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import rx.Observable;
@@ -58,12 +56,9 @@ public interface UserRepository {
    */
   Observable<User> userInfos(final String userId);
 
-  Observable<List<User>> getUsersInfosList(final List<String> usersIds);
+  Observable<Shortcut> getShortcuts(String shortcutId);
 
-  /**
-   * Get an {@link Observable} which will emit a {@link List<Friendship>}
-   */
-  Observable<List<Friendship>> friendships();
+  Observable<List<User>> getUsersInfosList(final List<String> usersIds);
 
   /**
    * Get an {@link Observable} which will emit a {@link User}
@@ -100,11 +95,13 @@ public interface UserRepository {
    */
   Observable<List<Contact>> contactsFB();
 
+  Observable<List<Contact>> contactsFBInvite();
+
   Observable<List<Contact>> contactsOnApp();
 
   Observable<List<Contact>> contactsInvite();
 
-  Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds);
+  Observable<List<Shortcut>> searchLocally(String s, Set<String> includedUserIds);
 
   /**
    * Get an {@link Observable} which will emit a {@link SearchResult} containing infos
@@ -119,20 +116,6 @@ public interface UserRepository {
   Observable<Boolean> lookupUsername(String username);
 
   /**
-   * Get an {@link Observable} which will emit a {@link com.tribe.app.domain.entity.Friendship}
-   * containing infos
-   * about the contact.
-   */
-  Observable<Friendship> createFriendship(String userId);
-
-  Observable<Void> createFriendships(String... userIds);
-
-  /**
-   * Get an {@link Observable} which will emit a void
-   */
-  Observable<Void> removeFriendship(String userId);
-
-  /**
    * Get an {@link Observable} which will emit a {@link Contact} containing infos
    * about the contact.
    */
@@ -143,58 +126,34 @@ public interface UserRepository {
    */
   Observable<Void> notifyFBFriends();
 
-  Observable<Group> getGroupMembers(String groupId);
-
-  Observable<Group> getGroupInfos(String groupId);
-
-  Observable<Membership> getMembershipInfos(String membershipId);
-
-  Observable<Membership> createGroup(GroupEntity groupEntity);
-
-  Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values);
-
-  Observable<Membership> updateMembership(String membershipId, List<Pair<String, String>> values);
-
-  Observable<Void> addMembersToGroup(String groupId, List<String> memberIds);
-
-  Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds);
-
-  Observable<Void> removeGroup(String groupId);
-
-  Observable<Void> leaveGroup(String membershipId);
-
-  Observable<Friendship> updateFriendship(final String friendshipId,
-      List<Pair<String, String>> values);
-
-  Observable<List<Friendship>> getBlockedFriendshipList();
-
   Observable<String> getHeadDeepLink(String url);
 
-  Observable<Membership> createMembership(String groupId);
-
-  Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup);
-
-  Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId, String linkId);
-
-  Observable<Boolean> inviteUserToRoom(String roomId, String userId);
-
-  Observable<Boolean> buzzRoom(String roomId);
-
-  Observable<Void> declineInvite(String roomId);
+  Observable<Recipient> getRecipientInfos(String recipientId);
 
   Observable<Void> sendInvitations();
 
-  Observable<String> getRoomLink(String roomId);
-
-  Observable<Boolean> bookRoomLink(String linkId);
-
-  Observable<Void> roomAcceptRandom(String roomId);
-
-  Observable<String> randomRoomAssigned();
-
   Observable<User> getFbIdUpdated();
 
-  Observable<Boolean> reportUser(String userId);
+  Observable<Boolean> reportUser(String userId, String imageUrl);
 
-  Observable<List<Friendship>> unblockedFriendships();
+  /**
+   * Get an {@link Observable} which will emit a {@link List<Shortcut>}
+   */
+  Observable<List<Shortcut>> singleShortcuts();
+
+  Observable<List<Shortcut>> shortcuts();
+
+  Observable<Shortcut> shortcutForUserIds(String... userIds);
+
+  Observable<List<Shortcut>> blockedShortcuts();
+
+  Observable<Shortcut> createShortcut(String... userIds);
+
+  Observable<Shortcut> updateShortcut(String shortcutId, List<Pair<String, String>> values);
+
+  Observable<Void> removeShortcut(String shortcutId);
+
+  Observable<List<Invite>> invites();
+
+  Observable<String> getRandomBannedUntil();
 }

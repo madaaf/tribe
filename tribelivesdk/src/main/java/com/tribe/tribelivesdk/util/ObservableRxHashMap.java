@@ -20,6 +20,7 @@ public class ObservableRxHashMap<T, R> {
   protected final HashMap<T, R> map;
   protected final PublishSubject<RxHashMap<T, R>> subject;
   protected final PublishSubject<Map<T, R>> mapSubject;
+
   public ObservableRxHashMap() {
     this.map = new HashMap<>();
     this.subject = PublishSubject.create();
@@ -39,6 +40,12 @@ public class ObservableRxHashMap<T, R> {
     mapSubject.onNext(map);
   }
 
+  public void compute(Map<T, R> map) {
+    this.map.putAll(map);
+    subject.onNext(new RxHashMap<>(ADD_ALL, null, null));
+    mapSubject.onNext(map);
+  }
+
   public void update(T key, R value) {
     map.put(key, value);
     subject.onNext(new RxHashMap<>(UPDATE, key, value));
@@ -51,11 +58,13 @@ public class ObservableRxHashMap<T, R> {
     mapSubject.onNext(map);
   }
 
-  public R remove(T key) {
+  public R remove(T key, boolean notify) {
     if (map.containsKey(key)) {
       R r = map.remove(key);
-      subject.onNext(new RxHashMap<>(REMOVE, key, r));
-      mapSubject.onNext(map);
+      if (notify) {
+        subject.onNext(new RxHashMap<>(REMOVE, key, r));
+        mapSubject.onNext(map);
+      }
       return r;
     }
 

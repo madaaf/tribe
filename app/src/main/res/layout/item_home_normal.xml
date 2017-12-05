@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutContent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/list_home_height"
+    >
+
+  <com.tribe.app.presentation.view.component.common.ShortcutListView
+      android:id="@+id/viewListItem"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/list_home_height"
+      android:background="@android:color/white"
+      android:clickable="true"
+      app:homeViewType="normal"
+      />
+</FrameLayout>

@@ -1,27 +1,34 @@
 package com.tribe.app.presentation.view.component.live;
 
+import android.animation.LayoutTransition;
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.IntDef;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Live;
+import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -30,35 +37,26 @@ import rx.subscriptions.CompositeSubscription;
 public class LiveStatusNameView extends FrameLayout {
 
   private static final int DURATION = 300;
-  private static final float OVERSHOOT = 0.90f;
-
-  public static final int INITIATING = R.string.live_waiting_state_initiating;
-  public static final int NOTIFYING = R.string.live_waiting_state_notifying;
-  public static final int WAITING = R.string.live_waiting_state_waiting;
-  public static final int DONE = -1;
-
-  @IntDef({ INITIATING, NOTIFYING, WAITING, DONE }) public @interface StatusType {
-  }
 
   @Inject ScreenUtils screenUtils;
 
   @Inject User user;
 
-  @BindView(R.id.txtName) TextViewFont txtName;
+  @BindView(R.id.layoutBG) ViewGroup layoutBG;
 
-  @BindView(R.id.txtStatus1) TextViewFont txtStatus1;
-  @BindView(R.id.txtStatus2) TextViewFont txtStatus2;
+  @BindView(R.id.txtName) TextViewFont txtName;
 
   // VARIABLES
   private Unbinder unbinder;
   private Live live;
-  private @StatusType int status;
+  private boolean active = false;
 
   // RESOURCES
-  private int translationY;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Boolean> onOpenView = PublishSubject.create();
+  private PublishSubject<Boolean> onCloseView = PublishSubject.create();
 
   public LiveStatusNameView(Context context) {
     super(context);
@@ -92,11 +90,12 @@ public class LiveStatusNameView extends FrameLayout {
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_status_name, this);
     unbinder = ButterKnife.bind(this);
 
+    setLayoutTransition(new LayoutTransition());
+
     setBackground(null);
   }
 
   private void initResources() {
-    translationY = screenUtils.dpToPx(20);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -115,73 +114,117 @@ public class LiveStatusNameView extends FrameLayout {
         .inject(this);
   }
 
+  @OnClick(R.id.txtName) void clickOpenView() {
+    if (active) {
+      closeView();
+    } else {
+      openView();
+    }
+  }
+
+  private void setAddFriendsTitle() {
+    int str = R.string.action_add_friend;
+    txtName.setText(str);
+  }
+
+  private void setShortcutTitle() {
+    txtName.setText(live.getShortcut().getName());
+  }
+
+  private void setPeopleCountTitle(int total) {
+    String str = getContext().getString(R.string.shortcut_members_count, (total + 1));
+    txtName.setText(str);
+  }
+
   //////////////
   //  PUBLIC  //
   //////////////
 
+  public int getNewWidth() {
+    txtName.measure(0, 0);
+    return txtName.getMeasuredWidth() + screenUtils.dpToPx(15 * 2);
+  }
+
+  public void openView() {
+    if (active) return;
+
+    active = true;
+    layoutBG.setBackgroundResource(R.drawable.bg_live_name_active);
+    txtName.setText(R.string.action_back);
+    txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_drawer_active, 0);
+    txtName.setShadowLayer(0, 0, 0, 0);
+    TextViewCompat.setTextAppearance(txtName, R.style.Body_Two_Black);
+
+    txtName.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
+
+    onOpenView.onNext(active);
+  }
+
+  public void closeView() {
+    if (!active) return;
+
+    active = false;
+    layoutBG.setBackgroundResource(R.drawable.bg_live_name);
+    refactorTitle();
+    txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.picto_drawer_inactive, 0);
+    txtName.setShadowLayer(10, 3, 3,
+        ContextCompat.getColor(getContext(), R.color.black_opacity_50));
+    TextViewCompat.setTextAppearance(txtName, R.style.Body_Two_White);
+
+    txtName.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
+
+    onCloseView.onNext(active);
+  }
+
   public void dispose() {
-    txtStatus1.clearAnimation();
   }
 
   public void setLive(Live live) {
     this.live = live;
 
-    if (!StringUtils.isEmpty(live.getLinkId())) {
-      if (live.getId().equals(Live.WEB)) {
-        if (user.getDisplayName() == null) {
-          txtName.setText("");
-        } else {
-          txtName.setText(
-              getContext().getString(R.string.live_title_with_guests, user.getDisplayName()));
-        }
-      } else if (live.getId().equals(Live.NEW_CALL)) {
-        txtName.setText(getContext().getString(R.string.live_new_call_title_alone));
-      }
-
-      setStatusText(null, null);
-
+    if (!live.hasUsers() || live.getUserIdsOfShortcut().size() <= 1) {
+      setAddFriendsTitle();
+    } else if (live.getShortcut() != null && !StringUtils.isEmpty(live.getShortcut().getName())) {
+      setShortcutTitle();
     } else {
-      if (live.isGroup()) {
-        txtName.setCompoundDrawablesWithIntrinsicBounds(R.drawable.picto_group_small_shadow, 0, 0,
-            0);
+      setPeopleCountTitle(live.getUserIdsOfShortcut().size());
+    }
+
+    if (live.onShortcutUpdated() == null) return;
+    subscriptions.add(live.onShortcutUpdated().subscribe(shortcut -> refactorTitle()));
+
+    if (live.onRoomUpdated() == null) return;
+    subscriptions.add(live.onRoomUpdated().subscribe(room -> refactorTitle()));
+  }
+
+  private void refactorTitle() {
+    if (active) return;
+
+    Room room = live.getRoom();
+    Shortcut shortcut = live.getShortcut();
+
+    if (shortcut != null && !StringUtils.isEmpty(shortcut.getName())) {
+      setShortcutTitle();
+    } else if (room != null) {
+      if (room.nbUsersTotalWithoutMe(user.getId()) <= 1) {
+        setAddFriendsTitle();
       } else {
-        txtName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        setPeopleCountTitle(room.nbUsersTotalWithoutMe(user.getId()));
       }
-
-      txtName.setText(live.getDisplayName());
-
-      setStatus(INITIATING);
+    } else {
+      setAddFriendsTitle();
     }
   }
 
-  public void refactorTitle() {
-    if (!live.getId().equals(Live.NEW_CALL)) return;
-    if (user.getDisplayName() != null) {
-      txtName.setText(
-          getContext().getString(R.string.live_title_with_guests, user.getDisplayName()));
-    }
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<Boolean> onOpenView() {
+    return onOpenView;
   }
 
-  public void setStatusText(String status1, String status2) {
-    txtStatus1.setText(status1);
-    txtStatus2.setText(status2);
-  }
-
-  public void setStatus(@StatusType int status) {
-    if (this.status == DONE || !StringUtils.isEmpty(live.getLinkId())) return;
-
-    this.status = status;
-
-    if (status == DONE) {
-      setStatusText(null, null);
-      return;
-    }
-
-    setStatusText(
-        EmojiParser.demojizedText(getContext().getString(status, live.getDisplayName())), null);
-  }
-
-  public @LiveStatusNameView.StatusType int getStatus() {
-    return status;
+  public Observable<Boolean> onCloseView() {
+    return onCloseView;
   }
 }

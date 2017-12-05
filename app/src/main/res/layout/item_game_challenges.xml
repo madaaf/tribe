@@ -43,9 +43,6 @@
             android:layout_gravity="left|center_vertical"
             android:background="@null"
             android:scaleType="centerCrop"
-            app:hasHole="true"
-            app:hasInd="true"
-            app:hasShadow="false"
             />
 
         <RelativeLayout

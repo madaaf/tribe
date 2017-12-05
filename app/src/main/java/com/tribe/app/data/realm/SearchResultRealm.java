@@ -14,7 +14,7 @@ public class SearchResultRealm extends RealmObject {
   private String display_name;
   private String username;
   private String picture;
-  private FriendshipRealm friendshipRealm;
+  private ShortcutRealm shortcutRealm;
   private boolean searchDone = false;
   private boolean invisible_mode = false;
 
@@ -62,12 +62,12 @@ public class SearchResultRealm extends RealmObject {
     this.picture = picture;
   }
 
-  public FriendshipRealm getFriendshipRealm() {
-    return friendshipRealm;
+  public ShortcutRealm getShortcutRealm() {
+    return shortcutRealm;
   }
 
-  public void setFriendshipRealm(FriendshipRealm friendshipRealm) {
-    this.friendshipRealm = friendshipRealm;
+  public void setShortcutRealm(ShortcutRealm shortcutRealm) {
+    this.shortcutRealm = shortcutRealm;
   }
 
   public boolean isSearchDone() {

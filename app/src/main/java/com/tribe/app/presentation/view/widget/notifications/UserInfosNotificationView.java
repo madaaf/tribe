@@ -15,8 +15,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -27,6 +27,7 @@ import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -169,29 +170,34 @@ public class UserInfosNotificationView extends FrameLayout {
         .start();
   }
 
-  public void update(Friendship friendship) {
-    contactAdapter.updateAdd(friendship.getFriend());
+  public void update(Shortcut shortcut) {
+    contactAdapter.updateAdd(shortcut.getSingleFriend());
   }
 
   /////////////////
   // OBSERVABLES //
   /////////////////
 
-  public Observable<TribeGuest> onClickMore() {
-    return contactAdapter.onClickMore().map(view -> {
+  public Observable<List<Object>> onClickMore() {
+    List<Object> list = new ArrayList<>();
+
+    return contactAdapter.onClickMore().map(v -> {
       TribeGuest guest;
       Object obj =
-          contactAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(view));
+          contactAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(v.itemView));
       if (obj instanceof Recipient) {
         guest = new TribeGuest(((Recipient) obj).getId());
         guest.setDisplayName(((Recipient) obj).getDisplayName());
-        return guest;
+        list.add(guest);
+        //  return guest;
       } else if (obj instanceof User) {
         guest = new TribeGuest(((User) obj).getId());
         guest.setDisplayName(((User) obj).getDisplayName());
-        return guest;
+        list.add(guest);
+        //   return guest;
       }
-      return null;
+      list.add(v);
+      return list;
     });
   }
 

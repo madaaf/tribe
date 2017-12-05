@@ -21,6 +21,7 @@ import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LiveImmersiveNotificationPresenter;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -84,6 +85,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
   @Inject @ImmersiveCallState Preference<Boolean> immersiveCallState;
   @Inject LiveImmersiveNotificationPresenter presenter;
   @Inject MissedCallManager missedCallManager;
+  @Inject User user;
 
   @BindView(R.id.txtDisplayName) TextViewFont txtDisplayName;
   @BindView(R.id.txtCallerName) TextViewFont txtCallerName;
@@ -219,9 +221,8 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
 
   private void updateFromPayload(NotificationPayload payload) {
     if (payload != null) {
-      boolean isGroup = !StringUtils.isEmpty(payload.getGroupId());
-      String name = isGroup ? payload.getGroupName() : payload.getUserDisplayName();
-      String picture = isGroup ? payload.getGroupPicture() : payload.getUserPicture();
+      String name = payload.getUserDisplayName();
+      String picture = payload.getUserPicture();
 
       if (StringUtils.isEmpty(picture) || picture.equals(noUrl)) {
         Random random = new Random();
@@ -234,13 +235,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
       }
 
       txtDisplayName.setText(EmojiParser.demojizedText(name));
-
-      if (isGroup) {
-        txtCallerName.setText(payload.getUserDisplayName());
-      } else {
-        txtCallerName.setVisibility(View.GONE);
-      }
-
+      txtCallerName.setVisibility(View.GONE);
       avatar.setType(AvatarView.LIVE);
       avatar.load(picture);
     }
@@ -347,7 +342,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
                 .withEndAction(() -> {
                   shouldStartHome = true;
                   finish();
-                  startActivity(NotificationUtils.getIntentForLive(v.getContext(), payload, true));
+                  startActivity(NotificationUtils.getIntentForLive(v.getContext(), payload, true, user));
                 })
                 .start();
           } else {
@@ -376,8 +371,8 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      if (payload.equals(notificationPayload) && !notificationPayload.getClickAction()
-          .equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
+      if (payload.equals(notificationPayload) &&
+          !notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
         if (notificationPayload.getClickAction()
             .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
           finish();
@@ -389,8 +384,7 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
       }
 
       LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload,
-              missedCallManager);
+          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
       if (liveNotificationView != null) {
         subscriptions.add(liveNotificationView.onClickAction()

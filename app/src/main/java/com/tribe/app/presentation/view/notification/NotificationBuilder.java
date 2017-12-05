@@ -1,7 +1,9 @@
 package com.tribe.app.presentation.view.notification;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
@@ -15,9 +17,10 @@ import com.jenzz.appstate.AppState;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.TribeApi;
-import com.tribe.app.data.network.job.UnhideFriendshipJob;
-import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -25,11 +28,16 @@ import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
+import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
+import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -45,6 +53,9 @@ import javax.inject.Singleton;
   @Inject @ImmersiveCallState Preference<Boolean> immersiveCallState;
   @Inject JobManager jobManager;
   @Inject MissedCallManager missedCallManager;
+  @Inject User user;
+
+  @Inject Navigator navigator;
   private AndroidApplication application;
 
   @Inject public NotificationBuilder(AndroidApplication application) {
@@ -56,19 +67,15 @@ import javax.inject.Singleton;
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
-      // If the user calling is hidden by the current user, we unhide it
-      // https://github.com/heytribe/roadmap/issues/530
-      if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
-          && notificationPayload.isUserCall()) {
-        FriendshipRealm friendshipRealm =
-            userCache.friendshipForUserId(notificationPayload.getUserId());
-        if (friendshipRealm != null && friendshipRealm.isHidden()) {
-          jobManager.addJobInBackground(new UnhideFriendshipJob(friendshipRealm));
-        }
-      } else if (notificationPayload.getClickAction()
-          .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+      if (notificationPayload.getBadge() > 0) {
+        userCache.updateBadgeValue(notificationPayload.getBadge());
+      }
+
+      if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
         if (application.getAppState() != null) {
           missedCallManager.setMissedNotificationPlayload(notificationPayload);
+          notificationPayload.setMissedCallActionList(missedCallManager.getMissedCallAction());
+          //notificationPayload = missedCallManager.buildNotificationBuilderFromMissedCallList();
         }
 
         PreferencesUtils.removeFromSet(fullScreenNotificationState,
@@ -128,14 +135,19 @@ import javax.inject.Singleton;
   }
 
   private Notification buildNotification(NotificationPayload payload) {
-    NotificationCompat.Builder builder =
-        new NotificationCompat.Builder(application).setContentTitle(
-            application.getString(R.string.app_name))
-            .setContentText(payload.getBody())
-            .setWhen(new Date().getTime())
-            .setSmallIcon(R.drawable.ic_notification)
-            .setShowWhen(true)
-            .setAutoCancel(true);
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(application);
+
+    if (!StringUtils.isEmpty(payload.getTitle())) {
+      builder.setContentText(payload.getBody());
+      builder.setContentTitle(payload.getTitle());
+    } else {
+      builder.setContentText(payload.getBody());
+    }
+
+    builder.setWhen(new Date().getTime())
+        .setSmallIcon(R.drawable.ic_notification)
+        .setShowWhen(true)
+        .setAutoCancel(true);
 
     PendingIntent pendingIntent = getIntentFromPayload(payload);
     if (pendingIntent != null) builder.setContentIntent(pendingIntent);
@@ -151,6 +163,64 @@ import javax.inject.Singleton;
     return builder.build();
   }
 
+  private boolean showMessageNotification(Context context,
+      LiveNotificationView liveNotificationView, NotificationPayload notificationPayload) {
+    if (liveNotificationView.getContainer() != null) {
+
+      Shortcut notificationShortcut =
+          ShortcutUtil.getRecipientFromId(notificationPayload.getUsers_ids(), user);
+
+      if (notificationShortcut != null) {
+        if (context instanceof ChatActivity) {
+          List<User> memberInChat = null;
+          if (((ChatActivity) context).getShortcut() != null
+              && ((ChatActivity) context).getShortcut().getMembers() != null) {
+            memberInChat = ((ChatActivity) context).getShortcut().getMembers();
+          }
+          boolean isSameChat =
+              ShortcutUtil.equalShortcutMembers(memberInChat, notificationShortcut.getMembers(),
+                  user);
+          if (isSameChat) {
+            return false;
+          }
+        } else if (context instanceof LiveActivity) {
+          List<User> memberInlive = null;
+          if (((LiveActivity) context).getShortcut() != null
+              && ((LiveActivity) context).getShortcut().getMembers() != null) {
+            memberInlive = ((LiveActivity) context).getShortcut().getMembers();
+          }
+          boolean isSameChat =
+              ShortcutUtil.equalShortcutMembers(memberInlive, notificationShortcut.getMembers(),
+                  user);
+          if (isSameChat) {
+            ((LiveActivity) context).notififyNewMessage();
+            return false;
+          }
+        }
+      }
+
+      Shortcut finalNotificationShortcut = notificationShortcut;
+      liveNotificationView.getContainer().setOnClickListener(view -> {
+        if (finalNotificationShortcut != null) {
+          if (context instanceof ChatActivity) {
+            if (!((ChatActivity) context).getShortcut()
+                .getId()
+                .equals(finalNotificationShortcut.getId())) {
+              navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null,
+                  null, false);
+            }
+          } else if (context instanceof LiveActivity) {
+            // TODO
+          } else {
+            navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null,
+                null, false);
+          }
+        }
+      });
+    }
+    return true;
+  }
+
   private PendingIntent getIntentFromPayload(NotificationPayload payload) {
     Class pendingClass = getClassFromPayload(payload);
     if (pendingClass != null) {
@@ -163,6 +233,10 @@ import javax.inject.Singleton;
       } else if (pendingClass.equals(HomeActivity.class) && payload.getClickAction()
           .equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
         return getPendingIntentForUserRegistered(payload);
+      } else if (pendingClass.equals(ChatActivity.class)) {
+        return getPendingIntentForChat(payload);
+      } else if (pendingClass.equals(MissedCallDetailActivity.class)) {
+        return getPendingIntentForMissedCall(payload);
       }
     }
 
@@ -170,14 +244,18 @@ import javax.inject.Singleton;
   }
 
   private Class getClassFromPayload(NotificationPayload payload) {
-    if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
-        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)
-        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
+    if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
       return HomeActivity.class;
     } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
         || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)
         || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
       return LiveActivity.class;
+    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_MESSAGE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
+      return ChatActivity.class;
+    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+      return MissedCallDetailActivity.class;
     }
 
     return HomeActivity.class;
@@ -208,11 +286,38 @@ import javax.inject.Singleton;
   }
 
   private PendingIntent getPendingIntentForLive(NotificationPayload payload) {
-    Intent notificationIntent = NotificationUtils.getIntentForLive(application, payload, false);
+    Intent notificationIntent =
+        NotificationUtils.getIntentForLive(application, payload, false, user);
     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
     PendingIntent pendingIntent =
         PendingIntent.getActivity(application, (int) System.currentTimeMillis(), notificationIntent,
+            PendingIntent.FLAG_ONE_SHOT);
+
+    return pendingIntent;
+  }
+
+  private PendingIntent getPendingIntentForMissedCall(NotificationPayload payload) {
+    List<MissedCallAction> missedCallAction = payload.getMissedCallList();
+    Intent intent =
+        MissedCallDetailActivity.getIntentForMissedCallDetail(application, missedCallAction);
+
+    PendingIntent pendingIntent =
+        PendingIntent.getActivity(application, (int) System.currentTimeMillis(), intent,
+            PendingIntent.FLAG_ONE_SHOT);
+
+    return pendingIntent;
+  }
+
+  private PendingIntent getPendingIntentForChat(NotificationPayload payload) {
+
+    Shortcut notificationShortcut = ShortcutUtil.getRecipientFromId(payload.getUsers_ids(), user);
+
+    Intent intent =
+        ChatActivity.getCallingIntent(application, notificationShortcut, null, null, null);
+
+    PendingIntent pendingIntent =
+        PendingIntent.getActivity(application, (int) System.currentTimeMillis(), intent,
             PendingIntent.FLAG_ONE_SHOT);
 
     return pendingIntent;
@@ -253,8 +358,9 @@ import javax.inject.Singleton;
   }
 
   private int getNotificationId(NotificationPayload payload) {
-    return !StringUtils.isEmpty(payload.getThread()) ? payload.getThread().hashCode()
-        : (int) System.currentTimeMillis();
+    return !StringUtils.isEmpty(payload.getSessionId()) ? payload.getSessionId().hashCode()
+        : (!StringUtils.isEmpty(payload.getThread()) ? payload.getThread().hashCode()
+            : (int) System.currentTimeMillis());
   }
 
   private void sendFullScreenNotification(RemoteMessage remoteMessage) {

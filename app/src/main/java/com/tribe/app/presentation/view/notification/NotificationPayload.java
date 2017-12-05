@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.notification;
 
 import android.support.annotation.StringDef;
+import com.google.gson.JsonArray;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -26,26 +27,44 @@ public class NotificationPayload implements Serializable {
   public static final String CLICK_ACTION_DECLINE = "decline_live";
   public static final String CLICK_ACTION_JOIN_CALL = "join_live";
   public static final String CLICK_ACTION_USER_REGISTERED = "user_registered";
+  public static final String CLICK_ACTION_MESSAGE = "message";
+  public static final String ACTION_JOINED = "joined";
+  public static final String ACTION_LEFT = "left";
 
   private String user_id;
   private String body;
+  private int badge;
+  private String title;
   private String click_action;
+  private String action;
   private String user_display_name;
   private String sound;
   private String session_id;
-  private String group_id;
-  private String group_name;
   private String user_picture;
-  private String group_picture;
   private String room_link;
   private boolean shouldDisplayDrag = true;
   private String thread;
   private int live_users_length;
   private List<MissedCallAction> missedCallList = new ArrayList<>();
   private long time;
+  private String message_picture;
+  private String users_ids;
+  private JsonArray thread_id;
 
   public void setTime(long time) {
     this.time = time;
+  }
+
+  public String getUsers_ids() {
+    return users_ids;
+  }
+
+  public void setUsers_ids(String users_ids) {
+    this.users_ids = users_ids;
+  }
+
+  public void setThread_id(JsonArray thread_id) {
+    this.thread_id = thread_id;
   }
 
   public long getTime() {
@@ -58,6 +77,14 @@ public class NotificationPayload implements Serializable {
 
   public String getUserId() {
     return user_id;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public void setBody(String body) {
@@ -108,30 +135,6 @@ public class NotificationPayload implements Serializable {
     this.session_id = sessionId;
   }
 
-  public String getGroupId() {
-    return group_id;
-  }
-
-  public void setGroupId(String groupId) {
-    this.group_id = groupId;
-  }
-
-  public String getGroupName() {
-    return group_name;
-  }
-
-  public void setGroupName(String group_name) {
-    this.group_name = group_name;
-  }
-
-  public void setGroupPicture(String groupPicture) {
-    this.group_picture = groupPicture;
-  }
-
-  public String getGroupPicture() {
-    return group_picture;
-  }
-
   public void setUserPicture(String userPicture) {
     this.user_picture = userPicture;
   }
@@ -172,13 +175,37 @@ public class NotificationPayload implements Serializable {
     this.room_link = room_link;
   }
 
+  public int getBadge() {
+    return badge;
+  }
+
+  public void setBadge(int badge) {
+    this.badge = badge;
+  }
+
+  public void setMessagePicture(String messagePicture) {
+    this.message_picture = messagePicture;
+  }
+
+  public String getMessagePicture() {
+    return message_picture;
+  }
+
+  public void setAction(String action) {
+    this.action = action;
+  }
+
+  public String getAction() {
+    return action;
+  }
+
   public boolean isLive() {
     return click_action == null || click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(
         CLICK_ACTION_LIVE);
   }
 
   public boolean isUserCall() {
-    return StringUtils.isEmpty(getGroupId()) && !StringUtils.isEmpty(getUserId());
+    return !StringUtils.isEmpty(getUserId());
   }
 
   @Override public boolean equals(Object o) {
@@ -187,8 +214,7 @@ public class NotificationPayload implements Serializable {
 
     NotificationPayload that = (NotificationPayload) o;
 
-    return group_id != null ? group_id.equals(that.group_id)
-        : (that.user_id != null ? user_id.equals(that.user_id)
-            : (session_id != null ? session_id.equals(that.session_id) : session_id == null));
+    return (that.user_id != null ? user_id.equals(that.user_id)
+        : (session_id != null ? session_id.equals(that.session_id) : session_id == null));
   }
 }

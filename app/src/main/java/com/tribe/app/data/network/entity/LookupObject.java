@@ -11,7 +11,7 @@ public class LookupObject {
 
   @SerializedName("n") private String phone;
   @SerializedName("u") private String userId;
-  @SerializedName("f") private int howManyFriends;
+  @SerializedName("f") private int howManyFriends = 0;
   @SerializedName("ln") private String lastName;
   @SerializedName("fn") private String firstName;
   @SerializedName("e") private String email;

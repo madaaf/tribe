@@ -4,34 +4,23 @@ import android.util.Pair;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
-import com.tribe.app.data.realm.FriendshipRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.ContactRealmDataMapper;
-import com.tribe.app.data.realm.mapper.MembershipRealmDataMapper;
 import com.tribe.app.data.realm.mapper.SearchResultRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.datasource.DiskUserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
-import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Group;
-import com.tribe.app.domain.entity.GroupEntity;
-import com.tribe.app.domain.entity.Membership;
+import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
-import com.tribe.app.domain.entity.RoomConfiguration;
 import com.tribe.app.domain.entity.SearchResult;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.user.UserRepository;
-import com.tribe.app.presentation.utils.StringUtils;
-import io.realm.RealmList;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,7 +35,6 @@ import rx.Observable;
   private final UserRealmDataMapper userRealmDataMapper;
   private final ContactRealmDataMapper contactRealmDataMapper;
   private final SearchResultRealmDataMapper searchResultRealmDataMapper;
-  private final MembershipRealmDataMapper membershipRealmDataMapper;
 
   /**
    * Constructs a {@link UserRepository}.
@@ -55,14 +43,12 @@ import rx.Observable;
    * @param realmDataMapper {@link UserRealmDataMapper}.
    */
   @Inject public DiskUserDataRepository(UserDataStoreFactory dataStoreFactory,
-      UserRealmDataMapper realmDataMapper, ContactRealmDataMapper contactRealmDataMapper,
-      MembershipRealmDataMapper membershipRealmDataMapper) {
+      UserRealmDataMapper realmDataMapper, ContactRealmDataMapper contactRealmDataMapper) {
     this.userDataStoreFactory = dataStoreFactory;
     this.userRealmDataMapper = realmDataMapper;
     this.contactRealmDataMapper = contactRealmDataMapper;
     this.searchResultRealmDataMapper =
-        new SearchResultRealmDataMapper(userRealmDataMapper.getFriendshipRealmDataMapper());
-    this.membershipRealmDataMapper = membershipRealmDataMapper;
+        new SearchResultRealmDataMapper(userRealmDataMapper.getShortcutRealmDataMapper());
   }
 
   @Override public Observable<Pin> requestCode(String phoneNumber, boolean shouldCall) {
@@ -82,29 +68,43 @@ import rx.Observable;
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-    return Observable.combineLatest(userDataStore.userInfos(null),
-        userDataStore.onlineMap().startWith(new HashMap<>()),
-        userDataStore.liveMap().startWith(new HashMap<>()), userDataStore.inviteMap(),
-        (userRealm, onlineMap, liveMap, inviteMap) -> {
-          if (userRealm != null && userRealm.getFriendships() != null) {
-            userRealm.setFriendships(
-                updateOnlineLiveFriendship(userRealm.getFriendships(), onlineMap, liveMap, true));
-            for (MembershipRealm membershipRealm : userRealm.getMemberships()) {
-              membershipRealm.getGroup().setIsLive(liveMap.containsKey(membershipRealm.getSubId()));
+    return Observable.combineLatest(userDataStore.userInfos(null), userDataStore.inviteMap(),
+        (userRealm, inviteMap) -> {
+          User user = userRealmDataMapper.transform(userRealm);
+
+          if (user != null && user.getShortcutList() != null) {
+            if (inviteMap != null && inviteMap.size() > 0) {
+              for (Shortcut shortcut : user.getShortcutList()) {
+                for (Invite invite : inviteMap.values()) {
+                  if (invite.getShortcut() != null &&
+                      invite.getShortcut().getId().equals(shortcut.getId())) {
+                    shortcut.setLive(true);
+                  }
+                }
+              }
             }
           }
 
-          User user = userRealmDataMapper.transform(userRealm, true);
-          if (user != null && inviteMap != null) user.setInviteList(inviteMap.values());
+          user.setInviteList(inviteMap.values());
 
           return user;
         });
   }
 
-  @Override public Observable<String> randomRoomAssigned() {
+  @Override public Observable<Shortcut> getShortcuts(String shortcutId) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
-    return userDataStore.callRouletteMap();
+
+    return userDataStore.shortcuts()
+        .map(shortcutRealmList -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(shortcutRealmList))
+        .map(list -> {
+          Shortcut shortcut = null;
+          for (Shortcut sc : list) {
+            if (sc.getId().equals(shortcutId)) shortcut = sc;
+          }
+          return shortcut;
+        });
   }
 
   @Override public Observable<User> getFbIdUpdated() {
@@ -113,39 +113,74 @@ import rx.Observable;
     return userDataStore.getFbIdUpdated();
   }
 
-  @Override public Observable<Boolean> reportUser(String userId) {
+  @Override public Observable<Boolean> reportUser(String userId, String imageUrl) {
     return null;
+  }
+
+  @Override public Observable<Shortcut> createShortcut(String... userIds) {
+    return null;
+  }
+
+  @Override
+  public Observable<Shortcut> updateShortcut(String shortcutId, List<Pair<String, String>> values) {
+    return null;
+  }
+
+  @Override public Observable<Void> removeShortcut(String shortcutId) {
+    return null;
+  }
+
+  @Override public Observable<List<Invite>> invites() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+
+    return Observable.just(userDataStore.invites());
+  }
+
+  @Override public Observable<String> getRandomBannedUntil() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.getRandomBannedUntil();
   }
 
   @Override public Observable<List<User>> getUsersInfosList(List<String> usersIds) {
     return null;
   }
 
-  @Override public Observable<List<Friendship>> friendships() {
+  @Override public Observable<List<Shortcut>> singleShortcuts() {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-    return Observable.combineLatest(userDataStore.friendships(),
-        userDataStore.onlineMap().startWith(new HashMap<>()),
-        userDataStore.liveMap().startWith(new HashMap<>()),
-        (friendships, onlineMap, liveMap) -> userRealmDataMapper.getFriendshipRealmDataMapper()
-            .transform(updateOnlineLiveFriendship(friendships, onlineMap, liveMap, true)));
+    return userDataStore.singleShortcuts()
+        .map(listShortcuts -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(listShortcuts));
   }
 
-  private RealmList<FriendshipRealm> updateOnlineLiveFriendship(List<FriendshipRealm> friendships,
-      Map<String, Boolean> onlineMap, Map<String, Boolean> liveMap, boolean excludeBlocked) {
-    RealmList<FriendshipRealm> result = new RealmList<>();
+  @Override public Observable<List<Shortcut>> shortcuts() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-    for (FriendshipRealm fr : friendships) {
-      if (!excludeBlocked || (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
-          .equals(FriendshipRealm.DEFAULT))) {
-        fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
-        fr.setLive(liveMap.containsKey(fr.getId()));
+    return userDataStore.shortcuts()
+        .map(listShortcuts -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(listShortcuts));
+  }
 
-        result.add(fr);
-      }
-    }
-    return result;
+  @Override public Observable<Shortcut> shortcutForUserIds(String... userIds) {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+
+    return userDataStore.shortcutForUserIds(userIds)
+        .map(shortcutRealm -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(shortcutRealm));
+  }
+
+  @Override public Observable<List<Shortcut>> blockedShortcuts() {
+    final DiskUserDataStore userDataStore =
+        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
+
+    return userDataStore.blockedShortcuts()
+        .map(blockedShortcuts -> userRealmDataMapper.getShortcutRealmDataMapper()
+            .transform(blockedShortcuts));
   }
 
   @Override public Observable<User> updateUser(List<Pair<String, String>> values) {
@@ -187,6 +222,13 @@ import rx.Observable;
             new ArrayList<ContactInterface>(collection)));
   }
 
+  @Override public Observable<List<Contact>> contactsFBInvite() {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
+    return userDataStore.contactsFBInvite()
+        .map(collection -> contactRealmDataMapper.transform(
+            new ArrayList<ContactInterface>(collection)));
+  }
+
   @Override public Observable<List<Contact>> contactsOnApp() {
     final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
     return userDataStore.contactsOnApp()
@@ -196,23 +238,10 @@ import rx.Observable;
 
   @Override public Observable<List<Contact>> contactsInvite() {
     final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-    return Observable.combineLatest(userDataStore.userInfos(null), userDataStore.contactsOnApp(),
-        userDataStore.contactsToInvite(), (userRealm, contactOnAppList, contactInviteList) -> {
+    return Observable.combineLatest(userDataStore.userInfos(null),
+        userDataStore.contactsToInvite().startWith(new ArrayList<ContactInterface>()),
+        (userRealm, contactInviteList) -> {
           List<ContactInterface> ciList = new ArrayList<>();
-
-          if (userRealm.getFriendships() != null && userRealm.getFriendships().size() > 0) {
-            for (ContactInterface ciAB : contactOnAppList) {
-              boolean add = true;
-
-              for (FriendshipRealm fr : userRealm.getFriendships()) {
-                for (UserRealm user : ciAB.getUsers()) {
-                  if (fr.getFriend().equals(user)) add = false;
-                }
-              }
-
-              if (add) ciList.add(ciAB);
-            }
-          }
 
           ciList.addAll(contactInviteList);
           return ciList;
@@ -221,76 +250,22 @@ import rx.Observable;
             new ArrayList<ContactInterface>(collection)));
   }
 
-  @Override public Observable<List<Object>> searchLocally(String s, Set<String> includedUserIds) {
+  @Override public Observable<List<Shortcut>> searchLocally(String s, Set<String> includedUserIds) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
-    return Observable.combineLatest(userDataStore.userInfos(null)
-            .map(userRealm -> userRealmDataMapper.transform(userRealm, true)),
-        userDataStore.contactsOnApp()
-            .map(contactInterfaces -> contactRealmDataMapper.transform(contactInterfaces)),
-        userDataStore.contactsToInvite()
-            .map(contactInterfaces -> contactRealmDataMapper.transform(contactInterfaces)),
-        userDataStore.liveMap(), userDataStore.onlineMap(),
-        (user, contactOnAppList, contactInviteList, liveMap, onlineMap) -> {
-          List<Object> result = new ArrayList<>();
-          Map<String, User> mapUsersAdded = new HashMap<>();
-
-          for (Recipient recipient : user.getFriendshipList()) {
-            if (recipient instanceof Friendship) {
-              Friendship fr = (Friendship) recipient;
-              mapUsersAdded.put(fr.getSubId(), fr.getFriend());
-              fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
-              fr.setIsLive(liveMap.containsKey(fr.getId()));
-            } else if (recipient instanceof Membership) {
-              Membership me = (Membership) recipient;
-              me.getGroup().setIsLive(liveMap.containsKey(me.getSubId()));
-            }
-
-            result.add(recipient);
-          }
-
-          for (Contact contact : contactOnAppList) {
-            compute(mapUsersAdded, includedUserIds, contact, result);
-          }
-
-          for (Contact contact : contactInviteList) {
-            compute(mapUsersAdded, includedUserIds, contact, result);
-          }
-
-          return result;
-        });
-  }
-
-  private void compute(Map<String, User> mapUsersAdded, Set<String> includedUserIds,
-      Contact contact, List<Object> result) {
-    boolean shouldAdd = true;
-    if (contact.getUserList() != null) {
-      for (User userInList : contact.getUserList()) {
-        if (mapUsersAdded.containsKey(userInList.getId()) && (includedUserIds == null
-            || !includedUserIds.contains(userInList.getId()))) {
-          shouldAdd = false;
-        }
-      }
-    }
-
-    if (shouldAdd) result.add(contact);
+    return userDataStore.singleShortcuts().map(shortcutRealmList -> {
+      List<Shortcut> shortcutList =
+          userRealmDataMapper.getShortcutRealmDataMapper().transform(shortcutRealmList);
+      return shortcutList;
+    });
   }
 
   @Override public Observable<SearchResult> findByUsername(String username) {
     final DiskUserDataStore userDataStore =
         (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
 
-    return Observable.combineLatest(userDataStore.findByUsername(username)
-            .map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm)),
-        userDataStore.liveMap(), userDataStore.onlineMap(), (searchResult, liveMap, onlineMap) -> {
-          if (searchResult != null && searchResult.getFriendship() != null) {
-            Friendship fr = searchResult.getFriendship();
-            fr.setIsLive(liveMap.containsKey(fr.getId()));
-            fr.getFriend().setIsOnline(onlineMap.containsKey(fr.getSubId()));
-          }
-
-          return searchResult;
-        });
+    return userDataStore.findByUsername(username)
+        .map(searchResultRealm -> searchResultRealmDataMapper.transform(searchResultRealm));
   }
 
   @Override public Observable<Boolean> lookupUsername(String username) {
@@ -304,170 +279,23 @@ import rx.Observable;
             new ArrayList<ContactInterface>(collection)));
   }
 
-  // TODO: update info in DB
-  @Override public Observable<Friendship> createFriendship(String userId) {
-    return null;
-  }
-
-  @Override public Observable<Void> createFriendships(String... userIds) {
-    return null;
-  }
-
-  @Override public Observable<Void> removeFriendship(String userId) {
-    return null;
-  }
-
   @Override public Observable<Void> notifyFBFriends() {
     return null;
-  }
-
-  @Override public Observable<Group> getGroupMembers(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<Group> getGroupInfos(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<Membership> getMembershipInfos(String membershipId) {
-    final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-    return userDataStore.getMembershipInfos(membershipId)
-        .map(membershipRealm -> membershipRealmDataMapper.transform(membershipRealm));
-  }
-
-  public Observable<Membership> createGroup(GroupEntity groupEntity) {
-    return null;
-  }
-
-  @Override
-  public Observable<Group> updateGroup(String groupId, List<Pair<String, String>> values) {
-    return null;
-  }
-
-  @Override public Observable<Membership> updateMembership(String membershipId,
-      List<Pair<String, String>> values) {
-    return null;
-  }
-
-  @Override public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
-    return null;
-  }
-
-  @Override public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
-    return null;
-  }
-
-  @Override public Observable<Void> removeGroup(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<Void> leaveGroup(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<Friendship> updateFriendship(String friendshipId,
-      List<Pair<String, String>> values) {
-    return null;
-  }
-
-  @Override public Observable<List<Friendship>> getBlockedFriendshipList() {
-    final DiskUserDataStore userDataStore =
-        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
-
-    return Observable.combineLatest(userDataStore.userInfos(null),
-        userDataStore.onlineMap().startWith(new HashMap<>()),
-        userDataStore.liveMap().startWith(new HashMap<>()), userDataStore.inviteMap(),
-        (userRealm, onlineMap, liveMap, inviteMap) -> {
-          RealmList<FriendshipRealm> result = new RealmList<>();
-
-          for (FriendshipRealm fr : userRealm.getFriendships()) {
-            if (!StringUtils.isEmpty(fr.getStatus()) && !fr.getStatus()
-                .equals(FriendshipRealm.DEFAULT)) {
-              result.add(fr);
-            }
-          }
-
-          userRealm.setFriendships(updateOnlineLiveFriendship(result, onlineMap, liveMap, false));
-
-          return userRealmDataMapper.transform(userRealm, true).getFriendships();
-        });
   }
 
   @Override public Observable<String> getHeadDeepLink(String url) {
     return null;
   }
 
-  @Override public Observable<Membership> createMembership(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<Recipient> getRecipientInfos(String recipientId, boolean isToGroup) {
+  @Override public Observable<Recipient> getRecipientInfos(String recipientId) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
 
-    return userDataStore.getRecipientInfos(recipientId, isToGroup).map(recipientRealmInterface -> {
-      if (recipientRealmInterface instanceof MembershipRealm) {
-        return userRealmDataMapper.getMembershipRealmDataMapper()
-            .transform((MembershipRealm) recipientRealmInterface);
-      } else {
-        return userRealmDataMapper.getFriendshipRealmDataMapper()
-            .transform((FriendshipRealm) recipientRealmInterface);
-      }
+    return userDataStore.getRecipientInfos(recipientId).map(recipientRealmInterface -> {
+      return null;
     });
-  }
-
-  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
-      String linkId) {
-    return null;
-  }
-
-  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
-    return null;
-  }
-
-  @Override public Observable<Boolean> buzzRoom(String roomId) {
-    return null;
-  }
-
-  @Override public Observable<Void> declineInvite(String roomId) {
-    return null;
   }
 
   @Override public Observable<Void> sendInvitations() {
     return null;
-  }
-
-  @Override public Observable<String> getRoomLink(String roomId) {
-    return null;
-  }
-
-  @Override public Observable<Boolean> bookRoomLink(String linkId) {
-    return null;
-  }
-
-  @Override public Observable<Void> roomAcceptRandom(String roomId) {
-    return null;
-  }
-
-  @Override public Observable<List<Friendship>> unblockedFriendships() {
-    final DiskUserDataStore userDataStore =
-        (DiskUserDataStore) this.userDataStoreFactory.createDiskDataStore();
-
-    return Observable.combineLatest(userDataStore.userInfos(null),
-        userDataStore.onlineMap().startWith(new HashMap<>()),
-        userDataStore.liveMap().startWith(new HashMap<>()), userDataStore.inviteMap(),
-        (userRealm, onlineMap, liveMap, inviteMap) -> {
-          RealmList<FriendshipRealm> result = new RealmList<>();
-
-          for (FriendshipRealm fr : userRealm.getFriendships()) {
-            if (!StringUtils.isEmpty(fr.getStatus()) && fr.getStatus()
-                .equals(FriendshipRealm.DEFAULT)) {
-              result.add(fr);
-            }
-          }
-
-          userRealm.setFriendships(updateOnlineLiveFriendship(result, onlineMap, liveMap, false));
-
-          return userRealmDataMapper.transform(userRealm, true).getFriendships();
-        });
   }
 }

@@ -3,15 +3,16 @@ package com.tribe.app.presentation.view.activity;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -36,36 +37,35 @@ import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfilePresenter;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
+import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.component.profile.ProfileView;
 import com.tribe.app.presentation.view.component.settings.SettingsBlockedFriendsView;
 import com.tribe.app.presentation.view.component.settings.SettingsFacebookAccountView;
-import com.tribe.app.presentation.view.component.settings.SettingsManageFriendshipsView;
+import com.tribe.app.presentation.view.component.settings.SettingsManageShortcutsView;
 import com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberView;
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
-import com.tribe.app.presentation.view.notification.Alerter;
-import com.tribe.app.presentation.view.notification.NotificationPayload;
-import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
-import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
-import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -77,7 +77,7 @@ import timber.log.Timber;
 import static android.view.View.GONE;
 import static com.tribe.app.presentation.view.activity.AuthActivity.APP_REQUEST_CODE;
 
-public class ProfileActivity extends BaseActivity implements ProfileMVPView {
+public class ProfileActivity extends BaseActivity implements ProfileMVPView, ShortcutMVPView {
 
   private static final int DURATION = 200;
 
@@ -90,9 +90,13 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
   @Inject ScreenUtils screenUtils;
 
+  @Inject User user;
+
   @Inject ProfilePresenter profilePresenter;
 
   @Inject MissedCallManager missedCallManager;
+
+  @BindView(R.id.imgBack) ImageView imgBack;
 
   @BindView(R.id.txtTitle) TextViewFont txtTitle;
 
@@ -110,12 +114,12 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   private SettingsPhoneNumberView viewSettingsPhoneNumber;
   private SettingsFacebookAccountView viewSettingsFacebookAccount;
   private SettingsBlockedFriendsView viewSettingsBlockedFriends;
-  private SettingsManageFriendshipsView viewSettingsManageFriendships;
+  private SettingsManageShortcutsView viewSettingsManageFriendships;
 
   // VARIABLES
   private boolean disableUI = false;
   private ProgressDialog progressDialog;
-  private NotificationReceiver notificationReceiver;
+  private TribeBroadcastReceiver notificationReceiver;
   private boolean receiverRegistered;
   private FirebaseRemoteConfig firebaseRemoteConfig;
 
@@ -143,7 +147,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   @Override protected void onResume() {
     super.onResume();
     if (!receiverRegistered) {
-      if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
+      if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
 
       registerReceiver(notificationReceiver,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
@@ -245,7 +249,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
 
   @Override public void finish() {
     super.finish();
-    overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
+    overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
   }
 
   @Override public boolean dispatchTouchEvent(@NonNull MotionEvent ev) {
@@ -292,13 +296,14 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     viewProfile = (ProfileView) viewStack.push(R.layout.view_profile);
 
     subscriptions.add(viewProfile.onShare().subscribe(aVoid -> {
-      String linkId =
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.PROFILE, null,
-              null, false);
-      profilePresenter.bookRoomLink(linkId);
+      profilePresenter.createRoom();
     }));
 
     subscriptions.add(viewProfile.onProfileClick().subscribe(aVoid -> setupProfileDetailView()));
+
+    subscriptions.add(viewProfile.onVideoClick()
+        .subscribe(aVoid -> navigator.navigateToUrl(this,
+            "https://www.facebook.com/Cyrilpaglino/posts/10210983466165378")));
 
     subscriptions.add(viewProfile.onFollowClick()
         .flatMap(aVoid -> DialogFactory.showBottomSheetForFollow(this), ((aVoid, labelType) -> {
@@ -430,25 +435,6 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     intent.putExtra(AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION,
         configurationBuilder.build());
     startActivityForResult(intent, APP_REQUEST_CODE);
-
-    /* authCallback = new AuthCallback() {
-
-      @Override public void success(DigitsSession session, String phoneNumber) {
-        profilePresenter.updatePhoneNumber(getCurrentUser().getId(), session);
-      }
-
-      @Override public void failure(DigitsException error) {
-        showError(error.getMessage());
-      }
-    };
-
-    AuthConfig.Builder builder = new AuthConfig.Builder();
-    builder.withAuthCallBack(authCallback);
-
-    AuthConfig authConfig = builder.build();
-
-    Digits.logout(); // Force logout
-    Digits.authenticate(authConfig);*/
   }
 
   private void setupFacebookAccountView() {
@@ -489,51 +475,63 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     viewSettingsBlockedFriends =
         (SettingsBlockedFriendsView) viewStack.push(R.layout.view_settings_blocked_friends);
 
-    subscriptions.add(viewSettingsBlockedFriends.onUnblock().subscribe(recipient -> {
-      if (recipient instanceof Friendship) {
-        Friendship fr = (Friendship) recipient;
-        profilePresenter.updateFriendship(fr.getId(), fr.isMute(), FriendshipRealm.DEFAULT);
+    subscriptions.add(viewSettingsBlockedFriends.onUnblock().subscribe(pair -> {
+      if (pair.first instanceof Shortcut) {
+        Shortcut fr = (Shortcut) pair.first;
+        profilePresenter.updateShortcutStatus(fr.getId(), ShortcutRealm.DEFAULT,
+            (BaseListViewHolder) pair.second);
       }
     }));
 
     subscriptions.add(viewSettingsBlockedFriends.onHangLive()
-        .subscribe(recipient -> navigator.navigateToLive(this, recipient, PaletteGrid.get(0),
-            LiveActivity.SOURCE_FRIENDS)));
+        .subscribe(
+            recipient -> navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_FRIENDS,
+                recipient.getSectionTag(), null)));
 
-    profilePresenter.loadBlockedFriendshipList();
+    profilePresenter.loadBlockedShortcuts();
   }
 
   private void setupManageFriendshipsView() {
     viewSettingsManageFriendships =
-        (SettingsManageFriendshipsView) viewStack.push(R.layout.view_settings_manage_friendships);
+        (SettingsManageShortcutsView) viewStack.push(R.layout.view_settings_manage_friendships);
 
     subscriptions.add(viewSettingsManageFriendships.onClickRemove()
         .flatMap(recipient -> DialogFactory.showBottomSheetForRecipient(this, recipient),
             ((recipient, labelType) -> {
               if (labelType != null) {
-                if (labelType.getTypeDef().equals(LabelType.HIDE) || labelType.getTypeDef()
-                    .equals(LabelType.BLOCK_HIDE)) {
-                  Friendship friendship = (Friendship) recipient;
-                  profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
-                      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? FriendshipRealm.BLOCKED
-                          : FriendshipRealm.HIDDEN);
+                if (labelType.getTypeDef().equals(LabelType.HIDE) ||
+                    labelType.getTypeDef().equals(LabelType.BLOCK_HIDE)) {
+                  Shortcut shortcut = (Shortcut) recipient;
+                  profilePresenter.updateShortcutStatus(shortcut.getId(),
+                      labelType.getTypeDef().equals(LabelType.BLOCK_HIDE) ? ShortcutRealm.BLOCKED
+                          : ShortcutRealm.HIDDEN, null);
                 }
               }
 
               return recipient;
             }))
-        .subscribe(recipient -> viewSettingsManageFriendships.remove((Friendship) recipient)));
+        .subscribe(recipient -> viewSettingsManageFriendships.remove((Shortcut) recipient)));
 
-    subscriptions.add(viewSettingsManageFriendships.onClickMute().doOnNext(friendship -> {
-      friendship.setMute(!friendship.isMute());
-      profilePresenter.updateFriendship(friendship.getId(), friendship.isMute(),
-          friendship.getStatus());
+    subscriptions.add(viewSettingsManageFriendships.onClickMute().doOnNext(shortcut -> {
+      shortcut.setMute(!shortcut.isMute());
+      profilePresenter.muteShortcut(shortcut.getId(), shortcut.isMute());
     }).subscribe());
 
-    profilePresenter.loadUnblockedFriendshipList();
+    subscriptions.add(viewSettingsManageFriendships.onClickMuteAll().doOnNext(aVoid -> {
+      profilePresenter.updateUserPushNotif(!getCurrentUser().isMute_online_notif());
+      getCurrentUser().setMute_online_notif(!getCurrentUser().isMute_online_notif());
+    }).subscribe());
+
+    profilePresenter.loadSingleShortcuts();
   }
 
   private void computeTitle(boolean forward, View to) {
+    if (to instanceof ProfileView) {
+      imgBack.setImageResource(R.drawable.picto_close);
+    } else {
+      imgBack.setImageResource(R.drawable.picto_back);
+    }
+
     if (to instanceof ProfileView) {
       setupTitle(getString(R.string.profile_title), forward);
       txtAction.setVisibility(GONE);
@@ -542,10 +540,11 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
       txtAction.setVisibility(View.VISIBLE);
       txtAction.setText(getString(R.string.action_save));
     } else if (to instanceof SettingsBlockedFriendsView) {
-      setupTitle(getString(R.string.profile_blocked_friends), forward);
+      String title = EmojiParser.demojizedText(getString(R.string.profile_blocked_friends));
+      setupTitle(title, forward);
       txtAction.setVisibility(GONE);
-    } else if (to instanceof SettingsManageFriendshipsView) {
-      setupTitle(getString(R.string.manage_friendships_title), forward);
+    } else if (to instanceof SettingsManageShortcutsView) {
+      setupTitle(EmojiParser.demojizedText(getString(R.string.manage_friendships_title)), forward);
       txtAction.setVisibility(View.GONE);
     } else if (to instanceof SettingsPhoneNumberView) {
       setupTitle(getString(R.string.profile_change_phone_title), forward);
@@ -592,28 +591,21 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     view.animate().translationX(0).alpha(1).setDuration(DURATION).start();
   }
 
-  private void declineInvitation(String sessionId) {
+  private void declineInvite(String sessionId) {
     profilePresenter.declineInvite(sessionId);
   }
 
   @Override public void goToLauncher() {
   }
 
-  @Override public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
-    if (viewSettingsBlockedFriends != null) {
-      viewSettingsBlockedFriends.renderBlockedFriendshipList(friendshipList);
-    }
-  }
-
-  @Override public void renderUnblockedFriendshipList(List<Friendship> friendshipList) {
-    if (viewSettingsManageFriendships != null) {
-      viewSettingsManageFriendships.renderUnblockedFriendshipList(friendshipList);
-    }
+  @Override public void onCreateRoom(Room room) {
+    String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.PROFILE,
+        room.getLink(), null, false);
   }
 
   @Override public void successUpdateUser(User user) {
-    viewProfile.reloadUserUI();
-    this.clickBack();
+    viewProfile.reloadUserUI(user);
+    if (viewSettingsManageFriendships == null) this.clickBack();
   }
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
@@ -636,8 +628,8 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
     if (viewStack.getTopView() instanceof SettingsProfileView) {
-      viewSettingsProfile.setUsernameValid(usernameValid || viewSettingsProfile.getUsername()
-          .equals(getCurrentUser().getUsername()));
+      viewSettingsProfile.setUsernameValid(usernameValid ||
+          viewSettingsProfile.getUsername().equals(getCurrentUser().getUsername()));
     }
   }
 
@@ -652,7 +644,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   }
 
   @Override public void successUpdateFacebook(User user) {
-    viewProfile.reloadUserUI();
+    viewProfile.reloadUserUI(user);
 
     if (viewSettingsFacebookAccount != null) {
       if (FacebookUtils.isLoggedIn()) {
@@ -666,7 +658,7 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
   }
 
   @Override public void successUpdatePhoneNumber(User user) {
-    viewProfile.reloadUserUI();
+    viewProfile.reloadUserUI(user);
 
     if (viewSettingsPhoneNumber != null) {
       viewSettingsPhoneNumber.reloadUserUI();
@@ -691,29 +683,52 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView {
     return this;
   }
 
-  class NotificationReceiver extends BroadcastReceiver {
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
 
-    @Override public void onReceive(Context context, Intent intent) {
-      NotificationPayload notificationPayload =
-          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+  }
 
-      LiveNotificationView liveNotificationView =
-          NotificationUtils.getNotificationViewFromPayload(context, notificationPayload, null);
+  @Override public void onShortcutCreatedError() {
 
-      if (liveNotificationView != null) {
-        subscriptions.add(liveNotificationView.onClickAction()
-            .delay(500, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(action -> {
-              if (action.getId().equals(NotificationUtils.ACTION_DECLINE)) {
-                declineInvitation(action.getSessionId());
-              } else if (action.getIntent() != null) {
-                navigator.navigateToIntent(ProfileActivity.this, action.getIntent());
-              }
-            }));
+  }
 
-        Alerter.create(ProfileActivity.this, liveNotificationView).show();
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
+    viewHolder.progressView.setVisibility(View.INVISIBLE);
+    viewHolder.btnAdd.setVisibility(View.VISIBLE);
+    viewHolder.btnAdd.setImageResource(R.drawable.picto_added);
+    viewHolder.btnAdd.setClickable(false);
+
+    for (Shortcut s : user.getShortcutList()) {
+      if (s.getId().equals(shortcut.getId())) {
+        s.setStatus(shortcut.getStatus());
       }
     }
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+    if (viewSettingsManageFriendships != null &&
+        ViewCompat.isAttachedToWindow(viewSettingsManageFriendships)) {
+      viewSettingsManageFriendships.renderUnblockedShortcutList(singleShortcutList);
+    } else if (viewSettingsBlockedFriends != null &&
+        ViewCompat.isAttachedToWindow(viewSettingsBlockedFriends)) {
+      viewSettingsBlockedFriends.renderBlockedShortcutList(singleShortcutList);
+    }
+
+    profilePresenter.unsubscribeLoadShortcuts();
+  }
+
+  @Override public void onShortcut(Shortcut shortcut) {
+
   }
 }

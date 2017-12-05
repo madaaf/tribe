@@ -1,11 +1,16 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
+import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by tiago on 02/09/2016.
  */
-public class Contact implements Comparable<Contact> {
+public class Contact implements Comparable<Contact>, HomeAdapterInterface {
+  public static final String FACEBOOK_ID = "FACEBOOK_ID";
+  public static final String ADDRESS_BOOK_ID = "ADDRESS_BOOK_ID";
 
   protected String id;
   protected String name;
@@ -29,6 +34,34 @@ public class Contact implements Comparable<Contact> {
 
   public String getId() {
     return id;
+  }
+
+  @Override public boolean isOnline() {
+    return (userList != null && userList.size() > 0) ? userList.get(0).isOnline() : false;
+  }
+
+  @Override public boolean isLive() {
+    return false;
+  }
+
+  @Override public String getDisplayName() {
+    return name;
+  }
+
+  @Override public boolean isRead() {
+    return true;
+  }
+
+  @Override public String getProfilePicture() {
+    return (userList != null && userList.size() > 0) ? userList.get(0).getProfilePicture() : null;
+  }
+
+  @Override public Date getLastSeenAt() {
+    return (userList != null && userList.size() > 0) ? userList.get(0).getLastSeenAt() : null;
+  }
+
+  @Override public int getHomeSectionType() {
+    return BaseSectionItemDecoration.SEARCH_INVITES_TO_SEND;
   }
 
   public void setId(String id) {

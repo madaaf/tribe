@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+  <FrameLayout
+      android:id="@+id/layoutCameras"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:layout_centerInParent="true"
+      android:clickable="true"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtRinging"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_below="@id/layoutCameras"
+      android:layout_centerHorizontal="true"
+      android:layout_marginTop="@dimen/horizontal_margin_small"
+      android:alpha="0"
+      android:gravity="center"
+      android:maxLines="1"
+      android:shadowColor="@color/black.opacity.50"
+      android:shadowDx="3"
+      android:shadowDy="3"
+      android:shadowRadius="10"
+      tools:text="@string/live_ringing"
+      style="@style/Title.2.White"
+      />
+</merge>

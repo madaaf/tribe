@@ -9,9 +9,9 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.domain.entity.Friendship;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -20,6 +20,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.adapter.ContactAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.DividerFirstLastItemDecoration;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class SettingsBlockedFriendsView extends FrameLayout {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
-  private PublishSubject<Recipient> clickUnblock = PublishSubject.create();
+  private PublishSubject<Pair> clickUnblock = PublishSubject.create();
   private PublishSubject<Recipient> clickHangLive = PublishSubject.create();
 
   public SettingsBlockedFriendsView(Context context, AttributeSet attrs) {
@@ -83,7 +84,7 @@ public class SettingsBlockedFriendsView extends FrameLayout {
 
     subscriptions.add(adapter.onUnblock()
         .map(view -> {
-          int position = recyclerView.getChildLayoutPosition(view);
+          int position = recyclerView.getChildLayoutPosition(view.itemView);
           Recipient recipient = (Recipient) adapter.getItemAtPosition(position);
           return new Pair<>(position, recipient);
         })
@@ -97,16 +98,21 @@ public class SettingsBlockedFriendsView extends FrameLayout {
             (pairPositionRecipient, aBoolean) -> new Pair<>(pairPositionRecipient, aBoolean))
         .filter(pair -> pair.second == true)
         .subscribe(pair -> {
-          Friendship friendship = (Friendship) pair.first.second;
-          clickUnblock.onNext(pair.first.second);
-          friendship.setStatus(FriendshipRealm.DEFAULT);
-          friendship.setAnimateAdd(true);
+          BaseListViewHolder v =
+              (BaseListViewHolder) recyclerView.findViewHolderForAdapterPosition(pair.first.first);
+          v.progressView.setVisibility(VISIBLE);
+
+          Shortcut shortcut = (Shortcut) pair.first.second;
+          Pair p = new Pair<>(pair.first.second, v);
+          clickUnblock.onNext(p);
+          shortcut.setStatus(ShortcutRealm.DEFAULT);
+          shortcut.setAnimateAdd(true);
           adapter.notifyItemChanged(pair.first.first);
         }));
 
     subscriptions.add(adapter.onHangLive()
         .map(view -> (Recipient) adapter.getItemAtPosition(
-            recyclerView.getChildLayoutPosition(view)))
+            recyclerView.getChildLayoutPosition(view.itemView)))
         .subscribe(clickHangLive));
   }
 
@@ -130,15 +136,15 @@ public class SettingsBlockedFriendsView extends FrameLayout {
   //   PUBLIC    //
   /////////////////
 
-  public void renderBlockedFriendshipList(List<Friendship> friendshipList) {
-    adapter.setItems(new ArrayList<>(friendshipList));
+  public void renderBlockedShortcutList(List<Shortcut> shortcutList) {
+    adapter.setItems(new ArrayList<>(shortcutList));
   }
 
   /**
    * OBSERVABLES
    */
 
-  public Observable<Recipient> onUnblock() {
+  public Observable<Pair> onUnblock() {
     return clickUnblock;
   }
 

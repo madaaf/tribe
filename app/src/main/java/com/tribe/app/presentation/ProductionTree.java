@@ -2,8 +2,6 @@ package com.tribe.app.presentation;
 
 import android.util.Log;
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
 import timber.log.Timber;
 
 /**
@@ -29,8 +27,12 @@ public class ProductionTree extends Timber.Tree {
       Crashlytics.logException(new Throwable(message));
     }
 
-    if (priority == Log.INFO) {
-      Answers.getInstance().logCustom(new CustomEvent(message));
-    }
+    //if (priority == Log.INFO) {
+    //  try {
+    //    Answers.getInstance().logCustom(new CustomEvent(message));
+    //  } catch (Exception ex) {
+    //
+    //  }
+    //}
   }
 }

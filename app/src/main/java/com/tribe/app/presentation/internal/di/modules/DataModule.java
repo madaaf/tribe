@@ -6,15 +6,18 @@ import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
-import com.tribe.app.presentation.utils.preferences.DataChallengesGame;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
+import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
+import com.tribe.app.presentation.utils.preferences.LastImOnline;
 import com.tribe.app.presentation.utils.preferences.LastSync;
+import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
@@ -27,11 +30,13 @@ import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
+import com.tribe.app.presentation.utils.preferences.Walkthrough;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import dagger.Module;
 import dagger.Provides;
 import java.util.HashSet;
 import java.util.Set;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -41,11 +46,22 @@ import static android.content.Context.MODE_PRIVATE;
  */
 @Module public class DataModule {
 
-  @Provides @Singleton SharedPreferences provideSharedPreferences(Context context) {
+  @Provides @Singleton SharedPreferences provideTempSharedPreferences(Context context) {
     return context.getSharedPreferences("TRIBE", MODE_PRIVATE);
   }
 
-  @Provides @Singleton RxSharedPreferences provideRxSharedPreferences(SharedPreferences prefs) {
+  @Provides @Singleton @Named("persistentPreferences")
+  SharedPreferences providePersistentSharedPreferences(Context context) {
+    return context.getSharedPreferences("PERSISTENT_TRIBE", MODE_PRIVATE);
+  }
+
+  @Provides @Singleton RxSharedPreferences provideTempRxSharedPreferences(SharedPreferences prefs) {
+    return RxSharedPreferences.create(prefs);
+  }
+
+  @Provides @Singleton @Named("persistentRxPreferences")
+  RxSharedPreferences providePersistentRxSharedPreferences(
+      @Named("persistentPreferences") SharedPreferences prefs) {
     return RxSharedPreferences.create(prefs);
   }
 
@@ -65,6 +81,16 @@ import static android.content.Context.MODE_PRIVATE;
 
   @Provides @Singleton @LastSync Preference<Long> provideLastSync(RxSharedPreferences prefs) {
     return prefs.getLong(PreferencesUtils.LAST_SYNC, 0L);
+  }
+
+  @Provides @Singleton @LastSyncGameData Preference<Long> provideLastSyncGameData(
+      RxSharedPreferences prefs) {
+    return prefs.getLong(PreferencesUtils.LAST_SYNC_GAME_DATA, 0L);
+  }
+
+  @Provides @Singleton @LastImOnline Preference<Long> provideLastImOnline(
+      RxSharedPreferences prefs) {
+    return prefs.getLong(PreferencesUtils.LAST_IM_ONLINE, 0L);
   }
 
   @Provides @Singleton @NewContactsTooltip Preference<Boolean> provideNewContactsTooltip(
@@ -112,6 +138,17 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getBoolean(PreferencesUtils.DEBUG_MODE, false);
   }
 
+  // We add the previous preferences, in case the user has already seen the
+  // walkthrough with the previous preferences
+  @Provides @Singleton @Walkthrough Preference<Boolean> provideWalkthrough(
+      @Named("persistentRxPreferences") RxSharedPreferences prefs, RxSharedPreferences oldPrefs) {
+    if (oldPrefs.getBoolean(PreferencesUtils.WALKTHROUGH).get()) {
+      prefs.getBoolean(PreferencesUtils.WALKTHROUGH, false).set(true);
+    }
+
+    return prefs.getBoolean(PreferencesUtils.WALKTHROUGH, false);
+  }
+
   @Provides @Singleton @UISounds Preference<Boolean> provideUISounds(RxSharedPreferences prefs) {
     return prefs.getBoolean(PreferencesUtils.UI_SOUNDS, true);
   }
@@ -136,9 +173,9 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getStringSet(PreferencesUtils.FULLSCREEN_NOTIFICATION_STATE, new HashSet<>());
   }
 
-  @Provides @Singleton @DataChallengesGame Preference<Set<String>> provideDataChallengesGame(
+  @Provides @Singleton @ChatShortcutData Preference<String> provideChatShortcutData(
       RxSharedPreferences prefs) {
-    return prefs.getStringSet(PreferencesUtils.DATA_CHALLANGES_GAME, new HashSet<>());
+    return prefs.getString(PreferencesUtils.CHAT_SHORTCUT_DATA, "");
   }
 
   @Provides @Singleton @MissedPlayloadNotification
@@ -160,5 +197,9 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @UserPhoneNumber Preference<String> provideUserPhoneNumber(
       RxSharedPreferences prefs) {
     return prefs.getString(PreferencesUtils.USER_PHONE_NUMBER, null);
+  }
+
+  @Provides @Singleton @GameData Preference<String> provideGameData(RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.GAME_DATA, "");
   }
 }

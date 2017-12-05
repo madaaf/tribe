@@ -15,6 +15,8 @@
 	<string name="action_resend">Resend</string>
 	<string name="action_hide">Hide</string>
 	<string name="action_copy">Copy</string>
+	<string name="action_got_it">Got it!</string>
+	<string name="action_tap_to_add">Tap to add</string>
 	
 	<!-- User Actions -->
 	<string name="action_add_friend">Add Friend</string>
@@ -47,6 +49,12 @@
 	<!-- Image Picker -->
 	<string name="image_picker_title">Add an avatar</string>
 	<string name="image_picker_chat_title">Send an image</string>
+	<string name="image_picker_camera">Take a selfie :camera_with_flash:</string>
+	<string name="image_picker_library">Open camera roll :arrow_up:</string>
+	<string name="image_picker_documents">Documents :file_folder:</string>
+	
+	<!-- Invite -->
+	<string name="invite_generating_link">Generating a link to share...</string>
 	<string name="image_picker_camera">Take a selfie</string>
 	<string name="image_picker_library">Open camera roll</string>
 	
@@ -58,6 +66,11 @@
 	<string name="contacts_section_facebook_no_os_facebook_cancel">Cancel</string>
 	<string name="contacts_section_facebook_no_os_facebook_settings">Got it!</string>
 	<string name="contacts_section_addressbook_friends_in_app">Would have %1$d friends on Tribe</string>
+	<string name="contacts_section_addressbook_friends_in_app_prefix">Would have</string>
+	<string name="contacts_section_addressbook_friends_in_app_friend">you as friend</string>
+	<string name="contacts_section_addressbook_friends_in_app_friends">%1$d friends</string>
+	<string name="contacts_section_addressbook_friends_in_app_suffix">on Tribe</string>
+	<string name="contacts_section_addressbook_friends_in_app_including">including</string>
 	
 	<!-- Permissions -->
 	<string name="permission_contacts_disabled_alert_title">"Address book" permission denied</string>
@@ -112,15 +125,32 @@
 	<string name="live_notification_action_add_as_friend">Add as friend</string>
 	<string name="live_notification_action_hang_live_friend">Join %1$s \'s video call</string>
 	<string name="live_notification_action_hang_live_group">Join %1$s \'s video call</string>
-	<string name="live_notification_add_as_guest">Drag %1$s a guest here</string>
-	<string name="live_notification_leave">Leave to video call %1$s</string>
-	<string name="live_notification_decline">Decline the call</string>
 	<string name="live_notification_invite_after_decline">Drag %1$s a guest</string>
 	<string name="live_notification_call_after_decline">Video call %1$s</string>
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	<string name="live_notification_action_see_thread">See the conversation</string>
 	<string name="live_notification_action_reply">Reply</string>
 	<string name="live_notification_online">is online</string>
+	<string name="live_notification_title">Pick an option</string>
+	<string name="live_notification_message">Here is what you can do\nwith %1$s now.</string>
+	<string name="live_notification_call">:telephone_receiver: Call %1$s</string>
+	<string name="live_notification_leave">:telephone_receiver: Join %1$s call</string>
+	<string name="live_notification_add_as_guest">:busts_in_silhouette: Add %1$s in this call</string>
+	<string name="live_notification_text">:speech_balloon: Text %1$s</string>
+	<string name="live_notification_decline">:no_mobile_phones: Decline %1$s call</string>
+	<string name="live_notification_ringing_people">Ringing %1$d people</string>
+	<string name="live_notification_waiting_people">Waiting for %1$d people to join</string>
+	
+	<!-- Decline Menu -->
+	<string name="decline_menu_title">Text %1$s</string>
+	<string name="decline_menu_message">Tap on an option to be sent\to %1$s in the chat</string>
+	<string name="decline_menu_answer1">Call you back ASAP! :dizzy:</string>
+	<string name="decline_menu_answer2">Can\'t talk now. Text me! :speech_balloon:</string>
+	<string name="decline_menu_custom">Type custom reply...</string>
+	
+	<!-- Invited Popup -->
+	<string name="invited_popup_title">%1$s invites you to join a call.</string>
+	<string name="invited_popup_message">%1$s is already in a call with %2$s.</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
@@ -149,7 +179,7 @@
 	<string name="grid_status_more_friends">Invite your friends!</string>
 	<string name="grid_name_video_demo">Video Demo</string>
 	<string name="grid_status_video_demo">Master it in 30sec!</string>
-	<string name="grid_menu_friendship_hide">Delete %1$s</string>
+	<string name="grid_menu_friendship_hide">Hide %1$s</string>
 	<string name="grid_menu_friendship_unhide">Add %1$s</string>
 	<string name="grid_menu_friendship_block">Block %1$s</string>
 	<string name="grid_menu_friendship_unblock">Add %1$s</string>
@@ -393,7 +423,10 @@
 	<string name="live_share_new_call_button_title">Call link</string>
 	<string name="live_share_screenshot_description">Share this screenshot!</string>
 	<string name="live_share_screenshot_caption">Thanks @heytribe! :metal: #tribegoals</string>
-	<string name="live_ringing">Ringing...</string>
+
+	<string name="live_ringing_in">Ringing in %1$d</string>
+	<string name="live_ringing">Ringing %1$s</string>
+	<string name="live_joining">Joining...</string>
 	<string name="live_invite_section_chat_members">Chat members</string>
 	<string name="live_invite_section_invite_link">Invite link</string>
 	<string name="live_invite_section_add_friends">Add friends in call</string>
@@ -403,7 +436,7 @@
 	<string name="live_members_ringing">Ringing</string>
 	<string name="live_members_waiting">Waiting</string>
 	<string name="live_members_add_friends">Add friends</string>
-	<string name="live_other_user_hung_up">We re-invited %1$s automatically</string>
+	<string name="live_other_user_hung_up">%1$s\'s been notified to come back</string>
 	<string name="live_members_menu_more">More</string>
 	<string name="live_members_menu_less">Less</string>
 	<string name="live_members_menu_added">Added</string>
@@ -413,8 +446,8 @@
 	<string name="profile_title">Profile</string>
 	<string name="profile_user_infos">Name, avatar and more :pencil2:</string>
 	<string name="profile_invisible_mode">Allow people to add me :mag:</string>
-	<string name="profile_video_demo_title">Video Demo :vhs:</string>
-	<string name="profile_video_demo_subtitle">Master Tribe in 30 seconds!</string>
+	<string name="profile_video_demo_title">Watch a quick demo :video_camera:</string>
+	<string name="profile_video_demo_subtitle"></string>
 	<string name="profile_fullscreen_notifications_android">Fullscreen call notifications :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications">"Phone" integration :telephone_receiver:</string>
 	<string name="profile_fullscreen_notifications_disable_alert_title">Downgrading Experience :warning:</string>
@@ -423,8 +456,8 @@
 	<string name="profile_invisible_mode_enable_alert_title">Downgrading Experience :warning:</string>
 	<string name="profile_invisible_mode_enable_alert_msg">You\'re about to disable the ability for anyone, including your friends, to add you as a friend on Tribe. Only you will be able to add people as friends.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Disable</string>
-	<string name="profile_blocked_friends">Blocked and deleted friends</string>
-	<string name="profile_manage_friendships">Friends &amp; Notifications :bell:</string>
+	<string name="profile_blocked_friends">Blocked or hidden chats :no_entry:</string>
+	<string name="profile_manage_friendships">Is online notification :bell:</string>
 	<string name="profile_rate_us">Rate us :hearts:</string>
 	<string name="profile_follow_us">Follow us :metal:</string>
 	<string name="profile_contact_us">Contact us :envelope:</string>
@@ -435,6 +468,8 @@
 	<string name="profile_calls_length_min">%1$d min</string>
 	<string name="profile_change_phone">Change phone number :telephone:</string>
 	<string name="profile_facebook_account">Facebook profile :bust_in_silhouette:</string>
+	<string name="profile_contact_us_email">Email us</string>
+	<string name="profile_contact_us_chat">Chat with us</string>
 	
 	<!-- Profile Phone Number -->
 	<string name="profile_change_phone_title">Phone number</string>
@@ -447,7 +482,7 @@
 	<string name="profile_facebook_account_already_in_use">This Facebook profile is already in use on another account.</string>
 	
 	<!-- Manage friendships -->
-	<string name="manage_friendships_title">Mute, delete or block</string>
+	<string name="manage_friendships_title">Is online notification :bell:</string>
 	<string name="manage_friendships_mute_alert_title">Mute \'is online\' notification</string>
 	<string name="manage_friendships_mute_alert_description">You won\'t receive any notification from this friend when he\'s on the app</string>
 	<string name="manage_friendships_mute_alert_mute">Mute it anyways</string>
@@ -496,6 +531,14 @@
 	<string name="tips_waiting60sec_message">You can video call with up to 8 people in a room.</string>
 	<string name="tips_waiting60sec_action1">Drag guests in!</string>
 	<string name="tips_waiting60sec_action2">Later</string>
+	<string name="tips_report_title">Report this user?</string>
+	<string name="tips_report_message">Don\'t hesitate to report this user to the team if this user is stream inappropriate content.</string>
+	<string name="tips_report_action1">Report</string>
+	<string name="tips_report_action2">Cancel</string>
+	<string name="tips_addfriend_title">Add as friend?</string>
+	<string name="tips_addfriend_message">Follow-up with this user directly from your home.</string>
+	<string name="tips_addfriend_action1">Add as friend</string>
+	<string name="tips_addfriend_action2">Cancel</string>
 	
 	<!-- Live Rating -->
 	<string name="live_rating_title">Rate the quality of your video call! :metal:</string>
@@ -619,7 +662,12 @@
 	<string name="game_event_started">%1$s launched the "%2$s" game! :video_game:</string>
 	<string name="game_event_post_it_re_roll">%1$s renewed the names! :video_game:</string>
 	<string name="game_event_stopped">%1$s ended the "%2$s" game. :video_game:</string>
-	<string name="game_tutorial">Tap long on the game button to stop the game.</string>
+	<string name="game_menu_title">Game options</string>
+	<string name="game_menu_restart">Restart this game</string>
+	<string name="game_menu_stop">Stop playing</string>
+	<string name="game_menu_play_another_game">Play another game</string>
+	<string name="game_menu_reset_scores">Reset scores</string>
+	<string name="game_tutorial">Tap on the game button to stop the game.</string>
 	<string name="game_song_pop">Battle music</string>
 	<string name="game_song_pop_rule">Guess 5 new songs!</string>
 	<string name="game_song_pop_menu_re_roll">Renew the songs</string>
@@ -661,6 +709,31 @@
 	<string name="game_draw_timer_instructions">Next in :hourglass:</string>
 	<string name="game_draw_clear">Clear</string>
 	<string name="game_draw_instructions_my_turn">Your turn to draw!</string>
+	<string name="game_aliens_attack">Aliens Attack</string>
+	<string name="game_aliens_attack_title">ALIENS\nATTACK</string>
+	<string name="game_aliens_attack_lets_go">TAP AN ALIEN TO KILL IT!</string>
+	<string name="game_aliens_attack_you_won">YOU WON!</string>
+	<string name="game_aliens_attack_someone_won">%1$s WON!</string>
+	<string name="game_aliens_attack_you_lost">YOU LOST</string>
+	<string name="game_aliens_attack_someone_lost">%1$s LOST!</string>
+	<string name="game_aliens_attack_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
+	<string name="game_aliens_attack_waiting_instructions">IT WILL RESTART WHEN\nSOMEONE JOINS</string>
+	<string name="game_bird_rush">Bird Rush!</string>
+	<string name="game_bird_rush_title">BIRD\nRUSH</string>
+	<string name="game_bird_rush_lets_go">TAP, TAP, TAP, TO FLY!</string>
+	<string name="game_bird_rush_you_won">YOU WON!</string>
+	<string name="game_bird_rush_someone_won">%1$s WON!</string>
+	<string name="game_bird_rush_you_lost">YOU LOST</string>
+	<string name="game_bird_rush_someone_lost">%1$s LOST!</string>
+	<string name="game_bird_rush_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
+	<string name="game_bird_rush_waiting_instructions">IT WILL RESTART WHEN\nSOMEONE JOINS</string>
+	<string name="game_webv1_lets_go">LET\'S GO!</string>
+	<string name="game_webv1_you_won">YOU WON!</string>
+	<string name="game_webv1_someone_won">%1$s WON!</string>
+	<string name="game_webv1_you_lost">YOU LOST</string>
+	<string name="game_webv1_someone_lost">%1$s LOST!</string>
+	<string name="game_webv1_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
+	<string name="game_webv1_waiting_instructions">IT WILL RESTART WHEN\nSOMEONE JOINS</string>
 	<string name="game_invaders">Invaders</string>
 	<string name="game_drop_it">Drop it!</string>
 	<string name="game_sing_along">Sing along</string>
@@ -670,6 +743,8 @@
 	<string name="game_taboo">Taboo</string>
 	<string name="game_backgam">Backgam\'</string>
 	<string name="game_beats">Beats</string>
+	<string name="game_trivia_status_pick_category">Pick a category!</string>
+	<string name="game_trivia_status_guess">Answer first!</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -697,7 +772,7 @@
 	<string name="fallback_invitation_more">More</string>
 	
 	<!-- Unlock Roll the dice -->
-	<string name="unlock_roll_the_dice_title">"Roll the dice" to meet new people in group!</string>
+	<string name="unlock_roll_the_dice_title">"Roll the dice" to play with random players!</string>
 	<string name="unlock_roll_the_dice_description">Facebook is required to keep this place safe, warm and get matches based on common interests and friends.</string>
 	<string name="unlock_roll_the_dice_facebook_action">Unlock with Facebook</string>
 	<string name="unlock_roll_the_dice_locked">You need to be 13 years old\nor over to roll the dice.</string>
@@ -734,11 +809,12 @@
 	<string name="home_section_suggested_friends">Suggested friends</string>
 	<string name="home_section_invites_to_send">Invites to send</string>
 	<string name="home_section_results">Results</string>
-	<string name="home_action_join_live">Swipe left to join</string>
-	<string name="home_action_read_chat">Swipe right to read</string>
+	<string name="home_action_join_live">Slide left to join</string>
+	<string name="home_action_read_chat">Slide right to read</string>
 	<string name="home_action_tap_to_chat">Tap to chat</string>
 	<string name="home_action_chat_preview">%1$s: %2$s</string>
 	<string name="home_action_new_chat">New chat</string>
+	<string name="home_action_new_game">New game</string>
 	<string name="home_anonymous_user">person</string>
 	<string name="home_anonymous_users">persons</string>
 	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Fav to top</string>
@@ -747,14 +823,28 @@
 	<string name="home_menu_shortcut_unmute">:bell: is online notification</string>
 	<string name="home_menu_shortcut_hide">:speak_no_evil: Hide</string>
 	<string name="home_menu_shortcut_block">:no_entry: Block</string>
+	<string name="home_menu_shortcut_block_group">:no_entry: Block</string>
 	<string name="home_menu_shortcut_update_name">:pencil2: Edit name</string>
+	<string name="home_menu_shortcut_customize">:art: Customize</string>
+	<string name="home_menu_shortcut_update_avatar">:framed_picture: Edit avatar</string>
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Mark as read</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Mark as unread</string>
 	<string name="home_menu_invite_decline">:phone: Decline call</string>
+	<string name="home_menu_user_leaderboard">:trophy: Scores</string>
+	<string name="home_block_shortcut_title">Block %1$s?</string>
+	<string name="home_block_shortcut_message">Mute new messages, calls and other associated notifications from this person. You\'ll be able to unblock this person from your profile.</string>
+	<string name="home_block_shortcut_validate">Block</string>
+	<string name="home_block_group_shortcut_title">Block this group?</string>
+	<string name="home_block_group_shortcut_message">Mute new messages, calls and other associated notifications from this group. You\'ll be able to unblock this group from your profile.</string>
+	<string name="home_block_group_shortcut_validate">Block</string>
+	<string name="home_sync_address_book_title">Connect Address Book</string>
+	<string name="home_sync_address_book_subtitle">Tap to see who\'s here!</string>
+	<string name="home_sync_facebook_title">Connect Facebook</string>
+	<string name="home_sync_facebook_subtitle">Tap to see who\'s here!</string>
 	
 	<!-- New Chat -->
 	<string name="newchat_title">New Chat</string>
-	<string name="newchat_to">To</string>
+	<string name="newchat_to">With</string>
 	<string name="newchat_create_error_noone_selected">You have to select people to create a chat</string>
 	
 	<!-- Shortcut -->
@@ -781,9 +871,80 @@
 	<string name="chat_live_status_hide">Hide</string>
 	<string name="chat_live_status_switching">Switching</string>
 	<string name="chat_quickchat_back_to_group">Group</string>
-	<string name="chat_placeholder_message">Message</string>
+	<string name="chat_placeholder_message">Aa</string>
 	<string name="chat_placeholder_tap_and_hold">Tap and Hold!</string>
 	<string name="chat_placeholder_slide_to_cancel">Slide to cancel</string>
 	<string name="chat_seen_by">Seen by %1$s</string>
-	<string name="chat_not_seen">Not seen yet</string>
+	<string name="chat_not_seen">Unseen</string>
+	<string name="chat_attachment_more_save">Save</string>
+	<string name="chat_attachment_more_save_success">Saved!</string>
+	
+	<!-- Walkthrough -->
+	<string name="walkthrough_action_step1">Quick tour</string>
+	<string name="walkthrough_action_step2">Got it!</string>
+	<string name="walkthrough_action_step3">Let\'s go!</string>
+	<string name="walkthrough_message_step1">Welcome home! :house:</string>
+	<string name="walkthrough_message_step2">Slide left to chat! :arrow_right:</string>
+	<string name="walkthrough_message_step3">Slide right to video call! :arrow_left:</string>
+	<string name="walkthrough_message_step4">Have fun with live games!</string>
+	<string name="walkthrough_message_highlight_step2">Slide left</string>
+	<string name="walkthrough_message_highlight_step3">Slide right</string>
+	<string name="walkthrough_message_highlight_step4">live games</string>
+	
+	<!-- Report -->
+	<string name="error_invited_user_random_banned">Sorry, no can do, because %1$s has been banned from using that feature...</string>
+	<string name="error_room_user_random_banned">Sorry, no can do, because %1$s has been banned from using that feature...</string>
+	<string name="error_just_banned_kicked_title">Kicked out.</string>
+	<string name="error_just_banned_kicked_message">You\'ve been kicked out because you behavior has been reported too many times by other users. Cool down, and come back later.</string>
+	<string name="error_just_banned_temporary_title">Temporarily banned.</string>
+	<string name="error_just_banned_temporary_message">After being kicked out several times today, you\'re now temporarily banned for improper behavior. Cool down for one hour, and come back. Careful, next step is a permanent ban.</string>
+	<string name="error_just_banned_permanently_title">Permanently banned.</string>
+	<string name="error_just_banned_permanently_message">After being kicked out several times and temporary banned, you\'re now permanently banned from launching the Dice.</string>
+	
+	<!-- Mute Group Popup -->
+	<string name="mute_group_popup_title">Block group?</string>
+	<string name="mute_group_popup_message">People you\'ve blocked are in this group. If you mute this group, you\'ll leave this view and won\'t receive new messages, calls and other associated notifications.</string>
+	<string name="mute_group_popup_validate">Block group</string>
+	<string name="mute_group_popup_cancel">Don\'t block group</string>
+	
+	<!-- Empty Call Popup -->
+	<string name="empty_call_popup_title">Nobody available yet</string>
+	<string name="empty_call_popup_message">Drag friends in to make group Facetime and play together!</string>
+	<string name="empty_call_popup_share_sms_ios">:speech_balloon: Send call link on iMessage</string>
+	<string name="empty_call_popup_share_sms_android">:speech_balloon: Send call link by SMS</string>
+	<string name="empty_call_popup_share_messenger">:busts_in_silhouette: Send call link on Messenger</string>
+	<string name="empty_call_popup_throw_the_dice">:game_die: Match with random players</string>
+	<string name="empty_call_popup_search_friend">:mag: Search for a friend</string>
+	<string name="empty_call_popup_cancel">Stay alone</string>
+	
+	<!-- New Game -->
+	<string name="new_game_title">New game</string>
+	<string name="new_game_plays">%1$s plays</string>
+	<string name="new_game_new">New</string>
+	<string name="new_game_featured">Featured</string>
+	<string name="new_game_dice_title">Random players</string>
+	<string name="new_game_dice_subtitle">Get a quick match up!</string>
+	<string name="new_game_suggest">Suggest a game</string>
+	<string name="new_game_cancelled">Your game selection (%1$s) has been cancelled because there is already another game in the room.</string>
+	
+	<!-- Game -->
+	<string name="game_loading">Loading %1$s</string>
+	<string name="game_rotate_landscape">Rotate to Landscape mode</string>
+	<string name="game_rotate_portrait">Rotate to Portrait mode</string>
+	<string name="game_unavailable">The game played is not available on your phone.</string>
+	<string name="game_update_forbidden">Only %1$s can change the current game.</string>
+	
+	<!-- Facebook Invite -->
+	<string name="facebook_invite_popup_message">You got it. Just tap a Facebook friend to send a Facebook notification.</string>
+	<string name="facebook_invite_popup_validate">Sweet :love_letter:</string>
+	<string name="facebook_invite_confirmation">Notified on Facebook! :love_letter:</string>
+	
+	<!-- Leaderboards -->
+	<string name="leaderboards_title">Leaderboards</string>
+	<string name="leaderboards_score">Best score</string>
+	<string name="leaderboards_friends">Friends</string>
+	<string name="leaderboards_overall">Overall</string>
+	<string name="leaderboards_point">pt</string>
+	<string name="leaderboards_points">pts</string>
+	<string name="leaderboards_you">You</string>
 </resources>

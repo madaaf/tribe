@@ -26,16 +26,14 @@
         android:orientation="horizontal"
         >
 
-      <com.tribe.app.presentation.view.widget.avatar.AvatarView
+      <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
           android:id="@+id/avatar"
-          android:layout_width="@dimen/nav_icon_size_with_shadow"
-          android:layout_height="@dimen/nav_icon_size_with_shadow"
+          android:layout_width="@dimen/avatar_size_small"
+          android:layout_height="@dimen/avatar_size_small"
           android:layout_gravity="left|center_vertical"
-          android:layout_margin="@dimen/horizontal_margin_smaller"
+          android:layout_margin="@dimen/horizontal_margin_small"
           android:background="@null"
-          app:hasHole="false"
-          app:hasInd="false"
-          app:hasShadow="true"
+          app:newAvatarType="online"
           />
 
       <LinearLayout
@@ -53,7 +51,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:singleLine="true"
-            style="@style/Body.Two.Black"
+            style="@style/Title.Regular.Black"
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
@@ -78,6 +76,17 @@
           android:src="@drawable/picto_more_friends"
           />
     </FrameLayout>
+
+    <include layout="@layout/view_separator_simple"/>
+
+    <com.tribe.app.presentation.view.component.ActionView
+        android:id="@+id/viewActionVideo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        app:actionTitle="@string/profile_video_demo_title"
+        app:actionType="hierarchy"
+        />
 
     <include layout="@layout/view_separator_simple"/>
 

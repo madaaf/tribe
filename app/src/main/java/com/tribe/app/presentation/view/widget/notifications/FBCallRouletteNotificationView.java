@@ -15,6 +15,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.BuildConfig;
+import com.facebook.AccessToken;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tribe.app.R;
@@ -126,8 +127,8 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
 
   @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
     Timber.d("loadFacebookInfos " + facebookEntity.getId());
-    facebookPresenter.updateUser(user.getUsername(), user.getDisplayName(), "",
-        facebookEntity.getId());
+    facebookPresenter.updateUser(user.getUsername(), user.getDisplayName(), null,
+        facebookEntity.getId(), AccessToken.getCurrentAccessToken());
   }
 
   @Override public void successFacebookLogin() {

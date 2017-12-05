@@ -1,38 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="user.infos" translatable="false">
+  <string name="user.infos" translatable="false">
         {
             user {
                 ...UserInfos
 
-                friendships {
-                    ...FriendshipInfos
-                }
-
-                memberships {
-                    ...MembershipInfos
+                shortcuts {
+                  recent %1$s {
+                    ...ShortcutInfos
+                  }
+                  unread {
+                    ...ShortcutInfos
+                  }
+                  online {
+                    ...ShortcutInfos
+                  }
                 }
 
                 invites {
-                    room_id
-                    room_name
+                  room {
+                    ...RoomInfos
+                  }
+                  inviter {
+                    ...UserInfos
+                  }
+                }
+            }
+        }
 
-                    group {
-                        ...GroupInfos
-                    }
+        %2$s
+        %3$s
+        %4$s
+  </string>
 
-                    friendships {
-                        ...FriendshipInfos
-                    }
+  <string name="user.infos.sync" translatable="false">
+        {
+            user {
+                ...UserInfos
+
+                shortcuts {
+                  recent {
+                    ...ShortcutInfos
+                  }
+                  hidden {
+                    ...ShortcutInfos
+                  }
+                  blocked {
+                    ...ShortcutInfos
+                  }
                 }
             }
         }
 
         %1$s
         %2$s
-        %3$s
-        %4$s
+  </string>
+
+  <string name="messages.details.before" translatable="false">
+                {
+                  user {
+                    id
+                    messages(usersIds: [%1$s], before: \"%2$s\", after: null , limit:20) {
+                      ...MessagePayload
+                    }
+                  }
+                }
+    %4$s
     </string>
+
+  <string name="messages.details.between" translatable="false">
+                {
+                  user {
+                    id
+                    messages(usersIds: [%1$s], before: \"%2$s\", after: \"%3$s\") {
+                      ...MessagePayload
+                    }
+                  }
+                }
+    %4$s
+    </string>
+
+
+  <string name="messages.create" translatable="false">
+        mutation {
+            createMessage(usersIds:[%1$s],  message : {type: %2$s, data: \"%3$s\"}) {
+                    ...MessagePayload
+                  }
+                }
+       %4$s
+
+    </string>
+
+  <string name="removeMessage" translatable="false">
+    removeMessage(messageId:\"%1$s\")
+  </string>
+
+
+  <string name="imTyping" translatable="false">
+            imTyping(usersIds:[%1$s])
+  </string>
+
+  <string name="imTalking" translatable="false">
+            imTalking(usersIds:[%1$s])
+  </string>
+
+  <string name="imReading" translatable="false">
+            imReading(usersIds:[%1$s])
+  </string>
 
   <string name="user.infos.friendships" translatable="false">
         {
@@ -71,18 +145,7 @@
         }
 
         %2$s
-    </string>
-
-  <string name="friendships.infos" translatable="false">
-        id
-        tag
-        category
-        status
-        mute
-        friend {
-            ...UserInfos
-        }
-    </string>
+  </string>
 
   <string name="userfragment.infos" translatable="false">
         fragment UserInfos on User {
@@ -95,11 +158,27 @@
             picture
             created_at
             push_notif
+            mute_online_notif
             is_online
             last_seen_at
             time_in_call
+            random_banned_permanently
+  	        random_banned_until
         }
     </string>
+
+  <string name="userfragment.infos.light" translatable="false">
+    fragment UserInfos on User {
+      id
+      phone
+      fbid
+      invisible_mode
+      username
+      display_name
+      picture
+      is_online
+    }
+  </string>
 
   <string name="user.mutate" translatable="false">
         mutation {
@@ -119,7 +198,11 @@
 
   <string name="mutation" translatable="false">
         mutation { %1$s }
-    </string>
+  </string>
+
+  <string name="query" translatable="false">
+        query { %1$s }
+  </string>
 
   <string name="installs" translatable="false">
         {
@@ -150,13 +233,13 @@
         }
     </string>
 
-    <string name="install.remove" translatable="false">
+  <string name="install.remove" translatable="false">
         mutation {
             removeInstall(id: \"%1$s\")
         }
     </string>
 
-    <string name="user.incrUserTimeInCall" translatable="false">
+  <string name="user.incrUserTimeInCall" translatable="false">
         mutation {
             incrUserTimeInCall(duration: %1$s)
         }
@@ -209,266 +292,122 @@
         }
 
         %2$s
-    </string>
-
-  <string name="friendship.mutation" translatable="false">
-        mutation {
-            %1$s
-        }
-
-        %2$s
-    </string>
-
-  <string name="createFriendship.input" translatable="false">
-        createFriendship%1$s : createFriendship(
-            friendId : \"%2$s\"
-        ) {
-            %3$s
-        }
-    </string>
-
-  <string name="removeFriendship.input" translatable="false">
-        removeFriendship%1$s : removeFriendship(friendshipId : \"%2$s\")
   </string>
 
-  <string name="groupfragment.info" translatable="false">
-        fragment GroupInfos on Group {
+  <string name="messagefragment.info" translatable="false">
+        fragment MessagePayload on MessageInterface {
+           __typename
             id
-            name
-            picture
-            created_at
-            last_seen_at
-            is_live
-        }
-  </string>
-
-  <string name="groupfragment.info.members" translatable="false">
-        fragment GroupInfos on Group {
-            id
-            name
-            picture
-            created_at
-            last_seen_at
-            is_live
-            members {
-                ...UserInfos
-            }
-        }
-    </string>
-
-  <string name="membershipfragment.info" translatable="false">
-        fragment MembershipInfos on Membership {
-            id
-            group {
-                ...GroupInfos
-            }
-            mute
-            created_at
-            updated_at
-        }
-    </string>
-
-  <string name="membershipfragment.info.light" translatable="false">
-        fragment MembershipInfos on Membership {
-            id
-            mute
-            created_at
-            updated_at
-        }
-    </string>
-
-  <string name="get.group.infos" translatable="false">
-        {
-            groups (ids : [\"%1$s\"]) {
-                ...GroupInfos
-            }
-        }
-
-        %2$s
-        %3$s
-    </string>
-
-
-  <string name="get.group.members" translatable="false">
-        {
-            groups (ids : [\"%1$s\"]) {
-                ...GroupInfos
-
-                members {
-                    ...UserInfos
-                }
-            }
-        }
-
-        %2$s
-        %3$s
-    </string>
-
-  <string name="create.group" translatable="false">
-       mutation {
-            createGroup(group: {
-                name : \"%1$s\"
-            } %2$s
-            ) {
-                ...GroupInfos
-            }
-        }
-        %3$s
-    </string>
-
-  <string name="create.group.members" translatable="false">
-        , members: [%1$s]
-    </string>
-
-  <string name="update.group" translatable="false">
-        mutation {
-            updateGroup(id : \"%1$s\",
-                group : { %2$s }
-            ) {
-                ...GroupInfos
-            }
-        }
-
-        %3$s
-    </string>
-
-  <string name="update.membership" translatable="false">
-        mutation {
-            updateMembership(membershipId : \"%1$s\",
-                membership : { %2$s }
-            ) {
-                ...MembershipInfos
-            }
-        }
-
-        %3$s
-    </string>
-
-  <string name="remove.members.group" translatable="false">
-        mutation {
-            removeMembersFromGroup(id : \"%1$s\", members: [%2$s]) {
+            ... on EmojiMessage {
+              author {
+                display_name
                 id
+                picture
+              }
+              data
             }
-        }
-    </string>
-
-  <string name="remove.group" translatable="false">
-        mutation {
-            removeGroup(id : \"%1$s\")
-        }
-    </string>
-
-  <string name="leave.group" translatable="false">
-        mutation {
-            removeMembership(membershipId: \"%1$s\")
-        }
-    </string>
-
-  <string name="create.membership" translatable="false">
-        mutation {
-            createMembership(groupId: \"%1$s\") {
-                ...MembershipInfos
+            ... on TextMessage {
+              author {
+                display_name
+                id
+                picture
+              }
+              data
             }
-        }
-
-        %2$s
-        %3$s
-        %4$s
-    </string>
-
-  <string name="create.membership.user" translatable="false">
-    createMembership%1$s : createMembership(groupId: \"%2$s\", userId: \"%3$s\") {
-      id
-    }
-    </string>
-
-  <string name="membership.infos" translatable="false">
-        {
-            user {
-                ...UserInfos
-
-                memberships(ids: [%1$s]) {
-                    ...MembershipInfos
+            ... on ImageMessage {
+              author {
+                display_name
+                id
+                picture
+              }
+              original {
+                url
+                filesize
+                width
+                height
+              }
+              alts {
+                url
+                filesize
+                width
+                height
+              }
+            }
+            ... on EventMessage {
+                  id
+                  action
+                  user{id picture display_name}
+                  created_at
+            }
+          ... on AudioMessage {
+                author {
+                  display_name
+                  id
+                  picture
                 }
-            }
-        }
-
-        %2$s
-        %3$s
-        %4$s
-    </string>
-
-  <string name="friendships.details" translatable="false">
-        {
-            user {
-                ...UserInfos
-
-                friendships(ids: [%1$s]) {
-                    ...FriendshipInfos
+                original {
+                  url
+                  duration
+                  filesize
                 }
+                alts {
+                  url
+                  duration
+                  filesize
+                }
+                created_at
             }
-        }
-
-        %2$s
-        %3$s
-    </string>
+            created_at
+          }
+  </string>
 
   <string name="boostrap.support" translatable="false">
         mutation {
             bootstrapSupport
         }
-    </string>
-
-  <string name="update.friendship" translatable="false">
-      mutation {
-          updateFriendship(friendshipId : \"%1$s\",
-              friendship : { %2$s }
-          ) {
-              id
-              mute
-              status
-          }
-      }
-
-    </string>
+  </string>
 
   <string name="subscription" translatable="false">
         subscription { %1$s }
-    </string>
+  </string>
 
   <string name="subscription.userUpdated" translatable="false">
         %1$s : userUpdated ( id : \"%2$s\" ) {
             ...UserInfos
         }
-    </string>
-
-  <string name="subscription.groupUpdated" translatable="false">
-        %1$s : groupUpdated ( id : \"%2$s\" ) {
-            ...GroupInfos
-        }
-    </string>
-
-  <string name="subscription.friendshipUpdated" translatable="false">
-      %1$s : friendshipUpdated ( id : \"%2$s\" ) {
-        id
-        is_live
-      }
   </string>
 
-  <string name="subscription.friendshipCreated" translatable="false">
-      %1$s : friendshipCreated
+  <string name="subscription.messageCreated" translatable="false">
+        %1$s : messageCreated ( usersIds : [%2$s] )
   </string>
 
-  <string name="subscription.friendshipRemoved" translatable="false">
-    %1$s : friendshipRemoved
+  <string name="subscription.messageRemoved" translatable="false">
+        %1$s : messageRemoved ( usersIds : [%2$s] )
   </string>
 
-  <string name="subscription.membershipCreated" translatable="false">
-    %1$s : membershipCreated
+
+  <string name="subscription.isTyping" translatable="false">
+        %1$s : isTyping ( usersIds : [%2$s] )
   </string>
 
-  <string name="subscription.membershipRemoved" translatable="false">
-    %1$s : membershipRemoved
+  <string name="subscription.isTalking" translatable="false">
+        %1$s : isTalking ( usersIds : [%2$s] )
+  </string>
+
+  <string name="subscription.isReading" translatable="false">
+        %1$s : isReading ( usersIds : [%2$s] )
+  </string>
+
+  <string name="subscription.shortcutCreated" translatable="false">
+        %1$s : shortcutCreated
+  </string>
+
+  <string name="subscription.shortcutUpdated" translatable="false">
+        %1$s : shortcutUpdated
+  </string>
+
+  <string name="subscription.shortcutRemoved" translatable="false">
+        %1$s : shortcutRemoved
   </string>
 
   <string name="subscription.inviteCreated" translatable="false">
@@ -483,48 +422,82 @@
     %1$s : randomRoomAssigned
   </string>
 
-  <string name="joinRoomFriendship" translatable="false">
-    getRoomParameters(friendshipId : \"%1$s\") {
+  <string name="subscription.roomUpdated" translatable="false">
+    %1$s : roomUpdated ( id : \"%2$s\" ) {
+      id
+    }
+  </string>
+
+  <string name="subscription.remove" translatable="false">
+    removeSubscription ( subscriptionId : \"%1$s\" )
+  </string>
+
+  <string name="getRoom.roomId" translatable="false">
+    room (roomId : \"%1$s\") {
       ...RoomInfos
     }
   </string>
 
-  <string name="joinRoomGroup" translatable="false">
-    getRoomParameters(groupId : \"%1$s\") {
+  <string name="getRoom.linkId" translatable="false">
+    room (linkId : \"%1$s\") {
       ...RoomInfos
     }
   </string>
 
-  <string name="joinRoomWithRoomId" translatable="false">
-    getRoomParameters(roomId : \"%1$s\") {
+  <string name="createRoom" translatable="false">
+    createRoom %1$s {
       ...RoomInfos
     }
   </string>
 
-  <string name="joinRoomWithLinkId" translatable="false">
-    getRoomParameters(linkId : \"%1$s\") {
+  <string name="createRoom.name" translatable="false">
+    name : \"%1$s\"
+  </string>
+
+  <string name="updateRoom" translatable="false">
+    updateRoom ( roomId : \"%1$s\", room : { %2$s } ) {
       ...RoomInfos
     }
+  </string>
+
+  <string name="removeRoom" translatable="false">
+    removeRoom ( roomId : \"%1$s\")
   </string>
 
   <string name="roomFragment_infos" translatable="false">
-    fragment RoomInfos on RoomPeerCredentials {
-      room_id
-      initiator_id
-      initiator_name
-      websocketUrl
-      rtcPeerConfiguration {
-        iceServers {
+    fragment RoomInfos on Room {
+      id
+      name
+      link
+      coordinates {
+        websocket_url
+        ice_servers {
           urls
           username
           credential
         }
       }
+      accept_random
+      initiator {
+        ...UserInfos
+      }
+      live_users {
+        ...UserInfos
+      }
+      invited_users {
+        ...UserInfos
+      }
+      created_at
+      updated_at
     }
   </string>
 
-  <string name="inviteToRoom" translatable="false">
-    inviteToRoom(roomId : \"%1$s\", userId : \"%2$s\")
+  <string name="createInvite" translatable="false">
+    createInvite%1$s : createInvite (roomId : \"%2$s\", userId : \"%3$s\")
+  </string>
+
+  <string name="removeInvite" translatable="false">
+    removeInvite(roomId : \"%1$s\", userId : \"%2$s\")
   </string>
 
   <string name="buzzRoom" translatable="false">
@@ -535,44 +508,128 @@
         {
             user {
                 invites {
-                    room_id
-                    room_name
-
-                    group {
-                        ...GroupInfos
-                    }
-
-                    friendships {
-                        ...FriendshipInfos
-                    }
+                  room {
+                    ...RoomInfos
+                  }
+                  inviter {
+                    ...UserInfos
+                  }
                 }
             }
         }
 
         %1$s
         %2$s
-        %3$s
     </string>
 
   <string name="declineInvite" translatable="false">
     declineInvite(roomId : \"%1$s\")
   </string>
 
-  <string name="getRoomLink" translatable="false">
-    getRoomLink(roomId : \"%1$s\")
-  </string>
-
   <string name="bookRoomLink" translatable="false">
     bookRoomLink(linkId : \"%1$s\")
   </string>
 
-
-  <string name="roomAcceptRandom" translatable="false">
-    roomAcceptRandom(roomId : \"%1$s\")
-  </string>
-
   <string name="reportUser" translatable="false">
-    reportUser(userId : \"%1$s\")
+    reportUser(userId : \"%1$s\", imageUrl: \"%2$s\")
   </string>
 
+  <string name="shortcutFragment.infos" translatable="false">
+      fragment ShortcutInfos on Shortcut {
+        id
+        name
+        picture
+        pinned
+        read
+        single
+        mute
+        online
+        status
+        created_at
+        last_activity_at
+        last_seen {
+          user_id
+          date
+        }
+        members {
+          ...UserInfos
+        }
+      }
+  </string>
+
+  <string name="createShortcut" translatable="false">
+    createShortcut %1$s {
+      ...ShortcutInfos
+    }
+  </string>
+
+  <string name="createShortcut.userIds" translatable="false">
+    userIds : [%1$s]
+  </string>
+
+  <string name="updateShortcut" translatable="false">
+    updateShortcut(shortcutId : \"%1$s\", shortcut : {
+        %2$s
+    }) {
+        ...ShortcutInfos
+    }
+  </string>
+
+  <string name="removeShortcut" translatable="false">
+    removeShortcut(shortcutId : \"%1$s\")
+  </string>
+
+  <string name="shortcuts.blocked" translatable="false">
+        {
+            user {
+                ...UserInfos
+
+                shortcuts {
+                  blocked {
+                    ...ShortcutInfos
+                  }
+                  hidden {
+                    ...ShortcutInfos
+                  }
+                }
+            }
+        }
+
+        %1$s
+        %2$s
+  </string>
+
+  <string name="imOnline" translatable="false">
+            imOnline
+  </string>
+
+  <string name="games.infos" translatable="false">
+    games {
+      id
+      online
+      playable
+      featured
+      new
+      title
+      baseline
+      icon
+      banner
+      primary_color
+      secondary_color
+      plays_count
+      __typename
+
+      ...on GameWebV1 {
+        url
+      }
+
+      ...on GameNative {
+        data
+      }
+
+      ...on GameWebRoom {
+        url
+      }
+    }
+  </string>
 </resources>

@@ -470,7 +470,7 @@ public class EglRenderer implements Callbacks {
       this.notifyCallbacks(frame, texMatrix);
       VideoRenderer.renderFrameDone(frame);
     } else {
-      this.logD("Dropping frame - No surface");
+      //this.logD("Dropping frame - No surface");
       VideoRenderer.renderFrameDone(frame);
     }
   }

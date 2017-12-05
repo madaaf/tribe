@@ -1,69 +1,79 @@
 package com.tribe.app.presentation.view.utils;
 
-/**
- * Copyright (C) 2015 Wasabeef
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.Transformation;
+import com.bumptech.glide.load.engine.Resource;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+import com.bumptech.glide.load.resource.bitmap.BitmapResource;
 
-public class RoundedCornersTransformation {
+public class RoundedCornersTransformation implements Transformation<Bitmap> {
 
   public enum CornerType {
-    ALL,
-    TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT,
-    TOP, BOTTOM, LEFT, RIGHT,
-    OTHER_TOP_LEFT, OTHER_TOP_RIGHT, OTHER_BOTTOM_LEFT, OTHER_BOTTOM_RIGHT,
-    DIAGONAL_FROM_TOP_LEFT, DIAGONAL_FROM_TOP_RIGHT
+    ALL, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, TOP, BOTTOM, LEFT, RIGHT, OTHER_TOP_LEFT, OTHER_TOP_RIGHT, OTHER_BOTTOM_LEFT, OTHER_BOTTOM_RIGHT, DIAGONAL_FROM_TOP_LEFT, DIAGONAL_FROM_TOP_RIGHT, BORDER
   }
 
+  private BitmapPool mBitmapPool;
   private int mRadius;
   private int mDiameter;
   private int mMargin;
   private CornerType mCornerType;
+  private String mColor;
+  private int mBorder;
 
-  public RoundedCornersTransformation(int radius, int margin) {
-    this(radius, margin, CornerType.ALL);
+  public RoundedCornersTransformation(Context context, int radius, int margin) {
+    this(context, radius, margin, CornerType.ALL);
   }
 
-  public RoundedCornersTransformation(int radius, int margin, CornerType cornerType) {
+  public RoundedCornersTransformation(Context context, int radius, int margin, String color,
+      int border) {
+    this(context, radius, margin, CornerType.BORDER);
+    mColor = color;
+    mBorder = border;
+  }
+
+  public RoundedCornersTransformation(BitmapPool pool, int radius, int margin) {
+    this(pool, radius, margin, CornerType.ALL);
+  }
+
+  public RoundedCornersTransformation(Context context, int radius, int margin,
+      CornerType cornerType) {
+    this(Glide.get(context).getBitmapPool(), radius, margin, cornerType);
+  }
+
+  public RoundedCornersTransformation(BitmapPool pool, int radius, int margin,
+      CornerType cornerType) {
+    mBitmapPool = pool;
     mRadius = radius;
-    mDiameter = radius * 2;
+    mDiameter = mRadius * 2;
     mMargin = margin;
     mCornerType = cornerType;
   }
 
-  public Bitmap transform(Bitmap source) {
+  public Resource<Bitmap> transform(Resource<Bitmap> resource, int outWidth, int outHeight) {
+    Bitmap source = resource.get();
 
     int width = source.getWidth();
     int height = source.getHeight();
 
-    Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+    Bitmap bitmap = mBitmapPool.get(width, height, Bitmap.Config.ARGB_8888);
+    if (bitmap == null) {
+      bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+    }
 
     Canvas canvas = new Canvas(bitmap);
     Paint paint = new Paint();
     paint.setAntiAlias(true);
     paint.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
     drawRoundRect(canvas, paint, width, height);
-    source.recycle();
-
-    return bitmap;
+    return BitmapResource.obtain(bitmap, mBitmapPool);
   }
 
   private void drawRoundRect(Canvas canvas, Paint paint, float width, float height) {
@@ -115,6 +125,9 @@ public class RoundedCornersTransformation {
         break;
       case DIAGONAL_FROM_TOP_RIGHT:
         drawDiagonalFromTopRightRoundRect(canvas, paint, right, bottom);
+        break;
+      case BORDER:
+        drawBorder(canvas, paint, right, bottom);
         break;
       default:
         canvas.drawRoundRect(new RectF(mMargin, mMargin, right, bottom), mRadius, mRadius, paint);
@@ -225,5 +238,38 @@ public class RoundedCornersTransformation {
         mRadius, mRadius, paint);
     canvas.drawRect(new RectF(mMargin, mMargin, right - mRadius, bottom - mRadius), paint);
     canvas.drawRect(new RectF(mMargin + mRadius, mMargin + mRadius, right, bottom), paint);
+  }
+
+  private void drawBorder(Canvas canvas, Paint paint, float right, float bottom) {
+
+    // stroke
+    Paint strokePaint = new Paint();
+    strokePaint.setStyle(Paint.Style.STROKE);
+    if (mColor != null) {
+      strokePaint.setColor(Color.parseColor(mColor));
+    } else {
+      strokePaint.setColor(Color.BLACK);
+    }
+    strokePaint.setStrokeWidth(mBorder);
+    strokePaint.setAntiAlias(true);
+
+    canvas.drawRoundRect(new RectF(mMargin, mMargin, right, bottom), mRadius, mRadius, paint);
+
+    // stroke
+    canvas.drawRoundRect(new RectF(mMargin, mMargin, right, bottom), mRadius, mRadius, strokePaint);
+  }
+
+  public String getId() {
+    return "RoundedTransformation(radius=" +
+        mRadius +
+        ", margin=" +
+        mMargin +
+        ", diameter=" +
+        mDiameter +
+        ", cornerType=" +
+        mCornerType.name() +
+        ", border =" +
+        mBorder +
+        ")";
   }
 }

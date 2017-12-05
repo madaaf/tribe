@@ -2,21 +2,19 @@ package com.tribe.app.presentation.view.adapter.manager;
 
 import android.content.Context;
 import android.graphics.PointF;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 
 /**
  * Layout manager to position items inside a {@link android.support.v7.widget.RecyclerView}.
  */
-public class HomeLayoutManager extends GridLayoutManager {
+public class HomeLayoutManager extends LinearLayoutManager {
 
   private boolean isScrollEnabled = true;
 
-  public HomeLayoutManager(Context context, int columnNumber) {
-    super(context, columnNumber);
-    setItemPrefetchEnabled(true);
-    setInitialPrefetchItemCount(columnNumber ^ 4);
+  public HomeLayoutManager(Context context) {
+    super(context);
   }
 
   public void setScrollEnabled(boolean enabled) {

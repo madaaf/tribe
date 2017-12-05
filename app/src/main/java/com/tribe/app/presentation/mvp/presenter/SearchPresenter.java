@@ -1,37 +1,37 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import android.util.Pair;
 import com.birbit.android.jobqueue.JobManager;
-import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.SearchResult;
-import com.tribe.app.domain.entity.User;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
-import com.tribe.app.domain.interactor.user.CreateFriendship;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.FindByUsername;
+import com.tribe.app.domain.interactor.user.GetDiskContactInviteList;
+import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
+import com.tribe.app.domain.interactor.user.GetDiskFBContactInviteList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.SearchLocally;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
+import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
-import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
 public class SearchPresenter extends UpdateUserPresenter {
+
+  // COMPOSITE PRESENTER
+  private ShortcutPresenter shortcutPresenter;
 
   // VIEW ATTACHED
   private SearchMVPView searchView;
@@ -42,50 +42,65 @@ public class SearchPresenter extends UpdateUserPresenter {
   private JobManager jobManager;
   private FindByUsername findByUsername;
   private DiskSearchResults searchResults;
-  private CreateFriendship createFriendship;
   private SearchLocally searchLocally;
   private UseCase synchroContactList;
+  private GetDiskContactOnAppList getDiskContactOnAppList;
+  private GetDiskContactInviteList getDiskContactInviteList;
+  private GetDiskFBContactInviteList getDiskFBContactInviteList;
 
   // SUBSCRIBERS
-  private CreateFriendshipSubscriber createFriendshipSubscriber;
   private DefaultSubscriber findByUsernameSubscriber;
   private ContactListSubscriber contactListSubscriber;
+  private ContactListOnAppSubscriber contactListOnAppSubscriber;
+  private ContactListInviteSubscriber contactListInviteSubscriber;
+  private FBContactListInviteSubscriber fbContactListInviteSubscriber;
   private LookupContactsSubscriber lookupContactsSubscriber;
 
-  @Inject public SearchPresenter(JobManager jobManager,
-                                 @Named("cloudFindByUsername") FindByUsername findByUsername,
-                                 @Named("diskSearchResults") DiskSearchResults diskSearchResults,
-                                 CreateFriendship createFriendship, SearchLocally searchLocally,
-                                 @Named("synchroContactList") UseCase synchroContactList, RxFacebook rxFacebook,
-                                 UpdateUser updateUser, UpdateUserPhoneNumber updateUserPhoneNumber,
-                                 UpdateUserFacebook updateUserFacebook, LookupUsername lookupUsername) {
+  @Inject public SearchPresenter(ShortcutPresenter shortcutPresenter, JobManager jobManager,
+      @Named("cloudFindByUsername") FindByUsername findByUsername,
+      @Named("diskSearchResults") DiskSearchResults diskSearchResults, SearchLocally searchLocally,
+      @Named("synchroContactList") UseCase synchroContactList, RxFacebook rxFacebook,
+      UpdateUser updateUser, UpdateUserPhoneNumber updateUserPhoneNumber,
+      UpdateUserFacebook updateUserFacebook, LookupUsername lookupUsername,
+      GetDiskContactOnAppList getDiskContactOnAppList,
+      GetDiskContactInviteList getDiskContactInviteList,
+      GetDiskFBContactInviteList getDiskFBContactInviteList) {
     super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
+    this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
     this.findByUsername = findByUsername;
     this.searchResults = diskSearchResults;
-    this.createFriendship = createFriendship;
     this.searchLocally = searchLocally;
     this.synchroContactList = synchroContactList;
+    this.getDiskContactOnAppList = getDiskContactOnAppList;
+    this.getDiskContactInviteList = getDiskContactInviteList;
+    this.getDiskFBContactInviteList = getDiskFBContactInviteList;
   }
 
-  @Override
-  protected UpdateUserMVPView getUpdateUserView() {
+  @Override protected UpdateUserMVPView getUpdateUserView() {
     return searchView;
   }
 
   @Override public void onViewDetached() {
+    shortcutPresenter.onViewDetached();
     findByUsername.unsubscribe();
     searchResults.unsubscribe();
-    createFriendship.unsubscribe();
     searchLocally.unsubscribe();
     synchroContactList.unsubscribe();
+    getDiskContactOnAppList.unsubscribe();
+    getDiskContactInviteList.unsubscribe();
+    getDiskFBContactInviteList.unsubscribe();
     searchView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {
     searchView = (SearchMVPView) v;
+    shortcutPresenter.onViewAttached(v);
     initSearchResult();
-    loadContacts("");
+    searchLocally("");
+    contactsInApp();
+    contactsInvite();
+    contactsFBInvite();
   }
 
   public void findByUsername(String username) {
@@ -114,35 +129,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     }
   }
 
-  public void createFriendship(String userId) {
-    if (createFriendshipSubscriber != null) createFriendshipSubscriber.unsubscribe();
-
-    addedUserIds.add(userId);
-
-    createFriendshipSubscriber = new CreateFriendshipSubscriber();
-    createFriendship.configure(userId, 1500);
-    createFriendship.execute(createFriendshipSubscriber);
-  }
-
-  private final class CreateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      e.printStackTrace();
-    }
-
-    @Override public void onNext(Friendship friendship) {
-      if (friendship == null) {
-        searchView.onAddError();
-      } else {
-        searchView.onAddSuccess(friendship);
-      }
-    }
-  }
-
-  public void loadContacts(String s) {
+  public void searchLocally(String s) {
     if (contactListSubscriber != null) {
       contactListSubscriber.unsubscribe();
     }
@@ -152,7 +139,7 @@ public class SearchPresenter extends UpdateUserPresenter {
     searchLocally.execute(contactListSubscriber);
   }
 
-  private final class ContactListSubscriber extends DefaultSubscriber<List<Object>> {
+  private final class ContactListSubscriber extends DefaultSubscriber<List<Shortcut>> {
 
     @Override public void onCompleted() {
     }
@@ -161,10 +148,8 @@ public class SearchPresenter extends UpdateUserPresenter {
 
     }
 
-    @Override public void onNext(List<Object> contactList) {
-      if (contactList != null && contactList.size() > 0) {
-        searchView.renderContactList(contactList);
-      }
+    @Override public void onNext(List<Shortcut> contactList) {
+      searchView.renderContactList(contactList);
     }
   }
 
@@ -187,5 +172,86 @@ public class SearchPresenter extends UpdateUserPresenter {
     @Override public void onNext(List<Contact> contactList) {
       searchView.syncDone();
     }
+  }
+
+  public void contactsInApp() {
+    if (contactListOnAppSubscriber != null) {
+      contactListOnAppSubscriber.unsubscribe();
+    }
+
+    contactListOnAppSubscriber = new ContactListOnAppSubscriber();
+    getDiskContactOnAppList.execute(contactListOnAppSubscriber);
+  }
+
+  private final class ContactListOnAppSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(List<Contact> contactList) {
+      searchView.renderContactListOnApp(contactList);
+    }
+  }
+
+  public void contactsInvite() {
+    if (contactListInviteSubscriber != null) {
+      contactListInviteSubscriber.unsubscribe();
+    }
+
+    contactListInviteSubscriber = new ContactListInviteSubscriber();
+    getDiskContactInviteList.execute(contactListInviteSubscriber);
+  }
+
+  private final class ContactListInviteSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(List<Contact> contactList) {
+      searchView.renderContactListInvite(contactList);
+    }
+  }
+
+  public void contactsFBInvite() {
+    if (fbContactListInviteSubscriber != null) {
+      fbContactListInviteSubscriber.unsubscribe();
+    }
+
+    fbContactListInviteSubscriber = new FBContactListInviteSubscriber();
+    getDiskFBContactInviteList.execute(fbContactListInviteSubscriber);
+  }
+
+  private final class FBContactListInviteSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(List<Contact> contactList) {
+      searchView.renderContactListInviteFB(contactList);
+    }
+  }
+
+  public void createShortcut(String... userIds) {
+    shortcutPresenter.createShortcut(userIds);
+  }
+
+  public void updateShortcutStatus(String shortcutId, @ShortcutRealm.ShortcutStatus String status) {
+    shortcutPresenter.updateShortcutStatus(shortcutId, status, null);
+  }
+
+  public void removeShortcut(String shortcutId) {
+    shortcutPresenter.removeShortcut(shortcutId);
   }
 }

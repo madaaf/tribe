@@ -1,9 +1,6 @@
 package com.tribe.app.presentation.view.adapter.delegate.base;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
@@ -11,9 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -24,9 +19,7 @@ import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.adapter.model.ButtonModel;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.notification.MissedCallAction;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.utils.UIUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +47,9 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
   // RX SUBSCRIPTIONS / SUBJECTS
   protected final PublishSubject<View> clickAdd = PublishSubject.create();
   protected final PublishSubject<View> clickRemove = PublishSubject.create();
-  protected final PublishSubject<View> clickHangLive = PublishSubject.create();
   protected final PublishSubject<View> clickLong = PublishSubject.create();
-  protected final PublishSubject<View> clickUnblock = PublishSubject.create();
+  protected final PublishSubject<BaseListViewHolder> clickHangLive = PublishSubject.create();
+  protected final PublishSubject<BaseListViewHolder> clickUnblock = PublishSubject.create();
 
   public BaseListAdapterDelegate(Context context) {
     this.context = context;
@@ -107,17 +100,11 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
       } else {
         displayName = context.getString(R.string.search_searching);
       }
-    } else if (item instanceof Membership) {
-      Membership membership = (Membership) item;
-      int size = membership.getGroup().getMembers() == null ? 0
-          : membership.getGroup().getMembers().size();
-      username = size + " " + (size > 1 ? context.getString(R.string.group_members)
-          : context.getString(R.string.group_member));
     } else if (item instanceof User) {
       User user = (User) item;
       vh.txtNew.setVisibility(user.isNew() ? View.VISIBLE : View.GONE);
     } else if (item instanceof MissedCallAction) {
-      vh.btnAdd.setVisibility(View.VISIBLE);
+      //  vh.btnAdd.setVisibility(View.VISIBLE);
     }
 
     if (animations.containsKey(holder)) {
@@ -131,8 +118,6 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
 
     vh.buttonModelFrom = getButtonModelFrom(item);
     vh.buttonModelTo = getButtonModelTo(item);
-
-    vh.btnAdd.setVisibility(isActionAvailable ? View.VISIBLE : View.GONE);
 
     vh.viewAvatar.setType(avatarModel.getType());
     if (avatarModel.getMemberPics() != null) {
@@ -159,9 +144,6 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
       vh.buttonModelFrom = getButtonModelFrom(item);
       vh.buttonModelTo = getButtonModelTo(item);
     } else {
-      vh.txtAction.setAlpha(1);
-      vh.progressBarAdd.setAlpha(0);
-
       setButton(vh.buttonModelFrom, vh);
     }
 
@@ -176,79 +158,24 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
 
   private void animateAdd(BaseListViewHolder vh, ButtonModel buttonModelFrom,
       ButtonModel buttonModelTo) {
-    AnimatorSet animatorSet = new AnimatorSet();
-    String text;
-    int textColorFrom, textColorTo;
-    int bgColorFrom, bgColorTo;
-
-    text = buttonModelTo.getText();
-    textColorFrom = buttonModelFrom.getTextColor();
-    textColorTo = buttonModelTo.getTextColor();
-    bgColorFrom = buttonModelFrom.getBackgroundColor();
-    bgColorTo = buttonModelTo.getBackgroundColor();
-
-    vh.txtAction.setText(text);
-    vh.txtAction.measure(0, 0);
-
-    Animator animator = AnimationUtils.getWidthAnimator(vh.btnAdd, vh.btnAdd.getWidth(),
-        vh.txtAction.getMeasuredWidth() + (2 * marginSmall));
-
-    animatorSet.setDuration(DURATION);
-    animatorSet.setInterpolator(new DecelerateInterpolator());
-
-    if (vh.progressBarAdd.getAlpha() == 1f) {
-      ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.txtAction, "alpha", 0f, 1f);
-      ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 1f, 0f);
-      animatorSet.play(animator).with(alphaAnimAdd).with(alphaAnimProgress);
+    if (buttonModelFrom.getImageRessource() != 0 && buttonModelFrom.isSetLoader()) {
+      vh.progressView.setVisibility(View.VISIBLE);
+      vh.btnAdd.setVisibility(View.GONE);
+      vh.btnAdd.setClickable(false);
+    } else if (buttonModelFrom.getImageRessource() != 0) {
+      vh.btnAdd.setImageResource(buttonModelFrom.getImageRessource());
     } else {
-      animatorSet.play(animator);
+      vh.gradientDrawable.setColor(buttonModelFrom.getBackgroundColor());
     }
-
-    animatorSet.start();
-
-    AnimationUtils.animateTextColor(vh.txtAction, textColorFrom, textColorTo, DURATION);
-    AnimationUtils.animateBGColor(vh.btnAdd, bgColorFrom, bgColorTo, DURATION);
-  }
-
-  protected AnimatorSet animateProgressBar(BaseListViewHolder vh) {
-    AnimatorSet animatorSet = new AnimatorSet();
-
-    ObjectAnimator alphaAnimAdd = ObjectAnimator.ofFloat(vh.txtAction, "alpha", 1f, 0f);
-
-    ObjectAnimator alphaAnimProgress = ObjectAnimator.ofFloat(vh.progressBarAdd, "alpha", 0f, 1f);
-
-    Animator animator =
-        AnimationUtils.getWidthAnimator(vh.btnAdd, vh.btnAdd.getWidth(), actionButtonHeight);
-
-    animatorSet.setDuration(DURATION);
-    animatorSet.setInterpolator(new DecelerateInterpolator());
-    animatorSet.play(alphaAnimAdd).with(alphaAnimProgress).with(animator);
-    animatorSet.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationCancel(Animator animation) {
-        animatorSet.removeAllListeners();
-        vh.txtAction.setAlpha(1);
-        vh.progressBarAdd.setAlpha(1);
-      }
-
-      @Override public void onAnimationEnd(Animator animation) {
-
-      }
-    });
-    animatorSet.start();
-    return animatorSet;
   }
 
   private void setButton(ButtonModel buttonModel, BaseListViewHolder vh) {
-    vh.txtAction.setText(buttonModel.getText());
-    vh.txtAction.measure(0, 0);
-    int width = vh.txtAction.getMeasuredWidth() + (2 * marginSmall);
-    UIUtils.changeWidthOfView(vh.btnAdd, width);
-    ViewGroup.MarginLayoutParams layoutInfos =
-        (ViewGroup.MarginLayoutParams) vh.layoutInfos.getLayoutParams();
-    layoutInfos.rightMargin = width + marginSmall;
     vh.layoutInfos.requestLayout();
-    vh.txtAction.setTextColor(buttonModel.getTextColor());
-    vh.gradientDrawable.setColor(buttonModel.getBackgroundColor());
+    if (buttonModel.getImageRessource() != 0) {
+      vh.btnAdd.setImageResource(buttonModel.getImageRessource());
+    } else {
+      vh.gradientDrawable.setColor(buttonModel.getBackgroundColor());
+    }
   }
 
   private void setFriendLabel(BaseListViewHolder vh, boolean isFriend) {
@@ -265,7 +192,7 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
     return clickRemove;
   }
 
-  public Observable<View> onHangLive() {
+  public Observable<BaseListViewHolder> onHangLive() {
     return clickHangLive;
   }
 
@@ -273,7 +200,7 @@ public abstract class BaseListAdapterDelegate extends RxAdapterDelegate<List<Obj
     return clickLong;
   }
 
-  public Observable<View> onUnblock() {
+  public Observable<BaseListViewHolder> onUnblock() {
     return clickUnblock;
   }
 }

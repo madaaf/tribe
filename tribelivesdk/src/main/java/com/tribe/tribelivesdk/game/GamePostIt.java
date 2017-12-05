@@ -46,8 +46,8 @@ public class GamePostIt extends Game {
   private VisionAPIManager visionAPIManager;
   private float newFaceWidth, currentPostItScale = SCALE_POST_IT;
 
-  public GamePostIt(Context context, @GameType String id, String name, int drawableRes) {
-    super(context, id, name, drawableRes);
+  public GamePostIt(Context context, String id) {
+    super(context, id);
     openCVWrapper = new OpenCVWrapper();
     libYuvConverter = new LibYuvConverter();
     visionAPIManager = VisionAPIManager.getInstance(context);
@@ -174,6 +174,10 @@ public class GamePostIt extends Game {
         bitmapRemotePostIt.getWidth(), bitmapRemotePostIt.getHeight());
   }
 
+  @Override public void generateNewDatas() {
+
+  }
+
   public PointF findXYForPostIt(Face face) {
     PointF leftEye = visionAPIManager.getLeftEye();
     PointF rightEye = visionAPIManager.getRightEye();
@@ -273,5 +277,4 @@ public class GamePostIt extends Game {
   private void refactorPostItScales() {
     currentPostItScale = Math.max(newFaceWidth / WIDTH_FACE_REFERENCE, SCALE_POST_IT);
   }
-
 }

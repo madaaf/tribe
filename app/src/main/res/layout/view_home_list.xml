@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+  <com.tribe.app.presentation.view.widget.picto.PictoChatView
+      android:id="@+id/viewPictoChat"
+      android:layout_width="@dimen/picto_chat_size"
+      android:layout_height="@dimen/picto_chat_size"
+      android:layout_centerVertical="true"
+      android:layout_marginEnd="@dimen/horizontal_margin_xsmall"
+      app:chatStatus="inactive"
+      />
+
+  <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+      android:id="@+id/viewNewAvatar"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
+      android:layout_centerVertical="true"
+      android:layout_toRightOf="@id/viewPictoChat"
+      />
+
+  <com.tribe.app.presentation.view.widget.picto.PictoLiveView
+      android:id="@+id/viewPictoLive"
+      android:layout_width="@dimen/picto_live_size"
+      android:layout_height="@dimen/picto_live_size"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:layout_marginEnd="@dimen/horizontal_margin_xsmall"
+      android:layout_marginStart="@dimen/horizontal_margin_xsmall"
+      app:liveStatus="inactive"
+      />
+
+  <com.tribe.app.presentation.view.widget.text.TextHomeNameActionView
+      android:id="@+id/viewHomeNameAction"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_centerVertical="true"
+      android:layout_marginEnd="60dp"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:layout_marginTop="@dimen/horizontal_margin_xsmall"
+      android:layout_toRightOf="@id/viewNewAvatar"
+      />
+
+</merge>

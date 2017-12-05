@@ -1,14 +1,11 @@
 package com.tribe.app.presentation.view.adapter.delegate.friend;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
 import com.tribe.app.presentation.view.adapter.model.ButtonModel;
@@ -36,17 +33,14 @@ public class RecipientListAdapterDelegate extends BaseListAdapterDelegate {
   @Override protected ButtonModel getButtonModelFrom(BaseListInterface baseListItem) {
     Recipient recipient = (Recipient) baseListItem;
 
-    if (recipient instanceof Membership) {
-      return getHangLiveButton();
+    Shortcut shortcut = (Shortcut) recipient;
+
+    if (shortcut.isBlocked()) {
+      return getUnblockButton();
+    } else if (shortcut.isHidden()) {
+      return getUnhideButton();
     } else {
-      Friendship friendship = (Friendship) recipient;
-      if (friendship.isBlocked()) {
-        return getUnblockButton();
-      } else if (friendship.isHidden()) {
-        return getUnhideButton();
-      } else {
-        return getHangLiveButton();
-      }
+      return getHangLiveButton();
     }
   }
 
@@ -55,32 +49,29 @@ public class RecipientListAdapterDelegate extends BaseListAdapterDelegate {
   }
 
   private ButtonModel getHangLiveButton() {
-    return new ButtonModel(context.getString(R.string.action_hang_live),
-        ContextCompat.getColor(context, R.color.red), Color.WHITE);
+    return new ButtonModel(R.drawable.picto_added, false);
   }
 
   private ButtonModel getUnblockButton() {
-    return new ButtonModel(context.getString(R.string.action_unblock),
-        ContextCompat.getColor(context, R.color.grey_unblock), Color.WHITE);
+    return new ButtonModel(R.drawable.picto_add, true);
   }
 
   private ButtonModel getUnhideButton() {
-    return new ButtonModel(context.getString(R.string.action_unhide),
-        ContextCompat.getColor(context, R.color.blue_new), Color.WHITE);
+    return new ButtonModel(R.drawable.picto_add, true);
   }
 
   @Override protected void setClicks(BaseListInterface baseList, BaseListViewHolder vh) {
     boolean isBlockedOrHidden = false;
 
-    if (baseList instanceof Friendship) {
-      Friendship fr = (Friendship) baseList;
-      isBlockedOrHidden = fr.isBlockedOrHidden();
+    if (baseList instanceof Shortcut) {
+      Shortcut sh = (Shortcut) baseList;
+      isBlockedOrHidden = sh.isBlockedOrHidden();
     }
 
     if (isBlockedOrHidden) {
-      vh.btnAdd.setOnClickListener(v -> clickUnblock.onNext(vh.itemView));
+      vh.btnAdd.setOnClickListener(v -> clickUnblock.onNext(vh));
     } else {
-      vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
+      vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh));
     }
   }
 }

@@ -1,71 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/view_notification_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@null"
     android:clickable="true"
     android:orientation="vertical"
     >
 
   <LinearLayout
       android:id="@+id/view_live_notification_container"
-      android:background="@color/black.light"
+      android:background="@null"
       android:clickable="true"
       android:orientation="vertical"
       tools:visibility="visible"
       style="@style/AlertStyle"
       >
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/notification"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="67dp"
         android:layout_gravity="top"
         android:layout_marginBottom="@dimen/horizontal_margin"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:layout_marginStart="@dimen/horizontal_margin_small"
-        android:layout_marginTop="@dimen/horizontal_margin"
+        android:layout_marginTop="@dimen/vertical_margin"
+        android:background="@drawable/shape_rect_rounded_5_white"
+        android:elevation="10dp"
+        android:paddingLeft="@dimen/horizontal_margin_small"
+        android:paddingRight="@dimen/horizontal_margin_small"
         >
 
-      <com.tribe.app.presentation.view.widget.avatar.AvatarView
+      <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
           android:id="@+id/avatar"
           android:layout_width="@dimen/avatar_size_small"
           android:layout_height="@dimen/avatar_size_small"
+          android:layout_centerVertical="true"
           android:layout_marginEnd="@dimen/horizontal_margin_small"
-          tools:src="@android:drawable/ic_menu_info_details"
           />
 
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/tvTitle"
-          android:layout_width="match_parent"
+      <LinearLayout
+          android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginRight="65dp"
-          android:gravity="center"
-          style="@style/Body.Two.White"
-          />
-    </LinearLayout>
+          android:layout_centerVertical="true"
+          android:layout_marginEnd="65dp"
+          android:layout_toRightOf="@id/avatar"
+          android:orientation="vertical"
+          >
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/divider_size"
-        android:background="@color/white.opacity.10"
-        />
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            style="@style/Body.One.Black"
+            />
 
-    <LinearLayout
-        android:id="@+id/view_live_notification_action_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|center_vertical"
-        android:orientation="vertical"
-        >
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/tvBody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2.5dp"
+            android:visibility="gone"
+            style="@style/Title.1.Black"
+            />
+      </LinearLayout>
 
-    </LinearLayout>
+      <FrameLayout
+          android:id="@+id/layoutDetails"
+          android:layout_width="@dimen/avatar_size_small"
+          android:layout_height="@dimen/avatar_size_small"
+          android:layout_alignParentEnd="true"
+          android:layout_centerVertical="true"
+          android:visibility="visible"
+          >
+
+        <ImageView
+            android:id="@+id/imgMessage"
+            android:layout_width="37dp"
+            android:layout_height="37dp"
+            android:layout_gravity="center_vertical|end"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            />
+
+        <com.tribe.app.presentation.view.widget.picto.PictoChatView
+            android:id="@+id/viewPictoChat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:chatStatus="inactive"
+            />
+
+        <com.tribe.app.presentation.view.widget.picto.PictoLiveView
+            android:id="@+id/viewPictoLive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:liveStatus="inactive"
+            />
+      </FrameLayout>
+    </RelativeLayout>
   </LinearLayout>
-
-  <View
-      android:layout_width="match_parent"
-      android:layout_height="10dp"
-      android:background="@drawable/shadow_bottom"
-      />
 </LinearLayout>

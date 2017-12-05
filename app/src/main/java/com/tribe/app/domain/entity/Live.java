@@ -1,10 +1,16 @@
 package com.tribe.app.domain.entity;
 
-import com.tribe.app.presentation.utils.StringUtils;
+import android.support.annotation.StringDef;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.BehaviorSubject;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 23/02/2017.
@@ -12,81 +18,102 @@ import java.util.List;
 
 public class Live implements Serializable {
 
+  @StringDef({ NEW_CALL, WEB, FRIEND_CALL }) public @interface LiveType {
+  }
+
   public static final String NEW_CALL = "NEW_CALL";
   public static final String WEB = "WEB";
+  public static final String FRIEND_CALL = "FRIEND_CALL";
 
-  private String id;
-  private String subId;
-  private String displayName;
-  private String userName;
-  private String picture;
-  private List<User> memberList;
-  private boolean isGroup;
-  private boolean isInvite;
-  private String sessionId;
+  private @LiveType String type;
+  private Room room;
   private String linkId;
+  private String shortcutId;
+  private boolean fromRoom = false;
+  private List<User> usersOfShortcut;
+  private List<User> usersOfRoom;
+  private List<String> userIdsOfShortcut;
+  private List<String> userIdsOfRoom;
   private String url;
-  private int color = 0;
   private boolean countdown = true;
   private boolean intent = false;
   private @LiveActivity.Source String source;
   private boolean isDiceDragedInRoom = false;
-  private String fbId;
+  private Shortcut shortcut;
+  private String section;
+  private String gesture;
+  private String gameId;
+
+  private transient CompositeSubscription subscriptions;
+  private transient BehaviorSubject<Room> onRoomUpdated;
+  private transient PublishSubject<Shortcut> onShortcutUpdated;
 
   private Live(Builder builder) {
-    this.id = builder.id;
-    this.displayName = builder.displayName;
-    this.picture = builder.picture;
-    this.memberList = builder.memberList;
-    this.isGroup = builder.isGroup;
-    this.isInvite = builder.isInvite;
-    this.sessionId = builder.sessionId;
-    this.color = builder.color;
-    this.subId = builder.subId;
+    this.room = builder.room;
+    this.fromRoom = room != null;
+    this.linkId = builder.linkId;
+    setUsersOfShortcut(builder.users);
+    this.type = builder.type;
     this.countdown = builder.countdown;
     this.intent = builder.intent;
-    this.userName = builder.userName;
-    this.linkId = builder.linkId;
     this.url = builder.url;
     this.source = builder.source;
     this.isDiceDragedInRoom = builder.isDiceDragedInRoom;
-    this.fbId = builder.fbId;
+    this.shortcut = builder.shortcut;
+    this.gesture = builder.gesture;
+    this.section = builder.section;
+    this.gameId = builder.gameId;
   }
 
-  public String getId() {
-    return id;
+  public void init() {
+    subscriptions = new CompositeSubscription();
+    onRoomUpdated = BehaviorSubject.create();
+    onShortcutUpdated = PublishSubject.create();
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void dispose() {
+    if (subscriptions != null) subscriptions.clear();
+    if (room != null) room.dispose();
   }
 
-  public String getDisplayName() {
-    return displayName;
+  public Room getRoom() {
+    return room;
   }
 
-  public String getUserName() {
-    return userName;
+  public void setRoom(Room room) {
+    this.room = room;
+
+    if (this.room.getRoomCoordinates() != null) {
+      onRoomUpdated.onNext(room);
+      this.room.onRoomUpdated().subscribe(onRoomUpdated);
+    }
+
+    if (room.getShortcut() != null) {
+      setShortcut(room.getShortcut());
+    } else if (shortcut != null) room.setShortcut(shortcut);
+
+    List<User> temp = new ArrayList<>();
+    temp.addAll(room.getLiveUsers());
+    temp.addAll(room.getInvitedUsers());
+    setUsersOfRoom(temp);
   }
 
-  public String getFbId() {
-    return fbId;
+  public Shortcut getShortcut() {
+    return shortcut;
   }
 
-  public void setUserName(String userName) {
-    this.userName = userName;
+  public void setShortcut(Shortcut shortcut) {
+    this.shortcut = shortcut;
+    if (room != null) this.room.setShortcut(shortcut);
+    if (onShortcutUpdated != null) onShortcutUpdated.onNext(this.shortcut);
   }
 
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
+  public String getType() {
+    return type;
   }
 
-  public String getPicture() {
-    return picture;
-  }
-
-  public void setPicture(String picture) {
-    this.picture = picture;
+  public void setType(String type) {
+    this.type = type;
   }
 
   public boolean isDiceDragedInRoom() {
@@ -97,58 +124,61 @@ public class Live implements Serializable {
     isDiceDragedInRoom = diceDragedInRoom;
   }
 
-  public List<User> getMembers() {
-    return memberList;
+  public String getRoomId() {
+    return room != null ? room.getId() : null;
   }
 
-  public void setMembers(List<User> members) {
-    this.memberList = members;
+  public void setUsersOfShortcut(List<User> users) {
+    this.usersOfShortcut = users;
+
+    userIdsOfShortcut = new ArrayList<>();
+
+    if (users != null) {
+      for (User user : users) {
+        userIdsOfShortcut.add(user.getId());
+      }
+    }
   }
 
-  public boolean isGroup() {
-    return isGroup;
+  public void setUsersOfRoom(List<User> users) {
+    this.usersOfRoom = users;
+
+    userIdsOfRoom = new ArrayList<>();
+
+    if (users != null) {
+      for (User user : users) {
+        userIdsOfShortcut.add(user.getId());
+      }
+    }
   }
 
-  public void setGroup(boolean group) {
-    isGroup = group;
+  public List<User> getUsersOfShortcut() {
+    return usersOfShortcut;
   }
 
-  public void setInvite(boolean invite) {
-    isInvite = invite;
+  public List<User> getUsersOfRoom() {
+    return usersOfRoom;
   }
 
-  public boolean isInvite() {
-    return isInvite;
+  public List<String> getUserIdsOfShortcut() {
+    return userIdsOfShortcut;
   }
 
-  public String getSessionId() {
-    return sessionId;
+  public List<String> getUserIdsOfRoom() {
+    return userIdsOfRoom;
   }
 
-  public void setSessionId(String sessionId) {
-    this.sessionId = sessionId;
+  public boolean hasUsers() {
+    return usersOfShortcut != null && usersOfShortcut.size() > 0;
+  }
+
+  public boolean hasUser(String userId) {
+    return usersOfShortcut != null && usersOfShortcut.contains(userId);
   }
 
   public void setCallRouletteSessionId(String sessionId) {
-    setSessionId(sessionId);
-    setLinkId(null);
+    setRoom(new Room(sessionId));
     setUrl(null);
-  }
-
-  public int getColor() {
-    return color;
-  }
-
-  public void setColor(int color) {
-    this.color = color;
-  }
-
-  public String getSubId() {
-    return subId;
-  }
-
-  public void setSubId(String subId) {
-    this.subId = subId;
   }
 
   public boolean isCountdown() {
@@ -163,46 +193,16 @@ public class Live implements Serializable {
     return intent;
   }
 
-  public boolean isGroupMember(String userId) {
-    if (memberList != null) {
-      for (User member : memberList) {
-        if (member.getId().equals(userId)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+  public boolean hasRoom() {
+    return room != null;
   }
 
-  public List<String> getMembersPics() {
-    List<String> pics = new ArrayList<>();
-
-    if (memberList != null) {
-      List<User> subMembers =
-          memberList.subList(Math.max(memberList.size() - 4, 0), memberList.size());
-
-      if (subMembers != null) {
-        for (User user : subMembers) {
-          String url = user.getProfilePicture();
-          if (!StringUtils.isEmpty(url)) pics.add(url);
-        }
-      }
-    }
-
-    return pics;
+  public boolean fromRoom() {
+    return fromRoom;
   }
 
-  public void setLinkId(String linkId) {
-    this.linkId = linkId;
-  }
-
-  public String getLinkId() {
-    return linkId;
-  }
-
-  public boolean isSessionOrLink() {
-    return !StringUtils.isEmpty(sessionId) || !StringUtils.isEmpty(linkId);
+  public boolean hasRoomId() {
+    return room != null;
   }
 
   public String getUrl() {
@@ -221,69 +221,83 @@ public class Live implements Serializable {
     this.source = source;
   }
 
+  public String getGesture() {
+    return gesture;
+  }
+
+  public void setGesture(String gesture) {
+    this.gesture = gesture;
+  }
+
+  public String getSection() {
+    return section;
+  }
+
+  public void setSection(String section) {
+    this.section = section;
+  }
+
+  public String getLinkId() {
+    return linkId;
+  }
+
+  public String getShortcutId() {
+    return shortcutId;
+  }
+
+  public void setShortcutId(String shortcutId) {
+    this.shortcutId = shortcutId;
+  }
+
+  public String getGameId() {
+    return gameId;
+  }
+
+  public void setGameId(String gameId) {
+    this.gameId = gameId;
+  }
+
   public static class Builder {
 
-    private String id;
-    private String subId;
-    private String displayName;
-    private String picture;
-    private List<User> memberList;
-    private boolean isGroup;
-    private boolean isInvite = false;
-    private String sessionId;
+    private Room room;
     private String linkId;
+    private @LiveType String type;
+    private List<User> users;
     private String url;
     private int color;
     private boolean countdown = true;
     private boolean intent = false;
     private boolean isDiceDragedInRoom = false;
-    private String userName;
     private @LiveActivity.Source String source;
-    private String fbId;
+    private String gesture;
+    private String section;
+    private Shortcut shortcut;
+    private String gameId;
 
-    public Builder(String id, String subId) {
-      this.id = id;
-      this.subId = subId;
+    public Builder(@LiveType String type) {
+      this.type = type;
     }
 
-    public Builder displayName(String displayName) {
-      this.displayName = displayName;
+    public Builder room(Room room) {
+      this.room = room;
       return this;
     }
 
-    public Builder fbId(String fbId) {
-      this.fbId = fbId;
+    public Builder users(User... users) {
+      this.users = new ArrayList<>(Arrays.asList(users));
       return this;
     }
 
-
-    public Builder userName(String userName) {
-      this.userName = userName;
+    public Builder shortcut(Shortcut shortcut) {
+      this.shortcut = shortcut;
+      if (shortcut != null && shortcut.getMembers() != null) {
+        this.users(shortcut.getMembers().toArray(new User[shortcut.getMembers().size()]));
+      }
       return this;
     }
 
-    public Builder picture(String picture) {
-      this.picture = picture;
-      return this;
-    }
-
-    public Builder memberList(List<User> memberList) {
-      this.memberList = memberList;
-      return this;
-    }
-
-    public Builder isGroup(boolean isGroup) {
-      this.isGroup = isGroup;
-      return this;
-    }
-
-    public Builder isInvite(boolean isInvite) {
-      this.isInvite = isInvite;
-      return this;
-    }
-
-    public Builder sessionId(String sessionId) {
-      this.sessionId = sessionId;
+    public Builder roomId(String roomId) {
+      this.room = new Room(roomId);
       return this;
     }
 
@@ -302,11 +316,6 @@ public class Live implements Serializable {
       return this;
     }
 
-    public Builder color(int color) {
-      this.color = color;
-      return this;
-    }
-
     public Builder countdown(boolean countdown) {
       this.countdown = countdown;
       return this;
@@ -322,8 +331,35 @@ public class Live implements Serializable {
       return this;
     }
 
+    public Builder gesture(String gesture) {
+      this.gesture = gesture;
+      return this;
+    }
+
+    public Builder section(String section) {
+      this.section = section;
+      return this;
+    }
+
+    public Builder gameId(String gameId) {
+      this.gameId = gameId;
+      return this;
+    }
+
     public Live build() {
       return new Live(this);
     }
+  }
+
+  /////////////////
+  // OBSERVABLES //
+  /////////////////
+
+  public Observable<Room> onRoomUpdated() {
+    return onRoomUpdated.onBackpressureDrop().observeOn(AndroidSchedulers.mainThread());
+  }
+
+  public Observable<Shortcut> onShortcutUpdated() {
+    return onShortcutUpdated;
   }
 }

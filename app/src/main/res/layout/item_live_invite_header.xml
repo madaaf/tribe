@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="42dp"
+    android:background="@null"
+    >
+
+  <ImageView
+      android:id="@+id/imgPicto"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical|right"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:clickable="true"
+      android:foreground="@drawable/selectable_button_oval"
+      android:scaleType="centerInside"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtLabel"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:gravity="center"
+      android:maxLines="1"
+      android:textAllCaps="true"
+      android:visibility="visible"
+      style="@style/Body.Two.Black"
+      />
+
+</FrameLayout>

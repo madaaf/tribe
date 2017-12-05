@@ -1,11 +1,11 @@
 package com.tribe.app.data.cache;
 
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import io.realm.RealmList;
+import java.util.Date;
 import java.util.List;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -21,6 +21,8 @@ import rx.Observable;
 
   void put(UserRealm userRealm);
 
+  void putShortcuts(List<ShortcutRealm> shortcutRealmList);
+
   void updateCurrentUser(UserRealm userRealm);
 
   void incrUserTimeInCall(String userId, Long timeInCall);
@@ -31,49 +33,43 @@ import rx.Observable;
 
   Observable<UserRealm> userInfos(String userId);
 
-  Observable<List<FriendshipRealm>> friendships();
+  Observable<List<ShortcutRealm>> singleShortcuts();
+
+  Observable<List<ShortcutRealm>> shortcuts();
+
+  Observable<List<ShortcutRealm>> blockedShortcuts();
 
   UserRealm userInfosNoObs(String userId);
 
-  MembershipRealm membershipForGroupId(String groupId);
+  ShortcutRealm shortcutForUserId(String userId);
 
-  FriendshipRealm friendshipForUserId(String userId);
+  Observable<ShortcutRealm> shortcutForUserIds(String... userIds);
 
-  void removeFriendship(String friendshipId);
+  ShortcutRealm shortcutForUserIdsNoObs(String... userIds);
 
-  void insertGroup(GroupRealm groupRealm);
+  void removeShortcut(String shortcutId);
 
-  void updateGroup(GroupRealm groupRealm, boolean isFull);
+  void updateShortcut(ShortcutRealm shortcutRealm);
 
-  void addMembersToGroup(String groupId, List<String> memberIds);
+  void updateShortcutLastText(String shortcutId, String lastMessage);
 
-  void removeMembersFromGroup(String groupId, List<String> memberIds);
+  void updateShortcutLeaveOnlineUntil(String shortcutId, Date leaveOnlineUntil);
 
-  void removeGroup(String groupId);
-
-  void removeGroupFromMembership(String membershipId);
-
-  void insertMembership(String userId, MembershipRealm membershipRealm);
-
-  void updateMembership(MembershipRealm membershipRealm);
-
-  void updateFriendship(FriendshipRealm friendshipRealm);
-
-  FriendshipRealm updateFriendshipNoObs(String friendshipId,
-      @FriendshipRealm.FriendshipStatus String moreType);
-
-  MembershipRealm membershipInfos(String membershipId);
+  ShortcutRealm updateShortcutNoObs(String shortcutId, @ShortcutRealm.ShortcutStatus String status);
 
   void updateUserRealmList(List<UserRealm> userRealm);
 
-  void updateGroupRealmList(List<GroupRealm> groupRealmList);
+  void addShortcut(ShortcutRealm shortcutRealm);
 
-  void addFriendship(FriendshipRealm friendshipRealm);
+  void removeShortcut(ShortcutRealm shortcutRealm);
 
-  void removeFriendship(FriendshipRealm friendshipRealm);
+  void updateBadgeValue(int badge);
 
-  void addMembership(MembershipRealm membershipRealm);
+  void incrementBadge();
 
-  void removeMembership(String id);
+  void decrementBadge();
 
+  Observable<String> getRandomBannedUntil();
+
+  void putRandomBannedUntil(String date);
 }

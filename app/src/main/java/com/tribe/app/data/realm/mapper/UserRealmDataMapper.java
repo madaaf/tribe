@@ -1,10 +1,14 @@
 package com.tribe.app.data.realm.mapper;
 
+import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.chat.model.Image;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -14,16 +18,15 @@ import javax.inject.Singleton;
  */
 @Singleton public class UserRealmDataMapper {
 
-  LocationRealmDataMapper locationRealmDataMapper;
-  MembershipRealmDataMapper membershipRealmDataMapper;
-  FriendshipRealmDataMapper friendshipRealmDataMapper;
+  ShortcutRealmDataMapper shortcutRealmDataMapper;
+  MessageRealmDataMapper messageRealmDataMapper;
 
-  @Inject public UserRealmDataMapper(LocationRealmDataMapper locationRealmDataMapper,
-      GroupMemberRealmDataMapper groupMemberRealmDataMapper) {
-    this.locationRealmDataMapper = locationRealmDataMapper;
-    this.membershipRealmDataMapper =
-        new MembershipRealmDataMapper(new GroupRealmDataMapper(this, groupMemberRealmDataMapper));
-    this.friendshipRealmDataMapper = new FriendshipRealmDataMapper(this);
+  @Inject ScreenUtils screenUtils;
+
+  @Inject public UserRealmDataMapper(ShortcutRealmDataMapper shortcutRealmDataMapper) {
+    this.shortcutRealmDataMapper = shortcutRealmDataMapper;
+    this.shortcutRealmDataMapper.setUserRealmDataMapper(this);
+    this.messageRealmDataMapper = new MessageRealmDataMapper(this);
   }
 
   /**
@@ -34,7 +37,7 @@ import javax.inject.Singleton;
    * @return {@link com.tribe.app.domain.entity.User} if valid {@link com.tribe.app.data.realm.UserRealm}
    * otherwise null.
    */
-  public User transform(UserRealm userRealm, boolean shouldTransformFriendships) {
+  public User transform(UserRealm userRealm) {
     User user = null;
     if (userRealm != null) {
       user = new User(userRealm.getId());
@@ -47,24 +50,84 @@ import javax.inject.Singleton;
       user.setPhone(userRealm.getPhone());
       user.setFbid(userRealm.getFbid());
       user.setTimeInCall(userRealm.getTimeInCall());
-      if (userRealm.getLocation() != null) {
-        user.setLocation(locationRealmDataMapper.transform(userRealm.getLocation()));
-      }
-      user.setTribeSave(userRealm.isTribeSave());
       user.setPushNotif(userRealm.isPushNotif());
       user.setIsOnline(userRealm.isOnline());
+      user.setIsLive(userRealm.isLive());
       user.setLastSeenAt(userRealm.getLastSeenAt());
-      if (shouldTransformFriendships) {
-        if (userRealm.getMemberships() != null) {
-          user.setMembershipList(membershipRealmDataMapper.transform(userRealm.getMemberships()));
-        }
-        if (userRealm.getFriendships() != null) {
-          user.setFriendships(friendshipRealmDataMapper.transform(userRealm.getFriendships()));
-        }
+      user.setRandom_banned_until(userRealm.getRandom_banned_until());
+      user.setMute_online_notif(userRealm.isMute_online_notif());
+      if (userRealm.getRandom_banned_permanently() != null) {
+        user.setRandom_banned_permanently(userRealm.getRandom_banned_permanently());
+      }
+      if (userRealm.getShortcuts() != null) {
+        user.setShortcutList(shortcutRealmDataMapper.transform(userRealm.getShortcuts()));
+      }
+      if (userRealm.getMessages() != null) {
+        user.setMessageList(messageRealmDataMapper.transform(userRealm.getMessages()));
       }
     }
 
     return user;
+  }
+
+  public Image transform(ImageRealm o) {
+    Image original = null;
+    if (o != null) {
+      original = new Image();
+      original.setUrl(o.getUrl());
+      original.setWidth(o.getWidth());
+      original.setHeight(o.getHeight());
+      original.setFilesize(o.getFilesize());
+      original.setDuration(o.getDuration());
+    }
+    return original;
+  }
+
+  public Image transformOriginalRealmList(List<ImageRealm> collection, boolean isAudio) {
+    List<Image> originalList = new ArrayList<>();
+    Image original = new Image();
+
+    if (collection != null) {
+      ImageRealm stamp = new ImageRealm();
+      stamp.setUrl("STAMP");
+      stamp.setWidth(String.valueOf(screenUtils.getWidthPx()));
+      collection.add(stamp);
+
+      if (!isAudio) {
+        Collections.sort(collection, (o1, o2) -> {
+          Integer w1 = Integer.parseInt(o1.getWidth());
+          Integer w2 = Integer.parseInt(o2.getWidth());
+          return w1.compareTo(w2);
+        });
+
+        int position = collection.indexOf(stamp);
+        ImageRealm imageSelected = collection.get(position - 1);
+        original = transform(imageSelected);
+      } else {
+        ImageRealm imageSelected = collection.get(0);
+        original = transform(imageSelected);
+      }
+      // originalList.add(original);
+      return original;
+    }
+
+    return original;
+  }
+
+  public RealmList<ImageRealm> transformOriginalList(Collection<Image> collection) {
+    RealmList<ImageRealm> originalRealmList = new RealmList<>();
+    ImageRealm originalRealm;
+
+    if (collection != null) {
+      for (Image original : collection) {
+        originalRealm = transform(original);
+        if (originalRealm != null) {
+          originalRealmList.add(originalRealm);
+        }
+      }
+    }
+
+    return originalRealmList;
   }
 
   /**
@@ -73,13 +136,12 @@ import javax.inject.Singleton;
    * @param userRealmCollection Object Collection to be transformed.
    * @return {@link User} if valid {@link UserRealm} otherwise null.
    */
-  public List<User> transform(Collection<UserRealm> userRealmCollection,
-      boolean shouldTransformFriendships) {
+  public List<User> transform(Collection<UserRealm> userRealmCollection) {
     List<User> userList = new ArrayList<>();
     User user;
     if (userRealmCollection != null) {
       for (UserRealm userRealm : userRealmCollection) {
-        user = transform(userRealm, shouldTransformFriendships);
+        user = transform(userRealm);
         if (user != null) {
           userList.add(user);
         }
@@ -95,7 +157,7 @@ import javax.inject.Singleton;
    * @param user Object to be transformed.
    * @return {@link UserRealm} if valid {@link User} otherwise null.
    */
-  public UserRealm transform(User user, boolean shouldTransformFriendships) {
+  public UserRealm transform(User user) {
     UserRealm userRealm = null;
 
     if (user != null) {
@@ -110,23 +172,34 @@ import javax.inject.Singleton;
       userRealm.setFbid(user.getFbid());
       userRealm.setPhone(user.getPhone());
       userRealm.setPushNotif(user.isPushNotif());
-      userRealm.setTribeSave(user.isTribeSave());
+      userRealm.setMute_online_notif(user.isMute_online_notif());
       userRealm.setIsOnline(user.isOnline());
+      userRealm.setIsLive(user.isLive());
       userRealm.setTimeInCall(user.getTimeInCall());
       userRealm.setLastSeenAt(user.getLastSeenAt());
-      if (shouldTransformFriendships) {
-        if (user.getMembershipList() != null) {
-          userRealm.setMemberships(
-              membershipRealmDataMapper.transformMemberships(user.getMembershipList()));
-        }
-        if (user.getFriendships() != null) {
-          userRealm.setFriendships(
-              friendshipRealmDataMapper.transformFriendships(user.getFriendships()));
-        }
+      userRealm.setRandom_banned_until(user.getRandom_banned_until());
+      userRealm.setRandom_banned_permanently(user.isRandom_banned_permanently());
+      userRealm.setShortcuts(shortcutRealmDataMapper.transformList(user.getShortcutList()));
+
+      if (user.getMessages() != null) {
+        userRealm.setMessages(messageRealmDataMapper.transformMessages(user.getMessageList()));
       }
     }
 
     return userRealm;
+  }
+
+  public ImageRealm transform(Image o) {
+    ImageRealm originalRealm = null;
+    if (o != null) {
+      originalRealm = new ImageRealm();
+      originalRealm.setFilesize(o.getFilesize());
+      originalRealm.setHeight(o.getHeight());
+      originalRealm.setWidth(o.getWidth());
+      originalRealm.setUrl(o.getUrl());
+      originalRealm.setDuration(o.getDuration());
+    }
+    return null;
   }
 
   /**
@@ -141,7 +214,7 @@ import javax.inject.Singleton;
 
     if (userCollection != null) {
       for (User user : userCollection) {
-        userRealm = transform(user, true);
+        userRealm = transform(user);
         if (userRealm != null) {
           userRealmList.add(userRealm);
         }
@@ -163,7 +236,7 @@ import javax.inject.Singleton;
 
     if (userCollection != null) {
       for (UserRealm userRealm : userCollection) {
-        user = transform(userRealm, true);
+        user = transform(userRealm);
         if (user != null) {
           userList.add(user);
         }
@@ -173,11 +246,11 @@ import javax.inject.Singleton;
     return userList;
   }
 
-  public FriendshipRealmDataMapper getFriendshipRealmDataMapper() {
-    return friendshipRealmDataMapper;
+  public ShortcutRealmDataMapper getShortcutRealmDataMapper() {
+    return shortcutRealmDataMapper;
   }
 
-  public MembershipRealmDataMapper getMembershipRealmDataMapper() {
-    return membershipRealmDataMapper;
+  public MessageRealmDataMapper getMessageRealmDataMapper() {
+    return messageRealmDataMapper;
   }
 }

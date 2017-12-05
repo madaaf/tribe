@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@null"
+    >
+
+  <View
+      android:id="@+id/viewBG"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:alpha="0"
+      android:background="@color/grey.background.profile_info"
+      />
+
+  <ImageView
+      android:id="@+id/imgSelected"
+      android:layout_width="60dp"
+      android:layout_height="match_parent"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_shortcut_selected"
+      />
+
+  <RelativeLayout
+      android:id="@+id/layoutContent"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      >
+    <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+        android:id="@+id/viewNewAvatar"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/viewNewAvatar"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_toRightOf="@id/viewNewAvatar"
+        style="@style/BiggerTitle.1.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtAdded"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/viewNewAvatar"
+        android:layout_below="@id/txtName"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_marginTop="2.5dp"
+        android:layout_toRightOf="@id/viewNewAvatar"
+        android:text="@string/action_tap_to_add"
+        style="@style/BiggerBody.One.Black40"
+        />
+
+  </RelativeLayout>
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/divider_size"
+      android:layout_gravity="bottom"
+      android:background="@color/grey.divider"
+      />
+
+</FrameLayout>

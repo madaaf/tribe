@@ -24,7 +24,8 @@ public class LegacyMediaPlayer extends TribeMediaPlayer
 
   // VARIABLES
   private MediaPlayer mediaPlayer = null;
-  private Subscription timerSubscription;
+  private Subscription timerCompletionSubscription;
+  private Subscription timerProgressSubscription;
   private boolean isPrepared = false;
 
   public LegacyMediaPlayer(TribeMediaPlayerBuilder builder) {
@@ -114,7 +115,7 @@ public class LegacyMediaPlayer extends TribeMediaPlayer
         mediaPlayer.setDataSource(raf.getFD(), 0, raf.length());
         mediaPlayer.setAudioStreamType(getAudioStreamType());
       } else if (!StringUtils.isEmpty(media) && media.contains("asset")) { // TODO BETTER
-        AssetFileDescriptor afd = context.getAssets().openFd("video/tooltip.mp4");
+        AssetFileDescriptor afd = context.getAssets().openFd("video/walkthrough.mp4");
         mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
         afd.close();
       }
@@ -142,9 +143,14 @@ public class LegacyMediaPlayer extends TribeMediaPlayer
   @Override public void pause() {
     mediaPlayer.pause();
 
-    if (timerSubscription != null) {
-      timerSubscription.unsubscribe();
-      timerSubscription = null;
+    if (timerCompletionSubscription != null) {
+      timerCompletionSubscription.unsubscribe();
+      timerCompletionSubscription = null;
+    }
+
+    if (timerProgressSubscription != null) {
+      timerProgressSubscription.unsubscribe();
+      timerProgressSubscription = null;
     }
   }
 
@@ -152,7 +158,8 @@ public class LegacyMediaPlayer extends TribeMediaPlayer
     mediaPlayer.start();
     onVideoStarted.onNext(true);
     setPlaybackRate();
-    scheduleTimer();
+    scheduleTimerCompletion();
+    scheduleTimerProgress();
   }
 
   @Override public void release() {
@@ -173,9 +180,14 @@ public class LegacyMediaPlayer extends TribeMediaPlayer
       }
     }).start();
 
-    if (timerSubscription != null) {
-      timerSubscription.unsubscribe();
-      timerSubscription = null;
+    if (timerCompletionSubscription != null) {
+      timerCompletionSubscription.unsubscribe();
+      timerCompletionSubscription = null;
+    }
+
+    if (timerProgressSubscription != null) {
+      timerProgressSubscription.unsubscribe();
+      timerProgressSubscription = null;
     }
 
     videoSize = null;
@@ -186,7 +198,8 @@ public class LegacyMediaPlayer extends TribeMediaPlayer
       try {
         PlaybackParams myPlayBackParams = new PlaybackParams();
         mediaPlayer.setPlaybackParams(myPlayBackParams);
-        scheduleTimer();
+        scheduleTimerCompletion();
+        scheduleTimerProgress();
       } catch (IllegalStateException ex) {
       }
     }
@@ -216,19 +229,34 @@ public class LegacyMediaPlayer extends TribeMediaPlayer
     return mediaPlayer.isPlaying();
   }
 
-  private void scheduleTimer() {
+  private void scheduleTimerCompletion() {
     if (isPrepared && mediaPlayer != null) {
-      if (timerSubscription != null) timerSubscription.unsubscribe();
+      if (timerCompletionSubscription != null) timerCompletionSubscription.unsubscribe();
 
       if (mediaPlayer.getCurrentPosition() > -1 && mediaPlayer.getDuration() > -1) {
-        timerSubscription =
+        timerCompletionSubscription =
             Observable.interval(mediaPlayer.getCurrentPosition(), mediaPlayer.getDuration(),
                 TimeUnit.MILLISECONDS)
                 .onBackpressureDrop()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(count -> {
-                  if (count > 0) onCompletion.onNext(true); // WE DON'T SEND THE FIRST EVENT
+                  if (count > 0) {
+                    onCompletion.onNext(true); // WE DON'T SEND THE FIRST EVENT
+                  }
                 });
+      }
+    }
+  }
+
+  private void scheduleTimerProgress() {
+    if (isPrepared && mediaPlayer != null) {
+      if (timerProgressSubscription != null) timerProgressSubscription.unsubscribe();
+
+      if (mediaPlayer.getCurrentPosition() > -1 && mediaPlayer.getDuration() > -1) {
+        timerProgressSubscription = Observable.interval(0, 1, TimeUnit.MILLISECONDS)
+            .onBackpressureDrop()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(count -> onProgress.onNext(mediaPlayer.getCurrentPosition()));
       }
     }
   }

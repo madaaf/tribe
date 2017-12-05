@@ -9,9 +9,9 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,13 +24,14 @@ import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.FriendshipRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.FacebookEntity;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -38,6 +39,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.view.SearchMVPView;
+import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
@@ -45,12 +47,19 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
-import com.tribe.app.presentation.view.adapter.ContactAdapter;
+import com.tribe.app.presentation.view.adapter.SearchAdapter;
+import com.tribe.app.presentation.view.adapter.SectionCallback;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.decorator.DividerHeadersItemDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.SearchSectionItemDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.SearchViewDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.CustomFrameLayout;
@@ -63,11 +72,12 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-public class SearchView extends CustomFrameLayout implements SearchMVPView {
+public class SearchView extends CustomFrameLayout implements SearchMVPView, ShortcutMVPView {
 
   private final static int DURATION = 300;
   private final static int DURATION_FAST = 100;
@@ -78,7 +88,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
   @Inject SearchPresenter searchPresenter;
 
-  @Inject ContactAdapter contactAdapter;
+  @Inject SearchAdapter searchAdapter;
 
   @Inject @AddressBook Preference<Boolean> addressBook;
 
@@ -87,6 +97,8 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   @Inject Navigator navigator;
 
   @Inject TagManager tagManager;
+
+  @Inject RxFacebook rxFacebook;
 
   @BindView(R.id.recyclerViewContacts) RecyclerView recyclerViewContacts;
 
@@ -111,6 +123,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   private ContactsLayoutManager layoutManager;
   private List<Object> filteredContactList;
   private List<Object> originalContactList;
+  private List<Object> contactList;
   private SearchResult searchResult;
   private String username;
   private boolean isSearchMode = false;
@@ -119,6 +132,11 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<SearchResult> onSearchResult = PublishSubject.create();
+  private PublishSubject<List<Contact>> onContactsInApp = PublishSubject.create();
+  private PublishSubject<List<Contact>> onContactsInvite = PublishSubject.create();
+  private PublishSubject<List<Contact>> onFBContactsInvite = PublishSubject.create();
+  private PublishSubject<List<Shortcut>> onShortcuts = PublishSubject.create();
   private PublishSubject<Void> onGone = PublishSubject.create();
   private PublishSubject<Void> onShow = PublishSubject.create();
   private PublishSubject<Void> onNavigateToSmsForInvites = PublishSubject.create();
@@ -144,6 +162,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
   @Override protected void onDetachedFromWindow() {
     searchPresenter.onViewDetached();
+    searchAdapter.releaseSubscriptions();
     recyclerViewContacts.setAdapter(null);
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
     super.onDetachedFromWindow();
@@ -161,11 +180,13 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
     initUI();
     initRecyclerView();
+    initSubscriptions();
   }
 
   private void initUI() {
     filteredContactList = new ArrayList<>();
     originalContactList = new ArrayList<>();
+    contactList = new ArrayList<>();
 
     refactorActions();
 
@@ -182,22 +203,32 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   }
 
   private void initRecyclerView() {
-    this.layoutManager = new ContactsLayoutManager(context());
-    this.recyclerViewContacts.setLayoutManager(layoutManager);
-    this.recyclerViewContacts.setItemAnimator(null);
-    this.recyclerViewContacts.addItemDecoration(
+    layoutManager = new ContactsLayoutManager(context());
+    recyclerViewContacts.setLayoutManager(layoutManager);
+    recyclerViewContacts.setItemAnimator(null);
+    recyclerViewContacts.addItemDecoration(
         new DividerHeadersItemDecoration(screenUtils.dpToPx(10), screenUtils.dpToPx(10)));
-    this.recyclerViewContacts.setAdapter(contactAdapter);
+    recyclerViewContacts.setAdapter(searchAdapter);
+    recyclerViewContacts.addItemDecoration(new SearchViewDividerDecoration(context(),
+        ContextCompat.getColor(context(), R.color.grey_divider), screenUtils.dpToPx(0.5f),
+        getSectionCallback(searchAdapter.getItems())));
 
-    contactAdapter.setItems(new ArrayList<>());
+    SearchSectionItemDecoration sectionItemDecoration = new SearchSectionItemDecoration(
+        getResources().getDimensionPixelSize(R.dimen.list_search_header_height), false,
+        getSectionCallback(searchAdapter.getItems()), screenUtils);
+    recyclerViewContacts.addItemDecoration(sectionItemDecoration);
 
-    subscriptions.add(contactAdapter.onClickAdd()
-        .map(view -> contactAdapter.getItemAtPosition(
+    searchAdapter.setItems(new ArrayList<>());
+
+    subscriptions.add(searchAdapter.onClick()
+        .map(view -> searchAdapter.getItemAtPosition(
             recyclerViewContacts.getChildLayoutPosition(view)))
         .doOnError(throwable -> throwable.printStackTrace())
         .subscribe(o -> {
           if (o instanceof SearchResult) {
             SearchResult searchResult = (SearchResult) o;
+            Shortcut shortcut = searchResult.getShortcut();
+
             if (searchResult.isInvisible()) {
               DialogFactory.dialog(getContext(), searchResult.getDisplayName(),
                   EmojiParser.demojizedText(
@@ -206,69 +237,132 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
                   context().getString(R.string.add_friend_error_invisible_cancel))
                   .filter(x -> x == true)
                   .subscribe(a -> onNavigateToSmsForInvites.onNext(null));
-            } else if (searchResult.getFriendship() == null) {
-              if (searchResult.getUsername() != null && !searchResult.getUsername()
-                  .equals(user.getUsername())) {
-                searchPresenter.createFriendship(searchResult.getId());
+            } else if (shortcut == null) {
+              if (searchResult.getUsername() != null &&
+                  !searchResult.getUsername().equals(user.getUsername())) {
+                searchPresenter.createShortcut(searchResult.getId());
               }
+            } else if (!shortcut.getStatus().equals(ShortcutRealm.DEFAULT)) {
+              shortcut.setStatus(ShortcutRealm.DEFAULT);
+              searchPresenter.updateShortcutStatus(shortcut.getId(), ShortcutRealm.DEFAULT);
             } else {
-              searchResult.getFriendship().setStatus(FriendshipRealm.DEFAULT);
-              onUnblock.onNext(searchResult.getFriendship());
+              searchPresenter.removeShortcut(shortcut.getId());
             }
           } else if (o instanceof Contact) {
             Contact contact = (Contact) o;
-            searchPresenter.createFriendship(contact.getUserList().get(0).getId());
+            searchPresenter.createShortcut(contact.getUserList().get(0).getId());
           } else if (o instanceof User) {
             User user = (User) o;
-            searchPresenter.createFriendship(user.getId());
+            searchPresenter.createShortcut(user.getId());
           }
         }));
 
-    subscriptions.add(contactAdapter.onClickInvite()
-        .map(view -> contactAdapter.getItemAtPosition(
+    subscriptions.add(searchAdapter.onInvite()
+        .map(view -> searchAdapter.getItemAtPosition(
             recyclerViewContacts.getChildLayoutPosition(view)))
         .doOnError(throwable -> throwable.printStackTrace())
         .subscribe(o -> {
           if (o instanceof ContactAB) {
             ContactAB contact = (ContactAB) o;
             onInvite.onNext(contact);
+          } else if (o instanceof ContactFB) {
+            ContactFB contactFB = (ContactFB) o;
+            subscriptions.add(rxFacebook.requestGameInvite(contactFB.getId()).subscribe());
           }
         }));
 
-    subscriptions.add(contactAdapter.onHangLive()
-        .map(view -> contactAdapter.getItemAtPosition(
-            recyclerViewContacts.getChildLayoutPosition(view)))
-        .doOnError(throwable -> throwable.printStackTrace())
-        .subscribe(o -> {
-          if (o instanceof Recipient) {
-            onHangLive.onNext((Recipient) o);
-          } else if (o instanceof SearchResult) {
-            onHangLive.onNext(((SearchResult) o).getFriendship());
-          }
-        }));
+    //subscriptions.add(contactAdapter.onHangLive()
+    //    .map(view -> contactAdapter.getItemAtPosition(
+    //        recyclerViewContacts.getChildLayoutPosition(view)))
+    //    .doOnError(throwable -> throwable.printStackTrace())
+    //    .subscribe(o -> {
+    //      if (o instanceof Recipient) {
+    //        onHangLive.onNext((Recipient) o);
+    //      } else if (o instanceof SearchResult) {
+    //        onHangLive.onNext(((SearchResult) o).getShortcut());
+    //      }
+    //    }));
+    //
+  }
 
-    subscriptions.add(contactAdapter.onUnblock()
-        .map(view -> {
-          int position = recyclerViewContacts.getChildLayoutPosition(view);
-          Recipient recipient = (Recipient) contactAdapter.getItemAtPosition(position);
-          return new Pair<>(position, recipient);
-        })
-        .doOnError(throwable -> throwable.printStackTrace())
-        .flatMap(pairPositionRecipient -> DialogFactory.dialog(getContext(),
-            pairPositionRecipient.second.getDisplayName(),
-            context().getString(R.string.search_unblock_alert_message),
-            context().getString(R.string.search_unblock_alert_unblock,
-                pairPositionRecipient.second.getDisplayName()),
-            context().getString(R.string.search_unblock_alert_cancel)),
-            (pairPositionRecipient, aBoolean) -> new Pair<>(pairPositionRecipient, aBoolean))
-        .filter(pair -> pair.second == true)
-        .subscribe(pair -> {
-          Friendship friendship = (Friendship) pair.first.second;
-          onUnblock.onNext(pair.first.second);
-          friendship.setStatus(FriendshipRealm.DEFAULT);
-          friendship.setAnimateAdd(true);
-          contactAdapter.notifyItemChanged(pair.first.first);
-        }));
+  private void initSubscriptions() {
+    subscriptions.add(
+        Observable.combineLatest(onSearchResult.startWith(new SearchResult()), onShortcuts,
+            onContactsInApp, onContactsInvite, onFBContactsInvite,
+            (searchResult, shortcutList, contactInAppList, contactInviteList, fbContactInviteList) -> {
+              Set<String> setUserAdded = new HashSet<>();
+
+              if (isSearchMode) {
+                searchResult.setAnimateAdd(this.searchResult.isAnimateAdd());
+                this.searchResult = searchResult;
+                this.searchResult.setMyself(searchResult.getUsername() != null &&
+                    searchResult.getUsername().equals(user.getUsername()));
+                updateSearch();
+              }
+
+              originalContactList.clear();
+              for (Shortcut shortcut : shortcutList) {
+                setUserAdded.add(shortcut.getSingleFriend().getId());
+                originalContactList.add(shortcut);
+              }
+
+              if (contactList.size() == 0) {
+                for (Contact contact : contactInAppList) {
+                  if (contact.getUserList() != null) {
+                    for (User userInList : contact.getUserList()) {
+                      if (!setUserAdded.contains(userInList.getId())) {
+                        contactList.add(contact);
+                        setUserAdded.add(userInList.getId());
+                      }
+                    }
+                  }
+                }
+              }
+
+              originalContactList.addAll(contactList);
+              originalContactList.addAll(contactInviteList);
+              originalContactList.addAll(fbContactInviteList);
+
+              refactorContacts(contactList);
+
+              return null;
+            })
+            .subscribeOn(Schedulers.computation())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(o -> showContactList()));
+  }
+
+  private SectionCallback getSectionCallback(final List<Object> itemList) {
+    return new SectionCallback() {
+      @Override public boolean isSection(int position) {
+        if (position == 0) return true;
+
+        Object item = itemList.get(position);
+        Object itemPrevious = itemList.get(position - 1);
+
+        return position > 0 && !item.getClass().equals(itemPrevious.getClass());
+      }
+
+      @Override public int getSectionType(int position) {
+        Object item = itemList.get(position);
+        if (item instanceof SearchResult || item instanceof Shortcut) {
+          if (item instanceof Shortcut) {
+            Shortcut shortcut = (Shortcut) item;
+            if (shortcut.getId().equals(Shortcut.ID_EMPTY)) {
+              return BaseSectionItemDecoration.SEARCH_EMPTY;
+            }
+
+            return BaseSectionItemDecoration.SEARCH_RECENT;
+          }
+
+          return BaseSectionItemDecoration.SEARCH_RESULTS;
+        } else if (item instanceof User) {
+          return BaseSectionItemDecoration.SEARCH_SUGGESTED_CONTACTS;
+        } else {
+          return BaseSectionItemDecoration.SEARCH_INVITES_TO_SEND;
+        }
+      }
+    };
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -290,75 +384,44 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   private void refactorContacts(List<Object> contactList) {
     this.filteredContactList.clear();
 
-    boolean hasDoneSuggested = false, hasDoneContacts = false, hasNewFriends = false;
-    Set<String> setLinkedUser = new HashSet<>();
+    Set<String> userIdsDone = new HashSet<>();
 
     for (Object obj : contactList) {
       boolean shouldAdd = false;
       if (obj instanceof Contact) {
         Contact contact = (Contact) obj;
-        if (!StringUtils.isEmpty(contact.getName()) && contact.getName()
-            .toLowerCase()
-            .startsWith(search)) {
+        if (!StringUtils.isEmpty(contact.getName()) &&
+            contact.getName().toLowerCase().startsWith(search)) {
           shouldAdd = true;
         }
-      } else if (obj instanceof Recipient) {
-        Recipient recipient = (Recipient) obj;
-        if (!StringUtils.isEmpty(search) && ((!StringUtils.isEmpty(recipient.getDisplayName())
-            && recipient.getDisplayName().toLowerCase().startsWith(search))
-            || (recipient.getUsername() != null && recipient.getUsername()
-            .toLowerCase()
-            .startsWith(search)))) {
+      } else if (obj instanceof Shortcut) {
+        Shortcut shortcut = (Shortcut) obj;
+        if (!StringUtils.isEmpty(search) &&
+            ((!StringUtils.isEmpty(shortcut.getDisplayName()) &&
+                shortcut.getDisplayName().toLowerCase().startsWith(search)) ||
+                (shortcut.getUsername() != null &&
+                    shortcut.getUsername().toLowerCase().startsWith(search)))) {
           shouldAdd = true;
         }
       }
 
       if (shouldAdd) {
-        if (!hasDoneSuggested && obj instanceof Recipient) {
-          hasDoneSuggested = true;
-          this.filteredContactList.add(
-              EmojiParser.demojizedText(getContext().getString(R.string.search_already_friends)));
-        } else if (!hasDoneContacts && obj instanceof Contact) {
+        if (obj instanceof Contact) {
           Contact contact = (Contact) obj;
           if (contact.getUserList() != null && contact.getUserList().size() > 0) {
             User user = contact.getUserList().get(0);
             user.setNew(contact.isNew());
 
-            if (contact.isNew()) {
-              hasNewFriends = true;
-            }
-            if (hasNewFriends) {
-              String titleNewfriend =
-                  EmojiParser.demojizedText(getContext().getString(R.string.search_new_friends));
-              if (!filteredContactList.contains(titleNewfriend)) {
-                this.filteredContactList.add(0, titleNewfriend);
-              }
-              this.filteredContactList.add(1, user);
-            }
-
-            if (!hasDoneSuggested) {
-              hasDoneSuggested = true;
-              String titleAlreadyFriend = EmojiParser.demojizedText(
-                  getContext().getString(R.string.search_already_friends));
-              if (!filteredContactList.contains(titleAlreadyFriend)) {
-                this.filteredContactList.add(titleAlreadyFriend);
-              }
-            }
-
-            if (!filteredContactList.contains(user) && !setLinkedUser.contains(user.getId())) {
+            if (!filteredContactList.contains(user) && !userIdsDone.contains(user.getId())) {
               this.filteredContactList.add(user);
-              setLinkedUser.add(user.getId());
+              userIdsDone.add(user.getId());
             }
 
             shouldAdd = false;
-          } else {
-            this.filteredContactList.add(
-                EmojiParser.demojizedText(getContext().getString(R.string.search_invite_contacts)));
-            hasDoneContacts = true;
           }
         }
 
-        if (shouldAdd) this.filteredContactList.add(obj);
+        if (shouldAdd) filteredContactList.add(obj);
       }
     }
   }
@@ -368,12 +431,18 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   }
 
   private void showContactList() {
-    if (!isSearchMode) contactAdapter.setItems(this.filteredContactList);
+    if (!isSearchMode) {
+      if (filteredContactList.size() == 0) {
+        ListUtils.addEmptyItemsSearch(filteredContactList);
+      }
+
+      searchAdapter.setItems(filteredContactList);
+    }
   }
 
   private void updateSearch() {
     filter();
-    this.contactAdapter.updateSearch(searchResult, filteredContactList);
+    this.searchAdapter.updateSearch(searchResult, filteredContactList);
   }
 
   public void refactorWarning(boolean open) {
@@ -390,9 +459,9 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
   public void refactorActions() {
     boolean permissionsFB = FacebookUtils.isLoggedIn();
-    boolean permissionsContact = PermissionUtils.hasPermissionsContact(rxPermissions)
-        && addressBook.get()
-        && !StringUtils.isEmpty(user.getPhone());
+    boolean permissionsContact = PermissionUtils.hasPermissionsContact(rxPermissions) &&
+        addressBook.get() &&
+        !StringUtils.isEmpty(user.getPhone());
 
     layoutBottom.removeAllViews();
 
@@ -404,7 +473,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
         getResources().getDimensionPixelSize(R.dimen.load_friends_height));
 
     if (permissionsContact || permissionsFB) {
-      searchPresenter.loadContacts(search);
+      searchPresenter.searchLocally(search);
     }
 
     refactorWarning(isContactsViewOpen());
@@ -422,7 +491,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     }));
 
     subscriptions.add(viewFriendsAddressBookLoad.onChecked().subscribe(checked -> {
-
       if (checked) {
         //changeMyPhoneNumber();
       } else {
@@ -448,11 +516,10 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   }
 
   private void openCloseContactsView(boolean open, boolean animate) {
-
     int rotation = open ? 180 : 0;
-    int translation = open ? 0 : (viewFriendsFBLoad.getHeight()
-        + viewFriendsAddressBookLoad.getHeight()
-        + screenUtils.dpToPx(1));
+    int translation = open ? 0 : (viewFriendsFBLoad.getHeight() +
+        viewFriendsAddressBookLoad.getHeight() +
+        screenUtils.dpToPx(1));
     // + 1 because of the dividers 2 * 0.5dp
 
     if (animate) {
@@ -540,7 +607,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
   }
 
   private void lookupContacts() {
-
     rxPermissions.requestEach(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(permission -> {
       Bundle bundle = new Bundle();
       bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, permission.granted);
@@ -570,6 +636,130 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     onSyncContacts.onNext(null);
   }
 
+  @Override public void successFacebookLogin() {
+    sync();
+    viewFriendsFBLoad.showLoading();
+    searchPresenter.connectToFacebook(user.getId(), FacebookUtils.accessToken().getToken());
+  }
+
+  @Override public void errorFacebookLogin() {
+    viewFriendsFBLoad.setChecked(false);
+  }
+
+  @Override public void syncDone() {
+    refactorActions();
+    viewFriendsFBLoad.hideLoading();
+    viewFriendsAddressBookLoad.hideLoading();
+  }
+
+  @Override public void renderSearchResult(SearchResult searchResult) {
+    onSearchResult.onNext(searchResult);
+  }
+
+  @Override public void renderContactList(List<Shortcut> shortcutList) {
+    onShortcuts.onNext(shortcutList);
+  }
+
+  @Override public void renderContactListOnApp(List<Contact> contactListOnApp) {
+    onContactsInApp.onNext(contactListOnApp);
+  }
+
+  @Override public void renderContactListInvite(List<Contact> contactListInvite) {
+    onContactsInvite.onNext(contactListInvite);
+  }
+
+  @Override public void renderContactListInviteFB(List<Contact> contactListInviteFB) {
+    onFBContactsInvite.onNext(contactListInviteFB);
+  }
+
+  @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
+
+  }
+
+  @Override public void successUpdateFacebook(User user) {
+    if (FacebookUtils.isLoggedIn()) {
+      showToastMessage(getContext().getString(R.string.linked_friends_link_success_fb));
+    } else {
+      showToastMessage(getContext().getString(R.string.linked_friends_unlink_success_fb));
+    }
+  }
+
+  @Override public void errorUpdatePhoneNumber() {
+    refactorActions();
+    showToastMessage(getContext().getString(R.string.linked_friends_link_error_phone));
+  }
+
+  @Override public void successUpdatePhoneNumber(User user) {
+    if (!StringUtils.isEmpty(user.getPhone())) {
+      showToastMessage(getContext().getString(R.string.linked_friends_link_success_phone));
+      lookupContacts();
+    } else {
+      showToastMessage(getContext().getString(R.string.linked_friends_unlink_success_phone));
+    }
+  }
+
+  @Override public void usernameResult(Boolean available) {
+
+  }
+
+  @Override public void successUpdateUser(User user) {
+
+  }
+
+  @Override public void showLoading() {
+
+  }
+
+  @Override public void hideLoading() {
+
+  }
+
+  @Override public void showError(String message) {
+
+  }
+
+  @Override public Context context() {
+    return getContext();
+  }
+
+  @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.SEARCH);
+    tagManager.trackEvent(TagManagerUtils.AddFriend, bundle);
+    searchAdapter.updateAdd(shortcut.getSingleFriend());
+  }
+
+  @Override public void onShortcutCreatedError() {
+    Toast.makeText(context(),
+        EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
+        Toast.LENGTH_SHORT).show();
+    updateSearch();
+  }
+
+  @Override public void onShortcutRemovedSuccess() {
+
+  }
+
+  @Override public void onShortcutRemovedError() {
+
+  }
+
+  @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
+
+  }
+
+  @Override public void onShortcutUpdatedError() {
+
+  }
+
+  @Override public void onSingleShortcutsLoaded(List<Shortcut> singleShortcutList) {
+
+  }
+
+  @Override public void onShortcut(Shortcut shortcut) {
+
+  }
+
   ///////////////////
   //    PUBLIC     //
   ///////////////////
@@ -587,7 +777,13 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
       searchResult = new SearchResult();
       searchResult.setUsername(s);
       updateSearch();
-    }).debounce(500, TimeUnit.MILLISECONDS).subscribe(s -> searchPresenter.findByUsername(s)));
+    }).debounce(500, TimeUnit.MILLISECONDS).subscribe(s -> {
+      Bundle bundle = new Bundle();
+      bundle.putString(TagManagerUtils.CONTENT_TYPE, "user");
+      bundle.putString(TagManagerUtils.SEARCH_STRING, s);
+      tagManager.trackEvent(TagManagerUtils.Searched, bundle);
+      searchPresenter.findByUsername(s);
+    }));
   }
 
   public void show() {
@@ -613,6 +809,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
 
   public void hide() {
     search = "";
+    contactList.clear();
 
     recyclerViewContacts.setVisibility(View.GONE);
 
@@ -665,123 +862,21 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView {
     return onUnblock;
   }
 
-  @Override public void onAddSuccess(Friendship friendship) {
-    contactAdapter.updateAdd(friendship.getFriend());
+  public Observable<Recipient> onClickLive() {
+    return searchAdapter.onLiveClick()
+        .map(view -> (Recipient) searchAdapter.getItemAtPosition(
+            recyclerViewContacts.getChildLayoutPosition(view)));
   }
 
-  @Override public void onAddError() {
-    Toast.makeText(context(),
-        EmojiParser.demojizedText(context().getString(R.string.add_friend_error_invisible)),
-        Toast.LENGTH_SHORT).show();
-    updateSearch();
+  public Observable<Recipient> onClickChat() {
+    return searchAdapter.onClickChat()
+        .map(view -> (Recipient) searchAdapter.getItemAtPosition(
+            recyclerViewContacts.getChildLayoutPosition(view)));
   }
 
-  @Override public void successFacebookLogin() {
-    sync();
-    viewFriendsFBLoad.showLoading();
-    searchPresenter.connectToFacebook(user.getId(), FacebookUtils.accessToken().getToken());
-  }
-
-  @Override public void errorFacebookLogin() {
-    viewFriendsFBLoad.setChecked(false);
-  }
-
-  @Override public void syncDone() {
-    refactorActions();
-    viewFriendsFBLoad.hideLoading();
-    viewFriendsAddressBookLoad.hideLoading();
-  }
-
-  @Override public void renderSearchResult(SearchResult searchResult) {
-    if (isSearchMode) {
-      searchResult.setAnimateAdd(this.searchResult.isAnimateAdd());
-      this.searchResult = searchResult;
-      this.searchResult.setMyself(searchResult.getUsername() != null && searchResult.getUsername()
-          .equals(user.getUsername()));
-      updateSearch();
-    }
-  }
-
-  @Override public void renderContactList(List<Object> contactList) {
-    this.originalContactList.clear();
-    this.originalContactList.addAll(contactList);
-    refactorContacts(contactList);
-    showContactList();
-  }
-
-  @Override public void loadFacebookInfos(FacebookEntity facebookEntity) {
-
-  }
-
-  @Override public void successUpdateFacebook(User user) {
-    if (FacebookUtils.isLoggedIn()) {
-      showToastMessage(getContext().getString(R.string.linked_friends_link_success_fb));
-    } else {
-      showToastMessage(getContext().getString(R.string.linked_friends_unlink_success_fb));
-    }
-  }
-
-/*  private AuthCallback authCallback;
-
-  private void changeMyPhoneNumber() {
-
-    authCallback = new AuthCallback() {
-
-      @Override public void success(DigitsSession session, String phoneNumber) {
-        searchPresenter.updatePhoneNumber(user.getId(), session);
-        viewFriendsAddressBookLoad.showLoading();
-      }
-
-      @Override public void failure(DigitsException error) {
-        viewFriendsAddressBookLoad.setChecked(false);
-        showError(error.getMessage());
-      }
-    };
-
-    AuthConfig.Builder builder = new AuthConfig.Builder();
-    builder.withAuthCallBack(authCallback);
-
-    AuthConfig authConfig = builder.build();
-
-    Digits.logout(); // Force logout
-    Digits.authenticate(authConfig);
-  }*/
-
-  @Override public void errorUpdatePhoneNumber() {
-    refactorActions();
-    showToastMessage(getContext().getString(R.string.linked_friends_link_error_phone));
-  }
-
-  @Override public void successUpdatePhoneNumber(User user) {
-    if (!StringUtils.isEmpty(user.getPhone())) {
-      showToastMessage(getContext().getString(R.string.linked_friends_link_success_phone));
-      lookupContacts();
-    } else {
-      showToastMessage(getContext().getString(R.string.linked_friends_unlink_success_phone));
-    }
-  }
-
-  @Override public void usernameResult(Boolean available) {
-
-  }
-
-  @Override public void successUpdateUser(User user) {
-
-  }
-
-  @Override public void showLoading() {
-
-  }
-
-  @Override public void hideLoading() {
-
-  }
-
-  @Override public void showError(String message) {
-
-  }
-
-  @Override public Context context() {
-    return getContext();
+  public Observable<Recipient> onMainClick() {
+    return searchAdapter.onMainClick()
+        .map(view -> (Recipient) searchAdapter.getItemAtPosition(
+            recyclerViewContacts.getChildLayoutPosition(view)));
   }
 }

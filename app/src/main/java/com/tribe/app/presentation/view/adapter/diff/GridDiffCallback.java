@@ -4,16 +4,17 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.utils.ObjectUtils;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GridDiffCallback extends DiffUtil.Callback {
 
-  private List<Recipient> oldList;
-  private List<Recipient> newList;
+  private List<HomeAdapterInterface> oldList;
+  private List<HomeAdapterInterface> newList;
 
-  public GridDiffCallback(List<Recipient> oldList, List<Recipient> newList) {
+  public GridDiffCallback(List<HomeAdapterInterface> oldList, List<HomeAdapterInterface> newList) {
     this.oldList = new ArrayList<>();
     this.oldList.addAll(oldList);
     this.newList = new ArrayList<>();
@@ -37,30 +38,33 @@ public class GridDiffCallback extends DiffUtil.Callback {
   }
 
   @Nullable @Override public Object getChangePayload(int oldItemPosition, int newItemPosition) {
-    Recipient newRecipient = newList.get(newItemPosition);
-    Recipient oldRecipient = oldList.get(oldItemPosition);
+    HomeAdapterInterface newItem = newList.get(newItemPosition);
+    HomeAdapterInterface oldItem = oldList.get(oldItemPosition);
 
     Bundle diffBundle = new Bundle();
 
-    if (!ObjectUtils.nullSafeEquals(newRecipient.getDisplayName(), oldRecipient.getDisplayName())) {
-      diffBundle.putString(Recipient.DISPLAY_NAME, newRecipient.getDisplayName());
+    if (!ObjectUtils.nullSafeEquals(newItem.getDisplayName(), oldItem.getDisplayName())) {
+      diffBundle.putString(Recipient.DISPLAY_NAME, newItem.getDisplayName());
     }
 
-    if (!ObjectUtils.nullSafeEquals(newRecipient.getProfilePicture(),
-        oldRecipient.getProfilePicture())) {
-      diffBundle.putString(Recipient.PROFILE_PICTURE, newRecipient.getProfilePicture());
+    if (!ObjectUtils.nullSafeEquals(newItem.getProfilePicture(), oldItem.getProfilePicture())) {
+      diffBundle.putString(Recipient.PROFILE_PICTURE, newItem.getProfilePicture());
     }
 
-    if (!ObjectUtils.nullSafeEquals(newRecipient.getLastSeenAt(), oldRecipient.getLastSeenAt())) {
-      diffBundle.putSerializable(Recipient.LAST_ONLINE, newRecipient.getLastSeenAt());
+    if (!ObjectUtils.nullSafeEquals(newItem.getLastSeenAt(), oldItem.getLastSeenAt())) {
+      diffBundle.putSerializable(Recipient.LAST_ONLINE, newItem.getLastSeenAt());
     }
 
-    if (newRecipient.isLive() != oldRecipient.isLive()) {
-      diffBundle.putBoolean(Recipient.IS_LIVE, newRecipient.isLive());
+    if (newItem.isLive() != oldItem.isLive()) {
+      diffBundle.putBoolean(Recipient.IS_LIVE, newItem.isLive());
     }
 
-    if (newRecipient.isOnline() != oldRecipient.isOnline()) {
-      diffBundle.putBoolean(Recipient.IS_ONLINE, newRecipient.isOnline());
+    if (newItem.isOnline() != oldItem.isOnline()) {
+      diffBundle.putBoolean(Recipient.IS_ONLINE, newItem.isOnline());
+    }
+
+    if (newItem.isRead() != oldItem.isRead()) {
+      diffBundle.putBoolean(Recipient.IS_ONLINE, newItem.isOnline());
     }
 
     if (diffBundle.size() == 0) return null;

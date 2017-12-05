@@ -15,24 +15,33 @@
       android:orientation="vertical"
       />
 
-  <com.tribe.app.presentation.view.component.TopBarContainer
+  <com.tribe.app.presentation.view.component.home.TopBarContainer
       android:id="@+id/topBarContainer"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:background="@null"
       >
 
-    <com.tribe.app.presentation.view.component.TopBarView
+    <com.tribe.app.presentation.view.component.home.TopBarView
         android:id="@+id/topBarView"
         android:layout_width="match_parent"
         android:layout_height="@dimen/top_bar_height"
         android:background="@null"
         />
 
+    <com.tribe.app.presentation.view.component.home.TopBarLogoView
+        android:id="@+id/viewTopBarLogo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:visibility="gone"
+        />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerViewFriends"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/top_bar_height"
         android:background="@null"
         android:fadingEdgeLength="0dp"
         android:overScrollMode="never"
@@ -40,8 +49,8 @@
         android:scrollbars="none"
         />
 
-    <com.tribe.app.presentation.view.component.home.NewCallView
-        android:id="@+id/btnNewCall"
+    <com.tribe.app.presentation.view.component.home.NewGameView
+        android:id="@+id/btnNewGame"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/bottom_bar_height"
         android:layout_gravity="center_horizontal|bottom"
@@ -49,11 +58,9 @@
         android:background="@drawable/shape_oval_white"
         android:clickable="true"
         android:elevation="10dp"
-        android:foreground="@drawable/selectable_button"
         />
 
-
-  </com.tribe.app.presentation.view.component.TopBarContainer>
+  </com.tribe.app.presentation.view.component.home.TopBarContainer>
 
   <com.tribe.app.presentation.view.widget.PopupContainerView
       android:id="@+id/nativeDialogsView"
@@ -103,6 +110,29 @@
       android:gravity="center"
       android:textColor="@android:color/white"
       android:visibility="gone"
+      />
+
+  <View
+      android:id="@+id/viewFadeInSwipe"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:alpha="0"
+      android:background="@android:color/black"
+      android:visibility="gone"
+      />
+
+  <com.tribe.app.presentation.view.component.live.LiveViewFake
+      android:id="@+id/viewLiveFake"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@null"
+      />
+
+  <com.tribe.app.presentation.view.component.home.HomeWalkthroughView
+      android:id="@+id/viewWalkthrough"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:clickable="true"
       />
 
 </FrameLayout>

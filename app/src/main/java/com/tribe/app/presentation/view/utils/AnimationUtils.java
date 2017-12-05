@@ -363,6 +363,16 @@ public class AnimationUtils {
     animator.start();
   }
 
+  public static void animateWidth(View view, int startSize, int endSize, int duration,
+      Interpolator interpolator) {
+    ValueAnimator animator = ValueAnimator.ofInt(startSize, endSize);
+    animator.setDuration(duration);
+    animator.setInterpolator(interpolator);
+    animator.addUpdateListener(
+        animation -> UIUtils.changeWidthOfView(view, (int) animation.getAnimatedValue()));
+    animator.start();
+  }
+
   public static void makeItBounce(View view, int duration, Interpolator interpolator) {
     ValueAnimator animator = ValueAnimator.ofFloat(1.0f, 1.15f, 1.0f);
     animator.setInterpolator(interpolator);

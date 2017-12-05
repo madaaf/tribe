@@ -7,9 +7,9 @@ import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.signature.StringSignature;
+import com.tribe.app.R;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.transformer.CropCircleTransformation;
-import com.tribe.app.presentation.view.transformer.HoleTransformation;
 import java.io.File;
 import java.util.Random;
 
@@ -28,7 +28,6 @@ public class GlideUtils {
     private File file;
     private int size = 0;
     private ImageView target;
-    private boolean hasHole = false;
     private boolean hasPlaceholder = true;
     private boolean rounded = true;
 
@@ -66,11 +65,6 @@ public class GlideUtils {
       return this;
     }
 
-    public Builder hasHole(boolean hasHole) {
-      this.hasHole = hasHole;
-      return this;
-    }
-
     public Builder hasPlaceholder(boolean hasPlaceholder) {
       this.hasPlaceholder = hasPlaceholder;
       return this;
@@ -86,8 +80,7 @@ public class GlideUtils {
 
       Random random = new Random();
       int r = random.nextInt(6 - 1) + 1; // From 1 to 6
-      int randomPlaceholder = context.getResources()
-          .getIdentifier("picto_placeholder_" + r, "drawable", context.getPackageName());
+      int randomPlaceholder = R.drawable.picto_avatar_placeholder;
 
       if (bitmap != null) {
         drawableRequestBuilder = Glide.with(context).load(bitmap);
@@ -115,15 +108,86 @@ public class GlideUtils {
       }
 
       if (rounded) {
-        if (hasHole) {
-          drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context),
-              new HoleTransformation(context));
-        } else {
-          drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context));
-        }
+        drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context));
       }
 
       drawableRequestBuilder.crossFade().diskCacheStrategy(DiskCacheStrategy.RESULT).into(target);
+    }
+  }
+
+  public static class GameImageBuilder {
+
+    private final Context context;
+    private final ScreenUtils screenUtils;
+    private String url;
+    private ImageView target;
+    private boolean hasPlaceholder = true;
+    private boolean rounded = true;
+    private boolean hasBorder = false;
+
+    public GameImageBuilder(Context context, ScreenUtils screenUtils) {
+      this.context = context;
+      this.screenUtils = screenUtils;
+    }
+
+    public GameImageBuilder url(String url) {
+      this.url = url;
+      return this;
+    }
+
+    public GameImageBuilder target(ImageView target) {
+      this.target = target;
+      return this;
+    }
+
+    public GameImageBuilder hasPlaceholder(boolean hasPlaceholder) {
+      this.hasPlaceholder = hasPlaceholder;
+      return this;
+    }
+
+    public GameImageBuilder rounded(boolean rounded) {
+      this.rounded = rounded;
+      return this;
+    }
+
+    public GameImageBuilder hasBorder(boolean hasBorder) {
+      this.hasBorder = hasBorder;
+      return this;
+    }
+
+    public void load() {
+      DrawableRequestBuilder drawableRequestBuilder;
+
+      int randomPlaceholder = R.drawable.picto_avatar_placeholder;
+
+      if (StringUtils.isEmpty(url)) {
+        drawableRequestBuilder = Glide.with(context).load(randomPlaceholder);
+      } else {
+        drawableRequestBuilder = Glide.with(context).load(url).error(randomPlaceholder);
+      }
+
+      if (hasPlaceholder) {
+        drawableRequestBuilder = drawableRequestBuilder.thumbnail(0.25f)
+            .error(randomPlaceholder)
+            .placeholder(randomPlaceholder);
+      }
+
+      if (rounded && !hasBorder) {
+        drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context));
+      } else if (rounded && hasBorder) {
+        drawableRequestBuilder.bitmapTransform(new CropCircleTransformation(context),
+            new RoundedCornersTransformation(context, screenUtils.dpToPx(400),
+                screenUtils.dpToPx(3), "#FFFFFF", screenUtils.dpToPx(2)));
+      } else if (!rounded && hasBorder) {
+        drawableRequestBuilder.bitmapTransform(
+            new RoundedCornersTransformation(context, screenUtils.dpToPx(400),
+                screenUtils.dpToPx(3), "#FFFFFF", screenUtils.dpToPx(2)));
+      }
+
+      drawableRequestBuilder.override(screenUtils.dpToPx(100), screenUtils.dpToPx(100))
+          .crossFade()
+          .diskCacheStrategy(DiskCacheStrategy.RESULT)
+          .into(target);
     }
   }
 }

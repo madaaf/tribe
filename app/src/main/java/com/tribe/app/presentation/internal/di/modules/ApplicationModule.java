@@ -7,8 +7,12 @@ import android.support.v4.content.ContextCompat;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.f2prateek.rx.preferences.Preference;
+import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.cache.ChatCacheImpl;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.ContactCacheImpl;
+import com.tribe.app.data.cache.GameCache;
+import com.tribe.app.data.cache.GameCacheImpl;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.LiveCacheImpl;
 import com.tribe.app.data.cache.UserCache;
@@ -16,19 +20,27 @@ import com.tribe.app.data.cache.UserCacheImpl;
 import com.tribe.app.data.executor.JobExecutor;
 import com.tribe.app.data.network.job.BaseJob;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.ShortcutRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
+import com.tribe.app.data.repository.chat.CloudChatDataRepository;
+import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
+import com.tribe.app.data.repository.live.CloudLiveDataRepository;
+import com.tribe.app.data.repository.live.DiskLiveDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.data.repository.user.contact.RxContacts;
-import com.tribe.app.domain.entity.RoomMember;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
+import com.tribe.app.domain.interactor.chat.ChatRepository;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.game.GameRepository;
+import com.tribe.app.domain.interactor.live.LiveRepository;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UserRepository;
@@ -59,6 +71,7 @@ import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Module;
 import dagger.Provides;
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -66,7 +79,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
+import me.leolin.shortcutbadger.ShortcutBadger;
 import timber.log.Timber;
 
 /**
@@ -76,6 +89,7 @@ import timber.log.Timber;
 
   private final AndroidApplication application;
   private RealmResults<UserRealm> userRealm;
+  private RealmResults<BadgeRealm> badgeRealmResults;
   private RealmResults<AccessToken> accessTokenResults;
 
   public ApplicationModule(AndroidApplication application) {
@@ -104,8 +118,22 @@ import timber.log.Timber;
     return userDataRepository;
   }
 
+  @Provides @Singleton ChatRepository provideCloudChatRepository(
+      CloudChatDataRepository chatDataRepository) {
+    return chatDataRepository;
+  }
+
+  @Provides @Singleton ChatRepository provideDiskChatRepository(
+      DiskChatDataRepository chatDataRepository) {
+    return chatDataRepository;
+  }
+
   @Provides @Singleton UserCache provideUserCache(UserCacheImpl userCache) {
     return userCache;
+  }
+
+  @Provides @Singleton ChatCache provideChatCache(ChatCacheImpl chatCache) {
+    return chatCache;
   }
 
   @Provides @Singleton LiveCache provideLiveCache(LiveCacheImpl liveCache) {
@@ -114,6 +142,10 @@ import timber.log.Timber;
 
   @Provides @Singleton ContactCache provideContactCache(ContactCacheImpl contactCache) {
     return contactCache;
+  }
+
+  @Provides @Singleton GameCache provideGameCache(GameCacheImpl gameCache) {
+    return gameCache;
   }
 
   @Provides @Singleton RxContacts provideRxContacts(Context context,
@@ -163,7 +195,7 @@ import timber.log.Timber;
   }
 
   @Provides @Singleton User provideCurrentUser(Realm realm, AccessToken accessToken,
-      UserRealmDataMapper userRealmDataMapper) {
+      UserRealmDataMapper userRealmDataMapper, ShortcutRealmDataMapper shortcutRealmDataMapper) {
     final User user = new User("");
 
     userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findAll();
@@ -172,15 +204,43 @@ import timber.log.Timber;
           realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
 
       if (userRealmRes != null) {
-        user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealmRes), true));
+        user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealmRes)));
       }
     });
 
+    RealmResults<ShortcutRealm> shortcutRealmResults = realm.where(ShortcutRealm.class).findAll();
+    RealmList<ShortcutRealm> finalList = new RealmList<ShortcutRealm>();
+    finalList.addAll(shortcutRealmResults.subList(0, shortcutRealmResults.size()));
+
     if (userRealm != null && userRealm.size() > 0) {
-      user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm.get(0)), true));
+      user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm.get(0))));
+      user.setShortcutList(shortcutRealmDataMapper.transform(finalList));
     }
 
     return user;
+  }
+
+  @Provides @Singleton BadgeRealm provideBadge(Realm realm) {
+    BadgeRealm newBadge = new BadgeRealm();
+    badgeRealmResults = realm.where(BadgeRealm.class).findAll();
+    badgeRealmResults.addChangeListener(
+        element -> updateBadge(realm.where(BadgeRealm.class).findFirst()));
+
+    if (badgeRealmResults != null && badgeRealmResults.size() > 0) {
+      updateBadge(badgeRealmResults.first());
+    }
+
+    return newBadge;
+  }
+
+  private void updateBadge(BadgeRealm badge) {
+    if (badge != null) {
+      if (badge.getValue() == 0) {
+        ShortcutBadger.removeCount(application);
+      } else {
+        ShortcutBadger.applyCount(application, badge.getValue());
+      }
+    }
   }
 
   @Provides @Singleton @Named("userThreadSafe") User provideCurrentUserThreadSafe(
@@ -191,7 +251,7 @@ import timber.log.Timber;
     UserRealm userDB =
         realmInst.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
     if (userDB != null) {
-      user.copy(userRealmDataMapper.transform(realmInst.copyFromRealm(userDB), true));
+      user.copy(userRealmDataMapper.transform(realmInst.copyFromRealm(userDB)));
     }
 
     realmInst.close();
@@ -215,6 +275,7 @@ import timber.log.Timber;
   }
 
   @Provides @Singleton Realm provideRealm() {
+    Timber.d("Accessing Realm applicationModule");
     Realm realm = Realm.getDefaultInstance();
     return realm;
   }
@@ -250,10 +311,6 @@ import timber.log.Timber;
 
   @Provides @Singleton SmsListener provideSmsListener(Context context, IntentFilter filter) {
     return new SmsListener(context, filter);
-  }
-
-  @Provides @Singleton ReactiveLocationProvider provideReactiveLocationProvider(Context context) {
-    return new ReactiveLocationProvider(context);
   }
 
   @Provides @Singleton SoundManager provideSoundManager(Context context,
@@ -325,8 +382,8 @@ import timber.log.Timber;
 
   // DATES
   @Provides @Singleton DateUtils provideDateUtils(
-      @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
-    return new DateUtils(utcSimpleDate);
+      @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate, Context context) {
+    return new DateUtils(utcSimpleDate, context);
   }
 
   @Provides @Singleton @Named("utcSimpleDate") SimpleDateFormat provideUTCSimpleDateFormat() {
@@ -356,5 +413,15 @@ import timber.log.Timber;
   @Provides @Singleton GameRepository provideCloudGameRepository(
       CloudGameDataRepository gameDataRepository) {
     return gameDataRepository;
+  }
+
+  @Provides @Singleton LiveRepository provideCloudLiveRepository(
+      CloudLiveDataRepository liveDataRepository) {
+    return liveDataRepository;
+  }
+
+  @Provides @Singleton LiveRepository provideDiskLiveRepository(
+      DiskLiveDataRepository liveDataRepository) {
+    return liveDataRepository;
   }
 }

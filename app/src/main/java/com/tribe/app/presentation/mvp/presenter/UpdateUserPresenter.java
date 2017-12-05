@@ -2,7 +2,6 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
 import com.facebook.AccessToken;
-import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.domain.entity.User;
@@ -86,6 +85,13 @@ public abstract class UpdateUserPresenter implements Presenter {
   public void updateUserInvisibleMode(boolean tribeSave) {
     List<Pair<String, String>> values = new ArrayList<>();
     values.add(new Pair<>(UserRealm.INVISIBLE_MODE, String.valueOf(tribeSave)));
+    updateUser.prepare(values);
+    updateUser.execute(new UpdateUserSubscriber());
+  }
+
+  public void updateUserPushNotif(boolean pushNotif) {
+    List<Pair<String, String>> values = new ArrayList<>();
+    values.add(new Pair<>(UserRealm.MUTE_ONLINE_NOTIF, String.valueOf(pushNotif)));
     updateUser.prepare(values);
     updateUser.execute(new UpdateUserSubscriber());
   }

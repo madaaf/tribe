@@ -1,58 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
+  <com.tribe.app.presentation.view.component.live.LiveInviteView
+      android:id="@+id/viewLiveInvite"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="end"
+      android:visibility="visible"
+      />
+
+  <View
+      android:id="@+id/viewShadow"
+      android:layout_width="10dp"
+      android:layout_height="match_parent"
+      android:layout_gravity="end"
+      android:layout_marginEnd="-10dp"
+      android:background="@drawable/shadow_right"
+      />
+
   <com.tribe.app.presentation.view.component.live.LiveRoomView
       android:id="@+id/viewRoom"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:animateLayoutChanges="true"
-      >
-
-  </com.tribe.app.presentation.view.component.live.LiveRoomView>
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtTooltipFirstGame"
-      android:layout_width="match_parent"
-      android:layout_height="@dimen/game_tooltip_first_height"
-      android:layout_gravity="bottom|center_horizontal"
       android:background="@android:color/black"
-      android:gravity="center"
-      android:maxLines="1"
-      android:text="@string/game_tutorial"
-      android:translationY="@dimen/game_tooltip_first_height"
-      style="@style/Caption.Two.White40"
+      android:clickable="false"
+      android:focusable="false"
+      android:focusableInTouchMode="false"
+      android:visibility="visible"
       />
 
-  <com.tribe.app.presentation.view.widget.game.GameChallengesView
-      android:id="@+id/gameChallengesView"
+  <com.tribe.app.presentation.view.component.live.LiveRingingView
+      android:id="@+id/viewRinging"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:clickable="false"
+      android:focusableInTouchMode="false"
+      />
+
+  <View
+      android:id="@+id/viewDarkOverlay"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:visibility="gone"
+      android:alpha="0"
+      android:background="@color/black.opacity.70"
+      android:clickable="false"
+      android:focusableInTouchMode="false"
       />
-
-  <com.tribe.app.presentation.view.widget.game.GameDrawView
-      android:id="@+id/gameDrawView"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:visibility="gone"
-      />
-
 
   <com.tribe.app.presentation.view.component.live.LiveControlsView
       android:id="@+id/viewControlsLive"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       />
-
-  <com.tribe.app.presentation.view.component.live.LiveStatusNameView
-      android:id="@+id/viewStatusName"
-      android:layout_width="match_parent"
-      android:layout_height="100dp"
-      android:layout_gravity="top|center_horizontal"
-      android:layout_marginLeft="50dp"
-      android:layout_marginRight="50dp"
-      android:layout_marginTop="19.5dp"
-      android:background="@null"
-      />
-
 </merge>

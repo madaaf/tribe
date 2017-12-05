@@ -29,13 +29,10 @@ public class SendboxActivity extends Activity {
     setContentView(R.layout.activity_sandbox);
     unbinder = ButterKnife.bind(this);
     setFinishOnTouchOutside(false);
-    Timber.w("open sendbox activity");
   }
 
   @OnClick(R.id.btnEnable) void enableSendboxAction() {
     if (sendboxEditText.getText().toString().equals(PASS)) {
-      Timber.w("enable sendbox");
-     // Digits.enableSandbox();
       Toast toast = Toast.makeText(getApplicationContext(), "enable Sandbox", Toast.LENGTH_SHORT);
       toast.show();
       finish();
@@ -48,8 +45,6 @@ public class SendboxActivity extends Activity {
   }
 
   @OnClick(R.id.btnDisable) void disableSendboxAction() {
-   // Digits.disableSandbox();
-    Timber.w("diable sendbox");
     Toast toast = Toast.makeText(getApplicationContext(), "disable Sandbox", Toast.LENGTH_SHORT);
     toast.show();
     finish();

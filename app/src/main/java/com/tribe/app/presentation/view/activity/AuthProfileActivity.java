@@ -321,25 +321,26 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     if (loginEntity.getFbAccessToken() != null) {
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_OpenNewCallFacebook);
       subscriptions.add(DialogFactory.dialog(this,
-              EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
-              getString(R.string.onboarding_user_alert_call_link_msg_facebook),
-              getString(R.string.onboarding_user_alert_call_link_facebook), null)
-              .filter(x -> x == true)
-              .subscribe(
-                      a -> navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId, true)));
-
-    } else if (PermissionUtils.hasPermissionsContact(rxPermissions)) {
-      tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_OpenNewCalliMessage);
-      subscriptions.add(DialogFactory.dialog(this,
           EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
-          getString(R.string.onboarding_user_alert_call_link_msg),
-          getString(R.string.onboarding_user_alert_call_link_sms), null)
+          getString(R.string.onboarding_user_alert_call_link_msg_facebook),
+          getString(R.string.onboarding_user_alert_call_link_facebook), null)
           .filter(x -> x == true)
           .subscribe(
-              a -> navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId, false)));
+              a -> navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), linkId,
+                  true)));
     } else {
+      tagSignUp();
       navigator.navigateToHomeFromLogin(this, loginEntity.getCountryCode(), null, false);
     }
+  }
+
+  private void tagSignUp() {
+    Bundle properties = new Bundle();
+    properties.putString(TagManagerUtils.TYPE, TagManagerUtils.SIGNUP);
+    properties.putString(TagManagerUtils.PLATFORM,
+        loginEntity.getFbAccessToken() != null ? TagManagerUtils.PLATFORM_FACEBOOK
+            : TagManagerUtils.PLATFORM_PHONE);
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
   }
 
   @Override public void successFacebookLogin() {
@@ -364,13 +365,11 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
     }
   }
 
-  @Override
-  public void successUpdateFacebook(User user) {
+  @Override public void successUpdateFacebook(User user) {
 
   }
 
-  @Override
-  public void successUpdatePhoneNumber(User user) {
+  @Override public void successUpdatePhoneNumber(User user) {
 
   }
 
@@ -384,9 +383,10 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Override public void usernameResult(Boolean available) {
     boolean usernameValid = available;
-    profileInfoView.setUsernameValid(usernameValid || (user != null
-        && !StringUtils.isEmpty(profileInfoView.getUsername())
-        && profileInfoView.getUsername().equals(user.getUsername())));
+    profileInfoView.setUsernameValid(usernameValid ||
+        (user != null &&
+            !StringUtils.isEmpty(profileInfoView.getUsername()) &&
+            profileInfoView.getUsername().equals(user.getUsername())));
   }
 
   @Override public void showLoading() {

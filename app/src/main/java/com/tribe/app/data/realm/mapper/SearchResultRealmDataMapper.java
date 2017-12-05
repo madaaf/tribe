@@ -10,10 +10,10 @@ import javax.inject.Singleton;
  */
 @Singleton public class SearchResultRealmDataMapper {
 
-  FriendshipRealmDataMapper friendshipRealmDataMapper;
+  private ShortcutRealmDataMapper shortcutRealmDataMapper;
 
-  @Inject public SearchResultRealmDataMapper(FriendshipRealmDataMapper friendshipRealmDataMapper) {
-    this.friendshipRealmDataMapper = friendshipRealmDataMapper;
+  @Inject public SearchResultRealmDataMapper(ShortcutRealmDataMapper shortcutRealmDataMapper) {
+    this.shortcutRealmDataMapper = shortcutRealmDataMapper;
   }
 
   /**
@@ -33,9 +33,9 @@ import javax.inject.Singleton;
       searchResult.setDisplayName(searchResultRealm.getDisplayName());
       searchResult.setPicture(searchResultRealm.getPicture());
       searchResult.setInvisibleMode(searchResultRealm.isInvisibleMode());
-      searchResult.setFriendship(
-          friendshipRealmDataMapper.transform(searchResultRealm.getFriendshipRealm()));
       searchResult.setSearchDone(searchResultRealm.isSearchDone());
+      searchResult.setShortcut(
+          shortcutRealmDataMapper.transform(searchResultRealm.getShortcutRealm()));
       searchResult.setId(searchResultRealm.getId());
     }
 

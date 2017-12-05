@@ -1,7 +1,10 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
+import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.utils.ObjectUtils;
 import java.io.Serializable;
@@ -10,7 +13,7 @@ import java.util.Date;
 /**
  * Created by tiago on 05/08/2016.
  */
-public abstract class Recipient implements Serializable, BaseListInterface {
+public abstract class Recipient implements Serializable, BaseListInterface, HomeAdapterInterface {
 
   public static final String ID_EMPTY = "EMPTY";
   public static final String ID_HEADER = "HEADER";
@@ -26,7 +29,6 @@ public abstract class Recipient implements Serializable, BaseListInterface {
 
   protected Date created_at;
   protected Date updated_at;
-  protected Boolean mute;
   protected int position;
   protected boolean animateAdd = false;
   protected AvatarModel avatarModel = null;
@@ -43,6 +45,10 @@ public abstract class Recipient implements Serializable, BaseListInterface {
     this.updated_at = updatedAt;
   }
 
+  public Date getUpdatedAt() {
+    return this.updated_at;
+  }
+
   public void setPosition(int position) {
     this.position = position;
   }
@@ -53,6 +59,9 @@ public abstract class Recipient implements Serializable, BaseListInterface {
 
   public static int nullSafeComparator(final Recipient one, final Recipient two) {
     int res = ((Boolean) two.isLive()).compareTo(one.isLive());
+    if (res != 0) return res;
+
+    res = ((Boolean) !two.isRead()).compareTo(!one.isRead());
     if (res != 0) return res;
 
     res = ((Boolean) two.isOnline()).compareTo(one.isOnline());
@@ -82,15 +91,9 @@ public abstract class Recipient implements Serializable, BaseListInterface {
 
   public abstract String getUsername();
 
-  public abstract String getUsernameDisplay();
-
   public abstract String getProfilePicture();
 
-  public abstract String getSubId();
-
   public abstract String getId();
-
-  public abstract Date getUpdatedAt();
 
   public abstract boolean isLive();
 
@@ -98,15 +101,7 @@ public abstract class Recipient implements Serializable, BaseListInterface {
 
   public abstract Date getLastSeenAt();
 
-  public abstract boolean isGroup();
-
-  public boolean isMute() {
-    return mute;
-  }
-
-  public void setMute(boolean mute) {
-    this.mute = mute;
-  }
+  public abstract boolean isRead();
 
   public boolean isFake() {
     return (getId().equals(Recipient.ID_EMPTY)
@@ -114,6 +109,38 @@ public abstract class Recipient implements Serializable, BaseListInterface {
         || getId().equals(Recipient.ID_MORE)
         || getId().equals(Recipient.ID_VIDEO)
         || getId().equals(Recipient.ID_CALL_ROULETTE));
+  }
+
+  public @BaseSectionItemDecoration.HeaderType int getHomeSectionType() {
+    if (isLive() || !isRead()) {
+      return BaseSectionItemDecoration.HOME_ONGOING;
+    } else if (isOnline()) {
+      return BaseSectionItemDecoration.HOME_ONLINE;
+    } else if (!getId().equals(ID_EMPTY) && !getId().equals(ID_HEADER)) {
+      return BaseSectionItemDecoration.HOME_RECENT;
+    } else {
+      return BaseSectionItemDecoration.NONE;
+    }
+  }
+
+  public String getSectionTag() {
+    String section = null;
+
+    switch (getHomeSectionType()) {
+      case BaseSectionItemDecoration.HOME_ONGOING:
+        section = TagManagerUtils.SECTION_ONGOING;
+        break;
+
+      case BaseSectionItemDecoration.HOME_ONLINE:
+        section = TagManagerUtils.SECTION_ONLINE;
+        break;
+
+      case BaseSectionItemDecoration.HOME_RECENT:
+        section = TagManagerUtils.SECTION_RECENT;
+        break;
+    }
+
+    return section;
   }
 
   @Override public void setAnimateAdd(boolean animateAdd) {

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/list_live_invite_header_height"
+    android:background="@null"
+    android:orientation="horizontal"
+    >
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtLabel"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:maxLines="1"
+      android:textAllCaps="true"
+      style="@style/Body.Two.Black"
+      />
+</LinearLayout>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+
+
+  <FrameLayout
+      android:id="@+id/recordingView"
+      android:layout_width="130dp"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_centerHorizontal="true"
+      android:background="@drawable/shape_rect_voice_note"
+      android:paddingBottom="5dp"
+      android:paddingStart="8dp"
+      android:paddingTop="5dp"
+      android:visibility="visible"
+      >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/picto_trash_white"
+        />
+
+    <ImageView
+        android:id="@+id/playerBtn"
+        android:layout_width="33dp"
+        android:layout_height="33dp"
+        android:layout_gravity="start"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_play_recording"
+        android:visibility="visible"
+        />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/loadingRecordView"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        app:indicatorColor="@color/blue.voice.bck"
+        app:indicatorName="LineScalePulseOutIndicator"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/timerVoiceNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:paddingEnd="10dp"
+        android:text="0:01"
+        android:textColor="@color/blue.voice.bck"
+        android:textSize="11sp"
+        />
+
+  </FrameLayout>
+
+</FrameLayout>

@@ -1,95 +1,113 @@
 package com.tribe.app.presentation.view.adapter.delegate.contact;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.SearchResult;
-import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
-import com.tribe.app.presentation.view.adapter.model.ButtonModel;
-import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 18/05/2016.
  */
-public class SearchResultGridAdapterDelegate extends BaseListAdapterDelegate {
+public class SearchResultGridAdapterDelegate extends RxAdapterDelegate<List<Object>> {
+
+  private Context context;
+  private LayoutInflater layoutInflater;
+
+  // OBSERVABLES
+  private PublishSubject<View> onClick = PublishSubject.create();
 
   public SearchResultGridAdapterDelegate(Context context) {
-    super(context);
+    this.context = context;
+    this.layoutInflater =
+        (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+  }
+
+  @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
+    SearchResultGridViewHolder vh = new SearchResultGridViewHolder(
+        layoutInflater.inflate(R.layout.item_search_result, parent, false));
+    return vh;
   }
 
   @Override public boolean isForViewType(@NonNull List<Object> items, int position) {
     return (items.get(position) instanceof SearchResult);
   }
 
-  @Override protected ButtonModel getButtonModelFrom(BaseListInterface baseListItem) {
-    SearchResult searchResult = (SearchResult) baseListItem;
-    ButtonModel buttonModel = null;
-
-    if (searchResult.getFriendship() == null) {
-      buttonModel = getAddFriendButton();
-    } else if (searchResult.getFriendship() != null && !searchResult.getFriendship()
-        .isBlockedOrHidden()) {
-      buttonModel = getHangLiveButton();
-    } else if (searchResult.getFriendship().isBlocked()) {
-      buttonModel = getUnblockButton();
-    } else if (searchResult.getFriendship().isHidden()) {
-      buttonModel = getUnhideButton();
-    }
-
-    return buttonModel;
-  }
-
-  @Override protected ButtonModel getButtonModelTo(BaseListInterface baseListItem) {
-    return getHangLiveButton();
-  }
-
-  private ButtonModel getAddFriendButton() {
-    return new ButtonModel(context.getString(R.string.action_add_friend),
-        ContextCompat.getColor(context, R.color.blue_new), Color.WHITE);
-  }
-
-  private ButtonModel getHangLiveButton() {
-    return new ButtonModel(context.getString(R.string.action_hang_live),
-        ContextCompat.getColor(context, R.color.red), Color.WHITE);
-  }
-
-  private ButtonModel getUnblockButton() {
-    return new ButtonModel(context.getString(R.string.action_unblock),
-        ContextCompat.getColor(context, R.color.grey_unblock), Color.WHITE);
-  }
-
-  private ButtonModel getUnhideButton() {
-    return new ButtonModel(context.getString(R.string.action_unhide),
-        ContextCompat.getColor(context, R.color.blue_new), Color.WHITE);
-  }
-
-  @Override protected void setClicks(BaseListInterface baseListItem, BaseListViewHolder vh) {
-    SearchResult searchResult = (SearchResult) baseListItem;
-    boolean conditions = (!searchResult.isMyself() && (searchResult.getFriendship() == null
-        || searchResult.getFriendship().isBlockedOrHidden()));
-
-    if (searchResult.isInvisible()) {
-      vh.btnAdd.setOnClickListener(v -> {
-        clickAdd.onNext(vh.itemView);
-      });
-    } else if (!searchResult.isInvisible() && conditions) {
-      vh.btnAdd.setOnClickListener(v -> {
-        animations.put(vh, animateProgressBar(vh));
-        searchResult.setAnimateAdd(true);
-        clickAdd.onNext(vh.itemView);
-      });
-    } else {
-      vh.btnAdd.setOnClickListener(v -> clickHangLive.onNext(vh.itemView));
-    }
-  }
-
   @Override
   public void onBindViewHolder(@NonNull List<Object> items, @NonNull RecyclerView.ViewHolder holder,
       int position, List<Object> payloads) {
+  }
+
+  @Override public void onBindViewHolder(@NonNull List<Object> items, int position,
+      @NonNull RecyclerView.ViewHolder holder) {
+    SearchResultGridViewHolder vh = (SearchResultGridViewHolder) holder;
+    SearchResult searchResult = (SearchResult) items.get(position);
+
+    String displayName = searchResult.getDisplayName(), username =
+        StringUtils.isEmpty(searchResult.getUsername()) ? "" : "@" + searchResult.getUsername(),
+        picture = searchResult.getPicture();
+
+    if (StringUtils.isEmpty(displayName)) {
+      vh.btnAdd.setVisibility(View.GONE);
+
+      if (searchResult.isSearchDone()) {
+        displayName = "No user found";
+      } else {
+        displayName = context.getString(R.string.search_searching);
+      }
+    } else {
+      vh.btnAdd.setVisibility(View.VISIBLE);
+    }
+
+    vh.txtName.setText(displayName);
+    vh.txtUsername.setText(username);
+    vh.viewNewAvatar.load(picture);
+
+    if (searchResult.getShortcut() != null) {
+      vh.btnAdd.setImageResource(R.drawable.picto_added);
+      vh.btnAdd.setOnClickListener(null);
+    } else {
+      vh.btnAdd.setImageResource(R.drawable.picto_add);
+      vh.btnAdd.setOnClickListener(view -> onClick.onNext(vh.itemView));
+    }
+  }
+
+  class SearchResultGridViewHolder extends RecyclerView.ViewHolder {
+
+    public SearchResultGridViewHolder(View itemView) {
+      super(itemView);
+      ButterKnife.bind(this, itemView);
+    }
+
+    @BindView(R.id.viewNewAvatar) public NewAvatarView viewNewAvatar;
+
+    @BindView(R.id.txtName) public TextViewFont txtName;
+
+    @BindView(R.id.txtUsername) public TextViewFont txtUsername;
+
+    @BindView(R.id.btnAdd) public ImageView btnAdd;
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<View> onClick() {
+    return onClick;
   }
 }

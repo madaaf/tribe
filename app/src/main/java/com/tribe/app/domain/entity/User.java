@@ -1,8 +1,14 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.domain.entity.helpers.Changeable;
+import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.interfaces.BaseListInterface;
+import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
+import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,16 +20,16 @@ import java.util.List;
 /**
  * Created by tiago on 04/05/2016.
  */
-public class User implements Serializable, BaseListInterface {
 
+public class User
+    implements Serializable, BaseListInterface, Changeable, LiveInviteAdapterSectionInterface,
+    HomeAdapterInterface {
 
   public static final String ID = "id";
   public static final String FBID = "fbid";
   public static final String USERNAME = "username";
   public static final String DISPLAY_NAME = "display_name";
   public static final String PICTURE = "picture";
-
-
 
   private static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
   public static final String ID_EMPTY = "EMPTY";
@@ -35,51 +41,71 @@ public class User implements Serializable, BaseListInterface {
   private Date updated_at;
   private String username;
   private String phone;
-  private int score = 0;
-  private Location location;
-  private boolean tribe_save;
-  private List<Friendship> friendships;
-  private List<Membership> membershipList;
-  private List<Recipient> friendshipList;
+  private List<Recipient> recipientList;
+  private List<Shortcut> shortcutList;
+  private List<Message> messageList;
   private List<Invite> inviteList;
   private String fbid;
   private boolean invisible_mode;
   private boolean push_notif;
+  private boolean mute_online_notif;
   private boolean is_online = false;
+  private boolean is_live = false;
+  private boolean isActive = false;
+  private boolean isTyping = false;
   private long time_in_call = 0;
   private Date last_seen_at;
+  private boolean random_banned_permanently;
+  private Date random_banned_until;
 
   private boolean isNewFriend = false;
   private boolean isFriend = false;
   private boolean animateAdd = false;
+  private boolean isSelected = false;
 
   private AvatarModel avatarModel = null;
 
   private boolean isNew = false;
 
+  private String currentRoomId;
+  private boolean ringing = false;
+
   public User(String id) {
     this.id = id;
     this.inviteList = new ArrayList<>();
+    this.shortcutList = new ArrayList<>();
   }
 
-  public int getScore() {
-    return score;
+  public boolean isRandom_banned_permanently() {
+    return random_banned_permanently;
   }
 
-  public String getScoreStr() {
-    return "" + score;
+  public void setRandom_banned_permanently(boolean random_banned_permanently) {
+    this.random_banned_permanently = random_banned_permanently;
   }
 
-  public void setScore(int score) {
-    this.score = score;
+  public Date getRandom_banned_until() {
+    return random_banned_until;
   }
 
-  public Location getLocation() {
-    return location;
+  public void setRandom_banned_until(Date random_banned_until) {
+    this.random_banned_until = random_banned_until;
   }
 
-  public void setLocation(Location location) {
-    this.location = location;
+  public boolean isActive() {
+    return isActive;
+  }
+
+  public boolean isTyping() {
+    return isTyping;
+  }
+
+  public void setTyping(boolean typing) {
+    isTyping = typing;
+  }
+
+  public void setActive(boolean active) {
+    isActive = active;
   }
 
   public String getUsername() {
@@ -112,6 +138,10 @@ public class User implements Serializable, BaseListInterface {
 
   public String getDisplayName() {
     return display_name;
+  }
+
+  @Override public boolean isRead() {
+    return false;
   }
 
   public void setDisplayName(String displayName) {
@@ -150,24 +180,18 @@ public class User implements Serializable, BaseListInterface {
     this.time_in_call = time_in_call;
   }
 
-  public void setFriendships(List<Friendship> friendships) {
-    this.friendships = friendships;
+  public List<Message> getMessages() {
+    if (messageList == null) return new ArrayList<>();
+
+    return messageList;
   }
 
-  public List<Friendship> getFriendships() {
-    if (friendships == null) return new ArrayList<>();
-
-    return friendships;
+  public List<Message> getMessageList() {
+    return messageList;
   }
 
-  public void setMembershipList(List<Membership> membershipList) {
-    this.membershipList = membershipList;
-  }
-
-  public List<Membership> getMembershipList() {
-    if (membershipList == null) return new ArrayList<>();
-
-    return membershipList;
+  public void setMessageList(List<Message> messageList) {
+    this.messageList = messageList;
   }
 
   public String getFbid() {
@@ -176,14 +200,6 @@ public class User implements Serializable, BaseListInterface {
 
   public void setFbid(String fbid) {
     this.fbid = fbid;
-  }
-
-  public boolean isTribeSave() {
-    return tribe_save;
-  }
-
-  public void setTribeSave(boolean tribeSave) {
-    this.tribe_save = tribeSave;
   }
 
   public boolean isInvisibleMode() {
@@ -202,35 +218,35 @@ public class User implements Serializable, BaseListInterface {
     return push_notif;
   }
 
-  public List<Recipient> getFriendshipList() {
-    friendshipList = new ArrayList<>();
-
-    List<Friendship> friendshipWithoutMe = new ArrayList<>();
-
-    if (friendships != null) {
-      for (Friendship fr : friendships) {
-        if (!id.equals(fr.getSubId())) {
-          friendshipWithoutMe.add(fr);
-        }
-      }
-
-      friendshipList.addAll(friendshipWithoutMe);
-    }
-
-    if (membershipList != null) friendshipList.addAll(membershipList);
-    if (inviteList != null) friendshipList.addAll(inviteList);
-
-    Collections.sort(friendshipList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
-
-    return friendshipList;
+  public void setMute_online_notif(boolean mute_online_notif) {
+    this.mute_online_notif = mute_online_notif;
   }
 
-  public boolean isOnline() {
+  public boolean isMute_online_notif() {
+    return mute_online_notif;
+  }
+
+  @Override public boolean isOnline() {
     if (is_online) return is_online;
     if (last_seen_at == null) return false;
 
+    //Timber.d("last_seen_at : " + display_name + " / " + last_seen_at);
+    //Timber.d("System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES : " +
+    //    (System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES));
     // We consider that somebody that was online less than fifteen minutes ago is still online
     return System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES;
+  }
+
+  @Override public boolean isLive() {
+    return is_live;
+  }
+
+  public void setIsLive(boolean is_live) {
+    this.is_live = is_live;
+  }
+
+  @Override public boolean isRinging() {
+    return ringing;
   }
 
   public void setIsOnline(boolean isOnline) {
@@ -239,6 +255,10 @@ public class User implements Serializable, BaseListInterface {
 
   public Date getLastSeenAt() {
     return last_seen_at;
+  }
+
+  @Override public int getHomeSectionType() {
+    return BaseSectionItemDecoration.SEARCH_SUGGESTED_CONTACTS;
   }
 
   public void setLastSeenAt(Date lastSeenAt) {
@@ -287,6 +307,14 @@ public class User implements Serializable, BaseListInterface {
     isNewFriend = newFriend;
   }
 
+  public boolean isSelected() {
+    return isSelected;
+  }
+
+  public void setSelected(boolean selected) {
+    isSelected = selected;
+  }
+
   public void setInviteList(Collection<Invite> inviteList) {
     this.inviteList.clear();
     this.inviteList.addAll(inviteList);
@@ -296,12 +324,46 @@ public class User implements Serializable, BaseListInterface {
     return inviteList;
   }
 
+  public void setShortcutList(List<Shortcut> shortcutList) {
+    this.shortcutList = shortcutList;
+  }
+
+  public List<Shortcut> getShortcutList() {
+    return shortcutList;
+  }
+
+  public List<Recipient> getRecipientList() {
+    recipientList = new ArrayList<>();
+    if (shortcutList != null) recipientList.addAll(shortcutList);
+    if (inviteList != null) recipientList.addAll(inviteList);
+
+    Collections.sort(recipientList, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
+
+    return recipientList;
+  }
+
   public void setNew(boolean aNew) {
     isNew = aNew;
   }
 
   public boolean isNew() {
     return isNew;
+  }
+
+  public void setCurrentRoomId(String currentRoomId) {
+    this.currentRoomId = currentRoomId;
+  }
+
+  public void setRinging(boolean ringing) {
+    this.ringing = ringing;
+  }
+
+  @Override public String getCurrentRoomId() {
+    return currentRoomId;
+  }
+
+  public boolean isUserInCall() {
+    return !StringUtils.isEmpty(currentRoomId) || ringing;
   }
 
   public TribeGuest asTribeGuest() {
@@ -329,21 +391,14 @@ public class User implements Serializable, BaseListInterface {
       setDisplayName(user.getDisplayName());
       setUsername(user.getUsername());
       setProfilePicture(user.getProfilePicture());
-      setScore(user.getScore());
       setPhone(user.getPhone());
       setFbid(user.getFbid());
       setInvisibleMode(user.isInvisibleMode());
-      setTribeSave(user.isTribeSave());
       setPushNotif(user.isPushNotif());
       setTimeInCall(user.getTimeInCall());
       setLastSeenAt(user.getLastSeenAt());
-      if (user.getLocation() != null) setLocation(user.getLocation());
-      if (user.getMembershipList() != null && user.getMembershipList().size() > 0) {
-        setMembershipList(user.getMembershipList());
-      }
-      if (user.getFriendships() != null && user.getFriendshipList().size() > 0) {
-        setFriendships(user.getFriendships());
-      }
+      setRandom_banned_until(user.getRandom_banned_until());
+      setMute_online_notif(user.isMute_online_notif());
     }
   }
 
@@ -354,78 +409,50 @@ public class User implements Serializable, BaseListInterface {
     setDisplayName(null);
     setUsername(null);
     setProfilePicture(null);
-    setScore(0);
     setPhone(null);
     setFbid(null);
     setInvisibleMode(false);
     setPushNotif(false);
     setTimeInCall(0);
     setLastSeenAt(null);
-    setTribeSave(false);
-    setLocation(null);
-    setMembershipList(null);
-    setFriendships(null);
+    setRandom_banned_until(null);
+    setMute_online_notif(false);
   }
 
-  public List<GroupMember> getUserList() {
-    List<GroupMember> userList = new ArrayList<>();
-
-    if (friendships == null) return userList;
-
-    Collections.sort(friendships, (lhs, rhs) -> Recipient.nullSafeComparator(lhs, rhs));
-
-    for (Friendship friendship : friendships) {
-      if (!friendship.isFake() && !friendship.getSubId().equals(this.id)) {
-        GroupMember groupMember = new GroupMember(friendship.getFriend());
-        groupMember.setFriend(true);
-        userList.add(groupMember);
-      }
-    }
-
-    return userList;
-  }
-
-  public void computeMemberFriends(List<GroupMember> groupMemberList) {
-    for (GroupMember groupMember : groupMemberList) {
-      for (Friendship friendship : friendships) {
-        if (friendship.getFriend().equals(groupMember.getUser())) {
-          groupMember.setFriend(true);
-          groupMember.setFriendship(friendship);
-        }
-      }
-    }
-  }
-
-  public int computeUserFriends(List<User> userList) {
-    int count = 0;
-
-    if (friendships != null) {
-      for (User user : userList) {
-        for (Friendship friendship : friendships) {
-          if (friendship.getFriend().equals(user)) {
-            user.setFriend(true);
-            count++;
-          }
-        }
-      }
-    }
-
-    return count;
-  }
-
-  public User getFromFriendships(String userId) {
-    for (Friendship friendship : friendships) {
-      if (friendship.getSubId().equals(userId)) {
-        return friendship.getFriend();
-      }
-    }
-
-    return null;
+  public boolean isEmpty() {
+    return StringUtils.isEmpty(username);
   }
 
   @Override public int hashCode() {
     int result = super.hashCode();
     result = 31 * result + (getId() != null ? getId().hashCode() : 0);
     return result;
+  }
+
+  @Override public int getChangeHashCode() {
+    return id.hashCode();
+  }
+
+  @Override public int getLiveInviteSectionType() {
+    if (isUserInCall()) {
+      return BaseSectionItemDecoration.LIVE_CHAT_MEMBERS;
+    } else {
+      return BaseSectionItemDecoration.LIVE_ADD_FRIENDS_IN_CALL;
+    }
+  }
+
+  @Override public String toString() {
+    return "User{" +
+        "id='" +
+        id +
+        '\'' +
+        ", display_name='" +
+        display_name +
+        '\'' +
+        ", is_online=" +
+        isOnline() +
+        ", isActive=" +
+        isActive() +
+        '}';
   }
 }

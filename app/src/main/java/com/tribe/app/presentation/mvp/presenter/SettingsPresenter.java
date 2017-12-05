@@ -2,12 +2,10 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.domain.entity.Contact;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
-import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateUser;
@@ -28,7 +26,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
 
   private SettingsMVPView settingsView;
 
-  private final GetBlockedFriendshipList getBlockedFriendshipList;
   private final RemoveInstall removeInstall;
   private final UseCase synchroContactList;
   private UseCaseDisk getDiskContactList;
@@ -36,21 +33,19 @@ public class SettingsPresenter extends UpdateUserPresenter {
   private JobManager jobManager;
 
   private LookupContactsSubscriber lookupContactsSubscriber;
-  private GetBlockedFriendshipListSubscriber getBlockedFriendshipListSubscriber;
 
   @Inject SettingsPresenter(UpdateUser updateUser,
-                            @Named("lookupByUsername") LookupUsername lookupUsername, RxFacebook rxFacebook,
-                            RemoveInstall removeInstall, @Named("synchroContactList") UseCase synchroContactList,
-                            JobManager jobManager, @Named("diskContactList") UseCaseDisk getDiskContactList,
-                            @Named("diskFBContactList") UseCaseDisk getDiskFBContactList,
-                            GetBlockedFriendshipList getBlockedFriendshipList, UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
+      @Named("lookupByUsername") LookupUsername lookupUsername, RxFacebook rxFacebook,
+      RemoveInstall removeInstall, @Named("synchroContactList") UseCase synchroContactList,
+      JobManager jobManager, @Named("diskContactList") UseCaseDisk getDiskContactList,
+      @Named("diskFBContactList") UseCaseDisk getDiskFBContactList,
+      UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
     super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
     this.removeInstall = removeInstall;
     this.synchroContactList = synchroContactList;
     this.jobManager = jobManager;
     this.getDiskContactList = getDiskContactList;
     this.getDiskFBContactList = getDiskFBContactList;
-    this.getBlockedFriendshipList = getBlockedFriendshipList;
   }
 
   @Override public void onViewDetached() {
@@ -58,14 +53,12 @@ public class SettingsPresenter extends UpdateUserPresenter {
     synchroContactList.unsubscribe();
     getDiskContactList.unsubscribe();
     getDiskFBContactList.unsubscribe();
-    getBlockedFriendshipList.unsubscribe();
     settingsView = null;
     super.onViewDetached();
   }
 
   @Override public void onViewAttached(MVPView v) {
     settingsView = (SettingsMVPView) v;
-    loadBlockedFriendshipList();
   }
 
   public void logout() {
@@ -149,41 +142,6 @@ public class SettingsPresenter extends UpdateUserPresenter {
       if (contactList != null) {
         settingsView.onFBContactsSync(contactList.size());
       }
-    }
-  }
-
-  public void loadBlockedFriendshipList() {
-    if (getBlockedFriendshipListSubscriber != null) {
-      getBlockedFriendshipListSubscriber.unsubscribe();
-    }
-
-    getBlockedFriendshipListSubscriber = new GetBlockedFriendshipListSubscriber();
-    getBlockedFriendshipList.execute(getBlockedFriendshipListSubscriber);
-  }
-
-  private class GetBlockedFriendshipListSubscriber extends DefaultSubscriber<List<Friendship>> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-    }
-
-    @Override public void onNext(List<Friendship> friendshipList) {
-      settingsView.renderBlockedFriendshipList(friendshipList);
-    }
-  }
-
-  private class UpdateFriendshipSubscriber extends DefaultSubscriber<Friendship> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-    }
-
-    @Override public void onNext(Friendship friendship) {
-      settingsView.friendshipUpdated(friendship);
     }
   }
 }

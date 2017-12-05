@@ -3,68 +3,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-  <RelativeLayout
-      android:id="@+id/progressRefreshBack"
-      android:layout_width="30dp"
-      android:layout_height="30dp"
-      android:layout_gravity="center"
-      android:background="@drawable/shape_oval_white10"
-      android:visibility="invisible"
-      >
-
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/progressRefresh"
-        android:layout_width="17.5dp"
-        android:layout_height="17.5dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="6dp"
-        android:alpha="0"
-        android:background="@null"
-        app:cpv_animAutostart="true"
-        app:cpv_animDuration="3000"
-        app:cpv_color="@android:color/white"
-        app:cpv_indeterminate="true"
-        app:cpv_thickness="2sp"
-        />
-  </RelativeLayout>
   <FrameLayout
       android:id="@+id/viewTopBarContainer"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-
       android:padding="10dp"
       >
-    <com.tribe.app.presentation.view.widget.avatar.AvatarView
-        android:id="@+id/viewAvatar"
-        android:layout_width="@dimen/avatar_size_smaller"
-        android:layout_height="@dimen/avatar_size_smaller"
-        android:layout_gravity="left"
+    <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+        android:id="@+id/viewNewAvatar"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_gravity="left|center_vertical"
         android:layout_marginLeft="@dimen/horizontal_margin_small"
         android:clickable="true"
         android:foreground="@drawable/selectable_button_oval_light"
         android:scaleType="centerInside"
-        app:avatarType="online"
-        app:hasHole="true"
-        app:hasInd="true"
-        app:hasShadow="false"
+        app:newAvatarType="online"
         />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/btnInvite"
-        android:layout_width="wrap_content"
+    <com.tribe.app.presentation.view.widget.DiceView
+        android:id="@+id/diceLayout"
+        android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_gravity="right"
-        android:background="@drawable/selectable_button_all_rounded_5_green"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginRight="@dimen/horizontal_margin_small"
         android:clickable="true"
-        android:drawablePadding="8dp"
-        android:drawableStart="@drawable/picto_hangouts"
         android:gravity="center_vertical"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:singleLine="true"
-        android:text="@string/topbar_invite"
-        style="@style/Body.Two.White"
+        app:diceType="homeGrid"
         />
 
     <ImageView
@@ -80,7 +46,7 @@
         android:src="@drawable/picto_search_close"
         />
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/btnSearch"
         android:layout_width="match_parent"
         android:layout_height="@dimen/avatar_size_smaller"
@@ -88,15 +54,6 @@
         android:clickable="true"
         android:paddingLeft="@dimen/horizontal_margin_smaller"
         >
-
-      <ImageView
-          android:id="@+id/imgSearch"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical"
-          android:scaleType="centerInside"
-          android:src="@drawable/picto_search_white"
-          />
 
       <com.tribe.app.presentation.view.widget.EditTextFont
           android:id="@+id/editTextSearch"
@@ -106,7 +63,6 @@
           android:layout_marginStart="20dp"
           android:background="@null"
           android:gravity="center_vertical"
-          android:hint="@string/topbar_search"
           android:imeOptions="actionDone"
           android:inputType="text|textVisiblePassword"
           android:singleLine="true"
@@ -116,10 +72,34 @@
           />
 
       <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/txtSearch"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_centerInParent="true"
+          android:layout_marginEnd="15dp"
+          android:layout_marginStart="5dp"
+          android:background="@null"
+          android:gravity="center_vertical"
+          android:text="@string/topbar_search"
+          style="@style/Body.Two.White40"
+          />
+
+      <ImageView
+          android:id="@+id/imgSearch"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerVertical="true"
+          android:layout_toLeftOf="@id/txtSearch"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_search"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
           android:id="@+id/txtNewContacts"
           android:layout_width="wrap_content"
           android:layout_height="match_parent"
-          android:layout_gravity="end"
+          android:layout_alignParentEnd="true"
+          android:layout_centerVertical="true"
           android:layout_margin="4dp"
           android:alpha="0"
           android:background="@null"
@@ -131,12 +111,12 @@
           style="@style/Title.2.White"
           />
 
-
       <FrameLayout
           android:id="@+id/btnSyncContacts"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_gravity="end|center_vertical"
+          android:layout_alignParentEnd="true"
+          android:layout_centerVertical="true"
           android:layout_margin="4dp"
           android:background="@drawable/shape_rect_orange_sync_corner"
           android:clickable="true"
@@ -152,47 +132,6 @@
             android:src="@drawable/picto_synch_contacts"
             />
       </FrameLayout>
-    </FrameLayout>
-
-    <FrameLayout
-        android:id="@+id/callRoulette"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="55dp"
-        android:background="@drawable/shape_rect_white_corner"
-        android:clickable="true"
-        android:gravity="center"
-        android:padding="15dp"
-        android:visibility="gone"
-        >
-
-      <com.tribe.app.presentation.view.widget.DiceView
-          android:id="@+id/diceLayout"
-          android:layout_width="45dp"
-          android:layout_height="45dp"
-          android:layout_marginEnd="4dp"
-          app:diceType="homeGrid"
-          />
-
-
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center"
-          android:layout_marginStart="5dp"
-          android:gravity="center"
-          android:paddingEnd="50dp"
-          android:paddingStart="50dp"
-          android:text="@string/roll_the_dice_grid_button"
-          android:textSize="15sp"
-          style="@style/Body.Two.Black"
-          />
-
-    </FrameLayout>
+    </RelativeLayout>
   </FrameLayout>
-
-
 </merge>

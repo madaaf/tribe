@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
@@ -98,6 +99,7 @@ public class DiceView extends FrameLayout {
     stopRotation();
     resetDotsStates();
     setAlphaBackground(0f);
+
     new Handler().postDelayed(() -> {
       ResizeAnimation a = new ResizeAnimation(dice);
       a.setDuration(500);
@@ -119,12 +121,27 @@ public class DiceView extends FrameLayout {
     }, 1000);
   }
 
+  public void translateDice(int translation, boolean shouldHideBG) {
+    if (shouldHideBG) {
+      bgView.setVisibility(View.GONE);
+    }
+
+    animate().translationY(translation > 0 ? translation - dice.getMeasuredHeight() : translation)
+        .scaleX(translation > 0 ? 0.8f : 1f)
+        .scaleY(translation > 0 ? 0.8f : 1f)
+        .setDuration(300)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+  }
+
   @OnClick(R.id.diceView) public void onNextClick() {
+    bgView.setVisibility(View.VISIBLE);
     startDiceAnimation();
     onNextDiceClick.onNext(null);
   }
 
   public void startDiceAnimation() {
+    translateDice(0, false);
     dice.setEnabled(false);
     setAlphaBackground(1f);
     if (type == TYPE_FROM_ROOM) {
@@ -156,7 +173,11 @@ public class DiceView extends FrameLayout {
       case TYPE_FROM_GRID:
         bgView.setVisibility(GONE);
         label.setVisibility(GONE);
-        dice.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.dice_top_bar_bg));
+        sizeDice = screenUtils.dpToPx(30);
+        setDiceSize(sizeDice);
+        showLabel(false);
+        dice.setBackground(
+            ContextCompat.getDrawable(getContext(), R.drawable.shape_rect_white_corner));
         Timber.d("dice from grid");
         break;
       case TYPE_FROM_TILE:

@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/contentView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical"
+    >
+
+  <FrameLayout
+      android:id="@+id/topbar"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/top_bar_height_small"
+      android:layout_alignParentStart="true"
+      android:layout_alignParentTop="true"
+      android:background="@drawable/shape_rect_white_rounded_corners_top"
+      >
+
+    <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+        android:id="@+id/viewNewAvatar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="left|center_vertical"
+        android:layout_marginStart="15dp"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="GROUP NAME"
+        app:textAllCaps="true"
+        style="@style/Title.2.Black40"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_gravity="bottom"
+        android:background="@color/grey.chat.grey"
+        />
+
+  </FrameLayout>
+
+  <FrameLayout
+      android:id="@+id/container"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@+id/topbar"
+      android:background="@android:color/white"
+      android:clickable="true"
+      />
+
+
+  <FrameLayout
+      android:id="@+id/containerUsers"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_above="@+id/separator"
+      android:layout_alignParentStart="true"
+      android:layout_gravity="center_vertical"
+      android:gravity="center_vertical"
+      >
+
+    <View
+        android:id="@+id/separator2"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/grey.chat.grey"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        >
+
+      <android.support.v7.widget.RecyclerView
+          android:id="@+id/recyclerViewGrp"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_weight="1"
+          android:orientation="horizontal"
+          android:overScrollMode="never"
+          android:paddingBottom="10dp"
+          android:paddingEnd="5dp"
+          android:paddingStart="5dp"
+          android:paddingTop="10dp"
+          app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+          app:reverseLayout="true"
+          />
+
+      <FrameLayout
+          android:id="@+id/containerQuickChat"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="end|center_horizontal"
+          android:paddingBottom="5dp"
+          android:paddingEnd="5dp"
+          android:paddingStart="5dp"
+          android:paddingTop="10dp"
+          android:visibility="visible"
+          />
+
+    </LinearLayout>
+
+
+  </FrameLayout>
+
+  <com.tribe.app.presentation.view.widget.chat.RecyclerMessageView
+      android:id="@+id/recyclerViewChat"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_above="@+id/containerUsers"
+      android:layout_below="@+id/topbar"
+      android:animateLayoutChanges="true"
+      >
+
+  </com.tribe.app.presentation.view.widget.chat.RecyclerMessageView>
+
+
+  <View
+      android:id="@+id/separator"
+      android:layout_width="match_parent"
+      android:layout_height="0.5dp"
+      android:layout_above="@+id/containerEditText"
+      android:background="@color/grey.chat.grey"
+      />
+
+  <include
+      layout="@layout/view_recording"
+      android:id="@+id/viewRecording"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_centerHorizontal="true"
+      android:visibility="visible"
+      />
+
+
+  <View
+      android:id="@+id/blurBackEditText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_alignTop="@+id/containerEditText"
+      android:alpha="0"
+      />
+
+  <RelativeLayout
+      android:id="@+id/containerEditText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentStart="true"
+      android:layout_gravity="bottom"
+      android:clipChildren="false"
+      android:clipToPadding="false"
+      android:gravity="bottom"
+      >
+
+
+    <FrameLayout
+        android:id="@+id/refMaxExpended"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/videoCallBtn"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
+        android:visibility="invisible"
+        />
+
+    <FrameLayout
+        android:id="@+id/refExpended"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/btnSendLikeContainer"
+        android:layout_alignStart="@+id/editText"
+        android:visibility="invisible"
+        />
+    <FrameLayout
+        android:id="@+id/refInit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/editText"
+        android:layout_marginEnd="10dp"
+        android:layout_toStartOf="@+id/btnSendLikeContainer"
+        android:visibility="invisible"
+        />
+
+    <ImageView
+        android:id="@+id/uploadBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editText"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:gravity="bottom"
+        android:paddingStart="20dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_chat_upload"
+        />
+
+    <ImageView
+        android:id="@+id/trashBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editText"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="35dp"
+        android:alpha="0"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_cancel_voice_note"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/hintEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editText"
+        android:layout_alignStart="@+id/editText"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="20dp"
+        android:paddingStart="40dp"
+        android:textColor="@color/grey.chat.grey.hint"
+        />
+
+    <com.tribe.app.presentation.view.widget.EditTextFont
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_toEndOf="@+id/uploadBtn"
+        android:background="@drawable/shape_rect_chat"
+        android:ems="10"
+        android:hint="Aa"
+        android:imeOptions="actionSend"
+        android:inputType="textMultiLine|textShortMessage|textAutoCorrect|textCapSentences"
+        android:minHeight="40dp"
+        android:padding="10dp"
+        android:paddingStart="20dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="@color/grey.chat.grey.hint"
+        android:textCursorDrawable="@drawable/color_cursor"
+        android:textSize="15sp"
+        style="@style/Content.Three.Black"
+        />
+
+    <FrameLayout
+        android:id="@+id/btnSendLikeContainer"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/editText"
+        android:layout_gravity="bottom"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_toStartOf="@+id/videoCallBtn"
+        android:gravity="bottom"
+        >
+
+      <ImageView
+          android:id="@+id/sendBtn"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_chat_send"
+          />
+
+      <ImageView
+          android:id="@+id/likeBtn"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_like_heart"
+          android:visibility="invisible"
+          />
+
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/videoCallBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/editText"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="12dp"
+        android:paddingEnd="20dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_chat_video"
+        />
+
+
+  </RelativeLayout>
+
+  <com.tribe.app.presentation.view.widget.PulseLayout
+      android:id="@+id/layoutPulse"
+      android:layout_width="150dp"
+      android:layout_height="150dp"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentEnd="true"
+      android:layout_marginBottom="-45dp"
+      android:layout_marginEnd="-45dp"
+      app:pulseColor="@null"
+      app:pulseCount="4"
+      app:pulseDuration="3000"
+      />
+
+  <ImageView
+      android:id="@+id/voiceNoteBtn"
+      android:layout_width="33dp"
+      android:layout_height="33dp"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentStart="true"
+      android:background="@drawable/shape_circle_grey"
+      android:scaleType="centerInside"
+      android:visibility="visible"
+      />
+
+  <ImageView
+      android:id="@+id/pictoVoiceNote"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      android:layout_alignParentStart="true"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_recording"
+      android:visibility="visible"
+      />
+
+
+</RelativeLayout>

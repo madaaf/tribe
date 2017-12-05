@@ -11,6 +11,8 @@ import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.preferences.LastSync;
@@ -20,7 +22,6 @@ import java.text.SimpleDateFormat;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
 
 /**
  * Factory that creates different implementations of {@link UserDataStoreFactory}.
@@ -39,18 +40,18 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
   private final GrowthApi growthApi;
   private final AccessToken accessToken;
   private final Installation installation;
-  private final ReactiveLocationProvider reactiveLocationProvider;
   private final SimpleDateFormat utcSimpleDate;
   private final @LastSync Preference<Long> lastSync;
   private final PhoneUtils phoneUtils;
   private final @LookupResult Preference<String> lookupResult;
+  private final UserRealmDataMapper userRealmDataMapper;
 
   @Inject public UserDataStoreFactory(Context context, UserCache userCache, LiveCache liveCache,
       ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi,
       LoginApi loginApi, LookupApi lookupApi, GrowthApi growthApi, AccessToken accessToken,
-      Installation installation, ReactiveLocationProvider reactiveLocationProvider,
+      Installation installation,
       @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate, @LastSync Preference<Long> lastSync,
-      PhoneUtils phoneUtils, @LookupResult Preference<String> lookupResult) {
+      PhoneUtils phoneUtils, @LookupResult Preference<String> lookupResult, UserRealmDataMapper userRealmDataMapper) {
 
     if (context == null || userCache == null) {
       throw new IllegalArgumentException("Constructor parameters cannot be null!");
@@ -68,11 +69,11 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
     this.growthApi = growthApi;
     this.accessToken = accessToken;
     this.installation = installation;
-    this.reactiveLocationProvider = reactiveLocationProvider;
     this.utcSimpleDate = utcSimpleDate;
     this.lastSync = lastSync;
     this.phoneUtils = phoneUtils;
     this.lookupResult = lookupResult;
+    this.userRealmDataMapper = userRealmDataMapper;
   }
 
   /**
@@ -89,6 +90,6 @@ import pl.charmas.android.reactivelocation.ReactiveLocationProvider;
     return new CloudUserDataStore(this.userCache, this.contactCache, this.liveCache,
         this.rxContacts, this.rxFacebook, this.tribeApi, this.loginApi, this.lookupApi,
         this.growthApi, this.accessToken, this.installation, this.context, this.lastSync,
-        this.phoneUtils, this.lookupResult);
+        this.phoneUtils, this.lookupResult, this.userRealmDataMapper);
   }
 }

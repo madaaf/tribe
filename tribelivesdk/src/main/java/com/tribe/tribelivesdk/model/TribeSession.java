@@ -20,7 +20,6 @@ public class TribeSession {
 
     if (userId == null || userId.equals("") || userId.startsWith(WEB_ID)) {
       isExternal = true;
-      this.userId = peerId;
     }
   }
 

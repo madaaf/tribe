@@ -9,20 +9,17 @@ import android.os.Build;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
-
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.utils.EmojiParser;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.LabelSheetAdapter;
+import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,36 +94,36 @@ public final class DialogFactory {
     });
   }
 
-  public static Observable<String> numberPadDialog(Context context, String title, String positiveMessage, String negativeMessage, int inputType) {
+  public static Observable<String> inputDialog(Context context, String title, String body,
+      String positiveMessage, String negativeMessage, int inputType) {
     return Observable.create((Subscriber<? super String> subscriber) -> {
 
       ContextThemeWrapper themedContext;
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         themedContext = new ContextThemeWrapper(context,
-                android.R.style.Theme_Material_Light_Dialog_NoActionBar);
+            android.R.style.Theme_Material_Light_Dialog_NoActionBar);
       } else {
         themedContext =
-                new ContextThemeWrapper(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
+            new ContextThemeWrapper(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
       }
 
-      final EditText et = new EditText(themedContext);
+      View parent = LayoutInflater.from(context).inflate(R.layout.view_edit_shortcut_name, null);
+      EditTextFont et = parent.findViewById(R.id.editTxtName);
       et.setInputType(inputType);
 
-      final AlertDialog ad = new AlertDialog.Builder(themedContext)
-              .setTitle(title)
-              .setPositiveButton(positiveMessage, (dialog, which) -> {
+      final AlertDialog ad = new AlertDialog.Builder(themedContext).setTitle(title)
+          .setMessage(body)
+          .setPositiveButton(positiveMessage, (dialog, which) -> {
 
-                if (et.getText() != null) {
-                  subscriber.onNext(et.getText().toString());
-                }
+            if (et.getText() != null) {
+              subscriber.onNext(et.getText().toString());
+            }
 
-                subscriber.onCompleted();
-              })
-              .setNegativeButton(negativeMessage, (dialog, which) -> {
-                subscriber.onCompleted();
-              })
-              .setView(et)
-              .create();
+            subscriber.onCompleted();
+          })
+          .setNegativeButton(negativeMessage, (dialog, which) -> subscriber.onCompleted())
+          .setView(parent)
+          .create();
 
       subscriber.add(Subscriptions.create(ad::dismiss));
       ad.show();
@@ -138,7 +135,7 @@ public final class DialogFactory {
     return Observable.create((Subscriber<? super LabelType> subscriber) -> {
 
       View view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_base, null);
-      RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerViewBottomSheet);
+      RecyclerView recyclerView = view.findViewById(R.id.recyclerViewBottomSheet);
       recyclerView.setHasFixedSize(true);
       recyclerView.setLayoutManager(new LinearLayoutManager(context));
       LabelSheetAdapter labelSheetAdapter = new LabelSheetAdapter(context, genericTypeList);
@@ -169,6 +166,15 @@ public final class DialogFactory {
     return createBottomSheet(context, generateLabelsForCamera(context));
   }
 
+  public static Observable<LabelType> showBottomSheetForMessageLongClick(Context context,
+      boolean enableUnsendMessage) {
+    if (enableUnsendMessage) {
+      return createBottomSheet(context, generateLabelsForMessage(context));
+    } else {
+      return createBottomSheet(context, generateLabelsForCopyMessage(context));
+    }
+  }
+
   public static Observable<LabelType> showBottomSheetForMoreBtn(Context context,
       String displayName) {
     return createBottomSheet(context, generateLabelsForMoreBtn(context, displayName));
@@ -177,10 +183,31 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForCamera(Context context) {
     List<LabelType> cameraTypeList = new ArrayList<>();
     cameraTypeList.add(
-        new LabelType(context.getString(R.string.image_picker_camera), LabelType.OPEN_CAMERA));
+        new LabelType(EmojiParser.demojizedText(context.getString(R.string.image_picker_camera)),
+            LabelType.OPEN_CAMERA));
     cameraTypeList.add(
-        new LabelType(context.getString(R.string.image_picker_library), LabelType.OPEN_PHOTOS));
+        new LabelType(EmojiParser.demojizedText(context.getString(R.string.image_picker_library)),
+            LabelType.OPEN_PHOTOS));
     return cameraTypeList;
+  }
+
+  private static List<LabelType> generateLabelsForMessage(Context context) {
+    List<LabelType> messageOption = new ArrayList<>();
+    messageOption.add(
+        new LabelType(EmojiParser.demojizedText(context.getString(R.string.action_unsend)),
+            LabelType.MESSAGE_OPTION_UNSEND));
+    messageOption.add(
+        new LabelType(EmojiParser.demojizedText(context.getString(R.string.action_copy)),
+            LabelType.MESSAGE_OPTION_COPY));
+    return messageOption;
+  }
+
+  private static List<LabelType> generateLabelsForCopyMessage(Context context) {
+    List<LabelType> messageOption = new ArrayList<>();
+    messageOption.add(
+        new LabelType(EmojiParser.demojizedText(context.getString(R.string.action_copy)),
+            LabelType.MESSAGE_OPTION_COPY));
+    return messageOption;
   }
 
   public static Observable<LabelType> showBottomSheetForRecipient(Context context,
@@ -199,8 +226,25 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForRecipient(Context context, Recipient recipient) {
     List<LabelType> moreTypeList = new ArrayList<>();
 
-    if (recipient instanceof Friendship) {
-      if (!recipient.isMute()) {
+    Shortcut shortcut = null;
+
+    if (recipient instanceof Shortcut) {
+      shortcut = (Shortcut) recipient;
+    } else if (recipient instanceof Invite) {
+      Invite invite = (Invite) recipient;
+      shortcut = invite.getShortcut();
+      moreTypeList.add(
+          new LabelType(context.getString(R.string.grid_menu_invite_decline), LabelType.DECLINE));
+    }
+
+    if (shortcut != null) {
+      if (!shortcut.isSingle()) {
+        moreTypeList.add(new LabelType(
+            EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_customize)),
+            LabelType.CUSTOMIZE));
+      }
+
+      if (!shortcut.isMute()) {
         moreTypeList.add(new LabelType(
             EmojiParser.demojizedText(context.getString(R.string.grid_menu_friendship_mute)),
             LabelType.MUTE));
@@ -211,15 +255,12 @@ public final class DialogFactory {
       }
 
       moreTypeList.add(new LabelType(
-          context.getString(R.string.grid_menu_friendship_hide, recipient.getDisplayName()),
+          EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_hide)),
           LabelType.HIDE));
 
-      moreTypeList.add(new LabelType(
-          context.getString(R.string.grid_menu_friendship_block, recipient.getDisplayName()),
-          LabelType.BLOCK_HIDE));
-    } else if (recipient instanceof Invite) {
-      moreTypeList.add(
-          new LabelType(context.getString(R.string.grid_menu_invite_decline), LabelType.DECLINE));
+      moreTypeList.add(new LabelType(EmojiParser.demojizedText(context.getString(
+          shortcut.isSingle() ? R.string.home_menu_shortcut_block
+              : R.string.home_menu_shortcut_block_group)), LabelType.BLOCK_HIDE));
     }
 
     return moreTypeList;
@@ -248,10 +289,8 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForFacebookAuth(Context context) {
     List<LabelType> followTypes = new ArrayList<>();
 
-    followTypes.add(
-            new LabelType("Login", LabelType.LOGIN));
-    followTypes.add(
-            new LabelType("Force logout", LabelType.FORCE_LOGOUT));
+    followTypes.add(new LabelType("Login", LabelType.LOGIN));
+    followTypes.add(new LabelType("Force logout", LabelType.FORCE_LOGOUT));
     return followTypes;
   }
 
@@ -262,12 +301,9 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForPhoneNumberAuth(Context context) {
     List<LabelType> followTypes = new ArrayList<>();
 
-    followTypes.add(
-            new LabelType("Login", LabelType.LOGIN));
-    followTypes.add(
-            new LabelType("Login (alternative)", LabelType.LOGIN_ALTERNATIVE));
-    followTypes.add(
-            new LabelType("Login (call)", LabelType.LOGIN_CALL));
+    followTypes.add(new LabelType("Login", LabelType.LOGIN));
+    followTypes.add(new LabelType("Login (alternative)", LabelType.LOGIN_ALTERNATIVE));
+    followTypes.add(new LabelType("Login (call)", LabelType.LOGIN_CALL));
     return followTypes;
   }
 
@@ -307,11 +343,31 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForGame(Context context, Game game) {
     List<LabelType> gameLabels = new ArrayList<>();
 
-    gameLabels.add(new LabelType(context.getString(R.string.game_post_it_menu_re_roll),
-        LabelType.GAME_RE_ROLL));
+    gameLabels.add(new LabelType(context.getString(R.string.game_menu_play_another_game),
+        LabelType.GAME_PLAY_ANOTHER));
+    gameLabels.add(new LabelType(context.getString(R.string.game_menu_reset_scores),
+        LabelType.GAME_RESET_SCORES));
     gameLabels.add(
         new LabelType(context.getString(R.string.game_post_it_menu_stop), LabelType.GAME_STOP));
 
     return gameLabels;
+  }
+
+  public static Observable<LabelType> showBottomSheetForCustomizeShortcut(Context context) {
+    return createBottomSheet(context, generateLabelsForCustomizeShortcut(context));
+  }
+
+  private static List<LabelType> generateLabelsForCustomizeShortcut(Context context) {
+    List<LabelType> moreTypeList = new ArrayList<>();
+
+    moreTypeList.add(new LabelType(
+        EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_update_name)),
+        LabelType.CHANGE_NAME));
+
+    moreTypeList.add(new LabelType(
+        EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_update_avatar)),
+        LabelType.CHANGE_PICTURE));
+
+    return moreTypeList;
   }
 }

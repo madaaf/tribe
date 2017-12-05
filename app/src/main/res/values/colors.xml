@@ -3,6 +3,7 @@
   <!-- BLACKS -->
   <color name="black.opacity.3">#08000000</color>
   <color name="black.opacity.5">#0D000000</color>
+  <color name="black.opacity.10">#1A000000</color>
   <color name="black.opacity.15">#26000000</color>
   <color name="black.opacity.20">#33000000</color>
   <color name="black.opacity.30">#4D000000</color>
@@ -13,11 +14,15 @@
   <color name="black.opacity.80">#CC000000</color>
   <color name="black.infos">#1A14181A</color>
   <color name="black.light">#1F2125</color>
+  <color name="black.walkthrough.gradient.start">#B32B3332</color>
+  <color name="black.walkthrough.gradient.end">#2B3332</color>
 
   <color name="black.dark.placeholder">#171717</color>
   <color name="black.light.placeholder">#1C1C1C</color>
+  <color name="black.dark.blue">#34373B</color>
 
   <!-- WHITES -->
+  <color name="white">#FFFFFF</color>
   <color name="white.opacity.5">#0DFFFFFF</color>
   <color name="white.opacity.10">#1AFFFFFF</color>
   <color name="white.opacity.15">#26FFFFFF</color>
@@ -26,10 +31,12 @@
   <color name="white.opacity.40">#66FFFFFF</color>
   <color name="white.opacity.50">#80FFFFFF</color>
   <color name="white.opacity.70">#B3FFFFFF</color>
+  <color name="white.off">#FAFFFE</color>
 
   <!-- VIOLETS -->
   <color name="violet">#6643C1</color>
   <color name="violet.opacity.10">#1A6643C1</color>
+  <color name="violet.home">#9751E6</color>
 
   <!-- ME -->
 
@@ -52,6 +59,12 @@
   <color name="grey.new.contacts">#757575</color>
   <color name="grey.share">#E8EBEE</color>
   <color name="grey.onboarding.phone_number">#F9F9F9</color>
+  <color name="grey.offline">#B6BFBF</color>
+  <color name="grey.divider">#E9F4F4</color>
+  <color name="grey.chat.border">#D7E1E1</color>
+  <color name="grey.chat.grey">#E9F4F4</color>
+  <color name="grey.chat.grey.hint">#D8D8D8</color>
+  <color name="grey.lighter">#F6F6F6</color>
 
   <!-- BLUE -->
   <color name="blue.text">#02ADF2</color>
@@ -60,8 +73,18 @@
   <color name="blue.facebook.dark.hard">#2C448A</color>
   <color name="blue.opaque">#0099E4</color>
   <color name="blue.new">#3DE9DA</color>
+  <color name="blue.new.opacity.40">#663DE9DA</color>
+
   <color name="blue.new.opacity.10">#1A3DE9DA</color>
   <color name="blue.dialogs">#316DF8</color>
+  <color name="blue.gradient.chat.opacity.5">#0D21A6FF</color>
+  <color name="blue.voice.bck">#21A6FF</color>
+  <color name="blue.voice.bck.opacity10">#1A21A6FF</color>
+  <color name="blue.voice.bck.opacity40">#6621A6FF</color>
+  <color name="blue.voice.recording">#DFF0FC</color>
+
+  <color name="transparent">#00ffffff</color>
+
 
   <!-- VIOLET -->
   <color name="purple.group">#8161DA</color>
@@ -80,8 +103,11 @@
   <color name="red">#F9474C</color>
   <color name="red.circle">#F22936</color>
   <color name="red.new.contacts">#FD2448</color>
+  <color name="red.gradient.live.opacity.5">#0DF8143A</color>
+  <color name="red.pulse">#80F9474C</color>
 
   <!-- ORANGES -->
+  <color name="orange.recent">#FFA496</color>
 
   <!-- BROWNS -->
   <color name="brown">#9B6A51</color>
@@ -153,6 +179,7 @@
   <color name="red.10">#FEC5C9</color>
   <color name="red.11">#FDA4AA</color>
   <color name="red.12">#FCAEB4</color>
+  <color name="red.13">#F61D47</color>
 
   <!-- Violet -->
   <color name="violet.1">#A571FC</color>

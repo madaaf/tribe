@@ -63,7 +63,7 @@ public class AuthPresenter implements Presenter {
     if (phoneNumber == null && fbAccessToken == null) {
       cloudLoginUseCase.execute(new UnknownSubscriber());
     } else {
-      cloudLoginUseCase.execute(new LoginSubscriber());
+      cloudLoginUseCase.execute(new LoginSubscriber());//TODO MADA
     }
 
     return loginEntity;

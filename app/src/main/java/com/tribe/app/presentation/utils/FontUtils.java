@@ -8,4 +8,6 @@ public class FontUtils {
 
   public static final String PROXIMA_BOLD = "ProximaNovaSoft-Bold.ttf";
   public static final String PROXIMA_MEDIUM = "ProximaNovaSoft-Medium.ttf";
+  public static final String PROXIMA_REGULAR = "ProximaNovaSoft-Regular.otf";
+  public static final String GULKAVE_REGULAR = "Gulkave-Regular.ttf";
 }

@@ -92,6 +92,7 @@ public class EmojiParser {
     IEmojiMap.put(":cookie:", "\uD83C\uDF6A");
     IEmojiMap.put(":lollipop:", "\uD83C\uDF6D");
     IEmojiMap.put(":see_no_evil:", "\uD83D\uDE48");
+    IEmojiMap.put(":speak_no_evil:", "\uD83D\uDE4A");
 
     IEmojiMap.put(":clock10:", "\uD83D\uDD59");
     IEmojiMap.put(":electric_plug:", "\uD83D\uDD0C");
@@ -113,6 +114,15 @@ public class EmojiParser {
     IEmojiMap.put(":poop:", "\uD83D\uDCA9");
     IEmojiMap.put(":crown:", "\uD83D\uDC51");
     IEmojiMap.put(":sports_medal:", "\uD83C\uDFC5");
+    IEmojiMap.put(":art:", "\uD83C\uDFA8");
+    IEmojiMap.put(":framed_picture:", "\uD83D\uDDBC");
+    IEmojiMap.put(":camera_with_flash:", "\uD83D\uDCF8");
+    IEmojiMap.put(":arrow_up:", "\u2B06");
+    IEmojiMap.put(":house:", "\u2302");
+    IEmojiMap.put(":arrow_right:", "\u27A1");
+    IEmojiMap.put(":arrow_left:", "\u2B05");
+    IEmojiMap.put(":no_entry:", "\u26D4");
+    IEmojiMap.put(":video_camera:", "\uD83D\uDCF9");
   }
 
   /**
@@ -130,5 +140,9 @@ public class EmojiParser {
     }
     // Returning text
     return returnTextString;
+  }
+
+  public static String getEmoji(String key) {
+    return IEmojiMap.get(key);
   }
 }

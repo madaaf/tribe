@@ -62,7 +62,7 @@ public class AccessView {
     LayoutInflater.from(getContext()).inflate(R.layout.view_access_friends, this);
     unbinder = ButterKnife.bind(this);
 
-    totalTimeSynchro = getContext().getResources().getInteger(R.integer.time_synchro);
+    totalTimeSynchro = getContext().getAlts().getInteger(R.integer.time_synchro);
 
     initDependencyInjector();
     init();
@@ -162,9 +162,9 @@ public class AccessView {
   private void removePulsingCircleAnimation() {
     Drawable backgrounds[] = new Drawable[2];
     backgrounds[0] =
-        ResourcesCompat.getDrawable(getResources(), R.drawable.shape_circle_black_3, null);
+        ResourcesCompat.getDrawable(getAlts(), R.drawable.shape_circle_black_3, null);
     backgrounds[1] =
-        ResourcesCompat.getDrawable(getResources(), R.drawable.shadow_circle_white, null);
+        ResourcesCompat.getDrawable(getAlts(), R.drawable.shadow_circle_white, null);
 
     TransitionDrawable transitionDrawable = new TransitionDrawable(backgrounds);
     viewPulse.setBackground(transitionDrawable);

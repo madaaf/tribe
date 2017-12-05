@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Patterns;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -87,10 +88,10 @@ public class StringUtils {
 
   public static String millisecondsToHhMmSs(long millis) {
     return String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis),
-        TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(
-            TimeUnit.MILLISECONDS.toHours(millis)),
-        TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(
-            TimeUnit.MILLISECONDS.toMinutes(millis)));
+        TimeUnit.MILLISECONDS.toMinutes(millis) -
+            TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)),
+        TimeUnit.MILLISECONDS.toSeconds(millis) -
+            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
   }
 
   public static String getLastBitFromUrl(final String url) {
@@ -121,5 +122,53 @@ public class StringUtils {
     String path = uri.getPath();
     String linkId = path.substring(path.lastIndexOf('/') + 1);
     return linkId;
+  }
+
+  public static String arrayToJson(String[] array) {
+    String json = "\"";
+    for (int i = 0; i < array.length; i++) {
+      if (i == array.length - 1) {
+        json += array[i] + "\"";
+      } else {
+        json += array[i] + "\", \"";
+      }
+    }
+    if (array.length == 0) json += "\"";
+    return json;
+  }
+
+  public static String constrainUsersStr(List<User> users, int availableWidth,
+      boolean isDisplayName) {
+    StringBuffer buffer = new StringBuffer();
+    int count = 0;
+    for (int i = 0; i < users.size() && buffer.length() <= availableWidth; i++) {
+      User user = users.get(i);
+      String label = isDisplayName ? user.getDisplayName() : user.getUsername();
+
+      if (buffer.length() + label.length() <= availableWidth) {
+        buffer.append(label);
+        count++;
+        if (i < users.size() - 1 && buffer.length() <= availableWidth) buffer.append(", ");
+      } else if (buffer.length() > 0) {
+        buffer.replace(buffer.length() - 2, buffer.length() - 1, "");
+        break;
+      }
+    }
+
+    if (buffer.length() >= availableWidth) {
+      String str = buffer.subSequence(0, availableWidth).toString();
+      buffer = new StringBuffer();
+      buffer.append(str);
+      buffer.append("... +" + (users.size() - count));
+    } else if (count < users.size()) {
+      buffer.append("... +" + (users.size() - count));
+    }
+
+    return buffer.toString();
+  }
+
+  public static int stringWithPrefix(Context context, String prefix, String name) {
+    return context.getResources().getIdentifier(prefix + name, "string",
+        context.getPackageName());
   }
 }

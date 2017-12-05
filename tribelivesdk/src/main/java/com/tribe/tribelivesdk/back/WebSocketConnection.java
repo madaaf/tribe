@@ -13,8 +13,10 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -82,6 +84,7 @@ public class WebSocketConnection {
   private WebSocket webSocketClient;
   private WebSocketFactory clientFactory;
   private Map<String, String> headers;
+  private Set<String> pendingMessages;
   private final Object closeLock = new Object();
   private boolean close, shouldReconnect = true, retrying = false;
   private int attempts = 1;
@@ -97,6 +100,7 @@ public class WebSocketConnection {
   public WebSocketConnection(WebSocketFactory clientFactory) {
     state = STATE_NEW;
     this.clientFactory = clientFactory;
+    this.pendingMessages = new HashSet<>();
   }
 
   public void setHeaders(Map<String, String> headers) {
@@ -150,6 +154,7 @@ public class WebSocketConnection {
           attempts = 1;
           state = STATE_CONNECTED;
           onStateChanged.onNext(state);
+          processPendingMessages();
         }
 
         @Override public void onConnectError(WebSocket websocket, WebSocketException cause)
@@ -283,6 +288,7 @@ public class WebSocketConnection {
 
         @Override public void handleCallbackError(WebSocket websocket, Throwable cause)
             throws Exception {
+          cause.printStackTrace();
           Timber.d("WebSocket handleCallbackError : " + cause.getMessage());
           disconnect(false);
         }
@@ -305,12 +311,25 @@ public class WebSocketConnection {
     webSocketClient.setPingPayloadGenerator(() -> "{}".getBytes());
   }
 
+  private void processPendingMessages() {
+    if (pendingMessages == null || pendingMessages.size() == 0) {
+      return;
+    } else {
+      for (String request : pendingMessages) {
+        send(request);
+      }
+
+      pendingMessages.clear();
+    }
+  }
+
   private void retry() {
     if (shouldReconnect && !retrying) {
       retrying = true;
       int time = generateInterval(attempts);
       Timber.d("Trying to reconnect in : " + time);
-      subscriptions.add(Observable.timer(time, TimeUnit.MILLISECONDS).subscribe(aLong -> {
+ 
+      subscriptions.add(Observable.timer(time, TimeUnit.MILLISECONDS).onBackpressureDrop().subscribe(aLong -> {
         Timber.d("Reconnecting");
         attempts++;
         connect(url);
@@ -366,7 +385,7 @@ public class WebSocketConnection {
 
   public void send(String msg) {
     if (webSocketClient == null || !isConnected()) {
-            /* TODO A mechanism of message queue to pile up before connecting ? */
+      pendingMessages.add(msg);
       return;
     }
 

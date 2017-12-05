@@ -58,7 +58,9 @@ public interface AdapterDelegate<T> {
    * @param position The position in the datasource
    * @param holder The {@link RecyclerView.ViewHolder} to bind
    */
-  public void onBindViewHolder(@NonNull T items, int position, @NonNull RecyclerView.ViewHolder holder);
+  public void onBindViewHolder(@NonNull T items, int position,
+      @NonNull RecyclerView.ViewHolder holder);
 
-  public void onBindViewHolder(@NonNull T items, @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads);
+  public void onBindViewHolder(@NonNull T items, @NonNull RecyclerView.ViewHolder holder,
+      int position, List<Object> payloads);
 }

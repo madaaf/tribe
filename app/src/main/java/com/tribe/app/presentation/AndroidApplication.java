@@ -21,15 +21,13 @@ import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
-import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupMemberRealm;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
-import com.tribe.app.data.realm.MembershipRealm;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerApplicationComponent;
@@ -43,20 +41,19 @@ import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.filters.Filter;
 import com.tribe.tribelivesdk.filters.lut3d.FilterManager;
 import com.tribe.tribelivesdk.filters.lut3d.LUT3DFilter;
-import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GameChallenge;
-import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GameManager;
-import com.tribe.tribelivesdk.game.GamePostIt;
 import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
+import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 import io.realm.exceptions.RealmMigrationNeededException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import net.danlew.android.joda.JodaTimeAndroid;
 import timber.log.Timber;
 
 import static com.tribe.app.presentation.view.utils.StateManager.FACEBOOK_CONTACT_PERMISSION;
@@ -76,18 +73,20 @@ public class AndroidApplication extends Application {
 
   @Override public void onCreate() {
     super.onCreate();
+    initTimber();
     initInjector();
     // initLeakDetection();
     initRealm();
+    initBadger();
     initStetho();
     initFacebook();
     initBranch();
-    initTimber();
     initAppState();
     initTakt();
     initUlsee();
     initFilters();
     initGameManager();
+    JodaTimeAndroid.init(this);
   }
 
   @Override protected void attachBaseContext(Context base) {
@@ -132,7 +131,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(8)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(11)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -162,18 +161,131 @@ public class AndroidApplication extends Application {
 
             oldVersion++;
           }
+
+          if (oldVersion == 8) {
+            if (schema.get("AudioResourceRealm") == null) {
+              schema.create("AudioResourceRealm")
+                  .addField("url", String.class)
+                  .addField("duration", Float.class)
+                  .addField("filesize", Integer.class);
+
+              schema.create("BadgeRealm")
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                  .addField("value", int.class);
+
+              schema.create("ImageRealm")
+                  .addField("url", String.class, FieldAttribute.PRIMARY_KEY)
+                  .addField("filesize", Integer.class)
+                  .addField("width", String.class)
+                  .addField("height", String.class)
+                  .addField("duration", float.class);
+
+              schema.create("MessageRealm")
+                  .addField("localId", String.class)
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                  .addRealmObjectField("author", schema.get("UserRealm"))
+                  .addRealmObjectField("user", schema.get("UserRealm"))
+                  .addField("data", String.class)
+                  .addField("__typename", String.class)
+                  .addRealmObjectField("original", schema.get("ImageRealm"))
+                  .addRealmListField("alts", schema.get("ImageRealm"))
+                  .addField("action", String.class)
+                  .addField("created_at", String.class)
+                  .addField("threadId", String.class);
+
+              schema.create("ShortcutLastSeenRealm")
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
+                  .addField("user_id", String.class)
+                  .addField("date", String.class);
+
+              schema.create("ShortcutRealm")
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
+                  .addField("name", String.class)
+                  .addField("picture", String.class)
+                  .addField("pinned", Boolean.class, FieldAttribute.REQUIRED)
+                  .addField("read", Boolean.class, FieldAttribute.REQUIRED)
+                  .addField("mute", Boolean.class, FieldAttribute.REQUIRED)
+                  .addField("status", String.class, FieldAttribute.INDEXED)
+                  .addField("single", Boolean.class, FieldAttribute.INDEXED,
+                      FieldAttribute.REQUIRED)
+                  .addRealmListField("last_seen", schema.get("ShortcutLastSeenRealm"))
+                  .addField("created_at", Date.class)
+                  .addField("last_activity_at", Date.class)
+                  .addRealmListField("members", schema.get("UserRealm"))
+                  .addField("lastMessage", String.class)
+                  .addField("leaveOnlineUntil", Date.class)
+                  .addField("membersHash", String.class);
+
+              schema.get("UserRealm")
+                  .addRealmListField("messages", schema.get("MessageRealm"))
+                  .addField("random_banned_until", Date.class)
+                  .addField("random_banned_permanently", Boolean.class)
+                  .removeField("friendships")
+                  .removeField("memberships");
+
+              schema.get("SearchResultRealm")
+                  .addRealmObjectField("shortcutRealm", schema.get("ShortcutRealm"))
+                  .removeField("friendshipRealm");
+
+              schema.get("ContactFBRealm").addField("hasApp", boolean.class);
+
+              schema.remove("MembershipRealm");
+              schema.remove("GroupRealm");
+              schema.remove("GroupMemberRealm");
+              schema.remove("FriendshipRealm");
+            }
+
+            oldVersion++;
+          }
+
+          if (oldVersion == 9) {
+            if (schema.get("GameRealm") == null) {
+              schema.create("GameRealm")
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
+                  .addField("online", boolean.class)
+                  .addField("playable", boolean.class)
+                  .addField("featured", boolean.class)
+                  .addField("isNew", boolean.class)
+                  .addField("title", String.class)
+                  .addField("baseline", String.class)
+                  .addField("icon", String.class)
+                  .addField("banner", String.class)
+                  .addField("primary_color", String.class)
+                  .addField("secondary_color", String.class)
+                  .addField("plays_count", int.class)
+                  .addField("__typename", String.class)
+                  .addField("url", String.class)
+                  .addField("dataUrl", String.class);
+            }
+
+            oldVersion++;
+          }
+
+          if (oldVersion == 10) {
+            schema.get("UserRealm").addField("mute_online_notif", boolean.class);
+
+            oldVersion++;
+          }
         })
         .build();
+
     Realm.setDefaultConfiguration(realmConfiguration);
 
     Realm realm = null;
     try {
       realm = Realm.getDefaultInstance();
     } catch (RealmMigrationNeededException e) {
+      e.printStackTrace();
       Realm.deleteRealm(realmConfiguration);
     } finally {
-      if (realm != null) realm.close();
+      if (realm != null) {
+        realm.close();
+      }
     }
+  }
+
+  private void initBadger() {
+    this.applicationComponent.badgeRealm();
   }
 
   private void initFacebook() {
@@ -218,24 +330,17 @@ public class AndroidApplication extends Application {
     FilterManager filterManager = FilterManager.getInstance(this);
     List<Filter> filterList = new ArrayList<>();
     filterList.add(new LUT3DFilter(this, LUT3DFilter.LUT3D_TAN, "Tan", R.drawable.picto_filter_tan,
-        R.drawable.lut_settled));
+        R.drawable.lut_settled, true));
     filterList.add(
         new LUT3DFilter(this, LUT3DFilter.LUT3D_HIPSTER, "Hipster", R.drawable.picto_filter_hipster,
-            R.drawable.lut_pola669));
+            R.drawable.lut_pola669, true));
     filterList.add(new LUT3DFilter(this, LUT3DFilter.LUT3D_BW, "B&W", R.drawable.picto_filter_bw,
-        R.drawable.lut_litho));
+        R.drawable.lut_litho, true));
     filterManager.initFilters(filterList);
   }
 
   private void initGameManager() {
-    GameManager gameManager = GameManager.getInstance(this);
-    gameManager.addGame(new GamePostIt(this, Game.GAME_POST_IT, getString(R.string.game_post_it),
-        R.drawable.picto_game_post_it));
-    gameManager.addGame(
-        new GameChallenge(this, Game.GAME_CHALLENGE, getString(R.string.game_challenges),
-            R.drawable.icon_game_challenge));
-    gameManager.addGame(new GameDraw(this, Game.GAME_DRAW, getString(R.string.game_draw),
-        R.drawable.icon_game_draw));
+    GameManager.getInstance(this);
   }
 
   private class SampleAppStateListener implements AppStateListener {
@@ -260,16 +365,14 @@ public class AndroidApplication extends Application {
         realm1.delete(AccessToken.class);
         realm1.delete(ContactABRealm.class);
         realm1.delete(ContactFBRealm.class);
-        realm1.delete(FriendshipRealm.class);
-        realm1.delete(GroupMemberRealm.class);
-        realm1.delete(GroupRealm.class);
+        realm1.delete(ShortcutRealm.class);
         realm1.delete(Installation.class);
         realm1.delete(LocationRealm.class);
-        realm1.delete(MembershipRealm.class);
         realm1.delete(PhoneRealm.class);
         realm1.delete(PinRealm.class);
         realm1.delete(SearchResultRealm.class);
         realm1.delete(UserRealm.class);
+        realm1.delete(MessageRealm.class);
       });
     } finally {
       realm.close();

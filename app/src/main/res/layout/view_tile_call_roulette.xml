@@ -3,9 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
 
-  <include layout="@layout/view_tile_background_invite" />
-
-
   <com.tribe.app.presentation.view.widget.DiceView
       android:id="@+id/diceLayout"
       android:layout_width="45dp"
@@ -20,11 +17,6 @@
       android:layout_height="@dimen/avatar_size"
       android:layout_gravity="center"
       android:background="@null"
-      android:visibility="gone"
-      />
-
-  <include
-      layout="@layout/view_tile_invite_base"
       android:visibility="gone"
       />
 

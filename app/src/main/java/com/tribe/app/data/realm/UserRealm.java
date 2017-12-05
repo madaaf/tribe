@@ -15,6 +15,8 @@ import java.util.List;
  */
 public class UserRealm extends RealmObject {
 
+  private static final int FIFTEEN_MINUTES = 15 * 60 * 1000;
+
   @StringDef({ UPDATED_AT }) public @interface UserRealmAttributes {
   }
 
@@ -26,6 +28,7 @@ public class UserRealm extends RealmObject {
   public static final String TRIBE_SAVE = "tribe_save";
   public static final String UPDATED_AT = "updated_at";
   public static final String PUSH_NOTIF = "push_notif";
+  public static final String MUTE_ONLINE_NOTIF = "mute_online_notif";
   public static final String TIME_IN_CALL = "time_in_call";
 
   @PrimaryKey private String id;
@@ -39,23 +42,42 @@ public class UserRealm extends RealmObject {
   private String picture;
   private LocationRealm location;
   private boolean tribe_save = false;
-  private RealmList<FriendshipRealm> friendships;
-  private RealmList<MembershipRealm> memberships;
+  private RealmList<MessageRealm> messages;
   private boolean invisible_mode;
   private boolean push_notif = true;
+  private boolean mute_online_notif = false;
   private Date last_seen_at;
   private long time_in_call = 0;
+  private Boolean random_banned_permanently;
+  private Date random_banned_until;
 
-  @Ignore private RealmList<GroupRealm> groups;
   @Ignore private List<Invite> invites;
+
+  @Ignore private List<ShortcutRealm> shortcuts;
 
   @Ignore private JsonObject jsonPayloadUpdate;
 
   @Ignore private boolean is_online = false;
+  @Ignore private boolean is_live = false;
 
   public UserRealm() {
-    memberships = new RealmList<>();
-    groups = new RealmList<>();
+
+  }
+
+  public Boolean getRandom_banned_permanently() {
+    return random_banned_permanently;
+  }
+
+  public void setRandom_banned_permanently(Boolean random_banned_permanently) {
+    this.random_banned_permanently = random_banned_permanently;
+  }
+
+  public Date getLastSeenAt() {
+    return last_seen_at;
+  }
+
+  public Date getRandom_banned_until() {
+    return random_banned_until;
   }
 
   public String getId() {
@@ -122,12 +144,20 @@ public class UserRealm extends RealmObject {
     this.phone = phone;
   }
 
-  public RealmList<FriendshipRealm> getFriendships() {
-    return friendships;
+  public List<ShortcutRealm> getShortcuts() {
+    return shortcuts;
   }
 
-  public void setFriendships(RealmList<FriendshipRealm> friendships) {
-    this.friendships = friendships;
+  public void setShortcuts(List<ShortcutRealm> shortcuts) {
+    this.shortcuts = shortcuts;
+  }
+
+  public RealmList<MessageRealm> getMessages() {
+    return messages;
+  }
+
+  public void setMessages(RealmList<MessageRealm> messages) {
+    this.messages = messages;
   }
 
   public String getFbid() {
@@ -154,24 +184,16 @@ public class UserRealm extends RealmObject {
     this.tribe_save = tribeSave;
   }
 
-  public RealmList<MembershipRealm> getMemberships() {
-    return memberships;
-  }
-
-  public void setMemberships(RealmList<MembershipRealm> memberships) {
-    this.memberships = memberships;
-  }
-
-  public RealmList<GroupRealm> getGroups() {
-    return groups;
-  }
-
-  public void setGroups(RealmList<GroupRealm> groups) {
-    this.groups = groups;
-  }
-
   public void setInvites(List<Invite> invites) {
     this.invites = invites;
+  }
+
+  public void setMute_online_notif(boolean mute_online_notif) {
+    this.mute_online_notif = mute_online_notif;
+  }
+
+  public boolean isMute_online_notif() {
+    return mute_online_notif;
   }
 
   public List<Invite> getInvites() {
@@ -187,19 +209,31 @@ public class UserRealm extends RealmObject {
   }
 
   public boolean isOnline() {
-    return is_online;
+    if (is_online) return is_online;
+    if (last_seen_at == null) return false;
+
+    // We consider that somebody that was online less than fifteen minutes ago is still online
+    return System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES;
   }
 
   public void setIsOnline(boolean isOnline) {
     this.is_online = isOnline;
   }
 
-  public Date getLastSeenAt() {
-    return last_seen_at;
+  public boolean isLive() {
+    return is_live;
+  }
+
+  public void setIsLive(boolean isLive) {
+    this.is_live = isLive;
   }
 
   public void setLastSeenAt(Date lastSeenAt) {
     this.last_seen_at = lastSeenAt;
+  }
+
+  public void setRandom_banned_until(Date random_banned_until) {
+    this.random_banned_until = random_banned_until;
   }
 
   public long getTimeInCall() {

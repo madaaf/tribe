@@ -123,29 +123,31 @@ public class StreamManager {
     if (remotePeerMap != null && remotePeerMap.size() > 0) {
       RemotePeer remotePeer = remotePeerMap.get(tribeSession.getPeerId());
       if (remotePeer != null) remotePeer.dispose();
-      remotePeerMap.remove(tribeSession.getPeerId());
+      remotePeerMap.remove(tribeSession.getPeerId(), true);
     }
   }
 
-  public void setMediaStreamForClient(@NonNull String peerId, @NonNull MediaStream mediaStream) {
+  public RemotePeer setMediaStreamForClient(@NonNull String peerId,
+      @NonNull MediaStream mediaStream) {
     if (TextUtils.isEmpty(peerId)) {
       Timber.d("We found a null peerId it doesn't make sense!");
-      return;
+      return null;
     }
 
     if (mediaStream == null) {
       Timber.d("Cannot set a null mediaStream to peerId: " + mediaStream);
-      return;
+      return null;
     }
 
     RemotePeer remotePeer = remotePeerMap.get(peerId);
     if (remotePeer == null) {
       Timber.d("Attempted to set MediaStream for non-existent RemotePeer: " + peerId);
-      return;
+      return null;
     }
 
     Timber.d("Setting the stream to peer : " + peerId);
     remotePeer.getPeerView().setStream(mediaStream);
+    return remotePeer;
   }
 
   public void setPeerMediaConfiguration(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
@@ -237,6 +239,16 @@ public class StreamManager {
     }
 
     return localPeerView.getMediaConfiguration();
+  }
+
+  public RemotePeer getRemotePeer(String userId) {
+    for (RemotePeer remotePeer : remotePeerMap.getMap().values()) {
+      if (userId.equals(remotePeer.getSession().getUserId())) {
+        return remotePeer;
+      }
+    }
+
+    return null;
   }
 
   public void dispose(boolean shouldDisposeLocal) {

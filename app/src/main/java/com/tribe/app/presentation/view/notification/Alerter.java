@@ -39,13 +39,11 @@ public final class Alerter {
   public LiveNotificationView show() {
     //This will get the Activity Window's DecorView
     if (getActivityWeakReference() != null) {
-      getActivityWeakReference().get().runOnUiThread(new Runnable() {
-        @Override public void run() {
-          //Add the new Alert to the View Hierarchy
-          final ViewGroup decorView = getActivityDecorView();
-          if (decorView != null && getLiveNotificationView().getParent() == null) {
-            decorView.addView(getLiveNotificationView());
-          }
+      getActivityWeakReference().get().runOnUiThread(() -> {
+        //Add the new Alert to the View Hierarchy
+        final ViewGroup decorView = getActivityDecorView();
+        if (decorView != null && getLiveNotificationView().getParent() == null) {
+          decorView.addView(getLiveNotificationView());
         }
       });
     }

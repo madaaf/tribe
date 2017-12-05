@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.FilterAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GameAdapterDelegate;
 import com.tribe.tribelivesdk.entity.GameFilter;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,16 +16,12 @@ import rx.Observable;
 public class GamesFiltersAdapter extends RecyclerView.Adapter {
 
   protected RxAdapterDelegatesManager<List<GameFilter>> delegatesManager;
-  private GameAdapterDelegate gameAdapterDelegate;
   private FilterAdapterDelegate filterAdapterDelegate;
 
   private List<GameFilter> items;
 
   public GamesFiltersAdapter(Context context) {
     delegatesManager = new RxAdapterDelegatesManager<>();
-
-    gameAdapterDelegate = new GameAdapterDelegate(context);
-    delegatesManager.addDelegate(gameAdapterDelegate);
 
     filterAdapterDelegate = new FilterAdapterDelegate(context);
     delegatesManager.addDelegate(filterAdapterDelegate);
@@ -91,6 +86,6 @@ public class GamesFiltersAdapter extends RecyclerView.Adapter {
   }
 
   public Observable<View> onClick() {
-    return Observable.merge(filterAdapterDelegate.onClick(), gameAdapterDelegate.onClick());
+    return filterAdapterDelegate.onClick();
   }
 }

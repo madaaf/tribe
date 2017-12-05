@@ -9,6 +9,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.contact.FriendshiptNotifAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.TribeGuestAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserNotifAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -31,7 +32,7 @@ public class NotifContactAdapter extends RecyclerView.Adapter {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
-  @Inject public NotifContactAdapter(Context context) {
+  @Inject public NotifContactAdapter(Context context, User user) {
     items = new ArrayList<>();
 
     delegatesManager = new RxAdapterDelegatesManager();
@@ -42,7 +43,7 @@ public class NotifContactAdapter extends RecyclerView.Adapter {
     tribeGuestAdapterDelegate = new TribeGuestAdapterDelegate(context);
     delegatesManager.addDelegate(tribeGuestAdapterDelegate);
 
-    userListAdapterDelegate = new UserNotifAdapterDelegate(context);
+    userListAdapterDelegate = new UserNotifAdapterDelegate(context, user);
     delegatesManager.addDelegate(userListAdapterDelegate);
 
     setHasStableIds(true);
@@ -137,8 +138,16 @@ public class NotifContactAdapter extends RecyclerView.Adapter {
     return userListAdapterDelegate.onClickAdd();
   }
 
-  public Observable<View> onClickMore() {
+  public Observable<BaseNotifViewHolder> onClickMore() {
+    return userListAdapterDelegate.clickMore();
+  }
+
+  /*
+
+    public Observable<BaseNotifViewHolder> onClickMore() {
     return Observable.merge(friendshiptNotifAdapterDelegate.clickMore(),
         userListAdapterDelegate.clickMore());
   }
+
+   */
 }

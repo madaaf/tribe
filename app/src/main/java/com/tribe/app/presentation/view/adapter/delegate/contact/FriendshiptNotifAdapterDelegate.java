@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.domain.entity.Friendship;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseNotifAdapterDelegate;
 import java.util.List;
@@ -28,16 +26,16 @@ public class FriendshiptNotifAdapterDelegate extends BaseNotifAdapterDelegate {
 
   @Override public void onBindViewHolder(@NonNull List<Object> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
-    Friendship friendship = null;
-    if (items.get(position) instanceof Recipient) {
-      friendship = (Friendship) items.get(position);
-    }
-    if (friendship.getStatus() != null && friendship.getStatus().equals(FriendshipRealm.HIDDEN)
-        || friendship.getStatus().equals(FriendshipRealm.BLOCKED)) {
-      onBindViewHolderForUnfriend(friendship.getFriend(), holder, true);
-    } else {
-      onBindViewHolderForFriend(friendship.getFriend(), holder);
-    }
+    //Friendship friendship = null;
+    //if (items.get(position) instanceof Recipient) {
+    //  friendship = (Friendship) items.get(position);
+    //}
+    //if (friendship.getStatus() != null && friendship.getStatus().equals(FriendshipRealm.HIDDEN)
+    //    || friendship.getStatus().equals(FriendshipRealm.BLOCKED)) {
+    //  onBindViewHolderForUnfriend(friendship.getFriend(), holder, true);
+    //} else {
+    //  onBindViewHolderForFriend(friendship.getFriend(), holder);
+    //}
   }
 
   @Override
@@ -46,7 +44,7 @@ public class FriendshiptNotifAdapterDelegate extends BaseNotifAdapterDelegate {
   }
 
   public Observable<View> clickMore() {
-    return clickMore;
+    return null;
   }
 
   public Observable<View> onUnblock() {

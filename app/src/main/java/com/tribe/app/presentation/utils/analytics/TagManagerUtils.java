@@ -19,43 +19,34 @@ public class TagManagerUtils {
       "KPI_Onboarding_AuthenticationSuccess";
   public static final String KPI_Onboarding_AuthenticationError =
       "KPI_Onboarding_AuthenticationError";
-  public static final String KPI_Onboarding_OpenNewCalliMessage =
-          "KPI_Onboarding_OpenNewCalliMessage";
   public static final String KPI_Onboarding_OpenNewCallFacebook =
-          "KPI_Onboarding_OpenNewCallFacebook";
-  public static final String KPI_Onboarding_SystemNotifications =
-      "KPI_Onboarding_SystemNotifications";
-  public static final String KPI_Onboarding_VideoSkipped = "KPI_Onboarding_VideoSkipped";
-  public static final String KPI_Onboarding_VideoFinished = "KPI_Onboarding_VideoFinished";
-  public static final String KPI_Onboarding_PinRequested = "KPI_Onboarding_PinRequested";
-  public static final String KPI_Onboarding_PinModified = "KPI_Onboarding_PinModified";
-  public static final String KPI_Onboarding_PinConfirmed = "KPI_Onboarding_PinConfirmed";
-  public static final String KPI_Onboarding_PinSubmitted = "KPI_Onboarding_PinSubmitted";
+      "KPI_Onboarding_OpenNewCallFacebook";
   public static final String KPI_Onboarding_PinFailed = "KPI_Onboarding_PinFailed";
   public static final String KPI_Onboarding_PinSucceeded = "KPI_Onboarding_PinSucceeded";
   public static final String KPI_Onboarding_ProfileFilledWithFacebook =
       "KPI_Onboarding_ProfileFilledWithFacebook";
   public static final String KPI_Onboarding_ProfileConfigured = "KPI_Onboarding_ProfileConfigured";
-  public static final String KPI_Onboarding_FindFriendsStart = "KPI_Onboarding_FindFriendsStart";
   public static final String KPI_Onboarding_SystemContacts = "KPI_Onboarding_SystemContacts";
-  public static final String KPI_Onboarding_FindFriendsNext = "KPI_Onboarding_FindFriendsNext";
-  public static final String KPI_Onboarding_FindFriendsSelectAll =
-      "KPI_Onboarding_FindFriendsSelectAll";
-  public static final String KPI_Onboarding_FindFriendsDone = "KPI_Onboarding_FindFriendsDone";
   public static final String KPI_Onboarding_HomeScreen = "KPI_Onboarding_HomeScreen";
   public static final String KPI_Onboarding_SystemCamera = "KPI_Onboarding_SystemCamera";
   public static final String KPI_Onboarding_SystemMicrophone = "KPI_Onboarding_SystemMicrophone";
   public static final String KPI_Onboarding_Phone_Button = "KPI_Onboarding_Phone_Button";
   public static final String KPI_Onboarding_Facebook_Button = "KPI_Onboarding_Facebook_Button";
-  public static final String Groups_Creation = "Groups_Creation";
-  public static final String Groups_Infos = "Groups_Infos";
-  public static final String Groups_Members = "Groups_Members";
-  public static final String Groups_Settings = "Groups_Settings";
   public static final String Invites = "Invites";
   public static final String Logout = "Logout";
   public static final String Calls = "Calls";
   public static final String Notification_AppOpen = "Notification_AppOpen";
   public static final String FacebookGate = "FacebookGate";
+  public static final String AddFriend = "AddFriend";
+  public static final String NewChat = "NewChat";
+  public static final String EditGroupName = "EditGroupName";
+  public static final String Shortcut = "Shortcut";
+  public static final String Chats = "Chats";
+  public static final String Game = "Game";
+  public static final String Searched = "Searched";
+  public static final String KPI_Onboarding_WalkthroughCompleted =
+      "KPI_Onboarding_WalkthroughCompleted";
+  public static final String Technical_Error = "Technical_Error";
 
   /**
    * ERRORS
@@ -69,7 +60,8 @@ public class TagManagerUtils {
   public static final String ACCEPTED = "accepted";
   public static final String SUCCESS = "success";
   public static final String FAIL = "fail";
-  public static final String MEMBERS_COUNT = "members_count";
+  public static final String MEMBERS = "members";
+  public static final String SAVE = "save";
   public static final String BUTTON = "button";
   public static final String SWIPE = "swipe";
   public static final String SCREEN = "screen";
@@ -77,20 +69,15 @@ public class TagManagerUtils {
   public static final String LIVE = "live";
   public static final String CALL = "call";
   public static final String SEARCH = "search";
-  public static final String GROUP = "group";
   public static final String INVITE = "invite";
+  public static final String CHAT = "chat";
   public static final String ONBOARDING = "onboarding";
   public static final String PROFILE = "profile";
   public static final String ACTION = "action";
+  public static final String GAME = "game";
   public static final String UNKNOWN = "unknown";
   public static final String CANCELLED = "cancelled";
-  public static final String CREATED = "created";
-  public static final String MEMBERS = "members";
-  public static final String SETTINGS = "settings";
-  public static final String MODIFIED = "modified";
-  public static final String MEMBERS_ADDED_COUNT = "members_added_count";
-  public static final String NOTIFICATIONS_ENABLED = "notifications_enabled";
-  public static final String LEFT = "left";
+  public static final String CANCEL = "cancel";
   public static final String DURATION = "duration";
   public static final String IS_CALL_ROULETTE = "is_call_roulette";
   public static final String TYPE = "type";
@@ -108,6 +95,27 @@ public class TagManagerUtils {
   public static final String POST_IT_GAME_COUNT = "post_it_game_count";
   public static final String CATEGORY = "category";
   public static final String SOURCE = "source";
+  public static final String GESTURE = "gesture";
+  public static final String GESTURE_TAP = "tap";
+  public static final String GESTURE_SWIPE = "swipe";
+  public static final String SECTION = "section";
+  public static final String SECTION_ONLINE = "online";
+  public static final String SECTION_RECENT = "recent";
+  public static final String SECTION_ONGOING = "ongoing";
+  public static final String SECTION_SHORTCUT = "shortcut";
+  public static final String HEART_COUNT = "heart_count";
+  public static final String TEXT_COUNT = "text_count";
+  public static final String AUDIO_COUNT = "audio_count";
+  public static final String IMAGE_COUNT = "image_count";
+  public static final String GAME_COUNT = "game_count";
+  public static final String GAME_DURATION = "game_duration";
+  public static final String SIGNUP = "signup";
+  public static final String CONTENT_TYPE = "contentType";
+  public static final String SEARCH_STRING = "searchString";
+
+  public static final String tagGameCountSuffix = "_game_count";
+  public static final String tagGameDurationSuffix = "_game_duration";
+  public static final String tagGameAverageMembersSuffix = "_members_count";
 
   /**
    * USER PROPERTIES
@@ -122,7 +130,6 @@ public class TagManagerUtils {
   public static final String USER_USERNAME = "user_username";
   public static final String USER_FACEBOOK_CONNECTED = "user_facebook_connected";
   public static final String USER_FRIENDS_COUNT = "user_friends_count";
-  public static final String USER_GROUPS_COUNT = "user_groups_count";
   public static final String USER_INVISIBLE_ENABLED = "user_invisible_enabled";
   public static final String USER_CALLS_COUNT = "user_calls_count";
   public static final String USER_CALLS_MINUTES = "user_calls_minutes";
@@ -135,6 +142,24 @@ public class TagManagerUtils {
   public static final String FB_ACTION_FAILED = "failed";
   public static final String FB_ACTION_SUCCESS = "succeeded";
   public static final String FB_ACTION = "action";
+
+  /**
+   * ERRORS
+   */
+
+  public static final String DESCRIPTION = "Description";
+  public static final String FEATURE = "Feature";
+  public static final String REASON = "Reason";
+  public static final String SERVER = "Server";
+  public static final String SIGNALING_ERROR_CODE = "SignalingErrorCode";
+  public static final String SIGNALING_ERROR = "SignalingError";
+
+  public static final String ROOM_STATUS = "Room Status";
+  public static final String ONBOARDING_FB = "Onboarding - Facebook";
+  public static final String ONBOARDING_PHONE = "Onboarding - Phone";
+  public static final String NO_SOCKET = "No Socket";
+  public static final String NOT_URL = "Not an URL";
+  public static final String WEB_SIGNALING = "WebSignaling";
 
   /**
    * MIXPANEL PROPERTIES

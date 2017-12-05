@@ -12,41 +12,38 @@ import java.util.List;
 
 public class Invite extends Recipient {
 
-  private String room_id;
-  private String room_name;
-  private Group group;
-  private List<Friendship> friendships;
+  private Room room;
+  private User inviter;
+  private Shortcut shortcut;
 
-  public void setFriendships(List<Friendship> friendships) {
-    this.friendships = friendships;
+  public void setInviter(User inviter) {
+    this.inviter = inviter;
   }
 
-  public List<Friendship> getFriendships() {
-    return friendships;
+  public User getInviter() {
+    return inviter;
   }
 
-  public Group getGroup() {
-    return group;
+  public void setRoom(Room room) {
+    this.room = room;
   }
 
-  public void setGroup(Group group) {
-    this.group = group;
-  }
-
-  public String getRoomId() {
-    return room_id;
-  }
-
-  public void setRoomId(String roomId) {
-    this.room_id = roomId;
+  public Room getRoom() {
+    return room;
   }
 
   public String getRoomName() {
-    return room_name;
+    if (room != null) {
+      return room.getName();
+    } else if (room.getLiveUsers().size() <= 1) {
+      return "";
+    } else {
+      return "PLACEHOLDER";
+    }
   }
 
-  public void setRoomName(String roomName) {
-    this.room_name = roomName;
+  public void setRoomName(String name) {
+    room.setName(name);
   }
 
   @Override public boolean isActionAvailable(User currentUser) {
@@ -58,28 +55,25 @@ public class Invite extends Recipient {
   }
 
   @Override public String getDisplayName() {
-    return isGroup() ? group.getName()
-        : (!StringUtils.isEmpty(room_name) ? room_name : getFriendshipsName());
+    if (room.getLiveUsers().size() <= 1 && room.getInvitedUsers().size() == 1) {
+      return room.getInitiator().getDisplayName();
+    } else if (shortcut != null && !StringUtils.isEmpty(shortcut.getName())) {
+      return shortcut.getName();
+    } else {
+      return room.getUserNames();
+    }
   }
 
   @Override public String getUsername() {
     return null;
   }
 
-  @Override public String getUsernameDisplay() {
-    return null;
-  }
-
   @Override public String getProfilePicture() {
-    return isGroup() ? group.getPicture() : "";
-  }
-
-  @Override public String getSubId() {
-    return room_id;
+    return room.getInitiator().getProfilePicture();
   }
 
   @Override public String getId() {
-    return room_id;
+    return room.getId();
   }
 
   @Override public Date getUpdatedAt() {
@@ -98,8 +92,8 @@ public class Invite extends Recipient {
     return null;
   }
 
-  @Override public boolean isGroup() {
-    return group != null;
+  @Override public boolean isRead() {
+    return shortcut != null ? shortcut.isRead() : true;
   }
 
   @Override public boolean isFriend() {
@@ -110,25 +104,12 @@ public class Invite extends Recipient {
     return null;
   }
 
-  private String getFriendshipsName() {
-    String name = "";
-
-    if (friendships != null && friendships.size() > 0) {
-      name += friendships.get(0).getDisplayName();
-    }
-
-    return name;
-  }
-
   public List<String> getMembersPic() {
     List<String> pics = new ArrayList<>();
 
-    if (isGroup()) {
-      return group.getMembersPics();
-    } else if (friendships != null) {
-      for (Friendship friendship : friendships) {
-        String url = friendship.getProfilePicture();
-        if (!StringUtils.isEmpty(url)) pics.add(url);
+    if (room.getLiveUsers() != null) {
+      for (User user : room.getLiveUsers()) {
+        pics.add(user.getProfilePicture());
       }
     }
 
@@ -138,14 +119,33 @@ public class Invite extends Recipient {
   public List<User> getMembers() {
     List<User> userList = new ArrayList<>();
 
-    if (friendships != null) {
-      for (Friendship fr : friendships) {
-        userList.add(fr.getFriend());
+    if (room.getLiveUsers() != null) {
+      for (User user : room.getLiveUsers()) {
+        userList.add(user);
       }
-    } else if (group != null) {
-      userList.addAll(group.getMembers());
     }
 
     return userList;
+  }
+
+  public List<User> getAllUsers() {
+    return room.getAllUsers();
+  }
+
+  public List<String> getRoomUserIds() {
+    return room.getUserIds();
+  }
+
+  public boolean isSingle() {
+    return room.getLiveUsers().size() <= 1;
+  }
+
+  public Shortcut getShortcut() {
+    return shortcut;
+  }
+
+  public void setShortcut(Shortcut shortcut) {
+    this.shortcut = shortcut;
+    if (this.room != null) room.setShortcut(shortcut);
   }
 }

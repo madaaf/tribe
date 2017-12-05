@@ -6,18 +6,20 @@ allprojects {
 
 ext {
   //Android
-  androidBuildToolsVersion = "25.0.1"
+  androidBuildToolsVersion = "26.0.1"
   androidMinSdkVersion = 18
-  androidTargetSdkVersion = 25
-  androidCompileSdkVersion = 25
+  androidTargetSdkVersion = 26
+  androidCompileSdkVersion = 26
+
+  compat = '26.1.0'
 
   //Libraries
   daggerVersion = '2.8'
   butterKnifeVersion = '8.4.0'
-  recyclerViewVersion = '25.1.0'
-  appCompatVersion = '25.1.0'
-  designSupportVersion = '25.1.0'
-  cardDesignVersion = '25.1.0'
+  recyclerViewVersion = "${compat}"
+  appCompatVersion = "${compat}"
+  designSupportVersion = "${compat}"
+  cardDesignVersion = "${compat}"
   rxJavaVersion = '1.2.5'
   rxAndroidVersion = '1.2.1'
   javaxAnnotationVersion = '1.0'
@@ -38,7 +40,7 @@ ext {
   reboundVersion = '0.3.8'
   rxSharedPreferencesVersion = '1.0.1'
   libPhoneNumberVersion = '8.4.0'
-  exoPlayerVersion = 'r1.5.10'
+  exoPlayerVersion = 'r2.6.0'
   vlcPlayerVersion = '1.9.8'
   circularProgressViewVersion = '2.5.0'
   rxLocationVersion = '0.9@aar'
@@ -53,11 +55,12 @@ ext {
   mixpanelVersion = '5.0.1'
   imageCropperVersion = '2.3.1'
   firebaseRemoteVersion = '10.2.1'
+  firebaseStorageVersion = '10.2.1'
   firebaseMessagingVersion = '10.2.1'
   firebaseCrashReportingVersion = '10.2.1'
   firebaseInvitesVersion = '10.2.1'
   recyclerViewAnimatorsVersion = '2.2.4'
-  branchIoVersion = '2.5.2'
+  branchIoVersion = '2.12.1'
   timberVersion = '4.4.0'
   blurKitVersion = '1.0.0'
   rxAppStateVersion = '2.0.0'
@@ -67,6 +70,10 @@ ext {
   flexboxVersion = '0.2.5'
   instacaptureVersion = '1.2.2'
   googlePlayVisionVersion = '10.2.1'
+  jodatimeVersion = '2.9.9'
+  shortcutBadgerVersion = '1.1.18@aar'
+  constraintLayoutVersion = '1.0.2'
+  loadingIndicatorVersion = '2.1.3'
 
   //Testing
   robolectricVersion = '3.0'
@@ -129,6 +136,7 @@ ext {
                               imageCropper            : "com.theartofdev.edmodo:android-image-cropper:${imageCropperVersion}",
                               firebaseInvites         : "com.google.firebase:firebase-invites:${firebaseInvitesVersion}",
                               firebaseRemote          : "com.google.firebase:firebase-config:${firebaseRemoteVersion}",
+                              firebaseStorage         : "com.google.firebase:firebase-storage:${firebaseStorageVersion}",
                               recyclerViewAnimators   : "jp.wasabeef:recyclerview-animators:${recyclerViewAnimatorsVersion}",
                               branchIo                : "io.branch.sdk.android:library:${branchIoVersion}",
                               timber                  : "com.jakewharton.timber:timber:${timberVersion}",
@@ -139,7 +147,11 @@ ext {
                               easyRS                  : "io.github.silvaren:easyrs:${easyRSVersion}",
                               instacapture            : "com.github.tarek360:instacapture:${instacaptureVersion}",
                               guava                   : "com.google.guava:guava:${guavaVersion}",
-                              googleVision            : "com.google.android.gms:play-services-vision:${googlePlayVisionVersion}"]
+                              googleVision            : "com.google.android.gms:play-services-vision:${googlePlayVisionVersion}",
+                              jodatime                : "net.danlew:android.joda:${jodatimeVersion}",
+                              shortcutBadget          : "me.leolin:shortcutbadger:${shortcutBadgerVersion}",
+                              constraintLayout        : "com.android.support.constraint:constraint-layout:${constraintLayoutVersion}",
+                              AVLoadingIndicatorView  : "com.wang.avi:library:${loadingIndicatorVersion}"]
 
 
   presentationTestDependencies = [mockito           : "org.mockito:mockito-core:${mockitoVersion}",

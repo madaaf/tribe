@@ -1,0 +1,25 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@android:color/white"
+    >
+
+  <com.tribe.app.presentation.view.widget.EditTextFont
+      android:id="@+id/editTxtName"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:backgroundTint="@android:color/black"
+      android:capitalize="sentences"
+      android:hint="@string/shortcut_update_name_placeholder"
+      android:imeOptions="actionDone"
+      android:inputType="textNoSuggestions"
+      android:maxLength="50"
+      android:maxLines="1"
+      android:textColorHint="@color/black.opacity.40"
+      style="@style/Title.1.Black"
+      />
+
+</FrameLayout>

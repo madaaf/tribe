@@ -6,32 +6,23 @@ import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
-import com.tribe.app.domain.interactor.user.AddMembersToGroup;
-import com.tribe.app.domain.interactor.user.CreateFriendship;
-import com.tribe.app.domain.interactor.user.CreateFriendships;
-import com.tribe.app.domain.interactor.user.CreateMembership;
 import com.tribe.app.domain.interactor.user.DiskFindContactByValue;
 import com.tribe.app.domain.interactor.user.DiskSearchResults;
 import com.tribe.app.domain.interactor.user.DoLoginWithPhoneNumber;
 import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.FindByUsername;
-import com.tribe.app.domain.interactor.user.GetBlockedFriendshipList;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetDiskContactList;
 import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskFBContactList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
-import com.tribe.app.domain.interactor.user.GetGroupMembers;
 import com.tribe.app.domain.interactor.user.GetHeadDeepLink;
 import com.tribe.app.domain.interactor.user.GetRequestCode;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.NotifyFBFriends;
-import com.tribe.app.domain.interactor.user.RemoveFriendship;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.SendToken;
 import com.tribe.app.domain.interactor.user.SynchroContactList;
-import com.tribe.app.domain.interactor.user.UpdateGroup;
-import com.tribe.app.domain.interactor.user.UpdateMembership;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.internal.di.scope.PerActivity;
 import dagger.Module;
@@ -62,22 +53,6 @@ import javax.inject.Named;
 
   @Provides @PerActivity UseCase provideUpdateUser(UpdateUser updateUser) {
     return updateUser;
-  }
-
-  @Provides @PerActivity UseCase provideGetGroupMembers(GetGroupMembers getGroupMembers) {
-    return getGroupMembers;
-  }
-
-  @Provides @PerActivity UseCase provideUpdateGroup(UpdateGroup updateGroup) {
-    return updateGroup;
-  }
-
-  @Provides @PerActivity UseCase provideUpdateMembership(UpdateMembership updateMembership) {
-    return updateMembership;
-  }
-
-  @Provides @PerActivity UseCase provideAddMembersToGroup(AddMembersToGroup addMembersToGroup) {
-    return addMembersToGroup;
   }
 
   @Provides @PerActivity @Named("cloudUserInfos") UseCase provideCloudGetUserInfos(
@@ -134,23 +109,6 @@ import javax.inject.Named;
     return diskFindContactByValue;
   }
 
-  @Provides @PerActivity @Named("removeFriendship") RemoveFriendship provideRemoveFriendship(
-      RemoveFriendship removeFriendship) {
-    return removeFriendship;
-  }
-
-  @Provides @PerActivity CreateFriendship provideCreateFriendship(
-      CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
-      PostExecutionThread postExecutionThread) {
-    return new CreateFriendship(userRepository, threadExecutor, postExecutionThread);
-  }
-
-  @Provides @PerActivity CreateFriendships provideCreateFriendships(
-      CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
-      PostExecutionThread postExecutionThread) {
-    return new CreateFriendships(userRepository, threadExecutor, postExecutionThread);
-  }
-
   @Provides @PerActivity @Named("notifyFBFriends") UseCase provideNotifyFBFriends(
       NotifyFBFriends notifyFBFriends) {
     return notifyFBFriends;
@@ -161,20 +119,9 @@ import javax.inject.Named;
     return lookupUsername;
   }
 
-  @Provides @PerActivity GetBlockedFriendshipList provideGetBlockedFriendshipList(
-      DiskUserDataRepository diskUserDataRepository, PostExecutionThread postExecutionThread) {
-    return new GetBlockedFriendshipList(diskUserDataRepository, postExecutionThread);
-  }
-
   @Provides @PerActivity GetHeadDeepLink provideGetHeadDeepLink(
       CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     return new GetHeadDeepLink(cloudUserDataRepository, threadExecutor, postExecutionThread);
-  }
-
-  @Provides @PerActivity CreateMembership provideCreateMembership(
-      CloudUserDataRepository cloudUserDataRepository, ThreadExecutor threadExecutor,
-      PostExecutionThread postExecutionThread) {
-    return new CreateMembership(cloudUserDataRepository, threadExecutor, postExecutionThread);
   }
 }

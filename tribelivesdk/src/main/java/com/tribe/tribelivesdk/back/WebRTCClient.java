@@ -8,7 +8,6 @@ import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeAnswer;
 import com.tribe.tribelivesdk.model.TribeCandidate;
 import com.tribe.tribelivesdk.model.TribeMediaConstraints;
-import com.tribe.tribelivesdk.model.TribeMediaStream;
 import com.tribe.tribelivesdk.model.TribeOffer;
 import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -54,7 +53,7 @@ import static android.R.attr.id;
   private PublishSubject<TribeOffer> onReadyToSendSdpOffer = PublishSubject.create();
   private PublishSubject<TribeAnswer> onReadyToSendSdpAnswer = PublishSubject.create();
   private PublishSubject<TribeCandidate> onReceivedTribeCandidate = PublishSubject.create();
-  private PublishSubject<TribeMediaStream> onReceivedPeer = PublishSubject.create();
+  private PublishSubject<RemotePeer> onReceivedPeer = PublishSubject.create();
   private PublishSubject<JSONObject> onSendToPeers = PublishSubject.create();
   private PublishSubject<PeerConnection.IceGatheringState> onIceGatheringChanged =
       PublishSubject.create();
@@ -106,9 +105,9 @@ import static android.R.attr.id;
     TribePeerConnection remotePeer = createPeerConnection(session, isOffer);
     peerConnections.put(session.getPeerId(), remotePeer);
 
-    if ((options.getRoutingMode().equals(TribeLiveOptions.P2P)
-        || session.getPeerId().equals(TribeSession.PUBLISHER_ID)
-        && remotePeer.getPeerConnection() != null)) {
+    if ((options.getRoutingMode().equals(TribeLiveOptions.P2P) ||
+        session.getPeerId().equals(TribeSession.PUBLISHER_ID) &&
+            remotePeer.getPeerConnection() != null)) {
       remotePeer.getPeerConnection().addStream(localMediaStream);
     }
 
@@ -122,9 +121,11 @@ import static android.R.attr.id;
 
     subscriptions.add(remotePeer.onReceivedMediaStream()
         .observeOn(AndroidSchedulers.mainThread())
-        .doOnNext(tribeMediaStream -> streamManager.generateNewRemotePeer(session))
-        .doOnNext(tribeMediaStream -> streamManager.setMediaStreamForClient(session.getPeerId(),
-            tribeMediaStream.getMediaStream()))
+        .map(tribeMediaStream -> {
+          streamManager.generateNewRemotePeer(session);
+          return streamManager.setMediaStreamForClient(session.getPeerId(),
+              tribeMediaStream.getMediaStream());
+        })
         .subscribe(onReceivedPeer));
   }
 
@@ -154,8 +155,8 @@ import static android.R.attr.id;
   }
 
   public void setRemoteMediaConfiguration(TribePeerMediaConfiguration tribePeerMediaConfiguration) {
-    Timber.d("setMediaConfiguration for peerId : " + tribePeerMediaConfiguration.getSession()
-        .getPeerId());
+    Timber.d("setMediaConfiguration for peerId : " +
+        tribePeerMediaConfiguration.getSession().getPeerId());
 
     streamManager.setPeerMediaConfiguration(tribePeerMediaConfiguration);
   }
@@ -220,6 +221,10 @@ import static android.R.attr.id;
     tribePeerConnection.setRemoteDescription(sdp);
   }
 
+  public RemotePeer getRemotePeer(String userId) {
+    return streamManager.getRemotePeer(userId);
+  }
+
   public Collection<TribePeerConnection> getPeers() {
     return peerConnections.values();
   }
@@ -229,6 +234,12 @@ import static android.R.attr.id;
     jsonPut(obj, "isAudioEnabled", mediaConfiguration.isAudioEnabled());
     jsonPut(obj, "isVideoEnabled", mediaConfiguration.isVideoEnabled());
     jsonPut(obj, "videoChangeReason", mediaConfiguration.getType());
+
+    JSONArray games = new JSONArray();
+    for (String str : GameManager.playableGames) {
+      games.put(str);
+    }
+    jsonPut(obj, "canPlayGames", games);
 
     Game currentGame = gameManager.getCurrentGame();
 
@@ -247,9 +258,9 @@ import static android.R.attr.id;
     jsonPut(obj, "isVideoEnabled", mediaConfiguration.isVideoEnabled());
     jsonPut(obj, "videoChangeReason", mediaConfiguration.getType());
     JSONArray games = new JSONArray();
-    games.put(Game.GAME_POST_IT);
-    games.put(Game.GAME_CHALLENGE);
-    games.put(Game.GAME_DRAW);
+    for (String str : GameManager.playableGames) {
+      games.put(str);
+    }
     jsonPut(obj, "canPlayGames", games);
     return obj;
   }
@@ -305,5 +316,9 @@ import static android.R.attr.id;
 
   public Observable<Boolean> isLocalFreeze() {
     return streamManager.isFreeze();
+  }
+
+  public Observable<RemotePeer> onReceivedStream() {
+    return onReceivedPeer;
   }
 }

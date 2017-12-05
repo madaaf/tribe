@@ -15,6 +15,7 @@ import com.tribe.app.presentation.mvp.presenter.DebugPresenter;
 import com.tribe.app.presentation.mvp.view.DebugMVPView;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.TribeState;
+import com.tribe.app.presentation.utils.preferences.Walkthrough;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import java.util.HashSet;
@@ -40,6 +41,8 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
   @Inject @RoutingMode Preference<String> routingMode;
 
   @Inject @TribeState Preference<Set<String>> tutorialState;
+
+  @Inject @Walkthrough Preference<Boolean> walkthrough;
 
   @BindView(R.id.viewActionRouted) ActionView viewActionRouted;
 
@@ -102,8 +105,10 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
       userCache.put(accessToken);
     }));
 
-    subscriptions.add(
-        viewActionTooltip.onClick().subscribe(aVoid -> tutorialState.set(new HashSet<>())));
+    subscriptions.add(viewActionTooltip.onClick().subscribe(aVoid -> {
+      walkthrough.set(false);
+      tutorialState.set(new HashSet<>());
+    }));
 
     subscriptions.add(viewActionSync.onClick().subscribe(aVoid -> {
       viewActionSync.setBody("Syncing...");

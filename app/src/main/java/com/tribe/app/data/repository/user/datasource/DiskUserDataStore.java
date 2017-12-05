@@ -9,17 +9,14 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
-import com.tribe.app.data.realm.FriendshipRealm;
-import com.tribe.app.data.realm.GroupRealm;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.MembershipRealm;
 import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.GroupEntity;
 import com.tribe.app.domain.entity.Invite;
-import com.tribe.app.domain.entity.RoomConfiguration;
+import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +29,7 @@ import rx.Observable;
 public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
   private final UserCache userCache;
-  private final LiveCache liveCache;
+  private LiveCache liveCache;
   private final ContactCache contactCache;
   private final AccessToken accessToken;
 
@@ -67,15 +64,17 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override public Observable<UserRealm> userInfos(String userId) {
-    return this.userCache.userInfos(accessToken.getUserId());
+    return Observable.combineLatest(this.userCache.userInfos(accessToken.getUserId()),
+        this.userCache.shortcuts().compose(listShortcutOnlineLiveTransformer),
+        liveCache.onlineMap(), liveCache.liveMap(),
+        (userRealm, shortcutRealmList, onlineMap, liveMap) -> {
+          userRealm.setShortcuts(shortcutRealmList);
+          return userRealm;
+        });
   }
 
   @Override public Observable<List<UserRealm>> userInfosList(List<String> userIds) {
     return null;
-  }
-
-  @Override public Observable<List<FriendshipRealm>> friendships() {
-    return this.userCache.friendships();
   }
 
   @Override public Observable<Installation> createOrUpdateInstall(String token) {
@@ -111,6 +110,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return contactCache.contactsFB().map(contactFBRealms -> new ArrayList<>(contactFBRealms));
   }
 
+  @Override public Observable<List<ContactInterface>> contactsFBInvite() {
+    return contactCache.contactsFBInvite().map(contactFBRealms -> new ArrayList<>(contactFBRealms));
+  }
+
   @Override public Observable<List<ContactInterface>> contactsOnApp() {
     return contactCache.contactsOnApp();
   }
@@ -132,62 +135,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return contactCache.findContactsByValue(username);
   }
 
-  @Override public Observable<FriendshipRealm> createFriendship(String userId) {
-    return null;
-  }
-
-  @Override public Observable<Void> removeFriendship(String userId) {
-    return null;
-  }
-
   @Override public Observable<Void> notifyFBFriends() {
-    return null;
-  }
-
-  @Override public Observable<GroupRealm> getGroupMembers(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<GroupRealm> getGroupInfos(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<MembershipRealm> getMembershipInfos(String membershipId) {
-    return Observable.just(userCache.membershipInfos(membershipId));
-  }
-
-  @Override public Observable<MembershipRealm> createGroup(GroupEntity groupEntity) {
-    return null;
-  }
-
-  @Override
-  public Observable<GroupRealm> updateGroup(String groupId, List<Pair<String, String>> values) {
-    return null;
-  }
-
-  @Override public Observable<MembershipRealm> updateMembership(String membershipId,
-      List<Pair<String, String>> values) {
-    return null;
-  }
-
-  @Override public Observable<Void> addMembersToGroup(String groupId, List<String> memberIds) {
-    return null;
-  }
-
-  @Override public Observable<Void> removeMembersFromGroup(String groupId, List<String> memberIds) {
-    return null;
-  }
-
-  @Override public Observable<Void> removeGroup(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<Void> leaveGroup(String groupId) {
-    return null;
-  }
-
-  @Override public Observable<FriendshipRealm> updateFriendship(String friendshipId,
-      List<Pair<String, String>> values) {
     return null;
   }
 
@@ -195,14 +143,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<MembershipRealm> createMembership(String groupId) {
+  @Override public Observable<RecipientRealmInterface> getRecipientInfos(String recipientId) {
     return null;
-  }
-
-  @Override public Observable<RecipientRealmInterface> getRecipientInfos(String recipientId,
-      boolean isToGroup) {
-    return Observable.just(isToGroup ? userCache.membershipForGroupId(recipientId)
-        : userCache.friendshipForUserId(recipientId));
   }
 
   @Override public Observable<Map<String, Boolean>> onlineMap() {
@@ -213,28 +155,11 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return liveCache.liveMap();
   }
 
-  @Override public Observable<String> callRouletteMap() {
-    return liveCache.getRandomRoomAssignedValue();
-  }
-
   @Override public Observable<User> getFbIdUpdated() {
     return liveCache.getFbIdUpdated();
   }
 
-  @Override public Observable<RoomConfiguration> joinRoom(String id, boolean isGroup, String roomId,
-      String linkId) {
-    return null;
-  }
-
-  @Override public Observable<Boolean> inviteUserToRoom(String roomId, String userId) {
-    return null;
-  }
-
-  @Override public Observable<Boolean> buzzRoom(String roomId) {
-    return null;
-  }
-
-  @Override public Observable<Void> declineInvite(String roomId) {
+  @Override public Observable<Room> getRoomUpdated(String roomId) {
     return null;
   }
 
@@ -242,23 +167,98 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<String> getRoomLink(String roomId) {
+  @Override public Observable<Boolean> reportUser(String userId, String imageUrl) {
     return null;
   }
 
-  @Override public Observable<Boolean> bookRoomLink(String linkId) {
+  @Override public Observable<ShortcutRealm> createShortcut(String[] userIds) {
     return null;
   }
 
-  @Override public Observable<Void> roomAcceptRandom(String roomId) {
+  @Override public Observable<ShortcutRealm> updateShortcut(String shortcutId,
+      List<Pair<String, String>> values) {
     return null;
   }
 
-  @Override public Observable<Boolean> reportUser(String userId) {
+  @Override public Observable<Void> removeShortcut(String shortcutId) {
     return null;
+  }
+
+  @Override public Observable<List<ShortcutRealm>> singleShortcuts() {
+    return Observable.combineLatest(userCache.singleShortcuts(), onlineMap(), liveMap(),
+        (shortcutRealmList, onlineMap, liveMap) -> shortcutRealmList)
+        .compose(listShortcutOnlineLiveTransformer);
+  }
+
+  @Override public Observable<List<ShortcutRealm>> shortcuts() {
+    return Observable.combineLatest(userCache.shortcuts(), onlineMap(), liveMap(),
+        (shortcutRealmList, onlineMap, liveMap) -> shortcutRealmList)
+        .compose(listShortcutOnlineLiveTransformer);
+  }
+
+  @Override public Observable<ShortcutRealm> shortcutForUserIds(String... userIds) {
+    return Observable.combineLatest(userCache.shortcutForUserIds(userIds), onlineMap(), liveMap(),
+        (shortcutRealmList, onlineMap, liveMap) -> shortcutRealmList).
+        compose(shortcutOnlineLiveTransformer);
+  }
+
+  public Observable<ShortcutRealm> shortcutForUserIdsNoObs(String... userIds) {
+    return Observable.combineLatest(Observable.just(userCache.shortcutForUserIdsNoObs(userIds)),
+        onlineMap(), liveMap(), (shortcutRealmList, onlineMap, liveMap) -> shortcutRealmList)
+        .compose(shortcutOnlineLiveTransformer)
+        .doOnError(Throwable::printStackTrace);
+  }
+
+  @Override public Observable<List<ShortcutRealm>> blockedShortcuts() {
+    return Observable.combineLatest(userCache.blockedShortcuts(), onlineMap(),
+        (shortcutRealmList, onlineMap) -> shortcutRealmList)
+        .compose(listShortcutOnlineLiveTransformer);
+  }
+
+  @Override public List<Invite> invites() {
+    return new ArrayList<>(liveCache.getInviteMap().values());
+  }
+
+  @Override public Observable<String> getRandomBannedUntil() {
+    return userCache.getRandomBannedUntil();
   }
 
   @Override public Observable<Map<String, Invite>> inviteMap() {
     return liveCache.inviteMap();
+  }
+
+  private Observable.Transformer<List<ShortcutRealm>, List<ShortcutRealm>>
+      listShortcutOnlineLiveTransformer =
+      shortcutRealmObservable -> shortcutRealmObservable.map(shortcutRealmList -> {
+        for (ShortcutRealm shortcutRealm : shortcutRealmList) {
+          transformOnlineShortcut(shortcutRealm);
+          transformLiveShortcut(shortcutRealm);
+        }
+
+        return shortcutRealmList;
+      });
+
+  private Observable.Transformer<ShortcutRealm, ShortcutRealm> shortcutOnlineLiveTransformer =
+      shortcutRealmObservable -> shortcutRealmObservable.map(shortcutRealm -> {
+        transformOnlineShortcut(shortcutRealm);
+        transformLiveShortcut(shortcutRealm);
+        return shortcutRealm;
+      });
+
+  private void transformOnlineShortcut(ShortcutRealm shortcutRealm) {
+    Map<String, Boolean> onlineMap = liveCache.getOnlineMap();
+    if (shortcutRealm != null) {
+      shortcutRealm.computeMembersOnline(onlineMap);
+      shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId())
+          || shortcutRealm.isUniqueMemberOnline());
+    }
+  }
+
+  private void transformLiveShortcut(ShortcutRealm shortcutRealm) {
+    Map<String, Boolean> liveMap = liveCache.getLiveMap();
+    if (shortcutRealm != null) {
+      shortcutRealm.computeMembersLive(liveMap);
+      shortcutRealm.setLive(liveMap.containsKey(shortcutRealm.getId()));
+    }
   }
 }

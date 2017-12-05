@@ -41,11 +41,11 @@ public class EmptyGridAdapterDelegate extends RxAdapterDelegate<List<Recipient>>
   }
 
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
-    return items.get(position).getSubId().equals(Recipient.ID_EMPTY);
+    return items.get(position).getId().equals(Recipient.ID_EMPTY);
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
-    return new EmptyGridViewHolder(layoutInflater.inflate(R.layout.item_empty_grid, parent, false));
+    return new EmptyGridViewHolder(layoutInflater.inflate(R.layout.item_list_empty, parent, false));
   }
 
   @Override public void onBindViewHolder(@NonNull List<Recipient> items, int position,

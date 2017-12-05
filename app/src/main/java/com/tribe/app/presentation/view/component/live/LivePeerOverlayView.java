@@ -174,9 +174,9 @@ public class LivePeerOverlayView extends FrameLayout {
 
     int icon = MediaConfigurationUtils.getStateResource(mediaConfiguration);
 
-    final boolean isViewVisible = !mediaConfiguration.isVideoEnabled()
-        || mediaConfiguration.isLowConnection()
-        || !mediaConfiguration.isAudioEnabled();
+    final boolean isViewVisible = !mediaConfiguration.isVideoEnabled() ||
+        mediaConfiguration.isLowConnection() ||
+        !mediaConfiguration.isAudioEnabled();
 
     if (shouldAnimateAvatar) {
       txtName.setAlpha(0f);
@@ -253,6 +253,7 @@ public class LivePeerOverlayView extends FrameLayout {
     if (!isViewVisible) {
       int timer = wasLowConnection ? viewLowConnection.getTimeToHide() : DURATION;
       subscriptions.add(Observable.timer(timer, TimeUnit.MILLISECONDS)
+          .onBackpressureDrop()
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> setVisibility(View.GONE)));
     } else {

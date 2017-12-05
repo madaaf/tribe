@@ -12,6 +12,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.List;
 import rx.Observable;
@@ -52,7 +53,6 @@ public class TribeGuestAdapterDelegate extends RxAdapterDelegate<List<Object>> {
 
     vh.txtName.setText(context.getString(R.string.live_external_user_display_name));
     vh.txtDescription.setText(context.getString(R.string.live_external_user_username));
-    vh.viewAvatar.setHasShadow(false);
     vh.viewAvatar.load("");
   }
 
@@ -74,7 +74,7 @@ public class TribeGuestAdapterDelegate extends RxAdapterDelegate<List<Object>> {
 
     @BindView(R.id.btnAdd) View btnAdd;
 
-    @BindView(R.id.viewAvatar) AvatarView viewAvatar;
+    @BindView(R.id.viewNewAvatar) NewAvatarView viewAvatar;
 
     public TribeGuestViewHolder(View itemView) {
       super(itemView);

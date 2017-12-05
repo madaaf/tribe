@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@null"
+    >
+
+  <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+      android:id="@+id/viewNewAvatar"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
+      android:layout_centerVertical="true"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      />
+
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_centerVertical="true"
+      android:layout_marginStart="@dimen/horizontal_margin_smaller"
+      android:layout_toRightOf="@id/viewNewAvatar"
+      android:orientation="vertical"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Title.Regular.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:maxLines="1"
+        android:visibility="gone"
+        style="@style/Caption.One.Black40"
+        />
+
+  </LinearLayout>
+</RelativeLayout>

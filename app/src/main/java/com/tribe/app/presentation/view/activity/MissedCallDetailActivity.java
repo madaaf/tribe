@@ -9,6 +9,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.adapter.MissedCallActionAdapter;
 import com.tribe.app.presentation.view.adapter.manager.MissedCallLayoutManager;
@@ -30,6 +31,7 @@ public class MissedCallDetailActivity extends BaseActivity {
   private static String LIST_MISSED_CALL = "LIST_MISSED_CALL";
 
   @Inject MissedCallManager missedCallManager;
+  @Inject User user;
 
   @BindView(R.id.recyclerViewMissedCall) RecyclerView recyclerView;
 
@@ -97,12 +99,13 @@ public class MissedCallDetailActivity extends BaseActivity {
     recyclerView.setAdapter(adapter);
 
     subscriptions.add(adapter.onHangLive().map(view -> {
-      MissedCallAction missedCallAction =
-          (MissedCallAction) adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view));
+      MissedCallAction missedCallAction = (MissedCallAction) adapter.getItemAtPosition(
+          recyclerView.getChildLayoutPosition(view.itemView));
       return missedCallAction;
     }).subscribe(missedCallAction -> {
       Intent intent =
-          NotificationUtils.getIntentForLive(this, missedCallAction.getNotificationPayload(), false);
+          NotificationUtils.getIntentForLive(this, missedCallAction.getNotificationPayload(), false,
+              user);
       startActivity(intent);
       finish();
     }));

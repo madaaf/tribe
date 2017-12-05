@@ -1,12 +1,10 @@
 package com.tribe.app.presentation.view.component.live;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +17,17 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.jakewharton.rxbinding.view.RxView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Live;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -32,7 +35,8 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.adapter.GamesFiltersAdapter;
 import com.tribe.app.presentation.view.adapter.manager.GamesFiltersLayoutManager;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
-import com.tribe.app.presentation.view.utils.BitmapUtils;
+import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.tribelivesdk.entity.GameFilter;
@@ -58,17 +62,14 @@ public class LiveControlsView extends FrameLayout {
   private static final int MAX_DURATION_LAYOUT_CONTROLS = 5;
   private static final int DURATION_GAMES_FILTERS = 300;
   private static final int DURATION_PARAM = 450;
+  private static final int DURATION_NAME = 200;
   private static final float OVERSHOOT_LIGHT = 0.45f;
 
   @Inject ScreenUtils screenUtils;
 
   @Inject StateManager stateManager;
 
-  @BindView(R.id.btnInviteLive) View btnInviteLive;
-
-  @BindView(R.id.btnNotify) View btnNotify;
-
-  @BindView(R.id.btnScreenshot) View btnScreenshot;
+  @Inject User user;
 
   @BindView(R.id.btnCameraOn) View btnCameraOn;
 
@@ -76,7 +77,7 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.layoutFilter) ViewGroup layoutFilter;
 
-  @BindView(R.id.btnFilterOn) ImageView btnFilterOn;
+  @Nullable @BindView(R.id.btnFilterOn) ImageView btnFilterOn;
 
   @BindView(R.id.btnFilterOff) ImageView btnFilterOff;
 
@@ -85,12 +86,6 @@ public class LiveControlsView extends FrameLayout {
   @BindView(R.id.layoutGame) ViewGroup layoutGame;
 
   @BindView(R.id.btnNewGameOff) ImageView btnNewGameOff;
-
-  @BindView(R.id.btnNewGameOn) ImageView btnNewGameOn;
-
-  @BindView(R.id.btnNewGame) FrameLayout btnNewGame;
-
-  @BindView(R.id.imgTriangleCloseGames) ImageView imgTriangleCloseGames;
 
   @BindView(R.id.btnExpand) ImageView btnExpand;
 
@@ -102,57 +97,68 @@ public class LiveControlsView extends FrameLayout {
 
   @BindView(R.id.layoutContainerParamExtendedLive) LinearLayout layoutContainerParamExtendedLive;
 
-  @BindViews({
-      R.id.btnCameraOn, R.id.btnCameraOff, R.id.btnOrientationCamera, R.id.btnMicro, R.id.btnExpand
-  }) List<View> viewToHideFilters;
+  @BindView(R.id.btnChat) LiveChatButton btnChat;
+
+  @BindView(R.id.viewStatusName) LiveStatusNameView viewStatusName;
 
   @BindViews({
-      R.id.btnInviteLive, R.id.btnExpand
-  }) List<View> viewToHideGames;
+      R.id.btnExpand, R.id.layoutGame
+  }) List<View> viewToHideBottomFilters;
+
+  @BindViews({ R.id.btnChat, R.id.viewStatusName }) List<View> viewToHideTopFilters;
+
+  @BindViews({ R.id.btnChat, R.id.viewStatusName }) List<View> viewToHideTopGames;
+
+  @BindViews({
+      R.id.viewStatusName, R.id.btnLeave
+  }) List<View> viewToHideTopChat;
+
+  @BindViews({
+      R.id.btnChat, R.id.btnLeave
+  }) List<View> viewToHideTopInvites;
+
+  @BindViews({
+      R.id.btnExpand, R.id.layoutFilter, R.id.layoutGame
+  }) List<View> viewToHideBottom;
 
   @BindView(R.id.btnLeave) ImageView btnLeave;
 
   @BindView(R.id.recyclerViewFilters) RecyclerView recyclerViewFilters;
 
-  @BindView(R.id.recyclerViewGames) RecyclerView recyclerViewGames;
-
-  @BindView(R.id.imgPlusAddIcon) ImageView imgPlusAddIcon;
-
   // VARIABLES
   private Unbinder unbinder;
   private boolean cameraEnabled = true, microEnabled = true, isParamExpanded = false,
-      filtersMenuOn = false, gamesMenuOn = false;
+      filtersMenuOn = false, gamesMenuOn = false, chatMenuOn = false, invitesMenuOn = false;
   private float xTranslation;
   private GameManager gameManager;
   private FilterManager filterManager;
   private GamesFiltersLayoutManager filtersLayoutManager;
-  private GamesFiltersLayoutManager gamesLayoutManager;
   private List<GameFilter> filterList;
   private GamesFiltersAdapter filtersAdapter;
-  private List<GameFilter> gameList;
-  private GamesFiltersAdapter gamesAdapter;
   private int[] btnFilterLocation;
   private ImageView currentGameView;
+  private @LiveContainer.Event int drawerState = LiveContainer.CLOSED;
 
   // RESOURCES
   private int sizeGameFilter;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Void> onOpenInvite = PublishSubject.create();
   private PublishSubject<Void> onClickCameraOrientation = PublishSubject.create();
   private PublishSubject<Boolean> onClickMicro = PublishSubject.create();
   private PublishSubject<Boolean> onClickParamExpand = PublishSubject.create();
   private PublishSubject<Void> onClickCameraEnable = PublishSubject.create();
   private PublishSubject<Void> onClickCameraDisable = PublishSubject.create();
-  private PublishSubject<Void> onClickNotify = PublishSubject.create();
-  private PublishSubject<Void> onNotifyAnimationDone = PublishSubject.create();
   private PublishSubject<Filter> onClickFilter = PublishSubject.create();
   private PublishSubject<Game> onStartGame = PublishSubject.create();
   private PublishSubject<Void> onLeave = PublishSubject.create();
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
-  private PublishSubject<Game> onGameOptions = PublishSubject.create();
+  private PublishSubject<Game> onStopGame = PublishSubject.create();
   private PublishSubject<View> onGameUIActive = PublishSubject.create();
+  private PublishSubject<Boolean> onGameMenuOpened = PublishSubject.create();
+  private PublishSubject<Game> onResetScores = PublishSubject.create();
+  private PublishSubject<Void> openGameStore = PublishSubject.create();
+
   private Subscription timerSubscription;
 
   public LiveControlsView(Context context) {
@@ -180,16 +186,15 @@ public class LiveControlsView extends FrameLayout {
       timerSubscription.unsubscribe();
       timerSubscription = null;
     }
-    imgPlusAddIcon.clearAnimation();
     super.onDetachedFromWindow();
   }
 
   public void hideGamesBtn() {
-    btnNewGame.setVisibility(INVISIBLE);
+    btnNewGameOff.setVisibility(INVISIBLE);
   }
 
   public void displayGamesBtn() {
-    btnNewGame.setVisibility(VISIBLE);
+    btnNewGameOff.setVisibility(VISIBLE);
   }
 
   private void init() {
@@ -204,6 +209,7 @@ public class LiveControlsView extends FrameLayout {
     setBackground(null);
     initResources();
     initUI();
+    initSubscriptions();
     initFilters();
     initGames();
   }
@@ -215,11 +221,6 @@ public class LiveControlsView extends FrameLayout {
 
   private void initUI() {
     xTranslation = getResources().getDimension(R.dimen.nav_icon_size) + screenUtils.dpToPx(10);
-    btnNotify.setEnabled(false);
-
-    Animation anim =
-        android.view.animation.AnimationUtils.loadAnimation(getContext(), R.anim.rotate90);
-    imgPlusAddIcon.startAnimation(anim);
 
     btnFilterOff.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -228,6 +229,10 @@ public class LiveControlsView extends FrameLayout {
             btnFilterOff.getLocationInWindow(btnFilterLocation);
           }
         });
+  }
+
+  private void initSubscriptions() {
+
   }
 
   private void initFilters() {
@@ -259,36 +264,6 @@ public class LiveControlsView extends FrameLayout {
 
   private void initGames() {
     gameManager = GameManager.getInstance(getContext());
-
-    gameList = new ArrayList<>();
-    gamesLayoutManager = new GamesFiltersLayoutManager(getContext());
-    recyclerViewGames.setLayoutManager(gamesLayoutManager);
-    recyclerViewGames.setItemAnimator(null);
-
-    gamesAdapter = new GamesFiltersAdapter(getContext());
-    gameList.addAll(gameManager.getGames());
-    gamesAdapter.setItems(gameList);
-
-    recyclerViewGames.setAdapter(gamesAdapter);
-    recyclerViewGames.getRecycledViewPool().setMaxRecycledViews(0, 50);
-
-    recyclerViewGames.setTranslationY(screenUtils.getHeightPx() >> 1);
-
-    subscriptions.add(gamesAdapter.onClick()
-        .map(view -> {
-          Game game =
-              (Game) gamesAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view));
-          return new Pair<>(view, game);
-        })
-        .observeOn(AndroidSchedulers.mainThread())
-        .doOnNext(pairViewGame -> {
-          gamesAdapter.updateSelected(pairViewGame.second);
-          gameManager.setCurrentGame(pairViewGame.second);
-          onStartGame.onNext(pairViewGame.second);
-        })
-        .delay(400, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(pairViewGame -> setupCurrentGameView(pairViewGame.second, pairViewGame.first)));
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -320,7 +295,6 @@ public class LiveControlsView extends FrameLayout {
   }
 
   private void clickOnParam() {
-    if (gamesMenuOn) hideGames();
     if (filtersMenuOn) hideFilters();
 
     if (!isParamExpanded) {
@@ -348,8 +322,7 @@ public class LiveControlsView extends FrameLayout {
     if (cameraEnabled) {
       setXTranslateAnimation(btnExpand, widthExtended);
     } else {
-      setXTranslateAnimation(btnExpand,
-          layoutContainerParamExtendedLive.getWidth() - xTranslation * 2);
+      setXTranslateAnimation(btnExpand, layoutContainerParamExtendedLive.getWidth() - xTranslation);
     }
   }
 
@@ -368,12 +341,11 @@ public class LiveControlsView extends FrameLayout {
 
   private void showFilters() {
     filtersMenuOn = true;
-    clearTimer();
 
     int toX =
-        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1)
-            + screenUtils.dpToPx(2.5f);
-    int toY = -screenUtils.dpToPx(70);
+        (screenUtils.getWidthPx() >> 1) - btnFilterLocation[0] - (layoutFilter.getWidth() >> 1) +
+            screenUtils.dpToPx(2.5f);
+    int toY = -screenUtils.dpToPx(65);
 
     layoutFilter.animate()
         .translationX(toX)
@@ -392,16 +364,21 @@ public class LiveControlsView extends FrameLayout {
         .setInterpolator(new DecelerateInterpolator())
         .start();
 
-    for (View v : viewToHideFilters) {
-      hideView(v);
+    for (View v : viewToHideBottomFilters) {
+      hideView(v, false);
     }
+
+    for (View v : viewToHideTopFilters) {
+      hideView(v, true);
+    }
+
+    if (currentGameView != null) hideView(currentGameView, false);
 
     showRecyclerView(recyclerViewFilters);
   }
 
   private void hideFilters() {
     filtersMenuOn = false;
-    setTimer();
 
     layoutFilter.animate()
         .translationX(0)
@@ -414,77 +391,28 @@ public class LiveControlsView extends FrameLayout {
 
     imgTriangleCloseFilters.setVisibility(View.GONE);
 
-    for (View v : viewToHideFilters) {
-      showView(v);
+    for (View v : viewToHideBottomFilters) {
+      if (currentGameView == null || v != layoutGame) showView(v);
     }
+
+    if (currentGameView == null) {
+      for (View v : viewToHideTopFilters) {
+        showView(v);
+      }
+    }
+
+    if (currentGameView != null) showView(currentGameView);
 
     hideRecyclerView(recyclerViewFilters);
   }
 
-  private void showGames() {
-    gamesMenuOn = true;
-
-    recyclerViewGames.getRecycledViewPool().clear();
-    gamesAdapter.notifyDataSetChanged();
-
-    int toY = -screenUtils.dpToPx(85);
-
-    layoutGame.animate()
-        .translationY(toY)
-        .setDuration(DURATION_GAMES_FILTERS)
-        .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
-        .start();
-
-    showBtnGameOn();
-
-    imgTriangleCloseGames.setAlpha(0f);
-    imgTriangleCloseGames.setVisibility(View.VISIBLE);
-    imgTriangleCloseGames.animate()
-        .setDuration(DURATION_GAMES_FILTERS)
-        .alpha(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .start();
-
-    for (View v : viewToHideGames) {
-      hideView(v);
-    }
-
-    showRecyclerView(recyclerViewGames);
-  }
-
   private void showActiveGame(boolean shouldDisplayGameTutorialPopup) {
     gamesMenuOn = false;
+    onGameMenuOpened.onNext(gamesMenuOn);
 
     if (shouldDisplayGameTutorialPopup) onGameUIActive.onNext(currentGameView);
 
-    hideRecyclerView(recyclerViewGames);
-
-    for (View v : viewToHideGames) {
-      if (v != btnExpand || !filtersMenuOn) showView(v);
-    }
-
     hideGameControls();
-  }
-
-  private void hideGames() {
-    gamesMenuOn = false;
-
-    layoutGame.animate()
-        .translationX(0)
-        .translationY(0)
-        .setDuration(DURATION_GAMES_FILTERS)
-        .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
-        .start();
-
-    showBtnGameOff(true);
-
-    imgTriangleCloseGames.setVisibility(View.GONE);
-
-    for (View v : viewToHideGames) {
-      showView(v);
-    }
-
-    hideRecyclerView(recyclerViewGames);
   }
 
   private void hideRecyclerView(RecyclerView recyclerView) {
@@ -504,19 +432,21 @@ public class LiveControlsView extends FrameLayout {
   }
 
   private void hideGameControls() {
-    hideView(layoutGame);
+    hideView(layoutGame, false);
+    hideView(btnChat, true);
+    hideView(viewStatusName, true);
   }
 
   private void showGameControls() {
     gamesMenuOn = false;
-    showBtnGameOff(false);
-    imgTriangleCloseGames.setVisibility(View.GONE);
     showView(layoutGame);
+    showView(viewStatusName);
+    showView(btnChat);
   }
 
-  private void hideView(View view) {
+  private void hideView(View view, boolean top) {
     view.animate()
-        .translationY(screenUtils.getHeightPx() >> 1)
+        .translationY(top ? -screenUtils.getHeightPx() >> 1 : screenUtils.getHeightPx() >> 1)
         .setDuration(DURATION_GAMES_FILTERS)
         .setInterpolator(new DecelerateInterpolator())
         .start();
@@ -526,18 +456,8 @@ public class LiveControlsView extends FrameLayout {
     view.animate()
         .translationY(0)
         .setDuration(DURATION_GAMES_FILTERS)
-        .setInterpolator(new DecelerateInterpolator())
+        .setInterpolator(new OvershootInterpolator(OVERSHOOT_LIGHT))
         .start();
-  }
-
-  private void showBtnGameOn() {
-    AnimationUtils.fadeIn(btnNewGameOn, DURATION_GAMES_FILTERS);
-    AnimationUtils.fadeOut(btnNewGameOff, DURATION_GAMES_FILTERS);
-  }
-
-  private void showBtnGameOff(boolean animate) {
-    AnimationUtils.fadeIn(btnNewGameOff, animate ? DURATION_GAMES_FILTERS : 0);
-    AnimationUtils.fadeOut(btnNewGameOn, animate ? DURATION_GAMES_FILTERS : 0);
   }
 
   private void showBtnFilterOn() {
@@ -570,19 +490,52 @@ public class LiveControlsView extends FrameLayout {
             }
 
             showActiveGame(viewFrom != null);
+
+            new GlideUtils.GameImageBuilder(getContext(), screenUtils).url(
+                gameManager.getCurrentGame().getIcon())
+                .hasBorder(true)
+                .hasPlaceholder(true)
+                .rounded(true)
+                .target(currentGameView)
+                .load();
           }
         });
     currentGameView.setClickable(true);
-    currentGameView.setOnLongClickListener(v -> {
-      onGameOptions.onNext(gameManager.getCurrentGame());
-      return false;
-    });
-    currentGameView.setOnClickListener(v -> {
-      AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
-          new OvershootInterpolator(OVERSHOOT_LIGHT));
-      onRestartGame.onNext(gameManager.getCurrentGame());//MADA
-    });
+
+    subscriptions.add(RxView.clicks(currentGameView)
+        .doOnNext(aVoid -> AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
+            new OvershootInterpolator(OVERSHOOT_LIGHT)))
+        .map(aVoid -> gameManager.getCurrentGame())
+        .filter(game -> {
+          if (game.getCurrentMaster() != null &&
+              game.getCurrentMaster().getId().equals(user.getId())) {
+            return true;
+          } else {
+            Toast.makeText(getContext(), getContext().getString(R.string.game_update_forbidden,
+                game.getCurrentMaster() != null ? game.getCurrentMaster().getDisplayName() : ""),
+                Toast.LENGTH_LONG).show();
+            return false;
+          }
+        })
+        .flatMap(game -> DialogFactory.showBottomSheetForGame(getContext(), game),
+            ((game, labelType) -> {
+              if (labelType.getTypeDef().equals(LabelType.GAME_PLAY_ANOTHER)) {
+                onStopGame.onNext(game);
+              } else if (labelType.getTypeDef().equals(LabelType.GAME_RESET_SCORES)) {
+                onResetScores.onNext(game);
+              } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
+                onStopGame.onNext(game);
+              }
+
+              return labelType;
+            }))
+        .filter(labelType -> labelType.getTypeDef().equals(LabelType.GAME_PLAY_ANOTHER))
+        .delay(1, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(labelType -> openGameStore.onNext(null)));
+
     layoutContainerParamLive.addView(currentGameView, params);
+
     return currentGameView;
   }
 
@@ -598,16 +551,34 @@ public class LiveControlsView extends FrameLayout {
     return xAnim;
   }
 
+  private void showMenuTop(List<View> viewsToHide) {
+    for (View v : viewsToHide) {
+      hideView(v, true);
+    }
+
+    for (View v : viewToHideBottom) {
+      hideView(v, false);
+    }
+  }
+
+  private void closeMenuTop(List<View> viewsToHide) {
+    chatMenuOn = false;
+
+    for (View v : viewsToHide) {
+      showView(v);
+    }
+
+    for (View v : viewToHideBottom) {
+      showView(v);
+    }
+  }
+
   ///////////////
   //  ONCLICK  //
   ///////////////
 
   @OnClick(R.id.btnLeave) void clickLeave() {
     onLeave.onNext(null);
-  }
-
-  @OnClick(R.id.btnInviteLive) void openInvite() {
-    onOpenInvite.onNext(null);
   }
 
   @OnClick(R.id.btnOrientationCamera) void clickOrientationCamera() {
@@ -647,7 +618,7 @@ public class LiveControlsView extends FrameLayout {
         .subscribe(aLong -> {
           setXTranslateAnimation(btnMicro, -xTranslation);
           setXTranslateAnimation(btnExpand,
-              layoutContainerParamExtendedLive.getWidth() - xTranslation * 2);
+              layoutContainerParamExtendedLive.getWidth() - xTranslation);
         }));
 
     onClickCameraEnable.onNext(null);
@@ -674,31 +645,8 @@ public class LiveControlsView extends FrameLayout {
     onClickCameraDisable.onNext(null);
   }
 
-  @OnClick({ R.id.btnNewGameOff, R.id.btnNewGameOn }) void clickNewGame() {
-    if (!gamesMenuOn) {
-      showGames();
-    } else {
-      hideGames();
-    }
-  }
-
-  @OnClick(R.id.btnNotify) void clickNotify() {
-    stateManager.addTutorialKey(StateManager.BUZZ_FRIEND_POPUP);
-
-    btnNotify.setEnabled(false);
-    btnNotify.animate()
-        .alpha(0.2f)
-        .setDuration(DURATION_GAMES_FILTERS)
-        .setInterpolator(new DecelerateInterpolator())
-        .setListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationEnd(Animator animation) {
-            onNotifyAnimationDone.onNext(null);
-            btnNotify.animate().setListener(null);
-          }
-        })
-        .start();
-
-    onClickNotify.onNext(null);
+  @OnClick({ R.id.btnNewGameOff }) void clickNewGame() {
+    openGameStore.onNext(null);
   }
 
   @OnClick({ R.id.btnFilterOn, R.id.btnFilterOff }) void clickFilter() {
@@ -713,26 +661,43 @@ public class LiveControlsView extends FrameLayout {
   //////////////
   //  PUBLIC  //
   //////////////
+
+  public void initDrawerEventChangeObservable(Observable<Integer> onEventChange) {
+    subscriptions.add(onEventChange.subscribe(event -> {
+      if (drawerState == LiveContainer.CLOSED && event != LiveContainer.CLOSED) {
+        drawerState = event;
+        viewStatusName.openView();
+      } else if (drawerState == LiveContainer.OPEN_PARTIAL && event == LiveContainer.CLOSED) {
+        drawerState = event;
+        viewStatusName.closeView();
+      }
+    }));
+  }
+
+  public void initOnShouldOpenChat(Observable<Boolean> obs) {
+    subscriptions.add(obs.subscribe(aBoolean -> {
+      if (aBoolean) {
+        btnChat.open();
+      } else {
+        btnChat.close();
+      }
+    }));
+  }
+
+  public void onNewMessage() {
+    btnChat.setNewBtn();
+  }
+
   public ImageView getCurrentGameView() {
     return currentGameView;
   }
 
   public void dispose() {
-    btnNotify.clearAnimation();
-    btnNotify.animate().setListener(null);
+    viewStatusName.dispose();
   }
 
-  public void blockOpenInviteViewBtn(boolean block) {
-    btnInviteLive.setEnabled(!block);
-    if (block) {
-      btnInviteLive.setAlpha(0.4f);
-    } else {
-      btnInviteLive.setAlpha(1f);
-    }
-  }
-
-  public void setNotifyEnabled(boolean enable) {
-    btnNotify.setEnabled(enable);
+  public void setLive(Live live) {
+    viewStatusName.setLive(live);
   }
 
   public void setMicroEnabled(boolean enabled) {
@@ -740,33 +705,22 @@ public class LiveControlsView extends FrameLayout {
         enabled ? R.drawable.picto_micro_on_live : R.drawable.picto_micro_off_live);
   }
 
-  public void refactorNotifyButton(boolean enable) {
-    if (!enable) {
-      btnNotify.setVisibility(View.GONE);
-      btnScreenshot.setVisibility(VISIBLE);
-      return;
-    } else {
-      btnNotify.setVisibility(View.VISIBLE);
-      btnScreenshot.setVisibility(INVISIBLE);
-    }
-
-    if (enable != btnNotify.isEnabled()) {
-      btnNotify.animate().alpha(1).setDuration(DURATION_GAMES_FILTERS);
-      btnNotify.setEnabled(true);
-    }
-  }
-
   public void startGameFromAnotherUser(Game game) {
     hideGameControls();
     setupCurrentGameView(game, null);
   }
 
+  public void startGame(Game game) {
+    gameManager.setCurrentGame(game);
+    onStartGame.onNext(game);
+    subscriptions.add(Observable.timer(400, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(pairViewGame -> setupCurrentGameView(game, null)));
+  }
+
   public void setupCurrentGameView(Game game, View viewFrom) {
-    if (currentGameView == null) { // TODO will have to change with other games
+    if (currentGameView == null) {
       currentGameView = addGameToView(viewFrom);
-      currentGameView.setImageBitmap(BitmapUtils.generateGameIconWithBorder(
-          BitmapUtils.bitmapFromResources(getResources(), game.getDrawableRes()),
-          screenUtils.dpToPx(10)));
     }
   }
 
@@ -783,10 +737,6 @@ public class LiveControlsView extends FrameLayout {
   /////////////////
   // OBSERVABLES //
   /////////////////
-
-  public Observable<Void> onOpenInvite() {
-    return onOpenInvite;
-  }
 
   public Observable<Void> onClickCameraOrientation() {
     return onClickCameraOrientation;
@@ -808,16 +758,12 @@ public class LiveControlsView extends FrameLayout {
     return onClickCameraDisable;
   }
 
-  public Observable<Void> onClickNotify() {
-    return onClickNotify;
-  }
-
-  public Observable<Void> onNotifyAnimationDone() {
-    return onNotifyAnimationDone;
-  }
-
   public Observable<Filter> onClickFilter() {
     return onClickFilter;
+  }
+
+  public Observable<Boolean> onGameMenuOpen() {
+    return onGameMenuOpened;
   }
 
   public Observable<Game> onStartGame() {
@@ -828,15 +774,62 @@ public class LiveControlsView extends FrameLayout {
     return onLeave;
   }
 
-  public Observable<Game> onGameOptions() {
-    return onGameOptions;
+  public Observable<Boolean> onOpenInvite() {
+    return viewStatusName.onOpenView().doOnNext(aBoolean -> {
+      invitesMenuOn = true;
+      showMenuTop(viewToHideTopInvites);
+
+      int width = viewStatusName.getNewWidth();
+
+      viewStatusName.animate()
+          .translationX((screenUtils.getWidthPx() >> 1) - (width >> 1) - screenUtils.dpToPx(15))
+          .setDuration(DURATION_NAME)
+          .setInterpolator(new DecelerateInterpolator())
+          .start();
+    }).filter(aBoolean -> drawerState == LiveContainer.CLOSED);
+  }
+
+  public Observable<Boolean> onCloseInvite() {
+    return viewStatusName.onCloseView().doOnNext(aBoolean -> {
+      invitesMenuOn = false;
+      closeMenuTop(viewToHideTopInvites);
+
+      viewStatusName.animate()
+          .translationX(0)
+          .setDuration(DURATION_NAME)
+          .setInterpolator(new DecelerateInterpolator())
+          .start();
+    }).filter(aBoolean -> drawerState == LiveContainer.OPEN_PARTIAL);
+  }
+
+  public Observable<Boolean> onOpenChat() {
+    return btnChat.onOpenChat().doOnNext(aBoolean -> {
+      chatMenuOn = true;
+      showMenuTop(viewToHideTopChat);
+    });
+  }
+
+  public Observable<Boolean> onCloseChat() {
+    return btnChat.onCloseChat().doOnNext(aBoolean -> {
+      chatMenuOn = false;
+      closeMenuTop(viewToHideTopChat);
+    });
   }
 
   public Observable<Game> onRestartGame() {
     return onRestartGame;
   }
 
-  public Observable<View> onGameUIActive() {
-    return onGameUIActive;
+  public Observable<Game> onStopGame() {
+    return onStopGame;
+  }
+
+  public Observable<Game> onResetScores() {
+    return onResetScores;
+  }
+
+  public Observable<Void> openGameStore() {
+    return openGameStore.debounce(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread());
   }
 }

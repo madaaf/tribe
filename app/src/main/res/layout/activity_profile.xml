@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@null"
-    tools:context=".presentation.view.activity.GroupActivity"
     >
 
   <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="@dimen/top_bar_height_small"
       >
-
     <com.github.rahatarmanahmed.cpv.CircularProgressView
         android:id="@+id/progressView"
         android:layout_width="20dp"
@@ -27,7 +24,6 @@
         />
 
   </FrameLayout>
-
 
   <com.solera.defrag.ViewStack
       android:id="@+id/viewNavigatorStack"
@@ -55,6 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
+        android:textAllCaps="true"
         style="@style/Title.2.Black"
         />
 
@@ -64,6 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
+        android:textAllCaps="true"
         style="@style/Title.2.Black"
         />
 
@@ -75,7 +73,7 @@
         android:background="@drawable/selectable_button_oval"
         android:clickable="true"
         android:scaleType="centerInside"
-        android:src="@drawable/picto_back"
+        android:src="@drawable/picto_close"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont

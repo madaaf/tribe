@@ -5,5 +5,5 @@ package com.tribe.app.data.realm;
  */
 public interface RecipientRealmInterface {
 
-  String getSubId();
+
 }

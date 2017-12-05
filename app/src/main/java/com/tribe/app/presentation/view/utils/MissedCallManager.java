@@ -52,6 +52,37 @@ import javax.inject.Singleton;
     return getNotificationPayloadList().size();
   }
 
+  public List<MissedCallAction> getMissedCallAction() {
+    List<String> missedCallUserIdList = new ArrayList<>();
+    Map<String, MissedCallAction> missedCallsActionList = new HashMap<>();
+
+    MissedCallAction missedCallAction;
+
+    for (NotificationPayload playload : notificationPayloadList) {
+      missedCallAction = new MissedCallAction(playload.getUserId(), playload, 1);
+      if (!missedCallUserIdList.contains(playload.getUserId())) {
+        missedCallUserIdList.add(playload.getUserId());
+        missedCallsActionList.put(missedCallAction.getUserId(), missedCallAction);
+      } else {
+        missedCallAction = missedCallsActionList.get(playload.getUserId());
+        missedCallAction.setNbrMissedCall(missedCallAction.getNbrMissedCall() + 1);
+      }
+    }
+    List<MissedCallAction> formatedMissedCallList = new ArrayList<>(missedCallsActionList.values());
+
+    for (MissedCallAction missedCall : formatedMissedCallList) {
+      String notificationActionTitle = context.getString(R.string.callback_notification_action,
+          missedCall.getNotificationPayload().getUserDisplayName(),
+          Integer.toString(missedCall.getNbrMissedCall()));
+      missedCall.getNotificationPayload().setClickAction(NotificationPayload.CLICK_ACTION_LIVE);
+      missedCall.getNotificationPayload().setBody(notificationActionTitle);
+      missedCall.getNotificationPayload()
+          .setUserDisplayName(missedCall.getNotificationPayload().getTitle());
+    }
+
+    return formatedMissedCallList;
+  }
+
   public NotificationPayload buildNotificationBuilderFromMissedCallList() {
     NotificationPayload notificationPayload = new NotificationPayload();
 

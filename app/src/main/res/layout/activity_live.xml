@@ -2,7 +2,6 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     >
-
   <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
@@ -12,20 +11,12 @@
       tools:context=".presentation.view.activity.LiveActivity"
       >
 
+
     <com.tribe.app.presentation.view.component.live.LiveContainer
         android:id="@+id/viewLiveContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@null"
         >
-
-      <com.tribe.app.presentation.view.component.live.LiveInviteView
-          android:id="@+id/viewInviteLive"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:layout_gravity="right"
-          />
-
       <com.tribe.app.presentation.view.component.live.LiveView
           android:id="@+id/viewLive"
           android:layout_width="match_parent"
@@ -33,23 +24,29 @@
           android:background="@null"
           />
 
-      <View
-          android:id="@+id/viewShadowRight"
-          android:layout_width="10dp"
-          android:layout_height="match_parent"
-          android:layout_gravity="right"
-          android:layout_marginRight="-10dp"
-          android:background="@drawable/shadow_right"
-          />
-
-      <com.tribe.app.presentation.view.widget.PopupContainerView
-          android:id="@+id/nativeDialogsView"
+      <com.tribe.app.presentation.view.component.live.LiveDropZoneView
+          android:id="@+id/viewLiveDropZone"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           />
 
+      <FrameLayout
+          android:id="@+id/chatview"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_alignParentBottom="true"
+          android:layout_marginTop="65dp"
+          android:clickable="true"
+          android:visibility="invisible"
+          />
 
     </com.tribe.app.presentation.view.component.live.LiveContainer>
+
+    <com.tribe.app.presentation.view.widget.PopupContainerView
+        android:id="@+id/nativeDialogsView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/remotePeerAdded"
@@ -62,7 +59,6 @@
         android:textColor="@android:color/white"
         android:visibility="gone"
         />
-
 
     <com.tribe.app.presentation.view.widget.notifications.UserInfosNotificationView
         android:id="@+id/userInfosNotificationView"
@@ -107,5 +103,4 @@
         />
 
   </FrameLayout>
-
 </merge>

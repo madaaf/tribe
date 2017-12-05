@@ -11,6 +11,7 @@ import java.io.Serializable;
  */
 
 public class MissedCallAction implements Serializable, BaseListInterface {
+
   private String userId;
   private int nbrMissedCall;
   private NotificationPayload notificationPayload;

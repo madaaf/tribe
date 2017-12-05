@@ -70,8 +70,8 @@ public class LUT3DFilter extends Filter {
   private Allocation lutAllocation;
 
   public LUT3DFilter(Context context, @LUT3DFilterType String id, String name,
-      @DrawableRes int drawableId, @DrawableRes @RawRes int filterResourceId) {
-    super(context, id, name, drawableId);
+      @DrawableRes int drawableId, @DrawableRes @RawRes int filterResourceId, boolean available) {
+    super(context, id, name, drawableId, available);
     this.id = id;
     this.filterResourceId = filterResourceId;
   }

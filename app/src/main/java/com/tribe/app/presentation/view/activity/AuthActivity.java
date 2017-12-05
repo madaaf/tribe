@@ -97,6 +97,10 @@ public class AuthActivity extends BaseActivity
     loginFromDeepLink();
   }
 
+  @Override protected void onResume() {
+    super.onResume();
+  }
+
   ////////////////
 
   private void loginFromDeepLink() {
@@ -179,13 +183,14 @@ public class AuthActivity extends BaseActivity
 
   private void alternativeAuth(boolean shouldCall) {
 
-    subscriptions.add(DialogFactory.numberPadDialog(this, getString(R.string.onboarding_step_phone),
-        getString(R.string.action_start), getString(R.string.action_cancel),
-        InputType.TYPE_CLASS_PHONE).subscribe(phoneNumber -> {
+    subscriptions.add(
+        DialogFactory.inputDialog(this, getString(R.string.onboarding_step_phone), null,
+            getString(R.string.action_start), getString(R.string.action_cancel),
+            InputType.TYPE_CLASS_PHONE).subscribe(phoneNumber -> {
 
-      userPhoneNumber.set(phoneNumber);
-      authPresenter.requestCode(phoneNumber, shouldCall);
-    }));
+          userPhoneNumber.set(phoneNumber);
+          authPresenter.requestCode(phoneNumber, shouldCall);
+        }));
   }
 
   @OnLongClick(R.id.btnPhoneNumber) boolean menuPhoneNumber() {
@@ -259,14 +264,14 @@ public class AuthActivity extends BaseActivity
     facebookPresenter.onViewAttached(this);
   }
 
+  private void tagLogin() {
+    Bundle properties = new Bundle();
+    properties.putString(TagManagerUtils.TYPE, "login");
+    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
+  }
+
   private void connectUser(User user) {
     this.currentUser.copy(user);
-    Bundle properties = new Bundle();
-    properties.putString(TagManagerUtils.TYPE, "signup");
-    properties.putString(TagManagerUtils.PLATFORM,
-        loginEntity.getFbAccessToken() != null ? TagManagerUtils.PLATFORM_FACEBOOK
-            : TagManagerUtils.PLATFORM_PHONE);
-    tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_AuthenticationSuccess, properties);
     Timber.d("KPI_Onboarding_AuthenticationSuccess");
     String countryCode = String.valueOf(phoneUtils.getCountryCode(loginEntity.getUsername()));
     if (deepLink != null) {
@@ -280,10 +285,12 @@ public class AuthActivity extends BaseActivity
     } else if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
         user.getUsername())) {
       Timber.d("goToConnected from new user");
+
       navigator.navigateToAuthProfile(this, null, loginEntity);
     } else {
       tagManager.updateUser(user);
       tagManager.setUserId(user.getId());
+      tagLogin();
       Timber.d("goToConnected from " + user.getDisplayName());
       navigator.navigateToHomeFromLogin(this, countryCode, null,
           loginEntity.getFbAccessToken() != null);
@@ -330,7 +337,7 @@ public class AuthActivity extends BaseActivity
     Timber.d("goToCode");
 
     subscriptions.add(
-        DialogFactory.numberPadDialog(context(), getString(R.string.onboarding_step_code),
+        DialogFactory.inputDialog(context(), getString(R.string.onboarding_step_code), null,
             getString(R.string.action_enter), getString(R.string.action_cancel),
             InputType.TYPE_CLASS_NUMBER).subscribe(code -> {
 

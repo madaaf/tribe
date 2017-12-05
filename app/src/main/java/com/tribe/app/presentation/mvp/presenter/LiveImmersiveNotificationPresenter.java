@@ -1,7 +1,8 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.user.DeclineInvite;
+import com.tribe.app.domain.interactor.live.DeclineInvite;
+import com.tribe.app.domain.interactor.live.RemoveInvite;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import javax.inject.Inject;
 
@@ -25,7 +26,7 @@ public class LiveImmersiveNotificationPresenter implements Presenter {
   }
 
   public void declineInvite(String roomId) {
-    declineInvite.prepare(roomId);
+    declineInvite.setup(roomId);
     declineInvite.execute(new DefaultSubscriber());
   }
 }

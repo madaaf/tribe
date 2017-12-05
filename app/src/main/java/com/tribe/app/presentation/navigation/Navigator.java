@@ -15,29 +15,29 @@ import com.facebook.share.widget.AppInviteDialog;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
-import com.tribe.app.domain.entity.GroupMember;
-import com.tribe.app.domain.entity.Membership;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
-import com.tribe.app.presentation.view.activity.GroupActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
-import com.tribe.app.presentation.view.activity.SendboxActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
-
+import com.tribe.app.presentation.view.widget.chat.ChatActivity;
+import com.tribe.app.presentation.view.widget.chat.PictureActivity;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -51,6 +51,8 @@ public class Navigator {
   public static int REQUEST_COUNTRY = 1000;
   public static int FROM_LIVE = 1001;
   public static int FROM_PROFILE = 1002;
+  public static int FROM_CHAT = 1003;
+  public static int FROM_NEW_GAME = 1004;
   public static String SNAPCHAT = "com.snapchat.android";
   public static String INSTAGRAM = "com.instagram.android";
   public static String TWITTER = "com.twitter.android";
@@ -123,7 +125,8 @@ public class Navigator {
    *
    * @param activity An activity needed to open the destiny activity.
    */
-  public void navigateToHomeFromLogin(Activity activity, String countryCode, String linkRoomId, boolean isFromFacebook) {
+  public void navigateToHomeFromLogin(Activity activity, String countryCode, String linkRoomId,
+      boolean isFromFacebook) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
       intent.putExtra(Extras.IS_FROM_LOGIN, true);
@@ -132,9 +135,9 @@ public class Navigator {
         intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
       }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-          | Intent.FLAG_ACTIVITY_CLEAR_TASK
-          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+          Intent.FLAG_ACTIVITY_CLEAR_TASK |
+          Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
       if (linkRoomId != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -146,7 +149,7 @@ public class Navigator {
     if (activity != null) {
       Intent intent = ProfileActivity.getCallingIntent(activity);
       activity.startActivityForResult(intent, FROM_PROFILE);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
   }
 
@@ -197,53 +200,17 @@ public class Navigator {
   }
 
   /**
-   * Goes to the group screen.
-   *
-   * @param activity activity needed to open the destiny activity.
-   */
-  public void navigateToCreateGroup(Activity activity) {
-    if (activity != null) {
-      Intent intent = GroupActivity.getCallingIntent(activity, null);
-      activity.startActivityForResult(intent, 0);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-    }
-  }
-
-  public void navigateToPrefilledCreationGroup(Activity activity,
-      List<GroupMember> prefilledGrpMembers, boolean createGrpDirectly) {
-    if (activity != null) {
-      Intent intent = GroupActivity.getCallingIntentWithMembers(activity, prefilledGrpMembers,
-          createGrpDirectly);
-      activity.startActivityForResult(intent, 0);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-    }
-  }
-
-  /**
-   * Goes to the group screen.
-   *
-   * @param activity activity needed to open the destiny activity.
-   * @param membership membership to detail
-   */
-  public void navigateToGroupDetails(Activity activity, Membership membership) {
-    if (activity != null) {
-      Intent intent = GroupActivity.getCallingIntent(activity, membership);
-      activity.startActivity(intent);
-      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-    }
-  }
-
-  /**
    * Goes to the live screen.
    *
    * @param activity activity needed to open the destiny activity.
    * @param recipient recipient to go live with
-   * @param color the color of the tile
    */
-  public void navigateToLive(Activity activity, Recipient recipient, int color,
-      @LiveActivity.Source String source) {
+  public void navigateToLive(Activity activity, Recipient recipient,
+      @LiveActivity.Source String source, String section, String gameId) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, recipient, color, source);
+      Intent intent =
+          LiveActivity.getCallingIntent(activity, recipient, source, TagManagerUtils.GESTURE_TAP,
+              section, gameId);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       if (activity instanceof LiveActivity) {
         activity.startActivity(intent);
@@ -251,6 +218,42 @@ public class Navigator {
         activity.startActivityForResult(intent, FROM_LIVE);
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
       }
+    }
+  }
+
+  public void navigateToChat(Activity activity, Recipient recipient, Shortcut fromShortcut,
+      String gesture, String section, boolean noHistory) {
+    if (activity != null) {
+      Intent intent =
+          ChatActivity.getCallingIntent(activity, recipient, fromShortcut, gesture, section);
+
+      if (noHistory) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivityForResult(intent, FROM_CHAT);
+        activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+      } else {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivityForResult(intent, FROM_CHAT);
+        activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
+      }
+    }
+  }
+
+  public void navigateToPicture(Context activity, String messageId, String[] arrIds) {
+    Intent intent = PictureActivity.getCallingIntent(activity, messageId, arrIds);
+    activity.startActivity(intent);
+    // activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+  }
+
+  public void navigateToLiveFromSwipe(Activity activity, Recipient recipient,
+      @LiveActivity.Source String source, String section) {
+    if (activity != null) {
+      Intent intent =
+          LiveActivity.getCallingIntent(activity, recipient, source, TagManagerUtils.GESTURE_SWIPE,
+              section, null);
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      activity.startActivityForResult(intent, FROM_LIVE);
+      activity.overridePendingTransition(0, 0);
     }
   }
 
@@ -274,11 +277,20 @@ public class Navigator {
     }
   }
 
-  public void navigateToNewCall(Activity activity, @LiveActivity.Source String source) {
+  public void navigateToNewCall(Activity activity, @LiveActivity.Source String source,
+      String gameId) {
     if (activity != null) {
-      Intent intent = LiveActivity.getCallingIntent(activity, source);
+      Intent intent = LiveActivity.getCallingIntent(activity, source, gameId);
       activity.startActivityForResult(intent, FROM_LIVE);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+    }
+  }
+
+  public void navigateToNewGame(Activity activity, String source) {
+    if (activity != null) {
+      Intent intent = NewGameActivity.getCallingIntent(activity, source);
+      activity.startActivityForResult(intent, FROM_NEW_GAME);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.activity_out_scale_down);
     }
   }
 
@@ -335,8 +347,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToUrl(Context context, String url) {
-    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+  public void navigateToUrl(Activity activity, String url) {
+    activity.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
   }
 
   /**
@@ -385,7 +398,8 @@ public class Navigator {
 
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
-    } else if (activity.getIntent() != null && activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
+    } else if (activity.getIntent() != null &&
+        activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
       openFacebookAppInvites(activity, url);
     } else {
       openDefaultMessagingApp(activity, text);
@@ -405,17 +419,7 @@ public class Navigator {
   }
 
   public String sendInviteToCall(BaseActivity activity, FirebaseRemoteConfig firebaseRemoteConfig,
-      String feature, String fromLinkId, String phoneNumber, boolean shouldOpenDefaultSms) {
-    String url, linkId;
-
-    if (StringUtils.isEmpty(fromLinkId)) {
-      linkId = StringUtils.generateLinkId();
-    } else {
-      linkId = fromLinkId;
-    }
-
-    url = StringUtils.getUrlFromLinkId(activity, linkId);
-
+      String feature, String link, String phoneNumber, boolean shouldOpenDefaultSms) {
     String title = activity.getString(R.string.onboarding_user_alert_call_link_metadata_title,
         activity.getCurrentUser().getDisplayName());
     String description =
@@ -423,21 +427,21 @@ public class Navigator {
             activity.getCurrentUser().getDisplayName());
 
     activity.getTagManager()
-        .generateBranchLink(activity, url, title, description, feature, "SMS",
+        .generateBranchLink(activity, link, title, description, feature, "SMS",
             (generatedUrl, error) -> {
               String finalUrl;
 
               if (error == null && !StringUtils.isEmpty(generatedUrl)) {
                 finalUrl = generatedUrl;
               } else {
-                finalUrl = url;
+                finalUrl = link;
               }
 
               openMessageAppForInviteWithUrl(activity, firebaseRemoteConfig, finalUrl, phoneNumber,
                   shouldOpenDefaultSms);
             });
 
-    return linkId;
+    return link;
   }
 
   public void openDefaultMessagingApp(Activity activity, String message) {
@@ -452,11 +456,10 @@ public class Navigator {
 
     if (AppInviteDialog.canShow()) {
 
-      AppInviteContent content = new AppInviteContent.Builder()
-              .setApplinkUrl(url)
-              .setPreviewImageUrl(Constants.OPEN_GRAPH_IMAGE)
-              .setDestination(AppInviteContent.Builder.Destination.FACEBOOK)
-              .build();
+      AppInviteContent content = new AppInviteContent.Builder().setApplinkUrl(url)
+          .setPreviewImageUrl(Constants.OPEN_GRAPH_IMAGE)
+          .setDestination(AppInviteContent.Builder.Destination.FACEBOOK)
+          .build();
 
       AppInviteDialog.show(activity, content);
     }

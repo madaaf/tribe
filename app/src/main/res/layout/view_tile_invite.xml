@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     >
 
-  <include layout="@layout/view_tile_background_invite" />
-
-  <com.tribe.app.presentation.view.widget.avatar.AvatarView
-      android:id="@+id/avatar"
-      android:layout_width="@dimen/avatar_size"
-      android:layout_height="@dimen/avatar_size"
+  <View
+      android:id="@+id/viewBG"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
       android:layout_gravity="center"
-      android:background="@null"
-      app:hasHole="false"
-      app:hasInd="false"
-      app:hasShadow="true"
+      android:background="@drawable/bg_invite_tile"
       />
 
-  <include layout="@layout/view_tile_invite_base" />
+  <ImageView
+      android:id="@+id/viewShadow"
+      android:layout_width="65dp"
+      android:layout_height="65dp"
+      android:layout_gravity="center"
+      android:scaleType="fitXY"
+      android:src="@drawable/bg_avatar_shadow"
+      />
+
+  <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+      android:id="@+id/viewNewAvatar"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      />
 
 </merge>

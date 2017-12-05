@@ -1,8 +1,10 @@
 package com.tribe.app.data.repository.game;
 
+import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
 import com.tribe.app.data.repository.game.datasource.GameDataStore;
 import com.tribe.app.data.repository.game.datasource.GameDataStoreFactory;
 import com.tribe.app.domain.interactor.game.GameRepository;
+import com.tribe.tribelivesdk.game.Game;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -11,23 +13,21 @@ import rx.Observable;
 @Singleton public class CloudGameDataRepository implements GameRepository {
 
   private final GameDataStoreFactory dataStoreFactory;
+  private final GameRealmDataMapper gameRealmDataMapper;
 
-  @Inject public CloudGameDataRepository(GameDataStoreFactory dataStoreFactory) {
+  @Inject public CloudGameDataRepository(GameDataStoreFactory dataStoreFactory,
+      GameRealmDataMapper gameRealmDataMapper) {
     this.dataStoreFactory = dataStoreFactory;
+    this.gameRealmDataMapper = gameRealmDataMapper;
   }
 
-  @Override public Observable<List<String>> getNamesForPostItGame(String lang) {
+  @Override public Observable<Void> synchronizeGamesData(String lang) {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
-    return gameDataStore.getNamesForPostItGame();
+    return gameDataStore.synchronizeGamesData();
   }
 
-  @Override public Observable<List<String>> getDataForChallengeGame(String lang) {
+  @Override public Observable<List<Game>> getGames() {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
-    return gameDataStore.getDataForChallengeGame();
-  }
-
-  @Override public Observable<List<String>> getNamesForDrawGame(String lang) {
-    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
-    return gameDataStore.getNamesForDrawGame();
+    return gameDataStore.getGames().map(gameRealm -> gameRealmDataMapper.transform(gameRealm));
   }
 }
