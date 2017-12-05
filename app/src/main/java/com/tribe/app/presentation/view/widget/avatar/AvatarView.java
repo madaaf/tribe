@@ -2,6 +2,8 @@ package com.tribe.app.presentation.view.widget.avatar;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
@@ -226,6 +229,18 @@ public class AvatarView extends RelativeLayout implements Avatar {
     } else {
       pendingBuilder = glideBuilder;
     }
+  }
+
+  @Override public void loadColorPlaceholder(int color) {
+    GradientDrawable drawable = new GradientDrawable();
+    drawable.setColor(color);
+    drawable.setShape(GradientDrawable.OVAL);
+
+    Glide.with(getContext())
+        .load("http://no")
+        .placeholder(drawable)
+        .error(drawable)
+        .into(imgAvatar);
   }
 
   public void changeSize(int size, boolean shouldChangeLP) {

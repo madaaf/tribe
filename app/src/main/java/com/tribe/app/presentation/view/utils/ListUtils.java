@@ -35,7 +35,7 @@ public class ListUtils {
   }
 
   public static void addEmptyItemsInvite(List<LiveInviteAdapterSectionInterface> items) {
-    double minItems = 10;
+    double minItems = 20;
 
     if (items.size() < minItems) {
       for (int i = items.size(); i < minItems; i++) {

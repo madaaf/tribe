@@ -15,5 +15,7 @@ public interface Avatar {
 
   void load(int drawableId);
 
+  void loadColorPlaceholder(int color);
+
   void loadGroupAvatar(String url, String previousUrl, String groupId, List<String> membersPic);
 }

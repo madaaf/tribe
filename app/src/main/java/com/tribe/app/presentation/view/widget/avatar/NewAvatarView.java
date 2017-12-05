@@ -121,6 +121,11 @@ public class NewAvatarView extends LinearLayout implements Avatar {
     avatar.load(drawableId);
   }
 
+  @Override
+  public void loadColorPlaceholder(int color) {
+    avatar.loadColorPlaceholder(color);
+  }
+
   public void setType(int type) {
     if (this.type == type) return;
 

@@ -148,7 +148,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
   // OBSERVABLES
 
   public Observable<View> onClick() {
-    return shortcutInviteAdapterDelegate.onClick();
+    return Observable.merge(shortcutInviteAdapterDelegate.onClick(), shortcutEmptyInviteAdapterDelegate.onClick());
   }
 
   public Observable<Void> onShareLink() {

@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -199,8 +200,11 @@ public class TileInviteView extends SquareFrameLayout {
   public void initClicks() {
     viewNewAvatar.setClickable(true);
     viewNewAvatar.setOnClickListener(view -> {
-      springTile.setEndValue(user.isSelected() ? 0 : 1);
-      user.setSelected(!user.isSelected());
+      if (user != null) {
+        springTile.setEndValue(user.isSelected() ? 0 : 1);
+        user.setSelected(!user.isSelected());
+      }
+
       onClick.onNext(viewNewAvatar);
     });
   }
@@ -224,21 +228,26 @@ public class TileInviteView extends SquareFrameLayout {
   public void setUser(User user) {
     this.user = user;
 
-    if (user.isSelected()) {
-      springTile.setEndValue(1);
-    } else {
-      springTile.setEndValue(0);
-    }
+    if (this.user != null) {
+      if (user.isSelected()) {
+        springTile.setEndValue(1);
+      } else {
+        springTile.setEndValue(0);
+      }
 
-    if (!StringUtils.isEmpty(user.getCurrentRoomId())) {
-      viewNewAvatar.setType(NewAvatarView.LIVE);
-    } else if (user.isOnline()) {
-      viewNewAvatar.setType(NewAvatarView.ONLINE);
-    } else {
-      viewNewAvatar.setType(NewAvatarView.NORMAL);
-    }
+      if (!StringUtils.isEmpty(user.getCurrentRoomId())) {
+        viewNewAvatar.setType(NewAvatarView.LIVE);
+      } else if (user.isOnline()) {
+        viewNewAvatar.setType(NewAvatarView.ONLINE);
+      } else {
+        viewNewAvatar.setType(NewAvatarView.NORMAL);
+      }
 
-    viewNewAvatar.load(user.getProfilePicture());
+      viewNewAvatar.load(user.getProfilePicture());
+    } else {
+      viewNewAvatar.loadColorPlaceholder(
+          ContextCompat.getColor(getContext(), R.color.grey_placeholder));
+    }
   }
 
   public void scaleAvatar(float scale) {

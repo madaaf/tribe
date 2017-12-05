@@ -16,6 +16,8 @@ import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.component.live.TileInviteView;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by tiago on 10/05/2017
@@ -26,6 +28,9 @@ public class ShortcutEmptyInviteAdapterDelegate
   protected LayoutInflater layoutInflater;
   protected Context context;
   protected int width;
+
+  // OBSERVABLES
+  private PublishSubject<View> onClick = PublishSubject.create();
 
   public ShortcutEmptyInviteAdapterDelegate(Context context) {
     this.context = context;
@@ -46,6 +51,8 @@ public class ShortcutEmptyInviteAdapterDelegate
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     ShortcutInviteViewHolder shortcutInviteViewHolder = new ShortcutInviteViewHolder(
         layoutInflater.inflate(R.layout.item_empty_shortcut_invite, parent, false));
+    shortcutInviteViewHolder.viewTile.initClicks();
+    subscriptions.add(shortcutInviteViewHolder.viewTile.onClick().map(v -> shortcutInviteViewHolder.itemView).subscribe(onClick));
     return shortcutInviteViewHolder;
   }
 
@@ -55,6 +62,7 @@ public class ShortcutEmptyInviteAdapterDelegate
     ShortcutInviteViewHolder vh = (ShortcutInviteViewHolder) holder;
     vh.viewTile.updateWidth(width);
     vh.viewTile.setPosition(position);
+    vh.viewTile.setUser(null);
   }
 
   @Override public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items,
@@ -83,4 +91,8 @@ public class ShortcutEmptyInviteAdapterDelegate
   /////////////////
   // OBSERVABLES //
   /////////////////
+
+  public Observable<View> onClick() {
+    return onClick;
+  }
 }

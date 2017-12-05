@@ -70,6 +70,7 @@ import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
+import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
@@ -166,6 +167,7 @@ public class LiveActivity extends BaseActivity
   @Inject RxImagePicker rxImagePicker;
   @Inject com.tribe.app.presentation.utils.DateUtils dateUtils;
   @BindView(R.id.viewLive) LiveView viewLive;
+  @BindView(R.id.viewLiveInvite) LiveInviteView viewLiveInvite;
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
   @BindView(R.id.userInfosNotificationView) UserInfosNotificationView userInfosNotificationView;
   @BindView(R.id.screenShotView) ScreenshotView screenshotView;
@@ -801,19 +803,19 @@ public class LiveActivity extends BaseActivity
     //      showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
     //}));
 
-    subscriptions.add(viewLiveContainer.onStopAndLaunchDice().subscribe(aVoid -> {
+    subscriptions.add(viewLiveInvite.onStopAndLaunchDice().subscribe(aVoid -> {
       returnIntent.putExtra(LAUNCH_DICE, true);
       setResult(RESULT_OK, returnIntent);
       leave();
     }));
 
-    subscriptions.add(viewLiveContainer.onInviteMessenger()
+    subscriptions.add(viewLiveInvite.onInviteMessenger()
         .subscribe(aVoid -> navigator.sendInviteToMessenger(this, firebaseRemoteConfig,
             TagManagerUtils.CALL, room.getLink())));
 
-    subscriptions.add(viewLiveContainer.onInviteSms().subscribe(aVoid -> share(true)));
+    subscriptions.add(viewLiveInvite.onInviteSms().subscribe(aVoid -> share(true)));
 
-    subscriptions.add(viewLiveContainer.onLaunchSearch().subscribe(aVoid -> {
+    subscriptions.add(viewLiveInvite.onLaunchSearch().subscribe(aVoid -> {
       returnIntent.putExtra(LAUNCH_SEARCH, true);
       setResult(RESULT_OK, returnIntent);
       leave();

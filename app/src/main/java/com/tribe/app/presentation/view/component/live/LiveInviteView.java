@@ -24,6 +24,7 @@ import com.tribe.app.presentation.mvp.presenter.LiveInvitePresenter;
 import com.tribe.app.presentation.mvp.view.LiveInviteMVPView;
 import com.tribe.app.presentation.mvp.view.RoomMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.adapter.LiveInviteAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
@@ -35,6 +36,7 @@ import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSecti
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
 import com.tribe.app.presentation.view.adapter.model.Header;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewUtils;
@@ -105,6 +107,10 @@ public class LiveInviteView extends FrameLayout
   private PublishSubject<Integer> onScrollStateChanged = PublishSubject.create();
   private PublishSubject<Integer> onScroll = PublishSubject.create();
   private PublishSubject<View> onClickEdit = PublishSubject.create();
+  private PublishSubject<Void> onInviteSms = PublishSubject.create();
+  private PublishSubject<Void> onInviteMessenger = PublishSubject.create();
+  private PublishSubject<Void> onLaunchSearch = PublishSubject.create();
+  private PublishSubject<Void> onLaunchDice = PublishSubject.create();
 
   public LiveInviteView(Context context) {
     super(context);
@@ -218,21 +224,54 @@ public class LiveInviteView extends FrameLayout
         .map(view -> adapter.getItemAtPosition(recyclerViewInvite.getChildLayoutPosition(view)))
         .subscribe(item -> {
           Shortcut shortcut = (Shortcut) item;
-          User user = shortcut.getSingleFriend();
+          if (shortcut.getId().equals(Shortcut.ID_EMPTY)) {
 
-          if (selected != null && !shortcut.getId().equals(selected.getId())) {
-            int position = itemsList.indexOf(selected);
-            selected.getSingleFriend().setSelected(false);
-            adapter.notifyItemChanged(position);
-          }
-
-          if (user.isSelected()) {
-            selected = shortcut;
+            subscriptions.add(DialogFactory.dialogMultipleChoices(getContext(),
+                EmojiParser.demojizedText(getContext().getString(R.string.empty_call_popup_title)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.empty_call_popup_message)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.empty_call_popup_share_sms_android)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.empty_call_popup_share_messenger)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.empty_call_popup_throw_the_dice)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.empty_call_popup_search_friend)),
+                EmojiParser.demojizedText(getContext().getString(R.string.empty_call_popup_cancel)))
+                .subscribe(integer -> {
+                  switch (integer) {
+                    case 0:
+                      onInviteSms.onNext(null);
+                      break;
+                    case 1:
+                      onInviteMessenger.onNext(null);
+                      break;
+                    case 2:
+                      onLaunchDice.onNext(null);
+                      break;
+                    case 3:
+                      onLaunchSearch.onNext(null);
+                      break;
+                  }
+                }));
           } else {
-            selected = null;
-          }
+            User user = shortcut.getSingleFriend();
 
-          onDisplayDropZone.onNext(user.isSelected());
+            if (selected != null && !shortcut.getId().equals(selected.getId())) {
+              int position = itemsList.indexOf(selected);
+              selected.getSingleFriend().setSelected(false);
+              adapter.notifyItemChanged(position);
+            }
+
+            if (user.isSelected()) {
+              selected = shortcut;
+            } else {
+              selected = null;
+            }
+
+            onDisplayDropZone.onNext(user.isSelected());
+          }
         }));
 
     subscriptions.add(adapter.onClickEdit().subscribe(onClickEdit));
@@ -414,7 +453,9 @@ public class LiveInviteView extends FrameLayout
         ViewUtils.findViewAt(recyclerViewInvite, TileInviteView.class, (int) rawX, (int) rawY);
 
     if (view instanceof TileInviteView) {
-      return (TileInviteView) view;
+      TileInviteView tileInviteView = (TileInviteView) view;
+      if (tileInviteView.getUser() == null) return null;
+      return tileInviteView;
     }
 
     return null;
@@ -512,6 +553,22 @@ public class LiveInviteView extends FrameLayout
 
   public Observable<View> onClickEdit() {
     return onClickEdit;
+  }
+
+  public Observable<Void> onInviteSms() {
+    return onInviteSms;
+  }
+
+  public Observable<Void> onInviteMessenger() {
+    return onInviteMessenger;
+  }
+
+  public Observable<Void> onStopAndLaunchDice() {
+    return onLaunchDice;
+  }
+
+  public Observable<Void> onLaunchSearch() {
+    return onLaunchSearch;
   }
 }
 

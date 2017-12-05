@@ -111,10 +111,6 @@ public class LiveContainer extends FrameLayout {
   private PublishSubject<Boolean> onDropZone = PublishSubject.create();
   private PublishSubject<TileInviteView> onDropped = PublishSubject.create();
   private PublishSubject<Void> onEndCall = PublishSubject.create();
-  private PublishSubject<Void> onInviteSms = PublishSubject.create();
-  private PublishSubject<Void> onInviteMessenger = PublishSubject.create();
-  private PublishSubject<Void> onLaunchSearch = PublishSubject.create();
-  private PublishSubject<Void> onLaunchDice = PublishSubject.create();
 
   public LiveContainer(Context context) {
     super(context);
@@ -306,39 +302,6 @@ public class LiveContainer extends FrameLayout {
                     currentTileView = viewLiveInvite.findViewByCoords(downX, downY);
                     if (currentTileView != null && currentTileView.getUser() != null) {
                       createTileForDrag();
-                    } else if (currentTileView != null && currentTileView.getUser() == null) {
-                      currentTileView = null;
-                      subscriptions.add(DialogFactory.dialogMultipleChoices(getContext(),
-                          EmojiParser.demojizedText(
-                              getContext().getString(R.string.empty_call_popup_title)),
-                          EmojiParser.demojizedText(
-                              getContext().getString(R.string.empty_call_popup_message)),
-                          EmojiParser.demojizedText(
-                              getContext().getString(R.string.empty_call_popup_share_sms_android)),
-                          EmojiParser.demojizedText(
-                              getContext().getString(R.string.empty_call_popup_share_messenger)),
-                          EmojiParser.demojizedText(
-                              getContext().getString(R.string.empty_call_popup_throw_the_dice)),
-                          EmojiParser.demojizedText(
-                              getContext().getString(R.string.empty_call_popup_search_friend)),
-                          EmojiParser.demojizedText(
-                              getContext().getString(R.string.empty_call_popup_cancel)))
-                          .subscribe(integer -> {
-                            switch (integer) {
-                              case 0:
-                                onInviteSms.onNext(null);
-                                break;
-                              case 1:
-                                onInviteMessenger.onNext(null);
-                                break;
-                              case 2:
-                                onLaunchDice.onNext(null);
-                                break;
-                              case 3:
-                                onLaunchSearch.onNext(null);
-                                break;
-                            }
-                          }));
                     }
                   }
                 }
@@ -806,21 +769,5 @@ public class LiveContainer extends FrameLayout {
 
   public Observable<Integer> onEventChange() {
     return onEventChange;
-  }
-
-  public Observable<Void> onInviteSms() {
-    return onInviteSms;
-  }
-
-  public Observable<Void> onInviteMessenger() {
-    return onInviteMessenger;
-  }
-
-  public Observable<Void> onStopAndLaunchDice() {
-    return onLaunchDice;
-  }
-
-  public Observable<Void> onLaunchSearch() {
-    return onLaunchSearch;
   }
 }
