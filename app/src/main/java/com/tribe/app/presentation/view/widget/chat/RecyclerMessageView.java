@@ -16,6 +16,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.domain.ShortcutLastSeen;
@@ -40,7 +41,21 @@ import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapte
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import com.zendesk.sdk.model.access.Identity;
+import com.zendesk.sdk.model.access.JwtIdentity;
+import com.zendesk.sdk.model.push.PushRegistrationResponse;
+import com.zendesk.sdk.model.request.Comment;
+import com.zendesk.sdk.model.request.CommentResponse;
+import com.zendesk.sdk.model.request.CommentsResponse;
+import com.zendesk.sdk.model.request.CreateRequest;
+import com.zendesk.sdk.model.request.EndUserComment;
+import com.zendesk.sdk.model.request.Request;
+import com.zendesk.sdk.network.RequestProvider;
+import com.zendesk.sdk.network.impl.ZendeskConfig;
+import com.zendesk.service.ErrorResponse;
+import com.zendesk.service.ZendeskCallback;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -79,6 +94,8 @@ public class RecyclerMessageView extends IChat {
   private boolean load = false, errorLoadingMessages = false;
   private List<Message> unreadMessage = new ArrayList<>();
   private String[] arrIds = null;
+  private String token = FirebaseInstanceId.getInstance().getToken();
+  private RequestProvider provider = ZendeskConfig.INSTANCE.provider().requestProvider();
 
   @BindView(R.id.recyclerViewMessageChat) RecyclerView recyclerView;
 
@@ -109,6 +126,100 @@ public class RecyclerMessageView extends IChat {
       this.type = ChatView.FROM_CHAT;
     }
     initView();
+    initZendesk();
+  }
+
+  private void initZendesk() {
+    Identity jwtUserIdentity = new JwtIdentity(token);
+    ZendeskConfig.INSTANCE.setIdentity(jwtUserIdentity);
+    enablePushZendesk();
+    // createZendeskRequest();
+    //getRequestProvider();
+    getCommentZendesk();
+    addCommentZendesk();
+  }
+
+  private void getCommentZendesk() {
+    provider.getComments("1402", new ZendeskCallback<CommentsResponse>() {
+      @Override public void onSuccess(CommentsResponse commentsResponse) {
+        for (CommentResponse resonse : commentsResponse.getComments()) {
+          Timber.e("onSuccess " + resonse.getBody());
+        }
+      }
+
+      @Override public void onError(ErrorResponse errorResponse) {
+        Timber.e(" getCommentZendesk onError " + errorResponse);
+      }
+    });
+  }
+
+  private void addCommentZendesk() {
+    EndUserComment o = new EndUserComment();
+    o.setValue("MADA TEST 5798798 ");
+
+    provider.addComment("1402", o, new ZendeskCallback<Comment>() {
+      @Override public void onSuccess(Comment comment) {
+        Timber.e("SOEF onSuccess ADD COMmENT " + comment.getBody());
+      }
+
+      @Override public void onError(ErrorResponse errorResponse) {
+        Timber.e("SOEF onSuccess ADD COMmENT " + errorResponse);
+      }
+    });
+  }
+
+  private void getRequestProvider() {
+    provider.getRequest("1402", new ZendeskCallback<Request>() {
+      @Override public void onSuccess(Request request) {
+        Timber.e("SOEF onSuccess getRequestProvider " + request.toString());
+      }
+
+      @Override public void onError(ErrorResponse errorResponse) {
+        Timber.e("SOEF error getRequestProvider " + errorResponse.toString());
+      }
+    });
+  }
+
+  private void createZendeskRequest() {
+    CreateRequest request = new CreateRequest();
+    request.setSubject("Chat with " + user.getDisplayName());
+    request.setDescription("1st message");
+    request.setTags(Arrays.asList("chat", "mobile"));
+
+    provider.createRequest(request, new ZendeskCallback<CreateRequest>() {
+      @Override public void onSuccess(CreateRequest createRequest) {
+        Timber.e("SOEF onSuccess REQUEST TIQUET " + createRequest.getId());
+      }
+
+      @Override public void onError(ErrorResponse errorResponse) {
+        Timber.e("SOEF MyLogTag" + errorResponse);
+      }
+    });
+  }
+
+  private void enablePushZendesk() {
+    ZendeskConfig.INSTANCE.enablePushWithIdentifier(token,
+        new ZendeskCallback<PushRegistrationResponse>() {
+          @Override public void onSuccess(PushRegistrationResponse pushRegistrationResponse) {
+            Timber.e("SOEF onSuccess enable oysg  TIQUET " + pushRegistrationResponse);
+          }
+
+          @Override public void onError(ErrorResponse errorResponse) {
+            Timber.e("SOEF  eonError " + errorResponse);
+          }
+        });
+  }
+
+  private void disablePushZendesk() {
+    ZendeskConfig.INSTANCE.disablePush(token, new ZendeskCallback<Void>() {
+      @Override public void onSuccess(Void aVoid) {
+        Timber.e("SOEF disable PushZendesk " + aVoid);
+      }
+
+      @Override public void onError(ErrorResponse errorResponse) {
+        Timber.e("SOEF  onError disable PushZendesk " + errorResponse);
+      }
+    });
   }
 
   protected void initDependencyInjector() {

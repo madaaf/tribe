@@ -740,6 +740,8 @@
 	<string name="game_taboo">Taboo</string>
 	<string name="game_backgam">Backgam\'</string>
 	<string name="game_beats">Beats</string>
+	<string name="game_trivia_status_pick_category">Choisis une catégorie !</string>
+	<string name="game_trivia_status_guess">Répond le premier !</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -937,6 +939,7 @@
 	<!-- Leaderboards -->
 	<string name="leaderboards_title">Classements</string>
 	<string name="leaderboards_score">Meilleur score</string>
+	<string name="leaderboards_no_score">Pas de score</string>
 	<string name="leaderboards_friends">Amis</string>
 	<string name="leaderboards_overall">Global</string>
 	<string name="leaderboards_point">pt</string>

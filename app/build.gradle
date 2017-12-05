@@ -250,7 +250,8 @@ dependencies {
   compile "me.leolin:ShortcutBadger:1.1.18@aar"
   compile presentationDependencies.constraintLayout
   compile presentationDependencies.AVLoadingIndicatorView
-  compile group: 'com.zendesk', name: 'sdk', version: '1.10.0.1'
+  compile group: 'com.zendesk', name: 'sdk-providers', version: '1.11.0.1'
+
 
   //androidTestCompile presentationTestDependencies.mockito
   //androidTestCompile presentationTestDependencies.dexmaker
