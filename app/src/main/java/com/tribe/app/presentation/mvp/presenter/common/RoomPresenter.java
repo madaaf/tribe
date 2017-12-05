@@ -98,6 +98,8 @@ public class RoomPresenter implements Presenter {
       if (roomMVPView != null) {
         roomMVPView.onRoomInfos(room);
       }
+
+      unsubscribe();
     }
   }
 
@@ -121,6 +123,8 @@ public class RoomPresenter implements Presenter {
       if (roomMVPView != null) {
         roomMVPView.onRoomInfos(room);
       }
+
+      unsubscribe();
     }
   }
 
