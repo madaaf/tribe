@@ -7,6 +7,7 @@ import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.notification.MissedCallAction;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +60,8 @@ import javax.inject.Singleton;
     MissedCallAction missedCallAction;
 
     for (NotificationPayload playload : notificationPayloadList) {
-      missedCallAction = new MissedCallAction(playload.getUserId(), playload, 1);
+      missedCallAction = new MissedCallAction(playload.getUserId(),
+          NotificationUtils.transformNotifPayload(playload), 1);
       if (!missedCallUserIdList.contains(playload.getUserId())) {
         missedCallUserIdList.add(playload.getUserId());
         missedCallsActionList.put(missedCallAction.getUserId(), missedCallAction);
@@ -92,7 +94,8 @@ import javax.inject.Singleton;
     MissedCallAction missedCallAction;
 
     for (NotificationPayload playload : notificationPayloadList) {
-      missedCallAction = new MissedCallAction(playload.getUserId(), playload, 1);
+      missedCallAction = new MissedCallAction(playload.getUserId(),
+          NotificationUtils.transformNotifPayload(playload), 1);
       if (!missedCallUserIdList.contains(playload.getUserId())) {
         missedCallUserIdList.add(playload.getUserId());
         missedCallsActionList.put(missedCallAction.getUserId(), missedCallAction);
