@@ -262,7 +262,8 @@ public class CloudUserDataStore implements UserDataStore {
     for (Pair<String, String> value : values) {
       if (value.first.equals(UserRealm.TRIBE_SAVE) ||
           value.first.equals(UserRealm.INVISIBLE_MODE) ||
-          value.first.equals(UserRealm.PUSH_NOTIF) || value.first.equals(UserRealm.MUTE_ONLINE_NOTIF)) {
+          value.first.equals(UserRealm.PUSH_NOTIF) ||
+          value.first.equals(UserRealm.MUTE_ONLINE_NOTIF)) {
         userInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
         userInputBuilder.append(",");
       } else if (!value.first.equals(UserRealm.FBID) ||
