@@ -55,8 +55,6 @@
 	
 	<!-- Invite -->
 	<string name="invite_generating_link">Generating a link to share...</string>
-	<string name="image_picker_camera">Take a selfie</string>
-	<string name="image_picker_library">Open camera roll</string>
 	
 	<!-- Contacts -->
 	<string name="contacts_search_new">NEW</string>
@@ -423,7 +421,6 @@
 	<string name="live_share_new_call_button_title">Call link</string>
 	<string name="live_share_screenshot_description">Share this screenshot!</string>
 	<string name="live_share_screenshot_caption">Thanks @heytribe! :metal: #tribegoals</string>
-
 	<string name="live_ringing_in">Ringing in %1$d</string>
 	<string name="live_ringing">Ringing %1$s</string>
 	<string name="live_joining">Joining...</string>

@@ -129,7 +129,6 @@
 	<string name="live_notification_action_see_thread">Voir la conversation</string>
 	<string name="live_notification_action_reply">Répondre</string>
 	<string name="live_notification_online">est en ligne</string>
-
 	<string name="live_notification_title">Choisissez une option</string>
 	<string name="live_notification_message">Voici ce que vous pouvez faire\navec %1$s maintenant.</string>
 	<string name="live_notification_call">:telephone_receiver: Appeler %1$s</string>
@@ -422,11 +421,9 @@
 	<string name="live_share_new_call_button_title">Partager l\'appel</string>
 	<string name="live_share_screenshot_description">Partagez ce screenshot !</string>
 	<string name="live_share_screenshot_caption">Merci @heytribe! :metal: #tribegoals</string>
-
 	<string name="live_ringing_in">Appel dans %1$d</string>
 	<string name="live_ringing">Appel en cours de %1$s</string>
 	<string name="live_joining">Connexion...</string>
-
 	<string name="live_invite_section_chat_members">Members du chat</string>
 	<string name="live_invite_section_invite_link">Lien d\'nvitation</string>
 	<string name="live_invite_section_add_friends">Ajouter des amis dans cette conversation</string>
