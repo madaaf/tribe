@@ -21,6 +21,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
+import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
 import com.tribe.app.data.realm.MessageRealm;
@@ -29,6 +30,7 @@ import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
@@ -342,7 +344,12 @@ public class AndroidApplication extends Application {
   }
 
   private void initGameManager() {
-    GameManager.getInstance(this);
+    GameManager gameManager = GameManager.getInstance(this);
+    GameRealmDataMapper gameRealmDataMapper = new GameRealmDataMapper(this);
+    List<GameRealm> gameRealmList = applicationComponent.gameCache().getGames();
+    if (gameRealmList != null && gameRealmList.size() > 0) {
+      gameManager.addGames(gameRealmDataMapper.transform(gameRealmList));
+    }
   }
 
   private class SampleAppStateListener implements AppStateListener {

@@ -7,6 +7,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import com.birbit.android.jobqueue.JobManager;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.cache.GameCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.WSService;
@@ -332,6 +333,8 @@ public interface ApplicationComponent {
   LiveCache liveCache();
 
   ChatCache chatCache();
+
+  GameCache gameCache();
 
   JobManager jobManager();
 
