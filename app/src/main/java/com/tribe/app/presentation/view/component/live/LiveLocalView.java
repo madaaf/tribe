@@ -151,16 +151,16 @@ public class LiveLocalView extends LiveStreamView {
 
   private void computeDisplay(boolean animate) {
     if (!localMediaConfiguration.isVideoEnabled()) {
-      UIUtils.hideReveal(layoutStream, animate, new AnimatorListenerAdapter() {
+      UIUtils.hideReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
         @Override public void onAnimationEnd(Animator animation) {
           if (animation != null) animation.removeAllListeners();
-          layoutStream.setVisibility(View.GONE);
+          viewPeerLocal.setVisibility(View.GONE);
         }
       });
     } else {
-      UIUtils.showReveal(layoutStream, animate, new AnimatorListenerAdapter() {
+      UIUtils.showReveal(viewPeerLocal, animate, new AnimatorListenerAdapter() {
         @Override public void onAnimationStart(Animator animation) {
-          layoutStream.setVisibility(View.VISIBLE);
+          viewPeerLocal.setVisibility(View.VISIBLE);
         }
 
         @Override public void onAnimationEnd(Animator animation) {
@@ -265,6 +265,7 @@ public class LiveLocalView extends LiveStreamView {
   public View getLayoutStream() {
     return layoutStream;
   }
+
   //////////////////
   //  OBSERVABLES //
   //////////////////

@@ -141,17 +141,17 @@ public class LiveRowView extends LiveStreamView {
     Timber.d("setMediaConfiguration");
     this.tribePeerMediaConfiguration = tribePeerMediaConfiguration;
 
-    if (!tribePeerMediaConfiguration.isVideoEnabled()) {
-      UIUtils.hideReveal(layoutStream, true, new AnimatorListenerAdapter() {
+    if (!tribePeerMediaConfiguration.isVideoEnabled() && remotePeerView != null) {
+      UIUtils.hideReveal(remotePeerView, true, new AnimatorListenerAdapter() {
         @Override public void onAnimationEnd(Animator animation) {
           if (animation != null) animation.removeAllListeners();
-          layoutStream.setVisibility(View.GONE);
+          remotePeerView.setVisibility(View.GONE);
         }
       });
-    } else {
-      UIUtils.showReveal(layoutStream, true, new AnimatorListenerAdapter() {
+    } else if (remotePeerView != null) {
+      UIUtils.showReveal(remotePeerView, true, new AnimatorListenerAdapter() {
         @Override public void onAnimationStart(Animator animation) {
-          layoutStream.setVisibility(View.VISIBLE);
+          remotePeerView.setVisibility(View.VISIBLE);
         }
 
         @Override public void onAnimationEnd(Animator animation) {

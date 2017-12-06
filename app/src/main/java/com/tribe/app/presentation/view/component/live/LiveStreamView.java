@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
@@ -14,6 +15,7 @@ import butterknife.BindView;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -71,6 +73,7 @@ public abstract class LiveStreamView extends LinearLayout {
 
   protected void endInit() {
     setOrientation(HORIZONTAL);
+    setBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
 
     layoutStream.setPreventCornerOverlap(false);
     layoutStream.setMaxCardElevation(0);
