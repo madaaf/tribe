@@ -73,8 +73,7 @@ public abstract class LiveStreamView extends LinearLayout {
 
   protected void endInit() {
     setOrientation(HORIZONTAL);
-    setBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
-
+    layoutStream.setCardBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
     layoutStream.setPreventCornerOverlap(false);
     layoutStream.setMaxCardElevation(0);
     layoutStream.setCardElevation(0);

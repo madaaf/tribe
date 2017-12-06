@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -966,8 +965,13 @@ public class LiveActivity extends BaseActivity
       }
     }));
 
-    subscriptions.add(gameManager.onCurrentUserStopGame()
-        .subscribe(game -> livePresenter.roomStopGame(room.getId())));
+    subscriptions.add(gameManager.onCurrentUserStopGame().subscribe(game -> {
+      if (room == null || !viewLive.hasJoined()) {
+        live.setGameId(null);
+      } else {
+        livePresenter.roomStopGame(room.getId());
+      }
+    }));
   }
 
   private void share(boolean shouldOpenSMSDefault) {

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -438,9 +439,15 @@ public class LiveInviteView extends FrameLayout
 
   public void initOnInviteDropped(Observable<TileInviteView> obs) {
     subscriptions.add(obs.subscribe(tile -> {
-      liveInvitePresenter.createInvite(live.getRoom().getId(), tile.getUser().getId());
-      adapter.removeItem(tile.getPosition());
-      viewInviteBottom.showAdded();
+      if (live.getRoom() == null) {
+        Toast.makeText(getContext(),
+            EmojiParser.demojizedText(getContext().getString(R.string.error_unknown)),
+            Toast.LENGTH_SHORT).show();
+      } else {
+        liveInvitePresenter.createInvite(live.getRoom().getId(), tile.getUser().getId());
+        adapter.removeItem(tile.getPosition());
+        viewInviteBottom.showAdded();
+      }
     }));
   }
 
