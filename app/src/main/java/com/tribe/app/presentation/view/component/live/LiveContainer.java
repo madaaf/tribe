@@ -24,8 +24,11 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -65,6 +68,8 @@ public class LiveContainer extends FrameLayout {
   private static final int INVALID_POINTER = -1;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject StateManager stateManager;
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
@@ -741,8 +746,6 @@ public class LiveContainer extends FrameLayout {
   }
 
   private void endCall() {
-    AnimationUtils.fadeOut(viewLiveHangUp, DURATION);
-
     int endValue = screenUtils.getWidthPx();
     if (velocityTracker != null) {
       springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(endValue);
@@ -750,6 +753,30 @@ public class LiveContainer extends FrameLayout {
       springLeft.setEndValue(endValue);
     }
 
+    if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
+      subscriptions.add(DialogFactory.dialog(getContext(),
+          EmojiParser.demojizedText(getResources().getString(R.string.tips_leavingroom_title)),
+          EmojiParser.demojizedText(getResources().getString(R.string.tips_leavingroom_message)),
+          getResources().getString(R.string.tips_leavingroom_action1),
+          getResources().getString(R.string.tips_leavingroom_action2)).filter(x -> {
+        if (!x) {
+          if (velocityTracker != null) {
+            springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+          } else {
+            springLeft.setEndValue(0);
+          }
+        }
+        return x == true;
+      }).subscribe(a -> endCallSuccess()));
+
+      stateManager.addTutorialKey(StateManager.LEAVING_ROOM_POPUP);
+    } else {
+      endCallSuccess();
+    }
+  }
+
+  private void endCallSuccess() {
+    AnimationUtils.fadeOut(viewLiveHangUp, DURATION);
     subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> onEndCall.onNext(null)));

@@ -939,6 +939,7 @@
 	<!-- Leaderboards -->
 	<string name="leaderboards_title">Classements</string>
 	<string name="leaderboards_score">Meilleur score</string>
+	<string name="leaderboards_no_score">Pas de score</string>
 	<string name="leaderboards_friends">Amis</string>
 	<string name="leaderboards_overall">Global</string>
 	<string name="leaderboards_point">pt</string>
