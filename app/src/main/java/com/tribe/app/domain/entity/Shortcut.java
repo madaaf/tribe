@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class Shortcut extends Recipient implements Serializable, LiveInviteAdapterSectionInterface {
 
-  public static final String SUPPORT = "SUPPORT";
+  public static final String SUPPORT = "support";
   private static final int ONE_MINUTE = 60 * 1000;
 
   private String id;

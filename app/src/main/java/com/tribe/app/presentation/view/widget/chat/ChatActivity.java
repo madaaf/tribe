@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.widget.chat;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -11,11 +12,12 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
-import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.notification.NotificationPayload;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by remy on 28/07/2017.
@@ -31,9 +33,8 @@ public class ChatActivity extends BaseActivity {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-
   private Shortcut shortcut;
-  private TribeBroadcastReceiver notificationReceiver;
+  private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered;
 
   @BindView(R.id.chatview) ChatView chatView;
@@ -92,7 +93,7 @@ public class ChatActivity extends BaseActivity {
     super.onResume();
     chatView.onResumeView();
     if (!receiverRegistered) {
-      if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
+      if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
       registerReceiver(notificationReceiver,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
       receiverRegistered = true;
@@ -123,5 +124,18 @@ public class ChatActivity extends BaseActivity {
 
   public Shortcut getShortcut() {
     return shortcut;
+  }
+
+  /////////////////
+  //  BROADCAST  //
+  /////////////////
+
+  class NotificationReceiver extends BroadcastReceiver {
+
+    @Override public void onReceive(Context context, Intent intent) {
+      NotificationPayload notificationPayload =
+          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+      Timber.e("RECEIVE NOTIFICATION BRODCATE");
+    }
   }
 }

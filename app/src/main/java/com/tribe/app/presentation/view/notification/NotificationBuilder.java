@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import timber.log.Timber;
 
 @Singleton public class NotificationBuilder {
 
@@ -65,7 +66,17 @@ import javax.inject.Singleton;
 
   public void sendBundledNotification(RemoteMessage remoteMessage) {
     NotificationPayload notificationPayload = getPayload(remoteMessage);
+    if (notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
+      Timber.e("IS SUPPORT NOTIFICATION");
 
+      Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
+      intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD, notificationPayload);
+      application.sendBroadcast(intentUnique);
+      Notification notification = buildNotification(notificationPayload);
+
+      notify(notificationPayload, notification);
+      return;
+    }
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
       if (notificationPayload.getBadge() > 0) {
         userCache.updateBadgeValue(notificationPayload.getBadge());

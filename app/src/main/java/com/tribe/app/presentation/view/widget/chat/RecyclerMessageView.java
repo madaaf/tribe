@@ -1,9 +1,11 @@
 package com.tribe.app.presentation.view.widget.chat;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -29,10 +31,12 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
+import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -658,5 +662,14 @@ public class RecyclerMessageView extends IChat {
 
   public Observable<Integer> onScrollRecyclerView() {
     return onScrollRecyclerView;
+  }
+
+  class NotificationReceiver extends BroadcastReceiver {
+
+    @Override public void onReceive(Context context, Intent intent) {
+      NotificationPayload notificationPayload =
+          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+      Timber.e("RECEIVE NOTIFICATION BRODCATE");
+    }
   }
 }
