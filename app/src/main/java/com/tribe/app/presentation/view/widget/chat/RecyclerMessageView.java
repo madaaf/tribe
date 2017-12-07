@@ -21,6 +21,7 @@ import butterknife.Unbinder;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.ShortcutLastSeen;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Shortcut;
@@ -93,17 +94,20 @@ public class RecyclerMessageView extends IChat {
   private MessageAdapter messageAdapter;
 
   private Shortcut shortcut;
+  private NotificationReceiver notificationReceiver;
+  private boolean receiverRegistered;
 
   private int type;
   private boolean load = false, errorLoadingMessages = false;
   private List<Message> unreadMessage = new ArrayList<>();
   private String[] arrIds = null;
-  private String token = FirebaseInstanceId.getInstance().getToken();
-  private RequestProvider provider = ZendeskConfig.INSTANCE.provider().requestProvider();
+  private String token;
+  private RequestProvider provider;
 
   @BindView(R.id.recyclerViewMessageChat) RecyclerView recyclerView;
 
   @Inject User user;
+  @Inject AccessToken accessToken;
   @Inject MessagePresenter messagePresenter;
   @Inject DateUtils dateUtils;
   @Inject ScreenUtils screenUtils;
@@ -130,11 +134,13 @@ public class RecyclerMessageView extends IChat {
       this.type = ChatView.FROM_CHAT;
     }
     initView();
-    initZendesk();
   }
 
   private void initZendesk() {
-    Identity jwtUserIdentity = new JwtIdentity(token);
+    provider = ZendeskConfig.INSTANCE.provider().requestProvider();
+    token = FirebaseInstanceId.getInstance().getToken();
+
+    Identity jwtUserIdentity = new JwtIdentity(accessToken.getAccessToken());
     ZendeskConfig.INSTANCE.setIdentity(jwtUserIdentity);
     enablePushZendesk();
     // createZendeskRequest();
@@ -147,7 +153,7 @@ public class RecyclerMessageView extends IChat {
     provider.getComments("1402", new ZendeskCallback<CommentsResponse>() {
       @Override public void onSuccess(CommentsResponse commentsResponse) {
         for (CommentResponse resonse : commentsResponse.getComments()) {
-          Timber.e("onSuccess " + resonse.getBody());
+          Timber.e("getCommentZendesk onSuccess " + resonse.getBody());
         }
       }
 
@@ -205,11 +211,11 @@ public class RecyclerMessageView extends IChat {
     ZendeskConfig.INSTANCE.enablePushWithIdentifier(token,
         new ZendeskCallback<PushRegistrationResponse>() {
           @Override public void onSuccess(PushRegistrationResponse pushRegistrationResponse) {
-            Timber.e("SOEF onSuccess enable oysg  TIQUET " + pushRegistrationResponse);
+            Timber.e("SOEF onSuccess enablePushZendesk" + pushRegistrationResponse);
           }
 
           @Override public void onError(ErrorResponse errorResponse) {
-            Timber.e("SOEF  eonError " + errorResponse);
+            Timber.e("SOEF  onError enablePushZendesk" + errorResponse);
           }
         });
   }
@@ -252,6 +258,7 @@ public class RecyclerMessageView extends IChat {
     if (type == ChatView.FROM_LIVE) {
       recyclerView.setVerticalScrollBarEnabled(false);
     }
+    initZendesk();
   }
 
   private void initSubscriptions() {
@@ -326,6 +333,7 @@ public class RecyclerMessageView extends IChat {
     if (!messagePresenter.isAttached()) {
       messagePresenter.onViewAttached(this);
     }
+    if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
 
     if (!shortcut.isSupport()) {
       context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,

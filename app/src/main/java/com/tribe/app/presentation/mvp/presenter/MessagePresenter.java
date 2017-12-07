@@ -297,11 +297,9 @@ public class MessagePresenter implements Presenter {
 
     @Override public void onError(Throwable e) {
       Timber.e(e.getMessage());
-      //if (chatMVPView != null) chatMVPView.errorRemovedMessage();
     }
 
     @Override public void onNext(List<Conversation> conversations) {
-      Timber.e("message support " );
       if (chatMVPView != null) chatMVPView.successMessageSupport(conversations.get(0).getMessages());
     }
   }
