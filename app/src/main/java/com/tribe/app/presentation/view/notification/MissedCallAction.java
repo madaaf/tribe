@@ -14,10 +14,10 @@ public class MissedCallAction implements Serializable, BaseListInterface {
 
   private String userId;
   private int nbrMissedCall;
-  private NotificationPayload notificationPayload;
+  private PayloadMissedCallAction notificationPayload;
   protected AvatarModel avatarModel = null;
 
-  public MissedCallAction(String userId, NotificationPayload notificationPayload,
+  public MissedCallAction(String userId, PayloadMissedCallAction notificationPayload,
       int nbrMissedCall) {
     this.userId = userId;
     this.nbrMissedCall = nbrMissedCall;
@@ -40,11 +40,11 @@ public class MissedCallAction implements Serializable, BaseListInterface {
     this.nbrMissedCall = nbrMissedCall;
   }
 
-  public NotificationPayload getNotificationPayload() {
+  public PayloadMissedCallAction getNotificationPayload() {
     return notificationPayload;
   }
 
-  public void setNotificationPayload(NotificationPayload notificationPayload) {
+  public void setNotificationPayload(PayloadMissedCallAction notificationPayload) {
     this.notificationPayload = notificationPayload;
   }
 

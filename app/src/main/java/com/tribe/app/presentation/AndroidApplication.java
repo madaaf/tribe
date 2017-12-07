@@ -302,12 +302,10 @@ public class AndroidApplication extends Application {
   private void initTimber() {
     if (BuildConfig.DEBUG) {
       Timber.plant(new Timber.DebugTree());
+    } else {
+      Timber.plant(new ProductionTree(this));
+      Fabric.with(this, new Crashlytics(), new Answers());
     }
-
-    //else {
-    Timber.plant(new ProductionTree(this));
-    Fabric.with(this, new Crashlytics(), new Answers());
-    //}
   }
 
   private void initAppState() {

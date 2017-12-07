@@ -108,7 +108,7 @@ public class PulseLayout extends RelativeLayout {
       return;
     }
 
-    if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+    if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
       animatorSet.start();
     }
   }
