@@ -119,7 +119,7 @@ public class NotificationUtils {
     return liveNotifView;
   }
 
-  public static Intent getIntentForLive(Context context, NotificationPayload payload,
+  public static Intent getIntentForLive(Context context, PayloadMissedCallAction payload,
       boolean isFromCallkit, User user) {
     String recipientId = payload.getUserId();
     String sessionId = payload.getSessionId();
@@ -154,5 +154,13 @@ public class NotificationUtils {
     Intent intent = new Intent(context, HomeActivity.class);
     if (payload != null) intent.putExtra(Constants.NOTIFICATION_HOME, payload.getClickAction());
     return intent;
+  }
+
+  public static PayloadMissedCallAction transformNotifPayload(
+      NotificationPayload notificationPayload) {
+    return new PayloadMissedCallAction(notificationPayload.getUserId(),
+        notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
+        notificationPayload.getClickAction(), notificationPayload.getBody(),
+        notificationPayload.getTime(), notificationPayload.getTitle(), notificationPayload.getSessionId());
   }
 }

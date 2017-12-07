@@ -287,7 +287,7 @@ import javax.inject.Singleton;
 
   private PendingIntent getPendingIntentForLive(NotificationPayload payload) {
     Intent notificationIntent =
-        NotificationUtils.getIntentForLive(application, payload, false, user);
+        NotificationUtils.getIntentForLive(application, NotificationUtils.transformNotifPayload(payload), false, user);
     notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
     PendingIntent pendingIntent =

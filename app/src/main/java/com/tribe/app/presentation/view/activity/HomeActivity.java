@@ -309,7 +309,12 @@ public class HomeActivity extends BaseActivity
   @Override protected void onRestart() {
     super.onRestart();
 
-    notificationManager.cancelAll();
+    // https://stackoverflow.com/questions/36634008/why-notificationmanagercompatcancelall-gets-securityexception
+    try {
+      notificationManager.cancelAll();
+    } catch (SecurityException ex) {
+      Timber.e("NotificationManager.cancelAll()", ex);
+    }
   }
 
   @Override protected void onStop() {

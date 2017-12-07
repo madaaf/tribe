@@ -342,7 +342,8 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
                 .withEndAction(() -> {
                   shouldStartHome = true;
                   finish();
-                  startActivity(NotificationUtils.getIntentForLive(v.getContext(), payload, true, user));
+                  startActivity(NotificationUtils.getIntentForLive(v.getContext(),
+                      NotificationUtils.transformNotifPayload(payload), true, user));
                 })
                 .start();
           } else {
@@ -371,8 +372,8 @@ public class LiveImmersiveNotificationActivity extends BaseActivity implements M
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      if (payload.equals(notificationPayload) &&
-          !notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
+      if (payload.equals(notificationPayload) && !notificationPayload.getClickAction()
+          .equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
         if (notificationPayload.getClickAction()
             .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
           finish();
