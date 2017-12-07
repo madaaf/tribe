@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ShortcutLastSeenRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -70,6 +71,29 @@ public class UserCacheImpl implements UserCache {
             realm1.insertOrUpdate(shortcutRealm);
           } else {
             updateShortcutPartially(realm1, shortcutRealm, shortcutRealmDB);
+          }
+        }
+      });
+    } finally {
+      obsRealm.close();
+    }
+  }
+
+  @Override public void putScores(List<ScoreRealm> scoreRealmList) {
+    Realm obsRealm = Realm.getDefaultInstance();
+
+    try {
+      obsRealm.executeTransaction(realm1 -> {
+        for (ScoreRealm scoreRealm : scoreRealmList) {
+          ScoreRealm scoreRealmDB =
+              realm1.where(ScoreRealm.class).equalTo("id", scoreRealm.getId()).findFirst();
+          if (scoreRealmDB == null) {
+            scoreRealm.setUser_id(scoreRealm.getUser().getId());
+            scoreRealm.setGame_id(scoreRealm.getGame().getId());
+            realm1.insertOrUpdate(scoreRealm);
+          } else {
+            scoreRealmDB.setRanking(scoreRealm.getRanking());
+            scoreRealmDB.setValue(scoreRealm.getValue());
           }
         }
       });

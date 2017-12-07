@@ -54,6 +54,7 @@ public class UserRealm extends RealmObject {
   @Ignore private List<Invite> invites;
 
   @Ignore private List<ShortcutRealm> shortcuts;
+  @Ignore private List<ScoreRealm> scores;
 
   @Ignore private JsonObject jsonPayloadUpdate;
 
@@ -242,6 +243,14 @@ public class UserRealm extends RealmObject {
 
   public void setTimeInCall(long time_in_call) {
     this.time_in_call = time_in_call;
+  }
+
+  public void setScores(List<ScoreRealm> scores) {
+    this.scores = scores;
+  }
+
+  public List<ScoreRealm> getScores() {
+    return scores;
   }
 
   public void setJsonPayloadUpdate(JsonObject jsonPayloadUpdate) {

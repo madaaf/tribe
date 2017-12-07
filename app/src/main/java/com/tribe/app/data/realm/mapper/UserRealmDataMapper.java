@@ -18,14 +18,18 @@ import javax.inject.Singleton;
  */
 @Singleton public class UserRealmDataMapper {
 
-  ShortcutRealmDataMapper shortcutRealmDataMapper;
-  MessageRealmDataMapper messageRealmDataMapper;
+  private ShortcutRealmDataMapper shortcutRealmDataMapper;
+  private MessageRealmDataMapper messageRealmDataMapper;
+  private ScoreRealmDataMapper scoreRealmDataMapper;
 
   @Inject ScreenUtils screenUtils;
 
-  @Inject public UserRealmDataMapper(ShortcutRealmDataMapper shortcutRealmDataMapper) {
+  @Inject public UserRealmDataMapper(ShortcutRealmDataMapper shortcutRealmDataMapper,
+      ScoreRealmDataMapper scoreRealmDataMapper) {
     this.shortcutRealmDataMapper = shortcutRealmDataMapper;
     this.shortcutRealmDataMapper.setUserRealmDataMapper(this);
+    this.scoreRealmDataMapper = scoreRealmDataMapper;
+    this.scoreRealmDataMapper.setUserRealmDataMapper(this);
     this.messageRealmDataMapper = new MessageRealmDataMapper(this);
   }
 
@@ -56,14 +60,21 @@ import javax.inject.Singleton;
       user.setLastSeenAt(userRealm.getLastSeenAt());
       user.setRandom_banned_until(userRealm.getRandom_banned_until());
       user.setMute_online_notif(userRealm.isMute_online_notif());
+
       if (userRealm.getRandom_banned_permanently() != null) {
         user.setRandom_banned_permanently(userRealm.getRandom_banned_permanently());
       }
+
       if (userRealm.getShortcuts() != null) {
         user.setShortcutList(shortcutRealmDataMapper.transform(userRealm.getShortcuts()));
       }
+
       if (userRealm.getMessages() != null) {
         user.setMessageList(messageRealmDataMapper.transform(userRealm.getMessages()));
+      }
+
+      if (userRealm.getScores() != null) {
+        user.setScoreList(scoreRealmDataMapper.transform(userRealm.getScores()));
       }
     }
 

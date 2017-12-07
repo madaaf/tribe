@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
@@ -151,6 +152,22 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       }
 
       userRealm.setInvites(listInvites);
+    }
+
+    List<ScoreRealm> scoreRealmList = new ArrayList<>();
+
+    if (result.has("scores") && !(result.get("scores") instanceof JsonNull)) {
+      JsonArray resultsScores = result.getAsJsonArray("scores");
+      if (resultsScores != null) {
+        for (JsonElement obj : resultsScores) {
+          if (!(obj instanceof JsonNull)) {
+            ScoreRealm scoreRealm = gson.fromJson(obj, ScoreRealm.class);
+            if (scoreRealm != null) scoreRealmList.add(scoreRealm);
+          }
+        }
+      }
+
+      userRealm.setScores(scoreRealmList);
     }
 
     return userRealm;

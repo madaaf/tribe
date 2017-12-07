@@ -164,6 +164,16 @@
             time_in_call
             random_banned_permanently
   	        random_banned_until
+            scores {
+              ranking
+              game {
+                id
+              }
+              value
+              user {
+                id
+              }
+            }
         }
     </string>
 

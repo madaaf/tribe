@@ -607,6 +607,7 @@ public class CloudUserDataStore implements UserDataStore {
 
       CloudUserDataStore.this.userCache.put(userRealm);
       CloudUserDataStore.this.userCache.putShortcuts(userRealm.getShortcuts());
+      CloudUserDataStore.this.userCache.putScores(userRealm.getScores());
 
       if (userRealm.getShortcuts() != null) {
         for (ShortcutRealm shortcutRealm : userRealm.getShortcuts()) {
