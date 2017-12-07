@@ -1,11 +1,9 @@
 package com.tribe.app.presentation.view.widget.chat;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -94,7 +92,6 @@ public class RecyclerMessageView extends IChat {
   private MessageAdapter messageAdapter;
 
   private Shortcut shortcut;
-  private NotificationReceiver notificationReceiver;
   private boolean receiverRegistered;
 
   private int type;
@@ -360,7 +357,6 @@ public class RecyclerMessageView extends IChat {
     if (!messagePresenter.isAttached()) {
       messagePresenter.onViewAttached(this);
     }
-    if (notificationReceiver == null) notificationReceiver = new NotificationReceiver();
 
     if (!shortcut.isSupport()) {
       context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
@@ -682,11 +678,7 @@ public class RecyclerMessageView extends IChat {
     return onScrollRecyclerView;
   }
 
-  class NotificationReceiver extends BroadcastReceiver {
-
-    @Override public void onReceive(Context context, Intent intent) {
-      getCommentZendesk();
-      Timber.e("RECEIVE NOTIFICATION BRODCATE");
-    }
+  public void onReceiveZendeskNotif() {
+    getCommentZendesk();
   }
 }

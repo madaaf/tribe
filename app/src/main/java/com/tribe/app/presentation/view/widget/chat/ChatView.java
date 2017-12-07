@@ -1075,4 +1075,8 @@ public class ChatView extends IChat {
   public void onStartRecording() {
     recyclerView.onStartRecording();
   }
+
+  public void onReceiveZendeskNotif() {
+    recyclerView.onReceiveZendeskNotif();
+  }
 }
