@@ -18,6 +18,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.google.common.collect.Lists;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
@@ -34,6 +35,7 @@ import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -147,14 +149,39 @@ public class RecyclerMessageView extends IChat {
     addCommentZendesk();
   }
 
+  @Override public void successMessageSupport(List<Message> messages) {
+    List<Message> list = new ArrayList<>();
+    User u = new User(Shortcut.SUPPORT);
+    u.setDisplayName("Live Support");
+    u.setProfilePicture("https://static.tribe.pm/assets/support-avatar-love.png");
+
+    for (Message message : messages) {
+      MessageText m = new MessageText(Shortcut.SUPPORT);
+      m.setAuthor(u);
+      m.setCreationDate(dateUtils.getUTCDateForMessage());
+      m.setMessage(message.getContent());
+      list.add(m);
+    }
+    messageAdapter.setItems(list, 0);
+    scrollListToBottom();
+  }
+
   private void getCommentZendesk() {
     provider.getComments("1402", new ZendeskCallback<CommentsResponse>() {
       @Override public void onSuccess(CommentsResponse commentsResponse) {
-        for (CommentResponse resonse : commentsResponse.getComments()) {
+        List<Message> list = new ArrayList<>();
+        for (CommentResponse response : commentsResponse.getComments()) {
+
           MessageText m = new MessageText();
-          m.setAuthor(new User(Shortcut.SUPPORT));
-          Timber.e("getCommentZendesk onSuccess " + resonse.getBody());
+          m.setAuthor(ShortcutUtil.createUserSupport());
+          m.setCreationDate(dateUtils.getUTCDateForMessage());
+          m.setMessage(response.getBody());
+          list.add(m);
+
+          Timber.e("getCommentZendesk onSuccess " + response.getBody());
         }
+        messageAdapter.setItems(Lists.reverse(list), messageAdapter.getItemCount()); // SOEF MAFA
+        scrollListToBottom();
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
@@ -463,23 +490,6 @@ public class RecyclerMessageView extends IChat {
 
   @Override public void successLoadingBetweenTwoDateMessage(List<Message> messages) {
     Timber.i("successLoadingBetweenTwoDateMessage " + messages.size());
-  }
-
-  @Override public void successMessageSupport(List<Message> messages) {
-    List<Message> list = new ArrayList<>();
-    User u = new User(Shortcut.SUPPORT);
-    u.setDisplayName("Live Support");
-    u.setProfilePicture("https://static.tribe.pm/assets/support-avatar-love.png");
-
-    for (Message message : messages) {
-      MessageText m = new MessageText("SUPPORT");
-      m.setAuthor(u);
-      m.setCreationDate(dateUtils.getUTCDateForMessage());
-      m.setMessage(message.getContent());
-      list.add(m);
-    }
-    messageAdapter.setItems(list, 0);
-    scrollListToBottom();
   }
 
   @Override public void successLoadingMessage(List<Message> messages) {
