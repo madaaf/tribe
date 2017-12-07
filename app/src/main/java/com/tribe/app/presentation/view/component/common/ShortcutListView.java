@@ -164,7 +164,7 @@ public class ShortcutListView extends RelativeLayout {
     viewAvatar.load(recipient);
     //}
 
-    if (recipient.getId().equals(Shortcut.SUPPORT)) {
+    if (recipient.isSupport()) {
       viewPictoLive.setVisibility(GONE);
       vh.itemView.setOnTouchListener((view, motionEvent) -> {
         Timber.e("OK");

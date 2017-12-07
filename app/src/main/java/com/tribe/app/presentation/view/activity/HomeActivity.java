@@ -75,6 +75,7 @@ import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
@@ -695,7 +696,7 @@ public class HomeActivity extends BaseActivity
                 finalList.add(new Contact(Contact.ADDRESS_BOOK_ID));
               }
 
-              finalList.add(createShortcutSupport());
+              finalList.add(ShortcutUtil.createShortcutSupport());
 
               finalList.addAll(contactsInvite);
               finalList.addAll(contactsFBInvite);
@@ -733,18 +734,6 @@ public class HomeActivity extends BaseActivity
             if (latestRecipientList.size() != 0) layoutManager.scrollToPositionWithOffset(0, 0);
           }
         }));
-  }
-
-  private Shortcut createShortcutSupport() {
-    Shortcut shortcutSupport = new Shortcut(Shortcut.SUPPORT);
-    List<User> members = new ArrayList<User>();
-    User u = new User(Shortcut.SUPPORT);
-    u.setDisplayName("Live Support");
-    u.setProfilePicture("https://static.tribe.pm/assets/support-avatar-love.png");
-    members.add(u);
-    shortcutSupport.setMembers(members);
-    shortcutSupport.setName("Live Support");
-    return shortcutSupport;
   }
 
   private void initNewCall() {

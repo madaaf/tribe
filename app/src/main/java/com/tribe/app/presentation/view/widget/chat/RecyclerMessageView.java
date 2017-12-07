@@ -32,12 +32,10 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
-import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -153,6 +151,8 @@ public class RecyclerMessageView extends IChat {
     provider.getComments("1402", new ZendeskCallback<CommentsResponse>() {
       @Override public void onSuccess(CommentsResponse commentsResponse) {
         for (CommentResponse resonse : commentsResponse.getComments()) {
+          MessageText m = new MessageText();
+          m.setAuthor(new User(Shortcut.SUPPORT));
           Timber.e("getCommentZendesk onSuccess " + resonse.getBody());
         }
       }
@@ -675,8 +675,7 @@ public class RecyclerMessageView extends IChat {
   class NotificationReceiver extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
-      NotificationPayload notificationPayload =
-          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+      getCommentZendesk();
       Timber.e("RECEIVE NOTIFICATION BRODCATE");
     }
   }

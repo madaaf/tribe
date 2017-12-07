@@ -122,4 +122,16 @@ public class ShortcutUtil {
     }
     return s;
   }
+
+  public static Shortcut createShortcutSupport() {
+    Shortcut shortcutSupport = new Shortcut(Shortcut.SUPPORT);
+    List<User> members = new ArrayList<User>();
+    User u = new User(Shortcut.SUPPORT);
+    u.setDisplayName("Live Support");
+    u.setProfilePicture("https://static.tribe.pm/assets/support-avatar-love.png");
+    members.add(u);
+    shortcutSupport.setMembers(members);
+    shortcutSupport.setName("Live Support");
+    return shortcutSupport;
+  }
 }

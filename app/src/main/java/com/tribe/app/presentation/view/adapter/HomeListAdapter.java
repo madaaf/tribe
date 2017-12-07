@@ -112,7 +112,7 @@ public class HomeListAdapter extends RecyclerView.Adapter
     for (int i = 0; i < items.size(); i++) {
       HomeAdapterInterface item = items.get(i);
       if (item instanceof Shortcut) {
-        if (item.getId().equals(Shortcut.SUPPORT)) {
+        if (((Shortcut) item).isSupport()) {
           return i;
         }
       }
