@@ -61,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.joda.time.DateTime;
@@ -163,21 +164,32 @@ public class RecyclerMessageView extends IChat {
     scrollListToBottom();
   }
 
+  private String generateSupportHashId() {
+    return Shortcut.SUPPORT + UUID.randomUUID().toString().toUpperCase().replace("-", "");
+  }
+
   private void getCommentZendesk() {
     provider.getComments("1402", new ZendeskCallback<CommentsResponse>() {
       @Override public void onSuccess(CommentsResponse commentsResponse) {
+        unreadMessage.clear();
         List<Message> list = new ArrayList<>();
         for (CommentResponse response : commentsResponse.getComments()) {
 
           MessageText m = new MessageText();
+          m.setId(response.getId().toString());
           m.setAuthor(ShortcutUtil.createUserSupport());
           m.setCreationDate(dateUtils.getUTCDateForMessage());
           m.setMessage(response.getBody());
           list.add(m);
 
+          if (!messageAdapter.getItems().contains(m)) {
+            unreadMessage.add(m);
+          }
+
           Timber.e("getCommentZendesk onSuccess " + response.getBody());
         }
-        messageAdapter.setItems(Lists.reverse(list), messageAdapter.getItemCount()); // SOEF MAFA
+        messageAdapter.setItems(Lists.reverse(unreadMessage),
+            messageAdapter.getItemCount()); // SOEF MAFA
         scrollListToBottom();
       }
 

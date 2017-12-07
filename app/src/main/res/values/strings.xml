@@ -740,7 +740,7 @@
 	<string name="game_taboo">Taboo</string>
 	<string name="game_backgam">Backgam\'</string>
 	<string name="game_beats">Beats</string>
-	<string name="game_trivia_status_pick_category">Pick a category!</string>
+	<string name="game_trivia_status_pick_category">Pick a topic!</string>
 	<string name="game_trivia_status_guess">Answer first!</string>
 	
 	<!-- Call Level -->
