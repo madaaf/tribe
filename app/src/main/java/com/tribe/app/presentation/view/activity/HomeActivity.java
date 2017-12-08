@@ -543,8 +543,9 @@ public class HomeActivity extends BaseActivity
               return new Triplet<LabelType, Shortcut, HomeAdapterInterface>(labelType, shortcut,
                   recipient);
             }))
-        .filter(pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) ||
-            pair.first.getTypeDef().equals(LabelType.BLOCK_HIDE))
+        .filter(
+            pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) || pair.first.getTypeDef()
+                .equals(LabelType.BLOCK_HIDE))
         .flatMap(pair -> {
           if (pair.first.getTypeDef().equals(LabelType.CUSTOMIZE)) {
             return DialogFactory.showBottomSheetForCustomizeShortcut(this);
@@ -996,8 +997,8 @@ public class HomeActivity extends BaseActivity
               .subscribe());
       isBannedUser = true;
       topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
-    } else if (user.getRandom_banned_until() != null &&
-        !dateUtils.isBefore(user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
+    } else if (user.getRandom_banned_until() != null && !dateUtils.isBefore(
+        user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
 
       subscriptions.add(
           DialogFactory.dialog(this, getString(R.string.error_just_banned_temporary_title),
@@ -1113,8 +1114,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) &&
-        !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
+        && !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(
@@ -1144,9 +1145,8 @@ public class HomeActivity extends BaseActivity
 
     if (requestCode == Navigator.FROM_PROFILE) {
       topBarContainer.reloadUserUI();
-    } else if (requestCode == Navigator.FROM_CHAT &&
-        data != null &&
-        data.hasExtra(ChatActivity.EXTRA_SHORTCUT_ID)) {
+    } else if (requestCode == Navigator.FROM_CHAT && data != null && data.hasExtra(
+        ChatActivity.EXTRA_SHORTCUT_ID)) {
       homeGridPresenter.updateShortcutLeaveOnlineUntil(
           data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
     } else if (requestCode == Navigator.FROM_NEW_GAME && data != null) {
@@ -1167,9 +1167,8 @@ public class HomeActivity extends BaseActivity
               }
             }
           }));
-    } else if (requestCode == Navigator.FROM_LIVE &&
-        data != null &&
-        data.hasExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
+    } else if (requestCode == Navigator.FROM_LIVE && data != null && data.hasExtra(
+        LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
       HashSet<String> userIds =
           (HashSet<String>) data.getSerializableExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT);
       homeGridPresenter.createShortcut(userIds.toArray(new String[userIds.size()]));
@@ -1274,10 +1273,10 @@ public class HomeActivity extends BaseActivity
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
         if (position < 0 || position > recipientList.size() - 1) return false;
-        return position == 0 ||
-            recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE &&
-                recipientList.get(position).getHomeSectionType() !=
-                    recipientList.get(position - 1).getHomeSectionType();
+        return position == 0
+            || recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE
+            && recipientList.get(position).getHomeSectionType() != recipientList.get(position - 1)
+            .getHomeSectionType();
       }
 
       @Override public int getSectionType(int position) {
@@ -1305,7 +1304,6 @@ public class HomeActivity extends BaseActivity
   }
 
   @Override public void onShortcutUpdatedSuccess(Shortcut shortcut, BaseListViewHolder viewHolder) {
-    Timber.e("OK " + shortcut.getStatus());
     for (Shortcut s : user.getShortcutList()) {
       if (s.getId().equals(shortcut.getId())) {
         s.setStatus(shortcut.getStatus());
