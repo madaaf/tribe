@@ -144,7 +144,6 @@ public class RecyclerMessageView extends IChat {
     // createZendeskRequest();
     //getRequestProvider();
     getCommentZendesk();
-    addCommentZendesk();
   }
 
   @Override public void successMessageSupport(List<Message> messages) {
@@ -199,9 +198,9 @@ public class RecyclerMessageView extends IChat {
     });
   }
 
-  private void addCommentZendesk() {
+  private void addCommentZendesk(String data) {
     EndUserComment o = new EndUserComment();
-    o.setValue("MADA TEST 5798798 ");
+    o.setValue(data);
 
     provider.addComment("1402", o, new ZendeskCallback<Comment>() {
       @Override public void onSuccess(Comment comment) {
@@ -462,7 +461,11 @@ public class RecyclerMessageView extends IChat {
   }
 
   public void sendMessageToNetwork(String[] arrIds, String data, String type, int position) {
-    if (!shortcut.isSupport()) messagePresenter.createMessage(arrIds, data, type, position);
+    if (!shortcut.isSupport()) {
+      messagePresenter.createMessage(arrIds, data, type, position);
+    } else {
+      addCommentZendesk(data);
+    }
   }
 
   public void sendMyMessageToAdapter(Message pendingMessage) {
