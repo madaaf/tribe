@@ -178,24 +178,24 @@ public class RecyclerMessageView extends IChat {
       @Override public void onSuccess(CommentsResponse commentsResponse) {
         String supportUserId = null;
         for (com.zendesk.sdk.model.request.User u : commentsResponse.getUsers()) {
-          if (u.isAgent()) {
+          if (u.isAgent() && u.getId() != null) {
             supportUserId = u.getId().toString();
           }
         }
         unreadMessage.clear();
-        List<Message> list = new ArrayList<>();
         for (CommentResponse response : commentsResponse.getComments()) {
 
           MessageText m = new MessageText();
-          m.setId(response.getId().toString());
-          if (response.getAuthorId().toString().equals(supportUserId)) {
+          if (response.getId() != null) m.setId(response.getId().toString());
+          if (response.getAuthorId() != null && response.getAuthorId()
+              .toString()
+              .equals(supportUserId)) {
             m.setAuthor(ShortcutUtil.createUserSupport());
           } else {
             m.setAuthor(user);
           }
           m.setCreationDate(dateUtils.getUTCDateForMessage());
           m.setMessage(response.getBody());
-          list.add(m);
 
           if (!messageAdapter.getItems().contains(m)) {
             unreadMessage.add(m);
