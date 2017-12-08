@@ -658,6 +658,9 @@ public class HomeActivity extends BaseActivity
         Observable.combineLatest(onRecipientUpdates.onBackpressureBuffer(), onNewContactsOnApp,
             onNewContactsInvite, onNewContactsFBInvite,
             (recipientList, contactsOnApp, contactsInvite, contactsFBInvite) -> {
+
+              recipientList.add(ShortcutUtil.createShortcutSupport());
+
               List<HomeAdapterInterface> finalList = new ArrayList<>();
               Set<String> addedUsers = new HashSet<>();
 
@@ -695,8 +698,6 @@ public class HomeActivity extends BaseActivity
               if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
                 finalList.add(new Contact(Contact.ADDRESS_BOOK_ID));
               }
-
-              finalList.add(ShortcutUtil.createShortcutSupport());
 
               finalList.addAll(contactsInvite);
               finalList.addAll(contactsFBInvite);

@@ -37,6 +37,7 @@ public class PreferencesUtils {
   public static String IS_GROUPE_CREATED = "IS_GROUPE_CREATED";
   public static String IMMERSIVE_CALL_STATE = "IMMERSIVE_CALL_STATE";
   public static String MINUTES_OF_CALLS = "MINUTES_OF_CALLS";
+  public static String SUPPORT = "SUPPORT";
   public static String FULLSCREEN_NOTIFICATION_STATE = "FULLSCREEN_NOTIFICATION_STATE";
   public static String DATA_CHALLANGES_GAME = "DATA_CHALLANGES_GAME";
   public static String CHAT_SHORTCUT_DATA = "CHAT_SHORTCUT_DATA";

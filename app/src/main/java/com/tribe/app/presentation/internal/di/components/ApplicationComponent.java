@@ -65,6 +65,7 @@ import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.utils.preferences.SupportId;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
@@ -401,6 +402,8 @@ public interface ApplicationComponent {
   @CounterOfCallsForGrpButton Preference<Integer> counterOfCallsForGrpButton();
 
   @MinutesOfCalls Preference<Float> minutesOfCalls();
+
+  @SupportId Preference<String> supportId();
 
   @MissedPlayloadNotification Preference<String> missedPlayloadNotification();
 

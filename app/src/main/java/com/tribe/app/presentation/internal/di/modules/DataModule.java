@@ -26,6 +26,7 @@ import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.utils.preferences.SupportId;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
@@ -122,6 +123,11 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @MinutesOfCalls Preference<Float> provideMinutesOfCalls(Context context,
       RxSharedPreferences prefs) {
     return prefs.getFloat(PreferencesUtils.MINUTES_OF_CALLS, 0f);
+  }
+
+  @Provides @Singleton @SupportId Preference<String> provideSupportId(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.SUPPORT, "");
   }
 
   @Provides @Singleton @IsGroupCreated Preference<Boolean> provideIsGroupCreated(Context context,

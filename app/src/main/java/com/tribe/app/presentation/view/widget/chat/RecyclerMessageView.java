@@ -16,6 +16,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.google.common.collect.Lists;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tribe.app.R;
@@ -33,6 +34,7 @@ import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.preferences.SupportId;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
@@ -61,7 +63,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.joda.time.DateTime;
@@ -91,6 +92,7 @@ public class RecyclerMessageView extends IChat {
   private Context context;
   private LinearLayoutManager layoutManager;
   private MessageAdapter messageAdapter;
+  private static String supportId;
 
   private Shortcut shortcut;
   private boolean receiverRegistered;
@@ -112,6 +114,7 @@ public class RecyclerMessageView extends IChat {
   @Inject StateManager stateManager;
   @Inject TagManager tagManager;
   @Inject Navigator navigator;
+  @Inject @SupportId Preference<String> supportIdPref;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Integer> onScrollRecyclerView = PublishSubject.create();
@@ -141,9 +144,16 @@ public class RecyclerMessageView extends IChat {
     Identity jwtUserIdentity = new JwtIdentity(accessToken.getAccessToken());
     ZendeskConfig.INSTANCE.setIdentity(jwtUserIdentity);
     enablePushZendesk();
-    // createZendeskRequest();
+
+    if (supportIdPref.get() == null || supportIdPref.get().isEmpty()) {
+      createZendeskRequest();
+    } else {
+      supportId = supportIdPref.get();
+      Timber.e("support id : " + supportId);
+      getCommentZendesk();
+    }
+
     //getRequestProvider();
-    getCommentZendesk();
   }
 
   @Override public void successMessageSupport(List<Message> messages) {
@@ -163,20 +173,26 @@ public class RecyclerMessageView extends IChat {
     scrollListToBottom();
   }
 
-  private String generateSupportHashId() {
-    return Shortcut.SUPPORT + UUID.randomUUID().toString().toUpperCase().replace("-", "");
-  }
-
   private void getCommentZendesk() {
-    provider.getComments("1402", new ZendeskCallback<CommentsResponse>() {
+    provider.getComments(supportId, new ZendeskCallback<CommentsResponse>() {
       @Override public void onSuccess(CommentsResponse commentsResponse) {
+        String supportUserId = null;
+        for (com.zendesk.sdk.model.request.User u : commentsResponse.getUsers()) {
+          if (u.isAgent()) {
+            supportUserId = u.getId().toString();
+          }
+        }
         unreadMessage.clear();
         List<Message> list = new ArrayList<>();
         for (CommentResponse response : commentsResponse.getComments()) {
 
           MessageText m = new MessageText();
           m.setId(response.getId().toString());
-          m.setAuthor(ShortcutUtil.createUserSupport());
+          if (response.getAuthorId().toString().equals(supportUserId)) {
+            m.setAuthor(ShortcutUtil.createUserSupport());
+          } else {
+            m.setAuthor(user);
+          }
           m.setCreationDate(dateUtils.getUTCDateForMessage());
           m.setMessage(response.getBody());
           list.add(m);
@@ -202,7 +218,7 @@ public class RecyclerMessageView extends IChat {
     EndUserComment o = new EndUserComment();
     o.setValue(data);
 
-    provider.addComment("1402", o, new ZendeskCallback<Comment>() {
+    provider.addComment(supportId, o, new ZendeskCallback<Comment>() {
       @Override public void onSuccess(Comment comment) {
         Timber.e("SOEF onSuccess ADD COMmENT " + comment.getBody());
       }
@@ -214,7 +230,7 @@ public class RecyclerMessageView extends IChat {
   }
 
   private void getRequestProvider() {
-    provider.getRequest("1402", new ZendeskCallback<Request>() {
+    provider.getRequest(supportId, new ZendeskCallback<Request>() {
       @Override public void onSuccess(Request request) {
         Timber.e("SOEF onSuccess getRequestProvider " + request.toString());
       }
@@ -228,12 +244,14 @@ public class RecyclerMessageView extends IChat {
   private void createZendeskRequest() {
     CreateRequest request = new CreateRequest();
     request.setSubject("Chat with " + user.getDisplayName());
-    request.setDescription("1st message");
     request.setTags(Arrays.asList("chat", "mobile"));
 
     provider.createRequest(request, new ZendeskCallback<CreateRequest>() {
       @Override public void onSuccess(CreateRequest createRequest) {
         Timber.e("SOEF onSuccess REQUEST TIQUET " + createRequest.getId());
+        supportIdPref.set(createRequest.getId());
+        supportId = createRequest.getId();
+        getCommentZendesk();
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
