@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtLabelActive"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:maxLines="1"
+      android:textAllCaps="true"
+      style="@style/BiggerBody.Two.Yellow"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtLabelInactive"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:alpha="0"
+      android:maxLines="1"
+      app:textAllCaps="true"
+      style="@style/BiggerBody.Two.Black40"
+      />
+</merge>

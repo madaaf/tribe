@@ -740,8 +740,19 @@
 	<string name="game_taboo">Taboo</string>
 	<string name="game_backgam">Backgam\'</string>
 	<string name="game_beats">Beats</string>
-	<string name="game_trivia_status_pick_category">Choisis une catégorie !</string>
+	<string name="game_trivia_change_category">Changer de sujet</string>
+	<string name="game_trivia_status_pick_category">Choisis un sujet !</string>
 	<string name="game_trivia_status_guess">Répond le premier !</string>
+	<string name="game_trivia_category_movies">Cinéma</string>
+	<string name="game_trivia_category_music">Musique</string>
+	<string name="game_trivia_category_tv">TV</string>
+	<string name="game_trivia_category_celebs">Célébrités</string>
+	<string name="game_trivia_category_sports">Sport</string>
+	<string name="game_trivia_category_geeks">Geeks</string>
+	<string name="game_trivia_category_general">Général</string>
+	<string name="game_trivia_category_world">Monde</string>
+	<string name="game_trivia_category_games">Jeux vidéo</string>
+	<string name="game_trivia_category_all">Tout en même temps!</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>

@@ -6,24 +6,20 @@ import io.realm.RealmObject;
 /**
  * Created by tiago on 12/07/2017.
  */
-public class Score extends RealmObject {
+public class Score {
 
   private String id;
-  private int ranking;
-  private int value;
+  private int ranking = 0;
+  private int value = 0;
   private User user;
   private Game game;
 
-  public Score(String id) {
+  public void setId(String id) {
     this.id = id;
   }
 
   public String getId() {
     return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public int getRanking() {
@@ -56,5 +52,11 @@ public class Score extends RealmObject {
 
   public void setGame(Game game) {
     this.game = game;
+  }
+
+  @Override public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (getGame().getId() != null ? getGame().getId().hashCode() : 0);
+    return result;
   }
 }

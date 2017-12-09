@@ -773,7 +773,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initTopBar() {
-    subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> navigateToProfile()));
+    subscriptions.add(
+        topBarContainer.onClickProfile().subscribe(aVoid -> navigateToLeaderboards()));
 
     subscriptions.add(topBarContainer.onClickCallRoulette()
         .subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, null)));
@@ -1038,8 +1039,8 @@ public class HomeActivity extends BaseActivity
         Toast.LENGTH_SHORT).show();
   }
 
-  private void navigateToProfile() {
-    navigator.navigateToProfile(HomeActivity.this);
+  private void navigateToLeaderboards() {
+    navigator.navigateToLeaderboards(HomeActivity.this);
   }
 
   private void navigateToNewCall(@LiveActivity.Source String source, String gameId) {

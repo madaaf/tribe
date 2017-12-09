@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutContent"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:background="@drawable/selectable_button"
+    android:clickable="true"
+    >
+
+  <ImageView
+      android:id="@+id/imgIcon"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:scaleType="fitXY"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <ImageView
+      android:id="@+id/imgArrow"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:scaleType="centerInside"
+      android:src="@drawable/picto_arrow_right"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtPointsSuffix"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:text="@string/leaderboards_points"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@id/imgArrow"
+      app:layout_constraintTop_toTopOf="parent"
+      style="@style/BiggerTitle.1.Black40"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtPoints"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="5dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@id/txtPointsSuffix"
+      app:layout_constraintTop_toTopOf="parent"
+      style="@style/BiggerTitle.2.Black"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtName"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:ellipsize="end"
+      android:textAllCaps="true"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@id/txtPoints"
+      app:layout_constraintStart_toEndOf="@id/imgIcon"
+      app:layout_constraintTop_toTopOf="parent"
+      style="@style/BiggerTitle.2.Black"
+      />
+
+</android.support.constraint.ConstraintLayout>

@@ -1,7 +1,9 @@
 package com.tribe.app.data.realm.mapper;
 
+import android.content.Context;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.tribelivesdk.game.GameManager;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,9 +20,14 @@ import javax.inject.Singleton;
 
   private UserRealmDataMapper userRealmDataMapper;
   private GameRealmDataMapper gameRealmDataMapper;
+  private ScoreUserRealmDataMapper scoreUserRealmDataMapper;
+  private GameManager gameManager;
 
-  @Inject public ScoreRealmDataMapper(GameRealmDataMapper gameRealmDataMapper) {
+  @Inject public ScoreRealmDataMapper(Context context, GameRealmDataMapper gameRealmDataMapper,
+      ScoreUserRealmDataMapper scoreUserRealmDataMapper) {
     this.gameRealmDataMapper = gameRealmDataMapper;
+    this.scoreUserRealmDataMapper = scoreUserRealmDataMapper;
+    this.gameManager = GameManager.getInstance(context);
   }
 
   /**
@@ -32,12 +39,13 @@ import javax.inject.Singleton;
   public Score transform(ScoreRealm scoreRealm) {
     Score score = null;
 
-    if (scoreRealm != null) {
-      score = new Score(scoreRealm.getId());
+    if (scoreRealm != null && gameManager.getGameById(scoreRealm.getGame_id()) != null) {
+      score = new Score();
+      score.setId(scoreRealm.getId());
       score.setValue(scoreRealm.getValue());
       score.setRanking(scoreRealm.getRanking());
-      score.setGame(gameRealmDataMapper.transform(scoreRealm.getGame()));
-      score.setUser(userRealmDataMapper.transform(scoreRealm.getUser()));
+      score.setGame(gameManager.getGameById(scoreRealm.getGame_id()));
+      score.setUser(scoreUserRealmDataMapper.transform(scoreRealm.getUser()));
     }
 
     return score;
@@ -57,8 +65,8 @@ import javax.inject.Singleton;
       scoreRealm.setId(score.getId());
       scoreRealm.setValue(score.getValue());
       scoreRealm.setRanking(score.getRanking());
-      scoreRealm.setGame(gameRealmDataMapper.transform(score.getGame()));
-      scoreRealm.setUser(userRealmDataMapper.transform(score.getUser()));
+      scoreRealm.setGame_id(score.getGame().getId());
+      scoreRealm.setUser(scoreUserRealmDataMapper.transform(score.getUser()));
     }
 
     return scoreRealm;

@@ -43,6 +43,7 @@ public class UserRealm extends RealmObject {
   private LocationRealm location;
   private boolean tribe_save = false;
   private RealmList<MessageRealm> messages;
+  private RealmList<ScoreRealm> scores;
   private boolean invisible_mode;
   private boolean push_notif = true;
   private boolean mute_online_notif = false;
@@ -54,7 +55,6 @@ public class UserRealm extends RealmObject {
   @Ignore private List<Invite> invites;
 
   @Ignore private List<ShortcutRealm> shortcuts;
-  @Ignore private List<ScoreRealm> scores;
 
   @Ignore private JsonObject jsonPayloadUpdate;
 
@@ -245,11 +245,11 @@ public class UserRealm extends RealmObject {
     this.time_in_call = time_in_call;
   }
 
-  public void setScores(List<ScoreRealm> scores) {
+  public void setScores(RealmList<ScoreRealm> scores) {
     this.scores = scores;
   }
 
-  public List<ScoreRealm> getScores() {
+  public RealmList<ScoreRealm> getScores() {
     return scores;
   }
 

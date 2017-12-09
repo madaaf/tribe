@@ -10,12 +10,12 @@ import android.view.View;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 
-public class GameListDividerDecoration extends RecyclerView.ItemDecoration {
+public class BaseListDividerDecoration extends RecyclerView.ItemDecoration {
 
   private final Paint paint;
   private int heightDp;
 
-  public GameListDividerDecoration(Context context, int color, float heightDp) {
+  public BaseListDividerDecoration(Context context, int color, float heightDp) {
     paint = new Paint();
     paint.setStyle(Paint.Style.FILL);
     paint.setColor(color);

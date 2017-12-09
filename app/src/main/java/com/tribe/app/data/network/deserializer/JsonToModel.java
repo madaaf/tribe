@@ -167,7 +167,7 @@ import timber.log.Timber;
                 try {
                   UserRealm initiator = gson.fromJson(roomJson.get("initiator"), UserRealm.class);
                   if (initiator != null) {
-                    room.setInitiator(userRealmDataMapper.transform(initiator));
+                    room.setInitiator(userRealmDataMapper.transform(initiator, true));
                   }
                 } catch (Exception ex) {
                   ex.printStackTrace();

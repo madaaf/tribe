@@ -7,6 +7,7 @@ import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -126,5 +127,8 @@ public interface TribeApi {
   @FormUrlEncoded @POST("/graphql") Observable<Void> removeShortcut(@Field("query") String query);
 
   @FormUrlEncoded @POST("/graphql") Observable<List<GameRealm>> getGames(
+      @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<List<ScoreRealm>> getGameLeaderboard(
       @Field("query") String query);
 }

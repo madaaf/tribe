@@ -10,6 +10,7 @@ import com.tribe.app.data.cache.GameCache;
 import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.GameRealm;
+import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -59,5 +60,14 @@ public class CloudGameDataStore implements GameDataStore {
     return this.tribeApi.getGames(request)
         .doOnNext(gameList -> gameCache.putGames(gameList))
         .onErrorResumeNext(throwable -> Observable.just(gameCache.getGames()));
+  }
+
+  @Override
+  public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, boolean friendsOnly,
+      int offset) {
+    String body = context.getString(R.string.game_leaderboard, gameId,
+        offset == 0 ? "" : "offset : " + offset, friendsOnly);
+    final String request = context.getString(R.string.query, body);
+    return this.tribeApi.getGameLeaderboard(request);
   }
 }

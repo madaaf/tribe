@@ -93,10 +93,13 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyInvite
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteFullAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardUserAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.newchat.ShortcutNewChatAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.common.ShortcutListView;
+import com.tribe.app.presentation.view.component.games.GameUserCardView;
 import com.tribe.app.presentation.view.component.home.HomeWalkthroughVideoView;
 import com.tribe.app.presentation.view.component.home.HomeWalkthroughView;
 import com.tribe.app.presentation.view.component.home.NewGameView;
@@ -270,6 +273,12 @@ public interface ApplicationComponent {
   void inject(GameAdapterDelegate gameAdapterDelegate);
 
   void inject(LiveHangUpView liveHangUpView);
+
+  void inject(LeaderboardUserAdapterDelegate leaderboardUserAdapterDelegate);
+
+  void inject(LeaderboardDetailsAdapterDelegate leaderboardDetailsAdapterDelegate);
+
+  void inject(GameUserCardView userGameCardView);
 
   // JOBS
   void inject(BaseJob baseJob);

@@ -32,6 +32,7 @@ import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.activity.LeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
@@ -54,6 +55,7 @@ public class Navigator {
   public static int FROM_PROFILE = 1002;
   public static int FROM_CHAT = 1003;
   public static int FROM_NEW_GAME = 1004;
+  public static int FROM_LEADERBOARD = 1005;
   public static String SNAPCHAT = "com.snapchat.android";
   public static String INSTAGRAM = "com.instagram.android";
   public static String TWITTER = "com.twitter.android";
@@ -151,6 +153,14 @@ public class Navigator {
       Intent intent = ProfileActivity.getCallingIntent(activity);
       activity.startActivityForResult(intent, FROM_PROFILE);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
+  }
+
+  public void navigateToLeaderboards(Activity activity) {
+    if (activity != null) {
+      Intent intent = LeaderboardActivity.getCallingIntent(activity);
+      activity.startActivityForResult(intent, FROM_LEADERBOARD);
+      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
     }
   }
 

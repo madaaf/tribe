@@ -51,7 +51,13 @@ public class UserCacheImpl implements UserCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
-      obsRealm.executeTransaction(realm1 -> realm1.insertOrUpdate(userRealm));
+      obsRealm.executeTransaction(realm1 -> {
+        realm1.where(ScoreRealm.class)
+            .equalTo("user.id", userRealm.getId())
+            .findAll()
+            .deleteAllFromRealm();
+        realm1.insertOrUpdate(userRealm);
+      });
     } finally {
       obsRealm.close();
     }
@@ -79,30 +85,9 @@ public class UserCacheImpl implements UserCache {
     }
   }
 
-  @Override public void putScores(List<ScoreRealm> scoreRealmList) {
-    Realm obsRealm = Realm.getDefaultInstance();
-
-    try {
-      obsRealm.executeTransaction(realm1 -> {
-        for (ScoreRealm scoreRealm : scoreRealmList) {
-          ScoreRealm scoreRealmDB =
-              realm1.where(ScoreRealm.class).equalTo("id", scoreRealm.getId()).findFirst();
-          if (scoreRealmDB == null) {
-            scoreRealm.setUser_id(scoreRealm.getUser().getId());
-            scoreRealm.setGame_id(scoreRealm.getGame().getId());
-            realm1.insertOrUpdate(scoreRealm);
-          } else {
-            scoreRealmDB.setRanking(scoreRealm.getRanking());
-            scoreRealmDB.setValue(scoreRealm.getValue());
-          }
-        }
-      });
-    } finally {
-      obsRealm.close();
-    }
-  }
-
   private void updateShortcutPartially(Realm tempRealm, ShortcutRealm from, ShortcutRealm to) {
+    if (to == null) return;
+
     to.setMute(from.isMute());
     to.setStatus(from.getStatus().toUpperCase());
     to.setRead(from.isRead());
@@ -129,6 +114,10 @@ public class UserCacheImpl implements UserCache {
 
     RealmList<UserRealm> userRealmList = new RealmList<>();
     for (UserRealm member : from.getMembers()) {
+      tempRealm.where(ScoreRealm.class)
+          .equalTo("user.id", member.getId())
+          .findAll()
+          .deleteAllFromRealm();
       tempRealm.insertOrUpdate(member);
       userRealmList.add(tempRealm.where(UserRealm.class).equalTo("id", member.getId()).findFirst());
     }

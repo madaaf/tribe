@@ -45,6 +45,18 @@
     <item name="android:textColor">@color/grey.text.profile_info</item>
   </style>
 
+  <style name="BiggerBody.Two.White" parent="BiggerBody.Two">
+    <item name="android:textColor">@android:color/white</item>
+  </style>
+
+  <style name="BiggerBody.Two.Black40" parent="BiggerBody.Two">
+    <item name="android:textColor">@color/black.opacity.40</item>
+  </style>
+
+  <style name="BiggerBody.Two.Yellow" parent="BiggerBody.Two">
+    <item name="android:textColor">@color/yellow</item>
+  </style>
+
   <style name="Content">
     <item name="android:textSize">16sp</item>
   </style>
@@ -361,8 +373,16 @@
     <item name="android:textColor">@android:color/black</item>
   </style>
 
+  <style name="BiggerTitle.1.Black40" parent="@style/BiggerTitle.1">
+    <item name="android:textColor">@color/black.opacity.40</item>
+  </style>
+
   <style name="BiggerTitle.2.Black" parent="@style/BiggerTitle.2">
     <item name="android:textColor">@android:color/black</item>
+  </style>
+
+  <style name="BiggerTitle.2.Yellow" parent="@style/BiggerTitle.2">
+    <item name="android:textColor">@color/yellow</item>
   </style>
 
   <style name="BiggerTitle.2.White" parent="@style/BiggerTitle.2">

@@ -1,7 +1,8 @@
 package com.tribe.app.data.realm;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 import java.util.UUID;
 
@@ -10,37 +11,18 @@ import java.util.UUID;
  */
 public class ScoreRealm extends RealmObject {
 
-  @PrimaryKey private String id = UUID.randomUUID().toString();
+  @PrimaryKey String id = UUID.randomUUID().toString();
   private int ranking;
   private int value;
+  private ScoreUserRealm user;
   private String game_id;
-  private String user_id;
-
-  @Ignore private GameRealm game;
-  @Ignore private UserRealm user;
-
-  public String getId() {
-    return id;
-  }
 
   public void setId(String id) {
     this.id = id;
   }
 
-  public String getGame_id() {
-    return game_id;
-  }
-
-  public void setGame_id(String game_id) {
-    this.game_id = game_id;
-  }
-
-  public String getUser_id() {
-    return user_id;
-  }
-
-  public void setUser_id(String user_id) {
-    this.user_id = user_id;
+  public String getId() {
+    return id;
   }
 
   public int getValue() {
@@ -59,19 +41,28 @@ public class ScoreRealm extends RealmObject {
     this.ranking = ranking;
   }
 
-  public GameRealm getGame() {
-    return game;
+  public void setGame_id(String game_id) {
+    this.game_id = game_id;
   }
 
-  public void setGame(GameRealm game) {
-    this.game = game;
+  public String getGame_id() {
+    return game_id;
   }
 
-  public UserRealm getUser() {
+  public ScoreUserRealm getUser() {
     return user;
   }
 
-  public void setUser(UserRealm user) {
+  public void setUser(ScoreUserRealm user) {
     this.user = user;
+  }
+
+  public static ScoreRealm deserialize(JsonObject jobject, Gson gson) {
+    ScoreRealm scoreRealm = new ScoreRealm();
+    scoreRealm.setValue(jobject.get("value").getAsInt());
+    scoreRealm.setRanking(jobject.get("ranking").getAsInt());
+    scoreRealm.setUser(gson.fromJson(jobject.get("user"), ScoreUserRealm.class));
+    scoreRealm.setGame_id(jobject.get("game").getAsJsonObject().get("id").getAsString());
+    return scoreRealm;
   }
 }

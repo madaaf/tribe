@@ -408,6 +408,7 @@ public class User
       setLastSeenAt(user.getLastSeenAt());
       setRandom_banned_until(user.getRandom_banned_until());
       setMute_online_notif(user.isMute_online_notif());
+      setScoreList(user.getScoreList());
     }
   }
 

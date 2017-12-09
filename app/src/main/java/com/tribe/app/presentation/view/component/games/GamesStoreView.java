@@ -14,7 +14,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.adapter.GameAdapter;
-import com.tribe.app.presentation.view.adapter.decorator.GameListDividerDecoration;
+import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.GamesLayoutManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.tribelivesdk.game.Game;
@@ -84,7 +84,7 @@ public class GamesStoreView extends FrameLayout {
     recyclerViewGames.setLayoutManager(layoutManager);
     recyclerViewGames.setItemAnimator(null);
     recyclerViewGames.setAdapter(gameAdapter);
-    recyclerViewGames.addItemDecoration(new GameListDividerDecoration(getContext(),
+    recyclerViewGames.addItemDecoration(new BaseListDividerDecoration(getContext(),
         ContextCompat.getColor(getContext(), R.color.grey_divider), screenUtils.dpToPx(0.5f)));
 
     items.addAll(gameManager.getGames());

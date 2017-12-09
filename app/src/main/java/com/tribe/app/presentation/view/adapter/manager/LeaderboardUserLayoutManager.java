@@ -6,9 +6,9 @@ import android.support.v7.widget.LinearLayoutManager;
 /**
  * Layout manager to position items inside a {@link android.support.v7.widget.RecyclerView}.
  */
-public class LeaderboardGeneralLayoutManager extends LinearLayoutManager {
+public class LeaderboardUserLayoutManager extends LinearLayoutManager {
 
-  public LeaderboardGeneralLayoutManager(Context context) {
+  public LeaderboardUserLayoutManager(Context context) {
     super(context);
   }
 }

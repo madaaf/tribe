@@ -41,7 +41,7 @@ import javax.inject.Singleton;
    * @return {@link com.tribe.app.domain.entity.User} if valid {@link com.tribe.app.data.realm.UserRealm}
    * otherwise null.
    */
-  public User transform(UserRealm userRealm) {
+  public User transform(UserRealm userRealm, boolean keepScores) {
     User user = null;
     if (userRealm != null) {
       user = new User(userRealm.getId());
@@ -73,7 +73,7 @@ import javax.inject.Singleton;
         user.setMessageList(messageRealmDataMapper.transform(userRealm.getMessages()));
       }
 
-      if (userRealm.getScores() != null) {
+      if (userRealm.getScores() != null && keepScores) {
         user.setScoreList(scoreRealmDataMapper.transform(userRealm.getScores()));
       }
     }
@@ -147,12 +147,12 @@ import javax.inject.Singleton;
    * @param userRealmCollection Object Collection to be transformed.
    * @return {@link User} if valid {@link UserRealm} otherwise null.
    */
-  public List<User> transform(Collection<UserRealm> userRealmCollection) {
+  public List<User> transform(Collection<UserRealm> userRealmCollection, boolean keepScores) {
     List<User> userList = new ArrayList<>();
     User user;
     if (userRealmCollection != null) {
       for (UserRealm userRealm : userRealmCollection) {
-        user = transform(userRealm);
+        user = transform(userRealm, keepScores);
         if (user != null) {
           userList.add(user);
         }
@@ -168,7 +168,7 @@ import javax.inject.Singleton;
    * @param user Object to be transformed.
    * @return {@link UserRealm} if valid {@link User} otherwise null.
    */
-  public UserRealm transform(User user) {
+  public UserRealm transform(User user, boolean keepScores) {
     UserRealm userRealm = null;
 
     if (user != null) {
@@ -195,6 +195,10 @@ import javax.inject.Singleton;
       if (user.getMessages() != null) {
         userRealm.setMessages(messageRealmDataMapper.transformMessages(user.getMessageList()));
       }
+
+      if (user.getScoreList() != null && keepScores) {
+        userRealm.setScores(scoreRealmDataMapper.transformList(user.getScoreList()));
+      }
     }
 
     return userRealm;
@@ -219,13 +223,13 @@ import javax.inject.Singleton;
    * @param userCollection Object Collection to be transformed.
    * @return {@link UserRealm} if valid {@link User} otherwise null.
    */
-  public RealmList<UserRealm> transformList(Collection<User> userCollection) {
+  public RealmList<UserRealm> transformList(Collection<User> userCollection, boolean keepScores) {
     RealmList<UserRealm> userRealmList = new RealmList<>();
     UserRealm userRealm;
 
     if (userCollection != null) {
       for (User user : userCollection) {
-        userRealm = transform(user);
+        userRealm = transform(user, keepScores);
         if (userRealm != null) {
           userRealmList.add(userRealm);
         }
@@ -241,13 +245,13 @@ import javax.inject.Singleton;
    * @param userCollection Object Collection to be transformed.
    * @return {@link User} if valid {@link UserRealm} otherwise null.
    */
-  public List<User> transformList(List<UserRealm> userCollection) {
+  public List<User> transformList(List<UserRealm> userCollection, boolean keepScores) {
     List<User> userList = new ArrayList<>();
     User user;
 
     if (userCollection != null) {
       for (UserRealm userRealm : userCollection) {
-        user = transform(userRealm);
+        user = transform(userRealm, keepScores);
         if (user != null) {
           userList.add(user);
         }

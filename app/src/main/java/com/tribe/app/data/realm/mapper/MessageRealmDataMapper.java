@@ -37,12 +37,12 @@ import javax.inject.Singleton;
         case Message.MESSAGE_TEXT:
           message = new MessageText(messageRealm.getId());
           ((MessageText) message).setMessage(messageRealm.getData());
-          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
+          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor(), true));
           break;
         case Message.MESSAGE_EMOJI:
           message = new MessageEmoji(messageRealm.getId());
           ((MessageEmoji) message).setEmoji(messageRealm.getData());
-          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
+          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor(), true));
           break;
         case Message.MESSAGE_IMAGE:
           message = new MessageImage(messageRealm.getId());
@@ -53,16 +53,16 @@ import javax.inject.Singleton;
 
             /*((MessageImage) message).setRessources(
               userRealmDataMapper.transformOriginalRealmList(ressources));*/
-          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
+          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor(), true));
           break;
         case Message.MESSAGE_EVENT:
           message = new MessageEvent(messageRealm.getId());
           ((MessageEvent) message).setAction(messageRealm.getAction());
-          ((MessageEvent) message).setUser(userRealmDataMapper.transform(messageRealm.getUser()));
+          ((MessageEvent) message).setUser(userRealmDataMapper.transform(messageRealm.getUser(), true));
           break;
         case Message.MESSAGE_AUDIO:
           message = new MessageAudio(messageRealm.getId());
-          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
+          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor(), true));
           List<ImageRealm> r = messageRealm.getAlts();
           Image i = userRealmDataMapper.transformOriginalRealmList(r, true);
           ((MessageAudio) message).setOriginal(i);
@@ -100,7 +100,7 @@ import javax.inject.Singleton;
     MessageRealm messageRealm = null;
     if (message != null) {
       messageRealm = new MessageRealm(message.getId());
-      messageRealm.setAuthor(userRealmDataMapper.transform(message.getAuthor()));
+      messageRealm.setAuthor(userRealmDataMapper.transform(message.getAuthor(), true));
       messageRealm.set__typename(message.getType());
       messageRealm.setCreated_at(message.getCreationDate());
 
@@ -119,7 +119,7 @@ import javax.inject.Singleton;
           break;
         case Message.MESSAGE_EVENT:
           messageRealm.setAction(((MessageEvent) message).getAction());
-          messageRealm.setUser(userRealmDataMapper.transform(((MessageEvent) message).getUser()));
+          messageRealm.setUser(userRealmDataMapper.transform(((MessageEvent) message).getUser(), true));
           break;
 
         case Message.MESSAGE_AUDIO:

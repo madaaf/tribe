@@ -26,6 +26,7 @@ import com.tribe.app.presentation.view.component.chat.ShortcutCompletionTokenVie
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
+import com.tribe.app.presentation.view.component.games.LeaderboardDetailsView;
 import com.tribe.app.presentation.view.component.games.LeaderboardMainView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
@@ -226,4 +227,6 @@ import dagger.Component;
   void inject(LeaderboardActivity leaderboardActivity);
 
   void inject(LeaderboardMainView leaderboardMainView);
+
+  void inject(LeaderboardDetailsView leaderboardDetailsView);
 }
