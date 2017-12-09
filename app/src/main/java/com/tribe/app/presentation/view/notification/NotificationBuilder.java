@@ -72,10 +72,10 @@ import timber.log.Timber;
       Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
       intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD, notificationPayload);
       application.sendBroadcast(intentUnique);
-      Notification notification = buildNotification(notificationPayload);
+    /*  Notification notification = buildNotification(notificationPayload);
 
       notify(notificationPayload, notification);
-      return;
+      return;*/
     }
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
       if (notificationPayload.getBadge() > 0) {

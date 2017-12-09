@@ -37,6 +37,10 @@ public class ShortcutUtil {
       }
       idslist.clear();
     }
+
+    if (userIds.equals(Shortcut.SUPPORT)) {
+      return ShortcutUtil.createShortcutSupport();
+    }
     return notificationShortcut;
   }
 
