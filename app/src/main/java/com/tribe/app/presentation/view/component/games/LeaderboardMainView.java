@@ -119,7 +119,7 @@ public class LeaderboardMainView extends FrameLayout {
     }
 
     for (Game game : gameManager.getGames()) {
-      if (!gameIdPresent.contains(game.getId())) {
+      if (!gameIdPresent.contains(game.getId()) && game.hasScores()) {
         Score score = new Score();
         score.setGame(game);
         score.setUser(currentUser);

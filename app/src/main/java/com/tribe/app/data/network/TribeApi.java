@@ -13,6 +13,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
+import io.realm.RealmList;
 import java.util.List;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;

@@ -25,6 +25,10 @@
     <item name="android:textColor">@android:color/white</item>
   </style>
 
+  <style name="BiggerBody.One.Black" parent="BiggerBody.One">
+    <item name="android:textColor">@android:color/black</item>
+  </style>
+
   <style name="BiggerBody.One.Black40" parent="BiggerBody.One">
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>

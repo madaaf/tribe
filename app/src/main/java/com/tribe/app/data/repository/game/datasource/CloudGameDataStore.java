@@ -68,6 +68,15 @@ public class CloudGameDataStore implements GameDataStore {
     String body = context.getString(R.string.game_leaderboard, gameId,
         offset == 0 ? "" : "offset : " + offset, friendsOnly);
     final String request = context.getString(R.string.query, body);
-    return this.tribeApi.getGameLeaderboard(request);
+    return this.tribeApi.getGameLeaderboard(request).doOnNext(scoreRealmList -> {
+      for (ScoreRealm scoreRealm : scoreRealmList) {
+        scoreRealm.setGame_id(gameId);
+      }
+
+      if (offset == 0) {
+        gameCache.updateLeaderboard(gameId, friendsOnly,
+            scoreRealmList); // We only save the first page
+      }
+    }).doOnError(Throwable::printStackTrace);
   }
 }

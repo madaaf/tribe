@@ -30,6 +30,7 @@ import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
+import com.tribe.app.data.repository.game.DiskGameDataRepository;
 import com.tribe.app.data.repository.live.CloudLiveDataRepository;
 import com.tribe.app.data.repository.live.DiskLiveDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
@@ -420,6 +421,11 @@ import timber.log.Timber;
 
   @Provides @Singleton GameRepository provideCloudGameRepository(
       CloudGameDataRepository gameDataRepository) {
+    return gameDataRepository;
+  }
+
+  @Provides @Singleton GameRepository provideDiskGameRepository(
+      DiskGameDataRepository gameDataRepository) {
     return gameDataRepository;
   }
 

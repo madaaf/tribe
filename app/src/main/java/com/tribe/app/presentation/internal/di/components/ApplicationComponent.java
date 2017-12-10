@@ -25,6 +25,7 @@ import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
+import com.tribe.app.data.repository.game.DiskGameDataRepository;
 import com.tribe.app.data.repository.live.CloudLiveDataRepository;
 import com.tribe.app.data.repository.live.DiskLiveDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
@@ -312,6 +313,8 @@ public interface ApplicationComponent {
   DiskUserDataRepository diskUserRepository();
 
   CloudGameDataRepository cloudGameRepository();
+
+  DiskGameDataRepository diskGameRepository();
 
   CloudChatDataRepository cloudChatRepository();
 

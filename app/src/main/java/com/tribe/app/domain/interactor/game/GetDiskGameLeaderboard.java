@@ -1,6 +1,7 @@
 package com.tribe.app.domain.interactor.game;
 
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
+import com.tribe.app.data.repository.game.DiskGameDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import javax.inject.Inject;
@@ -14,19 +15,21 @@ public class GetDiskGameLeaderboard extends UseCaseDisk {
   private GameRepository gameRepository;
   private String gameId;
   private boolean friendsOnly = true;
+  private int offset = 0;
 
-  @Inject public GetDiskGameLeaderboard(CloudGameDataRepository gameRepository,
+  @Inject public GetDiskGameLeaderboard(DiskGameDataRepository gameRepository,
       PostExecutionThread postExecutionThread) {
     super(postExecutionThread);
     this.gameRepository = gameRepository;
   }
 
-  public void setup(String gameId, boolean friendsOnly) {
+  public void setup(String gameId, boolean friendsOnly, int offset) {
     this.gameId = gameId;
     this.friendsOnly = friendsOnly;
+    this.offset = offset;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.gameRepository.getGames();
+    return this.gameRepository.getGameLeaderBoard(gameId, friendsOnly, offset);
   }
 }

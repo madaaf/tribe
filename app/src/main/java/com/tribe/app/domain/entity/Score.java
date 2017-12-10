@@ -2,6 +2,7 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.tribelivesdk.game.Game;
 import io.realm.RealmObject;
+import java.io.Serializable;
 
 /**
  * Created by tiago on 12/07/2017.

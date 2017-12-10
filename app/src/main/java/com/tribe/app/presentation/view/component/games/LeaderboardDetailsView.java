@@ -11,10 +11,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -32,6 +34,7 @@ import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -47,6 +50,8 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
   @Inject LeaderboardDetailsAdapter adapter;
 
   @Inject GamePresenter gamePresenter;
+
+  @BindView(R.id.viewGameUserCard) GameUserCardView viewGameUserCard;
 
   @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
@@ -65,6 +70,7 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<ScoreRealm> onNewScores = PublishSubject.create();
 
   public LeaderboardDetailsView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -83,10 +89,12 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
+    gamePresenter.onViewAttached(this);
   }
 
   @Override protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
+    gamePresenter.onViewDetached();
   }
 
   public void onDestroy() {
@@ -131,6 +139,8 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
   @OnClick(R.id.tabFriends) void clickFriends() {
     if (tabFriends.isActive()) return;
 
+    hideGameCard();
+
     tabFriends.setActive(true);
     tabOverall.setActive(false);
 
@@ -151,6 +161,8 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
   @OnClick(R.id.tabOverall) void clickOverall() {
     if (tabOverall.isActive()) return;
 
+    showGameCard();
+
     tabFriends.setActive(false);
     tabOverall.setActive(true);
 
@@ -170,17 +182,42 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
 
   private void updateConstraints(ConstraintSet constraintSet) {
     AutoTransition autoTransition = new AutoTransition();
-    autoTransition.setDuration(300);
+    autoTransition.setDuration(100);
     TransitionManager.beginDelayedTransition(this, autoTransition);
     constraintSet.applyTo(this);
+  }
+
+  private void clearAdapter() {
+    items.clear();
+    adapter.setItems(items);
   }
 
   @Override public Context context() {
     return null;
   }
 
-  @Override public void onGameLeaderboard(List<Score> scoreList) {
+  @Override public void onGameLeaderboard(List<Score> scoreList, boolean cloud, boolean friendsOnly,
+      int offset) {
+    if (friendsOnly && !tabFriends.isActive() || !friendsOnly && !tabOverall.isActive()) return;
+    if (offset == 0) items.clear();
+    items.addAll(scoreList);
+    adapter.setItems(scoreList);
+  }
 
+  private void hideGameCard() {
+    viewGameUserCard.animate()
+        .setDuration(300)
+        .setInterpolator(new DecelerateInterpolator())
+        .translationY(screenUtils.getHeightPx() / 4)
+        .start();
+  }
+
+  private void showGameCard() {
+    viewGameUserCard.animate()
+        .setDuration(300)
+        .setInterpolator(new DecelerateInterpolator())
+        .translationY(0)
+        .start();
   }
 
   /**
@@ -189,6 +226,18 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
 
   public void setGame(Game game) {
     selectedGame = game;
+    gamePresenter.loadGameLeaderboard(selectedGame.getId(), true, 0);
+    viewGameUserCard.setTranslationY(screenUtils.getHeightPx() >> 1);
+
+    Score score = currentUser.getScoreForGame(game.getId());
+
+    if (score == null) {
+      score = new Score();
+      score.setUser(currentUser);
+    }
+
+    viewGameUserCard.setScore(score);
+    showGameCard();
   }
 
   /**

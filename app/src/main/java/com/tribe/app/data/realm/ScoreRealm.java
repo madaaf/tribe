@@ -62,7 +62,9 @@ public class ScoreRealm extends RealmObject {
     scoreRealm.setValue(jobject.get("value").getAsInt());
     scoreRealm.setRanking(jobject.get("ranking").getAsInt());
     scoreRealm.setUser(gson.fromJson(jobject.get("user"), ScoreUserRealm.class));
-    scoreRealm.setGame_id(jobject.get("game").getAsJsonObject().get("id").getAsString());
+    if (jobject.has("game")) {
+      scoreRealm.setGame_id(jobject.get("game").getAsJsonObject().get("id").getAsString());
+    }
     return scoreRealm;
   }
 }

@@ -45,7 +45,7 @@ public class User
   private List<Shortcut> shortcutList;
   private List<Message> messageList;
   private List<Invite> inviteList;
-  private List<Score> scoreList;
+  private transient List<Score> scoreList;
   private String fbid;
   private boolean invisible_mode;
   private boolean push_notif;
@@ -369,6 +369,16 @@ public class User
 
   public List<Score> getScoreList() {
     return scoreList;
+  }
+
+  public Score getScoreForGame(String gameId) {
+    Score result = null;
+
+    for (Score score : scoreList) {
+      if (score.getGame().getId().equals(gameId)) result = score;
+    }
+
+    return result;
   }
 
   public boolean isUserInCall() {

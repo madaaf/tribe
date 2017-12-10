@@ -1,120 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutContentok"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="127dp"
     android:animateLayoutChanges="true"
     android:background="@null"
     android:clickable="true"
     android:foreground="@drawable/selectable_button"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
     >
-  <FrameLayout
-      android:layout_width="match_parent"
-      android:layout_height="65dp"
-      android:paddingLeft="@dimen/horizontal_margin_small"
-      android:paddingRight="@dimen/horizontal_margin_small"
-      >
 
-    <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
-        android:id="@+id/viewNewAvatar"
-        android:layout_width="@dimen/avatar_size_small"
-        android:layout_height="@dimen/avatar_size_small"
-        android:layout_gravity="left|center_vertical"
-        android:background="@null"
-        android:scaleType="centerCrop"
-        />
+  <View
+      android:id="@+id/separator"
+      android:layout_width="0dp"
+      android:layout_height="0.5dp"
+      android:background="@color/white.opacity.5"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
 
-    <RelativeLayout
-        android:id="@+id/layoutInfos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/avatar_size_small_margin_start"
-        android:gravity="center_vertical"
-        >
+  <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+      android:id="@+id/viewNewAvatar"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:scaleType="centerInside"
+      app:layout_constraintBottom_toTopOf="@id/separator"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
 
-      <LinearLayout
-          android:id="@+id/layoutName"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:orientation="horizontal"
-          >
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:layout_marginTop="2dp"
+      android:ellipsize="end"
+      android:maxLines="1"
+      app:layout_constraintStart_toEndOf="@id/viewNewAvatar"
+      app:layout_constraintTop_toTopOf="@id/viewNewAvatar"
+      style="@style/Title.2.Black"
+      />
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="25dp"
-            android:orientation="horizontal"
-            >
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtUsername"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="2dp"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:maxLines="1"
+      app:layout_constraintBottom_toBottomOf="@id/viewNewAvatar"
+      app:layout_constraintStart_toEndOf="@id/viewNewAvatar"
+      style="@style/Caption.One.Black40"
+      />
 
-          <com.tribe.app.presentation.view.widget.TextViewFont
-              android:id="@+id/txtName"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_centerVertical="true"
-              android:ellipsize="end"
-              android:lines="1"
-              android:singleLine="true"
-              android:textSize="15sp"
-              style="@style/Body.Two.Black"
-              />
+  <ImageView
+      android:id="@+id/btnAdd"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:clickable="true"
+      android:src="@drawable/btn_add"
+      app:layout_constraintBottom_toTopOf="@id/separator"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
 
-        </RelativeLayout>
-      </LinearLayout>
+  <com.github.rahatarmanahmed.cpv.CircularProgressView
+      android:id="@+id/progressView"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_marginEnd="@dimen/horizontal_margin_smaller"
+      android:clickable="true"
+      android:padding="5dp"
+      android:visibility="gone"
+      app:cpv_animAutostart="true"
+      app:cpv_color="@android:color/black"
+      app:cpv_indeterminate="true"
+      app:cpv_thickness="2dp"
+      app:layout_constraintBottom_toTopOf="@id/separator"
+      app:layout_constraintEnd_toStartOf="@id/btnAdd"
+      app:layout_constraintTop_toTopOf="parent"
+      />
 
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/txtUsername"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_below="@id/layoutName"
-          android:layout_marginTop="2.5dp"
-          android:singleLine="true"
-          android:textColor="@color/black.opacity.40"
-          android:textSize="11sp"
-          style="@style/Title.Regular.White"
-          />
+  <ImageView
+      android:id="@+id/btnMore"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/horizontal_margin_smaller"
+      android:clickable="true"
+      android:src="@drawable/picto_ban"
+      app:layout_constraintBottom_toTopOf="@id/separator"
+      app:layout_constraintEnd_toStartOf="@id/btnAdd"
+      app:layout_constraintTop_toTopOf="parent"
+      />
 
-    </RelativeLayout>
+  <ImageView
+      android:id="@+id/imgIcon"
+      android:layout_width="@dimen/avatar_size_small"
+      android:layout_height="@dimen/avatar_size_small"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:scaleType="fitXY"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/separator"
+      />
 
-    <ImageView
-        android:id="@+id/btnMore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="55dp"
-        android:clickable="true"
-        android:src="@drawable/picto_ban"
-        />
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtRanking"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:text="mdrrrrr"
+      app:layout_constraintBottom_toBottomOf="@id/imgIcon"
+      app:layout_constraintStart_toEndOf="@id/imgIcon"
+      app:layout_constraintTop_toTopOf="@id/imgIcon"
+      style="@style/BiggerTitle.2.Yellow"
+      />
 
-    <com.github.rahatarmanahmed.cpv.CircularProgressView
-        android:id="@+id/progressView"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="60dp"
-        android:clickable="true"
-        android:padding="5dp"
-        android:visibility="gone"
-        app:cpv_animAutostart="true"
-        app:cpv_color="@android:color/black"
-        app:cpv_indeterminate="true"
-        app:cpv_thickness="2dp"
-        />
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtBestScore"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:text="@string/leaderboards_score"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/txtPointsSuffix"
+      app:layout_constraintVertical_chainStyle="packed"
+      style="@style/BiggerTitle.1.Black40"
+      />
 
-    <ImageView
-        android:id="@+id/btnAdd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:clickable="true"
-        android:src="@drawable/btn_add"
-        />
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtPointsSuffix"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:text="@string/leaderboards_points"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintBottom_toTopOf="@id/txtBestScore"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/separator"
+      app:layout_constraintVertical_chainStyle="spread"
+      style="@style/BiggerTitle.1.Black40"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtPoints"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="5dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintBottom_toTopOf="@id/txtBestScore"
+      app:layout_constraintEnd_toStartOf="@id/txtPointsSuffix"
+      app:layout_constraintTop_toBottomOf="@id/separator"
+      app:layout_constraintVertical_chainStyle="spread"
+      style="@style/BiggerTitle.2.Black"
+      />
 
 
-  </FrameLayout>
-
-
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>

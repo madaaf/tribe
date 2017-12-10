@@ -90,7 +90,7 @@ public class GameUserCardView extends ConstraintLayout {
     viewNewAvatar.load(score.getUser().getProfilePicture());
     txtDisplayName.setText(score.getUser().getDisplayName());
     txtPoints.setText("" + score.getValue());
-    txtRanking.setText(score.getRanking());
+    txtRanking.setText("#" + score.getRanking());
   }
 
   ///////////////////////

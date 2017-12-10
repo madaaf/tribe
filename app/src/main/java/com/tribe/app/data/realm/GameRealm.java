@@ -1,7 +1,9 @@
 package com.tribe.app.data.realm;
 
 import com.google.gson.annotations.SerializedName;
+import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -17,6 +19,7 @@ public class GameRealm extends RealmObject {
   private boolean online;
   private boolean playable;
   private boolean featured;
+  private boolean has_scores;
   @SerializedName("new") private boolean isNew;
   private String title;
   private String baseline;
@@ -28,6 +31,10 @@ public class GameRealm extends RealmObject {
   private String __typename;
   private String url;
   @SerializedName("data") private String dataUrl;
+  private RealmList<ScoreRealm> friends_score;
+  private RealmList<ScoreRealm> overall_score;
+
+  @Ignore RealmList<ScoreRealm> scores;
 
   public String getId() {
     return id;
@@ -35,6 +42,14 @@ public class GameRealm extends RealmObject {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public boolean hasScores() {
+    return has_scores;
+  }
+
+  public void setHas_scores(boolean has_scores) {
+    this.has_scores = has_scores;
   }
 
   public boolean isOnline() {
@@ -147,5 +162,25 @@ public class GameRealm extends RealmObject {
 
   public void setDataUrl(String dataUrl) {
     this.dataUrl = dataUrl;
+  }
+
+  public RealmList<ScoreRealm> getFriends_score() {
+    return friends_score;
+  }
+
+  public void setFriends_score(RealmList<ScoreRealm> friends_score) {
+    this.friends_score = friends_score;
+  }
+
+  public RealmList<ScoreRealm> getOverall_score() {
+    return overall_score;
+  }
+
+  public void setOverall_score(RealmList<ScoreRealm> overall_score) {
+    this.overall_score = overall_score;
+  }
+
+  public RealmList<ScoreRealm> getScores() {
+    return scores;
   }
 }

@@ -635,6 +635,7 @@
       online
       playable
       featured
+      has_scores
       new
       title
       baseline
@@ -644,6 +645,17 @@
       secondary_color
       plays_count
       __typename
+
+      scores(limit : 20, friendsOnly : true) {
+        value
+        ranking
+        user {
+          id
+          display_name
+          username
+          picture
+        }
+      }
 
       ...on GameWebV1 {
         url
@@ -661,7 +673,7 @@
 
   <string name="game.leaderboard" translatable="false">
     game (gameId : \"%1$s\") {
-      scores(limit : 10, %2$s, friendsOnly : %3$s) {
+      scores(limit : 20, %2$s, friendsOnly : %3$s) {
         value
         ranking
         user {

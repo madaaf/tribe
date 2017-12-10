@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.game;
 
 import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
+import com.tribe.app.data.realm.mapper.ScoreRealmDataMapper;
 import com.tribe.app.data.repository.game.datasource.GameDataStore;
 import com.tribe.app.data.repository.game.datasource.GameDataStoreFactory;
 import com.tribe.app.domain.entity.Score;
@@ -15,10 +16,13 @@ import rx.Observable;
 
   private final GameDataStoreFactory dataStoreFactory;
   private final GameRealmDataMapper gameRealmDataMapper;
+  private final ScoreRealmDataMapper scoreRealmDataMapper;
 
-  @Inject public DiskGameDataRepository(GameDataStoreFactory dataStoreFactory, GameRealmDataMapper gameRealmDataMapper) {
+  @Inject public DiskGameDataRepository(GameDataStoreFactory dataStoreFactory,
+      GameRealmDataMapper gameRealmDataMapper, ScoreRealmDataMapper scoreRealmDataMapper) {
     this.dataStoreFactory = dataStoreFactory;
     this.gameRealmDataMapper = gameRealmDataMapper;
+    this.scoreRealmDataMapper = scoreRealmDataMapper;
   }
 
   @Override public Observable<Void> synchronizeGamesData(String lang) {
@@ -32,6 +36,8 @@ import rx.Observable;
 
   @Override public Observable<List<Score>> getGameLeaderBoard(String gameId, boolean friendsOnly,
       int offset) {
-    return null;
+    GameDataStore gameDataStore = dataStoreFactory.createDiskDataStore();
+    return gameDataStore.getGameLeaderBoard(gameId, friendsOnly, offset)
+        .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
   }
 }

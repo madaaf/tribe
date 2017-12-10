@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,7 +22,7 @@
       android:layout_height="wrap_content"
       android:layout_marginEnd="@dimen/horizontal_margin_small"
       android:layout_marginStart="@dimen/horizontal_margin_small"
-      android:layout_marginTop="7.5dp"
+      android:layout_marginTop="2dp"
       android:ellipsize="end"
       android:textAllCaps="true"
       app:layout_constraintStart_toEndOf="@id/viewNewAvatar"
@@ -34,15 +34,15 @@
       android:id="@+id/txtDisplayName"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
+      android:layout_marginBottom="4dp"
       android:layout_marginEnd="@dimen/horizontal_margin_small"
       android:layout_marginStart="@dimen/horizontal_margin_small"
-      android:layout_marginTop="7dp"
       android:ellipsize="end"
       android:gravity="start"
       android:maxLines="1"
+      app:layout_constraintBottom_toBottomOf="@id/viewNewAvatar"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toEndOf="@id/viewNewAvatar"
-      app:layout_constraintTop_toBottomOf="@id/txtRanking"
       style="@style/BiggerBody.One.Black40"
       />
 
@@ -69,4 +69,4 @@
       style="@style/BiggerTitle.2.Black"
       />
 
-</android.support.constraint.ConstraintLayout>
+</merge>

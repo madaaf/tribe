@@ -53,6 +53,7 @@ public class Game {
   protected boolean online;
   protected boolean playable;
   protected boolean featured;
+  protected boolean hasScores;
   protected boolean isNew;
   protected String title;
   protected String baseline;
@@ -237,6 +238,14 @@ public class Game {
 
   public TribeGuest getCurrentMaster() {
     return currentMaster;
+  }
+
+  public void setHasScores(boolean hasScores) {
+    this.hasScores = hasScores;
+  }
+
+  public boolean hasScores() {
+    return hasScores;
   }
 
   protected TribeGuest getNextGuest() {
