@@ -145,15 +145,17 @@ public class RecyclerMessageView extends IChat {
     ZendeskConfig.INSTANCE.setIdentity(jwtUserIdentity);
     enablePushZendesk();
 
-    if (supportIdPref.get() == null || supportIdPref.get().isEmpty()) {
-      createZendeskRequest();
-    } else {
+    if (haveRequestZendeskId()) {
       supportId = supportIdPref.get();
-      Timber.e("support id : " + supportId);
+      Timber.i("old zendesk ticket :" + supportId);
       getCommentZendesk();
     }
 
     //getRequestProvider();
+  }
+
+  private boolean haveRequestZendeskId() {
+    return supportIdPref.get() != null && !supportIdPref.get().isEmpty();
   }
 
   @Override public void successMessageSupport(List<Message> messages) {
@@ -241,21 +243,22 @@ public class RecyclerMessageView extends IChat {
     });
   }
 
-  private void createZendeskRequest() {
+  private void createZendeskRequest(String firstMessage) {
     CreateRequest request = new CreateRequest();
     request.setSubject("Chat with " + user.getDisplayName());
+    request.setDescription(firstMessage);
     request.setTags(Arrays.asList("chat", "mobile"));
 
     provider.createRequest(request, new ZendeskCallback<CreateRequest>() {
       @Override public void onSuccess(CreateRequest createRequest) {
-        Timber.e("SOEF onSuccess REQUEST TIQUET " + createRequest.getId());
+        Timber.i("new zendesk ticket :" + createRequest.getId());
         supportIdPref.set(createRequest.getId());
         supportId = createRequest.getId();
         getCommentZendesk();
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
-        Timber.e("SOEF MyLogTag" + errorResponse);
+        Timber.e("SOEF createRequest error " + errorResponse.getReason().toString());
       }
     });
   }
@@ -482,7 +485,11 @@ public class RecyclerMessageView extends IChat {
     if (!shortcut.isSupport()) {
       messagePresenter.createMessage(arrIds, data, type, position);
     } else {
-      addCommentZendesk(data);
+      if (!haveRequestZendeskId()) {
+        createZendeskRequest(data);
+      } else {
+        addCommentZendesk(data);
+      }
     }
   }
 

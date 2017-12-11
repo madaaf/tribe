@@ -956,4 +956,7 @@
 	<string name="leaderboards_point">pt</string>
 	<string name="leaderboards_points">pts</string>
 	<string name="leaderboards_you">Vous</string>
+	<string name="leaderboard_new_high_score">Nouveau meilleur score !</string>
+	<string name="leaderboard_self_is_best">%1$s êtes le(la) meilleur(e) !</string>
+	<string name="leaderboard_friend_is_best">%1$s est le(la) meilleur(e) !</string>
 </resources>

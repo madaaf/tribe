@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -75,7 +76,6 @@ import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
-import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
@@ -130,6 +130,7 @@ import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 import static android.view.View.VISIBLE;
+import static com.tribe.app.presentation.view.ShortcutUtil.createShortcutSupport;
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, ShortcutMVPView, HomeGridMVPView,
@@ -221,6 +222,7 @@ public class HomeActivity extends BaseActivity
   private ItemTouchHelper itemTouchHelper;
   private List<HomeAdapterInterface> latestRecipientList;
   private TribeBroadcastReceiver notificationReceiver;
+  private NotificationReceiverSupport notificationReceiverSupport;
   private boolean shouldOverridePendingTransactions = false, receiverRegistered = false, hasSynced =
       false, canEndRefresh = false, finish = false, searchViewDisplayed = false, isSwipingChat =
       false, shouldNavigateToChat = false;
@@ -333,8 +335,14 @@ public class HomeActivity extends BaseActivity
 
     if (!receiverRegistered) {
       if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
+      if (notificationReceiverSupport == null) {
+        notificationReceiverSupport = new NotificationReceiverSupport();
+      }
 
       registerReceiver(notificationReceiver,
+          new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
+
+      registerReceiver(notificationReceiverSupport,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
 
       subscriptions.add(notificationReceiver.onDeclineInvitation()
@@ -358,6 +366,7 @@ public class HomeActivity extends BaseActivity
   @Override protected void onPause() {
     if (receiverRegistered) {
       unregisterReceiver(notificationReceiver);
+      unregisterReceiver(notificationReceiverSupport);
       receiverRegistered = false;
     }
 
@@ -658,10 +667,12 @@ public class HomeActivity extends BaseActivity
         Observable.combineLatest(onRecipientUpdates.onBackpressureBuffer(), onNewContactsOnApp,
             onNewContactsInvite, onNewContactsFBInvite,
             (recipientList, contactsOnApp, contactsInvite, contactsFBInvite) -> {
-
-              recipientList.add(ShortcutUtil.createShortcutSupport());
-
               List<HomeAdapterInterface> finalList = new ArrayList<>();
+
+             /* Shortcut support = createShortcutSupport();
+              support.setRead(false);
+              finalList.add(support);*/
+
               Set<String> addedUsers = new HashSet<>();
 
               int realFriendsCount = 0;
@@ -871,6 +882,7 @@ public class HomeActivity extends BaseActivity
 
   @Override public void renderRecipientList(List<Recipient> recipientList) {
     if (recipientList != null) {
+      recipientList.add(createShortcutSupport());
       onRecipientUpdates.onNext(recipientList);
       canEndRefresh = false;
     }
@@ -1324,4 +1336,22 @@ public class HomeActivity extends BaseActivity
   @Override public void onShortcut(Shortcut shortcut) {
 
   }
+
+  class NotificationReceiverSupport extends BroadcastReceiver {
+
+    @Override public void onReceive(Context context, Intent intent) {
+      Timber.e("RECEIVE NOTIFICATION BRODCATE");
+      List<Recipient> lit = new ArrayList<>();
+      for (Shortcut s : user.getShortcutList()) {
+        lit.add(s);
+      }
+      Shortcut support = createShortcutSupport();
+      support.setRead(false);
+      support.setSingle(true);
+      lit.add(support);
+      onRecipientUpdates.onNext(lit);
+    }
+  }
 }
+
+

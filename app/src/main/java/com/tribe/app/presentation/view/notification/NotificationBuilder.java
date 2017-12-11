@@ -1,9 +1,7 @@
 package com.tribe.app.presentation.view.notification;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
@@ -34,14 +32,12 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
-import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import timber.log.Timber;
 
 @Singleton public class NotificationBuilder {
 
@@ -66,17 +62,13 @@ import timber.log.Timber;
 
   public void sendBundledNotification(RemoteMessage remoteMessage) {
     NotificationPayload notificationPayload = getPayload(remoteMessage);
-    if (notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
-      Timber.e("IS SUPPORT NOTIFICATION");
 
+    if (notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
       Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
       intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD, notificationPayload);
       application.sendBroadcast(intentUnique);
-    /*  Notification notification = buildNotification(notificationPayload);
-
-      notify(notificationPayload, notification);
-      return;*/
     }
+
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
       if (notificationPayload.getBadge() > 0) {
         userCache.updateBadgeValue(notificationPayload.getBadge());
@@ -172,64 +164,6 @@ import timber.log.Timber;
     }
 
     return builder.build();
-  }
-
-  private boolean showMessageNotification(Context context,
-      LiveNotificationView liveNotificationView, NotificationPayload notificationPayload) {
-    if (liveNotificationView.getContainer() != null) {
-
-      Shortcut notificationShortcut =
-          ShortcutUtil.getRecipientFromId(notificationPayload.getUsers_ids(), user);
-
-      if (notificationShortcut != null) {
-        if (context instanceof ChatActivity) {
-          List<User> memberInChat = null;
-          if (((ChatActivity) context).getShortcut() != null
-              && ((ChatActivity) context).getShortcut().getMembers() != null) {
-            memberInChat = ((ChatActivity) context).getShortcut().getMembers();
-          }
-          boolean isSameChat =
-              ShortcutUtil.equalShortcutMembers(memberInChat, notificationShortcut.getMembers(),
-                  user);
-          if (isSameChat) {
-            return false;
-          }
-        } else if (context instanceof LiveActivity) {
-          List<User> memberInlive = null;
-          if (((LiveActivity) context).getShortcut() != null
-              && ((LiveActivity) context).getShortcut().getMembers() != null) {
-            memberInlive = ((LiveActivity) context).getShortcut().getMembers();
-          }
-          boolean isSameChat =
-              ShortcutUtil.equalShortcutMembers(memberInlive, notificationShortcut.getMembers(),
-                  user);
-          if (isSameChat) {
-            ((LiveActivity) context).notififyNewMessage();
-            return false;
-          }
-        }
-      }
-
-      Shortcut finalNotificationShortcut = notificationShortcut;
-      liveNotificationView.getContainer().setOnClickListener(view -> {
-        if (finalNotificationShortcut != null) {
-          if (context instanceof ChatActivity) {
-            if (!((ChatActivity) context).getShortcut()
-                .getId()
-                .equals(finalNotificationShortcut.getId())) {
-              navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null,
-                  null, false);
-            }
-          } else if (context instanceof LiveActivity) {
-            // TODO
-          } else {
-            navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null,
-                null, false);
-          }
-        }
-      });
-    }
-    return true;
   }
 
   private PendingIntent getIntentFromPayload(NotificationPayload payload) {

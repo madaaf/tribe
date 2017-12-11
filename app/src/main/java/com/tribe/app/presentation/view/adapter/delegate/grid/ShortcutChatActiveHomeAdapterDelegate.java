@@ -20,10 +20,8 @@ public class ShortcutChatActiveHomeAdapterDelegate extends RecipientAdapterDeleg
   @Override public boolean isForViewType(@NonNull List<Recipient> items, int position) {
     if (items.get(position) instanceof Recipient) {
       Recipient recipient = items.get(position);
-      return recipient instanceof Shortcut &&
-          !recipient.isRead() &&
-          !recipient.getId().equals(Recipient.ID_HEADER) &&
-          !recipient.getId().equals(Recipient.ID_EMPTY);
+      return recipient instanceof Shortcut && !recipient.isRead() && !recipient.getId()
+          .equals(Recipient.ID_HEADER) && !recipient.getId().equals(Recipient.ID_EMPTY);
     }
 
     return false;

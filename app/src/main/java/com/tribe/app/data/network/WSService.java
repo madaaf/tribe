@@ -449,7 +449,7 @@ import timber.log.Timber;
         jsonToModel.onRandomBannedUntil().onBackpressureDrop().subscribe(date -> {
           userCache.putRandomBannedUntil(date);
         }));
-    
+
     persistentSubscriptions.add(
         jsonToModel.onMessageCreated().onBackpressureDrop().subscribe(messagRealm -> {
           RealmList<MessageRealm> messages = new RealmList<>();
@@ -508,7 +508,7 @@ import timber.log.Timber;
           if (!shortcutRealm.isOnline()) {
             liveCache.removeOnline(shortcutRealm.getId());
           } else if (shortcutRealm.isOnline()) liveCache.putOnline(shortcutRealm.getId());
-          userCache.updateShortcut(shortcutRealm);
+           userCache.updateShortcut(shortcutRealm);
         }));
 
     persistentSubscriptions.add(jsonToModel.onShortcutRemoved()
