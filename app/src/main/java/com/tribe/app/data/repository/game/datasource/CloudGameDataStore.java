@@ -94,4 +94,10 @@ public class CloudGameDataStore implements GameDataStore {
         .doOnError(Throwable::printStackTrace)
         .doOnNext(scoreRealmList -> gameCache.updateLeaderboard(userId, scoreRealmList));
   }
+
+  @Override public Observable<Void> addScore(String gameId, Integer score) {
+    String body = context.getString(R.string.addScore, gameId, "" + score);
+    final String request = context.getString(R.string.mutation, body);
+    return this.tribeApi.addScore(request);
+  }
 }

@@ -376,8 +376,8 @@ public final class DialogFactory {
 
     gameLabels.add(new LabelType(context.getString(R.string.game_menu_play_another_game),
         LabelType.GAME_PLAY_ANOTHER));
-    gameLabels.add(new LabelType(context.getString(R.string.game_menu_reset_scores),
-        LabelType.GAME_RESET_SCORES));
+    //gameLabels.add(new LabelType(context.getString(R.string.game_menu_reset_scores),
+    //    LabelType.GAME_RESET_SCORES));
     gameLabels.add(
         new LabelType(context.getString(R.string.game_post_it_menu_stop), LabelType.GAME_STOP));
 

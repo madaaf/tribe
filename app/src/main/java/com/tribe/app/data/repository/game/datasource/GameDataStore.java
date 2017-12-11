@@ -17,4 +17,6 @@ public interface GameDataStore {
   Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, boolean friendsOnly, int offset);
 
   Observable<List<ScoreRealm>> getUserLeaderboard(String userId);
+
+  Observable<Void> addScore(String gameId, Integer score);
 }

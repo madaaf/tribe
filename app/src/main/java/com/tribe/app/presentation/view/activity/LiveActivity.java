@@ -957,6 +957,9 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.openGameStore()
         .subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
 
+    subscriptions.add(
+        viewLive.onAddScore().subscribe(pair -> livePresenter.addScore(pair.first, pair.second)));
+
     subscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
       userInfosNotificationView.setCurrentGame(game);
 

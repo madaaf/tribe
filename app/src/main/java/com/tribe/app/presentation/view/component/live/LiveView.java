@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -1344,6 +1345,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> openGameStore() {
     return viewControlsLive.openGameStore();
+  }
+
+  public Observable<Pair<String, Integer>> onAddScore() {
+    return viewGameManager.onAddScore();
   }
 }
 

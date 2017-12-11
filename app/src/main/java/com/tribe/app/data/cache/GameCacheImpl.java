@@ -3,6 +3,7 @@ package com.tribe.app.data.cache;
 import android.content.Context;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.data.realm.UserRealm;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
@@ -124,12 +125,25 @@ public class GameCacheImpl implements GameCache {
   }
 
   @Override public void updateLeaderboard(String userId, List<ScoreRealm> scoreRealmList) {
+    if (scoreRealmList == null || scoreRealmList.size() == 0) return;
+
     Realm newRealm = Realm.getDefaultInstance();
 
     try {
       newRealm.executeTransaction(realm -> {
         realm.where(ScoreRealm.class).equalTo("user.id", userId).findAll().deleteAllFromRealm();
+        UserRealm userRealm = realm.where(UserRealm.class).equalTo("id", userId).findFirst();
         realm.insertOrUpdate(scoreRealmList);
+
+        if (userRealm != null) {
+          RealmList scoresRealm = new RealmList();
+          for (ScoreRealm scoreRealm : scoreRealmList) {
+            scoresRealm.add(
+                realm.where(ScoreRealm.class).equalTo("id", scoreRealm.getId()).findFirst());
+          }
+
+          userRealm.setScores(scoresRealm);
+        }
       });
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -144,7 +158,8 @@ public class GameCacheImpl implements GameCache {
     try {
       List<ScoreRealm> results = new ArrayList<>();
 
-      RealmResults<ScoreRealm> scoreRealmResults = newRealm.where(ScoreRealm.class).equalTo("user.id", userId).findAll();
+      RealmResults<ScoreRealm> scoreRealmResults =
+          newRealm.where(ScoreRealm.class).equalTo("user.id", userId).findAll();
       if (scoreRealmResults.size() > 0) results.addAll(newRealm.copyFromRealm(scoreRealmResults));
 
       return results;

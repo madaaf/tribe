@@ -18,4 +18,6 @@ public interface GameRepository {
   Observable<List<Score>> getGameLeaderBoard(String gameId, boolean friendsOnly, int offset);
 
   Observable<List<Score>> getUserLeaderboard(String userId);
+
+  Observable<Void> addScore(String gameId, Integer score);
 }

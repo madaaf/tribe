@@ -46,4 +46,8 @@ import rx.Observable;
     return gameDataStore.getUserLeaderboard(userId)
         .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
   }
+
+  @Override public Observable<Void> addScore(String gameId, Integer score) {
+    return null;
+  }
 }

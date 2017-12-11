@@ -132,4 +132,7 @@ public interface TribeApi {
 
   @FormUrlEncoded @POST("/graphql") Observable<List<ScoreRealm>> getLeaderboard(
       @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<Void> addScore(
+      @Field("query") String query);
 }

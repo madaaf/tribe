@@ -45,8 +45,11 @@ import rx.Observable;
   @Override public Observable<List<Score>> getUserLeaderboard(String userId) {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
     return gameDataStore.getUserLeaderboard(userId)
-        .map(scoreRealmList -> {
-          return scoreRealmDataMapper.transform(scoreRealmList);
-        });
+        .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
+  }
+
+  @Override public Observable<Void> addScore(String gameId, Integer score) {
+    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
+    return gameDataStore.addScore(gameId, score);
   }
 }
