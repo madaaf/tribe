@@ -269,6 +269,10 @@ public final class DialogFactory {
         moreTypeList.add(new LabelType(
             EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_customize)),
             LabelType.CUSTOMIZE));
+      } else {
+        moreTypeList.add(new LabelType(
+            (EmojiParser.demojizedText(context.getString(R.string.home_menu_user_leaderboard))),
+            LabelType.SCORES));
       }
 
       if (!shortcut.isMute()) {

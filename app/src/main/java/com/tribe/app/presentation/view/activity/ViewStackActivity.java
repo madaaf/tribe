@@ -25,6 +25,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -40,6 +41,8 @@ public abstract class ViewStackActivity extends BaseActivity {
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.btnBack) ImageView btnBack;
+
+  @BindView(R.id.viewNewAvatar) NewAvatarView newAvatarView;
 
   @BindView(R.id.txtTitle) TextViewFont txtTitle;
 
@@ -93,7 +96,7 @@ public abstract class ViewStackActivity extends BaseActivity {
     endInit(savedInstanceState);
   }
 
-  private void initDependencyInjector() {
+  protected void initDependencyInjector() {
     DaggerUserComponent.builder()
         .applicationComponent(getApplicationComponent())
         .activityModule(getActivityModule())

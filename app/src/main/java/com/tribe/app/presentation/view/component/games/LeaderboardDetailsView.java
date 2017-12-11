@@ -8,6 +8,7 @@ import android.support.constraint.Guideline;
 import android.support.transition.AutoTransition;
 import android.support.transition.TransitionManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -16,7 +17,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.tribe.app.R;
-import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -24,7 +24,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
-import com.tribe.app.presentation.mvp.view.GameMVPView;
+import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardDetailsLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter;
@@ -34,14 +34,13 @@ import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 12/09/2017.
  */
 
-public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPView {
+public class LeaderboardDetailsView extends ConstraintLayout {
 
   @Inject ScreenUtils screenUtils;
 
@@ -52,6 +51,8 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
   @Inject GamePresenter gamePresenter;
 
   @BindView(R.id.viewGameUserCard) GameUserCardView viewGameUserCard;
+
+  @BindView(R.id.cardView) CardView cardView;
 
   @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
@@ -67,10 +68,10 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
   private LeaderboardDetailsLayoutManager layoutManager;
   private List<Score> items;
   private Game selectedGame;
+  private GameMVPViewAdapter gameMVPViewAdapter;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<ScoreRealm> onNewScores = PublishSubject.create();
 
   public LeaderboardDetailsView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -84,12 +85,13 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
 
     initDependencyInjector();
     initSubscriptions();
+    initPresenter();
     initUI();
   }
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
-    gamePresenter.onViewAttached(this);
+    gamePresenter.onViewAttached(gameMVPViewAdapter);
   }
 
   @Override protected void onDetachedFromWindow() {
@@ -103,6 +105,23 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
 
   private void initSubscriptions() {
     subscriptions = new CompositeSubscription();
+  }
+
+  private void initPresenter() {
+    gameMVPViewAdapter = new GameMVPViewAdapter() {
+      @Override public Context context() {
+        return getContext();
+      }
+
+      @Override
+      public void onGameLeaderboard(List<Score> scoreList, boolean cloud, boolean friendsOnly,
+          int offset) {
+        if (friendsOnly && !tabFriends.isActive() || !friendsOnly && !tabOverall.isActive()) return;
+        if (offset == 0) items.clear();
+        items.addAll(scoreList);
+        adapter.setItems(scoreList);
+      }
+    };
   }
 
   private void initUI() {
@@ -192,20 +211,8 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
     adapter.setItems(items);
   }
 
-  @Override public Context context() {
-    return null;
-  }
-
-  @Override public void onGameLeaderboard(List<Score> scoreList, boolean cloud, boolean friendsOnly,
-      int offset) {
-    if (friendsOnly && !tabFriends.isActive() || !friendsOnly && !tabOverall.isActive()) return;
-    if (offset == 0) items.clear();
-    items.addAll(scoreList);
-    adapter.setItems(scoreList);
-  }
-
   private void hideGameCard() {
-    viewGameUserCard.animate()
+    cardView.animate()
         .setDuration(300)
         .setInterpolator(new DecelerateInterpolator())
         .translationY(screenUtils.getHeightPx() / 4)
@@ -213,7 +220,7 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
   }
 
   private void showGameCard() {
-    viewGameUserCard.animate()
+    cardView.animate()
         .setDuration(300)
         .setInterpolator(new DecelerateInterpolator())
         .translationY(0)
@@ -227,7 +234,7 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
   public void setGame(Game game) {
     selectedGame = game;
     gamePresenter.loadGameLeaderboard(selectedGame.getId(), true, 0);
-    viewGameUserCard.setTranslationY(screenUtils.getHeightPx() >> 1);
+    cardView.setTranslationY(screenUtils.getHeightPx() >> 1);
 
     Score score = currentUser.getScoreForGame(game.getId());
 
@@ -237,7 +244,6 @@ public class LeaderboardDetailsView extends ConstraintLayout implements GameMVPV
     }
 
     viewGameUserCard.setScore(score);
-    showGameCard();
   }
 
   /**

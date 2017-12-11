@@ -957,15 +957,19 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.openGameStore()
         .subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
 
-    subscriptions.add(gameManager.onCurrentUserStopGame().subscribe(game -> {
+    subscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
+      userInfosNotificationView.setCurrentGame(game);
+
       if (room == null || !viewLive.hasJoined()) {
-        live.setGameId(null);
+        live.setGameId(game.getId());
       } else {
-        livePresenter.roomStopGame(room.getId());
+        livePresenter.roomStartGame(room.getId(), game.getId());
       }
     }));
 
     subscriptions.add(gameManager.onCurrentUserStopGame().subscribe(game -> {
+      userInfosNotificationView.setCurrentGame(null);
+
       if (room == null || !viewLive.hasJoined()) {
         live.setGameId(null);
       } else {

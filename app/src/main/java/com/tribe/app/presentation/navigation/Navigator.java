@@ -164,6 +164,16 @@ public class Navigator {
     }
   }
 
+  public void navigateToLeaderboardsForShortcut(Activity activity, String userId,
+      String displayName, String profilePicture) {
+    if (activity != null) {
+      Intent intent =
+          LeaderboardActivity.getCallingIntent(activity, userId, displayName, profilePicture);
+      activity.startActivityForResult(intent, FROM_LEADERBOARD);
+      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
+    }
+  }
+
   public void navigateToVideo(Activity activity) {
     if (activity != null) {
       Intent intent = VideoActivity.getCallingIntent(activity);

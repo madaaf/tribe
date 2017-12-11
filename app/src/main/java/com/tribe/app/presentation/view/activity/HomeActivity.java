@@ -531,6 +531,8 @@ public class HomeActivity extends BaseActivity
                   } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
                     shortcut.setMute(false);
                     homeGridPresenter.muteShortcut(shortcut.getId(), false);
+                  } else if (labelType.getTypeDef().equals(LabelType.SCORES)) {
+                    navigateToLeaderboardsShortcut(shortcut);
                   }
                 }
 
@@ -1041,6 +1043,12 @@ public class HomeActivity extends BaseActivity
 
   private void navigateToLeaderboards() {
     navigator.navigateToLeaderboards(HomeActivity.this);
+  }
+
+  private void navigateToLeaderboardsShortcut(Shortcut shortcut) {
+    User friend = shortcut.getSingleFriend();
+    navigator.navigateToLeaderboardsForShortcut(HomeActivity.this, friend.getId(),
+        friend.getDisplayName(), friend.getProfilePicture());
   }
 
   private void navigateToNewCall(@LiveActivity.Source String source, String gameId) {

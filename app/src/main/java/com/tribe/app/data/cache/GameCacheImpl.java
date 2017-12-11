@@ -98,7 +98,7 @@ public class GameCacheImpl implements GameCache {
     }
   }
 
-  @Override public List<ScoreRealm> getLeaderboard(String gameId, boolean friendsOnly) {
+  @Override public List<ScoreRealm> getGameLeaderboard(String gameId, boolean friendsOnly) {
     Realm newRealm = Realm.getDefaultInstance();
 
     try {
@@ -112,6 +112,40 @@ public class GameCacheImpl implements GameCache {
           results.addAll(newRealm.copyFromRealm(gameRealm.getOverall_score()));
         }
       }
+
+      return results;
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    } finally {
+      newRealm.close();
+    }
+
+    return null;
+  }
+
+  @Override public void updateLeaderboard(String userId, List<ScoreRealm> scoreRealmList) {
+    Realm newRealm = Realm.getDefaultInstance();
+
+    try {
+      newRealm.executeTransaction(realm -> {
+        realm.where(ScoreRealm.class).equalTo("user.id", userId).findAll().deleteAllFromRealm();
+        realm.insertOrUpdate(scoreRealmList);
+      });
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    } finally {
+      newRealm.close();
+    }
+  }
+
+  @Override public List<ScoreRealm> getUserLeaderboard(String userId) {
+    Realm newRealm = Realm.getDefaultInstance();
+
+    try {
+      List<ScoreRealm> results = new ArrayList<>();
+
+      RealmResults<ScoreRealm> scoreRealmResults = newRealm.where(ScoreRealm.class).equalTo("user.id", userId).findAll();
+      if (scoreRealmResults.size() > 0) results.addAll(newRealm.copyFromRealm(scoreRealmResults));
 
       return results;
     } catch (Exception ex) {

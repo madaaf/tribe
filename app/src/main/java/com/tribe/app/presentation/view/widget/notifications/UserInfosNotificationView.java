@@ -87,7 +87,7 @@ public class UserInfosNotificationView extends FrameLayout {
     inflater.inflate(R.layout.view_user_infos_notification, this, true);
 
     unbinder = ButterKnife.bind(this);
-    
+
     gameManager = GameManager.getInstance(getContext());
 
     layoutManager = new ContactsLayoutManager(getContext());
@@ -132,6 +132,10 @@ public class UserInfosNotificationView extends FrameLayout {
 
   public void setCallRoulette(boolean callRoulette) {
     contactAdapter.setCallRoulette(callRoulette);
+  }
+
+  public void setCurrentGame(Game game) {
+    contactAdapter.setCurrentGame(game);
   }
 
   public void hideView() {

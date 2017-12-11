@@ -59,6 +59,16 @@
         android:src="@drawable/picto_btn_close"
         />
 
+    <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+        android:id="@+id/viewNewAvatar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/selectable_button_oval"
+        android:visibility="gone"
+        />
+
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtAction"
         android:layout_width="wrap_content"

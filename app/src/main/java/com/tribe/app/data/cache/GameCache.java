@@ -16,5 +16,9 @@ import javax.inject.Singleton;
 
   void updateLeaderboard(String gameId, boolean friendsOnly, List<ScoreRealm> scoreRealmList);
 
-  List<ScoreRealm> getLeaderboard(String gameId, boolean friendsOnly);
+  void updateLeaderboard(String userId, List<ScoreRealm> scoreRealmList);
+
+  List<ScoreRealm> getGameLeaderboard(String gameId, boolean friendsOnly);
+
+  List<ScoreRealm> getUserLeaderboard(String userId);
 }

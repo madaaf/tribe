@@ -2,6 +2,8 @@ package com.tribe.app.presentation.view.component.games;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -16,10 +18,13 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.mvp.presenter.GamePresenter;
+import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.view.adapter.LeaderboardUserAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardUserLayoutManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
@@ -41,9 +46,9 @@ public class LeaderboardMainView extends FrameLayout {
 
   @Inject ScreenUtils screenUtils;
 
-  @Inject User currentUser;
-
   @Inject LeaderboardUserAdapter adapter;
+
+  @Inject GamePresenter gamePresenter;
 
   @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
@@ -55,10 +60,16 @@ public class LeaderboardMainView extends FrameLayout {
 
   @BindView(R.id.imgSettings) ImageView imgSettings;
 
+  @BindView(R.id.appBar) AppBarLayout appBarLayout;
+
+  @BindView(R.id.collapsingToolbar) CollapsingToolbarLayout collapsingToolbar;
+
   // VARIABLES
   private LeaderboardUserLayoutManager layoutManager;
   private List<Score> items;
   private GameManager gameManager;
+  private GameMVPViewAdapter gameMVPViewAdapter;
+  private User user;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -78,15 +89,17 @@ public class LeaderboardMainView extends FrameLayout {
 
     initDependencyInjector();
     initSubscriptions();
-    initUI();
+    initPresenter();
   }
 
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
+    gamePresenter.onViewAttached(gameMVPViewAdapter);
   }
 
   @Override protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
+    gamePresenter.onViewDetached();
   }
 
   public void onDestroy() {
@@ -97,42 +110,35 @@ public class LeaderboardMainView extends FrameLayout {
     subscriptions = new CompositeSubscription();
   }
 
-  private void initUI() {
-    viewNewAvatar.load(currentUser.getProfilePicture());
-    txtName.setText(currentUser.getDisplayName());
-    txtUsername.setText(currentUser.getUsernameDisplay());
-    imgSettings.setOnClickListener(v -> onSettings.onNext(null));
+  private void initPresenter() {
+    gameMVPViewAdapter = new GameMVPViewAdapter() {
+      @Override public void onUserLeaderboard(List<Score> newScoreList, boolean cloud) {
+        Set<String> gameIdPresent = new HashSet<>();
+        List<Score> endScoreList = new ArrayList<>();
 
-    layoutManager = new LeaderboardUserLayoutManager(getContext());
-    recyclerView.setLayoutManager(layoutManager);
-    recyclerView.setItemAnimator(null);
-    recyclerView.setAdapter(adapter);
-    recyclerView.addItemDecoration(new BaseListDividerDecoration(getContext(),
-        ContextCompat.getColor(getContext(), R.color.grey_divider), screenUtils.dpToPx(0.5f)));
+        for (Score score : newScoreList) {
+          endScoreList.add(score);
+          gameIdPresent.add(score.getGame().getId());
+        }
 
-    Set<String> gameIdPresent = new HashSet<>();
-    List<Score> scoreList = new ArrayList<>();
+        for (Game game : gameManager.getGames()) {
+          if (!gameIdPresent.contains(game.getId()) && game.hasScores()) {
+            Score score = new Score();
+            score.setGame(game);
+            score.setUser(user);
+            endScoreList.add(score);
+          }
+        }
 
-    for (Score score : currentUser.getScoreList()) {
-      scoreList.add(score);
-      gameIdPresent.add(score.getGame().getId());
-    }
-
-    for (Game game : gameManager.getGames()) {
-      if (!gameIdPresent.contains(game.getId()) && game.hasScores()) {
-        Score score = new Score();
-        score.setGame(game);
-        score.setUser(currentUser);
-        scoreList.add(score);
+        items.clear();
+        items.addAll(endScoreList);
+        adapter.setItems(items);
       }
-    }
 
-    items.addAll(scoreList);
-    adapter.setItems(items);
-
-    subscriptions.add(adapter.onClick()
-        .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
-        .subscribe(score -> onClick.onNext(score.getGame())));
+      @Override public Context context() {
+        return getContext();
+      }
+    };
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -149,6 +155,39 @@ public class LeaderboardMainView extends FrameLayout {
         .applicationComponent(getApplicationComponent())
         .build()
         .inject(this);
+  }
+
+  /**
+   * PUBLIC
+   */
+
+  public void setUser(User user, boolean collapsed) {
+    this.user = user;
+
+    adapter.setCanClick(!collapsed);
+
+    viewNewAvatar.load(user.getProfilePicture());
+    txtName.setText(user.getDisplayName());
+    txtUsername.setText(user.getUsernameDisplay());
+    imgSettings.setOnClickListener(v -> onSettings.onNext(null));
+
+    layoutManager = new LeaderboardUserLayoutManager(getContext());
+    recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setItemAnimator(null);
+    recyclerView.setAdapter(adapter);
+    recyclerView.addItemDecoration(new BaseListDividerDecoration(getContext(),
+        ContextCompat.getColor(getContext(), R.color.grey_divider), screenUtils.dpToPx(0.5f)));
+
+    subscriptions.add(adapter.onClick()
+        .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
+        .subscribe(score -> onClick.onNext(score.getGame())));
+
+    if (collapsed) {
+      appBarLayout.setExpanded(false);
+      UIUtils.changeHeightOfView(collapsingToolbar, 0);
+    }
+
+    gamePresenter.loadUserLeaderboard(user.getId());
   }
 
   /**

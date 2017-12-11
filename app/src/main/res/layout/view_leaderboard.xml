@@ -15,19 +15,21 @@
       >
 
     <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
 
       <android.support.design.widget.CollapsingToolbarLayout
+          android:id="@+id/collapsingToolbar"
           android:layout_width="match_parent"
-          android:layout_height="match_parent"
+          android:layout_height="150dp"
           app:layout_scrollFlags="scroll|exitUntilCollapsed"
           >
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="match_parent"
             >
 
           <LinearLayout

@@ -76,6 +76,7 @@ import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.base.BaseNotifAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.common.RecipientAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.EmptyContactAdapterDelegate;
@@ -280,6 +281,8 @@ public interface ApplicationComponent {
   void inject(LeaderboardDetailsAdapterDelegate leaderboardDetailsAdapterDelegate);
 
   void inject(GameUserCardView userGameCardView);
+
+  void inject(BaseNotifAdapterDelegate baseNotifAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);

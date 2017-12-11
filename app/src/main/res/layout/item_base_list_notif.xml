@@ -1,166 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutContentok"
     android:layout_width="match_parent"
-    android:layout_height="127dp"
+    android:layout_height="@dimen/user_infos_notif_live_full_height"
     android:animateLayoutChanges="true"
     android:background="@null"
     android:clickable="true"
     android:foreground="@drawable/selectable_button"
+    android:orientation="vertical"
     >
+
+  <RelativeLayout
+      android:id="@+id/layoutUser"
+      android:layout_width="match_parent"
+      android:layout_height="67dp"
+      >
+
+    <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+        android:id="@+id/viewNewAvatar"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:scaleType="centerInside"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/viewNewAvatar"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_marginTop="2dp"
+        android:layout_toEndOf="@id/viewNewAvatar"
+        android:ellipsize="end"
+        android:maxLines="1"
+        style="@style/Title.2.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/viewNewAvatar"
+        android:layout_marginBottom="2dp"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_toEndOf="@id/viewNewAvatar"
+        android:maxLines="1"
+        style="@style/Caption.One.Black40"
+        />
+
+    <ImageView
+        android:id="@+id/btnAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/horizontal_margin_smaller"
+        android:clickable="true"
+        android:src="@drawable/btn_add"
+        />
+
+    <com.github.rahatarmanahmed.cpv.CircularProgressView
+        android:id="@+id/progressView"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="@dimen/horizontal_margin_smaller"
+        android:layout_toStartOf="@id/btnAdd"
+        android:clickable="true"
+        android:padding="5dp"
+        android:visibility="gone"
+        app:cpv_animAutostart="true"
+        app:cpv_color="@android:color/black"
+        app:cpv_indeterminate="true"
+        app:cpv_thickness="2dp"
+        />
+
+    <ImageView
+        android:id="@+id/btnMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/horizontal_margin_smaller"
+        android:layout_toStartOf="@id/btnAdd"
+        android:clickable="true"
+        android:src="@drawable/picto_ban"
+        />
+  </RelativeLayout>
 
   <View
       android:id="@+id/separator"
       android:layout_width="0dp"
       android:layout_height="0.5dp"
+      android:layout_centerVertical="true"
       android:background="@color/white.opacity.5"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
       />
 
-  <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
-      android:id="@+id/viewNewAvatar"
-      android:layout_width="@dimen/avatar_size_small"
-      android:layout_height="@dimen/avatar_size_small"
-      android:layout_marginStart="@dimen/horizontal_margin_small"
-      android:scaleType="centerInside"
-      app:layout_constraintBottom_toTopOf="@id/separator"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      />
+  <RelativeLayout
+      android:id="@+id/layoutGame"
+      android:layout_width="match_parent"
+      android:layout_height="58dp"
+      >
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtName"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="@dimen/horizontal_margin_small"
-      android:layout_marginTop="2dp"
-      android:ellipsize="end"
-      android:maxLines="1"
-      app:layout_constraintStart_toEndOf="@id/viewNewAvatar"
-      app:layout_constraintTop_toTopOf="@id/viewNewAvatar"
-      style="@style/Title.2.Black"
-      />
+    <ImageView
+        android:id="@+id/imgIcon"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:scaleType="fitXY"
+        />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtUsername"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="2dp"
-      android:layout_marginStart="@dimen/horizontal_margin_small"
-      android:maxLines="1"
-      app:layout_constraintBottom_toBottomOf="@id/viewNewAvatar"
-      app:layout_constraintStart_toEndOf="@id/viewNewAvatar"
-      style="@style/Caption.One.Black40"
-      />
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtRanking"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_toRightOf="@id/imgIcon"
+        style="@style/BiggerTitle.2.Yellow"
+        />
 
-  <ImageView
-      android:id="@+id/btnAdd"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginEnd="@dimen/horizontal_margin_small"
-      android:clickable="true"
-      android:src="@drawable/btn_add"
-      app:layout_constraintBottom_toTopOf="@id/separator"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      />
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtBestScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/imgIcon"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:text="@string/leaderboards_score"
+        style="@style/BiggerTitle.1.Black40"
+        />
 
-  <com.github.rahatarmanahmed.cpv.CircularProgressView
-      android:id="@+id/progressView"
-      android:layout_width="30dp"
-      android:layout_height="30dp"
-      android:layout_marginEnd="@dimen/horizontal_margin_smaller"
-      android:clickable="true"
-      android:padding="5dp"
-      android:visibility="gone"
-      app:cpv_animAutostart="true"
-      app:cpv_color="@android:color/black"
-      app:cpv_indeterminate="true"
-      app:cpv_thickness="2dp"
-      app:layout_constraintBottom_toTopOf="@id/separator"
-      app:layout_constraintEnd_toStartOf="@id/btnAdd"
-      app:layout_constraintTop_toTopOf="parent"
-      />
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtPointsSuffix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@id/imgIcon"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginTop="2dp"
+        android:text="@string/leaderboards_points"
+        style="@style/BiggerTitle.1.Black40"
+        />
 
-  <ImageView
-      android:id="@+id/btnMore"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginEnd="@dimen/horizontal_margin_smaller"
-      android:clickable="true"
-      android:src="@drawable/picto_ban"
-      app:layout_constraintBottom_toTopOf="@id/separator"
-      app:layout_constraintEnd_toStartOf="@id/btnAdd"
-      app:layout_constraintTop_toTopOf="parent"
-      />
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/imgIcon"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="2dp"
+        android:layout_toLeftOf="@id/txtPointsSuffix"
+        style="@style/BiggerTitle.2.Black"
+        />
 
-  <ImageView
-      android:id="@+id/imgIcon"
-      android:layout_width="@dimen/avatar_size_small"
-      android:layout_height="@dimen/avatar_size_small"
-      android:layout_marginStart="@dimen/horizontal_margin_small"
-      android:scaleType="fitXY"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/separator"
-      />
+  </RelativeLayout>
+</LinearLayout>
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtRanking"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="@dimen/horizontal_margin_small"
-      android:text="mdrrrrr"
-      app:layout_constraintBottom_toBottomOf="@id/imgIcon"
-      app:layout_constraintStart_toEndOf="@id/imgIcon"
-      app:layout_constraintTop_toTopOf="@id/imgIcon"
-      style="@style/BiggerTitle.2.Yellow"
-      />
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtBestScore"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginEnd="@dimen/horizontal_margin_small"
-      android:text="@string/leaderboards_score"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/txtPointsSuffix"
-      app:layout_constraintVertical_chainStyle="packed"
-      style="@style/BiggerTitle.1.Black40"
-      />
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtPointsSuffix"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginEnd="@dimen/horizontal_margin_small"
-      android:text="@string/leaderboards_points"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintBottom_toTopOf="@id/txtBestScore"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/separator"
-      app:layout_constraintVertical_chainStyle="spread"
-      style="@style/BiggerTitle.1.Black40"
-      />
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtPoints"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginEnd="5dp"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintBottom_toTopOf="@id/txtBestScore"
-      app:layout_constraintEnd_toStartOf="@id/txtPointsSuffix"
-      app:layout_constraintTop_toBottomOf="@id/separator"
-      app:layout_constraintVertical_chainStyle="spread"
-      style="@style/BiggerTitle.2.Black"
-      />
-
-
-</android.support.constraint.ConstraintLayout>

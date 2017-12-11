@@ -7,17 +7,40 @@ import android.support.v4.view.ViewCompat;
 import android.view.View;
 import butterknife.OnClick;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
+import com.tribe.app.presentation.mvp.view.adapter.ShortcutMVPViewAdapter;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.games.LeaderboardDetailsView;
 import com.tribe.app.presentation.view.component.games.LeaderboardMainView;
 import com.tribe.app.presentation.view.utils.GlideUtils;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
+import javax.inject.Inject;
 
 public class LeaderboardActivity extends ViewStackActivity {
+
+  private static final String USER_ID = "USER_ID";
+  private static final String DISPLAY_NAME = "DISPLAY_NAME";
+  private static final String PROFILE_PICTURE = "PROFILE_PICTURE";
 
   public static Intent getCallingIntent(Activity activity) {
     Intent intent = new Intent(activity, LeaderboardActivity.class);
     return intent;
   }
+
+  public static Intent getCallingIntent(Activity activity, String userId, String displayName,
+      String profilePicture) {
+    Intent intent = new Intent(activity, LeaderboardActivity.class);
+    intent.putExtra(USER_ID, userId);
+    intent.putExtra(DISPLAY_NAME, displayName);
+    intent.putExtra(PROFILE_PICTURE, profilePicture);
+    return intent;
+  }
+
+  @Inject ShortcutPresenter shortcutPresenter;
 
   // VIEWS
   private LeaderboardMainView viewLeaderboardMain;
@@ -25,17 +48,66 @@ public class LeaderboardActivity extends ViewStackActivity {
 
   // VARIABLES
   private Game selectedGame;
+  private String displayName, profilePicture, userId;
+  private ShortcutMVPViewAdapter shortcutMVPViewAdapter;
 
   // OBSERVABLES
 
+  @Override protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    shortcutMVPViewAdapter = new ShortcutMVPViewAdapter() {
+      @Override public void onShortcut(Shortcut shortcut) {
+        setupMainView(shortcut.getSingleFriend(), true);
+        newAvatarView.setType(
+            shortcut.getSingleFriend().isOnline() ? NewAvatarView.ONLINE : NewAvatarView.NORMAL);
+        shortcutPresenter.unsubscribeShortcut();
+      }
+    };
+  }
+
+  @Override protected void onStart() {
+    super.onStart();
+    shortcutPresenter.onViewAttached(shortcutMVPViewAdapter);
+  }
+
+  @Override protected void onStop() {
+    super.onStop();
+    shortcutPresenter.onViewDetached();
+  }
+
+  @Override protected void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .applicationComponent(getApplicationComponent())
+        .activityModule(getActivityModule())
+        .build()
+        .inject(this);
+  }
+
   @Override protected void endInit(Bundle savedInstanceState) {
+    if (getIntent().hasExtra(USER_ID)) {
+      userId = getIntent().getStringExtra(USER_ID);
+      displayName = getIntent().getStringExtra(DISPLAY_NAME);
+      profilePicture = getIntent().getStringExtra(PROFILE_PICTURE);
+
+      newAvatarView.setVisibility(View.VISIBLE);
+      newAvatarView.load(profilePicture);
+    }
+
     btnBack.setVisibility(View.GONE);
-    txtTitle.setText(R.string.leaderboards_you);
+
+    if (StringUtils.isEmpty(userId)) {
+      txtTitle.setText(R.string.leaderboards_you);
+    } else {
+      txtTitle.setText(displayName);
+    }
 
     btnForward.setOnClickListener(v -> finish());
 
-    if (savedInstanceState == null) {
-      setupMainView();
+    if (savedInstanceState == null && StringUtils.isEmpty(userId)) {
+      setupMainView(getCurrentUser(), false);
+    } else {
+      shortcutPresenter.shortcutForUserIds(userId);
     }
   }
 
@@ -48,8 +120,9 @@ public class LeaderboardActivity extends ViewStackActivity {
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_left);
   }
 
-  private void setupMainView() {
+  private void setupMainView(User user, boolean collapsed) {
     viewLeaderboardMain = (LeaderboardMainView) viewStack.push(R.layout.view_leaderboard);
+    viewLeaderboardMain.setUser(user, collapsed);
 
     subscriptions.add(
         viewLeaderboardMain.onSettings().subscribe(aVoid -> navigator.navigateToProfile(this)));

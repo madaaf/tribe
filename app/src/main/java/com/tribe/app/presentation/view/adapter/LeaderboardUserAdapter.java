@@ -88,6 +88,10 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter {
     this.notifyDataSetChanged();
   }
 
+  public void setCanClick(boolean canClick) {
+    leaderboardUserAdapterDelegate.setCanClick(canClick);
+  }
+
   /**
    * OBSERVABLES
    */

@@ -956,4 +956,5 @@
 	<string name="leaderboards_point">pt</string>
 	<string name="leaderboards_points">pts</string>
 	<string name="leaderboards_you">You</string>
+	<string name="leaderboard_new_high_score">New high score!</string>
 </resources>

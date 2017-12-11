@@ -40,4 +40,10 @@ import rx.Observable;
     return gameDataStore.getGameLeaderBoard(gameId, friendsOnly, offset)
         .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
   }
+
+  @Override public Observable<List<Score>> getUserLeaderboard(String userId) {
+    GameDataStore gameDataStore = dataStoreFactory.createDiskDataStore();
+    return gameDataStore.getUserLeaderboard(userId)
+        .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
+  }
 }

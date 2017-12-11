@@ -41,4 +41,12 @@ import rx.Observable;
     return gameDataStore.getGameLeaderBoard(gameId, friendsOnly, offset)
         .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
   }
+
+  @Override public Observable<List<Score>> getUserLeaderboard(String userId) {
+    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
+    return gameDataStore.getUserLeaderboard(userId)
+        .map(scoreRealmList -> {
+          return scoreRealmDataMapper.transform(scoreRealmList);
+        });
+  }
 }

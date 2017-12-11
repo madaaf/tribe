@@ -13,6 +13,7 @@ import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class CloudGameDataStore implements GameDataStore {
     String body = context.getString(R.string.game_leaderboard, gameId,
         offset == 0 ? "" : "offset : " + offset, friendsOnly);
     final String request = context.getString(R.string.query, body);
-    return this.tribeApi.getGameLeaderboard(request).doOnNext(scoreRealmList -> {
+    return this.tribeApi.getLeaderboard(request).doOnNext(scoreRealmList -> {
       for (ScoreRealm scoreRealm : scoreRealmList) {
         scoreRealm.setGame_id(gameId);
       }
@@ -78,5 +79,19 @@ public class CloudGameDataStore implements GameDataStore {
             scoreRealmList); // We only save the first page
       }
     }).doOnError(Throwable::printStackTrace);
+  }
+
+  @Override public Observable<List<ScoreRealm>> getUserLeaderboard(String userId) {
+    String userIdsListFormated = "\"" + userId + "\"";
+    return this.tribeApi.getUserListInfos(
+        context.getString(R.string.lookup_userid, userIdsListFormated,
+            context.getString(R.string.userfragment_infos_light)))
+        .map(userRealms -> {
+          List<ScoreRealm> realmList = new ArrayList<>();
+          realmList.addAll(userRealms.get(0).getScores());
+          return realmList;
+        })
+        .doOnError(Throwable::printStackTrace)
+        .doOnNext(scoreRealmList -> gameCache.updateLeaderboard(userId, scoreRealmList));
   }
 }

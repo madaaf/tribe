@@ -32,6 +32,7 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
   // VARIABLES
   protected Context context;
   protected LayoutInflater layoutInflater;
+  protected boolean canClick = true;
 
   protected PublishSubject<View> click = PublishSubject.create();
 
@@ -50,7 +51,7 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     final LeaderboardUserViewHolder vh = new LeaderboardUserViewHolder(
         layoutInflater.inflate(R.layout.item_leaderboard_user, parent, false));
-    vh.layoutContent.setOnClickListener(v -> click.onNext(vh.itemView));
+    if (canClick) vh.layoutContent.setOnClickListener(v -> click.onNext(vh.itemView));
     return vh;
   }
 
@@ -69,12 +70,18 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
         .load();
 
     vh.txtPoints.setText("" + score.getValue());
+
+    if (!canClick) vh.imgArrow.setVisibility(View.GONE);
   }
 
   @Override
   public void onBindViewHolder(@NonNull List<Score> items, @NonNull RecyclerView.ViewHolder holder,
       int position, List<Object> payloads) {
     onBindViewHolder(items, position, holder);
+  }
+
+  public void setCanClick(boolean canClick) {
+    this.canClick = canClick;
   }
 
   static class LeaderboardUserViewHolder extends RecyclerView.ViewHolder {
@@ -84,6 +91,7 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
     @BindView(R.id.txtName) TextViewFont txtName;
     @BindView(R.id.txtPoints) TextViewFont txtPoints;
     @BindView(R.id.txtPointsSuffix) TextViewFont txtPointsSuffix;
+    @BindView(R.id.imgArrow) ImageView imgArrow;
 
     public LeaderboardUserViewHolder(View itemView) {
       super(itemView);
