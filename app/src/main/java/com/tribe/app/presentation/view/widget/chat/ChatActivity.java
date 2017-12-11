@@ -16,6 +16,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by remy on 28/07/2017.
@@ -61,16 +62,26 @@ public class ChatActivity extends BaseActivity {
       chatView.setFromShortcut(fromShortcut);
       intent.removeExtra(FROM_SHORTCUT);
     }
-
+    
     if (intent.hasExtra(EXTRA_LIVE)) {
       Recipient recipient = (Recipient) intent.getSerializableExtra(EXTRA_LIVE);
 
       if (recipient instanceof Shortcut) {
         shortcut = (Shortcut) recipient;
+        if (shortcut != null) Timber.e("SHORTCUT shortcut null ");
       } else if (recipient instanceof Invite) {
         shortcut = ((Invite) recipient).getRoom().getShortcut();
+        if (shortcut == null) {
+          Timber.e("SHORTCUT invite NULL ");
+          shortcut = ((Invite) recipient).getShortcut();
+          if (shortcut != null) Timber.e("SHORTCUT invite null " + shortcut.toString());
+        }
       }
-      chatView.setChatId(shortcut, recipient);
+      if (shortcut != null) {
+        chatView.setChatId(shortcut, recipient);
+      } else {
+        Timber.e("SHORTCUT NULL");
+      }
     }
 
     chatView.setGestureAndSection(intent.getStringExtra(EXTRA_GESTURE),
