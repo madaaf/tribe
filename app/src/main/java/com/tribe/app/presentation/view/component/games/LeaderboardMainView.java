@@ -8,7 +8,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
@@ -58,8 +57,6 @@ public class LeaderboardMainView extends FrameLayout {
 
   @BindView(R.id.txtUsername) TextViewFont txtUsername;
 
-  @BindView(R.id.imgSettings) ImageView imgSettings;
-
   @BindView(R.id.appBar) AppBarLayout appBarLayout;
 
   @BindView(R.id.collapsingToolbar) CollapsingToolbarLayout collapsingToolbar;
@@ -73,7 +70,6 @@ public class LeaderboardMainView extends FrameLayout {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Void> onSettings = PublishSubject.create();
   private PublishSubject<Game> onClick = PublishSubject.create();
 
   public LeaderboardMainView(Context context, AttributeSet attrs) {
@@ -169,7 +165,6 @@ public class LeaderboardMainView extends FrameLayout {
     viewNewAvatar.load(user.getProfilePicture());
     txtName.setText(user.getDisplayName());
     txtUsername.setText(user.getUsernameDisplay());
-    imgSettings.setOnClickListener(v -> onSettings.onNext(null));
 
     layoutManager = new LeaderboardUserLayoutManager(getContext());
     recyclerView.setLayoutManager(layoutManager);
@@ -193,10 +188,6 @@ public class LeaderboardMainView extends FrameLayout {
   /**
    * OBSERVABLES
    */
-
-  public Observable<Void> onSettings() {
-    return onSettings;
-  }
 
   public Observable<Game> onClick() {
     return onClick;

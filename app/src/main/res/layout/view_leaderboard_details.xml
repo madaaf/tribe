@@ -52,8 +52,8 @@
       app:layout_constraintEnd_toStartOf="@id/guidelineHalfWidth"
       />
 
-  <android.support.v7.widget.RecyclerView
-      android:id="@+id/recyclerView"
+  <android.support.v4.view.ViewPager
+      android:id="@+id/viewPager"
       android:layout_width="0dp"
       android:layout_height="0dp"
       app:layout_constraintBottom_toBottomOf="parent"

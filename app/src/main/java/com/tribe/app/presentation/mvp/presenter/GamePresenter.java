@@ -51,23 +51,27 @@ public class GamePresenter implements Presenter {
     gameMVPView = (GameMVPView) v;
   }
 
-  public void loadGameLeaderboard(String gameId, boolean friendsOnly, int offset) {
-    if (offset == 0) {
-      if (diskGameLeaderboardSubscriber != null) {
-        diskGameLeaderboardSubscriber.unsubscribe();
-      }
-
-      diskGameLeaderboardSubscriber = new GameLeaderboardSubscriber(false, friendsOnly, offset);
-      diskGameLeaderboard.setup(gameId, friendsOnly, offset);
-      diskGameLeaderboard.execute(diskGameLeaderboardSubscriber);
-    }
+  public void loadGameLeaderboard(String gameId, boolean friendsOnly, boolean shouldLoadFromDisk,
+      int limit, int offset, boolean downwards) {
+    if (offset < 0) return;
+    //if (shouldLoadFromDisk) {
+    //  if (diskGameLeaderboardSubscriber != null) {
+    //    diskGameLeaderboardSubscriber.unsubscribe();
+    //  }
+    //
+    //  diskGameLeaderboardSubscriber =
+    //      new GameLeaderboardSubscriber(false, friendsOnly, offset, downwards);
+    //  diskGameLeaderboard.setup(gameId, friendsOnly, limit, offset);
+    //  diskGameLeaderboard.execute(diskGameLeaderboardSubscriber);
+    //}
 
     if (cloudGameLeaderboardSubscriber != null) {
       cloudGameLeaderboardSubscriber.unsubscribe();
     }
 
-    cloudGameLeaderboardSubscriber = new GameLeaderboardSubscriber(true, friendsOnly, offset);
-    cloudGameLeaderboard.setup(gameId, friendsOnly, offset);
+    cloudGameLeaderboardSubscriber =
+        new GameLeaderboardSubscriber(true, friendsOnly, offset, downwards);
+    cloudGameLeaderboard.setup(gameId, friendsOnly, limit, offset);
     cloudGameLeaderboard.execute(cloudGameLeaderboardSubscriber);
   }
 
@@ -76,11 +80,14 @@ public class GamePresenter implements Presenter {
     private boolean friendsOnly = false;
     private int offset = 0;
     private boolean cloud;
+    private boolean downwards;
 
-    public GameLeaderboardSubscriber(boolean cloud, boolean friendsOnly, int offset) {
+    public GameLeaderboardSubscriber(boolean cloud, boolean friendsOnly, int offset,
+        boolean downwards) {
       this.cloud = cloud;
       this.friendsOnly = friendsOnly;
       this.offset = offset;
+      this.downwards = downwards;
     }
 
     @Override public void onCompleted() {
@@ -91,7 +98,9 @@ public class GamePresenter implements Presenter {
     }
 
     @Override public void onNext(List<Score> score) {
-      if (gameMVPView != null) gameMVPView.onGameLeaderboard(score, cloud, friendsOnly, offset);
+      if (gameMVPView != null) {
+        gameMVPView.onGameLeaderboard(score, cloud, friendsOnly, offset, downwards);
+      }
     }
   }
 

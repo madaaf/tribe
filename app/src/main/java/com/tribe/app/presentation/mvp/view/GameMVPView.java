@@ -11,7 +11,8 @@ public interface GameMVPView extends MVPView {
 
   Context context();
 
-  void onGameLeaderboard(List<Score> scoreList, boolean cloud, boolean friendsOnly, int offset);
+  void onGameLeaderboard(List<Score> scoreList, boolean cloud, boolean friendsOnly, int offset,
+      boolean downwards);
 
   void onUserLeaderboard(List<Score> scoreList, boolean cloud);
 }

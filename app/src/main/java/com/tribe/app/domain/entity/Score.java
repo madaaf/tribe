@@ -1,19 +1,27 @@
 package com.tribe.app.domain.entity;
 
 import com.tribe.tribelivesdk.game.Game;
-import io.realm.RealmObject;
-import java.io.Serializable;
 
 /**
  * Created by tiago on 12/07/2017.
  */
 public class Score {
 
+  public static final String ID_PROGRESS = "ID_PROGRESS";
+
   private String id;
   private int ranking = 0;
   private int value = 0;
   private User user;
   private Game game;
+
+  public Score() {
+
+  }
+
+  public Score(String id) {
+    this.id = id;
+  }
 
   public void setId(String id) {
     this.id = id;
@@ -57,7 +65,8 @@ public class Score {
 
   @Override public int hashCode() {
     int result = super.hashCode();
-    result = 31 * result + (getGame().getId() != null ? getGame().getId().hashCode() : 0);
+    if (game == null) return result;
+    result = 31 * result + (game.getId() != null ? game.getId().hashCode() : 0);
     return result;
   }
 }

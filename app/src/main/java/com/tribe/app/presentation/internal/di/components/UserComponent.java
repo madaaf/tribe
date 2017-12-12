@@ -28,6 +28,7 @@ import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
 import com.tribe.app.presentation.view.component.games.LeaderboardDetailsView;
 import com.tribe.app.presentation.view.component.games.LeaderboardMainView;
+import com.tribe.app.presentation.view.component.games.LeaderboardPage;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
 import com.tribe.app.presentation.view.component.live.ChasingDotsView;
@@ -199,6 +200,8 @@ import dagger.Component;
   void inject(TileInviteView tileInviteView);
 
   void inject(ViewStackActivity viewStackActivity);
+
+  void inject(LeaderboardPage leaderboardPage);
 
   /**
    * GAMES

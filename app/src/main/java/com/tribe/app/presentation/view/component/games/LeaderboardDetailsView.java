@@ -7,9 +7,8 @@ import android.support.constraint.ConstraintSet;
 import android.support.constraint.Guideline;
 import android.support.transition.AutoTransition;
 import android.support.transition.TransitionManager;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -23,17 +22,12 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.mvp.presenter.GamePresenter;
-import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
-import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
-import com.tribe.app.presentation.view.adapter.manager.LeaderboardDetailsLayoutManager;
-import com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter;
+import com.tribe.app.presentation.view.adapter.LeaderboardPagerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TabUnderlinedView;
 import com.tribe.tribelivesdk.game.Game;
-import java.util.ArrayList;
-import java.util.List;
 import javax.inject.Inject;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -42,19 +36,17 @@ import rx.subscriptions.CompositeSubscription;
 
 public class LeaderboardDetailsView extends ConstraintLayout {
 
+  public static final int LIMIT = 20;
+
   @Inject ScreenUtils screenUtils;
 
   @Inject User currentUser;
 
-  @Inject LeaderboardDetailsAdapter adapter;
-
-  @Inject GamePresenter gamePresenter;
+  @BindView(R.id.viewPager) ViewPager viewPager;
 
   @BindView(R.id.viewGameUserCard) GameUserCardView viewGameUserCard;
 
   @BindView(R.id.cardView) CardView cardView;
-
-  @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
   @BindView(R.id.tabFriends) TabUnderlinedView tabFriends;
 
@@ -65,13 +57,12 @@ public class LeaderboardDetailsView extends ConstraintLayout {
   @BindView(R.id.guidelineHalfWidth) Guideline guidelineHalfWidth;
 
   // VARIABLES
-  private LeaderboardDetailsLayoutManager layoutManager;
-  private List<Score> items;
+  private LeaderboardPagerAdapter adapter;
   private Game selectedGame;
-  private GameMVPViewAdapter gameMVPViewAdapter;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Score> onViewCardClick = PublishSubject.create();
 
   public LeaderboardDetailsView(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -81,22 +72,9 @@ public class LeaderboardDetailsView extends ConstraintLayout {
     super.onFinishInflate();
     ButterKnife.bind(this);
 
-    items = new ArrayList<>();
-
     initDependencyInjector();
     initSubscriptions();
     initPresenter();
-    initUI();
-  }
-
-  @Override protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
-    gamePresenter.onViewAttached(gameMVPViewAdapter);
-  }
-
-  @Override protected void onDetachedFromWindow() {
-    super.onDetachedFromWindow();
-    gamePresenter.onViewDetached();
   }
 
   public void onDestroy() {
@@ -108,31 +86,44 @@ public class LeaderboardDetailsView extends ConstraintLayout {
   }
 
   private void initPresenter() {
-    gameMVPViewAdapter = new GameMVPViewAdapter() {
-      @Override public Context context() {
-        return getContext();
-      }
 
-      @Override
-      public void onGameLeaderboard(List<Score> scoreList, boolean cloud, boolean friendsOnly,
-          int offset) {
-        if (friendsOnly && !tabFriends.isActive() || !friendsOnly && !tabOverall.isActive()) return;
-        if (offset == 0) items.clear();
-        items.addAll(scoreList);
-        adapter.setItems(scoreList);
-      }
-    };
   }
 
   private void initUI() {
-    layoutManager = new LeaderboardDetailsLayoutManager(getContext());
-    recyclerView.setLayoutManager(layoutManager);
-    recyclerView.setItemAnimator(null);
-    recyclerView.setAdapter(adapter);
-    recyclerView.addItemDecoration(new BaseListDividerDecoration(getContext(),
-        ContextCompat.getColor(getContext(), R.color.grey_divider), screenUtils.dpToPx(0.5f)));
+    adapter = new LeaderboardPagerAdapter(getContext(), selectedGame, onViewCardClick);
+    viewPager.setAdapter(adapter);
 
-    adapter.setItems(items);
+    viewPager.setOffscreenPageLimit(2);
+    viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+      @Override
+      public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+      }
+
+      @Override public void onPageSelected(int position) {
+        if (position == 0) {
+          setFriends();
+        } else {
+          setOverall();
+        }
+      }
+
+      @Override public void onPageScrollStateChanged(int state) {
+
+      }
+    });
+
+    cardView.setTranslationY(screenUtils.getHeightPx() >> 1);
+
+    Score score = currentUser.getScoreForGame(selectedGame.getId());
+
+    if (score == null) {
+      score = new Score();
+      score.setUser(currentUser);
+    }
+
+    viewGameUserCard.setOnClickListener(v -> onViewCardClick.onNext(currentUser.getScoreForGame(selectedGame.getId())));
+    viewGameUserCard.setScore(score);
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -156,6 +147,14 @@ public class LeaderboardDetailsView extends ConstraintLayout {
    */
 
   @OnClick(R.id.tabFriends) void clickFriends() {
+    viewPager.setCurrentItem(0, true);
+  }
+
+  @OnClick(R.id.tabOverall) void clickOverall() {
+    viewPager.setCurrentItem(1, true);
+  }
+
+  private void setFriends() {
     if (tabFriends.isActive()) return;
 
     hideGameCard();
@@ -173,11 +172,9 @@ public class LeaderboardDetailsView extends ConstraintLayout {
     set.connect(viewUnderline.getId(), ConstraintSet.START, this.getId(), ConstraintSet.START);
 
     updateConstraints(set);
-
-    gamePresenter.loadGameLeaderboard(selectedGame.getId(), true, 0);
   }
 
-  @OnClick(R.id.tabOverall) void clickOverall() {
+  private void setOverall() {
     if (tabOverall.isActive()) return;
 
     showGameCard();
@@ -195,8 +192,6 @@ public class LeaderboardDetailsView extends ConstraintLayout {
     set.connect(viewUnderline.getId(), ConstraintSet.END, this.getId(), ConstraintSet.END);
 
     updateConstraints(set);
-
-    gamePresenter.loadGameLeaderboard(selectedGame.getId(), false, 0);
   }
 
   private void updateConstraints(ConstraintSet constraintSet) {
@@ -204,11 +199,6 @@ public class LeaderboardDetailsView extends ConstraintLayout {
     autoTransition.setDuration(100);
     TransitionManager.beginDelayedTransition(this, autoTransition);
     constraintSet.applyTo(this);
-  }
-
-  private void clearAdapter() {
-    items.clear();
-    adapter.setItems(items);
   }
 
   private void hideGameCard() {
@@ -233,17 +223,7 @@ public class LeaderboardDetailsView extends ConstraintLayout {
 
   public void setGame(Game game) {
     selectedGame = game;
-    gamePresenter.loadGameLeaderboard(selectedGame.getId(), true, 0);
-    cardView.setTranslationY(screenUtils.getHeightPx() >> 1);
-
-    Score score = currentUser.getScoreForGame(game.getId());
-
-    if (score == null) {
-      score = new Score();
-      score.setUser(currentUser);
-    }
-
-    viewGameUserCard.setScore(score);
+    initUI();
   }
 
   /**

@@ -24,7 +24,7 @@ public class DiskGameDataStore implements GameDataStore {
 
   @Override
   public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, boolean friendsOnly,
-      int offset) {
+      int limit, int offset) {
     return Observable.just(gameCache.getGameLeaderboard(gameId, friendsOnly));
   }
 

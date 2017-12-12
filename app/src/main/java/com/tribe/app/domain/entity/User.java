@@ -374,8 +374,10 @@ public class User
   public Score getScoreForGame(String gameId) {
     Score result = null;
 
-    for (Score score : scoreList) {
-      if (score.getGame().getId().equals(gameId)) result = score;
+    if (scoreList != null) {
+      for (Score score : scoreList) {
+        if (score.getGame().getId().equals(gameId)) result = score;
+      }
     }
 
     return result;

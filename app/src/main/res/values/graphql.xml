@@ -633,17 +633,6 @@
       plays_count
       __typename
 
-      scores(limit : 20, friendsOnly : true) {
-        value
-        ranking
-        user {
-          id
-          display_name
-          username
-          picture
-        }
-      }
-
       ...on GameWebV1 {
         url
       }
@@ -660,7 +649,7 @@
 
   <string name="game.leaderboard" translatable="false">
     game (gameId : \"%1$s\") {
-      scores(limit : 20, %2$s, friendsOnly : %3$s) {
+      scores(limit : %2$s, %3$s, friendsOnly : %4$s) {
         value
         ranking
         user {

@@ -76,6 +76,12 @@ public class LeaderboardActivity extends ViewStackActivity {
     shortcutPresenter.onViewDetached();
   }
 
+  @Override protected void onDestroy() {
+    if (viewLeaderboardDetails != null) viewLeaderboardDetails.onDestroy();
+    if (viewLeaderboardMain != null) viewLeaderboardMain.onDestroy();
+    super.onDestroy();
+  }
+
   @Override protected void initDependencyInjector() {
     DaggerUserComponent.builder()
         .applicationComponent(getApplicationComponent())
@@ -94,7 +100,8 @@ public class LeaderboardActivity extends ViewStackActivity {
       newAvatarView.load(profilePicture);
     }
 
-    btnBack.setVisibility(View.GONE);
+    btnBack.setVisibility(View.VISIBLE);
+    btnBack.setImageResource(R.drawable.picto_settings);
 
     if (StringUtils.isEmpty(userId)) {
       txtTitle.setText(R.string.leaderboards_you);
@@ -112,7 +119,11 @@ public class LeaderboardActivity extends ViewStackActivity {
   }
 
   @OnClick(R.id.btnBack) void clickBack() {
-    onBackPressed();
+    if (viewStack.getTopView() instanceof LeaderboardMainView) {
+      navigator.navigateToProfile(this);
+    } else {
+      onBackPressed();
+    }
   }
 
   @Override public void finish() {
@@ -123,9 +134,6 @@ public class LeaderboardActivity extends ViewStackActivity {
   private void setupMainView(User user, boolean collapsed) {
     viewLeaderboardMain = (LeaderboardMainView) viewStack.push(R.layout.view_leaderboard);
     viewLeaderboardMain.setUser(user, collapsed);
-
-    subscriptions.add(
-        viewLeaderboardMain.onSettings().subscribe(aVoid -> navigator.navigateToProfile(this)));
 
     subscriptions.add(viewLeaderboardMain.onClick().subscribe(game -> {
       selectedGame = game;
@@ -141,12 +149,11 @@ public class LeaderboardActivity extends ViewStackActivity {
 
   protected void computeTitle(boolean forward, View to) {
     if (to instanceof LeaderboardMainView) {
-      btnBack.setVisibility(View.GONE);
       setupTitle(getString(R.string.leaderboards_you), forward);
       btnForward.setVisibility(View.VISIBLE);
+      btnBack.setImageResource(R.drawable.picto_settings);
     } else if (to instanceof LeaderboardDetailsView) {
       btnForward.setVisibility(View.GONE);
-      btnBack.setVisibility(View.VISIBLE);
       setupTitle(selectedGame.getTitle(), forward);
 
       new GlideUtils.GameImageBuilder(this, screenUtils).url(selectedGame.getIcon())

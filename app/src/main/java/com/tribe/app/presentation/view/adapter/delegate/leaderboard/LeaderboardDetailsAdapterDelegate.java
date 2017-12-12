@@ -38,7 +38,12 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
   }
 
   @Override public boolean isForViewType(@NonNull List<Score> items, int position) {
-    return true;
+    if (items.get(position) instanceof Score) {
+      Score score = items.get(position);
+      return !score.getId().equals(Score.ID_PROGRESS);
+    }
+
+    return false;
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {

@@ -65,8 +65,8 @@ public class CloudGameDataStore implements GameDataStore {
 
   @Override
   public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, boolean friendsOnly,
-      int offset) {
-    String body = context.getString(R.string.game_leaderboard, gameId,
+      int limit, int offset) {
+    String body = context.getString(R.string.game_leaderboard, gameId, "" + limit,
         offset == 0 ? "" : "offset : " + offset, friendsOnly);
     final String request = context.getString(R.string.query, body);
     return this.tribeApi.getLeaderboard(request).doOnNext(scoreRealmList -> {
