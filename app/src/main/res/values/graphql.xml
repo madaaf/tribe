@@ -631,6 +631,14 @@
       primary_color
       secondary_color
       plays_count
+
+      emoji
+      friendLeader {
+        user {
+          id
+        }
+      }
+
       __typename
 
       ...on GameWebV1 {

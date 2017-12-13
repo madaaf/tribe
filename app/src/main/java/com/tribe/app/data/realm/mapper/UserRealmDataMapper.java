@@ -1,10 +1,14 @@
 package com.tribe.app.data.realm.mapper;
 
+import android.content.Context;
 import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,16 +25,19 @@ import javax.inject.Singleton;
   private ShortcutRealmDataMapper shortcutRealmDataMapper;
   private MessageRealmDataMapper messageRealmDataMapper;
   private ScoreRealmDataMapper scoreRealmDataMapper;
+  private GameManager gameManager;
 
   @Inject ScreenUtils screenUtils;
 
-  @Inject public UserRealmDataMapper(ShortcutRealmDataMapper shortcutRealmDataMapper,
+  @Inject
+  public UserRealmDataMapper(Context context, ShortcutRealmDataMapper shortcutRealmDataMapper,
       ScoreRealmDataMapper scoreRealmDataMapper) {
     this.shortcutRealmDataMapper = shortcutRealmDataMapper;
     this.shortcutRealmDataMapper.setUserRealmDataMapper(this);
     this.scoreRealmDataMapper = scoreRealmDataMapper;
     this.scoreRealmDataMapper.setUserRealmDataMapper(this);
     this.messageRealmDataMapper = new MessageRealmDataMapper(this);
+    this.gameManager = GameManager.getInstance(context);
   }
 
   /**
@@ -76,6 +83,19 @@ import javax.inject.Singleton;
       if (userRealm.getScores() != null && keepScores) {
         user.setScoreList(scoreRealmDataMapper.transform(userRealm.getScores()));
       }
+
+      List<String> emojis = new ArrayList<>();
+
+      if (gameManager.getGames() != null) {
+        for (Game game : gameManager.getGames()) {
+          if (!StringUtils.isEmpty(game.getFriendIdLeader()) &&
+              game.getFriendIdLeader().equals(user.getId())) {
+            emojis.add(game.getEmoji());
+          }
+        }
+      }
+
+      user.setEmojiLeaderGameList(emojis);
     }
 
     return user;

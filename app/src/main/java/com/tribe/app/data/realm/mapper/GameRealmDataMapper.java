@@ -59,6 +59,10 @@ import javax.inject.Singleton;
       game.setPlays_count(gameRealm.getPlays_count());
       game.setPrimary_color(gameRealm.getPrimary_color());
       game.setSecondary_color(gameRealm.getSecondary_color());
+      if (gameRealm.getFriendLeader() != null) {
+        game.setFriendIdLeader(gameRealm.getFriendLeader().getUser().getId());
+      }
+      game.setEmoji(gameRealm.getEmoji());
       game.setUrl(gameRealm.getUrl());
     }
 

@@ -63,6 +63,7 @@ public class User
   private boolean isFriend = false;
   private boolean animateAdd = false;
   private boolean isSelected = false;
+  private List<String> emojiLeaderGameList = new ArrayList<>();
 
   private AvatarModel avatarModel = null;
 
@@ -381,6 +382,14 @@ public class User
     }
 
     return result;
+  }
+
+  public void setEmojiLeaderGameList(List<String> emojiLeaderGameList) {
+    this.emojiLeaderGameList = emojiLeaderGameList;
+  }
+
+  public List<String> getEmojiLeaderGameList() {
+    return emojiLeaderGameList;
   }
 
   public boolean isUserInCall() {

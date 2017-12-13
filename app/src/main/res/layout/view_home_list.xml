@@ -20,6 +20,16 @@
       android:layout_toRightOf="@id/viewPictoChat"
       />
 
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtEmojiGame"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignBottom="@id/viewNewAvatar"
+      android:layout_alignEnd="@id/viewNewAvatar"
+      android:gravity="bottom|end"
+      style="@style/Headline.Black.2"
+      />
+
   <com.tribe.app.presentation.view.widget.picto.PictoLiveView
       android:id="@+id/viewPictoLive"
       android:layout_width="@dimen/picto_live_size"

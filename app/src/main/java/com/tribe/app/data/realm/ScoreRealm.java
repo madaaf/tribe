@@ -59,9 +59,11 @@ public class ScoreRealm extends RealmObject {
 
   public static ScoreRealm deserialize(JsonObject jobject, Gson gson) {
     ScoreRealm scoreRealm = new ScoreRealm();
-    scoreRealm.setValue(jobject.get("value").getAsInt());
-    scoreRealm.setRanking(jobject.get("ranking").getAsInt());
-    scoreRealm.setUser(gson.fromJson(jobject.get("user"), ScoreUserRealm.class));
+    if (jobject.has("value")) scoreRealm.setValue(jobject.get("value").getAsInt());
+    if (jobject.has("ranking")) scoreRealm.setRanking(jobject.get("ranking").getAsInt());
+    if (jobject.has("user")) {
+      scoreRealm.setUser(gson.fromJson(jobject.get("user"), ScoreUserRealm.class));
+    }
     if (jobject.has("game")) {
       scoreRealm.setGame_id(jobject.get("game").getAsJsonObject().get("id").getAsString());
     }
