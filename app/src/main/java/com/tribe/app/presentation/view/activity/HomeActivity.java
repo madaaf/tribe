@@ -212,6 +212,7 @@ public class HomeActivity extends BaseActivity
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Scheduler singleThreadExecutor;
   private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
+  private PublishSubject<Shortcut> onSupportUpdate = PublishSubject.create();
   private PublishSubject<List<Contact>> onNewContactsOnApp = PublishSubject.create();
   private PublishSubject<List<Contact>> onNewContactsInvite = PublishSubject.create();
   private PublishSubject<List<Contact>> onNewContactsFBInvite = PublishSubject.create();
@@ -665,13 +666,15 @@ public class HomeActivity extends BaseActivity
 
     subscriptions.add(
         Observable.combineLatest(onRecipientUpdates.onBackpressureBuffer(), onNewContactsOnApp,
-            onNewContactsInvite, onNewContactsFBInvite,
-            (recipientList, contactsOnApp, contactsInvite, contactsFBInvite) -> {
+            onNewContactsInvite, onNewContactsFBInvite, onSupportUpdate,
+            (recipientList, contactsOnApp, contactsInvite, contactsFBInvite, support) -> {
               List<HomeAdapterInterface> finalList = new ArrayList<>();
 
-             /* Shortcut support = createShortcutSupport();
-              support.setRead(false);
-              finalList.add(support);*/
+              if (!support.isRead()) {
+                finalList.add(support);
+              } else {
+                recipientList.add(support);
+              }
 
               Set<String> addedUsers = new HashSet<>();
 
@@ -882,7 +885,7 @@ public class HomeActivity extends BaseActivity
 
   @Override public void renderRecipientList(List<Recipient> recipientList) {
     if (recipientList != null) {
-      recipientList.add(createShortcutSupport());
+      onSupportUpdate.onNext(createShortcutSupport());
       onRecipientUpdates.onNext(recipientList);
       canEndRefresh = false;
     }
@@ -1340,16 +1343,10 @@ public class HomeActivity extends BaseActivity
   class NotificationReceiverSupport extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
-      Timber.e("RECEIVE NOTIFICATION BRODCATE");
-      List<Recipient> lit = new ArrayList<>();
-      for (Shortcut s : user.getShortcutList()) {
-        lit.add(s);
-      }
       Shortcut support = createShortcutSupport();
       support.setRead(false);
       support.setSingle(true);
-      lit.add(support);
-      onRecipientUpdates.onNext(lit);
+      onSupportUpdate.onNext(support);
     }
   }
 }
