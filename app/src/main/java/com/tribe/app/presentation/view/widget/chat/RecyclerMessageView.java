@@ -314,7 +314,6 @@ public class RecyclerMessageView extends IChat {
     if (type == ChatView.FROM_LIVE) {
       recyclerView.setVerticalScrollBarEnabled(false);
     }
-    initZendesk();
   }
 
   private void initSubscriptions() {
@@ -515,6 +514,7 @@ public class RecyclerMessageView extends IChat {
 
   public void setShortcut(Shortcut shortcut) {
     this.shortcut = shortcut;
+    if (shortcut.isSupport()) initZendesk();
   }
 
   /**

@@ -92,9 +92,13 @@ public class AndroidApplication extends Application {
   }
 
   private void initZendesk() {
-    ZendeskConfig.INSTANCE.init(this, "https://heytribe.zendesk.com",
-        "be1b539ac3ad6095d312d9a6e2732ae4c6f333496dc5d2f6",
-        "mobile_sdk_client_94f2987ca018d588bebf");
+    if (BuildConfig.DEBUG) {
+      ZendeskConfig.INSTANCE.init(this, "https://heytribe.zendesk.com",
+          "be1b539ac3ad6095d312d9a6e2732ae4c6f333496dc5d2f6",
+          "mobile_sdk_client_94f2987ca018d588bebf");
+    } else {
+      // TODO MADA
+    }
   }
 
   @Override protected void attachBaseContext(Context base) {

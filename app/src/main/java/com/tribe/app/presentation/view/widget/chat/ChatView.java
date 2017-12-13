@@ -388,6 +388,7 @@ public class ChatView extends IChat {
         }
 
         setTypeChatUX();
+        setTypeChatUXSupport();
 
        /* if (showOnlineUsers()) {
           containerUsers.setVisibility(VISIBLE);
@@ -413,6 +414,18 @@ public class ChatView extends IChat {
             stateManager.addTutorialKey(StateManager.NEVER_ASK_AGAIN_MICRO_PERMISSION);
           }
         }));
+  }
+
+  private void setTypeChatUXSupport() {
+    if (isSupport()) {
+      videoCallBtn.getLayoutParams().height = 0;
+      videoCallBtn.getLayoutParams().width = 0;
+      videoCallBtn.setImageDrawable(null);
+      layoutPulse.setVisibility(GONE);
+      widthRefInit = refInit.getWidth();
+      RelativeLayout.LayoutParams op = (RelativeLayout.LayoutParams) editText.getLayoutParams();
+      op.addRule(RelativeLayout.START_OF, btnSendLikeContainer.getId());
+    }
   }
 
   private void setTypeChatUX() {
@@ -662,8 +675,12 @@ public class ChatView extends IChat {
     videoCallBtn.setImageDrawable(null);
   }
 
+  private boolean isSupport() {
+    return (shortcut != null && shortcut.isSupport());
+  }
+
   private void expendEditText() {
-    if (type == FROM_LIVE) {
+    if (type == FROM_LIVE || isSupport()) {
       return;
     }
     btnSendLikeContainer.animate()
@@ -691,7 +708,7 @@ public class ChatView extends IChat {
   }
 
   private void shrankEditText() {
-    if (type == FROM_LIVE) {
+    if (type == FROM_LIVE || isSupport()) {
       return;
     }
     btnSendLikeContainer.animate()
@@ -945,7 +962,9 @@ public class ChatView extends IChat {
   }
 
   public void setPulseAnimation(String type) {
-    if (hideVideoCallBtn || this.type == (FROM_LIVE)) return;
+    if (hideVideoCallBtn || this.type == FROM_LIVE || isSupport()) {
+      return;
+    }
     this.typePulseAnim = type;
     switch (type) {
       case TYPE_NORMAL:
