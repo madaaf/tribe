@@ -97,7 +97,9 @@ public class AndroidApplication extends Application {
           "be1b539ac3ad6095d312d9a6e2732ae4c6f333496dc5d2f6",
           "mobile_sdk_client_94f2987ca018d588bebf");
     } else {
-      // TODO MADA
+      ZendeskConfig.INSTANCE.init(this, "https://heytribe.zendesk.com",
+          "5fdc28397e33b96f6ca4af8e6823bb94dfbd398dbdf4f8fb",
+          "mobile_sdk_client_8695d36d057f0767aeb7");
     }
   }
 
