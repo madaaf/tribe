@@ -33,9 +33,10 @@ public class GameRealm extends RealmObject {
   @SerializedName("data") private String dataUrl;
   private RealmList<ScoreRealm> friends_score;
   private RealmList<ScoreRealm> overall_score;
-  private ScoreRealm friendLeader;
   private String emoji;
+  private String friendLeaderId;
 
+  @Ignore private ScoreRealm friendLeader;
   @Ignore RealmList<ScoreRealm> scores;
 
   public String getId() {
@@ -190,15 +191,19 @@ public class GameRealm extends RealmObject {
     return friendLeader;
   }
 
-  public void setFriendLeader(ScoreRealm friendLeader) {
-    this.friendLeader = friendLeader;
-  }
-
   public String getEmoji() {
     return emoji;
   }
 
   public void setEmoji(String emoji) {
     this.emoji = emoji;
+  }
+
+  public void setFriendLeaderId(String friendLeaderId) {
+    this.friendLeaderId = friendLeaderId;
+  }
+
+  public String getFriendLeaderId() {
+    return friendLeaderId;
   }
 }

@@ -1,7 +1,5 @@
 package com.tribe.app.presentation.view.component.common;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.IntDef;
@@ -18,16 +16,12 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
 import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -46,13 +40,12 @@ public class ShortcutListView extends RelativeLayout {
 
   @BindView(R.id.viewPictoChat) PictoChatView viewPictoChat;
   @BindView(R.id.viewPictoLive) PictoLiveView viewPictoLive;
-  @BindView(R.id.txtEmojiGame) TextViewFont txtEmojiGame;
+  @BindView(R.id.txtEmojiGame) EmojiGameView txtEmojiGame;
   @BindView(R.id.viewNewAvatar) NewAvatarView viewAvatar;
   @BindView(R.id.viewHomeNameAction) TextHomeNameActionView viewHomeNameAction;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription emojiSubscription;
   private PublishSubject<View> onLongClick = PublishSubject.create();
   private PublishSubject<View> onMainClick = PublishSubject.create();
   private PublishSubject<View> onLive = PublishSubject.create();
@@ -66,7 +59,6 @@ public class ShortcutListView extends RelativeLayout {
   private Unbinder unbinder;
   private int type;
   private Recipient recipient;
-  private int currentEmojiIndex = -1;
 
   public ShortcutListView(Context context) {
     super(context);
@@ -152,10 +144,7 @@ public class ShortcutListView extends RelativeLayout {
 
     this.recipient = recipient;
 
-    if (emojiSubscription != null) emojiSubscription.unsubscribe();
-    currentEmojiIndex = -1;
-
-    txtEmojiGame.setText("");
+    txtEmojiGame.clear();
 
     if (!(recipient instanceof Invite)) {
       Shortcut shortcut = (Shortcut) recipient;
@@ -163,7 +152,7 @@ public class ShortcutListView extends RelativeLayout {
 
       if (shortcut.isSingle()) {
         User user = shortcut.getSingleFriend();
-        showEmojiGameLeader(user.getEmojiLeaderGameList());
+        txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
       }
 
       //if (!shortcut.isSingle()) {
@@ -190,66 +179,6 @@ public class ShortcutListView extends RelativeLayout {
     }
 
     viewHomeNameAction.setRecipient(recipient);
-  }
-
-  private void showEmojiGameLeader(List<String> emojiLeaderGameList) {
-    if (emojiLeaderGameList.size() > 0) {
-      if (emojiLeaderGameList.size() == 1) {
-        txtEmojiGame.setText(emojiLeaderGameList.get(0));
-        return;
-      }
-
-      if (emojiSubscription != null) emojiSubscription.unsubscribe();
-
-      emojiSubscription = Observable.timer(1, TimeUnit.SECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .doOnUnsubscribe(() -> txtEmojiGame.clearAnimation())
-          .subscribe(aLong -> {
-            currentEmojiIndex++;
-            if (emojiLeaderGameList.size() <= currentEmojiIndex) {
-              currentEmojiIndex = 0;
-            }
-
-            txtEmojiGame.animate()
-                .alpha(0)
-                .setStartDelay(0)
-                .setDuration(300)
-                .setListener(new AnimatorListenerAdapter() {
-                  @Override public void onAnimationCancel(Animator animation) {
-                    super.onAnimationCancel(animation);
-                    animation.removeAllListeners();
-                  }
-
-                  @Override public void onAnimationEnd(Animator animation) {
-                    animation.removeAllListeners();
-                    txtEmojiGame.clearAnimation();
-                    txtEmojiGame.setText(emojiLeaderGameList.get(currentEmojiIndex));
-                    txtEmojiGame.animate()
-                        .alpha(1)
-                        .setDuration(300)
-                        .setStartDelay(0)
-                        .setListener(new AnimatorListenerAdapter() {
-                          @Override public void onAnimationCancel(Animator animation) {
-                            super.onAnimationCancel(animation);
-                            txtEmojiGame.clearAnimation();
-                            animation.removeAllListeners();
-                          }
-
-                          @Override public void onAnimationEnd(Animator animation) {
-                            animation.removeAllListeners();
-                            txtEmojiGame.clearAnimation();
-                            txtEmojiGame.animate().setStartDelay(0).setListener(null).start();
-                            showEmojiGameLeader(emojiLeaderGameList);
-                          }
-                        })
-                        .start();
-                  }
-                })
-                .start();
-          });
-
-      subscriptions.add(emojiSubscription);
-    }
   }
 
   /////////////////

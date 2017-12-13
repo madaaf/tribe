@@ -28,6 +28,13 @@ public class GameCacheImpl implements GameCache {
     try {
       obsRealm.executeTransaction(realm1 -> {
         realm1.delete(GameRealm.class);
+
+        for (GameRealm gameRealm : gameRealmList) {
+          if (gameRealm.getFriendLeader() != null) {
+            gameRealm.setFriendLeaderId(gameRealm.getFriendLeader().getUser().getId());
+          }
+        }
+
         realm1.insertOrUpdate(gameRealmList);
       });
     } finally {

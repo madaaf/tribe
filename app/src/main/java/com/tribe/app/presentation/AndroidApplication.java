@@ -133,7 +133,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(11)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(12)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 

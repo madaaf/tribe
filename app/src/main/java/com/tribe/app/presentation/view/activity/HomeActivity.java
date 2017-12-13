@@ -252,9 +252,8 @@ public class HomeActivity extends BaseActivity
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
+    homeGridPresenter.getGames();
     if (!hasSynced) {
-      // We reload the games data only once
-      homeGridPresenter.getGames();
       hasSynced = true;
     }
 
@@ -464,6 +463,7 @@ public class HomeActivity extends BaseActivity
           if (canEndRefresh) {
             topBarContainer.endRefresh();
             latestRecipientList.clear();
+            homeGridPresenter.getGames();
             homeGridPresenter.reload(false);
             canEndRefresh = false;
           }
