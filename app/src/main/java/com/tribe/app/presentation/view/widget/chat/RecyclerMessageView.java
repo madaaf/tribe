@@ -43,7 +43,9 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
+import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
+import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.zendesk.sdk.model.access.Identity;
@@ -187,7 +189,27 @@ public class RecyclerMessageView extends IChat {
         }
         unreadMessage.clear();
         for (CommentResponse response : commentsResponse.getComments()) {
+          if (!response.getAttachments().isEmpty()) {
+            MessageImage image = new MessageImage();
+            if (response.getId() != null) image.setId(response.getId().toString());
+            if (response.getAuthorId() != null && response.getAuthorId()
+                .toString()
+                .equals(supportUserId)) {
+              image.setAuthor(ShortcutUtil.createUserSupport());
+            } else {
+              image.setAuthor(user);
+            }
+            image.setCreationDate(dateUtils.getUTCDateForMessage());
+            Image i = new Image();
+            i.setUrl(response.getAttachments().get(0).getContentUrl());
+            List<Image> list = new ArrayList<Image>();
+            list.add(i);
+            image.setRessources(list);
 
+            if (!messageAdapter.getItems().contains(image)) {
+              unreadMessage.add(image);
+            }
+          }
           MessageText m = new MessageText();
           if (response.getId() != null) m.setId(response.getId().toString());
           if (response.getAuthorId() != null && response.getAuthorId()
