@@ -418,11 +418,18 @@ public class ChatView extends IChat {
 
   private void setTypeChatUXSupport() {
     if (isSupport()) {
+      voiceNoteBtn.setTranslationX(
+          editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(5)
+              + videoCallBtn.getWidth());
+      pictoVoiceNote.setTranslationX(
+          voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
+
+      widthRefInit = refInit.getWidth();
       videoCallBtn.getLayoutParams().height = 0;
       videoCallBtn.getLayoutParams().width = 0;
       videoCallBtn.setImageDrawable(null);
       layoutPulse.setVisibility(GONE);
-      widthRefInit = refInit.getWidth();
+
       RelativeLayout.LayoutParams op = (RelativeLayout.LayoutParams) editText.getLayoutParams();
       op.addRule(RelativeLayout.START_OF, btnSendLikeContainer.getId());
     }
