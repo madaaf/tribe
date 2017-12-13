@@ -6,13 +6,57 @@
     android:background="@android:color/white"
     >
 
-  <com.solera.defrag.ViewStack
-      android:id="@+id/viewNavigatorStack"
+  <ScrollView
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_marginTop="@dimen/top_bar_height_small"
-      android:background="@null"
-      />
+
+      >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+      <com.solera.defrag.ViewStack
+          android:id="@+id/viewNavigatorStack"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/top_bar_height_small"
+          android:background="@null"
+          />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/divider_size"
+          android:background="@color/grey.light"
+          />
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/support"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_margin="10dp"
+          android:text="@string/new_game_suggest"
+          style="@style/Title.2.Black40"
+          />
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/divider_size"
+          android:background="@color/grey.light"
+          />
+      <ImageView
+          android:id="@+id/imgLogo"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:layout_margin="20dp"
+          android:layout_marginBottom="100dp"
+          android:src="@drawable/picto_tribe_logo_black"
+          />
+
+    </LinearLayout>
+
+  </ScrollView>
 
   <View
       android:layout_width="match_parent"
@@ -24,6 +68,7 @@
   <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="@dimen/top_bar_height_small"
+      android:background="@color/white"
       >
 
     <com.tribe.app.presentation.view.widget.TextViewFont
