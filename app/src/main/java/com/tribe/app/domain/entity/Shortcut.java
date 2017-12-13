@@ -19,6 +19,10 @@ import java.util.Map;
 public class Shortcut extends Recipient implements Serializable, LiveInviteAdapterSectionInterface {
 
   public static final String SUPPORT = "support";
+
+  public final static int SUPPORT_HOME = 0;
+  public final static int SUPPORT_SUGGEST = 1;
+
   private static final int ONE_MINUTE = 60 * 1000;
 
   private String id;
@@ -37,6 +41,7 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   private String lastMessage;
   private Date leaveOnlineUntil;
   private String membersHash;
+  private int typeSupport = SUPPORT_HOME;
 
   private boolean selected;
 
@@ -66,6 +71,14 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
 
   @Override public boolean isInvisible() {
     return single ? getSingleFriend().isInvisibleMode() : false;
+  }
+
+  public int getTypeSupport() {
+    return typeSupport;
+  }
+
+  public void setTypeSupport(int typeSupport) {
+    this.typeSupport = typeSupport;
   }
 
   @Override public boolean isFriend() {

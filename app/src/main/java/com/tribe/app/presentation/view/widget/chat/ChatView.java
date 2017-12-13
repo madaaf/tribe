@@ -116,6 +116,7 @@ public class ChatView extends IChat {
 
   public final static int FROM_CHAT = 0;
   public final static int FROM_LIVE = 1;
+
   private final static String TYPE_NORMAL = "TYPE_NORMAL";
   private final static String TYPE_LIVE = "TYPE_LIVE";
   private final static String TYPE_ONLINE = "TYPE_ONLINE";

@@ -31,11 +31,11 @@
           android:background="@color/grey.light"
           />
       <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/support"
+          android:id="@+id/supportBtn"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center"
-          android:layout_margin="10dp"
+          android:layout_margin="20dp"
           android:text="@string/new_game_suggest"
           style="@style/Title.2.Black40"
           />
@@ -49,8 +49,8 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center"
-          android:layout_margin="20dp"
           android:layout_marginBottom="100dp"
+          android:layout_marginTop="30dp"
           android:src="@drawable/picto_tribe_logo_black"
           />
 

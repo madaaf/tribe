@@ -112,8 +112,8 @@ public class MessagePresenter implements Presenter {
     onMessageRemovedFromDisk.execute(new GetDiskMessageRemovedSubscriber());
   }
 
-  public void getMessageSupport() {
-    getMessageSupport.execute(new GetDiskMessageSupportSubscriber());
+  public void getMessageSupport(int typeSupport) {
+    getMessageSupport.execute(new GetDiskMessageSupportSubscriber(typeSupport));
   }
 
   public void quickShortcutForUserIds(String userIds) {
@@ -291,6 +291,11 @@ public class MessagePresenter implements Presenter {
   }
 
   private class GetDiskMessageSupportSubscriber extends DefaultSubscriber<List<Conversation>> {
+    private int typeSupport;
+
+    public GetDiskMessageSupportSubscriber(int typeSupport) {
+      this.typeSupport = typeSupport;
+    }
 
     @Override public void onCompleted() {
     }
@@ -300,7 +305,13 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onNext(List<Conversation> conversations) {
-      if (chatMVPView != null) chatMVPView.successMessageSupport(conversations.get(0).getMessages());
+      if (chatMVPView != null) {
+        if (typeSupport == Shortcut.SUPPORT_HOME) {
+          chatMVPView.successMessageSupport(conversations.get(0).getMessages());
+        } else {
+          chatMVPView.successMessageSupport(conversations.get(1).getMessages());
+        }
+      }
     }
   }
 

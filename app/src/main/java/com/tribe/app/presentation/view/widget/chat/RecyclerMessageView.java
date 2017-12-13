@@ -159,6 +159,7 @@ public class RecyclerMessageView extends IChat {
   }
 
   @Override public void successMessageSupport(List<Message> messages) {
+    // TODO MADA
     List<Message> list = new ArrayList<>();
     User u = new User(Shortcut.SUPPORT);
     u.setDisplayName("Live Support");
@@ -397,7 +398,7 @@ public class RecyclerMessageView extends IChat {
       messagePresenter.getIsTalking();
       messagePresenter.getIsReading();
     } else {
-      messagePresenter.getMessageSupport();
+      messagePresenter.getMessageSupport(shortcut.getTypeSupport());
     }
   }
 

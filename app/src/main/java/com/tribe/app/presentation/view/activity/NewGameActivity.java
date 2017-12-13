@@ -22,8 +22,10 @@ import com.solera.defrag.TraversingOperation;
 import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
 import com.tribe.app.presentation.view.utils.GlideUtils;
@@ -106,6 +108,12 @@ public class NewGameActivity extends BaseActivity {
     if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     super.onDestroy();
+  }
+
+  @OnClick(R.id.supportBtn) void onClickSupport() {
+    Shortcut s = ShortcutUtil.createShortcutSupport();
+    s.setTypeSupport(Shortcut.SUPPORT_SUGGEST);
+    navigator.navigateToChat(this, s, null, null, null, false);
   }
 
   private void init(Bundle savedInstanceState) {
