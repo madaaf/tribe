@@ -164,6 +164,7 @@ public class LeaderboardMainView extends FrameLayout {
     this.user = user;
 
     adapter.setCanClick(!collapsed);
+    adapter.setUser(user);
 
     txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
     viewNewAvatar.load(user.getProfilePicture());

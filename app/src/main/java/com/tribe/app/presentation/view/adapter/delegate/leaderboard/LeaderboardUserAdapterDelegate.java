@@ -11,6 +11,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.GlideUtils;
@@ -33,6 +34,7 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
   protected Context context;
   protected LayoutInflater layoutInflater;
   protected boolean canClick = true;
+  protected User user;
 
   protected PublishSubject<View> click = PublishSubject.create();
 
@@ -71,7 +73,19 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
 
     vh.txtPoints.setText("" + score.getValue());
 
-    if (!canClick) vh.imgArrow.setVisibility(View.GONE);
+    if (!canClick) {
+      vh.imgArrow.setVisibility(View.GONE);
+      vh.txtHint.setVisibility(View.GONE);
+    } else if (score.getGame().getFriendLeader() != null) {
+      vh.txtHint.setVisibility(View.VISIBLE);
+      if (score.getGame().getFriendLeader().getId().equals(user.getId())) {
+        vh.txtHint.setText(context.getString(R.string.leaderboard_self_is_best,
+            context.getString(R.string.leaderboards_you)));
+      } else {
+        vh.txtHint.setText(
+            context.getString(R.string.leaderboard_friend_is_best, user.getDisplayName()));
+      }
+    }
   }
 
   @Override
@@ -84,11 +98,16 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
     this.canClick = canClick;
   }
 
+  public void setUser(User user) {
+    this.user = user;
+  }
+
   static class LeaderboardUserViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.layoutContent) ViewGroup layoutContent;
     @BindView(R.id.imgIcon) ImageView imgIcon;
     @BindView(R.id.txtName) TextViewFont txtName;
+    @BindView(R.id.txtHint) TextViewFont txtHint;
     @BindView(R.id.txtPoints) TextViewFont txtPoints;
     @BindView(R.id.txtPointsSuffix) TextViewFont txtPointsSuffix;
     @BindView(R.id.imgArrow) ImageView imgArrow;

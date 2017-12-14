@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardUserAdapterDelegate;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,6 +91,10 @@ public class LeaderboardUserAdapter extends RecyclerView.Adapter {
 
   public void setCanClick(boolean canClick) {
     leaderboardUserAdapterDelegate.setCanClick(canClick);
+  }
+
+  public void setUser(User user) {
+    leaderboardUserAdapterDelegate.setUser(user);
   }
 
   /**

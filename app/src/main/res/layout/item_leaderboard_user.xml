@@ -56,19 +56,35 @@
       style="@style/BiggerTitle.2.Black"
       />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtName"
+  <LinearLayout
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginEnd="@dimen/horizontal_margin_small"
       android:layout_marginStart="@dimen/horizontal_margin_small"
-      android:ellipsize="end"
-      android:textAllCaps="true"
+      android:orientation="vertical"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toStartOf="@id/txtPoints"
       app:layout_constraintStart_toEndOf="@id/imgIcon"
       app:layout_constraintTop_toTopOf="parent"
-      style="@style/BiggerTitle.2.Black"
-      />
+      >
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAllCaps="true"
+        style="@style/BiggerTitle.2.Black"
+        />
 
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4.5dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        style="@style/BiggerBody.Two.Yellow"
+        />
+  </LinearLayout>
 </android.support.constraint.ConstraintLayout>

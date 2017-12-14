@@ -959,4 +959,7 @@
 	<string name="leaderboard_new_high_score">Nouveau meilleur score !</string>
 	<string name="leaderboard_self_is_best">%1$s êtes le(la) meilleur(e) !</string>
 	<string name="leaderboard_friend_is_best">%1$s est le(la) meilleur(e) !</string>
+	
+	<!-- Hang Up -->
+	<string name="hang_up_title">TAP POUR RACCROCHER</string>
 </resources>

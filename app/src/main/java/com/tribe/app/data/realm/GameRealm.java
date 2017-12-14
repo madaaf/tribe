@@ -34,7 +34,7 @@ public class GameRealm extends RealmObject {
   private RealmList<ScoreRealm> friends_score;
   private RealmList<ScoreRealm> overall_score;
   private String emoji;
-  private String friendLeaderId;
+  private ScoreUserRealm friendLeaderScoreUser;
 
   @Ignore private ScoreRealm friendLeader;
   @Ignore RealmList<ScoreRealm> scores;
@@ -199,11 +199,11 @@ public class GameRealm extends RealmObject {
     this.emoji = emoji;
   }
 
-  public void setFriendLeaderId(String friendLeaderId) {
-    this.friendLeaderId = friendLeaderId;
+  public void setFriendLeaderScoreUser(ScoreUserRealm friendLeaderScoreUser) {
+    this.friendLeaderScoreUser = friendLeaderScoreUser;
   }
 
-  public String getFriendLeaderId() {
-    return friendLeaderId;
+  public ScoreUserRealm getFriendLeaderScoreUser() {
+    return friendLeaderScoreUser;
   }
 }

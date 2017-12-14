@@ -6,6 +6,7 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GamePostIt;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,8 +60,11 @@ import javax.inject.Singleton;
       game.setPlays_count(gameRealm.getPlays_count());
       game.setPrimary_color(gameRealm.getPrimary_color());
       game.setSecondary_color(gameRealm.getSecondary_color());
-      if (gameRealm.getFriendLeaderId() != null) {
-        game.setFriendIdLeader(gameRealm.getFriendLeaderId());
+      if (gameRealm.getFriendLeaderScoreUser() != null) {
+        TribeGuest guest = new TribeGuest(gameRealm.getFriendLeaderScoreUser().getId(),
+            gameRealm.getFriendLeaderScoreUser().getDisplay_name(),
+            gameRealm.getFriendLeaderScoreUser().getPicture(), false, false, null);
+        game.setFriendLeader(guest);
       }
       game.setEmoji(gameRealm.getEmoji());
       game.setUrl(gameRealm.getUrl());

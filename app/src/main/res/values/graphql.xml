@@ -636,6 +636,7 @@
       friendLeader {
         user {
           id
+          display_name
         }
       }
 

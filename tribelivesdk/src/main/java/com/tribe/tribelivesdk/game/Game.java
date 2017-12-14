@@ -71,7 +71,7 @@ public class Game {
   protected String previousGuestId = null;
   protected Map<String, Object> contextMap = null;
   protected TribeGuest currentMaster;
-  protected String friendIdLeader;
+  protected TribeGuest friendLeader;
   protected String emoji;
 
   // OBSERVABLE / SUBSCRIPTIONS
@@ -250,12 +250,12 @@ public class Game {
     return hasScores;
   }
 
-  public void setFriendIdLeader(String friendIdLeader) {
-    this.friendIdLeader = friendIdLeader;
+  public void setFriendLeader(TribeGuest friendLeader) {
+    this.friendLeader = friendLeader;
   }
 
-  public String getFriendIdLeader() {
-    return friendIdLeader;
+  public TribeGuest getFriendLeader() {
+    return friendLeader;
   }
 
   public void setEmoji(String emoji) {

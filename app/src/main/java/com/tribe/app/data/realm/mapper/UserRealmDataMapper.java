@@ -4,7 +4,6 @@ import android.content.Context;
 import com.tribe.app.data.realm.ImageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.tribelivesdk.game.Game;
@@ -88,8 +87,8 @@ import javax.inject.Singleton;
 
       if (gameManager.getGames() != null) {
         for (Game game : gameManager.getGames()) {
-          if (!StringUtils.isEmpty(game.getFriendIdLeader()) &&
-              game.getFriendIdLeader().equals(user.getId())) {
+          if (game.getFriendLeader() != null &&
+              game.getFriendLeader().getId().equals(user.getId())) {
             emojis.add(game.getEmoji());
           }
         }
