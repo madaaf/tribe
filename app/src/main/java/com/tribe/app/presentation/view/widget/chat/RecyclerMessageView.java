@@ -187,6 +187,7 @@ public class RecyclerMessageView extends IChat {
   private void getCommentZendesk() {
     provider.getComments(supportId, new ZendeskCallback<CommentsResponse>() {
       @Override public void onSuccess(CommentsResponse commentsResponse) {
+        Timber.i("onSuccess getCommentZendesk" + commentsResponse.getComments().size());
         String supportUserId = null;
         for (com.zendesk.sdk.model.request.User u : commentsResponse.getUsers()) {
           if (u.isAgent() && u.getId() != null) {
@@ -231,16 +232,13 @@ public class RecyclerMessageView extends IChat {
           if (!messageAdapter.getItems().contains(m)) {
             unreadMessage.add(m);
           }
-
-          Timber.e("getCommentZendesk onSuccess " + response.getBody());
         }
-        messageAdapter.setItems(Lists.reverse(unreadMessage),
-            messageAdapter.getItemCount()); // SOEF MAFA
+        messageAdapter.setItems(Lists.reverse(unreadMessage), messageAdapter.getItemCount());
         scrollListToBottom();
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
-        Timber.e(" getCommentZendesk onError " + errorResponse);
+        Timber.e("onError getCommentZendesk " + errorResponse.getReason());
       }
     });
   }
@@ -251,12 +249,12 @@ public class RecyclerMessageView extends IChat {
       uploadProvider.uploadAttachment("image.jpg", fileToUpload, "image/jpg",
           new ZendeskCallback<UploadResponse>() {
             @Override public void onSuccess(UploadResponse uploadResponse) {
-              Timber.e("SOEF UploadResponse " + uploadResponse.getAttachment());
+              Timber.i("success uploadAttachment to Zendesk" + uploadResponse.getAttachment());
               sendToZendesk("image : ", uploadResponse.getToken());
             }
 
             @Override public void onError(ErrorResponse errorResponse) {
-              Timber.e("SOEF UploadResponse onError ");
+              Timber.e("onError UploadResponse to Zendesk " + errorResponse.getReason());
             }
           });
     } else {
@@ -273,11 +271,11 @@ public class RecyclerMessageView extends IChat {
 
     provider.addComment(supportId, o, new ZendeskCallback<Comment>() {
       @Override public void onSuccess(Comment comment) {
-        Timber.e("SOEF onSuccess ADD COMmENT " + comment.getBody());
+        Timber.i("onSuccess add comment to zendesk" + comment.getBody());
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
-        Timber.e("SOEF onSuccess ADD COMmENT " + errorResponse);
+        Timber.e("onError add comment to Zendesk " + errorResponse);
       }
     });
   }
@@ -285,11 +283,11 @@ public class RecyclerMessageView extends IChat {
   private void getRequestProvider() {
     provider.getRequest(supportId, new ZendeskCallback<Request>() {
       @Override public void onSuccess(Request request) {
-        Timber.e("SOEF onSuccess getRequestProvider " + request.toString());
+        Timber.e("onSuccess getRequestProvider " + request.toString());
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
-        Timber.e("SOEF error getRequestProvider " + errorResponse.toString());
+        Timber.e("error getRequestProvider " + errorResponse.toString());
       }
     });
   }
@@ -302,14 +300,14 @@ public class RecyclerMessageView extends IChat {
 
     provider.createRequest(request, new ZendeskCallback<CreateRequest>() {
       @Override public void onSuccess(CreateRequest createRequest) {
-        Timber.i("new zendesk ticket :" + createRequest.getId());
+        Timber.i("onSuccess create zendesk request : " + createRequest.getId());
         supportIdPref.set(createRequest.getId());
         supportId = createRequest.getId();
         getCommentZendesk();
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
-        Timber.e("SOEF createRequest error " + errorResponse.getReason().toString());
+        Timber.e("onError create zendesk request" + errorResponse.getReason());
       }
     });
   }
@@ -318,11 +316,11 @@ public class RecyclerMessageView extends IChat {
     ZendeskConfig.INSTANCE.enablePushWithIdentifier(token,
         new ZendeskCallback<PushRegistrationResponse>() {
           @Override public void onSuccess(PushRegistrationResponse pushRegistrationResponse) {
-            Timber.e("SOEF onSuccess enablePushZendesk" + pushRegistrationResponse);
+            Timber.i("onSuccess enablePushZendesk" + pushRegistrationResponse);
           }
 
           @Override public void onError(ErrorResponse errorResponse) {
-            Timber.e("SOEF  onError enablePushZendesk" + errorResponse);
+            Timber.e("onError enablePushZendesk" + errorResponse);
           }
         });
   }
@@ -330,11 +328,11 @@ public class RecyclerMessageView extends IChat {
   private void disablePushZendesk() {
     ZendeskConfig.INSTANCE.disablePush(token, new ZendeskCallback<Void>() {
       @Override public void onSuccess(Void aVoid) {
-        Timber.e("SOEF disable PushZendesk " + aVoid);
+        Timber.i("success disable PushZendesk ");
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
-        Timber.e("SOEF  onError disable PushZendesk " + errorResponse);
+        Timber.e("onError disable PushZendesk " + errorResponse.getReason());
       }
     });
   }
