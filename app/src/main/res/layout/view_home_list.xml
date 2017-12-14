@@ -26,6 +26,8 @@
       android:layout_height="wrap_content"
       android:layout_alignBottom="@id/viewNewAvatar"
       android:layout_alignEnd="@id/viewNewAvatar"
+      android:layout_marginBottom="-5dp"
+      android:layout_marginEnd="-5dp"
       android:gravity="bottom|end"
       style="@style/Headline.Black.2"
       />

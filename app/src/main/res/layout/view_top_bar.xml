@@ -26,10 +26,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left|center_vertical"
-        android:layout_marginLeft="51dp"
-        android:layout_marginTop="36dp"
-        android:gravity="bottom|end"
-        style="@style/Headline.Black.2"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="10dp"
         />
 
     <com.tribe.app.presentation.view.widget.DiceView

@@ -11,7 +11,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -34,7 +36,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 12/09/2017.
  */
 
-public class LeaderboardDetailsView extends ConstraintLayout {
+public class LeaderboardDetailsView extends FrameLayout {
 
   public static final int LIMIT = 20;
 
@@ -42,19 +44,19 @@ public class LeaderboardDetailsView extends ConstraintLayout {
 
   @Inject User currentUser;
 
-  @BindView(R.id.viewPager) ViewPager viewPager;
+  //@BindView(R.id.viewPager) ViewPager viewPager;
 
   @BindView(R.id.viewGameUserCard) GameUserCardView viewGameUserCard;
 
   @BindView(R.id.cardView) CardView cardView;
 
-  @BindView(R.id.tabFriends) TabUnderlinedView tabFriends;
+  //@BindView(R.id.tabFriends) TabUnderlinedView tabFriends;
 
-  @BindView(R.id.tabOverall) TabUnderlinedView tabOverall;
+  //@BindView(R.id.tabOverall) TabUnderlinedView tabOverall;
 
-  @BindView(R.id.viewUnderline) View viewUnderline;
+  //@BindView(R.id.viewUnderline) View viewUnderline;
 
-  @BindView(R.id.guidelineHalfWidth) Guideline guidelineHalfWidth;
+  //@BindView(R.id.guidelineHalfWidth) Guideline guidelineHalfWidth;
 
   // VARIABLES
   private LeaderboardPagerAdapter adapter;
@@ -90,28 +92,34 @@ public class LeaderboardDetailsView extends ConstraintLayout {
   }
 
   private void initUI() {
-    adapter = new LeaderboardPagerAdapter(getContext(), selectedGame, onViewCardClick);
-    viewPager.setAdapter(adapter);
-
-    viewPager.setOffscreenPageLimit(2);
-    viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-      @Override
-      public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-      }
-
-      @Override public void onPageSelected(int position) {
-        if (position == 0) {
-          setFriends();
-        } else {
-          setOverall();
-        }
-      }
-
-      @Override public void onPageScrollStateChanged(int state) {
-
-      }
-    });
+    LeaderboardPage leaderboardPage =
+        new LeaderboardPage(getContext(), true, selectedGame);
+    leaderboardPage.initViewCardClickObservable(onViewCardClick);
+    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT);
+    addView(leaderboardPage, params);
+    //adapter = new LeaderboardPagerAdapter(getContext(), selectedGame, onViewCardClick);
+    //viewPager.setAdapter(adapter);
+    //
+    //viewPager.setOffscreenPageLimit(2);
+    //viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+    //  @Override
+    //  public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    //
+    //  }
+    //
+    //  @Override public void onPageSelected(int position) {
+    //    if (position == 0) {
+    //      setFriends();
+    //    } else {
+    //      setOverall();
+    //    }
+    //  }
+    //
+    //  @Override public void onPageScrollStateChanged(int state) {
+    //
+    //  }
+    //});
 
     cardView.setTranslationY(screenUtils.getHeightPx() >> 1);
 
@@ -146,15 +154,15 @@ public class LeaderboardDetailsView extends ConstraintLayout {
    * ON CLICK
    */
 
-  @OnClick(R.id.tabFriends) void clickFriends() {
-    viewPager.setCurrentItem(0, true);
-  }
+  //@OnClick(R.id.tabFriends) void clickFriends() {
+  //  viewPager.setCurrentItem(0, true);
+  //}
 
-  @OnClick(R.id.tabOverall) void clickOverall() {
-    viewPager.setCurrentItem(1, true);
-  }
+  //@OnClick(R.id.tabOverall) void clickOverall() {
+  //  viewPager.setCurrentItem(1, true);
+  //}
 
-  private void setFriends() {
+  /*private void setFriends() {
     if (tabFriends.isActive()) return;
 
     hideGameCard();
@@ -172,34 +180,34 @@ public class LeaderboardDetailsView extends ConstraintLayout {
     set.connect(viewUnderline.getId(), ConstraintSet.START, this.getId(), ConstraintSet.START);
 
     updateConstraints(set);
-  }
+  }*/
 
-  private void setOverall() {
-    if (tabOverall.isActive()) return;
-
-    showGameCard();
-
-    tabFriends.setActive(false);
-    tabOverall.setActive(true);
-
-    ConstraintSet set = new ConstraintSet();
-    set.clone(this);
-
-    set.connect(viewUnderline.getId(), ConstraintSet.BOTTOM, tabOverall.getId(),
-        ConstraintSet.BOTTOM);
-    set.connect(viewUnderline.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
-        ConstraintSet.END);
-    set.connect(viewUnderline.getId(), ConstraintSet.END, this.getId(), ConstraintSet.END);
-
-    updateConstraints(set);
-  }
-
-  private void updateConstraints(ConstraintSet constraintSet) {
-    AutoTransition autoTransition = new AutoTransition();
-    autoTransition.setDuration(100);
-    TransitionManager.beginDelayedTransition(this, autoTransition);
-    constraintSet.applyTo(this);
-  }
+  //private void setOverall() {
+  //  if (tabOverall.isActive()) return;
+  //
+  //  showGameCard();
+  //
+  //  tabFriends.setActive(false);
+  //  tabOverall.setActive(true);
+  //
+  //  ConstraintSet set = new ConstraintSet();
+  //  set.clone(this);
+  //
+  //  set.connect(viewUnderline.getId(), ConstraintSet.BOTTOM, tabOverall.getId(),
+  //      ConstraintSet.BOTTOM);
+  //  set.connect(viewUnderline.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
+  //      ConstraintSet.END);
+  //  set.connect(viewUnderline.getId(), ConstraintSet.END, this.getId(), ConstraintSet.END);
+  //
+  //  updateConstraints(set);
+  //}
+  //
+  //private void updateConstraints(ConstraintSet constraintSet) {
+  //  AutoTransition autoTransition = new AutoTransition();
+  //  autoTransition.setDuration(100);
+  //  TransitionManager.beginDelayedTransition(this, autoTransition);
+  //  constraintSet.applyTo(this);
+  //}
 
   private void hideGameCard() {
     cardView.animate()

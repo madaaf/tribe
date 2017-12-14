@@ -25,6 +25,7 @@ import com.tribe.app.presentation.view.adapter.manager.LeaderboardUserLayoutMana
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
@@ -52,6 +53,8 @@ public class LeaderboardMainView extends FrameLayout {
   @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
   @BindView(R.id.viewNewAvatar) NewAvatarView viewNewAvatar;
+
+  @BindView(R.id.txtEmojiGame) EmojiGameView txtEmojiGame;
 
   @BindView(R.id.txtName) TextViewFont txtName;
 
@@ -162,6 +165,7 @@ public class LeaderboardMainView extends FrameLayout {
 
     adapter.setCanClick(!collapsed);
 
+    txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
     viewNewAvatar.load(user.getProfilePicture());
     txtName.setText(user.getDisplayName());
     txtUsername.setText(user.getUsernameDisplay());

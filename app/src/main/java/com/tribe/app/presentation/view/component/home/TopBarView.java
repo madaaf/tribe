@@ -316,6 +316,7 @@ public class TopBarView extends FrameLayout {
 
     hideView(diceView, false);
     hideView(viewAvatar, true);
+    hideView(txtEmojiGame, true);
 
     AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
     AnimationUtils.animateRightMargin(btnSearch, imgClose.getWidth() + 2 * marginSmall, DURATION);
@@ -346,6 +347,7 @@ public class TopBarView extends FrameLayout {
     showView(diceView, null);
     hideView(imgClose, false);
     showView(viewAvatar, null);
+    showView(txtEmojiGame, null);
 
     if (nbContacts > 0) {
       showNewContacts(true);
