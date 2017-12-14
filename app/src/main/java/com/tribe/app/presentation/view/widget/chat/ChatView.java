@@ -500,7 +500,8 @@ public class ChatView extends IChat {
         Timber.e(exception.getMessage());
       }).addOnSuccessListener(taskSnapshot -> {
         Uri downloadUrl = taskSnapshot.getDownloadUrl();
-        recyclerView.sendMessageToNetwork(arrIds, downloadUrl.toString(), finalNetType, position);
+        recyclerView.sendMessageToNetwork(arrIds, downloadUrl.toString(), finalNetType, position,
+            uri);
       });
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -798,7 +799,7 @@ public class ChatView extends IChat {
       sendMedia(uri, fileName, 0, type);
     } else {
       String replaced = content.replace("\"", "“");
-      recyclerView.sendMessageToNetwork(arrIds, replaced, realmType, 0);
+      recyclerView.sendMessageToNetwork(arrIds, replaced, realmType, 0, null);
     }
   }
 

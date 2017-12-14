@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -57,10 +58,13 @@ import com.zendesk.sdk.model.request.CommentsResponse;
 import com.zendesk.sdk.model.request.CreateRequest;
 import com.zendesk.sdk.model.request.EndUserComment;
 import com.zendesk.sdk.model.request.Request;
+import com.zendesk.sdk.model.request.UploadResponse;
 import com.zendesk.sdk.network.RequestProvider;
+import com.zendesk.sdk.network.UploadProvider;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
 import com.zendesk.service.ErrorResponse;
 import com.zendesk.service.ZendeskCallback;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -105,6 +109,7 @@ public class RecyclerMessageView extends IChat {
   private String[] arrIds = null;
   private String token;
   private RequestProvider provider;
+  private UploadProvider uploadProvider;
 
   @BindView(R.id.recyclerViewMessageChat) RecyclerView recyclerView;
 
@@ -141,6 +146,7 @@ public class RecyclerMessageView extends IChat {
 
   private void initZendesk() {
     provider = ZendeskConfig.INSTANCE.provider().requestProvider();
+    uploadProvider = ZendeskConfig.INSTANCE.provider().uploadProvider();
     token = FirebaseInstanceId.getInstance().getToken();
 
     Identity jwtUserIdentity = new JwtIdentity(accessToken.getAccessToken());
@@ -239,9 +245,31 @@ public class RecyclerMessageView extends IChat {
     });
   }
 
-  private void addCommentZendesk(String data) {
+  private void addCommentZendesk(String data, Uri uri) {
+    if (uri != null) {
+      File fileToUpload = new File(uri.getPath());
+      uploadProvider.uploadAttachment("image.jpg", fileToUpload, "image/jpg",
+          new ZendeskCallback<UploadResponse>() {
+            @Override public void onSuccess(UploadResponse uploadResponse) {
+              Timber.e("SOEF UploadResponse " + uploadResponse.getAttachment());
+              sendToZendesk("image : ", uploadResponse.getToken());
+            }
+
+            @Override public void onError(ErrorResponse errorResponse) {
+              Timber.e("SOEF UploadResponse onError ");
+            }
+          });
+    } else {
+      sendToZendesk(data, null);
+    }
+  }
+
+  private void sendToZendesk(String data, String token) {
+    List<String> attachmentList = new ArrayList<>();
+    attachmentList.add(token);
     EndUserComment o = new EndUserComment();
     o.setValue(data);
+    o.setAttachments(attachmentList);
 
     provider.addComment(supportId, o, new ZendeskCallback<Comment>() {
       @Override public void onSuccess(Comment comment) {
@@ -503,14 +531,15 @@ public class RecyclerMessageView extends IChat {
     }
   }
 
-  public void sendMessageToNetwork(String[] arrIds, String data, String type, int position) {
+  public void sendMessageToNetwork(String[] arrIds, String data, String type, int position,
+      Uri uri) {
     if (!shortcut.isSupport()) {
       messagePresenter.createMessage(arrIds, data, type, position);
     } else {
       if (!haveRequestZendeskId()) {
         createZendeskRequest(data);
       } else {
-        addCommentZendesk(data);
+        addCommentZendesk(data, uri);
       }
     }
   }
