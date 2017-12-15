@@ -333,9 +333,8 @@ public class LiveActivity extends BaseActivity
 
         if (room.getId().equals(payload.getSessionId())) {
           String action = payload.getAction();
-          if (action != null &&
-              (action.equals(NotificationPayload.ACTION_LEFT) ||
-                  action.equals(NotificationPayload.ACTION_JOINED))) {
+          if (action != null && (action.equals(NotificationPayload.ACTION_LEFT) || action.equals(
+              NotificationPayload.ACTION_JOINED))) {
             shouldDisplay = false;
           }
         }
@@ -434,8 +433,9 @@ public class LiveActivity extends BaseActivity
 
         initSubscriptions();
 
-        boolean isCallRoulette = live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) ||
-            (live.getRoom() != null && live.getRoom().acceptsRandom());
+        boolean isCallRoulette =
+            live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) || (live.getRoom() != null
+                && live.getRoom().acceptsRandom());
         if (isCallRoulette) launchCallRoulette();
         userInfosNotificationView.setCallRoulette(isCallRoulette);
 
@@ -647,14 +647,13 @@ public class LiveActivity extends BaseActivity
 
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
-        if (chatView != null &&
-            chatView.getShortcut() != null &&
-            chatView.getShortcut().getMembers() != null &&
-            !chatView.getShortcut().getMembers().isEmpty()) {
+        if (chatView != null
+            && chatView.getShortcut() != null
+            && chatView.getShortcut().getMembers() != null
+            && !chatView.getShortcut().getMembers().isEmpty()) {
 
-          if (!allUsers.isEmpty() &&
-              !ShortcutUtil.equalShortcutMembers(chatView.getShortcut().getMembers(), allUsers,
-                  user)) {
+          if (!allUsers.isEmpty() && !ShortcutUtil.equalShortcutMembers(
+              chatView.getShortcut().getMembers(), allUsers, user)) {
             chatView.dispose();
             Shortcut shortcut = getShortcut();
             if (shortcut != null) {
@@ -681,8 +680,9 @@ public class LiveActivity extends BaseActivity
       }));
     } else {
       subscriptions.add(live.onRoomUpdated().subscribe(room1 -> {
-        boolean isCallRoulette = live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) ||
-            (live.getRoom() != null && live.getRoom().acceptsRandom());
+        boolean isCallRoulette =
+            live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) || (live.getRoom() != null
+                && live.getRoom().acceptsRandom());
         userInfosNotificationView.setCallRoulette(isCallRoulette);
       }));
     }
@@ -699,9 +699,8 @@ public class LiveActivity extends BaseActivity
 
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
       if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-        if (live.fromRoom() &&
-            (tribeJoinRoom.getSessionList() == null ||
-                tribeJoinRoom.getSessionList().size() == 0)) {
+        if (live.fromRoom() && (tribeJoinRoom.getSessionList() == null
+            || tribeJoinRoom.getSessionList().size() == 0)) {
           if (room.getInviter() != null) {
             Toast.makeText(this,
                 getString(R.string.live_other_user_hung_up, room.getInviter().getDisplayName()),
@@ -883,11 +882,12 @@ public class LiveActivity extends BaseActivity
         }));
 
     subscriptions.add(userInfosNotificationView.onClickMore()
-        .flatMap(pairGuestView -> (stateManager.shouldDisplay(StateManager.REPORT_USER) ? DialogFactory.dialog(this, getString(R.string.tips_report_title),
+        .flatMap(pairGuestView -> (stateManager.shouldDisplay(StateManager.REPORT_USER)
+            ? DialogFactory.dialog(this, getString(R.string.tips_report_title),
             getString(R.string.tips_report_message), getString(R.string.tips_report_action1),
-            getString(R.string.tips_report_action2)) : Observable.just(true))
-            .map(aBoolean -> new Triplet<TribeGuest, BaseNotifViewHolder, Boolean>(
-                pairGuestView.first, pairGuestView.second, aBoolean)))
+            getString(R.string.tips_report_action2)) : Observable.just(true)).map(
+            aBoolean -> new Triplet<TribeGuest, BaseNotifViewHolder, Boolean>(pairGuestView.first,
+                pairGuestView.second, aBoolean)))
         .filter(triplet -> {
           stateManager.addTutorialKey(StateManager.REPORT_USER);
           if (!triplet.third) {
@@ -1003,8 +1003,8 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE &&
-        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
+        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -1081,11 +1081,11 @@ public class LiveActivity extends BaseActivity
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
             byte[] data = baos.toByteArray();
-            StorageReference riversRef = storageRef.child("app/uploads/reported-users/" +
-                user.getId() +
-                "/" +
-                dateUtils.getUTCDateAsString() +
-                suffix);
+            StorageReference riversRef = storageRef.child("app/uploads/reported-users/"
+                + user.getId()
+                + "/"
+                + dateUtils.getUTCDateAsString()
+                + suffix);
             UploadTask uploadTask = riversRef.putBytes(data);
             uploadTask.addOnFailureListener(exception -> {
               Timber.e("error fetching image on firebase ");
@@ -1124,9 +1124,9 @@ public class LiveActivity extends BaseActivity
         String hashMembersInvite = ShortcutUtils.hashShortcut(getCurrentUser().getId(),
             usersInviteList.toArray(new String[usersInviteList.size()]));
 
-        if (hashMembersShortcut.equals(hashMembersInvite) &&
-            invite.getRoom() != null &&
-            !invite.getRoom().isUserInitiator(getCurrentUser().getId())) {
+        if (hashMembersShortcut.equals(hashMembersInvite)
+            && invite.getRoom() != null
+            && !invite.getRoom().isUserInitiator(getCurrentUser().getId())) {
           Live.Builder builder = new Live.Builder(Live.FRIEND_CALL).source(live.getSource());
           live = builder.room(invite.getRoom()).build();
           getRoomInfos();
@@ -1207,9 +1207,9 @@ public class LiveActivity extends BaseActivity
   }
 
   private void setExtraForShortcut() {
-    if (usersThatWereLive.size() > 0 &&
-        !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
-        !room.acceptsRandom()) {
+    if (usersThatWereLive.size() > 0
+        && !live.getSource().equals(SOURCE_CALL_ROULETTE)
+        && !room.acceptsRandom()) {
       returnIntent.putExtra(USER_IDS_FOR_NEW_SHORTCUT, usersThatWereLive);
       setResult(Activity.RESULT_OK, returnIntent);
     }
@@ -1341,6 +1341,10 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onBackPressed() {
+    if (!FacebookUtils.isLoggedIn() && live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+      super.onBackPressed();
+    }
+    // disable back btn
   }
 }
 

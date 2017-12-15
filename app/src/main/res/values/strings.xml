@@ -669,12 +669,13 @@
 	<string name="game_song_pop_rule">Guess 5 new songs!</string>
 	<string name="game_song_pop_menu_re_roll">Renew the songs</string>
 	<string name="game_song_pop_status_pick_playlist">Pick a playlist!</string>
-	<string name="game_song_pop_status_score_rule">First to %1$d points wins!</string>
+	<string name="game_song_pop_status_score_rule">First to 5 points wins!</string>
 	<string name="game_song_pop_status_guess">Guess the song!</string>
 	<string name="game_song_pop_status_wrong_answer">Arrgh! That\'s not the song! :hear_no_evil:</string>
 	<string name="game_song_pop_status_no_winner">Nobody guessed!</string>
 	<string name="game_song_pop_status_winner">%1$s guessed!</string>
 	<string name="game_song_pop_status_winner_step">%1$s wins!</string>
+	<string name="game_song_pop_status_winners_step">%1$s wins!</string>
 	<string name="game_song_pop_status_no_winner_step">Nobody won...</string>
 	<string name="game_song_pop_new_popup_title">Keep playing!</string>
 	<string name="game_song_pop_new_popup_description">Would you like to play this game again or try another game?</string>
@@ -743,6 +744,7 @@
 	<string name="game_trivia_change_category">Change topic</string>
 	<string name="game_trivia_status_pick_category">Pick a topic!</string>
 	<string name="game_trivia_status_guess">Answer first!</string>
+	<string name="game_trivia_status_wrong_answer">Arrgh! That\'s not the answer! :hear_no_evil:</string>
 	<string name="game_trivia_category_movies">Movies</string>
 	<string name="game_trivia_category_music">Music</string>
 	<string name="game_trivia_category_tv">TV</string>
@@ -957,4 +959,9 @@
 	<string name="leaderboards_points">pts</string>
 	<string name="leaderboards_you">You</string>
 	<string name="leaderboard_new_high_score">New high score!</string>
+	<string name="leaderboard_self_is_best">%1$s\'re the best!</string>
+	<string name="leaderboard_friend_is_best">%1$s is the best!</string>
+	
+	<!-- Hang Up -->
+	<string name="hang_up_title">TAP TO HANG UP</string>
 </resources>
