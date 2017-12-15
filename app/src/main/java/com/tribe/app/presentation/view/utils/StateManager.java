@@ -20,7 +20,7 @@ import javax.inject.Singleton;
   @StringDef({
       LEAVING_ROOM_POPUP, NEVER_ASK_AGAIN_MICRO_PERMISSION, NEVER_ASK_AGAIN_CAMERA_PERMISSION,
       NEVER_ASK_AGAIN_CONTACT_PERMISSION, PERMISSION_CONTACT, NEW_GAME_START, GAME_POST_IT_POPUP,
-      FACEBOOK_CONTACT_PERMISSION
+      FACEBOOK_CONTACT_PERMISSION, REPORT_USER
   }) public @interface StateKey {
   }
 
@@ -29,6 +29,7 @@ import javax.inject.Singleton;
   public static final String PERMISSION_CONTACT = "PERMISSION_CONTACT";
   public static final String NEW_GAME_START = "NEW_GAME_START";
   public static final String GAME_POST_IT_POPUP = "GAME_POST_IT_POPUP";
+  public static final String REPORT_USER = "REPORT_USER";
 
   public static final String NEVER_ASK_AGAIN_MICRO_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";
   public static final String NEVER_ASK_AGAIN_CAMERA_PERMISSION = "NEVER_ASK_AGAIN_MICRO_PERMISSION";

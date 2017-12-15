@@ -11,7 +11,12 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import rx.subjects.PublishSubject;
 
 /**
@@ -23,6 +28,7 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
   protected LayoutInflater layoutInflater;
   private Context context;
   private boolean callRoulette;
+  private Set<String> reportedIds = new HashSet();
 
   // OBSERVABLES
   protected PublishSubject<BaseNotifViewHolder> onClickAdd = PublishSubject.create();
@@ -53,8 +59,13 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
     vh.txtDescription.setText("@" + friend.getUsername());
     vh.viewAvatar.load("");
 
-    if (callRoulette) {
+    if (reportedIds.contains(friend.getId())) {
+      vh.btnMore.setImageResource(R.drawable.picto_ban_active);
+      vh.btnMore.setClickable(false);
+
+    } else if (callRoulette) {
       vh.btnMore.setOnClickListener(v -> {
+        reportedIds.add(friend.getId());
         clickMore.onNext(vh); // TODO MADA
         vh.progressView.setScaleX(0);
         vh.progressView.setScaleY(0);

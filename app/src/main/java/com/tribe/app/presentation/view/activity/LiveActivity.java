@@ -883,12 +883,13 @@ public class LiveActivity extends BaseActivity
         }));
 
     subscriptions.add(userInfosNotificationView.onClickMore()
-        .flatMap(pairGuestView -> DialogFactory.dialog(this, getString(R.string.tips_report_title),
+        .flatMap(pairGuestView -> (stateManager.shouldDisplay(StateManager.REPORT_USER) ? DialogFactory.dialog(this, getString(R.string.tips_report_title),
             getString(R.string.tips_report_message), getString(R.string.tips_report_action1),
-            getString(R.string.tips_report_action2))
+            getString(R.string.tips_report_action2)) : Observable.just(true))
             .map(aBoolean -> new Triplet<TribeGuest, BaseNotifViewHolder, Boolean>(
                 pairGuestView.first, pairGuestView.second, aBoolean)))
         .filter(triplet -> {
+          stateManager.addTutorialKey(StateManager.REPORT_USER);
           if (!triplet.third) {
             triplet.second.btnMore.setScaleX(1);
             triplet.second.btnMore.setScaleY(1);
@@ -1078,7 +1079,7 @@ public class LiveActivity extends BaseActivity
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
             byte[] data = baos.toByteArray();
             StorageReference riversRef = storageRef.child("app/uploads/reported-users/" +
                 user.getId() +
@@ -1091,6 +1092,7 @@ public class LiveActivity extends BaseActivity
             }).addOnSuccessListener(taskSnapshot -> {
               Uri downloadUrl = taskSnapshot.getDownloadUrl();
               livePresenter.reportUser(tribeGuestId, downloadUrl.toString());
+
               holder.btnMore.setImageResource(R.drawable.picto_ban_active);
               holder.btnMore.setClickable(false);
               holder.progressView.animate()
