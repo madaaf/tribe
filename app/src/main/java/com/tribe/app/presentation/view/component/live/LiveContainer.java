@@ -209,7 +209,12 @@ public class LiveContainer extends FrameLayout {
 
     subscriptions.add(viewLive.onOpenInvite().subscribe(aVoid -> {
       if (!isOpenedPartially) {
-        openPartialInviteView();
+        if (viewLive.nbInRoom() > 1) {
+          openFullInviteView();
+        } else {
+          openPartialInviteView();
+        }
+        
       } else if (isOpenedPartially) {
         closePartialInviteView();
       }

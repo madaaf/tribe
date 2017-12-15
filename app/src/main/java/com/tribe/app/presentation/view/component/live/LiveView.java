@@ -968,7 +968,7 @@ public class LiveView extends FrameLayout {
     return jsonObject;
   }
 
-  private int nbLiveInRoom() {
+  int nbLiveInRoom() {
     if (live.getRoom() == null) return 1;
     return live.getRoom().nbUsersLive();
   }
