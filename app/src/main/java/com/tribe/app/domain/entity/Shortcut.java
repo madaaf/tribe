@@ -19,6 +19,9 @@ import java.util.Map;
 public class Shortcut extends Recipient implements Serializable, LiveInviteAdapterSectionInterface {
 
   public static final String SUPPORT = "support";
+  public static final String SUPPORT_DISPLAYNAME = "Live Support";
+  public static final String SUPPORT_PICTURE =
+      "https://static.tribe.pm/assets/support-avatar-love.png";
 
   public final static int SUPPORT_HOME = 0;
   public final static int SUPPORT_SUGGEST = 1;

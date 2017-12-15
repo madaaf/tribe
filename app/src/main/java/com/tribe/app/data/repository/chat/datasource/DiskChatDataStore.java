@@ -65,7 +65,7 @@ public class DiskChatDataStore implements ChatDataStore {
     return null;
   }
 
-  @Override public Observable<List<Conversation>> getMessageSupport() {
+  @Override public Observable<List<Conversation>> getMessageSupport(int typeSupport) {
     return null;
   }
 }

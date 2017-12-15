@@ -118,6 +118,12 @@ import timber.log.Timber;
   static final ConditionVariable LOCK = new ConditionVariable(true);
   static final AtomicBoolean isRefreshing = new AtomicBoolean(false);
 
+  // DATES
+  @Provides @PerApplication @Named("dateUtils") DateUtils provideDateUtils(
+      @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate, Context context) {
+    return new DateUtils(utcSimpleDate, context);
+  }
+
   @Provides @PerApplication @Named("simpleGson") Gson provideSimpleGson(
       @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate) {
 
@@ -140,11 +146,12 @@ import timber.log.Timber;
 
   @Provides @PerApplication Gson provideGson(Context context,
       @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
+      @Named("dateUtils") DateUtils dateUtils,
       @Named("utcSimpleDateFull") SimpleDateFormat utcSimpleDateFull) {
 
     DataGameDeserializer dataGameDeserializer = new DataGameDeserializer(context);
     DataSupportMessageDeserializer dataSupportMessageDeserializer =
-        new DataSupportMessageDeserializer(context);
+        new DataSupportMessageDeserializer(context, dateUtils);
 
     return new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
       @Override public boolean shouldSkipField(FieldAttributes f) {

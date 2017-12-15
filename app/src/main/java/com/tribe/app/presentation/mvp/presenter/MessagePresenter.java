@@ -113,6 +113,7 @@ public class MessagePresenter implements Presenter {
   }
 
   public void getMessageSupport(int typeSupport) {
+    getMessageSupport.setTypeSupport(typeSupport);
     getMessageSupport.execute(new GetDiskMessageSupportSubscriber(typeSupport));
   }
 

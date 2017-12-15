@@ -38,8 +38,10 @@ public class CloudChatDataStore implements ChatDataStore {
     this.fileApi = fileApi;
   }
 
-  @Override public Observable<List<Conversation>> getMessageSupport() {
-    return fileApi.getMessageSupport();
+  @Override public Observable<List<Conversation>> getMessageSupport(int typeSupport) {
+    return fileApi.getMessageSupport().doOnNext(messageSupport -> {
+      chatCache.putMessagesSupport(messageSupport.get(typeSupport).getMessages());
+    });
   }
 
   @Override

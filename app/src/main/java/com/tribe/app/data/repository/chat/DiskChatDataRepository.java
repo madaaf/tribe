@@ -87,7 +87,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Conversation>> getMessageSupport(String lang) {
+  @Override public Observable<List<Conversation>> getMessageSupport(String lang, int typeSupport) {
     return null;
   }
 }

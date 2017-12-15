@@ -1,6 +1,7 @@
 package com.tribe.app.data.cache;
 
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import io.realm.RealmList;
 import java.util.List;
 import javax.inject.Singleton;
@@ -43,5 +44,6 @@ import rx.Observable;
   void deleteRemovedMessageFromCache(RealmList<MessageRealm> messages, String s, String dateBefore,
       String dateAfter);
 
+  void putMessagesSupport(List<Message> messageList);
 }
 

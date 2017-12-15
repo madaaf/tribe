@@ -30,5 +30,5 @@ public interface ChatRepository {
 
   Observable<Boolean> imTyping(String[] userIds);
 
-  Observable<List<Conversation>> getMessageSupport(String lang);
+  Observable<List<Conversation>> getMessageSupport(String lang, int typeSupport);
 }

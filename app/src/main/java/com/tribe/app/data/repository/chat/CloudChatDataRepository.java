@@ -41,9 +41,9 @@ import rx.Observable;
         .map(this.messageRealmDataMapper::transform);
   }
 
-  @Override public Observable<List<Conversation>> getMessageSupport(String lang) {
+  @Override public Observable<List<Conversation>> getMessageSupport(String lang, int typeSupport) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
-    return userDataStore.getMessageSupport();
+    return userDataStore.getMessageSupport(typeSupport);
   }
 
   @Override public Observable<List<Message>> loadMessages(String[] userIds, String dateBefore,

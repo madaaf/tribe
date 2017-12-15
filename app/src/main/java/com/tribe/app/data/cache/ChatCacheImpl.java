@@ -99,6 +99,10 @@ public class ChatCacheImpl implements ChatCache {
     }
   }
 
+  @Override public void putMessagesSupport(List<Message> messageList) {
+
+  }
+
   @Override public void putMessages(RealmList<MessageRealm> messages, String userIds) {
     Realm obsRealm = Realm.getDefaultInstance();
     try {

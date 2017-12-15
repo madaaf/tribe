@@ -10,6 +10,7 @@ import rx.Observable;
 public class GetMessageSupport extends UseCase {
 
   private String lang;
+  private int typeSupport;
   private ChatRepository chatRepository;
 
   @Inject
@@ -19,11 +20,17 @@ public class GetMessageSupport extends UseCase {
     this.chatRepository = chatRepository;
   }
 
+  public void setTypeSupport(int typeSupport) {
+    this.typeSupport = typeSupport;
+  }
+
   public void setup(String lang) {
     this.lang = lang;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.chatRepository.getMessageSupport(lang);
+    return this.chatRepository.getMessageSupport(lang, typeSupport);
   }
+
+
 }

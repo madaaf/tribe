@@ -158,8 +158,6 @@ public class RecyclerMessageView extends IChat {
       Timber.i("old zendesk ticket :" + supportId);
       getCommentZendesk();
     }
-
-    //getRequestProvider();
   }
 
   private boolean haveRequestZendeskId() {
@@ -167,20 +165,7 @@ public class RecyclerMessageView extends IChat {
   }
 
   @Override public void successMessageSupport(List<Message> messages) {
-    // TODO MADA
-    List<Message> list = new ArrayList<>();
-    User u = new User(Shortcut.SUPPORT);
-    u.setDisplayName("Live Support");
-    u.setProfilePicture("https://static.tribe.pm/assets/support-avatar-love.png");
-
-    for (Message message : messages) {
-      MessageText m = new MessageText(Shortcut.SUPPORT);
-      m.setAuthor(u);
-      m.setCreationDate(dateUtils.getUTCDateForMessage());
-      m.setMessage(message.getContent());
-      list.add(m);
-    }
-    messageAdapter.setItems(list, 0);
+    messageAdapter.setItems(messages, 0);
     scrollListToBottom();
   }
 
@@ -280,7 +265,7 @@ public class RecyclerMessageView extends IChat {
     });
   }
 
-  private void getRequestProvider() {
+  private void getRequestProvider() { // TODO SOEF
     provider.getRequest(supportId, new ZendeskCallback<Request>() {
       @Override public void onSuccess(Request request) {
         Timber.e("onSuccess getRequestProvider " + request.toString());
@@ -316,11 +301,11 @@ public class RecyclerMessageView extends IChat {
     ZendeskConfig.INSTANCE.enablePushWithIdentifier(token,
         new ZendeskCallback<PushRegistrationResponse>() {
           @Override public void onSuccess(PushRegistrationResponse pushRegistrationResponse) {
-            Timber.i("onSuccess enablePushZendesk" + pushRegistrationResponse);
+            Timber.i("onSuccess enablePushZendesk " + pushRegistrationResponse);
           }
 
           @Override public void onError(ErrorResponse errorResponse) {
-            Timber.e("onError enablePushZendesk" + errorResponse);
+            Timber.e("onError enablePushZendesk " + errorResponse);
           }
         });
   }

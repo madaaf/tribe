@@ -34,5 +34,5 @@ public interface ChatDataStore {
   Observable<Boolean> imTyping(String[] userIds);
 
 
-  Observable<List<Conversation>> getMessageSupport();
+  Observable<List<Conversation>> getMessageSupport(int typeSupport);
 }

@@ -10,9 +10,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
+import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,15 +28,16 @@ public class DataSupportMessageDeserializer implements JsonDeserializer<List<Con
   private static String DEFAULT = "default";
 
   private String lang;
+  private DateUtils dateUtils;
 
-  public DataSupportMessageDeserializer(Context context) {
+  public DataSupportMessageDeserializer(Context context, DateUtils dateUtils) {
     this.lang = DeviceUtils.getLanguage(context);
+    this.dateUtils = dateUtils;
   }
 
   @Override public List<Conversation> deserialize(JsonElement json, Type typeOfT,
       JsonDeserializationContext context) throws JsonParseException {
     List<Conversation> nameList = new ArrayList<>();
-    List<Message> messages = new ArrayList<>();
     Gson gson = new GsonBuilder().create();
 
     JsonObject results = null;
@@ -50,6 +56,20 @@ public class DataSupportMessageDeserializer implements JsonDeserializer<List<Con
           }
         }
       }
+    }
+
+    for (Conversation conversation : nameList) {
+      List<Message> list = new ArrayList<>();
+      User u = ShortcutUtil.createUserSupport();
+
+      for (Message message : conversation.getMessages()) {
+        MessageText m = new MessageText(Shortcut.SUPPORT);
+        m.setAuthor(u);
+        m.setCreationDate(dateUtils.getUTCDateForMessage());
+        m.setMessage(message.getContent());
+        list.add(m);
+      }
+      conversation.setMessages(list);
     }
 
     return nameList;

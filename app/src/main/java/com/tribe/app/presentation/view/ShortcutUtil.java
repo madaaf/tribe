@@ -73,22 +73,6 @@ public class ShortcutUtil {
     }
   }
 
-
-  /*public static List<String> removeMyId(List<String> one, User me) {
-    List<String> tempId = new ArrayList<>();
-    List<String> tempUser = new ArrayList<>();
-    tempUser.addAll(one);
-
-    for (String id : one) {
-      tempId.add(id);
-    }
-
-    if (tempId.contains(me.getId())) {
-      tempUser.remove(me.getId());
-    }
-    return tempUser;
-  }*/
-
   public static List<User> removeMe(List<User> one, User me) {
     List<String> tempId = new ArrayList<>();
     List<User> tempUser = new ArrayList<>();
@@ -132,14 +116,14 @@ public class ShortcutUtil {
     List<User> members = new ArrayList<User>();
     members.add(createUserSupport());
     shortcutSupport.setMembers(members);
-    shortcutSupport.setName("Live Support");
+    shortcutSupport.setName(Shortcut.SUPPORT_DISPLAYNAME);
     return shortcutSupport;
   }
 
   public static User createUserSupport() {
     User u = new User(Shortcut.SUPPORT);
-    u.setDisplayName("Live Support");
-    u.setProfilePicture("https://static.tribe.pm/assets/support-avatar-love.png");
+    u.setDisplayName(Shortcut.SUPPORT_DISPLAYNAME);
+    u.setProfilePicture(Shortcut.SUPPORT_PICTURE);
     return u;
   }
 }
