@@ -485,10 +485,15 @@ public class CloudUserDataStore implements UserDataStore {
         }
       }
 
-      return this.tribeApi.getUserListInfos(context.getString(R.string.lookup_userid,
-          resultLookupUserIds.length() > 0 ? resultLookupUserIds.substring(0,
-              resultLookupUserIds.length() - 1) : "",
-          context.getString(R.string.userfragment_infos)));
+      if (resultLookupUserIds.length() == 0) {
+        return Observable.just(new ArrayList<UserRealm>());
+
+      } else {
+        return this.tribeApi.getUserListInfos(context.getString(R.string.lookup_userid,
+                resultLookupUserIds.substring(0, resultLookupUserIds.length() - 1),
+                context.getString(R.string.userfragment_infos)));
+      }
+ 
     }, (lookupHolder, lookupUsers) -> {
       if (lookupHolder != null && lookupUsers != null) {
         List<LookupObject> listLookup = lookupHolder.getLookupObjectList();
