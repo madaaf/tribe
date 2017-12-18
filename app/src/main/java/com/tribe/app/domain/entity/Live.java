@@ -63,6 +63,8 @@ public class Live implements Serializable {
     this.gesture = builder.gesture;
     this.section = builder.section;
     this.gameId = builder.gameId;
+
+    if (room != null && room.acceptsRandom()) source = LiveActivity.SOURCE_CALL_ROULETTE;
   }
 
   public void init() {
