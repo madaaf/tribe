@@ -377,6 +377,10 @@
     <item name="android:textColor">@android:color/black</item>
   </style>
 
+  <style name="BiggerTitle.1.White" parent="@style/BiggerTitle.1">
+    <item name="android:textColor">@android:color/white</item>
+  </style>
+
   <style name="BiggerTitle.1.Black40" parent="@style/BiggerTitle.1">
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>

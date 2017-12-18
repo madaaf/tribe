@@ -1,27 +1,39 @@
 package com.tribe.app.presentation.view.component.live;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 10/05/2017.
  */
 public class LiveHangUpView extends FrameLayout {
+
+  private static final int DURATION = 300;
 
   public static final int MIN_WIDTH = 75;
   public static final int MAX_WIDTH = 800;
@@ -31,6 +43,10 @@ public class LiveHangUpView extends FrameLayout {
 
   @BindView(R.id.imgPhone) ImageView imgPhone;
 
+  @BindView(R.id.viewCard) CardView viewCard;
+
+  @BindView(R.id.txtHangUp) TextViewFont txtHangUp;
+
   // VARIABLES
   private int maxWidth, minWidth, maxWidthRotation;
 
@@ -39,6 +55,7 @@ public class LiveHangUpView extends FrameLayout {
   // BINDERS / SUBSCRIPTIONS
   private Unbinder unbinder;
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Void> onEndCall = PublishSubject.create();
 
   public LiveHangUpView(Context context) {
     super(context);
@@ -87,6 +104,10 @@ public class LiveHangUpView extends FrameLayout {
 
   }
 
+  @OnClick(R.id.viewCard) void onHangUp() {
+    onEndCall.onNext(null);
+  }
+
   ///////////////////////
   //      PUBLIC       //
   ///////////////////////
@@ -100,6 +121,40 @@ public class LiveHangUpView extends FrameLayout {
     UIUtils.changeWidthOfView(this, (int) value);
   }
 
+  public int getMaxWidth() {
+    return (int) (((float) 2 / 3) * screenUtils.getWidthPx());
+  }
+
+  public void showEndCall() {
+    ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, screenUtils.dpToPx(20));
+    valueAnimator.setDuration(DURATION);
+    valueAnimator.addUpdateListener(animation -> {
+      float value = (float) animation.getAnimatedValue();
+      viewCard.setCardElevation(value);
+    });
+    valueAnimator.setInterpolator(new DecelerateInterpolator());
+    valueAnimator.start();
+
+    AnimationUtils.fadeIn(txtHangUp, DURATION);
+  }
+
+  public void hideEndCall() {
+    ValueAnimator valueAnimator = ValueAnimator.ofFloat(viewCard.getCardElevation(), 0);
+    valueAnimator.setDuration(DURATION);
+    valueAnimator.addUpdateListener(animation -> {
+      float value = (float) animation.getAnimatedValue();
+      viewCard.setCardElevation(value);
+    });
+    valueAnimator.setInterpolator(new DecelerateInterpolator());
+    valueAnimator.start();
+
+    AnimationUtils.fadeOut(txtHangUp, DURATION);
+  }
+
+  public View getHangUpButton() {
+    return viewCard;
+  }
+
   ///////////////////////
   //    ANIMATIONS     //
   ///////////////////////
@@ -107,4 +162,8 @@ public class LiveHangUpView extends FrameLayout {
   ///////////////////////
   //    OBSERVABLES    //
   ///////////////////////
+
+  public Observable<Void> onEndCall() {
+    return onEndCall;
+  }
 }
