@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.tribe.app.presentation.view.component.games.LeaderboardDetailsView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@null"
+    android:fillViewport="true"
+    tools:context=".presentation.view.activity.LeaderboardActivity"
+    >
+
+  <!--<android.support.constraint.Guideline
+      android:id="@+id/guidelineHalfWidth"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_percent="0.5"
+      />
+
+  <com.tribe.app.presentation.view.widget.TabUnderlinedView
+      android:id="@+id/tabFriends"
+      android:layout_width="0dp"
+      android:layout_height="46dp"
+      android:background="@drawable/selectable_button"
+      android:clickable="true"
+      app:layout_constraintEnd_toStartOf="@id/guidelineHalfWidth"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:tabActive="true"
+      app:tabText="@string/leaderboards_friends"
+      />
+
+  <com.tribe.app.presentation.view.widget.TabUnderlinedView
+      android:id="@+id/tabOverall"
+      android:layout_width="0dp"
+      android:layout_height="46dp"
+      android:background="@drawable/selectable_button"
+      android:clickable="true"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@id/guidelineHalfWidth"
+      app:layout_constraintTop_toTopOf="parent"
+      app:tabActive="false"
+      app:tabText="@string/leaderboards_overall"
+      />
+
+  <View
+      android:id="@+id/viewUnderline"
+      android:layout_width="0dp"
+      android:layout_height="2dp"
+      android:background="@color/yellow"
+      app:layout_constraintBottom_toBottomOf="@id/tabFriends"
+      app:layout_constraintEnd_toStartOf="@id/guidelineHalfWidth"
+      />
+
+  <android.support.v4.view.ViewPager
+      android:id="@+id/viewPager"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/viewUnderline"
+      />
+
+  <View
+      android:id="@+id/viewShadow"
+      android:layout_width="0dp"
+      android:layout_height="10dp"
+      android:background="@drawable/shadow_bottom"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/viewUnderline"
+      />-->
+
+  <android.support.v7.widget.CardView
+      android:id="@+id/cardView"
+      android:layout_width="0dp"
+      android:layout_height="70dp"
+      android:layout_margin="@dimen/horizontal_margin"
+      android:clickable="true"
+      android:clipChildren="false"
+      app:cardBackgroundColor="@android:color/white"
+      app:cardCornerRadius="5dp"
+      app:cardElevation="5dp"
+      app:cardPreventCornerOverlap="false"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      >
+
+    <com.tribe.app.presentation.view.component.games.GameUserCardView
+        android:id="@+id/viewGameUserCard"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/selectable_button"
+        android:clickable="true"
+        />
+  </android.support.v7.widget.CardView>
+</com.tribe.app.presentation.view.component.games.LeaderboardDetailsView>

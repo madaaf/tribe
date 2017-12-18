@@ -177,6 +177,42 @@
       display_name
       picture
       is_online
+      scores {
+        ranking
+        game {
+          id
+        }
+        value
+        user {
+          id
+          display_name
+          picture
+          username
+        }
+      }
+    }
+  </string>
+
+  <string name="userfragment.infos.game" translatable="false">
+    fragment UserInfos on User {
+      id
+      username
+      display_name
+      picture
+      is_online
+      scores {
+        ranking
+        game {
+          id
+        }
+        value
+        user {
+          id
+          display_name
+          picture
+          username
+        }
+      }
     }
   </string>
 
@@ -557,6 +593,15 @@
       }
   </string>
 
+  <string name="shortcutFragment.infos.game" translatable="false">
+      fragment ShortcutInfos on Shortcut {
+        id
+        members {
+          ...UserInfos
+        }
+      }
+  </string>
+
   <string name="createShortcut" translatable="false">
     createShortcut %1$s {
       ...ShortcutInfos
@@ -609,6 +654,7 @@
       online
       playable
       featured
+      has_scores
       new
       title
       baseline
@@ -617,6 +663,15 @@
       primary_color
       secondary_color
       plays_count
+
+      emoji
+      friendLeader {
+        user {
+          id
+          display_name
+        }
+      }
+
       __typename
 
       ...on GameWebV1 {
@@ -631,5 +686,41 @@
         url
       }
     }
+  </string>
+
+  <string name="game.leaderboard" translatable="false">
+    game (gameId : \"%1$s\") {
+      scores(limit : %2$s, %3$s, friendsOnly : %4$s) {
+        value
+        ranking
+        user {
+          id
+          display_name
+          username
+          picture
+        }
+      }
+    }
+  </string>
+
+  <string name="addScore" translatable="false">
+    addScore (gameId : \"%1$s\", value : %2$s) {
+      value
+    }
+  </string>
+
+  <string name="friends_scores" translatable="false">
+      {
+          user {
+              shortcuts {
+                single {
+                  ...ShortcutInfos
+                }
+              }
+          }
+      }
+
+      %1$s
+      %2$s
   </string>
 </resources>

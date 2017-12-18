@@ -15,7 +15,7 @@ public class NotificationPayload implements Serializable {
 
   @StringDef({
       CLICK_ACTION_ONLINE, CLICK_ACTION_FRIENDSHIP, CLICK_ACTION_BUZZ, CLICK_ACTION_LIVE,
-      CLICK_ACTION_END_LIVE, CLICK_ACTION_DECLINE, CLICK_ACTION_JOIN_CALL
+      CLICK_ACTION_END_LIVE, CLICK_ACTION_DECLINE, CLICK_ACTION_JOIN_CALL, CLICK_ACTION_GAME_LEADER
   }) public @interface ClickActionType {
   }
 
@@ -30,6 +30,7 @@ public class NotificationPayload implements Serializable {
   public static final String CLICK_ACTION_MESSAGE = "message";
   public static final String ACTION_JOINED = "joined";
   public static final String ACTION_LEFT = "left";
+  public static final String CLICK_ACTION_GAME_LEADER = "game_friend_leader";
 
   private String user_id;
   private String body;
@@ -50,6 +51,7 @@ public class NotificationPayload implements Serializable {
   private String message_picture;
   private String users_ids;
   private JsonArray thread_id;
+  private String game_id;
 
   public void setTime(long time) {
     this.time = time;
@@ -200,8 +202,9 @@ public class NotificationPayload implements Serializable {
   }
 
   public boolean isLive() {
-    return click_action == null || click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(
-        CLICK_ACTION_LIVE);
+    return click_action == null ||
+        click_action.equals(CLICK_ACTION_BUZZ) ||
+        click_action.equals(CLICK_ACTION_LIVE);
   }
 
   public boolean isUserCall() {

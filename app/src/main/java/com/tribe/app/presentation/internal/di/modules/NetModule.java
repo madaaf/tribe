@@ -36,6 +36,8 @@ import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.RemoveMessageDeserializer;
 import com.tribe.app.data.network.deserializer.RoomDeserializer;
 import com.tribe.app.data.network.deserializer.RoomLinkDeserializer;
+import com.tribe.app.data.network.deserializer.ScoreRealmDeserializer;
+import com.tribe.app.data.network.deserializer.ScoreRealmListDeserializer;
 import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
 import com.tribe.app.data.network.deserializer.ShortcutRealmDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
@@ -52,6 +54,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -178,6 +181,9 @@ import timber.log.Timber;
         .registerTypeAdapter(ShortcutRealm.class, new ShortcutRealmDeserializer())
         .registerTypeAdapter(new TypeToken<List<GameRealm>>() {
         }.getType(), new GameListDeserializer())
+        .registerTypeAdapter(ScoreRealm.class, new ScoreRealmDeserializer())
+        .registerTypeAdapter(new TypeToken<List<ScoreRealm>>() {
+        }.getType(), new ScoreRealmListDeserializer())
         .create();
   }
 
@@ -546,8 +552,8 @@ import timber.log.Timber;
             " " +
             tribeAuthorizer.getAccessToken().getAccessToken());
 
-        TribeApiUtils.appendTribeHeaders(context, tribeAuthorizer.getAccessToken().getUserId(), requestBuilder);
-
+        TribeApiUtils.appendTribeHeaders(context, tribeAuthorizer.getAccessToken().getUserId(),
+            requestBuilder);
       } else {
         byte[] data = (tribeAuthorizer.getApiClient() +
             ":" +

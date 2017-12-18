@@ -92,9 +92,10 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   }
 
   public boolean isOnline() {
-    return online || (leaveOnlineUntil != null
-        && !single
-        && System.currentTimeMillis() - leaveOnlineUntil.getTime() <= ONE_MINUTE);
+    return online ||
+        (leaveOnlineUntil != null &&
+            !single &&
+            System.currentTimeMillis() - leaveOnlineUntil.getTime() <= ONE_MINUTE);
   }
 
   @Override public boolean isRinging() {
@@ -263,8 +264,8 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   }
 
   public boolean isBlockedOrHidden() {
-    return status.equalsIgnoreCase(ShortcutRealm.BLOCKED) || status.equalsIgnoreCase(
-        ShortcutRealm.HIDDEN);
+    return status.equalsIgnoreCase(ShortcutRealm.BLOCKED) ||
+        status.equalsIgnoreCase(ShortcutRealm.HIDDEN);
   }
 
   public boolean isBlocked() {

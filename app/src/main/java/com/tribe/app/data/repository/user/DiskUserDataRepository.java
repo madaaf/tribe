@@ -70,7 +70,7 @@ import rx.Observable;
 
     return Observable.combineLatest(userDataStore.userInfos(null), userDataStore.inviteMap(),
         (userRealm, inviteMap) -> {
-          User user = userRealmDataMapper.transform(userRealm);
+          User user = userRealmDataMapper.transform(userRealm, true);
 
           if (user != null && user.getShortcutList() != null) {
             if (inviteMap != null && inviteMap.size() > 0) {

@@ -14,7 +14,9 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
@@ -38,6 +40,7 @@ public class ShortcutListView extends RelativeLayout {
 
   @BindView(R.id.viewPictoChat) PictoChatView viewPictoChat;
   @BindView(R.id.viewPictoLive) PictoLiveView viewPictoLive;
+  @BindView(R.id.txtEmojiGame) EmojiGameView txtEmojiGame;
   @BindView(R.id.viewNewAvatar) NewAvatarView viewAvatar;
   @BindView(R.id.viewHomeNameAction) TextHomeNameActionView viewHomeNameAction;
 
@@ -90,7 +93,6 @@ public class ShortcutListView extends RelativeLayout {
   }
 
   private void initResources() {
-
   }
 
   private void initDependencyInjector() {
@@ -142,9 +144,16 @@ public class ShortcutListView extends RelativeLayout {
 
     this.recipient = recipient;
 
+    txtEmojiGame.clear();
+
     if (!(recipient instanceof Invite)) {
       Shortcut shortcut = (Shortcut) recipient;
       viewAvatar.setType(recipient.isOnline() ? NewAvatarView.ONLINE : NewAvatarView.NORMAL);
+
+      if (shortcut.isSingle()) {
+        User user = shortcut.getSingleFriend();
+        txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
+      }
 
       //if (!shortcut.isSingle()) {
       //  subscriptions.add(Observable.interval(1000, TimeUnit.MILLISECONDS)
@@ -158,6 +167,7 @@ public class ShortcutListView extends RelativeLayout {
       //  viewAvatar.load(recipient);
       //}
     }
+
     //else {
     viewAvatar.load(recipient);
     //}

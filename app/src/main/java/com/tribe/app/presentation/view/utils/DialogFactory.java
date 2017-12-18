@@ -269,6 +269,10 @@ public final class DialogFactory {
         moreTypeList.add(new LabelType(
             EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_customize)),
             LabelType.CUSTOMIZE));
+      } else {
+        moreTypeList.add(new LabelType(
+            (EmojiParser.demojizedText(context.getString(R.string.home_menu_user_leaderboard))),
+            LabelType.SCORES));
       }
 
       if (!shortcut.isMute()) {
@@ -372,8 +376,8 @@ public final class DialogFactory {
 
     gameLabels.add(new LabelType(context.getString(R.string.game_menu_play_another_game),
         LabelType.GAME_PLAY_ANOTHER));
-    gameLabels.add(new LabelType(context.getString(R.string.game_menu_reset_scores),
-        LabelType.GAME_RESET_SCORES));
+    //gameLabels.add(new LabelType(context.getString(R.string.game_menu_reset_scores),
+    //    LabelType.GAME_RESET_SCORES));
     gameLabels.add(
         new LabelType(context.getString(R.string.game_post_it_menu_stop), LabelType.GAME_STOP));
 

@@ -6,17 +6,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import com.tribe.app.presentation.view.utils.GlideUtils;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.tribelivesdk.game.Game;
+import java.util.List;
+import javax.inject.Inject;
 import rx.subjects.PublishSubject;
 
 /**
@@ -25,10 +31,14 @@ import rx.subjects.PublishSubject;
 
 public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Object>> {
 
+  @Inject ScreenUtils screenUtils;
+
   protected LayoutInflater layoutInflater;
   private Context context;
   private boolean callRoulette;
   private Set<String> reportedIds = new HashSet();
+  private Game currentGame;
+  private int partialHeight, fullHeight;
 
   // OBSERVABLES
   protected PublishSubject<BaseNotifViewHolder> onClickAdd = PublishSubject.create();
@@ -39,10 +49,19 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
     this.context = context;
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+    partialHeight =
+        context.getResources().getDimensionPixelSize(R.dimen.user_infos_notif_live_partial_height);
+    fullHeight =
+        context.getResources().getDimensionPixelSize(R.dimen.user_infos_notif_live_full_height);
   }
 
   public void setCallRoulette(boolean callRoulette) {
     this.callRoulette = callRoulette;
+  }
+
+  public void setCurrentGame(Game currentGame) {
+    this.currentGame = currentGame;
   }
 
   protected RecyclerView.ViewHolder onCreateViewHolderNotif(ViewGroup parent) {
@@ -80,6 +99,33 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
       });
     } else {
       vh.btnMore.setVisibility(View.GONE);
+    }
+    
+    if (currentGame != null && currentGame.hasScores()) {
+      UIUtils.changeHeightOfView(vh.layoutContent, fullHeight);
+      vh.separator.setVisibility(View.VISIBLE);
+      vh.layoutGame.setVisibility(View.VISIBLE);
+
+      Score score = user.getScoreForGame(currentGame.getId());
+
+      if (score == null) {
+        score = new Score();
+        score.setGame(currentGame);
+      }
+
+      new GlideUtils.GameImageBuilder(context, screenUtils).url(score.getGame().getIcon())
+          .hasBorder(true)
+          .hasPlaceholder(true)
+          .rounded(true)
+          .target(vh.imgIcon)
+          .load();
+
+      vh.txtPoints.setText("" + score.getValue());
+      //vh.txtRanking.setText("#" + score.getRanking());
+    } else {
+      UIUtils.changeHeightOfView(vh.layoutContent, partialHeight);
+      vh.separator.setVisibility(View.GONE);
+      vh.layoutGame.setVisibility(View.GONE);
     }
 
     Shortcut s = ShortcutUtil.getShortcut(friend, user);

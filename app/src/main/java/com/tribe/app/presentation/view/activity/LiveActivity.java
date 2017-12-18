@@ -189,7 +189,7 @@ public class LiveActivity extends BaseActivity
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private RxPermissions rxPermissions;
   private Intent returnIntent = new Intent();
-  private List anonymousIdList = new ArrayList();
+  private List userIdList = new ArrayList();
   private boolean finished = false, isChatViewOpen = false;
   private boolean shouldOverridePendingTransactions = false;
   private float initialBrightness = -1;
@@ -855,11 +855,11 @@ public class LiveActivity extends BaseActivity
           }
         }));
 
-    subscriptions.add(viewLive.onAnonymousJoined().
+    subscriptions.add(viewLive.onUserJoined().
         subscribe(anonymousId -> {
-          anonymousIdList.clear();
-          anonymousIdList.add(anonymousId);
-          if (!anonymousIdList.isEmpty()) livePresenter.getUsersInfoListById(anonymousIdList);
+          userIdList.clear();
+          userIdList.add(anonymousId);
+          if (!userIdList.isEmpty()) livePresenter.getUsersInfoListById(userIdList);
         }));
 
     subscriptions.add(viewLive.onRoomError().
@@ -958,15 +958,22 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.openGameStore()
         .subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
 
-    subscriptions.add(gameManager.onCurrentUserStopGame().subscribe(game -> {
+    subscriptions.add(
+        viewLive.onAddScore().subscribe(pair -> livePresenter.addScore(pair.first, pair.second)));
+
+    subscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
+      userInfosNotificationView.setCurrentGame(game);
+
       if (room == null || !viewLive.hasJoined()) {
-        live.setGameId(null);
+        live.setGameId(game.getId());
       } else {
-        livePresenter.roomStopGame(room.getId());
+        livePresenter.roomStartGame(room.getId(), game.getId());
       }
     }));
 
     subscriptions.add(gameManager.onCurrentUserStopGame().subscribe(game -> {
+      userInfosNotificationView.setCurrentGame(null);
+
       if (room == null || !viewLive.hasJoined()) {
         live.setGameId(null);
       } else {

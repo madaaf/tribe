@@ -2,9 +2,9 @@ package com.tribe.app.data.cache;
 
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
-import io.realm.RealmList;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Singleton;

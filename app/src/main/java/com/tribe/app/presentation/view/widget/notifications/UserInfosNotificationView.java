@@ -27,6 +27,8 @@ import com.tribe.app.presentation.view.adapter.NotifContactAdapter;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -55,6 +57,7 @@ public class UserInfosNotificationView extends FrameLayout {
   private Unbinder unbinder;
   private ContactsLayoutManager layoutManager;
   private boolean animating = false;
+  private GameManager gameManager;
 
   // OBSERVABLES
   Subscription timerSubscription;
@@ -84,6 +87,8 @@ public class UserInfosNotificationView extends FrameLayout {
     inflater.inflate(R.layout.view_user_infos_notification, this, true);
 
     unbinder = ButterKnife.bind(this);
+
+    gameManager = GameManager.getInstance(getContext());
 
     layoutManager = new ContactsLayoutManager(getContext());
     layoutManager.setScrollEnabled(false);
@@ -127,6 +132,10 @@ public class UserInfosNotificationView extends FrameLayout {
 
   public void setCallRoulette(boolean callRoulette) {
     contactAdapter.setCallRoulette(callRoulette);
+  }
+
+  public void setCurrentGame(Game game) {
+    contactAdapter.setCurrentGame(game);
   }
 
   public void hideView() {

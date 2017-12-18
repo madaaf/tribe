@@ -6,6 +6,7 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.game.GamePostIt;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +52,7 @@ import javax.inject.Singleton;
       game.setTitle(gameRealm.getTitle());
       game.setBaseline(gameRealm.getBaseline());
       game.setFeatured(gameRealm.isFeatured());
+      game.setHasScores(gameRealm.hasScores());
       game.setIcon(gameRealm.getIcon());
       game.setPlayable(gameRealm.isPlayable());
       game.setNew(gameRealm.isNew());
@@ -58,6 +60,13 @@ import javax.inject.Singleton;
       game.setPlays_count(gameRealm.getPlays_count());
       game.setPrimary_color(gameRealm.getPrimary_color());
       game.setSecondary_color(gameRealm.getSecondary_color());
+      if (gameRealm.getFriendLeaderScoreUser() != null) {
+        TribeGuest guest = new TribeGuest(gameRealm.getFriendLeaderScoreUser().getId(),
+            gameRealm.getFriendLeaderScoreUser().getDisplay_name(),
+            gameRealm.getFriendLeaderScoreUser().getPicture(), false, false, null);
+        game.setFriendLeader(guest);
+      }
+      game.setEmoji(gameRealm.getEmoji());
       game.setUrl(gameRealm.getUrl());
     }
 
@@ -81,6 +90,7 @@ import javax.inject.Singleton;
       gameRealm.setBanner(game.getBanner());
       gameRealm.setBaseline(game.getBaseline());
       gameRealm.setFeatured(game.isFeatured());
+      gameRealm.setHas_scores(game.hasScores());
       gameRealm.setIcon(game.getIcon());
       gameRealm.setPlayable(game.isPlayable());
       gameRealm.setNew(game.isNew());

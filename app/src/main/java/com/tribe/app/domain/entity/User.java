@@ -45,6 +45,7 @@ public class User
   private List<Shortcut> shortcutList;
   private List<Message> messageList;
   private List<Invite> inviteList;
+  private transient List<Score> scoreList;
   private String fbid;
   private boolean invisible_mode;
   private boolean push_notif;
@@ -62,6 +63,7 @@ public class User
   private boolean isFriend = false;
   private boolean animateAdd = false;
   private boolean isSelected = false;
+  private List<String> emojiLeaderGameList = new ArrayList<>();
 
   private AvatarModel avatarModel = null;
 
@@ -362,6 +364,34 @@ public class User
     return currentRoomId;
   }
 
+  public void setScoreList(List<Score> scoreList) {
+    this.scoreList = scoreList;
+  }
+
+  public List<Score> getScoreList() {
+    return scoreList;
+  }
+
+  public Score getScoreForGame(String gameId) {
+    Score result = null;
+
+    if (scoreList != null) {
+      for (Score score : scoreList) {
+        if (score.getGame().getId().equals(gameId)) result = score;
+      }
+    }
+
+    return result;
+  }
+
+  public void setEmojiLeaderGameList(List<String> emojiLeaderGameList) {
+    this.emojiLeaderGameList = emojiLeaderGameList;
+  }
+
+  public List<String> getEmojiLeaderGameList() {
+    return emojiLeaderGameList;
+  }
+
   public boolean isUserInCall() {
     return !StringUtils.isEmpty(currentRoomId) || ringing;
   }
@@ -399,6 +429,8 @@ public class User
       setLastSeenAt(user.getLastSeenAt());
       setRandom_banned_until(user.getRandom_banned_until());
       setMute_online_notif(user.isMute_online_notif());
+      setScoreList(user.getScoreList());
+      setEmojiLeaderGameList(user.getEmojiLeaderGameList());
     }
   }
 

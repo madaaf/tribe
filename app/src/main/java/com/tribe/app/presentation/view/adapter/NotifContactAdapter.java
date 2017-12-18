@@ -10,6 +10,7 @@ import com.tribe.app.presentation.view.adapter.delegate.contact.FriendshiptNotif
 import com.tribe.app.presentation.view.adapter.delegate.contact.TribeGuestAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserNotifAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
+import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -128,6 +129,10 @@ public class NotifContactAdapter extends RecyclerView.Adapter {
 
   public void setCallRoulette(boolean callRoulette) {
     userListAdapterDelegate.setCallRoulette(callRoulette);
+  }
+
+  public void setCurrentGame(Game game) {
+    userListAdapterDelegate.setCurrentGame(game);
   }
 
   public Observable<View> onUnblock() {

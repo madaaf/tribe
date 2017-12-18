@@ -7,6 +7,7 @@ import android.support.v4.app.NotificationManagerCompat;
 import com.birbit.android.jobqueue.JobManager;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.cache.ChatCache;
+import com.tribe.app.data.cache.GameCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.WSService;
@@ -24,6 +25,7 @@ import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
+import com.tribe.app.data.repository.game.DiskGameDataRepository;
 import com.tribe.app.data.repository.live.CloudLiveDataRepository;
 import com.tribe.app.data.repository.live.DiskLiveDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
@@ -74,6 +76,7 @@ import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.base.BaseNotifAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.common.RecipientAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.ContactToInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.contact.EmptyContactAdapterDelegate;
@@ -92,10 +95,13 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyInvite
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteFullAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardUserAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.newchat.ShortcutNewChatAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.common.ShortcutListView;
+import com.tribe.app.presentation.view.component.games.GameUserCardView;
 import com.tribe.app.presentation.view.component.home.HomeWalkthroughVideoView;
 import com.tribe.app.presentation.view.component.home.HomeWalkthroughView;
 import com.tribe.app.presentation.view.component.home.NewGameView;
@@ -270,6 +276,14 @@ public interface ApplicationComponent {
 
   void inject(LiveHangUpView liveHangUpView);
 
+  void inject(LeaderboardUserAdapterDelegate leaderboardUserAdapterDelegate);
+
+  void inject(LeaderboardDetailsAdapterDelegate leaderboardDetailsAdapterDelegate);
+
+  void inject(GameUserCardView userGameCardView);
+
+  void inject(BaseNotifAdapterDelegate baseNotifAdapterDelegate);
+
   // JOBS
   void inject(BaseJob baseJob);
 
@@ -303,6 +317,8 @@ public interface ApplicationComponent {
 
   CloudGameDataRepository cloudGameRepository();
 
+  DiskGameDataRepository diskGameRepository();
+
   CloudChatDataRepository cloudChatRepository();
 
   DiskChatDataRepository diskChatRepository();
@@ -332,6 +348,8 @@ public interface ApplicationComponent {
   LiveCache liveCache();
 
   ChatCache chatCache();
+
+  GameCache gameCache();
 
   JobManager jobManager();
 

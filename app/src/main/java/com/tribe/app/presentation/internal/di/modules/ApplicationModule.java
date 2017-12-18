@@ -24,11 +24,13 @@ import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.ScoreRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ShortcutRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.CloudChatDataRepository;
 import com.tribe.app.data.repository.chat.DiskChatDataRepository;
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
+import com.tribe.app.data.repository.game.DiskGameDataRepository;
 import com.tribe.app.data.repository.live.CloudLiveDataRepository;
 import com.tribe.app.data.repository.live.DiskLiveDataRepository;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
@@ -71,7 +73,6 @@ import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Module;
 import dagger.Provides;
 import io.realm.Realm;
-import io.realm.RealmList;
 import io.realm.RealmResults;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -195,7 +196,8 @@ import timber.log.Timber;
   }
 
   @Provides @Singleton User provideCurrentUser(Realm realm, AccessToken accessToken,
-      UserRealmDataMapper userRealmDataMapper, ShortcutRealmDataMapper shortcutRealmDataMapper) {
+      UserRealmDataMapper userRealmDataMapper, ShortcutRealmDataMapper shortcutRealmDataMapper,
+      ScoreRealmDataMapper scoreRealmDataMapper) {
     final User user = new User("");
 
     userRealm = realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findAll();
@@ -204,20 +206,27 @@ import timber.log.Timber;
           realm.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
 
       if (userRealmRes != null) {
-        user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealmRes)));
+        user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealmRes), true));
+        attachDataToUser(user, realm, shortcutRealmDataMapper);
       }
     });
 
-    RealmResults<ShortcutRealm> shortcutRealmResults = realm.where(ShortcutRealm.class).findAll();
-    RealmList<ShortcutRealm> finalList = new RealmList<ShortcutRealm>();
-    finalList.addAll(shortcutRealmResults.subList(0, shortcutRealmResults.size()));
-
     if (userRealm != null && userRealm.size() > 0) {
-      user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm.get(0))));
-      user.setShortcutList(shortcutRealmDataMapper.transform(finalList));
+      user.copy(userRealmDataMapper.transform(realm.copyFromRealm(userRealm.get(0)), true));
     }
 
+    attachDataToUser(user, realm, shortcutRealmDataMapper);
+
     return user;
+  }
+
+  private void attachDataToUser(User user, Realm realm,
+      ShortcutRealmDataMapper shortcutRealmDataMapper) {
+    RealmResults<ShortcutRealm> shortcutRealmResults = realm.where(ShortcutRealm.class).findAll();
+
+    if (user != null) {
+      user.setShortcutList(shortcutRealmDataMapper.transform(shortcutRealmResults));
+    }
   }
 
   @Provides @Singleton BadgeRealm provideBadge(Realm realm) {
@@ -251,7 +260,7 @@ import timber.log.Timber;
     UserRealm userDB =
         realmInst.where(UserRealm.class).equalTo("id", accessToken.getUserId()).findFirst();
     if (userDB != null) {
-      user.copy(userRealmDataMapper.transform(realmInst.copyFromRealm(userDB)));
+      user.copy(userRealmDataMapper.transform(realmInst.copyFromRealm(userDB), true));
     }
 
     realmInst.close();
@@ -412,6 +421,11 @@ import timber.log.Timber;
 
   @Provides @Singleton GameRepository provideCloudGameRepository(
       CloudGameDataRepository gameDataRepository) {
+    return gameDataRepository;
+  }
+
+  @Provides @Singleton GameRepository provideDiskGameRepository(
+      DiskGameDataRepository gameDataRepository) {
     return gameDataRepository;
   }
 

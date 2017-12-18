@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
@@ -37,7 +38,9 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
   public UserRealm deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<RealmList<UserRealm>>() {
-    }.getType(), new UserRealmListDeserializer()).create();
+    }.getType(), new UserRealmListDeserializer())
+        .registerTypeAdapter(ScoreRealm.class, new ScoreRealmDeserializer())
+        .create();
 
     UserRealm userRealm = new UserRealm();
     JsonObject result = null;
@@ -54,7 +57,9 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateUser");
     }
 
-    userRealm.setId(result.get("id").getAsString());
+    userRealm.setId(
+        result.get("id") != null && !result.get("id").isJsonNull() ? result.get("id").getAsString()
+            : "");
     userRealm.setPhone(
         result.get("phone") != null && !result.get("phone").isJsonNull() ? result.get("phone")
             .getAsString() : "");
@@ -151,6 +156,22 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       }
 
       userRealm.setInvites(listInvites);
+    }
+
+    RealmList<ScoreRealm> scoreRealmList = new RealmList<>();
+
+    if (result.has("scores") && !(result.get("scores") instanceof JsonNull)) {
+      JsonArray resultsScores = result.getAsJsonArray("scores");
+      if (resultsScores != null) {
+        for (JsonElement obj : resultsScores) {
+          if (!(obj instanceof JsonNull)) {
+            ScoreRealm scoreRealm = gson.fromJson(obj, ScoreRealm.class);
+            if (scoreRealm != null) scoreRealmList.add(scoreRealm);
+          }
+        }
+      }
+
+      userRealm.setScores(scoreRealmList);
     }
 
     return userRealm;

@@ -3,9 +3,9 @@ package com.tribe.app.presentation.view.component.live;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -140,7 +140,7 @@ public class LiveView extends FrameLayout {
   private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true,
       hasShared = false;
   private View view;
-  private List<User> anonymousInLive = new ArrayList<>();
+  private List<User> detailedUserInfoInLive = new ArrayList<>();
   private boolean isFirstToJoin = true;
   private double duration;
   private GameManager gameManager;
@@ -186,7 +186,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onNotificationGameStarted = PublishSubject.create();
   private PublishSubject<String> onNotificationGameStopped = PublishSubject.create();
   private PublishSubject<String> onNotificationGameRestart = PublishSubject.create();
-  private PublishSubject<String> onAnonymousJoined = PublishSubject.create();
+  private PublishSubject<String> onUserJoined = PublishSubject.create();
 
   public LiveView(Context context) {
     super(context);
@@ -582,12 +582,7 @@ public class LiveView extends FrameLayout {
 
           tribeGuestMap.put(remotePeer.getSession().getUserId(), guestFromRemotePeer(remotePeer));
 
-          String username = getDisplayNameFromId(remotePeer.getSession().getUserId());
-
-          if ((username == null || username.isEmpty()) && !remotePeer.getSession().isExternal()) {
-            Timber.d("anonymous joinded in room with id : " + remotePeer.getSession().getUserId());
-            onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
-          }
+          onUserJoined.onNext(remotePeer.getSession().getUserId());
 
           Timber.d("Remote peer added with id : " +
               remotePeer.getSession().getPeerId() +
@@ -689,7 +684,7 @@ public class LiveView extends FrameLayout {
   public void initAnonymousSubscription(Observable<List<User>> obs) {
     persistentSubscriptions.add(obs.subscribe(userList -> {
       if (!userList.isEmpty()) {
-        anonymousInLive.addAll(userList);
+        detailedUserInfoInLive.addAll(userList);
 
         for (User user : userList) {
           if (liveRowViewMap.get(user.getId()) != null) {
@@ -994,7 +989,7 @@ public class LiveView extends FrameLayout {
       }
     }
 
-    for (User anonymousUser : anonymousInLive) {
+    for (User anonymousUser : detailedUserInfoInLive) {
       if (anonymousUser.getId().equals(id)) {
         return anonymousUser.getDisplayName();
       }
@@ -1004,12 +999,6 @@ public class LiveView extends FrameLayout {
   }
 
   private Object computeGuest(String id) {
-    for (User user : live.getRoom().getAllUsers()) {
-      if (id.equals(user.getId()) && !user.isEmpty()) {
-        return user;
-      }
-    }
-
     for (Shortcut shortcut : user.getShortcutList()) {
       if (shortcut.isSingle()) {
         User friend = shortcut.getSingleFriend();
@@ -1019,7 +1008,7 @@ public class LiveView extends FrameLayout {
       }
     }
 
-    for (User anonymousUser : anonymousInLive) {
+    for (User anonymousUser : detailedUserInfoInLive) {
       if (anonymousUser.getId().equals(id)) {
         return anonymousUser;
       }
@@ -1290,8 +1279,8 @@ public class LiveView extends FrameLayout {
     return onNotificationRemoteJoined;
   }
 
-  public Observable<String> onAnonymousJoined() {
-    return onAnonymousJoined;
+  public Observable<String> onUserJoined() {
+    return onUserJoined;
   }
 
   public Observable<String> onNotificationonRemotePeerRemoved() {
@@ -1356,6 +1345,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> openGameStore() {
     return viewControlsLive.openGameStore();
+  }
+
+  public Observable<Pair<String, Integer>> onAddScore() {
+    return viewGameManager.onAddScore();
   }
 }
 

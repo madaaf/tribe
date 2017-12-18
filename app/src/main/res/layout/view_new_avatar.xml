@@ -9,5 +9,4 @@
       android:background="@null"
       android:scaleType="centerCrop"
       />
-
 </merge>

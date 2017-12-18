@@ -13,19 +13,22 @@ import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
+import com.tribe.app.presentation.view.activity.LeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
-import com.tribe.app.presentation.view.activity.NewChatActivity;
 import com.tribe.app.presentation.view.activity.NewGameActivity;
-import com.tribe.app.presentation.view.activity.NewGameActivityToDelete;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
+import com.tribe.app.presentation.view.activity.ViewStackActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionTokenView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
 import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
+import com.tribe.app.presentation.view.component.games.LeaderboardDetailsView;
+import com.tribe.app.presentation.view.component.games.LeaderboardMainView;
+import com.tribe.app.presentation.view.component.games.LeaderboardPage;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.live.BuzzView;
 import com.tribe.app.presentation.view.component.live.ChasingDotsView;
@@ -40,9 +43,13 @@ import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.component.live.TileInviteView;
+import com.tribe.app.presentation.view.component.live.game.GameChallengesView;
+import com.tribe.app.presentation.view.component.live.game.GameDrawView;
+import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackAlienView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackBackground;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
+import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -61,10 +68,6 @@ import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.PictureActivity;
 import com.tribe.app.presentation.view.widget.chat.RecyclerMessageView;
-import com.tribe.app.presentation.view.component.live.game.GameChallengesView;
-import com.tribe.app.presentation.view.component.live.game.GameDrawView;
-import com.tribe.app.presentation.view.component.live.game.GameManagerView;
-import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
@@ -192,11 +195,13 @@ import dagger.Component;
 
   void inject(LiveRingingView liveRingingView);
 
-  void inject(NewChatActivity newChatActivity);
-
   void inject(ShortcutCompletionTokenView shortcutCompletionTokenView);
 
   void inject(TileInviteView tileInviteView);
+
+  void inject(ViewStackActivity viewStackActivity);
+
+  void inject(LeaderboardPage leaderboardPage);
 
   /**
    * GAMES
@@ -221,4 +226,10 @@ import dagger.Component;
   void inject(GamesStoreView gamesStoreView);
 
   void inject(GamesMembersView gamesMembersView);
+
+  void inject(LeaderboardActivity leaderboardActivity);
+
+  void inject(LeaderboardMainView leaderboardMainView);
+
+  void inject(LeaderboardDetailsView leaderboardDetailsView);
 }

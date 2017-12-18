@@ -43,6 +43,7 @@ public class UserRealm extends RealmObject {
   private LocationRealm location;
   private boolean tribe_save = false;
   private RealmList<MessageRealm> messages;
+  private RealmList<ScoreRealm> scores;
   private boolean invisible_mode;
   private boolean push_notif = true;
   private boolean mute_online_notif = false;
@@ -242,6 +243,24 @@ public class UserRealm extends RealmObject {
 
   public void setTimeInCall(long time_in_call) {
     this.time_in_call = time_in_call;
+  }
+
+  public void setScores(RealmList<ScoreRealm> scores) {
+    this.scores = scores;
+  }
+
+  public RealmList<ScoreRealm> getScores() {
+    return scores;
+  }
+
+  public ScoreRealm getScoreForGame(String gameId) {
+    if (scores == null || scores.size() == 0) return null;
+
+    for (ScoreRealm scoreRealm : scores) {
+      if (scoreRealm.getGame_id().equals(gameId)) return scoreRealm;
+    }
+
+    return null;
   }
 
   public void setJsonPayloadUpdate(JsonObject jsonPayloadUpdate) {

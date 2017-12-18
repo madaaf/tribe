@@ -44,7 +44,7 @@ import rx.Observable;
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
     return userDataStore.loadMessages(userIds, dateBefore, dateAfter)
         .doOnError(Throwable::printStackTrace)
-        .map(userRealm -> this.userRealmDataMapper.transform(userRealm).getMessages());
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true).getMessages());
   }
 
   @Override public Observable<List<Message>> getMessagesImage(String[] userIds) {

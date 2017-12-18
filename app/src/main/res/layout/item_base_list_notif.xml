@@ -1,100 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutContentok"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/user_infos_notif_live_full_height"
     android:animateLayoutChanges="true"
     android:background="@null"
     android:clickable="true"
     android:foreground="@drawable/selectable_button"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     >
-  <FrameLayout
+
+  <RelativeLayout
+      android:id="@+id/layoutUser"
       android:layout_width="match_parent"
-      android:layout_height="65dp"
-      android:paddingLeft="@dimen/horizontal_margin_small"
-      android:paddingRight="@dimen/horizontal_margin_small"
+      android:layout_height="67dp"
       >
 
     <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
         android:id="@+id/viewNewAvatar"
         android:layout_width="@dimen/avatar_size_small"
         android:layout_height="@dimen/avatar_size_small"
-        android:layout_gravity="left|center_vertical"
-        android:background="@null"
-        android:scaleType="centerCrop"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:scaleType="centerInside"
         />
 
-    <RelativeLayout
-        android:id="@+id/layoutInfos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/avatar_size_small_margin_start"
-        android:gravity="center_vertical"
-        >
-
-      <LinearLayout
-          android:id="@+id/layoutName"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:orientation="horizontal"
-          >
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="25dp"
-            android:orientation="horizontal"
-            >
-
-          <com.tribe.app.presentation.view.widget.TextViewFont
-              android:id="@+id/txtName"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_centerVertical="true"
-              android:ellipsize="end"
-              android:lines="1"
-              android:singleLine="true"
-              android:textSize="15sp"
-              style="@style/Body.Two.Black"
-              />
-
-        </RelativeLayout>
-      </LinearLayout>
-
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/txtUsername"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_below="@id/layoutName"
-          android:layout_marginTop="2.5dp"
-          android:singleLine="true"
-          android:textColor="@color/black.opacity.40"
-          android:textSize="11sp"
-          style="@style/Title.Regular.White"
-          />
-
-    </RelativeLayout>
-
-    <ImageView
-        android:id="@+id/btnMore"
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="55dp"
+        android:layout_alignTop="@id/viewNewAvatar"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_marginTop="2dp"
+        android:layout_toEndOf="@id/viewNewAvatar"
+        android:ellipsize="end"
+        android:maxLines="1"
+        style="@style/Title.2.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/viewNewAvatar"
+        android:layout_marginBottom="2dp"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_toEndOf="@id/viewNewAvatar"
+        android:maxLines="1"
+        style="@style/Caption.One.Black40"
+        />
+
+    <ImageView
+        android:id="@+id/btnAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/horizontal_margin_smaller"
         android:clickable="true"
-        android:src="@drawable/picto_ban"
+        android:src="@drawable/btn_add"
         />
 
     <com.github.rahatarmanahmed.cpv.CircularProgressView
         android:id="@+id/progressView"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="60dp"
+        android:layout_marginEnd="@dimen/horizontal_margin_smaller"
+        android:layout_toStartOf="@id/btnAdd"
         android:clickable="true"
         android:padding="5dp"
         android:visibility="gone"
@@ -105,16 +79,88 @@
         />
 
     <ImageView
-        android:id="@+id/btnAdd"
+        android:id="@+id/btnMore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|end"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="@dimen/horizontal_margin_smaller"
+        android:layout_toStartOf="@id/btnAdd"
         android:clickable="true"
-        android:src="@drawable/btn_add"
+        android:src="@drawable/picto_ban"
+        />
+  </RelativeLayout>
+
+  <View
+      android:id="@+id/separator"
+      android:layout_width="0dp"
+      android:layout_height="0.5dp"
+      android:layout_centerVertical="true"
+      android:background="@color/white.opacity.5"
+      />
+
+  <RelativeLayout
+      android:id="@+id/layoutGame"
+      android:layout_width="match_parent"
+      android:layout_height="58dp"
+      >
+
+    <ImageView
+        android:id="@+id/imgIcon"
+        android:layout_width="@dimen/avatar_size_small"
+        android:layout_height="@dimen/avatar_size_small"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:scaleType="fitXY"
         />
 
+    <!--<com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtRanking"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_toRightOf="@id/imgIcon"
+        style="@style/BiggerTitle.2.Yellow"
+        />-->
 
-  </FrameLayout>
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtBestScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/imgIcon"
+        android:layout_marginBottom="2dp"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_toRightOf="@id/imgIcon"
+        android:text="@string/leaderboards_score"
+        style="@style/BiggerTitle.1.Black40"
+        />
 
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtPointsSuffix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@id/imgIcon"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="2dp"
+        android:layout_toRightOf="@+id/txtPoints"
+        android:text="@string/leaderboards_points"
+        style="@style/BiggerTitle.1.Black40"
+        />
 
-</FrameLayout>
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtPoints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/imgIcon"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_marginTop="2dp"
+        android:layout_toRightOf="@id/imgIcon"
+        android:text="2222"
+        style="@style/BiggerTitle.2.Black"
+        />
+
+  </RelativeLayout>
+</LinearLayout>
+

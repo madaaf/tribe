@@ -252,9 +252,8 @@ public class HomeActivity extends BaseActivity
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
+    homeGridPresenter.getGames();
     if (!hasSynced) {
-      // We reload the games data only once
-      homeGridPresenter.getGames();
       hasSynced = true;
     }
 
@@ -464,6 +463,7 @@ public class HomeActivity extends BaseActivity
           if (canEndRefresh) {
             topBarContainer.endRefresh();
             latestRecipientList.clear();
+            homeGridPresenter.getGames();
             homeGridPresenter.reload(false);
             canEndRefresh = false;
           }
@@ -531,6 +531,8 @@ public class HomeActivity extends BaseActivity
                   } else if (labelType.getTypeDef().equals(LabelType.UNMUTE)) {
                     shortcut.setMute(false);
                     homeGridPresenter.muteShortcut(shortcut.getId(), false);
+                  } else if (labelType.getTypeDef().equals(LabelType.SCORES)) {
+                    navigateToLeaderboardsShortcut(shortcut);
                   }
                 }
 
@@ -773,7 +775,8 @@ public class HomeActivity extends BaseActivity
   }
 
   private void initTopBar() {
-    subscriptions.add(topBarContainer.onClickProfile().subscribe(aVoid -> navigateToProfile()));
+    subscriptions.add(
+        topBarContainer.onClickProfile().subscribe(aVoid -> navigateToLeaderboards()));
 
     subscriptions.add(topBarContainer.onClickCallRoulette()
         .subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, null)));
@@ -1038,8 +1041,14 @@ public class HomeActivity extends BaseActivity
         Toast.LENGTH_SHORT).show();
   }
 
-  private void navigateToProfile() {
-    navigator.navigateToProfile(HomeActivity.this);
+  private void navigateToLeaderboards() {
+    navigator.navigateToLeaderboards(HomeActivity.this);
+  }
+
+  private void navigateToLeaderboardsShortcut(Shortcut shortcut) {
+    User friend = shortcut.getSingleFriend();
+    navigator.navigateToLeaderboardsForShortcut(HomeActivity.this, friend.getId(),
+        friend.getDisplayName(), friend.getProfilePicture());
   }
 
   private void navigateToNewCall(@LiveActivity.Source String source, String gameId) {

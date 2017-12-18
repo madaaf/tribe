@@ -64,12 +64,14 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   protected String wordingPrefix = "";
   protected boolean pending = false;
   protected boolean ready = false;
+  protected int roundPoints = 0;
 
   // OBSERVABLES
   protected PublishSubject<Boolean> onPending = PublishSubject.create();
   protected PublishSubject<Boolean> isGameReady = PublishSubject.create();
   protected BehaviorSubject<Boolean> onGameReady = BehaviorSubject.create();
   protected PublishSubject<String> onMessage = PublishSubject.create();
+  protected PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
 
   public GameViewWithEngine(@NonNull Context context) {
     super(context);
@@ -120,6 +122,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     webRTCRoom.sendToPeers(getNewGamePayload(currentUser.getId(), timestamp,
         playerIds.toArray(new String[playerIds.size()])), true);
     setupGameLocally(currentUser.getId(), playerIds, timestamp);
+    resetScores(false);
   }
 
   @Override protected void takeOverGame() {
@@ -221,9 +224,23 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     if (gameEngine != null) gameEngine.setUserReady(currentUser.getId());
   }
 
+  @Override protected void addPoints(int points, String userId, boolean shouldBroadcast) {
+    super.addPoints(points, userId, shouldBroadcast);
+
+    if (userId.equals(currentUser.getId())) {
+      roundPoints += points;
+    }
+  }
+
   protected void iLost() {
     Timber.d("iLost");
     if (game == null || gameEngine == null) return;
+
+    if (gameEngine.mapPlayerStatus.size() > 1 && roundPoints > 0) {
+      onAddScore.onNext(Pair.create(game.getId(), roundPoints));
+    }
+
+    roundPoints = 0;
     webRTCRoom.sendToPeers(getILostPayload(currentUser.getId()), true);
     gameEngine.setUserGameOver(currentUser.getId());
     refactorPending(true);
@@ -629,9 +646,18 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   public void stop() {
     Timber.d("stop");
-    super.stop();
-    if (gameEngine != null) gameEngine.stop();
+    if (gameEngine != null) {
+      if (gameEngine.mapPlayerStatus.size() > 1 && roundPoints > 0) {
+        onAddScore.onNext(Pair.create(game.getId(), roundPoints));
+      }
+
+      roundPoints = 0;
+
+      gameEngine.stop();
+    }
+
     soundManager.cancelMediaPlayer();
+    super.stop();
   }
 
   @Override public void resetScores(boolean shouldSendGameOver) {
@@ -658,4 +684,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   /**
    * OBSERVABLE
    */
+
+  public Observable<Pair<String, Integer>> onAddScore() {
+    return onAddScore;
+  }
 }

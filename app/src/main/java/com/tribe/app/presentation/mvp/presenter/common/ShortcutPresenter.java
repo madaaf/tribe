@@ -238,6 +238,10 @@ public class ShortcutPresenter implements Presenter {
     getShortcutForUserIds.execute(shortcutForUserIdsSubscriber);
   }
 
+  public void unsubscribeShortcut() {
+    if (shortcutForUserIdsSubscriber != null) shortcutForUserIdsSubscriber.unsubscribe();
+  }
+
   private class ShortcutForUserIdsSubscriber extends DefaultSubscriber<Shortcut> {
 
     @Override public void onCompleted() {
