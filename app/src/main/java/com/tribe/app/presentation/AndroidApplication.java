@@ -133,7 +133,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(11)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(12)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -265,6 +265,34 @@ public class AndroidApplication extends Application {
 
           if (oldVersion == 10) {
             schema.get("UserRealm").addField("mute_online_notif", boolean.class);
+
+            oldVersion++;
+          }
+
+          if (oldVersion == 11) {
+            if (schema.get("ScoreRealm") == null) {
+              schema.create("ScoreUserRealm")
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
+                  .addField("display_name", String.class)
+                  .addField("picture", String.class)
+                  .addField("username", String.class);
+
+              schema.create("ScoreRealm")
+                  .addField("id", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
+                  .addField("value", int.class)
+                  .addField("ranking", int.class)
+                  .addRealmObjectField("user", schema.get("ScoreUserRealm"))
+                  .addField("game_id", String.class);
+
+              schema.get("GameRealm")
+                  .addRealmListField("friends_score", schema.get("ScoreRealm"))
+                  .addRealmListField("overall_score", schema.get("ScoreRealm"))
+                  .addField("has_scores", boolean.class)
+                  .addField("emoji", String.class)
+                  .addRealmObjectField("friendLeaderScoreUser", schema.get("ScoreUserRealm"));
+
+              schema.get("UserRealm").addRealmListField("scores", schema.get("ScoreRealm"));
+            }
 
             oldVersion++;
           }

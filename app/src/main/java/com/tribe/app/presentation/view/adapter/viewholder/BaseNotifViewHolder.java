@@ -38,7 +38,7 @@ public class BaseNotifViewHolder extends RecyclerView.ViewHolder {
 
   @Nullable @BindView(R.id.imgIcon) public ImageView imgIcon;
 
-  @Nullable @BindView(R.id.txtRanking) public TextViewFont txtRanking;
+  //@Nullable @BindView(R.id.txtRanking) public TextViewFont txtRanking;
 
   @Nullable @BindView(R.id.txtPointsSuffix) public TextViewFont txtPointsSuffix;
 

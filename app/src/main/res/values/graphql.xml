@@ -193,6 +193,29 @@
     }
   </string>
 
+  <string name="userfragment.infos.game" translatable="false">
+    fragment UserInfos on User {
+      id
+      username
+      display_name
+      picture
+      is_online
+      scores {
+        ranking
+        game {
+          id
+        }
+        value
+        user {
+          id
+          display_name
+          picture
+          username
+        }
+      }
+    }
+  </string>
+
   <string name="user.mutate" translatable="false">
         mutation {
             updateUser(user: {
@@ -570,6 +593,15 @@
       }
   </string>
 
+  <string name="shortcutFragment.infos.game" translatable="false">
+      fragment ShortcutInfos on Shortcut {
+        id
+        members {
+          ...UserInfos
+        }
+      }
+  </string>
+
   <string name="createShortcut" translatable="false">
     createShortcut %1$s {
       ...ShortcutInfos
@@ -675,5 +707,20 @@
     addScore (gameId : \"%1$s\", value : %2$s) {
       value
     }
+  </string>
+
+  <string name="friends_scores" translatable="false">
+      {
+          user {
+              shortcuts {
+                single {
+                  ...ShortcutInfos
+                }
+              }
+          }
+      }
+
+      %1$s
+      %2$s
   </string>
 </resources>

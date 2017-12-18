@@ -2,8 +2,10 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.game.GetCloudFriendsScores;
 import com.tribe.app.domain.interactor.game.GetCloudGameLeaderboard;
 import com.tribe.app.domain.interactor.game.GetCloudUserLeaderboard;
+import com.tribe.app.domain.interactor.game.GetDiskFriendsScores;
 import com.tribe.app.domain.interactor.game.GetDiskGameLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskUserLeaderboard;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
@@ -23,20 +25,27 @@ public class GamePresenter implements Presenter {
   private GetDiskGameLeaderboard diskGameLeaderboard;
   private GetCloudUserLeaderboard cloudUserLeaderboard;
   private GetDiskUserLeaderboard diskUserLeaderboard;
+  private GetCloudFriendsScores cloudFriendsScores;
+  private GetDiskFriendsScores diskFriendsScores;
 
   // SUBSCRIBERS
   private GameLeaderboardSubscriber cloudGameLeaderboardSubscriber;
   private GameLeaderboardSubscriber diskGameLeaderboardSubscriber;
   private UserLeaderboardSubscriber cloudUserLeaderboardSubscriber;
   private UserLeaderboardSubscriber diskUserLeaderboardSubscriber;
+  private FriendsScoreSubscriber diskFriendsScoreSubscriber;
+  private FriendsScoreSubscriber cloudFriendsScoreSubscriber;
 
   @Inject public GamePresenter(GetCloudGameLeaderboard cloudGameLeaderboard,
       GetDiskGameLeaderboard diskGameLeaderboard, GetCloudUserLeaderboard cloudUserLeaderboard,
-      GetDiskUserLeaderboard diskUserLeaderboard) {
+      GetDiskUserLeaderboard diskUserLeaderboard, GetDiskFriendsScores diskFriendsScores,
+      GetCloudFriendsScores cloudFriendsScores) {
     this.cloudGameLeaderboard = cloudGameLeaderboard;
     this.diskGameLeaderboard = diskGameLeaderboard;
     this.cloudUserLeaderboard = cloudUserLeaderboard;
     this.diskUserLeaderboard = diskUserLeaderboard;
+    this.diskFriendsScores = diskFriendsScores;
+    this.cloudFriendsScores = cloudFriendsScores;
   }
 
   @Override public void onViewDetached() {
@@ -44,6 +53,8 @@ public class GamePresenter implements Presenter {
     diskGameLeaderboard.unsubscribe();
     cloudUserLeaderboard.unsubscribe();
     diskUserLeaderboard.unsubscribe();
+    cloudFriendsScores.unsubscribe();
+    diskFriendsScores.unsubscribe();
     gameMVPView = null;
   }
 
@@ -139,6 +150,44 @@ public class GamePresenter implements Presenter {
 
     @Override public void onNext(List<Score> score) {
       if (gameMVPView != null) gameMVPView.onUserLeaderboard(score, cloud);
+    }
+  }
+
+  public void loadFriendsScore(String gameId) {
+    if (diskFriendsScoreSubscriber != null) {
+      diskFriendsScoreSubscriber.unsubscribe();
+    }
+
+    diskFriendsScoreSubscriber = new FriendsScoreSubscriber(false);
+    diskFriendsScores.setup(gameId);
+    diskFriendsScores.execute(diskFriendsScoreSubscriber);
+
+    if (cloudFriendsScoreSubscriber != null) {
+      cloudFriendsScoreSubscriber.unsubscribe();
+    }
+
+    cloudFriendsScoreSubscriber = new FriendsScoreSubscriber(true);
+    cloudFriendsScores.setup(gameId);
+    cloudFriendsScores.execute(cloudFriendsScoreSubscriber);
+  }
+
+  private final class FriendsScoreSubscriber extends DefaultSubscriber<List<Score>> {
+
+    private boolean cloud;
+
+    public FriendsScoreSubscriber(boolean cloud) {
+      this.cloud = cloud;
+    }
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+
+    }
+
+    @Override public void onNext(List<Score> score) {
+      if (gameMVPView != null) gameMVPView.onFriendsScore(score, cloud);
     }
   }
 }

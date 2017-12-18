@@ -113,7 +113,7 @@
         android:scaleType="fitXY"
         />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
+    <!--<com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtRanking"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -121,16 +121,16 @@
         android:layout_marginStart="@dimen/horizontal_margin_small"
         android:layout_toRightOf="@id/imgIcon"
         style="@style/BiggerTitle.2.Yellow"
-        />
+        />-->
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/txtBestScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/imgIcon"
-        android:layout_alignParentEnd="true"
         android:layout_marginBottom="2dp"
-        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:layout_toRightOf="@id/imgIcon"
         android:text="@string/leaderboards_score"
         style="@style/BiggerTitle.1.Black40"
         />
@@ -141,8 +141,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignTop="@id/imgIcon"
-        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="2dp"
+        android:layout_toRightOf="@+id/txtPoints"
         android:text="@string/leaderboards_points"
         style="@style/BiggerTitle.1.Black40"
         />
@@ -153,8 +154,10 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/imgIcon"
         android:layout_marginEnd="5dp"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
         android:layout_marginTop="2dp"
-        android:layout_toLeftOf="@id/txtPointsSuffix"
+        android:layout_toRightOf="@id/imgIcon"
+        android:text="2222"
         style="@style/BiggerTitle.2.Black"
         />
 

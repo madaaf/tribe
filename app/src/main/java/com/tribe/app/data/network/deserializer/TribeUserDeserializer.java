@@ -38,7 +38,9 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
   public UserRealm deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     Gson gson = new GsonBuilder().registerTypeAdapter(new TypeToken<RealmList<UserRealm>>() {
-    }.getType(), new UserRealmListDeserializer()).registerTypeAdapter(ScoreRealm.class, new ScoreRealmDeserializer()).create();
+    }.getType(), new UserRealmListDeserializer())
+        .registerTypeAdapter(ScoreRealm.class, new ScoreRealmDeserializer())
+        .create();
 
     UserRealm userRealm = new UserRealm();
     JsonObject result = null;
@@ -55,7 +57,9 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       result = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateUser");
     }
 
-    userRealm.setId(result.get("id").getAsString());
+    userRealm.setId(
+        result.get("id") != null && !result.get("id").isJsonNull() ? result.get("id").getAsString()
+            : "");
     userRealm.setPhone(
         result.get("phone") != null && !result.get("phone").isJsonNull() ? result.get("phone")
             .getAsString() : "");

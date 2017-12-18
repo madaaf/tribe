@@ -23,4 +23,8 @@ public class GameMVPViewAdapter implements GameMVPView {
   @Override public Context context() {
     return null;
   }
+
+  @Override public void onFriendsScore(List<Score> scoreList, boolean cloud) {
+
+  }
 }

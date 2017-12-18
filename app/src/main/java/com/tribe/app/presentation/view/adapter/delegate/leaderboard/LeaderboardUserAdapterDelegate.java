@@ -73,17 +73,18 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
 
     vh.txtPoints.setText("" + score.getValue());
 
+    vh.txtHint.setVisibility(View.GONE);
+
     if (!canClick) {
       vh.imgArrow.setVisibility(View.GONE);
-      vh.txtHint.setVisibility(View.GONE);
     } else if (score.getGame().getFriendLeader() != null) {
       vh.txtHint.setVisibility(View.VISIBLE);
       if (score.getGame().getFriendLeader().getId().equals(user.getId())) {
         vh.txtHint.setText(context.getString(R.string.leaderboard_self_is_best,
             context.getString(R.string.leaderboards_you)));
       } else {
-        vh.txtHint.setText(
-            context.getString(R.string.leaderboard_friend_is_best, user.getDisplayName()));
+        vh.txtHint.setText(context.getString(R.string.leaderboard_friend_is_best,
+            score.getGame().getFriendLeader().getDisplayName()));
       }
     }
   }

@@ -24,6 +24,7 @@ import com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdap
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -103,28 +104,28 @@ public class LeaderboardPage extends LinearLayout {
 
     adapter.setItems(items);
 
-    subscriptions.add(adapter.onLoadMore().subscribe(downwards -> {
-      if (!downwards && friends) return;
+    //subscriptions.add(adapter.onLoadMore().subscribe(downwards -> {
+    //  if (!downwards && friends) return;
+    //
+    //  if (downwards) {
+    //    if (items.get(items.size() - 1) instanceof Score) {
+    //      Score score = (Score) items.get(items.size() - 1);
+    //      gamePresenter.load(selectedGame.getId(), friends, false, LIMIT,
+    //          score.getRanking() + 1, downwards);
+    //    }
+    //  } else {
+    //    if (items.get(0) instanceof Score) {
+    //      Score score = (Score) items.get(0);
+    //      if (score.getRanking() == 0 || score.getRanking() == 1) return;
+    //      int offset = score.getRanking() - LIMIT;
+    //      int limit = offset < 0 ? LIMIT + offset : LIMIT;
+    //      gamePresenter.loadGameLeaderboard(selectedGame.getId(), friends, false, limit,
+    //          offset < 0 ? 0 : offset, downwards);
+    //    }
+    //  }
+    //}));
 
-      if (downwards) {
-        if (items.get(items.size() - 1) instanceof Score) {
-          Score score = (Score) items.get(items.size() - 1);
-          gamePresenter.loadGameLeaderboard(selectedGame.getId(), friends, false, LIMIT,
-              score.getRanking() + 1, downwards);
-        }
-      } else {
-        if (items.get(0) instanceof Score) {
-          Score score = (Score) items.get(0);
-          if (score.getRanking() == 0 || score.getRanking() == 1) return;
-          int offset = score.getRanking() - LIMIT;
-          int limit = offset < 0 ? LIMIT + offset : LIMIT;
-          gamePresenter.loadGameLeaderboard(selectedGame.getId(), friends, false, limit,
-              offset < 0 ? 0 : offset, downwards);
-        }
-      }
-    }));
-
-    gamePresenter.loadGameLeaderboard(selectedGame.getId(), friends, true, LIMIT, 0, true);
+    gamePresenter.loadFriendsScore(selectedGame.getId());
   }
 
   private void initPresenter() {
@@ -136,17 +137,25 @@ public class LeaderboardPage extends LinearLayout {
       @Override
       public void onGameLeaderboard(List<Score> scoreList, boolean cloud, boolean friendsOnly,
           int offset, boolean downwards) {
-        if (cloud) {
-          if (!downwards) {
-            items.addAll(0, scoreList);
-            adapter.addItems(0, scoreList);
-          } else {
-            items.addAll(scoreList);
-            adapter.addItems(scoreList);
-          }
-        } else {
-          adapter.setItems(items);
-        }
+        // NOT USED FOR NOW
+        //if (cloud) {
+        //  if (!downwards) {
+        //    items.addAll(0, scoreList);
+        //    adapter.addItems(0, scoreList);
+        //  } else {
+        //    items.addAll(scoreList);
+        //    adapter.addItems(scoreList);
+        //  }
+        //} else {
+        //  adapter.setItems(items);
+        //}
+      }
+
+      @Override public void onFriendsScore(List<Score> scoreList, boolean cloud) {
+        Collections.sort(scoreList, (o1, o2) -> ((Integer) o2.getValue()).compareTo(o1.getValue()));
+        items.clear();
+        items.addAll(scoreList);
+        adapter.setItems(items);
       }
     };
   }

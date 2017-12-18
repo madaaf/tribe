@@ -15,4 +15,6 @@ public interface GameMVPView extends MVPView {
       boolean downwards);
 
   void onUserLeaderboard(List<Score> scoreList, boolean cloud);
+
+  void onFriendsScore(List<Score> scoreList, boolean cloud);
 }

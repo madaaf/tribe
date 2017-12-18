@@ -56,6 +56,8 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
   @Override public void onBindViewHolder(@NonNull List<Score> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     LeaderboardUserViewHolder vh = (LeaderboardUserViewHolder) holder;
+    Score score = items.get(position);
+    score.setRanking(position + 1);
     vh.viewGameUserCard.setScore(items.get(position));
   }
 

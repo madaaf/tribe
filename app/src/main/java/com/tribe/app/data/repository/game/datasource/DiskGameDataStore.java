@@ -35,4 +35,8 @@ public class DiskGameDataStore implements GameDataStore {
   @Override public Observable<Void> addScore(String gameId, Integer score) {
     return null;
   }
+
+  @Override public Observable<List<ScoreRealm>> getFriendsScore(String gameId) {
+    return Observable.just(gameCache.getGameLeaderboard(gameId, true));
+  }
 }

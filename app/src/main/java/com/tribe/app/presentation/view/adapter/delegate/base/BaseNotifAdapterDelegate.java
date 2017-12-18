@@ -93,7 +93,7 @@ public abstract class BaseNotifAdapterDelegate extends RxAdapterDelegate<List<Ob
           .load();
 
       vh.txtPoints.setText("" + score.getValue());
-      vh.txtRanking.setText("#" + score.getRanking());
+      //vh.txtRanking.setText("#" + score.getRanking());
     } else {
       UIUtils.changeHeightOfView(vh.layoutContent, partialHeight);
       vh.separator.setVisibility(View.GONE);

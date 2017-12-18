@@ -76,7 +76,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
       this.previousTotalItemCountBottom = totalItemCount;
       if (totalItemCount == 0) {
         this.loadingBottom = true;
-        Timber.d("Bad state loadingBottom");
+        //Timber.d("Bad state loadingBottom");
       }
     }
 
@@ -85,7 +85,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
       this.previousTotalItemCountTop = totalItemCount;
       if (totalItemCount == 0) {
         this.loadingTop = true;
-        Timber.d("Bad state loadingTop");
+        //Timber.d("Bad state loadingTop");
       }
     }
 
@@ -93,13 +93,13 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     // changed, if so we conclude it has finished loading and update the current page
     // number and total item count.
     if (loadingBottom && (totalItemCount > previousTotalItemCountBottom)) {
-      Timber.d("loadingBottom false");
+      //Timber.d("loadingBottom false");
       loadingBottom = false;
       previousTotalItemCountBottom = totalItemCount;
     }
 
     if (loadingTop && (totalItemCount > previousTotalItemCountTop)) {
-      Timber.d("loadingTop false");
+      //Timber.d("loadingTop false");
       loadingTop = false;
       previousTotalItemCountTop = totalItemCount;
     }
@@ -111,13 +111,13 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     if (!loadingBottom &&
         downwards &&
         (lastVisibleItemPosition + visibleThreshold) > totalItemCount) {
-      Timber.d("Loadingbottom loadmore");
+      //Timber.d("Loadingbottom loadmore");
       onLoadMore(currentPage, totalItemCount, view, downwards);
       loadingBottom = true;
     }
 
     if (!loadingTop && !downwards && (firstVisibleItemPosition - visibleThreshold) <= 0) {
-      Timber.d("Loadingtop loadmore");
+      //Timber.d("Loadingtop loadmore");
       onLoadMore(currentPage, totalItemCount, view, downwards);
       loadingTop = true;
     }

@@ -253,6 +253,16 @@ public class UserRealm extends RealmObject {
     return scores;
   }
 
+  public ScoreRealm getScoreForGame(String gameId) {
+    if (scores == null || scores.size() == 0) return null;
+
+    for (ScoreRealm scoreRealm : scores) {
+      if (scoreRealm.getGame_id().equals(gameId)) return scoreRealm;
+    }
+
+    return null;
+  }
+
   public void setJsonPayloadUpdate(JsonObject jsonPayloadUpdate) {
     this.jsonPayloadUpdate = jsonPayloadUpdate;
   }

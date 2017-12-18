@@ -11,6 +11,7 @@ import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -100,5 +101,23 @@ public class CloudGameDataStore implements GameDataStore {
     String body = context.getString(R.string.addScore, gameId, "" + score);
     final String request = context.getString(R.string.mutation, body);
     return this.tribeApi.addScore(request);
+  }
+
+  @Override public Observable<List<ScoreRealm>> getFriendsScore(String gameId) {
+    return this.tribeApi.getUserInfos(context.getString(R.string.friends_scores,
+        context.getString(R.string.userfragment_infos_game),
+        context.getString(R.string.shortcutFragment_infos_game)))
+        .doOnError(Throwable::printStackTrace)
+        .map(userRealm -> {
+          List<ScoreRealm> scoreRealmList = new ArrayList<>();
+
+          for (ShortcutRealm shortcutRealm : userRealm.getShortcuts()) {
+            ScoreRealm scoreRealm = shortcutRealm.getSingleFriend().getScoreForGame(gameId);
+            if (scoreRealm != null) scoreRealmList.add(scoreRealm);
+          }
+
+          return scoreRealmList;
+        })
+        .doOnNext(scoreRealmList -> gameCache.updateLeaderboard(gameId, true, scoreRealmList));
   }
 }
