@@ -41,12 +41,12 @@ public class NewGameActivity extends ViewStackActivity {
   // OBSERVABLES
 
   @Override protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-
     if (getIntent() != null && getIntent().getExtras() != null) {
       isFromHome = getIntent().getBooleanExtra(FROM_HOME, false);
       source = getIntent().getStringExtra(SOURCE);
     }
+
+    super.onCreate(savedInstanceState);
   }
 
   @Override protected void endInit(Bundle savedInstanceState) {
@@ -81,6 +81,9 @@ public class NewGameActivity extends ViewStackActivity {
     if (!isFromHome) {
       txtAction.setVisibility(View.GONE);
       btnForward.setVisibility(View.GONE);
+    } else {
+      btnForward.setVisibility(View.VISIBLE);
+      btnBack.setVisibility(View.VISIBLE);
     }
   }
 
