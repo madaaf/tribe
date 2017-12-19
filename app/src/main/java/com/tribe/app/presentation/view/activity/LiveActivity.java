@@ -439,8 +439,7 @@ public class LiveActivity extends BaseActivity
 
         initSubscriptions();
 
-        boolean isCallRoulette = live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) ||
-            (live.getRoom() != null && live.getRoom().acceptsRandom());
+        boolean isCallRoulette = live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE);
         if (isCallRoulette) launchCallRoulette();
         userInfosNotificationView.setCallRoulette(isCallRoulette);
 
@@ -579,7 +578,7 @@ public class LiveActivity extends BaseActivity
 
   private void initChatView(Shortcut shortcut) {
     Timber.i("init chat view from live activity");
-    if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || (live.getRoom() != null && live.getRoom().acceptsRandom())) {
       return;
     }
     if (shortcut != null) {
@@ -642,7 +641,7 @@ public class LiveActivity extends BaseActivity
     livePresenter.getRandomBannedUntil();
     if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       subscriptions.add(live.onRoomUpdated().subscribe(room -> {
-        if (room == null && chatView == null) return;
+        if ((room == null || room.acceptsRandom()) && chatView == null) return;
 
         if (room != null && room.getLiveUsers() != null) {
           for (User user : room.getLiveUsers()) {
