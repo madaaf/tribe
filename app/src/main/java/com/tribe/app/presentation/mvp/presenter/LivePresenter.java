@@ -1,10 +1,12 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.job.DeleteRoomJob;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Live;
+import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.game.AddScore;
@@ -268,6 +270,12 @@ public class LivePresenter implements Presenter {
 
   public void addScore(String gameId, Integer score) {
     addScore.setup(gameId, score);
-    addScore.execute(new DefaultSubscriber());
+    addScore.execute(new DefaultSubscriber<AddScoreEntity>() {
+      @Override public void onNext(AddScoreEntity score) {
+        if (score != null && liveMVPView != null) {
+          liveMVPView.onDisplayNotificationForNewHighScore();
+        }
+      }
+    });
   }
 }

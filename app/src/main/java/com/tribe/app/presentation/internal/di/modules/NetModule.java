@@ -21,6 +21,7 @@ import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
+import com.tribe.app.data.network.deserializer.AddScoreDeserializer;
 import com.tribe.app.data.network.deserializer.BookRoomLinkDeserializer;
 import com.tribe.app.data.network.deserializer.BooleanTypeAdapter;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
@@ -43,6 +44,7 @@ import com.tribe.app.data.network.deserializer.ShortcutRealmDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
+import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RefreshEntity;
@@ -184,6 +186,7 @@ import timber.log.Timber;
         .registerTypeAdapter(ScoreRealm.class, new ScoreRealmDeserializer())
         .registerTypeAdapter(new TypeToken<List<ScoreRealm>>() {
         }.getType(), new ScoreRealmListDeserializer())
+        .registerTypeAdapter(AddScoreEntity.class, new AddScoreDeserializer())
         .create();
   }
 

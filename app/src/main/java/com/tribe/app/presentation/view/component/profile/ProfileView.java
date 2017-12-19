@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Pair;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import butterknife.BindView;
@@ -29,7 +28,6 @@ import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -44,14 +42,6 @@ public class ProfileView extends ScrollView {
   @Inject Navigator navigator;
 
   @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
-
-  @BindView(R.id.avatar) NewAvatarView viewAvatar;
-
-  @BindView(R.id.txtName) TextViewFont txtName;
-
-  @BindView(R.id.txtUsername) TextViewFont txtUsername;
-
-  @BindView(R.id.viewShareProfile) View viewShareProfile;
 
   @BindView(R.id.viewActionVideo) ActionView viewActionVideo;
 
@@ -76,6 +66,7 @@ public class ProfileView extends ScrollView {
   @BindView(R.id.viewActionBlocked) ActionView viewActionBlocked;
 
   @BindView(R.id.txtVersion) TextViewFont txtVersion;
+
   @BindView(R.id.txtTimeInCall) TextViewFont txtTimeInCall;
 
   @BindView(R.id.imgLogo) ImageView imgLogo;
@@ -114,10 +105,6 @@ public class ProfileView extends ScrollView {
   }
 
   public void reloadUserUI(User user) {
-    txtName.setText(user.getDisplayName());
-    txtUsername.setText("@" + user.getUsername());
-    viewAvatar.load(user.getProfilePicture());
-
     long minutes = Math.round(user.getTimeInCall() / 60.0f);
     txtTimeInCall.setText(" " +
         getContext().getString(
@@ -221,10 +208,6 @@ public class ProfileView extends ScrollView {
     if (BuildConfig.DEBUG) {
       onDebugMode.onNext(null);
     }
-  }
-
-  @OnClick({ R.id.viewShareProfile, R.id.btnShare }) void clickShareProfile() {
-    onShare.onNext(null);
   }
 
   /**

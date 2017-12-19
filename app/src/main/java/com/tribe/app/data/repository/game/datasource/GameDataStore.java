@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.game.datasource;
 
+import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import java.util.List;
@@ -19,7 +20,7 @@ public interface GameDataStore {
 
   Observable<List<ScoreRealm>> getUserLeaderboard(String userId);
 
-  Observable<Void> addScore(String gameId, Integer score);
+  Observable<AddScoreEntity> addScore(String gameId, Integer score);
 
   Observable<List<ScoreRealm>> getFriendsScore(String gameId);
 }

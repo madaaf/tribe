@@ -30,4 +30,6 @@ public interface LiveMVPView extends MVPView {
   void onInvites(List<Invite> invites);
 
   void onRandomBannedUntil(String date);
+
+  void onDisplayNotificationForNewHighScore();
 }

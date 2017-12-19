@@ -364,6 +364,8 @@ public class LiveContainer extends FrameLayout {
       case MotionEvent.ACTION_MOVE: {
         final int pointerIndex = event.findPointerIndex(activePointerId);
 
+        if (isEndCallOpened) break;
+
         if (pointerIndex != INVALID_POINTER) {
           float x = event.getX(pointerIndex) + location[0];
           float offsetX = x - lastDownX;

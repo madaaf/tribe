@@ -9,6 +9,7 @@ import com.tribe.app.R;
 import com.tribe.app.data.cache.GameCache;
 import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
@@ -97,7 +98,7 @@ public class CloudGameDataStore implements GameDataStore {
         .doOnNext(scoreRealmList -> gameCache.updateLeaderboard(userId, scoreRealmList));
   }
 
-  @Override public Observable<Void> addScore(String gameId, Integer score) {
+  @Override public Observable<AddScoreEntity> addScore(String gameId, Integer score) {
     String body = context.getString(R.string.addScore, gameId, "" + score);
     final String request = context.getString(R.string.mutation, body);
     return this.tribeApi.addScore(request);

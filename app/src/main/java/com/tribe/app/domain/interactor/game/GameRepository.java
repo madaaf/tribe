@@ -4,9 +4,8 @@ package com.tribe.app.domain.interactor.game;
  * Created by tiago on 04/05/2016.
  */
 
-import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.domain.entity.Score;
-import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.List;
 import rx.Observable;
@@ -22,7 +21,7 @@ public interface GameRepository {
 
   Observable<List<Score>> getUserLeaderboard(String userId);
 
-  Observable<Void> addScore(String gameId, Integer score);
+  Observable<AddScoreEntity> addScore(String gameId, Integer score);
 
   Observable<List<Score>> getFriendsScores(String gameId);
 }

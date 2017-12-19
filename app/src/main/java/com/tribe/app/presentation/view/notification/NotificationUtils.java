@@ -57,7 +57,7 @@ public class NotificationUtils {
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_GAME_LEADER)) {
       // A friend beat the best score
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
-      builder.sound(SoundManager.FRIEND_ONLINE);
+      builder.sound(SoundManager.GAME_FRIEND_LEADER);
       liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
       // A friend entered live - 1o1

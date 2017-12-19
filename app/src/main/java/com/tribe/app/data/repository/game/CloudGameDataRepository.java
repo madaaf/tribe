@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.game;
 
+import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ScoreRealmDataMapper;
 import com.tribe.app.data.repository.game.datasource.GameDataStore;
@@ -49,7 +50,7 @@ import rx.Observable;
         .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
   }
 
-  @Override public Observable<Void> addScore(String gameId, Integer score) {
+  @Override public Observable<AddScoreEntity> addScore(String gameId, Integer score) {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
     return gameDataStore.addScore(gameId, score);
   }

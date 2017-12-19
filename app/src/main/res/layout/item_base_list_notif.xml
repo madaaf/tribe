@@ -33,11 +33,11 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/viewNewAvatar"
         android:layout_marginStart="@dimen/horizontal_margin_small"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="2.5dp"
         android:layout_toEndOf="@id/viewNewAvatar"
         android:ellipsize="end"
         android:maxLines="1"
-        style="@style/Title.2.Black"
+        style="@style/BiggerTitle.1.Black"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -45,11 +45,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/viewNewAvatar"
-        android:layout_marginBottom="2dp"
+        android:layout_marginBottom="2.5dp"
         android:layout_marginStart="@dimen/horizontal_margin_small"
         android:layout_toEndOf="@id/viewNewAvatar"
         android:maxLines="1"
-        style="@style/Caption.One.Black40"
+        style="@style/BiggerBody.One.Black40"
         />
 
     <ImageView
@@ -92,7 +92,7 @@
 
   <View
       android:id="@+id/separator"
-      android:layout_width="0dp"
+      android:layout_width="match_parent"
       android:layout_height="0.5dp"
       android:layout_centerVertical="true"
       android:background="@color/white.opacity.5"
@@ -128,11 +128,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/imgIcon"
-        android:layout_marginBottom="2dp"
+        android:layout_marginBottom="2.5dp"
         android:layout_marginStart="@dimen/horizontal_margin_small"
         android:layout_toRightOf="@id/imgIcon"
         android:text="@string/leaderboards_score"
-        style="@style/BiggerTitle.1.Black40"
+        android:textAllCaps="true"
+        style="@style/Caption.One.Black40"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -142,7 +143,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignTop="@id/imgIcon"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="2.5dp"
         android:layout_toRightOf="@+id/txtPoints"
         android:text="@string/leaderboards_points"
         style="@style/BiggerTitle.1.Black40"
@@ -153,9 +154,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/imgIcon"
-        android:layout_marginEnd="5dp"
         android:layout_marginStart="@dimen/horizontal_margin_small"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="2.5dp"
         android:layout_toRightOf="@id/imgIcon"
         android:text="2222"
         style="@style/BiggerTitle.2.Black"

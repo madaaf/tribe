@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.game.datasource;
 
 import com.tribe.app.data.cache.GameCache;
+import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import java.util.List;
@@ -32,7 +33,7 @@ public class DiskGameDataStore implements GameDataStore {
     return Observable.just(gameCache.getUserLeaderboard(userId));
   }
 
-  @Override public Observable<Void> addScore(String gameId, Integer score) {
+  @Override public Observable<AddScoreEntity> addScore(String gameId, Integer score) {
     return null;
   }
 
