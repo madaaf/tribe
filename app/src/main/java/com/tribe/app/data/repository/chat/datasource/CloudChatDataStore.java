@@ -37,10 +37,11 @@ public class CloudChatDataStore implements ChatDataStore {
   @Override
   public Observable<MessageRealm> createMessage(String[] userIds, String type, String data,
       String date) {
+    if (userIds == null || userIds.length == 0) return Observable.empty();
+
     String req =
         context.getString(R.string.messages_create, JsonUtils.arrayToJson(userIds), type, data,
             context.getString(R.string.messagefragment_info));
-    Timber.i("req : " + req);
     return this.tribeApi.createMessage(req).doOnNext(messageRealm -> {
       RealmList<MessageRealm> list = new RealmList<>();
       list.add(messageRealm);
