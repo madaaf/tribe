@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 10/05/2017.
@@ -118,7 +117,7 @@ public class LiveHangUpView extends FrameLayout {
         (int) SpringUtil.mapValueFromRangeToRange(value, minWidth, maxWidthRotation, MAX_ROTATION,
             0), 0);
     imgPhone.setRotation(rotation);
-    UIUtils.changeWidthOfView(this, (int) value);
+    UIUtils.changeWidthOfView(this, (int) value + screenUtils.dpToPx(5));
   }
 
   public int getMaxWidth() {

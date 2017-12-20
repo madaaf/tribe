@@ -347,6 +347,7 @@ public class LiveContainer extends FrameLayout {
         break;
       case MotionEvent.ACTION_UP:
       case MotionEvent.ACTION_CANCEL:
+        if (isEndCallOpened) closeEndCall();
         clearTouch();
         break;
     }
