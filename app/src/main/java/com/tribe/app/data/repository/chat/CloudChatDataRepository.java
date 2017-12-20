@@ -46,12 +46,24 @@ import rx.Observable;
     return userDataStore.getMessageSupport(typeSupport);
   }
 
+  @Override public Observable addMessageSupportDisk(Message message) {
+    return null;
+  }
+
   @Override public Observable<List<Message>> loadMessages(String[] userIds, String dateBefore,
       String dateAfter) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
     return userDataStore.loadMessages(userIds, dateBefore, dateAfter)
         .doOnError(Throwable::printStackTrace)
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm).getMessages());
+  }
+
+  @Override public Observable<List<Message>> getMessageZendesk(String lang, int typeSupport,
+      String supportId) {
+    final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
+    return userDataStore.getMessageZendesk(supportId)
+        .doOnError(Throwable::printStackTrace)
+        .map(this.messageRealmDataMapper::transform);
   }
 
   @Override public Observable<List<Message>> getMessagesImage(String[] userIds) {

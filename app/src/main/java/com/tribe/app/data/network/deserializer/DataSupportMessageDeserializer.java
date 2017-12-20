@@ -58,15 +58,18 @@ public class DataSupportMessageDeserializer implements JsonDeserializer<List<Con
       }
     }
 
+    int i = 0;
     for (Conversation conversation : nameList) {
       List<Message> list = new ArrayList<>();
       User u = ShortcutUtil.createUserSupport();
 
       for (Message message : conversation.getMessages()) {
-        MessageText m = new MessageText(Shortcut.SUPPORT);
+        i++;
+        MessageText m = new MessageText(Shortcut.SUPPORT + "_" + i);
         m.setAuthor(u);
         m.setCreationDate(dateUtils.getUTCDateForMessage());
         m.setMessage(message.getContent());
+        m.setType(Message.MESSAGE_TEXT);
         list.add(m);
       }
       conversation.setMessages(list);

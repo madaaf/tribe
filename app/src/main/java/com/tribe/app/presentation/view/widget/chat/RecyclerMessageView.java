@@ -18,7 +18,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
-import com.google.common.collect.Lists;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
@@ -83,6 +82,8 @@ import timber.log.Timber;
 
 import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMREADING;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_EVENT;
+import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_IMAGE;
+import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_TEXT;
 
 /**
  * Created by madaaflak on 03/10/2017.
@@ -165,8 +166,9 @@ public class RecyclerMessageView extends IChat {
   }
 
   @Override public void successMessageSupport(List<Message> messages) {
-    messageAdapter.setItems(messages, 0);
-    scrollListToBottom();
+   /* messageAdapter.setItems(messages, 0);
+    scrollListToBottom();*/
+    Timber.i("onSuccess load message support from static api");
   }
 
   private void getCommentZendesk() {
@@ -197,7 +199,7 @@ public class RecyclerMessageView extends IChat {
             List<Image> list = new ArrayList<Image>();
             list.add(i);
             image.setRessources(list);
-
+            image.setType(MESSAGE_IMAGE);
             if (!messageAdapter.getItems().contains(image)) {
               unreadMessage.add(image);
             }
@@ -213,12 +215,16 @@ public class RecyclerMessageView extends IChat {
           }
           m.setCreationDate(dateUtils.getUTCDateForMessage());
           m.setMessage(response.getBody());
-
+          m.setType(MESSAGE_TEXT);
           if (!messageAdapter.getItems().contains(m)) {
             unreadMessage.add(m);
           }
         }
-        messageAdapter.setItems(Lists.reverse(unreadMessage), messageAdapter.getItemCount());
+        for (Message m : unreadMessage) {
+          Timber.e("UNREAD MESSAFE " + m.toString());
+          messagePresenter.addMessageSupportDisk(m); // TODO SOEF
+        }
+        //  messageAdapter.setItems(Lists.reverse(unreadMessage), messageAdapter.getItemCount());
         scrollListToBottom();
       }
 
@@ -256,7 +262,7 @@ public class RecyclerMessageView extends IChat {
 
     provider.addComment(supportId, o, new ZendeskCallback<Comment>() {
       @Override public void onSuccess(Comment comment) {
-        Timber.i("onSuccess add comment to zendesk" + comment.getBody());
+        Timber.i("onSuccess add comment to zendesk " + comment.getBody());
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
@@ -511,6 +517,8 @@ public class RecyclerMessageView extends IChat {
       messagePresenter.onMessageReceivedFromDisk();
       messagePresenter.onMessageRemovedFromDisk();
       messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateForMessage(), null);
+    } else {
+      messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString(), null);
     }
   }
 
@@ -607,6 +615,11 @@ public class RecyclerMessageView extends IChat {
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.i("successLoadingMessageDisk " + messages.size());
+
+    for (Message m : messages) {
+      Timber.e(" DISK " + m.toString());
+    }
+
     if (errorLoadingMessages || !successLoadingMessage) {
       Timber.i("message disk displayed " + messages.size());
       messageAdapter.setItems(messages, 0);

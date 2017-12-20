@@ -25,14 +25,6 @@ public class MessageText extends Message {
   }
 
   @Override public String toString() {
-    return "MessageText{"
-        + "message='"
-        + message
-        + '\''
-        + " pending "
-        + isPending()
-        + " "
-        + getId()
-        + '}';
+    return "MessageText{ " + getId() + " message= '" + message + '}';
   }
 }

@@ -3,7 +3,11 @@ package com.tribe.app.data.repository.chat.datasource;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
+import io.realm.RealmList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import rx.Observable;
@@ -15,9 +19,11 @@ import rx.Observable;
 public class DiskChatDataStore implements ChatDataStore {
 
   private final ChatCache chatCache;
+  private final MessageRealmDataMapper messageRealmDataMapper;
 
-  public DiskChatDataStore(ChatCache chatCache) {
+  public DiskChatDataStore(ChatCache chatCache, MessageRealmDataMapper messageRealmDataMapper) {
     this.chatCache = chatCache;
+    this.messageRealmDataMapper = messageRealmDataMapper;
   }
 
   @Override
@@ -28,6 +34,10 @@ public class DiskChatDataStore implements ChatDataStore {
 
   @Override
   public Observable<UserRealm> loadMessages(String[] userIds, String dateBefore, String dateAfter) {
+    return null;
+  }
+
+  @Override public Observable<List<MessageRealm>> getMessageZendesk(String supportId) {
     return null;
   }
 
@@ -66,6 +76,13 @@ public class DiskChatDataStore implements ChatDataStore {
   }
 
   @Override public Observable<List<Conversation>> getMessageSupport(int typeSupport) {
+    return null;
+  }
+
+  @Override public Observable<Object> addMessageSupportDisk(Message message) {
+    RealmList<MessageRealm> list = new RealmList<>();
+    list.add(messageRealmDataMapper.transform(message));
+    chatCache.putMessages(list, Shortcut.SUPPORT);
     return null;
   }
 }

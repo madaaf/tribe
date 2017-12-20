@@ -44,6 +44,6 @@ import rx.Observable;
   void deleteRemovedMessageFromCache(RealmList<MessageRealm> messages, String s, String dateBefore,
       String dateAfter);
 
-  void putMessagesSupport(List<Message> messageList);
+  void putMessagesSupport(List<Message> messages);
 }
 

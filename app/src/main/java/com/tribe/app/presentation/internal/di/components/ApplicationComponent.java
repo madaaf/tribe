@@ -309,7 +309,6 @@ public interface ApplicationComponent {
 
   DiskLiveDataRepository diskLiveRepository();
 
-
   TribeAuthorizer tribeAuthorizer();
 
   PhoneUtils phoneUtils();

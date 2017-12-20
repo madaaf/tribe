@@ -4,6 +4,7 @@ import android.util.Pair;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.interactor.chat.AddMessageSupportDisk;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
 import com.tribe.app.domain.interactor.chat.GetMessageImageFromDisk;
@@ -61,6 +62,7 @@ public class MessagePresenter implements Presenter {
   protected UpdateShortcut updateShortcut;
   protected GetShortcutForUserIds getShortcutForUserIds;
   protected RemoveMessage removeMessage;
+  protected AddMessageSupportDisk addMessageSupportDisk;
 
   // SUBSCRIBERS
   private UpdateShortcutSubscriber updateShortcutSubscriber;
@@ -74,7 +76,8 @@ public class MessagePresenter implements Presenter {
       GetMessageImageFromDisk getMessageImageFromDisk, GetShortcutForUserIds getShortcutForUserIds,
       CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk,
       IsReadingFromDisk isReadingFromDisk, RemoveMessage removeMessage,
-      OnMessageRemovedFromDisk onMessageRemovedFromDisk, GetMessageSupport getMessageSupport) {
+      OnMessageRemovedFromDisk onMessageRemovedFromDisk, GetMessageSupport getMessageSupport,
+      AddMessageSupportDisk addMessageSupportDisk) {
     this.shortcutPresenter = shortcutPresenter;
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
@@ -92,6 +95,12 @@ public class MessagePresenter implements Presenter {
     this.removeMessage = removeMessage;
     this.onMessageRemovedFromDisk = onMessageRemovedFromDisk;
     this.getMessageSupport = getMessageSupport;
+    this.addMessageSupportDisk = addMessageSupportDisk;
+  }
+
+  public void addMessageSupportDisk(Message message) {
+    addMessageSupportDisk.setup(message);
+    addMessageSupportDisk.execute(new OKSubscriber());
   }
 
   public void getMessageImage(String[] userIds) {
@@ -158,6 +167,10 @@ public class MessagePresenter implements Presenter {
   public void loadMessage(String[] userIds, String dateBefore, String dateAfter) {
     userMessageInfos.setUserIds(userIds, dateBefore, dateAfter);
     userMessageInfos.execute(new LoadMessageSubscriber(dateAfter != null));
+  }
+
+  public void loadMessageZendesk() {
+
   }
 
   public void createMessage(String[] userIds, String data, String type, int positon) {
@@ -249,6 +262,20 @@ public class MessagePresenter implements Presenter {
           chatMVPView.successLoadingBetweenTwoDateMessage(messages);
         }
       }
+    }
+  }
+
+  private class OKSubscriber extends DefaultSubscriber<Object> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e("SOEF " + e.getMessage());
+    }
+
+    @Override public void onNext(Object messages) {
+      Timber.e("SOEF OK ");
     }
   }
 

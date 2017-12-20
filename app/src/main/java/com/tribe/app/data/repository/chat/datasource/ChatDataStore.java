@@ -3,6 +3,7 @@ package com.tribe.app.data.repository.chat.datasource;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 import rx.Observable;
 
@@ -16,6 +17,8 @@ public interface ChatDataStore {
       String date);
 
   Observable<UserRealm> loadMessages(final String[] userIds, String dateBefore, String dateAfter);
+
+  Observable<List<MessageRealm>> getMessageZendesk(String supportId);
 
   Observable<List<MessageRealm>> getMessages(String[] userIds);
 
@@ -33,6 +36,7 @@ public interface ChatDataStore {
 
   Observable<Boolean> imTyping(String[] userIds);
 
-
   Observable<List<Conversation>> getMessageSupport(int typeSupport);
+
+  Observable<Object> addMessageSupportDisk(Message message);
 }

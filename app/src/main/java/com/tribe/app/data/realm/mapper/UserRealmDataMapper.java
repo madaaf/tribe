@@ -181,7 +181,7 @@ import javax.inject.Singleton;
       userRealm.setRandom_banned_permanently(user.isRandom_banned_permanently());
       userRealm.setShortcuts(shortcutRealmDataMapper.transformList(user.getShortcutList()));
 
-      if (user.getMessages() != null) {
+      if (user.getMessages() != null && user.getMessageList()!=null) {
         userRealm.setMessages(messageRealmDataMapper.transformMessages(user.getMessageList()));
       }
     }

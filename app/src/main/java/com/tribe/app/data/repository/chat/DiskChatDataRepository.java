@@ -41,6 +41,11 @@ import rx.Observable;
         .map(messageRealmDataMapper::transform);
   }
 
+  @Override public Observable<List<Message>> getMessageZendesk(String lang, int typeSupport,
+      String supportId) {
+    return null;
+  }
+
   @Override public Observable<List<Message>> getMessagesImage(String[] userIds) {
     final DiskChatDataStore chatDataStore =
         (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
@@ -88,6 +93,13 @@ import rx.Observable;
   }
 
   @Override public Observable<List<Conversation>> getMessageSupport(String lang, int typeSupport) {
+    return null;
+  }
+
+  @Override public Observable addMessageSupportDisk(Message message) {
+    final DiskChatDataStore chatDataStore =
+        (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
+    chatDataStore.addMessageSupportDisk(message).doOnError(Throwable::printStackTrace);
     return null;
   }
 }

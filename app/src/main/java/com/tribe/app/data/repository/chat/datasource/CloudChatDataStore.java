@@ -9,7 +9,11 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
+import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.presentation.utils.RXZendesk.RXZendesk;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.RealmList;
 import java.util.List;
@@ -28,20 +32,36 @@ public class CloudChatDataStore implements ChatDataStore {
   private ChatCache chatCache;
   private UserCache userCache;
   private FileApi fileApi;
+  private MessageRealmDataMapper messageRealmDataMapper;
+  private final RXZendesk rxZendesk;
 
   public CloudChatDataStore(Context context, TribeApi tribeApi, FileApi fileApi,
-      ChatCache chatCache, UserCache userCache) {
+      ChatCache chatCache, UserCache userCache, MessageRealmDataMapper messageRealmDataMapper,
+      RXZendesk rxZendesk) {
     this.context = context;
     this.tribeApi = tribeApi;
     this.chatCache = chatCache;
     this.userCache = userCache;
     this.fileApi = fileApi;
+    this.messageRealmDataMapper = messageRealmDataMapper;
+    this.rxZendesk = rxZendesk;
   }
 
   @Override public Observable<List<Conversation>> getMessageSupport(int typeSupport) {
     return fileApi.getMessageSupport().doOnNext(messageSupport -> {
-      chatCache.putMessagesSupport(messageSupport.get(typeSupport).getMessages());
+      // chatCache.putMessagesSupport(messageSupport.get(typeSupport).getMessages());
+
+      RealmList<MessageRealm> list = new RealmList<>();
+      for (Message message : messageSupport.get(typeSupport).getMessages()) {
+        list.add(messageRealmDataMapper.transform(message));
+      }
+
+      chatCache.putMessages(list, Shortcut.SUPPORT);
     });
+  }
+
+  @Override public Observable<Object> addMessageSupportDisk(Message message) {
+    return null;
   }
 
   @Override
@@ -78,6 +98,10 @@ public class CloudChatDataStore implements ChatDataStore {
               JsonUtils.arrayToJson(userIds), dateBefore, dateAfter))
           .doOnNext(messageRealm -> refactorMessages.call(userIds));
     }
+  }
+
+  @Override public Observable<List<MessageRealm>> getMessageZendesk(String supportId) {
+    return rxZendesk.getComments(supportId);
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {

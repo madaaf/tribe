@@ -16,6 +16,8 @@ public interface ChatRepository {
   Observable<List<Message>> loadMessages(final String[] userIds, String dateBefore,
       String dateAfter);
 
+  Observable<List<Message>> getMessageZendesk(String lang, int typeSupport, String supportId);
+
   Observable<List<Message>> getMessagesImage(final String[] userIds);
 
   Observable<List<Message>> onMessageReceived();
@@ -31,4 +33,6 @@ public interface ChatRepository {
   Observable<Boolean> imTyping(String[] userIds);
 
   Observable<List<Conversation>> getMessageSupport(String lang, int typeSupport);
+
+  Observable addMessageSupportDisk(Message message);
 }

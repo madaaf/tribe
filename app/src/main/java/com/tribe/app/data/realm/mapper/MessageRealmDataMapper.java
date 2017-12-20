@@ -96,7 +96,7 @@ import javax.inject.Singleton;
     return messageList;
   }
 
-  private MessageRealm transform(Message message) {
+  public MessageRealm transform(Message message) {
     MessageRealm messageRealm = null;
     if (message != null) {
       messageRealm = new MessageRealm(message.getId());

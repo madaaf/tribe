@@ -99,7 +99,7 @@ public class ChatCacheImpl implements ChatCache {
     }
   }
 
-  @Override public void putMessagesSupport(List<Message> messageList) {
+  @Override public void putMessagesSupport(List<Message> messages) {
 
   }
 
@@ -237,9 +237,8 @@ public class ChatCacheImpl implements ChatCache {
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
-    RealmResults<MessageRealm> ok = realm.where(MessageRealm.class)
-        .equalTo("localId", JsonUtils.arrayToJson(userIds))
-        .findAll();
+    RealmResults<MessageRealm> ok =
+        realm.where(MessageRealm.class).equalTo("localId", "support").findAll(); // TODO MADA
 
     return ok.asObservable()
         .filter(RealmResults::isLoaded)
