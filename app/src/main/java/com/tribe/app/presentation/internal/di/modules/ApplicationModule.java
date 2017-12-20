@@ -76,6 +76,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 import javax.inject.Named;
@@ -396,7 +397,7 @@ import timber.log.Timber;
   }
 
   @Provides @Singleton @Named("utcSimpleDate") SimpleDateFormat provideUTCSimpleDateFormat() {
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     return sdf;
   }

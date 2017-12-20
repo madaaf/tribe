@@ -148,9 +148,9 @@ public class RecyclerMessageView extends ChatMVPView {
 
       for (User user : shortcut.getMembers()) {
         if (lastSeenListId.contains(user.getId())) {
-          lastSeenString +=
-              user.getDisplayName().substring(0, 1).toUpperCase() + user.getDisplayName()
-                  .substring(1) + ", ";
+          lastSeenString += user.getDisplayName().substring(0, 1).toUpperCase() +
+              user.getDisplayName().substring(1) +
+              ", ";
         }
       }
 
@@ -160,13 +160,13 @@ public class RecyclerMessageView extends ChatMVPView {
     }));
 
     subscriptions.add(messageAdapter.onLongClickItem().subscribe(m -> {
-      Timber.i("on long click message " + dateUtils.getDiffDate(m.getCreationDate(),
-          dateUtils.getUTCDateAsString()));
+      Timber.i("on long click message " +
+          dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString()));
       boolean enableUnsendMessage = false;
-      if (!m.getType().equals(MESSAGE_EVENT)
-          && m.getAuthor().getId().equals(user.getId())
-          && dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString())
-          < MAX_DURATION_MIN_DELETE_MESSAGE) {
+      if (!m.getType().equals(MESSAGE_EVENT) &&
+          m.getAuthor().getId().equals(user.getId()) &&
+          dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString()) <
+              MAX_DURATION_MIN_DELETE_MESSAGE) {
         enableUnsendMessage = true;
       }
       subscriptions.add(
@@ -273,9 +273,9 @@ public class RecyclerMessageView extends ChatMVPView {
     this.arrIds = arrIds;
     messageAdapter.setArrIds(arrIds);
 
-    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString(),
+    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateForMessage(),
         dateUtils.getUTCDateWithDeltaAsString(-(2 * ONE_HOUR_DURATION)));
-    messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString(), null);
+    messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateForMessage(), null);
     messagePresenter.onMessageReceivedFromDisk();
     messagePresenter.onMessageRemovedFromDisk();
     messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateForMessage(), null);

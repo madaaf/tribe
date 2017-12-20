@@ -38,18 +38,15 @@ public class DateUtils {
     return utcTime;
   }
 
-
   public String getUTCDateWithDeltaAsString(long delta) {
     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     Date d1 = new Date();
     Date d2 = new Date(d1.getTime() + delta);
     return sdf.format(d2);
   }
-  
+
   public String getUTCDateForMessage() {
-    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
-    sdf2.setTimeZone(TimeZone.getTimeZone("UTC"));
-    return sdf2.format(new Date());
+    return sdf.format(new Date());
   }
 
   public Date stringDateToDate(String StrDate) {
@@ -164,9 +161,9 @@ public class DateUtils {
 
     DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
     DateTime dateTimeHere = parser.parseDateTime(stringDate);
-    return (dateTimeHere.getYear() == year
-        && dateTimeHere.getMonthOfYear() == month
-        && dateTimeHere.getDayOfMonth() == day);
+    return (dateTimeHere.getYear() == year &&
+        dateTimeHere.getMonthOfYear() == month &&
+        dateTimeHere.getDayOfMonth() == day);
   }
 
   private boolean isYesterday(String stringDate) {
@@ -177,9 +174,9 @@ public class DateUtils {
 
     DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
     DateTime dateTimeHere = parser.parseDateTime(stringDate);
-    return (dateTimeHere.getYear() == year
-        && dateTimeHere.getMonthOfYear() == month
-        && dateTimeHere.getDayOfMonth() == day);
+    return (dateTimeHere.getYear() == year &&
+        dateTimeHere.getMonthOfYear() == month &&
+        dateTimeHere.getDayOfMonth() == day);
   }
 
   public static String unifyDate(String dateInput) {
