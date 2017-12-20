@@ -44,9 +44,6 @@ import timber.log.Timber;
 
 @Singleton public class WSService extends Service {
 
-  private static final int TIMER_IM_ONLINE = 30000; // 30 SECS
-  private static final long TWENTY_FOUR_HOURS = 86400000;
-
   public static final String TYPE = "TYPE";
   public static final String ROOM_ID = "ROOM_ID";
   public static final String CHAT_IDS = "CHAT_IDS";
@@ -301,8 +298,9 @@ import timber.log.Timber;
       }
     }
 
-    if (webSocketState != null && (webSocketState.equals(WebSocketConnection.STATE_CONNECTED)
-        || webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
+    if (webSocketState != null &&
+        (webSocketState.equals(WebSocketConnection.STATE_CONNECTED) ||
+            webSocketConnection.equals(WebSocketConnection.STATE_CONNECTING))) {
       Timber.d("webSocketState connected or connecting, no need to reconnect");
       return Service.START_STICKY;
     }
@@ -327,9 +325,9 @@ import timber.log.Timber;
   }
 
   private void prepareHeaders() {
-    if (accessToken.isAnonymous()
-        || StringUtils.isEmpty(accessToken.getTokenType())
-        || StringUtils.isEmpty(accessToken.getAccessToken())) {
+    if (accessToken.isAnonymous() ||
+        StringUtils.isEmpty(accessToken.getTokenType()) ||
+        StringUtils.isEmpty(accessToken.getAccessToken())) {
 
       webSocketConnection.setShouldReconnect(false);
     } else {
@@ -449,7 +447,7 @@ import timber.log.Timber;
         jsonToModel.onRandomBannedUntil().onBackpressureDrop().subscribe(date -> {
           userCache.putRandomBannedUntil(date);
         }));
-    
+
     persistentSubscriptions.add(
         jsonToModel.onMessageCreated().onBackpressureDrop().subscribe(messagRealm -> {
           RealmList<MessageRealm> messages = new RealmList<>();
@@ -493,10 +491,13 @@ import timber.log.Timber;
 
     persistentSubscriptions.add(
         jsonToModel.onShortcutCreated().onBackpressureDrop().subscribe(shortcutRealm -> {
-          for (UserRealm userRealm : shortcutRealm.getMembers()) {
-            if (!userSubscribed.contains(userRealm.getId())) {
-              sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
-                  generateHash() + USER_SUFFIX + userSubscribed.size(), user.getId()));
+          if (shortcutRealm.isSingle()) {
+            for (UserRealm userRealm : shortcutRealm.getMembers()) {
+              if (!userSubscribed.contains(userRealm.getId())) {
+                sendSubscription(
+                    getApplicationContext().getString(R.string.subscription_userUpdated,
+                        generateHash() + USER_SUFFIX + userSubscribed.size(), user.getId()));
+              }
             }
           }
 
@@ -540,13 +541,15 @@ import timber.log.Timber;
       int count = 0;
 
       for (ShortcutRealm shortcutRealm : shortcutList) {
-        for (UserRealm user : shortcutRealm.getMembers()) {
-          if (!userSubscribed.contains(user.getId())) {
-            sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
-                hash + USER_SUFFIX + count, user.getId()));
+        if (shortcutRealm.isSingle()) {
+          for (UserRealm user : shortcutRealm.getMembers()) {
+            if (!userSubscribed.contains(user.getId())) {
+              sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,
+                  hash + USER_SUFFIX + count, user.getId()));
 
-            userSubscribed.add(user.getId());
-            count++;
+              userSubscribed.add(user.getId());
+              count++;
+            }
           }
         }
       }
@@ -560,9 +563,8 @@ import timber.log.Timber;
   }
 
   private void sendSubscription(String body) {
-    String userInfosFragment =
-        (body.contains("UserInfos") ? "\n" + getApplicationContext().getString(
-            R.string.userfragment_infos) : "");
+    String userInfosFragment = (body.contains("UserInfos") ? "\n" +
+        getApplicationContext().getString(R.string.userfragment_infos) : "");
 
     String req = getApplicationContext().getString(R.string.subscription, body) + userInfosFragment;
 
