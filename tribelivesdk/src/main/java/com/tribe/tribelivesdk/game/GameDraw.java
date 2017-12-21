@@ -37,7 +37,7 @@ public class GameDraw extends Game {
     if (peerList == null || peerList.size() == 0) {
       return;
     }
-    currentDrawer = getNextGuest();
+    currentMaster = currentDrawer = getNextGuest();
     Timber.d("set current gamer : " + currentDrawer.getDisplayName());
   }
 

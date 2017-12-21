@@ -246,9 +246,11 @@ import rx.subscriptions.CompositeSubscription;
 
   public void setCurrentDataGame(String name, TribeGuest currentPlayer) {
     if (currentGame.getId().equals(Game.GAME_DRAW)) {
+      ((GameDraw) currentGame).setCurrentMaster(currentPlayer);
       ((GameDraw) currentGame).setCurrentDrawer(currentPlayer);
       ((GameDraw) currentGame).setCurrentDrawName(name);
     } else if (currentGame.getId().equals(Game.GAME_CHALLENGE)) {
+      ((GameChallenge) currentGame).setCurrentMaster(currentPlayer);
       ((GameChallenge) currentGame).setCurrentChallenger(currentPlayer);
       ((GameChallenge) currentGame).setCurrentChallenge(name);
     }

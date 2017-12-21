@@ -507,8 +507,8 @@ public class LiveControlsView extends FrameLayout {
             new OvershootInterpolator(OVERSHOOT_LIGHT)))
         .map(aVoid -> gameManager.getCurrentGame())
         .filter(game -> {
-          if (game.getCurrentMaster() != null &&
-              game.getCurrentMaster().getId().equals(user.getId())) {
+          if ((game.getCurrentMaster() != null &&
+              game.getCurrentMaster().getId().equals(user.getId())) || game.getId().equals(Game.GAME_POST_IT)) {
             return true;
           } else {
             Toast.makeText(getContext(), getContext().getString(R.string.game_update_forbidden,
