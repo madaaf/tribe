@@ -12,6 +12,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -63,7 +64,10 @@ import rx.Observable;
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
     return userDataStore.getMessageZendesk(supportId)
         .doOnError(Throwable::printStackTrace)
-        .map(this.messageRealmDataMapper::transform);
+        .map(list -> {
+          Timber.e("SOEF " + list);
+          return list;
+        });
   }
 
   @Override public Observable<List<Message>> getMessagesImage(String[] userIds) {

@@ -18,7 +18,7 @@ public interface ChatDataStore {
 
   Observable<UserRealm> loadMessages(final String[] userIds, String dateBefore, String dateAfter);
 
-  Observable<List<MessageRealm>> getMessageZendesk(String supportId);
+  Observable<List<Message>> getMessageZendesk(String supportId);
 
   Observable<List<MessageRealm>> getMessages(String[] userIds);
 

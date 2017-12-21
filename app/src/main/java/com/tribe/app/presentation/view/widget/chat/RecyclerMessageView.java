@@ -35,7 +35,6 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.preferences.SupportId;
-import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -43,17 +42,12 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
-import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
-import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
-import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.zendesk.sdk.model.access.Identity;
 import com.zendesk.sdk.model.access.JwtIdentity;
 import com.zendesk.sdk.model.push.PushRegistrationResponse;
 import com.zendesk.sdk.model.request.Comment;
-import com.zendesk.sdk.model.request.CommentResponse;
-import com.zendesk.sdk.model.request.CommentsResponse;
 import com.zendesk.sdk.model.request.CreateRequest;
 import com.zendesk.sdk.model.request.EndUserComment;
 import com.zendesk.sdk.model.request.Request;
@@ -82,8 +76,6 @@ import timber.log.Timber;
 
 import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMREADING;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_EVENT;
-import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_IMAGE;
-import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_TEXT;
 
 /**
  * Created by madaaflak on 03/10/2017.
@@ -172,66 +164,7 @@ public class RecyclerMessageView extends IChat {
   }
 
   private void getCommentZendesk() {
-    provider.getComments(supportId, new ZendeskCallback<CommentsResponse>() {
-      @Override public void onSuccess(CommentsResponse commentsResponse) {
-        Timber.i("onSuccess getCommentZendesk" + commentsResponse.getComments().size());
-        String supportUserId = null;
-        for (com.zendesk.sdk.model.request.User u : commentsResponse.getUsers()) {
-          if (u.isAgent() && u.getId() != null) {
-            supportUserId = u.getId().toString();
-          }
-        }
-        unreadMessage.clear();
-        for (CommentResponse response : commentsResponse.getComments()) {
-          if (!response.getAttachments().isEmpty()) {
-            MessageImage image = new MessageImage();
-            if (response.getId() != null) image.setId(response.getId().toString());
-            if (response.getAuthorId() != null && response.getAuthorId()
-                .toString()
-                .equals(supportUserId)) {
-              image.setAuthor(ShortcutUtil.createUserSupport());
-            } else {
-              image.setAuthor(user);
-            }
-            image.setCreationDate(dateUtils.getUTCDateForMessage());
-            Image i = new Image();
-            i.setUrl(response.getAttachments().get(0).getContentUrl());
-            List<Image> list = new ArrayList<Image>();
-            list.add(i);
-            image.setRessources(list);
-            image.setType(MESSAGE_IMAGE);
-            if (!messageAdapter.getItems().contains(image)) {
-              unreadMessage.add(image);
-            }
-          }
-          MessageText m = new MessageText();
-          if (response.getId() != null) m.setId(response.getId().toString());
-          if (response.getAuthorId() != null && response.getAuthorId()
-              .toString()
-              .equals(supportUserId)) {
-            m.setAuthor(ShortcutUtil.createUserSupport());
-          } else {
-            m.setAuthor(user);
-          }
-          m.setCreationDate(dateUtils.getUTCDateForMessage());
-          m.setMessage(response.getBody());
-          m.setType(MESSAGE_TEXT);
-          if (!messageAdapter.getItems().contains(m)) {
-            unreadMessage.add(m);
-          }
-        }
-        for (Message m : unreadMessage) {
-          Timber.e("UNREAD MESSAFE " + m.toString());
-          messagePresenter.addMessageSupportDisk(m); // TODO SOEF
-        }
-        //  messageAdapter.setItems(Lists.reverse(unreadMessage), messageAdapter.getItemCount());
-        scrollListToBottom();
-      }
-
-      @Override public void onError(ErrorResponse errorResponse) {
-        Timber.e("onError getCommentZendesk " + errorResponse.getReason());
-      }
-    });
+    messagePresenter.getMessageZendesk(supportId);
   }
 
   private void addCommentZendesk(String data, Uri uri) {
@@ -615,11 +548,9 @@ public class RecyclerMessageView extends IChat {
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.i("successLoadingMessageDisk " + messages.size());
-
     for (Message m : messages) {
       Timber.e(" DISK " + m.toString());
     }
-
     if (errorLoadingMessages || !successLoadingMessage) {
       Timber.i("message disk displayed " + messages.size());
       messageAdapter.setItems(messages, 0);

@@ -100,8 +100,12 @@ public class CloudChatDataStore implements ChatDataStore {
     }
   }
 
-  @Override public Observable<List<MessageRealm>> getMessageZendesk(String supportId) {
-    return rxZendesk.getComments(supportId);
+  @Override public Observable<List<Message>> getMessageZendesk(String supportId) {
+    return rxZendesk.getComments(supportId).doOnNext(comments -> {
+      RealmList<MessageRealm> messageRealms = new RealmList<>();
+      messageRealms.addAll(messageRealmDataMapper.transformMessages(comments));
+      chatCache.putMessages(messageRealms, Shortcut.SUPPORT);
+    });
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {

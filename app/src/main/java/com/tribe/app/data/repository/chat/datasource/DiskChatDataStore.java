@@ -37,7 +37,7 @@ public class DiskChatDataStore implements ChatDataStore {
     return null;
   }
 
-  @Override public Observable<List<MessageRealm>> getMessageZendesk(String supportId) {
+  @Override public Observable<List<Message>> getMessageZendesk(String supportId) {
     return null;
   }
 

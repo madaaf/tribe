@@ -9,6 +9,7 @@ import com.tribe.app.domain.interactor.chat.CreateMessage;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
 import com.tribe.app.domain.interactor.chat.GetMessageImageFromDisk;
 import com.tribe.app.domain.interactor.chat.GetMessageSupport;
+import com.tribe.app.domain.interactor.chat.GetMessageZendesk;
 import com.tribe.app.domain.interactor.chat.ImTyping;
 import com.tribe.app.domain.interactor.chat.IsReadingFromDisk;
 import com.tribe.app.domain.interactor.chat.IsTalkingFromDisk;
@@ -63,6 +64,7 @@ public class MessagePresenter implements Presenter {
   protected GetShortcutForUserIds getShortcutForUserIds;
   protected RemoveMessage removeMessage;
   protected AddMessageSupportDisk addMessageSupportDisk;
+  protected GetMessageZendesk getMessageZendesk;
 
   // SUBSCRIBERS
   private UpdateShortcutSubscriber updateShortcutSubscriber;
@@ -77,7 +79,7 @@ public class MessagePresenter implements Presenter {
       CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk,
       IsReadingFromDisk isReadingFromDisk, RemoveMessage removeMessage,
       OnMessageRemovedFromDisk onMessageRemovedFromDisk, GetMessageSupport getMessageSupport,
-      AddMessageSupportDisk addMessageSupportDisk) {
+      AddMessageSupportDisk addMessageSupportDisk, GetMessageZendesk getMessageZendesk) {
     this.shortcutPresenter = shortcutPresenter;
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
@@ -96,6 +98,12 @@ public class MessagePresenter implements Presenter {
     this.onMessageRemovedFromDisk = onMessageRemovedFromDisk;
     this.getMessageSupport = getMessageSupport;
     this.addMessageSupportDisk = addMessageSupportDisk;
+    this.getMessageZendesk = getMessageZendesk;
+  }
+
+  public void getMessageZendesk(String supportId) {
+    getMessageZendesk.setTypeSupport(0, supportId);
+    getMessageZendesk.execute(new DefaultSubscriber());
   }
 
   public void addMessageSupportDisk(Message message) {
