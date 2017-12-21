@@ -792,7 +792,7 @@ public class ChatView extends IChat {
     message.setType(type);
     message.setAuthor(user);
     message.setCreationDate(dateUtils.getUTCDateAsString());
-    if (!shortcut.isSupport()) message.setPending(true);
+    message.setPending(true);
     message.setId(Message.PENDING);//+ UUID.randomUUID()
     recyclerView.sendMyMessageToAdapter(message);
     if (type.equals(MESSAGE_IMAGE) || type.equals(MESSAGE_AUDIO)) {

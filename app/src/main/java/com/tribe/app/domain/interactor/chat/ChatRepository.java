@@ -1,5 +1,6 @@
 package com.tribe.app.domain.interactor.chat;
 
+import android.net.Uri;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
@@ -34,5 +35,5 @@ public interface ChatRepository {
 
   Observable<List<Conversation>> getMessageSupport(String lang, int typeSupport);
 
-  Observable addMessageSupportDisk(Message message);
+  Observable addMessageZendesk(String supportId, String data, Uri uri);
 }

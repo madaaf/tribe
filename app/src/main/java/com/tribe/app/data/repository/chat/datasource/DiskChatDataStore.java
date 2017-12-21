@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.chat.datasource;
 
+import android.net.Uri;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -41,6 +42,10 @@ public class DiskChatDataStore implements ChatDataStore {
     return null;
   }
 
+  @Override public Observable<Boolean> addMessageZendesk(String supportId, String data, Uri uri) {
+    return null;
+  }
+
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
     return chatCache.getMessages(userIds).debounce(600, TimeUnit.MILLISECONDS);
   }
@@ -79,10 +84,5 @@ public class DiskChatDataStore implements ChatDataStore {
     return null;
   }
 
-  @Override public Observable<Object> addMessageSupportDisk(Message message) {
-    RealmList<MessageRealm> list = new RealmList<>();
-    list.add(messageRealmDataMapper.transform(message));
-    chatCache.putMessages(list, Shortcut.SUPPORT);
-    return null;
-  }
+
 }

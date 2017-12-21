@@ -99,6 +99,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
     return items.indexOf(message);
   }
 
+  public Message getItem(int index) {
+    return items.get(index);
+  }
+
   public Message getMessage(int position) {
     return items.get(position);
   }

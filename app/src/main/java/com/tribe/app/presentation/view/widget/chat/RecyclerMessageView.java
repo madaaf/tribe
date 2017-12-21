@@ -47,17 +47,13 @@ import com.tribe.tribelivesdk.util.JsonUtils;
 import com.zendesk.sdk.model.access.Identity;
 import com.zendesk.sdk.model.access.JwtIdentity;
 import com.zendesk.sdk.model.push.PushRegistrationResponse;
-import com.zendesk.sdk.model.request.Comment;
 import com.zendesk.sdk.model.request.CreateRequest;
-import com.zendesk.sdk.model.request.EndUserComment;
 import com.zendesk.sdk.model.request.Request;
-import com.zendesk.sdk.model.request.UploadResponse;
 import com.zendesk.sdk.network.RequestProvider;
 import com.zendesk.sdk.network.UploadProvider;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
 import com.zendesk.service.ErrorResponse;
 import com.zendesk.service.ZendeskCallback;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -168,40 +164,7 @@ public class RecyclerMessageView extends IChat {
   }
 
   private void addCommentZendesk(String data, Uri uri) {
-    if (uri != null) {
-      File fileToUpload = new File(uri.getPath());
-      uploadProvider.uploadAttachment("image.jpg", fileToUpload, "image/jpg",
-          new ZendeskCallback<UploadResponse>() {
-            @Override public void onSuccess(UploadResponse uploadResponse) {
-              Timber.i("success uploadAttachment to Zendesk" + uploadResponse.getAttachment());
-              sendToZendesk("image : ", uploadResponse.getToken());
-            }
-
-            @Override public void onError(ErrorResponse errorResponse) {
-              Timber.e("onError UploadResponse to Zendesk " + errorResponse.getReason());
-            }
-          });
-    } else {
-      sendToZendesk(data, null);
-    }
-  }
-
-  private void sendToZendesk(String data, String token) {
-    List<String> attachmentList = new ArrayList<>();
-    attachmentList.add(token);
-    EndUserComment o = new EndUserComment();
-    o.setValue(data);
-    o.setAttachments(attachmentList);
-
-    provider.addComment(supportId, o, new ZendeskCallback<Comment>() {
-      @Override public void onSuccess(Comment comment) {
-        Timber.i("onSuccess add comment to zendesk " + comment.getBody());
-      }
-
-      @Override public void onError(ErrorResponse errorResponse) {
-        Timber.e("onError add comment to Zendesk " + errorResponse);
-      }
-    });
+    messagePresenter.addMessageZendesk(supportId, data, uri);
   }
 
   private void getRequestProvider() { // TODO SOEF
@@ -548,10 +511,20 @@ public class RecyclerMessageView extends IChat {
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.i("successLoadingMessageDisk " + messages.size());
-    for (Message m : messages) {
-      Timber.e(" DISK " + m.toString());
+    unreadMessage.clear();
+    if (shortcut.isSupport()) {
+      for (Message m : messages) {
+        Timber.e(" DISK " + m.toString());
+        if (!messageAdapter.getItems().contains(m)) {
+          unreadMessage.add(m);
+        }
+      }
+
+      messageAdapter.setItems(unreadMessage, messageAdapter.getItemCount());
+      scrollListToBottom();
     }
-    if (errorLoadingMessages || !successLoadingMessage) {
+
+    if (!shortcut.isSupport() && (errorLoadingMessages || !successLoadingMessage)) {
       Timber.i("message disk displayed " + messages.size());
       messageAdapter.setItems(messages, 0);
       scrollListToBottom();
@@ -562,6 +535,12 @@ public class RecyclerMessageView extends IChat {
   @Override public void successMessageCreated(Message message, int position) {
     Timber.i("successMessageCreated " + message.getId());
     messageAdapter.updateItem(messageAdapter.getItemCount() - 1, message);
+  }
+
+  @Override public void successAddMessageZendeskSubscriber() {
+    Timber.i("successAddMessageZendeskSubscriber ");
+    Message m = messageAdapter.getItem(messageAdapter.getItemCount() - 1);
+    messageAdapter.updateItem(messageAdapter.getItemCount() - 1, m);
   }
 
   /**

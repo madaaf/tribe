@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.chat;
 
+import android.net.Uri;
 import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory;
@@ -96,10 +97,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable addMessageSupportDisk(Message message) {
-    final DiskChatDataStore chatDataStore =
-        (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
-    chatDataStore.addMessageSupportDisk(message).doOnError(Throwable::printStackTrace);
+  @Override public Observable addMessageZendesk(String supportId, String data, Uri uri) {
     return null;
   }
 }

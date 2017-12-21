@@ -238,7 +238,7 @@ public class ChatCacheImpl implements ChatCache {
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
     RealmResults<MessageRealm> ok =
-        realm.where(MessageRealm.class).equalTo("localId", "support").findAll(); // TODO MADA
+        realm.where(MessageRealm.class).equalTo("localId", "support").findAll(); // TODO SOEF
 
     return ok.asObservable()
         .filter(RealmResults::isLoaded)

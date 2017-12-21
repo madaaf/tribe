@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.chat.datasource;
 
+import android.net.Uri;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
@@ -17,8 +18,6 @@ public interface ChatDataStore {
       String date);
 
   Observable<UserRealm> loadMessages(final String[] userIds, String dateBefore, String dateAfter);
-
-  Observable<List<Message>> getMessageZendesk(String supportId);
 
   Observable<List<MessageRealm>> getMessages(String[] userIds);
 
@@ -38,5 +37,7 @@ public interface ChatDataStore {
 
   Observable<List<Conversation>> getMessageSupport(int typeSupport);
 
-  Observable<Object> addMessageSupportDisk(Message message);
+  Observable<List<Message>> getMessageZendesk(String supportId);
+
+  Observable<Boolean> addMessageZendesk(String supportId, String data, Uri uri);
 }

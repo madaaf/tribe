@@ -77,4 +77,12 @@ public abstract class ChatMVPView extends FrameLayout implements MVPView, Shortc
   public void successMessageSupport(List<Message> messages) {
 
   }
+
+  public void successAddMessageZendeskSubscriber() {
+
+  }
+
+  public void errorAddMessageZendeskSubscriber() {
+
+  }
 }

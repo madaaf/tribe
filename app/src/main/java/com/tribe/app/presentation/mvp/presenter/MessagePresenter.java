@@ -1,10 +1,11 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.net.Uri;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Shortcut;
-import com.tribe.app.domain.interactor.chat.AddMessageSupportDisk;
+import com.tribe.app.domain.interactor.chat.AddMessageZendesk;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
 import com.tribe.app.domain.interactor.chat.GetMessageImageFromDisk;
@@ -63,8 +64,8 @@ public class MessagePresenter implements Presenter {
   protected UpdateShortcut updateShortcut;
   protected GetShortcutForUserIds getShortcutForUserIds;
   protected RemoveMessage removeMessage;
-  protected AddMessageSupportDisk addMessageSupportDisk;
   protected GetMessageZendesk getMessageZendesk;
+  protected AddMessageZendesk addMessageZendesk;
 
   // SUBSCRIBERS
   private UpdateShortcutSubscriber updateShortcutSubscriber;
@@ -79,7 +80,7 @@ public class MessagePresenter implements Presenter {
       CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk,
       IsReadingFromDisk isReadingFromDisk, RemoveMessage removeMessage,
       OnMessageRemovedFromDisk onMessageRemovedFromDisk, GetMessageSupport getMessageSupport,
-      AddMessageSupportDisk addMessageSupportDisk, GetMessageZendesk getMessageZendesk) {
+      GetMessageZendesk getMessageZendesk, AddMessageZendesk addMessageZendesk) {
     this.shortcutPresenter = shortcutPresenter;
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
@@ -97,8 +98,8 @@ public class MessagePresenter implements Presenter {
     this.removeMessage = removeMessage;
     this.onMessageRemovedFromDisk = onMessageRemovedFromDisk;
     this.getMessageSupport = getMessageSupport;
-    this.addMessageSupportDisk = addMessageSupportDisk;
     this.getMessageZendesk = getMessageZendesk;
+    this.addMessageZendesk = addMessageZendesk;
   }
 
   public void getMessageZendesk(String supportId) {
@@ -106,9 +107,24 @@ public class MessagePresenter implements Presenter {
     getMessageZendesk.execute(new DefaultSubscriber());
   }
 
-  public void addMessageSupportDisk(Message message) {
-    addMessageSupportDisk.setup(message);
-    addMessageSupportDisk.execute(new OKSubscriber());
+  public void addMessageZendesk(String supportId, String data, Uri uri) {
+    addMessageZendesk.setData(supportId, data, uri);
+    addMessageZendesk.execute(new AddMessageZendeskSubscriber());
+  }
+
+  private class AddMessageZendeskSubscriber extends DefaultSubscriber<Boolean> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
+      if (chatMVPView != null) chatMVPView.errorAddMessageZendeskSubscriber();
+    }
+
+    @Override public void onNext(Boolean isMessageSend) {
+      if (chatMVPView != null) chatMVPView.successAddMessageZendeskSubscriber();
+    }
   }
 
   public void getMessageImage(String[] userIds) {
@@ -144,11 +160,6 @@ public class MessagePresenter implements Presenter {
     getShortcutForUserIds.setup(userIds);
     getShortcutForUserIds.execute(shortcutForUserIdsSubscriber);
   }
-
-/*  public void getDiskShortcut(String shortcutId) {
-    getDiskShortcut.setShortcutId(shortcutId);
-    getDiskShortcut.execute(new GetDiskShortcutSubscriber());
-  }*/
 
   public void imTypingMessage(String[] userIds) {
     imTyping.setUserIds(userIds);
@@ -270,20 +281,6 @@ public class MessagePresenter implements Presenter {
           chatMVPView.successLoadingBetweenTwoDateMessage(messages);
         }
       }
-    }
-  }
-
-  private class OKSubscriber extends DefaultSubscriber<Object> {
-
-    @Override public void onCompleted() {
-    }
-
-    @Override public void onError(Throwable e) {
-      Timber.e("SOEF " + e.getMessage());
-    }
-
-    @Override public void onNext(Object messages) {
-      Timber.e("SOEF OK ");
     }
   }
 

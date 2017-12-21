@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.chat.datasource;
 
 import android.content.Context;
+import android.net.Uri;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.UserCache;
@@ -60,9 +61,6 @@ public class CloudChatDataStore implements ChatDataStore {
     });
   }
 
-  @Override public Observable<Object> addMessageSupportDisk(Message message) {
-    return null;
-  }
 
   @Override
   public Observable<MessageRealm> createMessage(String[] userIds, String type, String data,
@@ -106,6 +104,10 @@ public class CloudChatDataStore implements ChatDataStore {
       messageRealms.addAll(messageRealmDataMapper.transformMessages(comments));
       chatCache.putMessages(messageRealms, Shortcut.SUPPORT);
     });
+  }
+
+  @Override public Observable<Boolean> addMessageZendesk(String supportId, String data, Uri uri) {
+    return rxZendesk.addMessageZendesk(supportId, data, uri);
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {

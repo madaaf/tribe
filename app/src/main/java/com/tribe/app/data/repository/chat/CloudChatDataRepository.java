@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.chat;
 
+import android.net.Uri;
 import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStore;
@@ -12,7 +13,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -47,10 +47,6 @@ import timber.log.Timber;
     return userDataStore.getMessageSupport(typeSupport);
   }
 
-  @Override public Observable addMessageSupportDisk(Message message) {
-    return null;
-  }
-
   @Override public Observable<List<Message>> loadMessages(String[] userIds, String dateBefore,
       String dateAfter) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
@@ -64,10 +60,14 @@ import timber.log.Timber;
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
     return userDataStore.getMessageZendesk(supportId)
         .doOnError(Throwable::printStackTrace)
-        .map(list -> {
-          Timber.e("SOEF " + list);
-          return list;
-        });
+        .map(zendeskMessages -> zendeskMessages);
+  }
+
+  @Override public Observable addMessageZendesk(String supportId, String data, Uri uri) {
+    final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
+    return userDataStore.addMessageZendesk(supportId, data, uri)
+        .doOnError(Throwable::printStackTrace)
+        .map(zendeskMessages -> zendeskMessages);
   }
 
   @Override public Observable<List<Message>> getMessagesImage(String[] userIds) {
