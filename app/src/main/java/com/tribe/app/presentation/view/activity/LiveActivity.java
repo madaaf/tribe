@@ -961,7 +961,10 @@ public class LiveActivity extends BaseActivity
         subscribe(aVoid -> reRollTheDiceFromCallRoulette(true)));
 
     subscriptions.add(viewLive.openGameStore()
-        .subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
+            .subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
+
+    subscriptions.add(viewLive.onSwipeUp()
+            .subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
 
     subscriptions.add(
         viewLive.onAddScore().subscribe(pair -> livePresenter.addScore(pair.first, pair.second)));
