@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
+
 import com.facebook.AccessToken;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
@@ -14,8 +15,10 @@ import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -252,7 +255,26 @@ public abstract class UpdateUserPresenter implements Presenter {
     }
 
     @Override public void onNext(FacebookEntity facebookEntity) {
-      if (facebookEntity != null) getUpdateUserView().loadFacebookInfos(facebookEntity);
+      if (facebookEntity != null) {
+        getUpdateUserView().loadFacebookInfos(facebookEntity);
+        updateAgeRange(facebookEntity);
+      }
+    }
+  }
+
+  protected void updateAgeRange(FacebookEntity facebookEntity) {
+
+    List<Pair<String, String>> values = new ArrayList<>();
+    if (facebookEntity.getAgeRangeMin() != null) {
+      values.add(new Pair<>(UserRealm.AGE_RANGE_MIN, String.valueOf(facebookEntity.getAgeRangeMin())));
+    }
+    if (facebookEntity.getAgeRangeMax() != null) {
+      values.add(new Pair<>(UserRealm.AGE_RANGE_MAX, String.valueOf(facebookEntity.getAgeRangeMax())));
+    }
+
+    if (!values.isEmpty()) {
+      updateUser.prepare(values);
+      updateUser.execute(new DefaultSubscriber<User>());
     }
   }
 }

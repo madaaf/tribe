@@ -1,6 +1,10 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.util.Pair;
+
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
@@ -10,7 +14,13 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.inject.Inject;
+
+import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -69,7 +79,10 @@ public class FacebookPresenter extends UpdateUserPresenter {
     }
 
     @Override public void onNext(FacebookEntity facebookEntity) {
-      if (facebookEntity != null) profileInfoView.loadFacebookInfos(facebookEntity);
+      if (facebookEntity != null) {
+        profileInfoView.loadFacebookInfos(facebookEntity);
+        updateAgeRange(facebookEntity);
+      }
     }
   }
 }

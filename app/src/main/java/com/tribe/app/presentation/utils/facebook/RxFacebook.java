@@ -167,16 +167,22 @@ import rx.subjects.PublishSubject;
 
   public void emitMe(Subscriber subscriber) {
 
-    new GraphRequest(AccessToken.getCurrentAccessToken(), "/me?fields=id,name,email", null,
+    new GraphRequest(AccessToken.getCurrentAccessToken(), "/me?fields=id,name,email,age_range", null,
         HttpMethod.GET, response -> {
       JSONObject jsonResponse = response.getJSONObject();
       FacebookEntity facebookEntity = new FacebookEntity();
 
       if (jsonResponse != null) {
+        Log.d("RxFacebook", jsonResponse.toString());
         try {
           facebookEntity.setName(jsonResponse.getString("name"));
           if (jsonResponse.has("email")) facebookEntity.setEmail(jsonResponse.getString("email"));
           facebookEntity.setId(jsonResponse.getString("id"));
+          if (jsonResponse.has("age_range")) {
+            JSONObject ageRange = jsonResponse.getJSONObject("age_range");
+            if (ageRange.getInt("min") > 0) facebookEntity.setAgeRangeMin(ageRange.getInt("min"));
+            if (ageRange.getInt("max") > 0) facebookEntity.setAgeRangeMax(ageRange.getInt("max"));
+          }
           facebookEntity.setProfilePicture(
               "https://graph.facebook.com/" + facebookEntity.getId() + "/picture?type=large");
         } catch (JSONException e) {
