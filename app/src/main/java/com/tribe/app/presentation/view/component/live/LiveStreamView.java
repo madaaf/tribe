@@ -77,6 +77,7 @@ public abstract class LiveStreamView extends LinearLayout {
     layoutStream.setPreventCornerOverlap(false);
     layoutStream.setMaxCardElevation(0);
     layoutStream.setCardElevation(0);
+    layoutStream.setRadius(0);
   }
 
   public void dispose() {

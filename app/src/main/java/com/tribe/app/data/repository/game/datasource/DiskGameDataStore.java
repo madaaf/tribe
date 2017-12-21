@@ -4,6 +4,7 @@ import com.tribe.app.data.cache.GameCache;
 import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import java.util.List;
 import rx.Observable;
 
@@ -39,5 +40,9 @@ public class DiskGameDataStore implements GameDataStore {
 
   @Override public Observable<List<ScoreRealm>> getFriendsScore(String gameId) {
     return Observable.just(gameCache.getGameLeaderboard(gameId, true));
+  }
+
+  @Override public Observable<List<TriviaQuestions>> getTriviaData() {
+    return null;
   }
 }

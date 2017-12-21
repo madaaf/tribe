@@ -6,6 +6,7 @@ package com.tribe.app.domain.interactor.game;
 
 import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.List;
 import rx.Observable;
@@ -24,4 +25,6 @@ public interface GameRepository {
   Observable<AddScoreEntity> addScore(String gameId, Integer score);
 
   Observable<List<Score>> getFriendsScores(String gameId);
+
+  Observable<List<TriviaQuestions>> getTriviaData();
 }

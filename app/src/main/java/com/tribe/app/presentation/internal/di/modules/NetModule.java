@@ -47,6 +47,7 @@ import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
+import com.tribe.app.data.network.entity.GameDataEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
@@ -179,8 +180,7 @@ import timber.log.Timber;
         .registerTypeAdapter(RoomLinkEntity.class, new RoomLinkDeserializer())
         .registerTypeAdapter(BookRoomLinkEntity.class, new BookRoomLinkDeserializer())
         .registerTypeAdapter(RemoveMessageEntity.class, new RemoveMessageDeserializer())
-        .registerTypeAdapter(new TypeToken<List<String>>() {
-        }.getType(), dataGameDeserializer)
+        .registerTypeAdapter(GameDataEntity.class, dataGameDeserializer)
         .registerTypeAdapter(ShortcutRealm.class, new ShortcutRealmDeserializer())
         .registerTypeAdapter(new TypeToken<List<GameRealm>>() {
         }.getType(), new GameListDeserializer())

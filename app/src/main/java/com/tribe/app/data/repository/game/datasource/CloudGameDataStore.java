@@ -8,12 +8,17 @@ import com.google.gson.reflect.TypeToken;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.GameCache;
 import com.tribe.app.data.network.FileApi;
+import com.tribe.app.data.network.OpentdbApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.AddScoreEntity;
+import com.tribe.app.data.network.entity.CategoryEntity;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.domain.entity.trivia.TriviaCategoryEnum;
+import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,15 +31,17 @@ public class CloudGameDataStore implements GameDataStore {
   private final Context context;
   private final TribeApi tribeApi;
   private final FileApi fileApi;
+  private final OpentdbApi opentdbApi;
   private final Preference<String> gameData;
   private final Gson gson;
   private final GameCache gameCache;
 
   public CloudGameDataStore(Context context, TribeApi tribeApi, FileApi fileApi,
-      Preference<String> gameData, GameCache gameCache) {
+      OpentdbApi opentdbApi, Preference<String> gameData, GameCache gameCache) {
     this.context = context;
     this.tribeApi = tribeApi;
     this.fileApi = fileApi;
+    this.opentdbApi = opentdbApi;
     this.gameData = gameData;
     this.gson = new GsonBuilder().create();
     this.gameCache = gameCache;
@@ -45,7 +52,7 @@ public class CloudGameDataStore implements GameDataStore {
     return getGames().flatMap(gameList -> Observable.from(gameList)).flatMap(gameRealm -> {
       if (!StringUtils.isEmpty(gameRealm.getDataUrl())) {
         return fileApi.getDataForUrl(gameRealm.getDataUrl())
-            .map(strings -> mapData.put(gameRealm.getId(), strings));
+            .map(gameDataEntity -> mapData.put(gameRealm.getId(), gameDataEntity.getData()));
       } else {
         return Observable.empty();
       }
@@ -120,5 +127,44 @@ public class CloudGameDataStore implements GameDataStore {
           return scoreRealmList;
         })
         .doOnNext(scoreRealmList -> gameCache.updateLeaderboard(gameId, true, scoreRealmList));
+  }
+
+  @Override public Observable<List<TriviaQuestions>> getTriviaData() {
+    if (DeviceUtils.getLanguage(context).equals("en")) {
+      return Observable.just(TriviaCategoryEnum.getCategories())
+          .flatMap(categoryList -> Observable.from(categoryList))
+          .flatMap(category -> {
+            if (category.getCategory() == TriviaCategoryEnum.CELEBS.getCategory()) {
+              return opentdbApi.getCategory(category.getId(), 36).map(questionsList -> {
+                CategoryEntity categoryEntity = new CategoryEntity();
+                categoryEntity.setId(category.getCategory());
+                categoryEntity.setQuestions(questionsList);
+                return categoryEntity;
+              });
+            } else {
+              return opentdbApi.getCategory(category.getId(), 100).map(questionsList -> {
+                CategoryEntity categoryEntity = new CategoryEntity();
+                categoryEntity.setId(category.getCategory());
+                categoryEntity.setQuestions(questionsList);
+                return categoryEntity;
+              });
+            }
+          })
+          .toList()
+          .map(lists -> {
+            Map<String, List<TriviaQuestions>> result = new HashMap<>();
+
+            for (CategoryEntity categoryEntity : lists) {
+              result.put(categoryEntity.getId(), categoryEntity.getQuestions());
+            }
+
+            return (List<TriviaQuestions>) new ArrayList();
+          })
+          .doOnError(Throwable::printStackTrace);
+    } else {
+      return fileApi.getTriviaData().map(triviaCategoriesHolders -> {
+        return (List<TriviaQuestions>) new ArrayList<TriviaQuestions>();
+      }).doOnError(Throwable::printStackTrace);
+    }
   }
 }

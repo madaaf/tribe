@@ -2,6 +2,7 @@ package com.tribe.app.presentation.mvp.view.adapter;
 
 import android.content.Context;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
 import java.util.List;
 
@@ -25,6 +26,10 @@ public class GameMVPViewAdapter implements GameMVPView {
   }
 
   @Override public void onFriendsScore(List<Score> scoreList, boolean cloud) {
+
+  }
+
+  @Override public void onTriviaData(List<TriviaQuestions> questionsList) {
 
   }
 }

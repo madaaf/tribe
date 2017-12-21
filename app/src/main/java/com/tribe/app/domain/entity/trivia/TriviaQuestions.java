@@ -1,4 +1,4 @@
-package com.tribe.tribelivesdk.game.trivia;
+package com.tribe.app.domain.entity.trivia;
 
 import java.util.List;
 

@@ -16,16 +16,20 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.mvp.presenter.GamePresenter;
+import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
+import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
@@ -52,6 +56,8 @@ public class GameManagerView extends FrameLayout {
 
   @Inject User currentUser;
 
+  @Inject GamePresenter gamePresenter;
+
   /**
    * VARIABLES
    */
@@ -64,6 +70,7 @@ public class GameManagerView extends FrameLayout {
   private Game currentGame;
   private Map<String, List<String>> mapGameData;
   private Observable<Map<String, LiveStreamView>> onLiveViewsChange;
+  private GameMVPViewAdapter gameMVPViewAdapter;
 
   /**
    * OBSERVABLES
@@ -85,6 +92,16 @@ public class GameManagerView extends FrameLayout {
     initView();
   }
 
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    gamePresenter.onViewAttached(gameMVPViewAdapter);
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    gamePresenter.onViewDetached();
+  }
+
   private void initView() {
     initDependencyInjector();
     unbinder = ButterKnife.bind(this);
@@ -97,6 +114,12 @@ public class GameManagerView extends FrameLayout {
     } else {
       mapGameData = new HashMap<>();
     }
+
+    gameMVPViewAdapter = new GameMVPViewAdapter() {
+      @Override public void onTriviaData(List<TriviaQuestions> questionsList) {
+
+      }
+    };
 
     setBackground(null);
 
@@ -134,6 +157,10 @@ public class GameManagerView extends FrameLayout {
           if (currentGameView instanceof GameChallengesView) {
             GameChallengesView gameChallengesView = (GameChallengesView) currentGameView;
             gameChallengesView.displayPopup();
+          }
+
+          if (currentGameView instanceof GameTriviaView) {
+            gamePresenter.getTriviaData();
           }
 
           currentGameView.setNextGame();
@@ -221,6 +248,9 @@ public class GameManagerView extends FrameLayout {
       GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
       subscriptionsGame.add(gameAlienAttacksView.onAddScore().subscribe(onAddScore));
       gameView = gameAlienAttacksView;
+    } else if (game.getId().equals(Game.GAME_TRIVIA)) {
+      GameTriviaView gameTriviaView = new GameTriviaView(getContext());
+      gameView = gameTriviaView;
     } else if (game.isWeb()) {
       GameWebView gameWebView = new GameWebView(getContext());
       subscriptionsGame.add(gameWebView.onAddScore().subscribe(onAddScore));

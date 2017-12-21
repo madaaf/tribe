@@ -3,6 +3,7 @@ package com.tribe.app.data.repository.game.datasource;
 import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import java.util.List;
 import rx.Observable;
 
@@ -23,4 +24,6 @@ public interface GameDataStore {
   Observable<AddScoreEntity> addScore(String gameId, Integer score);
 
   Observable<List<ScoreRealm>> getFriendsScore(String gameId);
+
+  Observable<List<TriviaQuestions>> getTriviaData();
 }

@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.game.GetCloudFriendsScores;
 import com.tribe.app.domain.interactor.game.GetCloudGameLeaderboard;
@@ -8,6 +9,7 @@ import com.tribe.app.domain.interactor.game.GetCloudUserLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskFriendsScores;
 import com.tribe.app.domain.interactor.game.GetDiskGameLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskUserLeaderboard;
+import com.tribe.app.domain.interactor.game.GetTriviaData;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import java.util.List;
@@ -27,6 +29,7 @@ public class GamePresenter implements Presenter {
   private GetDiskUserLeaderboard diskUserLeaderboard;
   private GetCloudFriendsScores cloudFriendsScores;
   private GetDiskFriendsScores diskFriendsScores;
+  private GetTriviaData getTriviaData;
 
   // SUBSCRIBERS
   private GameLeaderboardSubscriber cloudGameLeaderboardSubscriber;
@@ -39,13 +42,14 @@ public class GamePresenter implements Presenter {
   @Inject public GamePresenter(GetCloudGameLeaderboard cloudGameLeaderboard,
       GetDiskGameLeaderboard diskGameLeaderboard, GetCloudUserLeaderboard cloudUserLeaderboard,
       GetDiskUserLeaderboard diskUserLeaderboard, GetDiskFriendsScores diskFriendsScores,
-      GetCloudFriendsScores cloudFriendsScores) {
+      GetCloudFriendsScores cloudFriendsScores, GetTriviaData getTriviaData) {
     this.cloudGameLeaderboard = cloudGameLeaderboard;
     this.diskGameLeaderboard = diskGameLeaderboard;
     this.cloudUserLeaderboard = cloudUserLeaderboard;
     this.diskUserLeaderboard = diskUserLeaderboard;
     this.diskFriendsScores = diskFriendsScores;
     this.cloudFriendsScores = cloudFriendsScores;
+    this.getTriviaData = getTriviaData;
   }
 
   @Override public void onViewDetached() {
@@ -55,6 +59,7 @@ public class GamePresenter implements Presenter {
     diskUserLeaderboard.unsubscribe();
     cloudFriendsScores.unsubscribe();
     diskFriendsScores.unsubscribe();
+    getTriviaData.unsubscribe();
     gameMVPView = null;
   }
 
@@ -189,5 +194,13 @@ public class GamePresenter implements Presenter {
     @Override public void onNext(List<Score> score) {
       if (gameMVPView != null) gameMVPView.onFriendsScore(score, cloud);
     }
+  }
+
+  public void getTriviaData() {
+    getTriviaData.execute(new DefaultSubscriber<List<TriviaQuestions>>() {
+      @Override public void onNext(List<TriviaQuestions> questionsList) {
+        if (questionsList != null && gameMVPView != null) gameMVPView.onTriviaData(questionsList);
+      }
+    });
   }
 }
