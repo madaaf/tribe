@@ -1,8 +1,10 @@
 package com.tribe.app.presentation.utils.RXZendesk;
 
 import android.net.Uri;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.utils.preferences.SupportUserId;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.widget.chat.model.Image;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
@@ -40,14 +42,17 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
   private final UploadProvider uploadProvider;
   private final User user;
   private final DateUtils dateUtils;
+  private Preference<String> supportUserIdPref;
   private Observable<List<Message>> messageListObservable;
   private Observable<Boolean> isMessageSend;
 
-  @Inject public RXZendesk(User user, DateUtils dateUtils) {
+  @Inject public RXZendesk(User user, DateUtils dateUtils,
+      @SupportUserId Preference<String> supportUserIdPref) {
     this.user = user;
     this.dateUtils = dateUtils;
     this.provider = ZendeskConfig.INSTANCE.provider().requestProvider();
     this.uploadProvider = ZendeskConfig.INSTANCE.provider().uploadProvider();
+    this.supportUserIdPref = supportUserIdPref;
   }
 
   public Observable<List<Message>> getComments(String supportId) {
@@ -75,10 +80,12 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
     provider.getComments(supportId, new ZendeskCallback<CommentsResponse>() {
       @Override public void onSuccess(CommentsResponse commentsResponse) {
         Timber.i("onSuccess getCommentZendesk" + commentsResponse.getComments().size());
-        String supportUserId = null;
+        String supportId = null;
         for (com.zendesk.sdk.model.request.User u : commentsResponse.getUsers()) {
           if (u.isAgent() && u.getId() != null) {
-            supportUserId = u.getId().toString();
+            supportId = u.getId().toString();
+          } else if (!u.isAgent() && u.getId() != null) {
+            supportUserIdPref.set(u.getId().toString());
           }
         }
         for (CommentResponse response : commentsResponse.getComments()) {
@@ -87,7 +94,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
             if (response.getId() != null) image.setId(response.getId().toString());
             if (response.getAuthorId() != null && response.getAuthorId()
                 .toString()
-                .equals(supportUserId)) {
+                .equals(supportId)) {
               image.setAuthor(ShortcutUtil.createUserSupport());
             } else {
               image.setAuthor(user);
@@ -99,13 +106,14 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
             list.add(i);
             image.setRessources(list);
             image.setType(MESSAGE_IMAGE);
+            image.setSupportAuthorId(response.getAuthorId().toString());
             messages.add(image);
           }
           MessageText m = new MessageText();
           if (response.getId() != null) m.setId(response.getId().toString());
           if (response.getAuthorId() != null && response.getAuthorId()
               .toString()
-              .equals(supportUserId)) {
+              .equals(supportId)) {
             m.setAuthor(ShortcutUtil.createUserSupport());
           } else {
             m.setAuthor(user);
@@ -113,6 +121,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
           m.setCreationDate(dateUtils.getUTCDateForMessage());
           m.setMessage(response.getBody());
           m.setType(MESSAGE_TEXT);
+          m.setSupportAuthorId(response.getAuthorId().toString());
           messages.add(m);
         }
 

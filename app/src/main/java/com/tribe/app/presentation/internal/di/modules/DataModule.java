@@ -26,7 +26,8 @@ import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
-import com.tribe.app.presentation.utils.preferences.SupportId;
+import com.tribe.app.presentation.utils.preferences.SupportRequestId;
+import com.tribe.app.presentation.utils.preferences.SupportUserId;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
@@ -125,9 +126,14 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getFloat(PreferencesUtils.MINUTES_OF_CALLS, 0f);
   }
 
-  @Provides @Singleton @SupportId Preference<String> provideSupportId(Context context,
+  @Provides @Singleton @SupportRequestId Preference<String> provideSupportRequestId(Context context,
       RxSharedPreferences prefs) {
-    return prefs.getString(PreferencesUtils.SUPPORT, "");
+    return prefs.getString(PreferencesUtils.SUPPORT_REQUEST_ID, "");
+  }
+
+  @Provides @Singleton @SupportUserId Preference<String> provideSupportUserId(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.SUPPORT_USER_ID, "");
   }
 
   @Provides @Singleton @IsGroupCreated Preference<Boolean> provideIsGroupCreated(Context context,

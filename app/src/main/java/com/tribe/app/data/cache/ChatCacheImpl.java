@@ -118,7 +118,7 @@ public class ChatCacheImpl implements ChatCache {
           } else {
             m = messageRealmDB;
           }
-
+          m.setSupportAuthorId(message.getSupportAuthorId());
           m.setLocalId(userIds);
           m.set__typename(message.get__typename());
           m.setData(message.getData());

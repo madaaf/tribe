@@ -65,7 +65,8 @@ import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
-import com.tribe.app.presentation.utils.preferences.SupportId;
+import com.tribe.app.presentation.utils.preferences.SupportRequestId;
+import com.tribe.app.presentation.utils.preferences.SupportUserId;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
@@ -403,7 +404,9 @@ public interface ApplicationComponent {
 
   @MinutesOfCalls Preference<Float> minutesOfCalls();
 
-  @SupportId Preference<String> supportId();
+  @SupportRequestId Preference<String> supportRequestId();
+
+  @SupportUserId Preference<String> supportUserId();
 
   @MissedPlayloadNotification Preference<String> missedPlayloadNotification();
 

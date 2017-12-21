@@ -71,6 +71,7 @@ import javax.inject.Singleton;
       }
       if (message != null) {
         message.setType(messageRealm.get__typename());
+        message.setSupportAuthorId(messageRealm.getSupportAuthorId());
         message.setCreationDate(messageRealm.getCreated_at());
       }
     }
@@ -102,6 +103,7 @@ import javax.inject.Singleton;
       messageRealm = new MessageRealm(message.getId());
       messageRealm.setAuthor(userRealmDataMapper.transform(message.getAuthor()));
       messageRealm.set__typename(message.getType());
+      messageRealm.setSupportAuthorId(message.getSupportAuthorId());
       messageRealm.setCreated_at(message.getCreationDate());
 
       switch (message.getType()) {

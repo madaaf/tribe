@@ -27,8 +27,18 @@ public class MessageRealm extends RealmObject {
   private String action;
   private String created_at;
   private String threadId;
+  private String supportAuthorId;
+
 
   public MessageRealm() {
+  }
+
+  public String getSupportAuthorId() {
+    return supportAuthorId;
+  }
+
+  public void setSupportAuthorId(String supportAuthorId) {
+    this.supportAuthorId = supportAuthorId;
   }
 
   public String getThreadId() {

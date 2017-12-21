@@ -34,7 +34,8 @@ import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-import com.tribe.app.presentation.utils.preferences.SupportId;
+import com.tribe.app.presentation.utils.preferences.SupportRequestId;
+import com.tribe.app.presentation.utils.preferences.SupportUserId;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -110,7 +111,8 @@ public class RecyclerMessageView extends IChat {
   @Inject StateManager stateManager;
   @Inject TagManager tagManager;
   @Inject Navigator navigator;
-  @Inject @SupportId Preference<String> supportIdPref;
+  @Inject @SupportRequestId Preference<String> supportIdPref;
+  @Inject @SupportUserId Preference<String> supportUserIdPref;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Integer> onScrollRecyclerView = PublishSubject.create();
@@ -141,6 +143,8 @@ public class RecyclerMessageView extends IChat {
     Identity jwtUserIdentity = new JwtIdentity(accessToken.getAccessToken());
     ZendeskConfig.INSTANCE.setIdentity(jwtUserIdentity);
     enablePushZendesk();
+
+    Timber.e("TEST OK " + supportUserIdPref.get());
 
     if (haveRequestZendeskId()) {
       supportId = supportIdPref.get();
@@ -509,13 +513,23 @@ public class RecyclerMessageView extends IChat {
     load = false;
   }
 
+  private boolean supportAuthorIdIsMe(Message m) {
+    if (m.getSupportAuthorId() != null && m.getSupportAuthorId().equals(supportUserIdPref.get())) {
+      Timber.e("getSupportAuthorId " + m.getSupportAuthorId());
+    }
+    return m.getSupportAuthorId() != null && m.getSupportAuthorId().equals(supportUserIdPref.get());
+  }
+
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.i("successLoadingMessageDisk " + messages.size());
     unreadMessage.clear();
     if (shortcut.isSupport()) {
       for (Message m : messages) {
         Timber.e(" DISK " + m.toString());
-        if (!messageAdapter.getItems().contains(m)) {
+        if ((!messageAdapter.getItems().contains(m) && messageAdapter.getItems().isEmpty())
+            || (!messageAdapter.getItems().contains(m)
+            && !messageAdapter.getItems().isEmpty()
+            && !supportAuthorIdIsMe(m))) {
           unreadMessage.add(m);
         }
       }

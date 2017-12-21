@@ -28,8 +28,17 @@ public class Message implements Serializable {
   private String creationDate;
   private boolean isPending = false;
   private String content;
+  private String supportAuthorId;
 
   public Message() {
+  }
+
+  public String getSupportAuthorId() {
+    return supportAuthorId;
+  }
+
+  public void setSupportAuthorId(String supportAuthorId) {
+    this.supportAuthorId = supportAuthorId;
   }
 
   public boolean isPending() {

@@ -8,5 +8,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Created by tiagoduarte on 10/19/16.
  */
-@Qualifier @Retention(RUNTIME) public @interface SupportId {
+@Qualifier @Retention(RUNTIME) public @interface SupportUserId {
 }
