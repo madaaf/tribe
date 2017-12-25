@@ -44,6 +44,7 @@ import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
 import com.tribe.app.data.network.deserializer.ShortcutRealmDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
+import com.tribe.app.data.network.deserializer.TriviaQuestionsDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
@@ -64,6 +65,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.utils.DateUtils;
@@ -188,6 +190,8 @@ import timber.log.Timber;
         .registerTypeAdapter(new TypeToken<List<ScoreRealm>>() {
         }.getType(), new ScoreRealmListDeserializer())
         .registerTypeAdapter(AddScoreEntity.class, new AddScoreDeserializer())
+        .registerTypeAdapter(new TypeToken<List<TriviaQuestions>>() {
+        }.getType(), new TriviaQuestionsDeserializer())
         .create();
   }
 

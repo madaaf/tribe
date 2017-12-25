@@ -1,25 +1,42 @@
 package com.tribe.app.data.network.deserializer;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
+import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TriviaQuestionsDeserializer<T> implements JsonDeserializer<T> {
+public class TriviaQuestionsDeserializer implements JsonDeserializer<List<TriviaQuestions>> {
 
-  @Override public T deserialize(JsonElement je, Type typeOfT, JsonDeserializationContext context)
-      throws JsonParseException {
-    JsonElement results =
-        je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("createInstall");
-    if (results == null) {
-      results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateInstall");
+  @Override public List<TriviaQuestions> deserialize(JsonElement je, Type typeOfT,
+      JsonDeserializationContext context) throws JsonParseException {
+    JsonArray results = je.getAsJsonObject().getAsJsonArray("results");
+    List<TriviaQuestions> triviaQuestionsList = new ArrayList<>();
+    Gson gson = new Gson();
+    Type listType = new TypeToken<List<String>>() {
+    }.getType();
+
+    if (results != null) {
+      for (final JsonElement jsonElement : results) {
+        if (!jsonElement.isJsonNull()) {
+          JsonObject jo = jsonElement.getAsJsonObject();
+          TriviaQuestions triviaQuestions = new TriviaQuestions();
+          triviaQuestions.setAnswer(jo.get("correct_answer").getAsString());
+          triviaQuestions.setAlternativeAnswers(
+              gson.fromJson(jo.get("incorrect_answers"), listType));
+          triviaQuestions.setQuestion(jo.get("question").getAsString());
+          triviaQuestionsList.add(triviaQuestions);
+        }
+      }
     }
-    if (results == null) {
-      results = je.getAsJsonObject().getAsJsonObject("data").getAsJsonObject("updateI");
-    }
 
-    return new Gson().fromJson(results, typeOfT);
+    return triviaQuestionsList;
   }
 }

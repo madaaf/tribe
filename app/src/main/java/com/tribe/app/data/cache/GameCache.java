@@ -24,7 +24,7 @@ import javax.inject.Singleton;
 
   List<ScoreRealm> getUserLeaderboard(String userId);
 
-  void setTriviaData(Map<String, TriviaQuestions> mapTrivia);
+  void setTriviaData(Map<String, List<TriviaQuestions>> mapTrivia);
 
-  Map<String, TriviaQuestions> getTriviaData();
+  Map<String, List<TriviaQuestions>> getTriviaData();
 }

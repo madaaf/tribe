@@ -129,42 +129,58 @@ public class CloudGameDataStore implements GameDataStore {
         .doOnNext(scoreRealmList -> gameCache.updateLeaderboard(gameId, true, scoreRealmList));
   }
 
-  @Override public Observable<List<TriviaQuestions>> getTriviaData() {
+  @Override public Observable<Map<String, List<TriviaQuestions>>> getTriviaData() {
     if (DeviceUtils.getLanguage(context).equals("en")) {
       return Observable.just(TriviaCategoryEnum.getCategories())
           .flatMap(categoryList -> Observable.from(categoryList))
           .flatMap(category -> {
+            int count = 100;
             if (category.getCategory() == TriviaCategoryEnum.CELEBS.getCategory()) {
-              return opentdbApi.getCategory(category.getId(), 36).map(questionsList -> {
-                CategoryEntity categoryEntity = new CategoryEntity();
-                categoryEntity.setId(category.getCategory());
-                categoryEntity.setQuestions(questionsList);
-                return categoryEntity;
-              });
-            } else {
-              return opentdbApi.getCategory(category.getId(), 100).map(questionsList -> {
-                CategoryEntity categoryEntity = new CategoryEntity();
-                categoryEntity.setId(category.getCategory());
-                categoryEntity.setQuestions(questionsList);
-                return categoryEntity;
-              });
+              count = 36;
             }
+
+            return opentdbApi.getCategory(category.getId(), count)
+                .compose(new TriviaQuestionsTransformer(category.getCategory()));
           })
           .toList()
-          .map(lists -> {
-            Map<String, List<TriviaQuestions>> result = new HashMap<>();
-
-            for (CategoryEntity categoryEntity : lists) {
-              result.put(categoryEntity.getId(), categoryEntity.getQuestions());
-            }
-
-            return (List<TriviaQuestions>) new ArrayList();
-          })
+          .compose(listCategoryMapTransformer)
           .doOnError(Throwable::printStackTrace);
     } else {
-      return fileApi.getTriviaData().map(triviaCategoriesHolders -> {
-        return (List<TriviaQuestions>) new ArrayList<TriviaQuestions>();
-      }).doOnError(Throwable::printStackTrace);
+      return fileApi.getTriviaData()
+          .map(triviaCategoriesHolders -> triviaCategoriesHolders.getCategories())
+          .compose(listCategoryMapTransformer)
+          .doOnError(Throwable::printStackTrace);
     }
   }
+
+  class TriviaQuestionsTransformer
+      implements Observable.Transformer<List<TriviaQuestions>, CategoryEntity> {
+
+    private String category;
+
+    public TriviaQuestionsTransformer(String category) {
+      this.category = category;
+    }
+
+    @Override
+    public Observable<CategoryEntity> call(Observable<List<TriviaQuestions>> listObservable) {
+      return listObservable.map(questionsList -> {
+        CategoryEntity categoryEntity = new CategoryEntity();
+        categoryEntity.setId(category);
+        categoryEntity.setQuestions(questionsList);
+        return categoryEntity;
+      });
+    }
+  }
+
+  private Observable.Transformer<List<CategoryEntity>, Map<String, List<TriviaQuestions>>>
+      listCategoryMapTransformer = listObservable -> listObservable.map(lists -> {
+    Map<String, List<TriviaQuestions>> result = new HashMap<>();
+
+    for (CategoryEntity categoryEntity : lists) {
+      result.put(categoryEntity.getId(), categoryEntity.getQuestions());
+    }
+
+    return result;
+  });
 }

@@ -8,6 +8,6 @@ import rx.Observable;
 
 public interface OpentdbApi {
 
-  @GET("/api.php?type=multiple&encode=url3986") Observable<List<TriviaQuestions>> getCategory(
+  @GET("/api.php?type=multiple") Observable<List<TriviaQuestions>> getCategory(
       @Query("category") int category, @Query("amount") int amount);
 }

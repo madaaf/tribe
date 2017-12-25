@@ -6,6 +6,7 @@ import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import java.util.List;
+import java.util.Map;
 import rx.Observable;
 
 public class DiskGameDataStore implements GameDataStore {
@@ -42,7 +43,7 @@ public class DiskGameDataStore implements GameDataStore {
     return Observable.just(gameCache.getGameLeaderboard(gameId, true));
   }
 
-  @Override public Observable<List<TriviaQuestions>> getTriviaData() {
-    return null;
+  @Override public Observable<Map<String, List<TriviaQuestions>>> getTriviaData() {
+    return Observable.just(gameCache.getTriviaData());
   }
 }

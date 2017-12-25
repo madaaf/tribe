@@ -10,8 +10,8 @@ import java.util.List;
 
 public enum TriviaCategoryEnum {
 
-  MOVIES("movie", 11), MUSIC("music", 12), TV("tv", 14), CELEBS("celebs", 26), SPORTS("sports",
-      21), GEEKS("geeks", 18), GENERAL("general", 9), WORLD("world", 22), GAMES("games", 15);
+  MOVIES(11, "movie"), MUSIC(12, "music"), TV(14, "tv"), CELEBS(26, "celebs"), SPORTS(21,
+      "sports"), GEEKS(18, "geeks"), GENERAL(19, "general"), WORLD(22, "world"), GAMES(15, "games");
 
   private int id;
   private String category;

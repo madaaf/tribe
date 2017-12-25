@@ -9,6 +9,7 @@ import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.List;
+import java.util.Map;
 import rx.Observable;
 
 public interface GameRepository {
@@ -26,5 +27,5 @@ public interface GameRepository {
 
   Observable<List<Score>> getFriendsScores(String gameId);
 
-  Observable<List<TriviaQuestions>> getTriviaData();
+  Observable<Map<String, List<TriviaQuestions>>> getTriviaData();
 }

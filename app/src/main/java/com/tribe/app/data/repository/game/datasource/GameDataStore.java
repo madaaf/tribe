@@ -5,6 +5,7 @@ import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import java.util.List;
+import java.util.Map;
 import rx.Observable;
 
 /**
@@ -25,5 +26,5 @@ public interface GameDataStore {
 
   Observable<List<ScoreRealm>> getFriendsScore(String gameId);
 
-  Observable<List<TriviaQuestions>> getTriviaData();
+  Observable<Map<String, List<TriviaQuestions>>> getTriviaData();
 }
