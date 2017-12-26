@@ -14,6 +14,8 @@ import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
+import android.widget.Toast;
+
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ResizeAnimation;
@@ -596,6 +598,14 @@ public class SwipeDetector implements View.OnTouchListener {
   }
 
   public void onSingleTap() {
+      Toast.makeText(context.getContext(),
+              context.getContext().getString(R.string.chat_placeholder_tap_and_hold),
+              Toast.LENGTH_SHORT).show();
+  }
+
+  /*
+  public void onSingleTap() {
+
     int translation = screenUtils.dpToPx(30);
     context.hintEditText.setTranslationX(-translation);
     context.editText.setCursorVisible(false);
@@ -627,4 +637,5 @@ public class SwipeDetector implements View.OnTouchListener {
         }, 1000))
         .start();
   }
+  */
 }

@@ -179,10 +179,10 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<List<UserRealm>> userInfosList(List<String> userIdsList) {
-    String userIdsListFormated = listToJson(userIdsList);
+    String userIdsListFormated = StringUtils.listToJson(userIdsList);
     return this.tribeApi.getUserListInfos(
         context.getString(R.string.lookup_userid, userIdsListFormated,
-            context.getString(R.string.userfragment_infos)));
+            context.getString(R.string.userfragment_infos_light)));
   }
 
   @Override public Observable<Installation> createOrUpdateInstall(String token) {
@@ -485,10 +485,15 @@ public class CloudUserDataStore implements UserDataStore {
         }
       }
 
-      return this.tribeApi.getUserListInfos(context.getString(R.string.lookup_userid,
-          resultLookupUserIds.length() > 0 ? resultLookupUserIds.substring(0,
-              resultLookupUserIds.length() - 1) : "",
-          context.getString(R.string.userfragment_infos)));
+      if (resultLookupUserIds.length() == 0) {
+        return Observable.just(new ArrayList<UserRealm>());
+
+      } else {
+        return this.tribeApi.getUserListInfos(context.getString(R.string.lookup_userid,
+                resultLookupUserIds.substring(0, resultLookupUserIds.length() - 1),
+                context.getString(R.string.userfragment_infos)));
+      }
+ 
     }, (lookupHolder, lookupUsers) -> {
       if (lookupHolder != null && lookupUsers != null) {
         List<LookupObject> listLookup = lookupHolder.getLookupObjectList();
@@ -696,30 +701,6 @@ public class CloudUserDataStore implements UserDataStore {
       userCache.updateCurrentUser(userRealm);
     }
   };
-
-  public String listToJson(List<String> list) {
-    String json = "\"";
-    for (int i = 0; i < list.size(); i++) {
-      if (i == list.size() - 1) {
-        json += list.get(i) + "\"";
-      } else {
-        json += list.get(i) + "\", \"";
-      }
-    }
-    if (list.size() == 0) json += "\"";
-    return json;
-  }
-
-  private String listToArrayReq(List<String> ids) {
-    StringBuilder result = new StringBuilder();
-
-    for (String string : ids) {
-      result.append("\"" + string + "\"");
-      result.append(",");
-    }
-
-    return result.length() > 0 ? result.substring(0, result.length() - 1) : "";
-  }
 
   @Override public Observable<String> getHeadDeepLink(String url) {
     return tribeApi.getHeadDeepLink(url).flatMap(response -> {

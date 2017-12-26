@@ -131,6 +131,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
     subscriptions.add(obs.subscribe(width -> {
       shortcutInviteAdapterDelegate.updateWidth(width);
       shortcutInviteFullAdapterDelegate.updateWidth(width);
+      shortcutEmptyInviteAdapterDelegate.updateWidth(width);
     }));
   }
 
@@ -147,7 +148,7 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
   // OBSERVABLES
 
   public Observable<View> onClick() {
-    return shortcutInviteAdapterDelegate.onClick();
+    return Observable.merge(shortcutInviteAdapterDelegate.onClick(), shortcutEmptyInviteAdapterDelegate.onClick());
   }
 
   public Observable<Void> onShareLink() {

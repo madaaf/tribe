@@ -7,22 +7,22 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.IntDef;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import javax.inject.Inject;
 
 /**
  * Created by tiago on 17/02/2016.
  */
-public class NewAvatarView extends LinearLayout implements Avatar {
+public class NewAvatarView extends FrameLayout implements Avatar {
 
   @IntDef({ LIVE, ONLINE, NORMAL }) public @interface AvatarType {
   }
@@ -73,7 +73,6 @@ public class NewAvatarView extends LinearLayout implements Avatar {
     setWillNotDraw(false);
     a.recycle();
 
-    setGravity(Gravity.CENTER);
     updateGraphicConstraints(strokeWidth);
   }
 
@@ -119,6 +118,10 @@ public class NewAvatarView extends LinearLayout implements Avatar {
 
   @Override public void load(int drawableId) {
     avatar.load(drawableId);
+  }
+
+  @Override public void loadColorPlaceholder(int color) {
+    avatar.loadColorPlaceholder(color);
   }
 
   public void setType(int type) {

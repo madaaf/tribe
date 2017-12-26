@@ -26,6 +26,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.ViewUtils;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -60,10 +61,13 @@ public class LiveContainer extends FrameLayout {
   private static final SpringConfig ORIGAMI_SPRING_CONFIG =
       SpringConfig.fromBouncinessAndSpeed(0f, 100f);
   private static final float DRAG_RATE = 0.1f;
+  private static final float DRAG_RATE_HANG_UP = 0.4f;
   private static final int DRAG_THRESHOLD = 20;
   private static final int INVALID_POINTER = -1;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject StateManager stateManager;
 
   @BindView(R.id.viewLive) LiveView viewLive;
 
@@ -71,28 +75,32 @@ public class LiveContainer extends FrameLayout {
 
   @BindView(R.id.viewLiveDropZone) LiveDropZoneView viewLiveDropZone;
 
+  @BindView(R.id.viewLiveHangUp) LiveHangUpView viewLiveHangUp;
+
   @BindView(R.id.viewRinging) LiveRingingView viewRinging;
 
   // SPRINGS
   private SpringSystem springSystem = null;
   private Spring springRight;
   private RightSpringListener springRightListener;
+  private Spring springLeft;
+  private LeftSpringListener springLeftListener;
 
   // VARIABLES
   private float currentDragPercent, lastDownX, lastDownY, downX, downY, currentX, currentY,
       diffDown, scrollTolerance, initDistance = 0;
   private boolean beingDragged = false, isOpenedPartially = false, isOpenedFully = false, isDown =
       false, hasNotifiedAtRest = false, dropEnabled = false, hasJoined = false, chatOpened = false,
-      gameMenuOpen = false, touchEnabled = true;
-  private int activePointerId, touchSlop, currentOffsetRight, overallScrollY = 0, statusBarHeight =
-      0;
+      gameMenuOpen = false, touchEnabled = true, isEndCallOpened = false;
+  private int activePointerId, touchSlop, currentOffsetRight, currentOffsetLeft, overallScrollY = 0,
+      statusBarHeight = 0;
   private VelocityTracker velocityTracker;
   private long longDown = 0L;
   private TileInviteView currentTileView, draggedTileView;
   private int[] tileLocationStart = new int[2], tileLocationLast = new int[2];
 
   // DIMENS
-  private int thresholdEnd;
+  private int thresholdEnd, thresholdEndCall;
 
   //// BINDERS / SUBSCRIPTIONS
   private Unbinder unbinder;
@@ -103,7 +111,7 @@ public class LiveContainer extends FrameLayout {
   private PublishSubject<Void> onEndDrag = PublishSubject.create();
   private PublishSubject<Boolean> onDropZone = PublishSubject.create();
   private PublishSubject<TileInviteView> onDropped = PublishSubject.create();
-  private PublishSubject<Boolean> onChatOpen = PublishSubject.create();
+  private PublishSubject<Void> onEndCall = PublishSubject.create();
 
   public LiveContainer(Context context) {
     super(context);
@@ -117,6 +125,7 @@ public class LiveContainer extends FrameLayout {
     super.onAttachedToWindow();
 
     springRight.addListener(springRightListener);
+    springLeft.addListener(springLeftListener);
   }
 
   @Override protected void onFinishInflate() {
@@ -129,13 +138,14 @@ public class LiveContainer extends FrameLayout {
     applicationComponent.inject(this);
     screenUtils = applicationComponent.screenUtils();
 
-    initRessource();
+    initResources();
     initUI();
     initSubscriptions();
   }
 
   public void dispose() {
     springRight.removeListener(springRightListener);
+    springLeft.removeListener(springLeftListener);
 
     try {
       if (unbinder != null) unbinder.unbind();
@@ -152,6 +162,10 @@ public class LiveContainer extends FrameLayout {
     springRight = springSystem.createSpring();
     springRight.setSpringConfig(ORIGAMI_SPRING_CONFIG);
     springRightListener = new RightSpringListener();
+    springLeft = springSystem.createSpring();
+    springLeft.setSpringConfig(ORIGAMI_SPRING_CONFIG);
+    springLeftListener = new LeftSpringListener();
+
     touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 
     diffDown = screenUtils.dpToPx(DIFF_DOWN);
@@ -160,14 +174,15 @@ public class LiveContainer extends FrameLayout {
     tileLocationLast = new int[2];
   }
 
-  private void initRessource() {
+  private void initResources() {
     thresholdEnd =
         getContext().getResources().getDimensionPixelSize(R.dimen.threshold_open_live_invite);
+    thresholdEndCall = screenUtils.getWidthPx() >> 1;
   }
 
   private void initSubscriptions() {
     viewLive.initDrawerEventChangeObservable(onEventChange);
-    viewLive.initOnShouldOpenChat(onChatOpen);
+    viewLive.initDrawerEndCallObservable(onEndCall);
     viewLiveInvite.initOnInviteDropped(onDropped);
 
     subscriptions.add(viewLive.onJoined().subscribe(tribeJoinRoom -> hasJoined = true));
@@ -192,7 +207,11 @@ public class LiveContainer extends FrameLayout {
 
     subscriptions.add(viewLive.onOpenInvite().subscribe(aVoid -> {
       if (!isOpenedPartially) {
-        openPartialInviteView();
+        if (viewLive.nbInRoom() > 1) {
+          openFullInviteView();
+        } else {
+          openPartialInviteView();
+        }
       } else if (isOpenedPartially) {
         closePartialInviteView();
       }
@@ -211,6 +230,8 @@ public class LiveContainer extends FrameLayout {
         viewRinging.show();
       }
     }));
+
+    subscriptions.add(viewLiveHangUp.onEndCall().subscribe(aVoid -> endCallSuccess()));
   }
 
   public void setStatusBarHeight(int height) {
@@ -241,7 +262,13 @@ public class LiveContainer extends FrameLayout {
     } else if (isOpenedPartially) widthOpen = viewLive.getLiveInviteViewPartialWidth();
 
     boolean isTouchInInviteView = ev.getRawX() >= screenUtils.getWidthPx() - widthOpen;
-    if (!isEnabled() || !hasJoined || gameMenuOpen || !touchEnabled) {
+    boolean isInHangUpButton =
+        ViewUtils.isIn(viewLiveHangUp.getHangUpButton(), (int) ev.getRawX(), (int) ev.getRawY());
+    if (!isEnabled() ||
+        gameMenuOpen ||
+        !touchEnabled ||
+        chatOpened ||
+        (isInHangUpButton && isEndCallOpened)) { //!hasJoined ||
       return false;
     }
 
@@ -249,14 +276,17 @@ public class LiveContainer extends FrameLayout {
 
     switch (action) {
       case MotionEvent.ACTION_DOWN:
-        if (!isOpenedPartially && !isOpenedFully) springRight.setCurrentValue(0).setAtRest();
+        if (!isOpenedPartially && !isOpenedFully && !isEndCallOpened) {
+          springRight.setCurrentValue(0).setAtRest();
+          springLeft.setCurrentValue(0).setAtRest();
+        }
 
         activePointerId = ev.getPointerId(0);
 
         lastDownX = ev.getRawX();
         lastDownY = ev.getRawY();
 
-        if ((!isOpenedPartially && !isOpenedFully) || !isTouchInInviteView) {
+        if ((!isOpenedPartially && !isOpenedFully && !isEndCallOpened) || !isTouchInInviteView) {
           beingDragged = false;
 
           velocityTracker = VelocityTracker.obtain();
@@ -285,7 +315,7 @@ public class LiveContainer extends FrameLayout {
                             LiveView.LIVE_MAX), Toast.LENGTH_SHORT).show();
                   } else {
                     currentTileView = viewLiveInvite.findViewByCoords(downX, downY);
-                    if (currentTileView != null) {
+                    if (currentTileView != null && currentTileView.getUser() != null) {
                       createTileForDrag();
                     }
                   }
@@ -317,6 +347,7 @@ public class LiveContainer extends FrameLayout {
         break;
       case MotionEvent.ACTION_UP:
       case MotionEvent.ACTION_CANCEL:
+        if (isEndCallOpened) closeEndCall();
         clearTouch();
         break;
     }
@@ -334,6 +365,8 @@ public class LiveContainer extends FrameLayout {
       case MotionEvent.ACTION_MOVE: {
         final int pointerIndex = event.findPointerIndex(activePointerId);
 
+        if (isEndCallOpened) break;
+
         if (pointerIndex != INVALID_POINTER) {
           float x = event.getX(pointerIndex) + location[0];
           float offsetX = x - lastDownX;
@@ -343,6 +376,8 @@ public class LiveContainer extends FrameLayout {
           if (currentTileView == null && !chatOpened && velocityTracker != null) {
             if (offsetX <= 0 && !isOpenedPartially) {
               applyOffsetRightWithTension(offsetX);
+            } else if (offsetX >= 0 && !isOpenedPartially && !isOpenedFully && !isEndCallOpened) {
+              applyOffsetLeftWithTension(offsetX);
             }
 
             velocityTracker.addMovement(event);
@@ -397,8 +432,12 @@ public class LiveContainer extends FrameLayout {
             closeFullInviteView();
             clearTouch();
             break;
-          } else if (chatOpened) {
-            onChatOpen.onNext(false);
+          }
+
+          if (isEndCallOpened) {
+            if (velocityTracker != null) velocityTracker.addMovement(event);
+            springLeft.setCurrentValue(viewLiveHangUp.getMaxWidth()).setAtRest();
+            closeEndCall();
             clearTouch();
             break;
           }
@@ -423,11 +462,21 @@ public class LiveContainer extends FrameLayout {
               clearTouch();
               break;
             }
-          } else if (isOpenedPartially) {
-            springRight.setCurrentValue(-viewLive.getLiveInviteViewPartialWidth()).setAtRest();
-            closePartialInviteView();
           } else {
-            onChatOpen.onNext(true);
+            if (isOpenedPartially) {
+              springRight.setCurrentValue(-viewLive.getLiveInviteViewPartialWidth()).setAtRest();
+              closePartialInviteView();
+            } else if (!isOpenedFully && !isOpenedPartially) {
+              springLeft.setCurrentValue(currentOffsetLeft).setAtRest();
+
+              if (offsetX > thresholdEndCall) {
+                openEndCall();
+                clearTouch();
+                break;
+              } else {
+                springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+              }
+            }
           }
         }
 
@@ -597,7 +646,7 @@ public class LiveContainer extends FrameLayout {
   }
 
   private void applyRight(float value) {
-    viewLive.applyTranslateX(value);
+    viewLive.applyTranslateX(value, true);
     viewLiveDropZone.applyTranslationX(value);
   }
 
@@ -687,15 +736,73 @@ public class LiveContainer extends FrameLayout {
     return (int) ((slingshotDist * boundedDragPercent) + extraMove);
   }
 
+  private class LeftSpringListener extends SimpleSpringListener {
+
+    @Override public void onSpringUpdate(Spring spring) {
+      if (ViewCompat.isAttachedToWindow(LiveContainer.this)) {
+        float value = (float) spring.getCurrentValue();
+        applyLeft(value);
+      }
+    }
+
+    @Override public void onSpringActivate(Spring spring) {
+      hasNotifiedAtRest = false;
+    }
+  }
+
+  private void applyLeft(float value) {
+    viewLiveHangUp.applyTranslationX(value);
+    viewLive.applyTranslateX(value, false);
+    viewLiveInvite.setTranslationX(value);
+  }
+
+  private boolean applyOffsetLeftWithTension(float offsetX) {
+    final float scrollLeft = offsetX;
+    currentOffsetLeft = (int) scrollLeft;
+    float appliedValue = Math.min(Math.max(offsetX, 0), viewLiveHangUp.getMaxWidth());
+    applyLeft(appliedValue);
+
+    return true;
+  }
+
+  private void openEndCall() {
+    isEndCallOpened = true;
+
+    int endValue = viewLiveHangUp.getMaxWidth();
+    if (velocityTracker != null) {
+      springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(endValue);
+    } else {
+      springLeft.setEndValue(endValue);
+    }
+
+    viewLiveHangUp.showEndCall();
+  }
+
+  private void closeEndCall() {
+    isEndCallOpened = false;
+
+    viewLiveHangUp.hideEndCall();
+
+    if (velocityTracker != null) {
+      springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
+    } else {
+      springLeft.setEndValue(0);
+    }
+  }
+
+  private void endCallSuccess() {
+    springLeft.setEndValue(screenUtils.getWidthPx());
+    AnimationUtils.fadeOut(viewLiveHangUp, DURATION);
+    subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> onEndCall.onNext(null)));
+  }
+
   ///////////////////////
   //    OBSERVABLES    //
   ///////////////////////
 
   public Observable<Integer> onEventChange() {
     return onEventChange;
-  }
-
-  public Observable<Boolean> onChatOpen() {
-    return onChatOpen;
   }
 }

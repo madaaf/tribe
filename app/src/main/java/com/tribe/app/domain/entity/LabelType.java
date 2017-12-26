@@ -49,6 +49,11 @@ public class LabelType implements Serializable {
   public static final String TRIBE_SAVE = "tribeSave";
   public static final String TRIBE_INCREASE_SPEED = "tribeIncreaseSpeed";
   public static final String TRIBE_DECREASE_SPEED = "tribeDecreaseSpeed";
+  public static final String SEND_CALL_LINK_SMS = "sendCallLinkSms";
+  public static final String SEND_CALL_LINK_MESSENGER = "sendCallLinkMessenger";
+  public static final String MATCH_RANDOM_PLAYERS = "matchRandomPlayers";
+  public static final String SEARCH_FRIENDS = "searchFriends";
+  public static final String SCORES = "scores";
 
   public static final String INSTAGRAM = "instagram";
   public static final String TWITTER = "twitter";

@@ -68,6 +68,8 @@
   <dimen name="list_home_header_height">40dp</dimen>
   <dimen name="list_live_invite_header_height">45dp</dimen>
   <dimen name="list_search_header_height">40dp</dimen>
+  <dimen name="user_infos_notif_live_partial_height">67dp</dimen>
+  <dimen name="user_infos_notif_live_full_height">127dp</dimen>
 
   <!-- WIDTHS -->
   <dimen name="live_invite_view_width">106dp</dimen>
@@ -125,6 +127,7 @@
   <dimen name="threshold_dismiss">100dp</dimen>
   <dimen name="threshold_open_live_invite">100dp</dimen>
   <dimen name="threshold_open_notification">50dp</dimen>
+  <dimen name="threshold_end_call">200dp</dimen>
 
   <!-- TRANSLATIONS -->
   <dimen name="transition_grid_back_to_top">150dp</dimen>

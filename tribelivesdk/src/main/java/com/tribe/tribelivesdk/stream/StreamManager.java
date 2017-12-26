@@ -12,6 +12,8 @@ import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.view.RemotePeerView;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnectionFactory;
@@ -29,6 +31,7 @@ public class StreamManager {
   private TribeLiveLocalStream liveLocalStream;
   private LocalPeerView localPeerView;
   private final ObservableRxHashMap<String, RemotePeer> remotePeerMap = new ObservableRxHashMap<>();
+  private Map<String, TribePeerMediaConfiguration> pendingPeerMediaConfigurationMap;
 
   // OBSERVABLES
   private CompositeSubscription localSubscriptions = new CompositeSubscription();
@@ -45,6 +48,8 @@ public class StreamManager {
     this.localPeerView = localPeerView;
     generateLocalStream(context, peerConnectionFactory);
     liveLocalStream.startVideoCapture();
+
+    pendingPeerMediaConfigurationMap = new HashMap<>();
 
     localSubscriptions.add(this.localPeerView.onSwitchCamera().subscribe(aVoid -> switchCamera()));
 
@@ -117,6 +122,12 @@ public class StreamManager {
     remotePeer.setPeerView(remotePeerView);
 
     remotePeerMap.put(session.getPeerId(), remotePeer);
+
+    if (pendingPeerMediaConfigurationMap.get(session.getPeerId()) != null) {
+      Timber.d("Setting pending media configuration");
+      remotePeer.setMediaConfiguration(pendingPeerMediaConfigurationMap.get(session.getPeerId()));
+      pendingPeerMediaConfigurationMap.remove(session.getPeerId());
+    }
   }
 
   public void removePeer(TribeSession tribeSession) {
@@ -155,6 +166,8 @@ public class StreamManager {
 
     if (remotePeer == null) {
       Timber.d("setMediaConfiguration to a null remotePeer");
+      pendingPeerMediaConfigurationMap.put(tribePeerMediaConfiguration.getSession().getPeerId(),
+          tribePeerMediaConfiguration);
       return;
     }
 

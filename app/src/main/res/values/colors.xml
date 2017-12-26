@@ -65,6 +65,7 @@
   <color name="grey.chat.grey">#E9F4F4</color>
   <color name="grey.chat.grey.hint">#D8D8D8</color>
   <color name="grey.lighter">#F6F6F6</color>
+  <color name="grey.placeholder">#EFEFEF</color>
 
   <!-- BLUE -->
   <color name="blue.text">#02ADF2</color>
@@ -105,6 +106,7 @@
   <color name="red.new.contacts">#FD2448</color>
   <color name="red.gradient.live.opacity.5">#0DF8143A</color>
   <color name="red.pulse">#80F9474C</color>
+  <color name="red.hangup">#F61D47</color>
 
   <!-- ORANGES -->
   <color name="orange.recent">#FFA496</color>

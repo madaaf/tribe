@@ -13,7 +13,6 @@ import io.realm.RealmList;
 import java.util.List;
 import rx.Observable;
 import rx.functions.Action1;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -37,10 +36,11 @@ public class CloudChatDataStore implements ChatDataStore {
   @Override
   public Observable<MessageRealm> createMessage(String[] userIds, String type, String data,
       String date) {
+    if (userIds == null || userIds.length == 0) return Observable.empty();
+
     String req =
         context.getString(R.string.messages_create, JsonUtils.arrayToJson(userIds), type, data,
             context.getString(R.string.messagefragment_info));
-    Timber.i("req : " + req);
     return this.tribeApi.createMessage(req).doOnNext(messageRealm -> {
       RealmList<MessageRealm> list = new RealmList<>();
       list.add(messageRealm);
@@ -54,7 +54,6 @@ public class CloudChatDataStore implements ChatDataStore {
     if (dateAfter == null) {
       req = context.getString(R.string.messages_details_before, JsonUtils.arrayToJson(userIds),
           dateBefore, null, context.getString(R.string.messagefragment_info));
-      Timber.i("request : " + req);
       return this.tribeApi.getUserMessage(req)
           .doOnNext(userRealm -> chatCache.putMessages(userRealm.getMessages(),
               JsonUtils.arrayToJson(userIds)))
@@ -62,7 +61,6 @@ public class CloudChatDataStore implements ChatDataStore {
     } else {
       req = context.getString(R.string.messages_details_between, JsonUtils.arrayToJson(userIds),
           dateBefore, dateAfter, context.getString(R.string.messagefragment_info));
-      Timber.i("request : " + req);
       return this.tribeApi.getUserMessage(req)
           .doOnNext(userRealm -> chatCache.deleteRemovedMessageFromCache(userRealm.getMessages(),
               JsonUtils.arrayToJson(userIds), dateBefore, dateAfter))

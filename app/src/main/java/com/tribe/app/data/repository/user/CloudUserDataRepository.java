@@ -84,14 +84,14 @@ import rx.Observable;
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.userInfos(userId)
         .doOnError(throwable -> throwable.printStackTrace())
-        .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
   @Override public Observable<List<User>> getUsersInfosList(List<String> userIds) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.userInfosList(userIds)
         .doOnError(throwable -> throwable.printStackTrace())
-        .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
   @Override public Observable<List<Shortcut>> singleShortcuts() { // TOSO
@@ -130,14 +130,14 @@ import rx.Observable;
   @Override public Observable<User> updateUser(List<Pair<String, String>> values) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.updateUser(values)
-        .map(userRealm -> this.userRealmDataMapper.transform(userRealm));
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
   @Override public Observable<User> updateUserFacebook(String userId, String accessToken) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.updateUserFacebook(accessToken)
         .flatMap(aVoid -> userDataStore.userInfos(userId)
-            .map(userRealm -> this.userRealmDataMapper.transform(userRealm)));
+            .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true)));
   }
 
   @Override public Observable<User> updateUserPhoneNumber(String userId, String accessToken,
@@ -145,7 +145,7 @@ import rx.Observable;
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.updateUserPhoneNumber(accessToken, phoneNumber)
         .flatMap(aVoid -> userDataStore.userInfos(userId)
-            .map(userRealm -> this.userRealmDataMapper.transform(userRealm)));
+            .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true)));
   }
 
   @Override public Observable<Void> incrUserTimeInCall(String userId, Long timeInCall) {

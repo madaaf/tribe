@@ -30,6 +30,7 @@ import rx.android.schedulers.AndroidSchedulers;
   public static final int WIZZ = 5;
   public static final int ALIENS_ATTACK_KILLED = 6;
   public static final int ALIENS_ATTACK_SOUNDTRACK = 7;
+  public static final int GAME_FRIEND_LEADER = 8;
 
   // VARIABLES
   private Context context;
@@ -71,6 +72,7 @@ import rx.android.schedulers.AndroidSchedulers;
     addSound(WIZZ, R.raw.wizz);
     addSound(ALIENS_ATTACK_KILLED, R.raw.aliens_attack_alien_killed);
     addSound(ALIENS_ATTACK_SOUNDTRACK, R.raw.aliens_attack_soundtrack);
+    addSound(GAME_FRIEND_LEADER, R.raw.game_friend_leader);
   }
 
   public void addSound(int index, int soundID) {

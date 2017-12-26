@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.tribe.app.presentation.view.component.games.LeaderboardMainView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@null"
+    android:fillViewport="true"
+    tools:context=".presentation.view.activity.LeaderboardActivity"
+    >
+
+  <android.support.design.widget.CoordinatorLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      >
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+      <android.support.design.widget.CollapsingToolbarLayout
+          android:id="@+id/collapsingToolbar"
+          android:layout_width="match_parent"
+          android:layout_height="150dp"
+          app:layout_scrollFlags="scroll|exitUntilCollapsed"
+          >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_collapseMode="parallax"
+            >
+
+          <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+              android:id="@+id/viewNewAvatar"
+              android:layout_width="@dimen/avatar_size_small"
+              android:layout_height="@dimen/avatar_size_small"
+              android:layout_centerHorizontal="true"
+              />
+
+          <com.tribe.app.presentation.view.widget.avatar.EmojiGameView
+              android:id="@+id/txtEmojiGame"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignBottom="@id/viewNewAvatar"
+              android:layout_alignEnd="@id/viewNewAvatar"
+              android:layout_marginBottom="-5dp"
+              android:layout_marginEnd="-5dp"
+              style="@style/Headline.Black.2"
+              />
+
+          <com.tribe.app.presentation.view.widget.TextViewFont
+              android:id="@+id/txtName"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_below="@id/viewNewAvatar"
+              android:layout_centerHorizontal="true"
+              android:layout_marginTop="@dimen/horizontal_margin_small"
+              style="@style/Title.2.Black"
+              />
+
+          <com.tribe.app.presentation.view.widget.TextViewFont
+              android:id="@+id/txtUsername"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_below="@id/txtName"
+              android:layout_centerHorizontal="true"
+              android:layout_marginTop="4dp"
+              style="@style/BiggerBody.One.Black40"
+              />
+        </RelativeLayout>
+      </android.support.design.widget.CollapsingToolbarLayout>
+
+      <RelativeLayout
+          android:layout_width="match_parent"
+          android:layout_height="40dp"
+          android:background="@color/yellow"
+          >
+
+        <ImageView
+            android:id="@+id/imgCup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/horizontal_margin_small"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_leaderboard_cup"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_toRightOf="@id/imgCup"
+            android:text="@string/leaderboards_title"
+            android:textAllCaps="true"
+            style="@style/BiggerBody.Two.White"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/horizontal_margin_small"
+            android:text="@string/leaderboards_score"
+            android:textAllCaps="true"
+            style="@style/BiggerBody.Two.Black40"
+            />
+      </RelativeLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+
+  </android.support.design.widget.CoordinatorLayout>
+</com.tribe.app.presentation.view.component.games.LeaderboardMainView>

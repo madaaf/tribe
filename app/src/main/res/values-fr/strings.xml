@@ -17,6 +17,7 @@
 	<string name="action_copy">Copier</string>
 	<string name="action_got_it">J\'ai compris !</string>
 	<string name="action_tap_to_add">Tap to add</string>
+	<string name="action_play">Jouer</string>
 	
 	<!-- User Actions -->
 	<string name="action_add_friend">Ajouter en ami</string>
@@ -669,12 +670,13 @@
 	<string name="game_song_pop_rule">Devinez 5 autres morceaux !</string>
 	<string name="game_song_pop_menu_re_roll">Renouveler les morceaux</string>
 	<string name="game_song_pop_status_pick_playlist">Choisis une playlist !</string>
-	<string name="game_song_pop_status_score_rule">Le premier à %1$d points gagne!</string>
+	<string name="game_song_pop_status_score_rule">Le premier à 5 points gagne!</string>
 	<string name="game_song_pop_status_guess">Devine le morceau !</string>
 	<string name="game_song_pop_status_wrong_answer">Oups ! Ce n\'est pas le morceau !</string>
 	<string name="game_song_pop_status_no_winner">Personne n\'a deviné !</string>
 	<string name="game_song_pop_status_winner">%1$s a deviné !</string>
 	<string name="game_song_pop_status_winner_step">%1$s a gagné!</string>
+	<string name="game_song_pop_status_winners_step">%1$s ont gagné!</string>
 	<string name="game_song_pop_status_no_winner_step">Personne n\'a gagné...</string>
 	<string name="game_song_pop_new_popup_title">Continuer à jouer!</string>
 	<string name="game_song_pop_new_popup_description">Voulez-vous rejouer ou faire un autre jeu ?</string>
@@ -740,8 +742,10 @@
 	<string name="game_taboo">Taboo</string>
 	<string name="game_backgam">Backgam\'</string>
 	<string name="game_beats">Beats</string>
+	<string name="game_trivia_change_category">Changer de sujet</string>
 	<string name="game_trivia_status_pick_category">Choisis un sujet !</string>
 	<string name="game_trivia_status_guess">Répond le premier !</string>
+	<string name="game_trivia_status_wrong_answer">Oups ! Ce n\'est pas la réponse !</string>
 	<string name="game_trivia_category_movies">Cinéma</string>
 	<string name="game_trivia_category_music">Musique</string>
 	<string name="game_trivia_category_tv">TV</string>
@@ -850,7 +854,7 @@
 	<string name="home_sync_facebook_subtitle">Tappez pour voir qui est là !</string>
 	
 	<!-- New Chat -->
-	<string name="newchat_title">Nouveau chat</string>
+	<string name="newchat_title">Choisissez vos amis</string>
 	<string name="newchat_to">Avec</string>
 	<string name="newchat_create_error_noone_selected">Vous devez sélectionner des gens pour créer un chat</string>
 	
@@ -955,4 +959,17 @@
 	<string name="leaderboards_point">pt</string>
 	<string name="leaderboards_points">pts</string>
 	<string name="leaderboards_you">Vous</string>
+	<string name="leaderboard_new_high_score">Nouveau meilleur score !</string>
+	<string name="leaderboard_self_is_best">%1$s êtes le(la) meilleur(e) !</string>
+	<string name="leaderboard_friend_is_best">%1$s est le(la) meilleur(e) !</string>
+	
+	<!-- Hang Up -->
+	<string name="hang_up_title">TAP POUR RACCROCHER</string>
+	
+	<!-- Game Mode -->
+	<string name="gamemode_title">Mode de jeu</string>
+	<string name="gamemode_alone_title">SEUL</string>
+	<string name="gamemode_alone_subtitle">Entrainez vous !</string>
+	<string name="gamemode_multi_title">MULTIJOUEUR</string>
+	<string name="gamemode_multi_subtitle">Jouez avec vos amis !</string>
 </resources>

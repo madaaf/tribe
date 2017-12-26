@@ -208,6 +208,12 @@
         android:theme="@style/AppTheme.White"/>
 
     <activity
+        android:name=".presentation.view.activity.LeaderboardActivity"
+        android:configChanges="orientation|keyboardHidden|screenSize"
+        android:screenOrientation="portrait"
+        android:theme="@style/AppTheme.White"/>
+
+    <activity
         android:name=".presentation.view.activity.LiveImmersiveNotificationActivity"
         android:keepScreenOn="true"
         android:launchMode="singleTask"
@@ -220,7 +226,7 @@
         android:configChanges="orientation|screenSize"
         android:keepScreenOn="true"
         android:launchMode="singleTask"
-        android:theme="@style/AppTheme.Black"/>
+        android:theme="@style/AppTheme.Transparent"/>
 
     <activity
         android:name=".presentation.view.activity.VideoActivity"

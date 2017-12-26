@@ -53,6 +53,7 @@ public class Game {
   protected boolean online;
   protected boolean playable;
   protected boolean featured;
+  protected boolean hasScores;
   protected boolean isNew;
   protected String title;
   protected String baseline;
@@ -70,6 +71,8 @@ public class Game {
   protected String previousGuestId = null;
   protected Map<String, Object> contextMap = null;
   protected TribeGuest currentMaster;
+  protected TribeGuest friendLeader;
+  protected String emoji;
 
   // OBSERVABLE / SUBSCRIPTIONS
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -237,6 +240,30 @@ public class Game {
 
   public TribeGuest getCurrentMaster() {
     return currentMaster;
+  }
+
+  public void setHasScores(boolean hasScores) {
+    this.hasScores = hasScores;
+  }
+
+  public boolean hasScores() {
+    return hasScores;
+  }
+
+  public void setFriendLeader(TribeGuest friendLeader) {
+    this.friendLeader = friendLeader;
+  }
+
+  public TribeGuest getFriendLeader() {
+    return friendLeader;
+  }
+
+  public void setEmoji(String emoji) {
+    this.emoji = emoji;
+  }
+
+  public String getEmoji() {
+    return emoji;
   }
 
   protected TribeGuest getNextGuest() {

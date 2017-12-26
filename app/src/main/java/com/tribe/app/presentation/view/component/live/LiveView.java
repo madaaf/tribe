@@ -3,7 +3,9 @@ package com.tribe.app.presentation.view.component.live;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,7 +119,9 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewLiveInvite) LiveInviteView viewLiveInvite;
 
-  @BindView(R.id.viewShadow) View viewShadow;
+  @BindView(R.id.viewShadowRight) View viewShadowRight;
+
+  @BindView(R.id.viewShadowLeft) View viewShadowLeft;
 
   @BindView(R.id.viewLocalLive) LiveLocalView viewLocalLive;
 
@@ -136,7 +140,7 @@ public class LiveView extends FrameLayout {
   private boolean isParamExpended = false, isMicroActivated = true, isCameraActivated = true,
       hasShared = false;
   private View view;
-  private List<User> anonymousInLive = new ArrayList<>();
+  private List<User> detailedUserInfoInLive = new ArrayList<>();
   private boolean isFirstToJoin = true;
   private double duration;
   private GameManager gameManager;
@@ -182,7 +186,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<String> onNotificationGameStarted = PublishSubject.create();
   private PublishSubject<String> onNotificationGameStopped = PublishSubject.create();
   private PublishSubject<String> onNotificationGameRestart = PublishSubject.create();
-  private PublishSubject<String> onAnonymousJoined = PublishSubject.create();
+  private PublishSubject<String> onUserJoined = PublishSubject.create();
 
   public LiveView(Context context) {
     super(context);
@@ -352,7 +356,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void initUI() {
-    setBackgroundColor(Color.BLACK);
+    ViewCompat.setBackground(this, null);
   }
 
   private void initResources() {
@@ -578,12 +582,7 @@ public class LiveView extends FrameLayout {
 
           tribeGuestMap.put(remotePeer.getSession().getUserId(), guestFromRemotePeer(remotePeer));
 
-          String username = getDisplayNameFromId(remotePeer.getSession().getUserId());
-
-          if ((username == null || username.isEmpty()) && !remotePeer.getSession().isExternal()) {
-            Timber.d("anonymous joinded in room with id : " + remotePeer.getSession().getUserId());
-            onAnonymousJoined.onNext(remotePeer.getSession().getUserId());
-          }
+          onUserJoined.onNext(remotePeer.getSession().getUserId());
 
           Timber.d("Remote peer added with id : " +
               remotePeer.getSession().getPeerId() +
@@ -678,14 +677,14 @@ public class LiveView extends FrameLayout {
     viewControlsLive.initDrawerEventChangeObservable(obs);
   }
 
-  public void initOnShouldOpenChat(Observable<Boolean> obs) {
-    viewControlsLive.initOnShouldOpenChat(obs);
+  public void initDrawerEndCallObservable(Observable<Void> obs) {
+    persistentSubscriptions.add(obs.subscribe(aVoid -> onLeave.onNext(null)));
   }
 
   public void initAnonymousSubscription(Observable<List<User>> obs) {
     persistentSubscriptions.add(obs.subscribe(userList -> {
       if (!userList.isEmpty()) {
-        anonymousInLive.addAll(userList);
+        detailedUserInfoInLive.addAll(userList);
 
         for (User user : userList) {
           if (liveRowViewMap.get(user.getId()) != null) {
@@ -711,15 +710,20 @@ public class LiveView extends FrameLayout {
     return live;
   }
 
-  public void applyTranslateX(float value) {
+  public void applyTranslateX(float value, boolean right) {
     viewControlsLive.setTranslationX(value);
     viewRoom.setTranslationX(value);
     viewRinging.applyTranslationX(value);
     viewDarkOverlay.setTranslationX(value);
-    viewShadow.setTranslationX(value);
 
-    if (Math.abs(value) >= getLiveInviteViewPartialWidth()) {
-      updateInviteViewWidth((int) Math.abs(value));
+    if (right) {
+      viewShadowRight.setTranslationX(value);
+
+      if (Math.abs(value) >= getLiveInviteViewPartialWidth()) {
+        updateInviteViewWidth((int) Math.abs(value));
+      }
+    } else {
+      viewShadowLeft.setTranslationX(value);
     }
   }
 
@@ -739,7 +743,13 @@ public class LiveView extends FrameLayout {
     this.live = live;
     this.fbId = live.hasUsers() ? live.getUsersOfShortcut().get(0).getFbid() : "";
 
-    if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+    tempSubscriptions.add(live.onRoomUpdated().subscribe(room -> {
+      if (live.getRoom() != null && live.getRoom().acceptsRandom()) {
+        viewControlsLive.btnChat.setVisibility(INVISIBLE);
+      }
+    }));
+
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || live.getRoom() != null && live.getRoom().acceptsRandom()) {
       viewControlsLive.btnChat.setVisibility(INVISIBLE);
       viewRinging.setVisibility(INVISIBLE);
     }
@@ -789,6 +799,7 @@ public class LiveView extends FrameLayout {
   }
 
   public int nbInRoom() {
+    if (live.getRoom() == null) return 0;
     return live.getRoom().nbUsersTotal();
   }
 
@@ -958,7 +969,7 @@ public class LiveView extends FrameLayout {
     return jsonObject;
   }
 
-  private int nbLiveInRoom() {
+  int nbLiveInRoom() {
     if (live.getRoom() == null) return 1;
     return live.getRoom().nbUsersLive();
   }
@@ -984,7 +995,7 @@ public class LiveView extends FrameLayout {
       }
     }
 
-    for (User anonymousUser : anonymousInLive) {
+    for (User anonymousUser : detailedUserInfoInLive) {
       if (anonymousUser.getId().equals(id)) {
         return anonymousUser.getDisplayName();
       }
@@ -994,12 +1005,6 @@ public class LiveView extends FrameLayout {
   }
 
   private Object computeGuest(String id) {
-    for (User user : live.getRoom().getAllUsers()) {
-      if (id.equals(user.getId()) && !user.isEmpty()) {
-        return user;
-      }
-    }
-
     for (Shortcut shortcut : user.getShortcutList()) {
       if (shortcut.isSingle()) {
         User friend = shortcut.getSingleFriend();
@@ -1009,7 +1014,7 @@ public class LiveView extends FrameLayout {
       }
     }
 
-    for (User anonymousUser : anonymousInLive) {
+    for (User anonymousUser : detailedUserInfoInLive) {
       if (anonymousUser.getId().equals(id)) {
         return anonymousUser;
       }
@@ -1280,8 +1285,8 @@ public class LiveView extends FrameLayout {
     return onNotificationRemoteJoined;
   }
 
-  public Observable<String> onAnonymousJoined() {
-    return onAnonymousJoined;
+  public Observable<String> onUserJoined() {
+    return onUserJoined;
   }
 
   public Observable<String> onNotificationonRemotePeerRemoved() {
@@ -1346,6 +1351,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Void> openGameStore() {
     return viewControlsLive.openGameStore();
+  }
+
+  public Observable<Pair<String, Integer>> onAddScore() {
+    return viewGameManager.onAddScore();
   }
 }
 

@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.adapter.viewholder;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -17,6 +18,8 @@ import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 
 public class BaseNotifViewHolder extends RecyclerView.ViewHolder {
 
+  @Nullable @BindView(R.id.layoutContentok) public ViewGroup layoutContent;
+
   @Nullable @BindView(R.id.txtName) public TextViewFont txtName;
 
   @Nullable @BindView(R.id.txtUsername) public TextViewFont txtDescription;
@@ -30,6 +33,22 @@ public class BaseNotifViewHolder extends RecyclerView.ViewHolder {
   @Nullable @BindView(R.id.progressView) public CircularProgressView progressView;
 
   @Nullable @BindView(R.id.txtAction) public TextViewFont txtAction;
+
+  @Nullable @BindView(R.id.txtPoints) public TextViewFont txtPoints;
+
+  @Nullable @BindView(R.id.imgIcon) public ImageView imgIcon;
+
+  //@Nullable @BindView(R.id.txtRanking) public TextViewFont txtRanking;
+
+  @Nullable @BindView(R.id.txtPointsSuffix) public TextViewFont txtPointsSuffix;
+
+  @Nullable @BindView(R.id.separator) public View separator;
+
+  @Nullable @BindView(R.id.txtBestScore) public TextViewFont txtBestScore;
+
+  @Nullable @BindView(R.id.layoutUser) public ViewGroup layoutUser;
+
+  @Nullable @BindView(R.id.layoutGame) public ViewGroup layoutGame;
 
   public BaseNotifViewHolder(View itemView) {
     super(itemView);

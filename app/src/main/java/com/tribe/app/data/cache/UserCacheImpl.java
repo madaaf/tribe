@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.realm.Installation;
+import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ShortcutLastSeenRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -50,7 +51,13 @@ public class UserCacheImpl implements UserCache {
     Realm obsRealm = Realm.getDefaultInstance();
 
     try {
-      obsRealm.executeTransaction(realm1 -> realm1.insertOrUpdate(userRealm));
+      obsRealm.executeTransaction(realm1 -> {
+        realm1.where(ScoreRealm.class)
+            .equalTo("user.id", userRealm.getId())
+            .findAll()
+            .deleteAllFromRealm();
+        realm1.insertOrUpdate(userRealm);
+      });
     } finally {
       obsRealm.close();
     }
@@ -79,6 +86,8 @@ public class UserCacheImpl implements UserCache {
   }
 
   private void updateShortcutPartially(Realm tempRealm, ShortcutRealm from, ShortcutRealm to) {
+    if (to == null) return;
+
     to.setMute(from.isMute());
     to.setStatus(from.getStatus().toUpperCase());
     to.setRead(from.isRead());
@@ -105,6 +114,10 @@ public class UserCacheImpl implements UserCache {
 
     RealmList<UserRealm> userRealmList = new RealmList<>();
     for (UserRealm member : from.getMembers()) {
+      tempRealm.where(ScoreRealm.class)
+          .equalTo("user.id", member.getId())
+          .findAll()
+          .deleteAllFromRealm();
       tempRealm.insertOrUpdate(member);
       userRealmList.add(tempRealm.where(UserRealm.class).equalTo("id", member.getId()).findFirst());
     }

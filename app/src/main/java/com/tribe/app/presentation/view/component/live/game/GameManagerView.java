@@ -73,6 +73,7 @@ public class GameManagerView extends FrameLayout {
   private CompositeSubscription subscriptionsGame = new CompositeSubscription();
   private BehaviorSubject<Map<String, TribeGuest>> onPeerMapChange = BehaviorSubject.create();
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
+  private PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
 
   public GameManagerView(@NonNull Context context) {
     super(context);
@@ -154,7 +155,7 @@ public class GameManagerView extends FrameLayout {
             currentGameView.stop();
             removeView(currentGameView);
           }
-          
+
           currentGameView = null;
           currentGame = null;
         }));
@@ -218,9 +219,11 @@ public class GameManagerView extends FrameLayout {
           .subscribe(onRestartGame));
     } else if (game.getId().equals(Game.GAME_INVADERS)) {
       GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
+      subscriptionsGame.add(gameAlienAttacksView.onAddScore().subscribe(onAddScore));
       gameView = gameAlienAttacksView;
     } else if (game.isWeb()) {
       GameWebView gameWebView = new GameWebView(getContext());
+      subscriptionsGame.add(gameWebView.onAddScore().subscribe(onAddScore));
       gameView = gameWebView;
     }
 
@@ -260,5 +263,9 @@ public class GameManagerView extends FrameLayout {
 
   public Observable<Game> onRestartGame() {
     return onRestartGame;
+  }
+
+  public Observable<Pair<String, Integer>> onAddScore() {
+    return onAddScore;
   }
 }

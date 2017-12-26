@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Settings;
+import android.widget.Toast;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
@@ -31,6 +32,7 @@ import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.activity.LeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
@@ -53,6 +55,7 @@ public class Navigator {
   public static int FROM_PROFILE = 1002;
   public static int FROM_CHAT = 1003;
   public static int FROM_NEW_GAME = 1004;
+  public static int FROM_LEADERBOARD = 1005;
   public static String SNAPCHAT = "com.snapchat.android";
   public static String INSTAGRAM = "com.instagram.android";
   public static String TWITTER = "com.twitter.android";
@@ -150,6 +153,24 @@ public class Navigator {
       Intent intent = ProfileActivity.getCallingIntent(activity);
       activity.startActivityForResult(intent, FROM_PROFILE);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
+  }
+
+  public void navigateToLeaderboards(Activity activity) {
+    if (activity != null) {
+      Intent intent = LeaderboardActivity.getCallingIntent(activity);
+      activity.startActivityForResult(intent, FROM_LEADERBOARD);
+      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
+    }
+  }
+
+  public void navigateToLeaderboardsForShortcut(Activity activity, String userId,
+      String displayName, String profilePicture) {
+    if (activity != null) {
+      Intent intent =
+          LeaderboardActivity.getCallingIntent(activity, userId, displayName, profilePicture);
+      activity.startActivityForResult(intent, FROM_LEADERBOARD);
+      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
     }
   }
 
@@ -439,6 +460,50 @@ public class Navigator {
 
               openMessageAppForInviteWithUrl(activity, firebaseRemoteConfig, finalUrl, phoneNumber,
                   shouldOpenDefaultSms);
+            });
+
+    return link;
+  }
+
+  public String sendInviteToMessenger(BaseActivity activity,
+      FirebaseRemoteConfig firebaseRemoteConfig, String feature, String link) {
+    String title = activity.getString(R.string.onboarding_user_alert_call_link_metadata_title,
+        activity.getCurrentUser().getDisplayName());
+    String description =
+        activity.getString(R.string.onboarding_user_alert_call_link_metadata_description,
+            activity.getCurrentUser().getDisplayName());
+
+    activity.getTagManager()
+        .generateBranchLink(activity, link, title, description, feature, "SMS",
+            (generatedUrl, error) -> {
+              String finalUrl;
+
+              if (error == null && !StringUtils.isEmpty(generatedUrl)) {
+                finalUrl = generatedUrl;
+              } else {
+                finalUrl = link;
+              }
+
+              String text = firebaseRemoteConfig.getString("invite_message");
+
+              if (StringUtils.isEmpty(text)) {
+                text =
+                    activity.getString(R.string.onboarding_user_alert_call_link_content, finalUrl);
+              } else {
+                text = text.replace("%LINK%", finalUrl);
+              }
+
+              Intent sendIntent = new Intent();
+              sendIntent.setAction(Intent.ACTION_SEND);
+              sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+              sendIntent.setType("text/plain");
+              sendIntent.setPackage("com.facebook.orca");
+              try {
+                activity.startActivity(sendIntent);
+              } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(activity, "Please Install Facebook Messenger", Toast.LENGTH_LONG)
+                    .show();
+              }
             });
 
     return link;

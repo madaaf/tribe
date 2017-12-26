@@ -58,6 +58,7 @@ import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.Triplet;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
@@ -69,6 +70,7 @@ import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
+import com.tribe.app.presentation.view.component.live.LiveInviteView;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
@@ -102,6 +104,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -143,8 +146,10 @@ public class LiveActivity extends BaseActivity
 
   public static final String ROOM_ID = "ROOM_ID";
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
-  public static String UNKNOWN_USER_FROM_DEEPLINK = "UNKNOWN_USER_FROM_DEEPLINK";
-  public static String USER_IDS_FOR_NEW_SHORTCUT = "USER_IDS_FOR_NEW_SHORTCUT";
+  public static final String UNKNOWN_USER_FROM_DEEPLINK = "UNKNOWN_USER_FROM_DEEPLINK";
+  public static final String USER_IDS_FOR_NEW_SHORTCUT = "USER_IDS_FOR_NEW_SHORTCUT";
+  public static final String LAUNCH_DICE = "LAUNCH_DICE";
+  public static final String LAUNCH_SEARCH = "LAUNCH_SEARCH";
 
   private final int MAX_DURATION_WAITING_LIVE = 8;
   private final int MIN_LIVE_DURATION_TO_DISPLAY_RATING_NOTIF = 30;
@@ -163,6 +168,7 @@ public class LiveActivity extends BaseActivity
   @Inject RxImagePicker rxImagePicker;
   @Inject com.tribe.app.presentation.utils.DateUtils dateUtils;
   @BindView(R.id.viewLive) LiveView viewLive;
+  @BindView(R.id.viewLiveInvite) LiveInviteView viewLiveInvite;
   @BindView(R.id.remotePeerAdded) TextViewFont txtRemotePeerAdded;
   @BindView(R.id.userInfosNotificationView) UserInfosNotificationView userInfosNotificationView;
   @BindView(R.id.screenShotView) ScreenshotView screenshotView;
@@ -184,15 +190,17 @@ public class LiveActivity extends BaseActivity
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private RxPermissions rxPermissions;
   private Intent returnIntent = new Intent();
-  private List anonymousIdList = new ArrayList();
+  private List userIdList = new ArrayList();
   private boolean finished = false, isChatViewOpen = false;
   private boolean shouldOverridePendingTransactions = false;
   private float initialBrightness = -1;
   private int createRoomErrorCount = 0;
   private HashSet<String> usersThatWereLive = new HashSet<>();
   private ChatView chatView;
+
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private Subscription broadcastSubscription;
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
 
   public static Live getLive(Recipient recipient, @Source String source) {
@@ -318,7 +326,9 @@ public class LiveActivity extends BaseActivity
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
       receiverRegistered = true;
 
-      subscriptions.add(notificationReceiver.onShowNotificationLive().subscribe(pair -> {
+      if (broadcastSubscription != null) broadcastSubscription.unsubscribe();
+
+      broadcastSubscription = notificationReceiver.onShowNotificationLive().subscribe(pair -> {
         NotificationPayload payload = pair.first;
 
         if (room == null) return;
@@ -335,7 +345,7 @@ public class LiveActivity extends BaseActivity
         }
 
         if (shouldDisplay) Alerter.create(this, pair.second).show();
-      }));
+      });
     }
 
     if (shouldOverridePendingTransactions) {
@@ -348,6 +358,7 @@ public class LiveActivity extends BaseActivity
     if (receiverRegistered) {
       unregisterReceiver(notificationReceiver);
       receiverRegistered = false;
+      if (broadcastSubscription != null) broadcastSubscription.unsubscribe();
     }
 
     if (chatView != null) chatView.dispose();
@@ -428,7 +439,9 @@ public class LiveActivity extends BaseActivity
 
         initSubscriptions();
 
-        if (live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE)) launchCallRoulette();
+        boolean isCallRoulette = live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE);
+        if (isCallRoulette) launchCallRoulette();
+        userInfosNotificationView.setCallRoulette(isCallRoulette);
 
         viewLive.start(live);
       } else {
@@ -565,7 +578,7 @@ public class LiveActivity extends BaseActivity
 
   private void initChatView(Shortcut shortcut) {
     Timber.i("init chat view from live activity");
-    if (live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || (live.getRoom() != null && live.getRoom().acceptsRandom())) {
       return;
     }
     if (shortcut != null) {
@@ -628,7 +641,7 @@ public class LiveActivity extends BaseActivity
     livePresenter.getRandomBannedUntil();
     if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       subscriptions.add(live.onRoomUpdated().subscribe(room -> {
-        if (room == null && chatView == null) return;
+        if ((room == null || room.acceptsRandom()) && chatView == null) return;
 
         if (room != null && room.getLiveUsers() != null) {
           for (User user : room.getLiveUsers()) {
@@ -669,6 +682,12 @@ public class LiveActivity extends BaseActivity
               .withEndAction(() -> setChatVisibility(INVISIBLE))
               .setListener(null);
         }
+      }));
+    } else {
+      subscriptions.add(live.onRoomUpdated().subscribe(room1 -> {
+        boolean isCallRoulette = live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) ||
+            (live.getRoom() != null && live.getRoom().acceptsRandom());
+        userInfosNotificationView.setCallRoulette(isCallRoulette);
       }));
     }
 
@@ -747,7 +766,7 @@ public class LiveActivity extends BaseActivity
         })
         .subscribe());
 
-    subscriptions.add(viewLive.onShareLink().subscribe(aVoid -> share()));
+    subscriptions.add(viewLive.onShareLink().subscribe(aVoid -> share(false)));
 
     subscriptions.add(viewLive.unlockRollTheDice().
         subscribeOn(Schedulers.newThread()).
@@ -762,7 +781,6 @@ public class LiveActivity extends BaseActivity
         }));
 
     subscriptions.add(viewLive.onEndCall().
-        subscribeOn(Schedulers.newThread()).
         observeOn(AndroidSchedulers.mainThread()).
         subscribe(duration -> livePresenter.incrementTimeInCall(user.getId(), duration)));
 
@@ -788,6 +806,24 @@ public class LiveActivity extends BaseActivity
     //  notificationContainerView.
     //      showNotification(null, NotificationContainerView.DISPLAY_FB_CALL_ROULETTE);
     //}));
+
+    subscriptions.add(viewLiveInvite.onStopAndLaunchDice().subscribe(aVoid -> {
+      returnIntent.putExtra(LAUNCH_DICE, true);
+      setResult(RESULT_OK, returnIntent);
+      leave();
+    }));
+
+    subscriptions.add(viewLiveInvite.onInviteMessenger()
+        .subscribe(aVoid -> navigator.sendInviteToMessenger(this, firebaseRemoteConfig,
+            TagManagerUtils.CALL, room.getLink())));
+
+    subscriptions.add(viewLiveInvite.onInviteSms().subscribe(aVoid -> share(true)));
+
+    subscriptions.add(viewLiveInvite.onLaunchSearch().subscribe(aVoid -> {
+      returnIntent.putExtra(LAUNCH_SEARCH, true);
+      setResult(RESULT_OK, returnIntent);
+      leave();
+    }));
 
     subscriptions.add(viewLive.onNotificationRemotePeerInvited().
         subscribe(userName -> displayNotification(
@@ -824,11 +860,11 @@ public class LiveActivity extends BaseActivity
           }
         }));
 
-    subscriptions.add(viewLive.onAnonymousJoined().
+    subscriptions.add(viewLive.onUserJoined().
         subscribe(anonymousId -> {
-          anonymousIdList.clear();
-          anonymousIdList.add(anonymousId);
-          if (!anonymousIdList.isEmpty()) livePresenter.getUsersInfoListById(anonymousIdList);
+          userIdList.clear();
+          userIdList.add(anonymousId);
+          if (!userIdList.isEmpty()) livePresenter.getUsersInfoListById(userIdList);
         }));
 
     subscriptions.add(viewLive.onRoomError().
@@ -850,25 +886,56 @@ public class LiveActivity extends BaseActivity
               live.getLinkId(), room.getId(), false);
         }));
 
-    subscriptions.add(userInfosNotificationView.onClickMore().subscribe(list -> {
-      TribeGuest tribeGuest = (TribeGuest) list.get(0);
-      BaseNotifViewHolder holder = (BaseNotifViewHolder) list.get(1);
-      userInfosNotificationView.setVisibility(View.GONE);
-      setImageFirebase(tribeGuest.getId(), holder);
-    }));
+    subscriptions.add(userInfosNotificationView.onClickMore()
+        .flatMap(pairGuestView -> (stateManager.shouldDisplay(StateManager.REPORT_USER)
+            ? DialogFactory.dialog(this, getString(R.string.tips_report_title),
+            getString(R.string.tips_report_message), getString(R.string.tips_report_action1),
+            getString(R.string.tips_report_action2)) : Observable.just(true)).map(
+            aBoolean -> new Triplet<TribeGuest, BaseNotifViewHolder, Boolean>(pairGuestView.first,
+                pairGuestView.second, aBoolean)))
+        .filter(triplet -> {
+          stateManager.addTutorialKey(StateManager.REPORT_USER);
+          if (!triplet.third) {
+            triplet.second.btnMore.setScaleX(1);
+            triplet.second.btnMore.setScaleY(1);
+            triplet.second.progressView.setVisibility(View.GONE);
+          }
 
-    subscriptions.add(userInfosNotificationView.onAdd().
-        subscribe(user -> {
-          if (user != null) {
-            if (user.isInvisible()) {
-              DialogFactory.dialog(context(), user.getDisplayName(), EmojiParser.demojizedText(
-                  context().getString(R.string.add_friend_error_invisible)),
+          return triplet.third == true;
+        })
+        .subscribe(triplet -> {
+          TribeGuest tribeGuest = triplet.first;
+          BaseNotifViewHolder holder = triplet.second;
+          userInfosNotificationView.setVisibility(View.GONE);
+          setImageFirebase(tribeGuest.getId(), holder);
+        }));
+
+    subscriptions.add(userInfosNotificationView.onAdd()
+        .flatMap(pair -> DialogFactory.dialog(this, getString(R.string.tips_addfriend_title),
+            getString(R.string.tips_addfriend_message), getString(R.string.tips_addfriend_action1),
+            getString(R.string.tips_addfriend_action2))
+            .map(
+                aBoolean -> new Triplet<User, BaseNotifViewHolder, Boolean>(pair.first, pair.second,
+                    aBoolean)))
+        .filter(triplet -> {
+          if (!triplet.third) {
+            triplet.second.btnAdd.setImageResource(R.drawable.btn_add);
+          }
+
+          return triplet.third == true;
+        })
+        .subscribe(triplet -> {
+          if (triplet.first != null) {
+            if (triplet.first.isInvisible()) {
+              subscriptions.add(DialogFactory.dialog(context(), triplet.first.getDisplayName(),
+                  EmojiParser.demojizedText(
+                      context().getString(R.string.add_friend_error_invisible)),
                   context().getString(R.string.add_friend_error_invisible_invite_android),
                   context().getString(R.string.add_friend_error_invisible_cancel))
                   .filter(x -> x == true)
-                  .subscribe(a -> share());
+                  .subscribe(a -> share(false)));
             } else {
-              livePresenter.createShortcut(user.getId());
+              livePresenter.createShortcut(triplet.first.getId());
             }
           }
         }));
@@ -896,19 +963,31 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.openGameStore()
         .subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
 
+    subscriptions.add(
+        viewLive.onAddScore().subscribe(pair -> livePresenter.addScore(pair.first, pair.second)));
+
+    subscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
+      userInfosNotificationView.setCurrentGame(game);
+
+      if (room == null || !viewLive.hasJoined()) {
+        live.setGameId(game.getId());
+      } else {
+        livePresenter.roomStartGame(room.getId(), game.getId());
+      }
+    }));
+
     subscriptions.add(gameManager.onCurrentUserStopGame().subscribe(game -> {
+      userInfosNotificationView.setCurrentGame(null);
+
       if (room == null || !viewLive.hasJoined()) {
         live.setGameId(null);
       } else {
         livePresenter.roomStopGame(room.getId());
       }
     }));
-
-    subscriptions.add(gameManager.onCurrentUserStopGame()
-        .subscribe(game -> livePresenter.roomStopGame(room.getId())));
   }
 
-  private void share() {
+  private void share(boolean shouldOpenSMSDefault) {
     if (room == null) return;
 
     Bundle bundle = new Bundle();
@@ -916,7 +995,7 @@ public class LiveActivity extends BaseActivity
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
     tagManager.trackEvent(TagManagerUtils.Invites, bundle);
     navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, room.getLink(),
-        null, false);
+        null, shouldOpenSMSDefault);
   }
 
   private void reRollTheDiceFromCallRoulette(boolean isFromOthers) {
@@ -1012,7 +1091,7 @@ public class LiveActivity extends BaseActivity
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
             byte[] data = baos.toByteArray();
             StorageReference riversRef = storageRef.child("app/uploads/reported-users/" +
                 user.getId() +
@@ -1025,6 +1104,7 @@ public class LiveActivity extends BaseActivity
             }).addOnSuccessListener(taskSnapshot -> {
               Uri downloadUrl = taskSnapshot.getDownloadUrl();
               livePresenter.reportUser(tribeGuestId, downloadUrl.toString());
+
               holder.btnMore.setImageResource(R.drawable.picto_ban_active);
               holder.btnMore.setClickable(false);
               holder.progressView.animate()
@@ -1076,6 +1156,18 @@ public class LiveActivity extends BaseActivity
         .filter(aBoolean -> aBoolean)
         .subscribe();
     finish();
+  }
+
+  @Override public void onDisplayNotificationForNewHighScore() {
+    NotificationPayload notificationPayload = new NotificationPayload();
+    notificationPayload.setSound("game_friend_leader.ogg");
+    notificationPayload.setTitle(getString(R.string.leaderboards_you));
+    notificationPayload.setUserId(user.getId());
+    notificationPayload.setUserDisplayName(user.getDisplayName());
+    notificationPayload.setUserPicture(user.getProfilePicture());
+    notificationPayload.setBody(getString(R.string.leaderboard_new_high_score));
+    notificationPayload.setClickAction(NotificationPayload.CLICK_ACTION_GAME_LEADER);
+    notificationReceiver.computeNotificationPayload(this, notificationPayload);
   }
 
   private void displayNotification(String txt) {
@@ -1273,6 +1365,10 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public void onBackPressed() {
+    if (!FacebookUtils.isLoggedIn() && live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+      super.onBackPressed();
+    }
+    // disable back btn
   }
 }
 

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -24,10 +25,12 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.adapter.NotifContactAdapter;
 import com.tribe.app.presentation.view.adapter.manager.ContactsLayoutManager;
+import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -54,6 +57,7 @@ public class UserInfosNotificationView extends FrameLayout {
   private Unbinder unbinder;
   private ContactsLayoutManager layoutManager;
   private boolean animating = false;
+  private GameManager gameManager;
 
   // OBSERVABLES
   Subscription timerSubscription;
@@ -83,6 +87,8 @@ public class UserInfosNotificationView extends FrameLayout {
     inflater.inflate(R.layout.view_user_infos_notification, this, true);
 
     unbinder = ButterKnife.bind(this);
+
+    gameManager = GameManager.getInstance(getContext());
 
     layoutManager = new ContactsLayoutManager(getContext());
     layoutManager.setScrollEnabled(false);
@@ -123,6 +129,14 @@ public class UserInfosNotificationView extends FrameLayout {
   ////////////
   // PUBLIC //
   ////////////
+
+  public void setCallRoulette(boolean callRoulette) {
+    contactAdapter.setCallRoulette(callRoulette);
+  }
+
+  public void setCurrentGame(Game game) {
+    contactAdapter.setCurrentGame(game);
+  }
 
   public void hideView() {
     if (animating) return;
@@ -178,26 +192,21 @@ public class UserInfosNotificationView extends FrameLayout {
   // OBSERVABLES //
   /////////////////
 
-  public Observable<List<Object>> onClickMore() {
-    List<Object> list = new ArrayList<>();
-
+  public Observable<Pair<TribeGuest, BaseNotifViewHolder>> onClickMore() {
     return contactAdapter.onClickMore().map(v -> {
-      TribeGuest guest;
+      TribeGuest guest = null;
       Object obj =
           contactAdapter.getItemAtPosition(recyclerViewContacts.getChildLayoutPosition(v.itemView));
+
       if (obj instanceof Recipient) {
         guest = new TribeGuest(((Recipient) obj).getId());
         guest.setDisplayName(((Recipient) obj).getDisplayName());
-        list.add(guest);
-        //  return guest;
       } else if (obj instanceof User) {
         guest = new TribeGuest(((User) obj).getId());
         guest.setDisplayName(((User) obj).getDisplayName());
-        list.add(guest);
-        //   return guest;
       }
-      list.add(v);
-      return list;
+
+      return Pair.create(guest, v);
     });
   }
 
@@ -205,10 +214,10 @@ public class UserInfosNotificationView extends FrameLayout {
     return contactAdapter.onClickInvite();
   }
 
-  public Observable<User> onAdd() {
+  public Observable<Pair<User, BaseNotifViewHolder>> onAdd() {
     return contactAdapter.onClickAdd()
-        .map(view -> ((User) contactAdapter.getItemAtPosition(
-            recyclerViewContacts.getChildLayoutPosition(view))));
+        .map(vh -> Pair.create((User) contactAdapter.getItemAtPosition(
+            recyclerViewContacts.getChildLayoutPosition(vh.itemView)), vh));
   }
 
   public Observable<Recipient> onUnblock() {

@@ -1,5 +1,6 @@
 package com.tribe.app.data.network;
 
+import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
@@ -7,6 +8,7 @@ import com.tribe.app.data.network.entity.RoomLinkEntity;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.MessageRealm;
+import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
@@ -127,4 +129,9 @@ public interface TribeApi {
 
   @FormUrlEncoded @POST("/graphql") Observable<List<GameRealm>> getGames(
       @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<List<ScoreRealm>> getLeaderboard(
+      @Field("query") String query);
+
+  @FormUrlEncoded @POST("/graphql") Observable<AddScoreEntity> addScore(@Field("query") String query);
 }

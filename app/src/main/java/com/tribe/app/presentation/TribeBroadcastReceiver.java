@@ -64,41 +64,7 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
     NotificationPayload notificationPayload =
         (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-    LiveNotificationView liveNotificationView =
-        NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
-
-    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
-      liveNotificationView.getContainer().setOnClickListener(view -> {
-        Shortcut shortcut = ShortcutUtil.getRecipientFromId(notificationPayload.getUserId(), user);
-        Room room = new Room(notificationPayload.getSessionId());
-        room.setShortcut(shortcut);
-        Invite invite = new Invite();
-        invite.setShortcut(shortcut);
-        invite.setRoom(room);
-        navigator.navigateToLive((Activity) context, invite,
-            LiveActivity.SOURCE_IN_APP_NOTIFICATION, null, null);
-      });
-    }
-
-    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_MESSAGE)) {
-      if (!showMessageNotification(context, liveNotificationView, notificationPayload)) {
-        return;
-      }
-    }
-
-    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
-      onDisplayNotification.onNext(EmojiParser.demojizedText(
-          context.getString(R.string.live_notification_guest_declined,
-              notificationPayload.getUserDisplayName())));
-      onDisplayNotification.onNext(null);
-    }
-
-    if (liveNotificationView != null && (weakReferenceActivity.get() != null
-        && !(weakReferenceActivity.get() instanceof LiveActivity))) {
-      Alerter.create(weakReferenceActivity.get(), liveNotificationView).show();
-    } else if (liveNotificationView != null) {
-      onShowNotificationLive.onNext(Pair.create(notificationPayload, liveNotificationView));
-    }
+    computeNotificationPayload(context, notificationPayload);
   }
 
   private boolean showMessageNotification(Context context,
@@ -159,6 +125,49 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
     }
     return true;
   }
+
+  /**
+   * PUBLIC
+   */
+
+  public void computeNotificationPayload(Context context,NotificationPayload notificationPayload) {
+    LiveNotificationView liveNotificationView =
+        NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
+
+    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
+      liveNotificationView.getContainer().setOnClickListener(view -> {
+        Shortcut shortcut = ShortcutUtil.getRecipientFromId(notificationPayload.getUserId(), user);
+        Room room = new Room(notificationPayload.getSessionId());
+        room.setShortcut(shortcut);
+        Invite invite = new Invite();
+        invite.setShortcut(shortcut);
+        invite.setRoom(room);
+        navigator.navigateToLive((Activity) context, invite,
+            LiveActivity.SOURCE_IN_APP_NOTIFICATION, null, null);
+      });
+    }
+
+    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_MESSAGE)) {
+      if (!showMessageNotification(context, liveNotificationView, notificationPayload)) {
+        return;
+      }
+    }
+
+    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_DECLINE)) {
+      onDisplayNotification.onNext(EmojiParser.demojizedText(
+          context.getString(R.string.live_notification_guest_declined,
+              notificationPayload.getUserDisplayName())));
+      onDisplayNotification.onNext(null);
+    }
+
+    if (liveNotificationView != null && (weakReferenceActivity.get() != null
+        && !(weakReferenceActivity.get() instanceof LiveActivity))) {
+      Alerter.create(weakReferenceActivity.get(), liveNotificationView).show();
+    } else if (liveNotificationView != null) {
+      onShowNotificationLive.onNext(Pair.create(notificationPayload, liveNotificationView));
+    }
+  }
+
 
   /**
    * OBSERVABLES

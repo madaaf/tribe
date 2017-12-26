@@ -9,9 +9,13 @@ import com.tribe.app.R;
 import com.tribe.app.data.cache.GameCache;
 import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.TribeApi;
+import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.realm.GameRealm;
+import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +62,63 @@ public class CloudGameDataStore implements GameDataStore {
     final String request = context.getString(R.string.query, body);
     return this.tribeApi.getGames(request)
         .doOnNext(gameList -> gameCache.putGames(gameList))
-        .onErrorResumeNext(throwable -> Observable.just(gameCache.getGames()));
+        .onErrorResumeNext(throwable -> Observable.just(gameCache.getGames()))
+        .doOnError(Throwable::printStackTrace);
+  }
+
+  @Override
+  public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, boolean friendsOnly,
+      int limit, int offset) {
+    String body = context.getString(R.string.game_leaderboard, gameId, "" + limit,
+        offset == 0 ? "" : "offset : " + offset, friendsOnly);
+    final String request = context.getString(R.string.query, body);
+    return this.tribeApi.getLeaderboard(request).doOnNext(scoreRealmList -> {
+      for (ScoreRealm scoreRealm : scoreRealmList) {
+        scoreRealm.setGame_id(gameId);
+      }
+
+      if (offset == 0) {
+        gameCache.updateLeaderboard(gameId, friendsOnly,
+            scoreRealmList); // We only save the first page
+      }
+    }).doOnError(Throwable::printStackTrace);
+  }
+
+  @Override public Observable<List<ScoreRealm>> getUserLeaderboard(String userId) {
+    String userIdsListFormated = "\"" + userId + "\"";
+    return this.tribeApi.getUserListInfos(
+        context.getString(R.string.lookup_userid, userIdsListFormated,
+            context.getString(R.string.userfragment_infos_light)))
+        .map(userRealms -> {
+          List<ScoreRealm> realmList = new ArrayList<>();
+          realmList.addAll(userRealms.get(0).getScores());
+          return realmList;
+        })
+        .doOnError(Throwable::printStackTrace)
+        .doOnNext(scoreRealmList -> gameCache.updateLeaderboard(userId, scoreRealmList));
+  }
+
+  @Override public Observable<AddScoreEntity> addScore(String gameId, Integer score) {
+    String body = context.getString(R.string.addScore, gameId, "" + score);
+    final String request = context.getString(R.string.mutation, body);
+    return this.tribeApi.addScore(request);
+  }
+
+  @Override public Observable<List<ScoreRealm>> getFriendsScore(String gameId) {
+    return this.tribeApi.getUserInfos(context.getString(R.string.friends_scores,
+        context.getString(R.string.userfragment_infos_game),
+        context.getString(R.string.shortcutFragment_infos_game)))
+        .doOnError(Throwable::printStackTrace)
+        .map(userRealm -> {
+          List<ScoreRealm> scoreRealmList = new ArrayList<>();
+
+          for (ShortcutRealm shortcutRealm : userRealm.getShortcuts()) {
+            ScoreRealm scoreRealm = shortcutRealm.getSingleFriend().getScoreForGame(gameId);
+            if (scoreRealm != null) scoreRealmList.add(scoreRealm);
+          }
+
+          return scoreRealmList;
+        })
+        .doOnNext(scoreRealmList -> gameCache.updateLeaderboard(gameId, true, scoreRealmList));
   }
 }

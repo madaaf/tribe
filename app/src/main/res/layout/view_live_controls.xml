@@ -31,7 +31,7 @@
       android:layout_gravity="right|top"
       android:layout_marginEnd="10dp"
       android:layout_marginTop="5dp"
-      android:background="@drawable/selectable_button_oval"
+      android:foreground="@drawable/selectable_button_oval"
       android:clickable="true"
       android:scaleType="centerInside"
       android:src="@drawable/picto_leave_live"

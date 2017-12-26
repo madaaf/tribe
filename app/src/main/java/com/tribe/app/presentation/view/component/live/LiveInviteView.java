@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -24,6 +25,7 @@ import com.tribe.app.presentation.mvp.presenter.LiveInvitePresenter;
 import com.tribe.app.presentation.mvp.view.LiveInviteMVPView;
 import com.tribe.app.presentation.mvp.view.RoomMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.adapter.LiveInviteAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
@@ -35,6 +37,7 @@ import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSecti
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
 import com.tribe.app.presentation.view.adapter.model.Header;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewUtils;
@@ -105,6 +108,10 @@ public class LiveInviteView extends FrameLayout
   private PublishSubject<Integer> onScrollStateChanged = PublishSubject.create();
   private PublishSubject<Integer> onScroll = PublishSubject.create();
   private PublishSubject<View> onClickEdit = PublishSubject.create();
+  private PublishSubject<Void> onInviteSms = PublishSubject.create();
+  private PublishSubject<Void> onInviteMessenger = PublishSubject.create();
+  private PublishSubject<Void> onLaunchSearch = PublishSubject.create();
+  private PublishSubject<Void> onLaunchDice = PublishSubject.create();
 
   public LiveInviteView(Context context) {
     super(context);
@@ -179,7 +186,7 @@ public class LiveInviteView extends FrameLayout
     recyclerViewInvite.addItemDecoration(new InviteListDividerDecoration(getContext(),
         ContextCompat.getColor(getContext(), R.color.grey_divider), screenUtils.dpToPx(0.5f),
         getSectionCallback(itemsList)));
-    adapter.setItems(new ArrayList<>());
+    adapter.setItems(itemsList);
     recyclerViewInvite.setAdapter(adapter);
 
     // TODO HACK FIND ANOTHER WAY OF OPTIMIZING THE VIEW?
@@ -218,21 +225,54 @@ public class LiveInviteView extends FrameLayout
         .map(view -> adapter.getItemAtPosition(recyclerViewInvite.getChildLayoutPosition(view)))
         .subscribe(item -> {
           Shortcut shortcut = (Shortcut) item;
-          User user = shortcut.getSingleFriend();
+          if (shortcut.getId().equals(Shortcut.ID_EMPTY)) {
 
-          if (selected != null && !shortcut.getId().equals(selected.getId())) {
-            int position = itemsList.indexOf(selected);
-            selected.getSingleFriend().setSelected(false);
-            adapter.notifyItemChanged(position);
-          }
-
-          if (user.isSelected()) {
-            selected = shortcut;
+            subscriptions.add(DialogFactory.dialogMultipleChoices(getContext(),
+                EmojiParser.demojizedText(getContext().getString(R.string.empty_call_popup_title)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.empty_call_popup_message)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.empty_call_popup_share_sms_android)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.empty_call_popup_share_messenger)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.empty_call_popup_throw_the_dice)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.empty_call_popup_search_friend)),
+                EmojiParser.demojizedText(getContext().getString(R.string.empty_call_popup_cancel)))
+                .subscribe(integer -> {
+                  switch (integer) {
+                    case 0:
+                      onInviteSms.onNext(null);
+                      break;
+                    case 1:
+                      onInviteMessenger.onNext(null);
+                      break;
+                    case 2:
+                      onLaunchDice.onNext(null);
+                      break;
+                    case 3:
+                      onLaunchSearch.onNext(null);
+                      break;
+                  }
+                }));
           } else {
-            selected = null;
-          }
+            User user = shortcut.getSingleFriend();
 
-          onDisplayDropZone.onNext(user.isSelected());
+            if (selected != null && !shortcut.getId().equals(selected.getId())) {
+              int position = itemsList.indexOf(selected);
+              selected.getSingleFriend().setSelected(false);
+              adapter.notifyItemChanged(position);
+            }
+
+            if (user.isSelected()) {
+              selected = shortcut;
+            } else {
+              selected = null;
+            }
+
+            onDisplayDropZone.onNext(user.isSelected());
+          }
         }));
 
     subscriptions.add(adapter.onClickEdit().subscribe(onClickEdit));
@@ -326,7 +366,8 @@ public class LiveInviteView extends FrameLayout
       for (Shortcut shortcut : listShortcut) {
         User user = shortcut.getSingleFriend();
         user.setSelected(selected != null && selected.getId().equals(shortcut.getId()));
-        if (!alreadyPresent.contains(user.getId()) && !usersAtBeginningOfCall.contains(user.getId())) {
+        if (!alreadyPresent.contains(user.getId()) &&
+            !usersAtBeginningOfCall.contains(user.getId())) {
           temp.add(shortcut);
         }
       }
@@ -398,9 +439,15 @@ public class LiveInviteView extends FrameLayout
 
   public void initOnInviteDropped(Observable<TileInviteView> obs) {
     subscriptions.add(obs.subscribe(tile -> {
-      liveInvitePresenter.createInvite(live.getRoom().getId(), tile.getUser().getId());
-      adapter.removeItem(tile.getPosition());
-      viewInviteBottom.showAdded();
+      if (live.getRoom() == null) {
+        Toast.makeText(getContext(),
+            EmojiParser.demojizedText(getContext().getString(R.string.error_unknown)),
+            Toast.LENGTH_SHORT).show();
+      } else {
+        liveInvitePresenter.createInvite(live.getRoom().getId(), tile.getUser().getId());
+        adapter.removeItem(tile.getPosition());
+        viewInviteBottom.showAdded();
+      }
     }));
   }
 
@@ -413,7 +460,9 @@ public class LiveInviteView extends FrameLayout
         ViewUtils.findViewAt(recyclerViewInvite, TileInviteView.class, (int) rawX, (int) rawY);
 
     if (view instanceof TileInviteView) {
-      return (TileInviteView) view;
+      TileInviteView tileInviteView = (TileInviteView) view;
+      if (tileInviteView.getUser() == null) return null;
+      return tileInviteView;
     }
 
     return null;
@@ -511,6 +560,22 @@ public class LiveInviteView extends FrameLayout
 
   public Observable<View> onClickEdit() {
     return onClickEdit;
+  }
+
+  public Observable<Void> onInviteSms() {
+    return onInviteSms;
+  }
+
+  public Observable<Void> onInviteMessenger() {
+    return onInviteMessenger;
+  }
+
+  public Observable<Void> onStopAndLaunchDice() {
+    return onLaunchDice;
+  }
+
+  public Observable<Void> onLaunchSearch() {
+    return onLaunchSearch;
   }
 }
 

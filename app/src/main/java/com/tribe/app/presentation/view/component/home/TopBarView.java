@@ -36,6 +36,7 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -63,6 +64,8 @@ public class TopBarView extends FrameLayout {
   @Inject StateManager stateManager;
 
   @BindView(R.id.viewNewAvatar) NewAvatarView viewAvatar;
+
+  @BindView(R.id.txtEmojiGame) EmojiGameView txtEmojiGame;
 
   @BindView(R.id.btnSearch) ViewGroup btnSearch;
 
@@ -184,6 +187,7 @@ public class TopBarView extends FrameLayout {
 
   public void reloadUserUI() {
     viewAvatar.load(user.getProfilePicture());
+    txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
   }
 
   private void displaySyncBtn() {
@@ -260,7 +264,7 @@ public class TopBarView extends FrameLayout {
     clickCallRoulette.onNext(null);
   }
 
-  public View getDiceViewBtn(){
+  public View getDiceViewBtn() {
     return diceView;
   }
 
@@ -312,6 +316,7 @@ public class TopBarView extends FrameLayout {
 
     hideView(diceView, false);
     hideView(viewAvatar, true);
+    hideView(txtEmojiGame, true);
 
     AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
     AnimationUtils.animateRightMargin(btnSearch, imgClose.getWidth() + 2 * marginSmall, DURATION);
@@ -342,6 +347,7 @@ public class TopBarView extends FrameLayout {
     showView(diceView, null);
     hideView(imgClose, false);
     showView(viewAvatar, null);
+    showView(txtEmojiGame, null);
 
     if (nbContacts > 0) {
       showNewContacts(true);

@@ -1,12 +1,15 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.birbit.android.jobqueue.JobManager;
+import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.job.DeleteRoomJob;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Live;
+import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.game.AddScore;
 import com.tribe.app.domain.interactor.user.FbIdUpdated;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetInvites;
@@ -39,6 +42,7 @@ public class LivePresenter implements Presenter {
   private IncrUserTimeInCall incrUserTimeInCall;
   private GetInvites getInvites;
   private GetRandomBannedUntil getRandomBannedUntil;
+  private AddScore addScore;
 
   // SUBSCRIBERS
   private GetUserInfoListSubscriber getUserInfoListSubscriber;
@@ -48,7 +52,7 @@ public class LivePresenter implements Presenter {
       ShortcutPresenter shortcutPresenter, GetRecipientInfos getRecipientInfos,
       GetCloudUserInfosList cloudUserInfosList, ReportUser reportUser, FbIdUpdated fbIdUpdated,
       IncrUserTimeInCall incrUserTimeInCall, GetInvites getInvites,
-      GetRandomBannedUntil getRandomBannedUntil) {
+      GetRandomBannedUntil getRandomBannedUntil, AddScore addScore) {
 
     this.jobManager = jobManager;
     this.shortcutPresenter = shortcutPresenter;
@@ -60,6 +64,7 @@ public class LivePresenter implements Presenter {
     this.fbIdUpdated = fbIdUpdated;
     this.getInvites = getInvites;
     this.getRandomBannedUntil = getRandomBannedUntil;
+    this.addScore = addScore;
   }
 
   @Override public void onViewDetached() {
@@ -261,5 +266,16 @@ public class LivePresenter implements Presenter {
 
   public void roomStopGame(String roomId) {
     roomPresenter.roomSetGame(roomId, null);
+  }
+
+  public void addScore(String gameId, Integer score) {
+    addScore.setup(gameId, score);
+    addScore.execute(new DefaultSubscriber<AddScoreEntity>() {
+      @Override public void onNext(AddScoreEntity score) {
+        if (score != null && liveMVPView != null) {
+          liveMVPView.onDisplayNotificationForNewHighScore();
+        }
+      }
+    });
   }
 }

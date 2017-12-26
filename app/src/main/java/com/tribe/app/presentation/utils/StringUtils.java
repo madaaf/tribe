@@ -168,7 +168,19 @@ public class StringUtils {
   }
 
   public static int stringWithPrefix(Context context, String prefix, String name) {
-    return context.getResources().getIdentifier(prefix + name, "string",
-        context.getPackageName());
+    return context.getResources().getIdentifier(prefix + name, "string", context.getPackageName());
+  }
+
+  public static String listToJson(List<String> list) {
+    String json = "\"";
+    for (int i = 0; i < list.size(); i++) {
+      if (i == list.size() - 1) {
+        json += list.get(i) + "\"";
+      } else {
+        json += list.get(i) + "\", \"";
+      }
+    }
+    if (list.size() == 0) json += "\"";
+    return json;
   }
 }

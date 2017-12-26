@@ -27,6 +27,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
+import timber.log.Timber;
 
 public final class DialogFactory {
 
@@ -85,6 +86,32 @@ public final class DialogFactory {
           })
           .setNegativeButton(negativeMessage, (dialog, which) -> {
             subscriber.onNext(false);
+            subscriber.onCompleted();
+          })
+          .create();
+
+      subscriber.add(Subscriptions.create(ad::dismiss));
+      ad.show();
+    });
+  }
+
+  public static Observable<Integer> dialogMultipleChoices(Context context, String title,
+      String message, String... buttons) {
+    return Observable.create((Subscriber<? super Integer> subscriber) -> {
+
+      ContextThemeWrapper themedContext;
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        themedContext = new ContextThemeWrapper(context,
+            android.R.style.Theme_Material_Light_Dialog_NoActionBar);
+      } else {
+        themedContext =
+            new ContextThemeWrapper(context, android.R.style.Theme_Holo_Light_Dialog_NoActionBar);
+      }
+
+      Timber.d("buttons : " + buttons);
+      final AlertDialog ad = new AlertDialog.Builder(themedContext).setTitle(title)
+          .setItems(buttons, (dialog, which) -> {
+            subscriber.onNext(which);
             subscriber.onCompleted();
           })
           .create();
@@ -242,6 +269,10 @@ public final class DialogFactory {
         moreTypeList.add(new LabelType(
             EmojiParser.demojizedText(context.getString(R.string.home_menu_shortcut_customize)),
             LabelType.CUSTOMIZE));
+      } else {
+        moreTypeList.add(new LabelType(
+            (EmojiParser.demojizedText(context.getString(R.string.home_menu_user_leaderboard))),
+            LabelType.SCORES));
       }
 
       if (!shortcut.isMute()) {
@@ -345,8 +376,8 @@ public final class DialogFactory {
 
     gameLabels.add(new LabelType(context.getString(R.string.game_menu_play_another_game),
         LabelType.GAME_PLAY_ANOTHER));
-    gameLabels.add(new LabelType(context.getString(R.string.game_menu_reset_scores),
-        LabelType.GAME_RESET_SCORES));
+    //gameLabels.add(new LabelType(context.getString(R.string.game_menu_reset_scores),
+    //    LabelType.GAME_RESET_SCORES));
     gameLabels.add(
         new LabelType(context.getString(R.string.game_post_it_menu_stop), LabelType.GAME_STOP));
 
