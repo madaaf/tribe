@@ -286,50 +286,50 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   private void initSubscriptions() {
-    subscriptions.add(
-        Observable.combineLatest(onSearchResult.startWith(new SearchResult()), onShortcuts,
-            onContactsInApp, onContactsInvite, onFBContactsInvite,
-            (searchResult, shortcutList, contactInAppList, contactInviteList, fbContactInviteList) -> {
-              Set<String> setUserAdded = new HashSet<>();
+    subscriptions.add(Observable.combineLatest(onSearchResult.startWith(new SearchResult()),
+        onShortcuts.onBackpressureDrop(), onContactsInApp.onBackpressureDrop(),
+        onContactsInvite.onBackpressureDrop(), onFBContactsInvite.onBackpressureDrop(),
+        (searchResult, shortcutList, contactInAppList, contactInviteList, fbContactInviteList) -> {
+          Set<String> setUserAdded = new HashSet<>();
 
-              if (isSearchMode) {
-                searchResult.setAnimateAdd(this.searchResult.isAnimateAdd());
-                this.searchResult = searchResult;
-                this.searchResult.setMyself(searchResult.getUsername() != null &&
-                    searchResult.getUsername().equals(user.getUsername()));
-                updateSearch();
-              }
+          if (isSearchMode) {
+            searchResult.setAnimateAdd(this.searchResult.isAnimateAdd());
+            this.searchResult = searchResult;
+            this.searchResult.setMyself(searchResult.getUsername() != null &&
+                searchResult.getUsername().equals(user.getUsername()));
+            updateSearch();
+          }
 
-              originalContactList.clear();
-              for (Shortcut shortcut : shortcutList) {
-                setUserAdded.add(shortcut.getSingleFriend().getId());
-                originalContactList.add(shortcut);
-              }
+          originalContactList.clear();
+          for (Shortcut shortcut : shortcutList) {
+            setUserAdded.add(shortcut.getSingleFriend().getId());
+            originalContactList.add(shortcut);
+          }
 
-              if (contactList.size() == 0) {
-                for (Contact contact : contactInAppList) {
-                  if (contact.getUserList() != null) {
-                    for (User userInList : contact.getUserList()) {
-                      if (!setUserAdded.contains(userInList.getId())) {
-                        contactList.add(contact);
-                        setUserAdded.add(userInList.getId());
-                      }
-                    }
+          if (contactList.size() == 0) {
+            for (Contact contact : contactInAppList) {
+              if (contact.getUserList() != null) {
+                for (User userInList : contact.getUserList()) {
+                  if (!setUserAdded.contains(userInList.getId())) {
+                    contactList.add(contact);
+                    setUserAdded.add(userInList.getId());
                   }
                 }
               }
+            }
+          }
 
-              originalContactList.addAll(contactList);
-              originalContactList.addAll(contactInviteList);
-              originalContactList.addAll(fbContactInviteList);
+          originalContactList.addAll(contactList);
+          originalContactList.addAll(contactInviteList);
+          originalContactList.addAll(fbContactInviteList);
 
-              refactorContacts(contactList);
+          refactorContacts(contactList);
 
-              return null;
-            })
-            .subscribeOn(Schedulers.computation())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(o -> showContactList()));
+          return null;
+        })
+        .subscribeOn(Schedulers.computation())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(o -> showContactList()));
   }
 
   private SectionCallback getSectionCallback(final List<Object> itemList) {
