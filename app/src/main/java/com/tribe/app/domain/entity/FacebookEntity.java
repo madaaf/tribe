@@ -12,6 +12,25 @@ public class FacebookEntity implements Serializable {
   private String email;
   private String name;
 
+  public Integer getAgeRangeMin() {
+    return ageRangeMin;
+  }
+
+  public void setAgeRangeMin(Integer ageRangeMin) {
+    this.ageRangeMin = ageRangeMin;
+  }
+
+  public Integer getAgeRangeMax() {
+    return ageRangeMax;
+  }
+
+  public void setAgeRangeMax(Integer ageRangeMax) {
+    this.ageRangeMax = ageRangeMax;
+  }
+
+  private Integer ageRangeMin;
+  private Integer ageRangeMax;
+
   public void setProfilePicture(String profilePicture) {
     this.profilePicture = profilePicture;
   }

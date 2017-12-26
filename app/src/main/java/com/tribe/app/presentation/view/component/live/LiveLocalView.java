@@ -9,6 +9,7 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -59,6 +60,7 @@ public class LiveLocalView extends LiveStreamView {
   private PublishSubject<Game> onStartGame;
   private PublishSubject<Void> onClick;
   private PublishSubject<Void> onStopGame;
+  private PublishSubject<Void> onSwipeUp;
 
   public LiveLocalView(Context context) {
     super(context);
@@ -81,7 +83,7 @@ public class LiveLocalView extends LiveStreamView {
 
     ViewCompat.setElevation(viewPeerOverlay, 0);
 
-    gestureDetector = new GestureDetectorCompat(getContext(), new TapGestureListener());
+    gestureDetector = new GestureDetectorCompat(getContext(), new GestureListener());
 
     localMediaConfiguration = new TribePeerMediaConfiguration(
         new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID));
@@ -102,6 +104,7 @@ public class LiveLocalView extends LiveStreamView {
     onStartGame = PublishSubject.create();
     onClick = PublishSubject.create();
     onStopGame = PublishSubject.create();
+    onSwipeUp = PublishSubject.create();
 
     viewPeerLocal.initEnableCameraSubscription(onEnableCamera);
     viewPeerLocal.initEnableMicroSubscription(onEnableMicro);
@@ -181,11 +184,22 @@ public class LiveLocalView extends LiveStreamView {
     return super.onTouchEvent(event);
   }
 
-  class TapGestureListener extends GestureDetector.SimpleOnGestureListener {
+  class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
     @Override public boolean onDoubleTap(MotionEvent e) {
       switchCamera();
       return true;
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+      if (velocityY < 0) {
+        onSwipeUp.onNext(null);
+        return true;
+      }
+
+      return false;
     }
 
     @Override public boolean onSingleTapConfirmed(MotionEvent e) {
@@ -272,5 +286,9 @@ public class LiveLocalView extends LiveStreamView {
 
   public Observable<Void> onClick() {
     return onClick;
+  }
+
+  public Observable<Void> onSwipeUp() {
+    return onSwipeUp;
   }
 }

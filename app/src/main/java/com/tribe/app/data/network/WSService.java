@@ -541,7 +541,7 @@ import timber.log.Timber;
       int count = 0;
 
       for (ShortcutRealm shortcutRealm : shortcutList) {
-        if (shortcutRealm.isSingle()) {
+        if (shortcutRealm.isSingle() && shortcutRealm.getStatus().equals(ShortcutRealm.DEFAULT)) {
           for (UserRealm user : shortcutRealm.getMembers()) {
             if (!userSubscribed.contains(user.getId())) {
               sendSubscription(getApplicationContext().getString(R.string.subscription_userUpdated,

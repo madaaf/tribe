@@ -1353,6 +1353,10 @@ public class LiveView extends FrameLayout {
     return viewControlsLive.openGameStore();
   }
 
+  public Observable<Void> onSwipeUp() {
+    return viewLocalLive.onSwipeUp();
+  }
+
   public Observable<Pair<String, Integer>> onAddScore() {
     return viewGameManager.onAddScore();
   }
