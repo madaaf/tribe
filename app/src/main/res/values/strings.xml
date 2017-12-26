@@ -17,6 +17,7 @@
 	<string name="action_copy">Copy</string>
 	<string name="action_got_it">Got it!</string>
 	<string name="action_tap_to_add">Tap to add</string>
+	<string name="action_play">Play</string>
 	
 	<!-- User Actions -->
 	<string name="action_add_friend">Add Friend</string>
@@ -853,7 +854,7 @@
 	<string name="home_sync_facebook_subtitle">Tap to see who\'s here!</string>
 	
 	<!-- New Chat -->
-	<string name="newchat_title">New Chat</string>
+	<string name="newchat_title">Pick friends</string>
 	<string name="newchat_to">With</string>
 	<string name="newchat_create_error_noone_selected">You have to select people to create a chat</string>
 	
@@ -964,4 +965,11 @@
 	
 	<!-- Hang Up -->
 	<string name="hang_up_title">TAP TO HANG UP</string>
+	
+	<!-- Game Mode -->
+	<string name="gamemode_title">Game mode</string>
+	<string name="gamemode_alone_title">PLAY ALONE</string>
+	<string name="gamemode_alone_subtitle">Practice your skills!</string>
+	<string name="gamemode_multi_title">LIVE MULTIPLAYER</string>
+	<string name="gamemode_multi_subtitle">Battle your friends!</string>
 </resources>
