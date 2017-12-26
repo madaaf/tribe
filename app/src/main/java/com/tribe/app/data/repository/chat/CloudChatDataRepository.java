@@ -70,6 +70,11 @@ import rx.Observable;
         .map(zendeskMessages -> zendeskMessages);
   }
 
+  @Override public Observable createRequestZendesk(String data) {
+    final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
+    return userDataStore.createRequestZendesk(data);
+  }
+
   @Override public Observable<List<Message>> getMessagesImage(String[] userIds) {
     return null;
   }

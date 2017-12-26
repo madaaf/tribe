@@ -56,6 +56,7 @@ import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
+import com.tribe.app.presentation.utils.preferences.SupportRequestId;
 import com.tribe.app.presentation.utils.preferences.SupportUserId;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
@@ -157,8 +158,9 @@ import timber.log.Timber;
   }
 
   @Provides @Singleton RXZendesk provideRxZendesk(User user, DateUtils dateUtils,
-      @SupportUserId Preference<String> supportUserIdPref) {
-    return new RXZendesk(user, dateUtils, supportUserIdPref);
+      @SupportUserId Preference<String> supportUserIdPref,
+      @SupportRequestId Preference<String> supportIdPref) {
+    return new RXZendesk(user, dateUtils, supportUserIdPref, supportIdPref);
   }
 
   @Provides @Singleton Navigator provideNavigator(Context context) {

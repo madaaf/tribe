@@ -7,6 +7,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.interactor.chat.AddMessageZendesk;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
+import com.tribe.app.domain.interactor.chat.CreateRequestZendesk;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
 import com.tribe.app.domain.interactor.chat.GetMessageImageFromDisk;
 import com.tribe.app.domain.interactor.chat.GetMessageSupport;
@@ -66,6 +67,7 @@ public class MessagePresenter implements Presenter {
   protected RemoveMessage removeMessage;
   protected GetMessageZendesk getMessageZendesk;
   protected AddMessageZendesk addMessageZendesk;
+  protected CreateRequestZendesk createRequestZendesk;
 
   // SUBSCRIBERS
   private UpdateShortcutSubscriber updateShortcutSubscriber;
@@ -80,7 +82,7 @@ public class MessagePresenter implements Presenter {
       CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk,
       IsReadingFromDisk isReadingFromDisk, RemoveMessage removeMessage,
       OnMessageRemovedFromDisk onMessageRemovedFromDisk, GetMessageSupport getMessageSupport,
-      GetMessageZendesk getMessageZendesk, AddMessageZendesk addMessageZendesk) {
+      GetMessageZendesk getMessageZendesk, AddMessageZendesk addMessageZendesk, CreateRequestZendesk createRequestZendesk) {
     this.shortcutPresenter = shortcutPresenter;
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
@@ -100,6 +102,7 @@ public class MessagePresenter implements Presenter {
     this.getMessageSupport = getMessageSupport;
     this.getMessageZendesk = getMessageZendesk;
     this.addMessageZendesk = addMessageZendesk;
+    this.createRequestZendesk = createRequestZendesk;
   }
 
   public void getMessageZendesk(String supportId) {
@@ -110,6 +113,11 @@ public class MessagePresenter implements Presenter {
   public void addMessageZendesk(String supportId, String data, Uri uri) {
     addMessageZendesk.setData(supportId, data, uri);
     addMessageZendesk.execute(new AddMessageZendeskSubscriber());
+  }
+
+  public void createRequestZendesk(String firstMessage) {
+    createRequestZendesk.setData(firstMessage);
+    createRequestZendesk.execute(new DefaultSubscriber());
   }
 
   private class AddMessageZendeskSubscriber extends DefaultSubscriber<Boolean> {

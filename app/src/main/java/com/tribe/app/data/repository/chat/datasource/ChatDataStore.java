@@ -40,4 +40,6 @@ public interface ChatDataStore {
   Observable<List<Message>> getMessageZendesk(String supportId);
 
   Observable<Boolean> addMessageZendesk(String supportId, String data, Uri uri);
+
+  Observable createRequestZendesk(String data);
 }

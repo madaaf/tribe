@@ -184,7 +184,8 @@ public class RecyclerMessageView extends IChat {
   }
 
   private void createZendeskRequest(String firstMessage) {
-    CreateRequest request = new CreateRequest();
+    messagePresenter.createRequestZendesk(firstMessage);
+/*    CreateRequest request = new CreateRequest();
     request.setSubject("Chat with " + user.getDisplayName());
     request.setDescription(firstMessage);
     request.setTags(Arrays.asList("chat", "mobile"));
@@ -193,14 +194,14 @@ public class RecyclerMessageView extends IChat {
       @Override public void onSuccess(CreateRequest createRequest) {
         Timber.i("onSuccess create zendesk request : " + createRequest.getId());
         supportIdPref.set(createRequest.getId());
-        supportId = createRequest.getId();
+        supportId = createRequest.getId(); // TODO SOEF update
         getCommentZendesk();
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
         Timber.e("onError create zendesk request" + errorResponse.getReason());
       }
-    });
+    });*/
   }
 
   private void enablePushZendesk() {

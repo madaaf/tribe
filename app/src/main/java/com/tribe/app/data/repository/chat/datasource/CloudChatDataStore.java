@@ -61,7 +61,6 @@ public class CloudChatDataStore implements ChatDataStore {
     });
   }
 
-
   @Override
   public Observable<MessageRealm> createMessage(String[] userIds, String type, String data,
       String date) {
@@ -108,6 +107,10 @@ public class CloudChatDataStore implements ChatDataStore {
 
   @Override public Observable<Boolean> addMessageZendesk(String supportId, String data, Uri uri) {
     return rxZendesk.addMessageZendesk(supportId, data, uri);
+  }
+
+  @Override public Observable createRequestZendesk(String data) {
+    return rxZendesk.createRequestZendesk(data);
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {

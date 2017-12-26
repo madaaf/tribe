@@ -36,4 +36,6 @@ public interface ChatRepository {
   Observable<List<Conversation>> getMessageSupport(String lang, int typeSupport);
 
   Observable addMessageZendesk(String supportId, String data, Uri uri);
+
+  Observable createRequestZendesk(String data);
 }
