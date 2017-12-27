@@ -169,7 +169,8 @@ public class RecyclerMessageView extends IChat {
   }
 
   private void addCommentZendesk(String data, Uri uri) {
-    Timber.i("addCommentZendesk " + data + " " + uri.toString());
+    String comment = (uri != null) ? uri.toString() : data;
+    Timber.i("addCommentZendesk " + comment);
     messagePresenter.addMessageZendesk(data, uri);
   }
 
@@ -501,8 +502,8 @@ public class RecyclerMessageView extends IChat {
     Timber.i("successLoadingMessageDisk " + messages.size());
     unreadMessage.clear();
     if (shortcut.isSupport()) {
+
       for (Message m : messages) {
-        Timber.e(" DISK " + m.toString());
         if ((!messageAdapter.getItems().contains(m) && messageAdapter.getItems().isEmpty())
             || (!messageAdapter.getItems().contains(m)
             && !messageAdapter.getItems().isEmpty()
@@ -511,6 +512,14 @@ public class RecyclerMessageView extends IChat {
         }
       }
 
+      for (Message m : unreadMessage) {
+        Timber.e(" before sort  DISK " + m.toString());
+      }
+      Timber.e(" ");
+      sortMessageList(messages);
+      for (Message m : unreadMessage) {
+        Timber.e(" after sort  DISK " + m.toString());
+      }
       messageAdapter.setItems(unreadMessage, messageAdapter.getItemCount());
       scrollListToBottom();
     }

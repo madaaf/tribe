@@ -25,6 +25,6 @@ public class MessageText extends Message {
   }
 
   @Override public String toString() {
-    return "MessageText{ " + getId() + " message= '" + message + '}';
+    return "MessageText{ " + getId() + " message= '" + message + " cd : " + getCreationDate() + '}';
   }
 }

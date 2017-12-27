@@ -38,18 +38,23 @@ public class DateUtils {
     return utcTime;
   }
 
-
   public String getUTCDateWithDeltaAsString(long delta) {
     sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
     Date d1 = new Date();
     Date d2 = new Date(d1.getTime() + delta);
     return sdf.format(d2);
   }
-  
+
   public String getUTCDateForMessage() {
     SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
     sdf2.setTimeZone(TimeZone.getTimeZone("UTC"));
     return sdf2.format(new Date());
+  }
+
+  public String dateToDateForMessage(Date date) {
+    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    sdf2.setTimeZone(TimeZone.getTimeZone("UTC"));
+    return sdf2.format(date);
   }
 
   public Date stringDateToDate(String StrDate) {

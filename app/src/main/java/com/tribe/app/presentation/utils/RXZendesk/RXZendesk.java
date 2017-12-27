@@ -25,6 +25,7 @@ import com.zendesk.service.ZendeskCallback;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -65,30 +66,23 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
   }
 
   public Observable<List<Message>> getComments() {
-    if (messageListObservable == null) {
-      messageListObservable = Observable.create((Subscriber<? super List<Message>> subscriber) -> {
-        emitFriends(subscriber);
-      }).onBackpressureBuffer().serialize();
-    }
-
+    messageListObservable = Observable.create((Subscriber<? super List<Message>> subscriber) -> {
+      emitFriends(subscriber);
+    }).onBackpressureBuffer().serialize();
     return messageListObservable;
   }
 
-  public Observable<Boolean> addMessageZendesk(String data, Uri uri) {
-    if (isMessageSend == null) {
-      isMessageSend = Observable.create((Subscriber<? super Boolean> subscriber) -> {
-        isMessageSend(subscriber, data, uri);
-      }).onBackpressureBuffer().serialize();
-    }
+  public Observable<Boolean> addMessageZendesk(String message, Uri uri) {
+    isMessageSend = Observable.create((Subscriber<? super Boolean> subscriber) -> {
+      isMessageSend(subscriber, message, uri);
+    }).onBackpressureBuffer().serialize();
     return isMessageSend;
   }
 
   public Observable<Boolean> createRequestZendesk(String firstMessage) {
-    if (isRequestZendeskCreated == null) {
-      isRequestZendeskCreated = Observable.create((Subscriber<? super Boolean> subscriber) -> {
-        createRequestZendesk(subscriber, firstMessage);
-      }).onBackpressureBuffer().serialize();
-    }
+    isRequestZendeskCreated = Observable.create((Subscriber<? super Boolean> subscriber) -> {
+      createRequestZendesk(subscriber, firstMessage);
+    }).onBackpressureBuffer().serialize();
     return isRequestZendeskCreated;
   }
 
@@ -105,17 +99,19 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
         supportId = createRequest.getId();
         getComments();
         subscriber.onNext(true);
+        subscriber.onCompleted();
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
         Timber.e("onError create zendesk request" + errorResponse.getReason());
         subscriber.onNext(false);
+        subscriber.onCompleted();
       }
     });
   }
 
   public void emitFriends(Subscriber subscriber) {
-    List<Message> messages = new ArrayList<Message>();
+    List<Message> messages = new ArrayList<>();
     provider.getComments(supportId, new ZendeskCallback<CommentsResponse>() {
       @Override public void onSuccess(CommentsResponse commentsResponse) {
         Timber.i("onSuccess getCommentZendesk" + commentsResponse.getComments().size());
@@ -157,7 +153,8 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
           } else {
             m.setAuthor(user);
           }
-          m.setCreationDate(dateUtils.getUTCDateForMessage());
+          Date d = response.getCreatedAt();
+          m.setCreationDate(dateUtils.dateToDateForMessage(d));
           m.setMessage(response.getBody());
           m.setType(MESSAGE_TEXT);
           m.setSupportAuthorId(response.getAuthorId().toString());
