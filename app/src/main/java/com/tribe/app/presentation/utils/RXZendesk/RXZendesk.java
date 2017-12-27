@@ -49,6 +49,8 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
   private Preference<String> supportIdPref;
   private Observable<List<Message>> messageListObservable;
   private Observable<Boolean> isMessageSend;
+  private Observable<Boolean> isRequestZendeskCreated;
+  private String supportId;
 
   @Inject public RXZendesk(User user, DateUtils dateUtils,
       @SupportUserId Preference<String> supportUserIdPref,
@@ -59,28 +61,38 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
     this.uploadProvider = ZendeskConfig.INSTANCE.provider().uploadProvider();
     this.supportUserIdPref = supportUserIdPref;
     this.supportIdPref = supportIdPref;
+    supportId = supportIdPref.get();
   }
 
-  public Observable<List<Message>> getComments(String supportId) {
+  public Observable<List<Message>> getComments() {
     if (messageListObservable == null) {
       messageListObservable = Observable.create((Subscriber<? super List<Message>> subscriber) -> {
-        emitFriends(subscriber, supportId);
+        emitFriends(subscriber);
       }).onBackpressureBuffer().serialize();
     }
 
     return messageListObservable;
   }
 
-  public Observable<Boolean> addMessageZendesk(String supportId, String data, Uri uri) {
+  public Observable<Boolean> addMessageZendesk(String data, Uri uri) {
     if (isMessageSend == null) {
       isMessageSend = Observable.create((Subscriber<? super Boolean> subscriber) -> {
-        isMessageSend(subscriber, supportId, data, uri);
+        isMessageSend(subscriber, data, uri);
       }).onBackpressureBuffer().serialize();
     }
     return isMessageSend;
   }
 
-  public Observable createRequestZendesk(String firstMessage) {
+  public Observable<Boolean> createRequestZendesk(String firstMessage) {
+    if (isRequestZendeskCreated == null) {
+      isRequestZendeskCreated = Observable.create((Subscriber<? super Boolean> subscriber) -> {
+        createRequestZendesk(subscriber, firstMessage);
+      }).onBackpressureBuffer().serialize();
+    }
+    return isRequestZendeskCreated;
+  }
+
+  public void createRequestZendesk(Subscriber subscriber, String firstMessage) {
     CreateRequest request = new CreateRequest();
     request.setSubject("Chat with " + user.getDisplayName());
     request.setDescription(firstMessage);
@@ -90,17 +102,19 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
       @Override public void onSuccess(CreateRequest createRequest) {
         Timber.i("onSuccess create zendesk request : " + createRequest.getId());
         supportIdPref.set(createRequest.getId());
-        /* supportId = createRequest.getId();
-        getCommentZendesk();*/
+        supportId = createRequest.getId();
+        getComments();
+        subscriber.onNext(true);
       }
 
       @Override public void onError(ErrorResponse errorResponse) {
         Timber.e("onError create zendesk request" + errorResponse.getReason());
+        subscriber.onNext(false);
       }
     });
   }
 
-  public void emitFriends(Subscriber subscriber, String supportId) {
+  public void emitFriends(Subscriber subscriber) {
     List<Message> messages = new ArrayList<Message>();
     provider.getComments(supportId, new ZendeskCallback<CommentsResponse>() {
       @Override public void onSuccess(CommentsResponse commentsResponse) {
@@ -127,7 +141,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
             image.setCreationDate(dateUtils.getUTCDateForMessage());
             Image i = new Image();
             i.setUrl(response.getAttachments().get(0).getContentUrl());
-            List<Image> list = new ArrayList<Image>();
+            List<Image> list = new ArrayList<>();
             list.add(i);
             image.setRessources(list);
             image.setType(MESSAGE_IMAGE);
@@ -160,14 +174,14 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
     });
   }
 
-  public void isMessageSend(Subscriber subscriber, String supportId, String data, Uri uri) {
+  public void isMessageSend(Subscriber subscriber, String data, Uri uri) {
     if (uri != null) {
       File fileToUpload = new File(uri.getPath());
       uploadProvider.uploadAttachment("image.jpg", fileToUpload, "image/jpg",
           new ZendeskCallback<UploadResponse>() {
             @Override public void onSuccess(UploadResponse uploadResponse) {
               Timber.i("success uploadAttachment to Zendesk" + uploadResponse.getAttachment());
-              sendToZendesk(subscriber, supportId, "image : ", uploadResponse.getToken());
+              sendToZendesk(subscriber, "image : ", uploadResponse.getToken());
             }
 
             @Override public void onError(ErrorResponse errorResponse) {
@@ -175,11 +189,11 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
             }
           });
     } else {
-      sendToZendesk(subscriber, supportId, data, null);
+      sendToZendesk(subscriber, data, null);
     }
   }
 
-  private void sendToZendesk(Subscriber subscriber, String supportId, String data, String token) {
+  private void sendToZendesk(Subscriber subscriber, String data, String token) {
     List<String> attachmentList = new ArrayList<>();
     attachmentList.add(token);
     EndUserComment o = new EndUserComment();
@@ -191,6 +205,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
         Timber.i("onSuccess add comment to zendesk " + comment.getBody());
         subscriber.onNext(true);
         subscriber.onCompleted();
+        // getComments();
       }
 
       @Override public void onError(ErrorResponse errorResponse) {

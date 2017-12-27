@@ -5,10 +5,8 @@ import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
-import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
-import io.realm.RealmList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import rx.Observable;
@@ -38,11 +36,15 @@ public class DiskChatDataStore implements ChatDataStore {
     return null;
   }
 
-  @Override public Observable<List<Message>> getMessageZendesk(String supportId) {
+  @Override public Observable<List<Message>> getMessageZendesk() {
     return null;
   }
 
-  @Override public Observable<Boolean> addMessageZendesk(String supportId, String data, Uri uri) {
+  @Override public Observable<Boolean> addMessageZendesk(String data, Uri uri) {
+    return null;
+  }
+
+  @Override public Observable createRequestZendesk(String data) {
     return null;
   }
 
@@ -83,6 +85,4 @@ public class DiskChatDataStore implements ChatDataStore {
   @Override public Observable<List<Conversation>> getMessageSupport(int typeSupport) {
     return null;
   }
-
-
 }

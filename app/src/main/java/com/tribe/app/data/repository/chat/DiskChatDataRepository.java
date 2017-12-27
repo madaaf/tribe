@@ -42,8 +42,7 @@ import rx.Observable;
         .map(messageRealmDataMapper::transform);
   }
 
-  @Override public Observable<List<Message>> getMessageZendesk(String lang, int typeSupport,
-      String supportId) {
+  @Override public Observable<List<Message>> getMessageZendesk(String lang, int typeSupport) {
     return null;
   }
 
@@ -97,7 +96,11 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable addMessageZendesk(String supportId, String data, Uri uri) {
+  @Override public Observable addMessageZendesk(String data, Uri uri) {
+    return null;
+  }
+
+  @Override public Observable createRequestZendesk(String data) {
     return null;
   }
 }

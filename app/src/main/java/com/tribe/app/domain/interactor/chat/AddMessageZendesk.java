@@ -12,7 +12,6 @@ public class AddMessageZendesk extends UseCase {
 
   private Uri uri;
   private String data;
-  private String supportId;
   private ChatRepository chatRepository;
 
   @Inject
@@ -22,13 +21,12 @@ public class AddMessageZendesk extends UseCase {
     this.chatRepository = chatRepository;
   }
 
-  public void setData(String supportId, String data, Uri uri) {
+  public void setData(String data, Uri uri) {
     this.data = data;
     this.uri = uri;
-    this.supportId = supportId;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.chatRepository.addMessageZendesk(supportId, data, uri);
+    return this.chatRepository.addMessageZendesk(data, uri);
   }
 }

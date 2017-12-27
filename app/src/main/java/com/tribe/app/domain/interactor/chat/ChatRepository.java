@@ -17,7 +17,7 @@ public interface ChatRepository {
   Observable<List<Message>> loadMessages(final String[] userIds, String dateBefore,
       String dateAfter);
 
-  Observable<List<Message>> getMessageZendesk(String lang, int typeSupport, String supportId);
+  Observable<List<Message>> getMessageZendesk(String lang, int typeSupport);
 
   Observable<List<Message>> getMessagesImage(final String[] userIds);
 
@@ -35,7 +35,7 @@ public interface ChatRepository {
 
   Observable<List<Conversation>> getMessageSupport(String lang, int typeSupport);
 
-  Observable addMessageZendesk(String supportId, String data, Uri uri);
+  Observable addMessageZendesk(String data, Uri uri);
 
   Observable createRequestZendesk(String data);
 }

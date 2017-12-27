@@ -55,17 +55,16 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm).getMessages());
   }
 
-  @Override public Observable<List<Message>> getMessageZendesk(String lang, int typeSupport,
-      String supportId) {
+  @Override public Observable<List<Message>> getMessageZendesk(String lang, int typeSupport) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
-    return userDataStore.getMessageZendesk(supportId)
+    return userDataStore.getMessageZendesk()
         .doOnError(Throwable::printStackTrace)
         .map(zendeskMessages -> zendeskMessages);
   }
 
-  @Override public Observable addMessageZendesk(String supportId, String data, Uri uri) {
+  @Override public Observable addMessageZendesk(String data, Uri uri) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
-    return userDataStore.addMessageZendesk(supportId, data, uri)
+    return userDataStore.addMessageZendesk(data, uri)
         .doOnError(Throwable::printStackTrace)
         .map(zendeskMessages -> zendeskMessages);
   }

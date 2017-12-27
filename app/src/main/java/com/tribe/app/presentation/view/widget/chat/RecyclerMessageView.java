@@ -48,15 +48,12 @@ import com.tribe.tribelivesdk.util.JsonUtils;
 import com.zendesk.sdk.model.access.Identity;
 import com.zendesk.sdk.model.access.JwtIdentity;
 import com.zendesk.sdk.model.push.PushRegistrationResponse;
-import com.zendesk.sdk.model.request.CreateRequest;
-import com.zendesk.sdk.model.request.Request;
 import com.zendesk.sdk.network.RequestProvider;
 import com.zendesk.sdk.network.UploadProvider;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
 import com.zendesk.service.ErrorResponse;
 import com.zendesk.service.ZendeskCallback;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -144,12 +141,15 @@ public class RecyclerMessageView extends IChat {
     ZendeskConfig.INSTANCE.setIdentity(jwtUserIdentity);
     enablePushZendesk();
 
-    Timber.e("TEST OK " + supportUserIdPref.get());
-
     if (haveRequestZendeskId()) {
       supportId = supportIdPref.get();
       Timber.i("old zendesk ticket :" + supportId);
       getCommentZendesk();
+    } else {
+      Timber.i("initZendesk supportUserIdPref: "
+          + supportUserIdPref.get()
+          + " ticket: "
+          + supportIdPref.get());
     }
   }
 
@@ -164,47 +164,22 @@ public class RecyclerMessageView extends IChat {
   }
 
   private void getCommentZendesk() {
-    messagePresenter.getMessageZendesk(supportId);
+    Timber.i("getCommentZendesk ");
+    messagePresenter.getMessageZendesk();
   }
 
   private void addCommentZendesk(String data, Uri uri) {
-    messagePresenter.addMessageZendesk(supportId, data, uri);
-  }
-
-  private void getRequestProvider() { // TODO SOEF
-    provider.getRequest(supportId, new ZendeskCallback<Request>() {
-      @Override public void onSuccess(Request request) {
-        Timber.e("onSuccess getRequestProvider " + request.toString());
-      }
-
-      @Override public void onError(ErrorResponse errorResponse) {
-        Timber.e("error getRequestProvider " + errorResponse.toString());
-      }
-    });
+    Timber.i("addCommentZendesk " + data + " " + uri.toString());
+    messagePresenter.addMessageZendesk(data, uri);
   }
 
   private void createZendeskRequest(String firstMessage) {
+    Timber.i("createZendeskRequest " + firstMessage);
     messagePresenter.createRequestZendesk(firstMessage);
-/*    CreateRequest request = new CreateRequest();
-    request.setSubject("Chat with " + user.getDisplayName());
-    request.setDescription(firstMessage);
-    request.setTags(Arrays.asList("chat", "mobile"));
-
-    provider.createRequest(request, new ZendeskCallback<CreateRequest>() {
-      @Override public void onSuccess(CreateRequest createRequest) {
-        Timber.i("onSuccess create zendesk request : " + createRequest.getId());
-        supportIdPref.set(createRequest.getId());
-        supportId = createRequest.getId(); // TODO SOEF update
-        getCommentZendesk();
-      }
-
-      @Override public void onError(ErrorResponse errorResponse) {
-        Timber.e("onError create zendesk request" + errorResponse.getReason());
-      }
-    });*/
   }
 
   private void enablePushZendesk() {
+    Timber.i("enablePushZendesk ");
     ZendeskConfig.INSTANCE.enablePushWithIdentifier(token,
         new ZendeskCallback<PushRegistrationResponse>() {
           @Override public void onSuccess(PushRegistrationResponse pushRegistrationResponse) {
@@ -218,6 +193,7 @@ public class RecyclerMessageView extends IChat {
   }
 
   private void disablePushZendesk() {
+    Timber.i("disablePushZendesk ");
     ZendeskConfig.INSTANCE.disablePush(token, new ZendeskCallback<Void>() {
       @Override public void onSuccess(Void aVoid) {
         Timber.i("success disable PushZendesk ");
@@ -692,6 +668,7 @@ public class RecyclerMessageView extends IChat {
   }
 
   public void onReceiveZendeskNotif() {
+    Timber.i("onReceiveZendeskNotif");
     getCommentZendesk();
   }
 }

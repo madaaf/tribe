@@ -82,7 +82,8 @@ public class MessagePresenter implements Presenter {
       CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk,
       IsReadingFromDisk isReadingFromDisk, RemoveMessage removeMessage,
       OnMessageRemovedFromDisk onMessageRemovedFromDisk, GetMessageSupport getMessageSupport,
-      GetMessageZendesk getMessageZendesk, AddMessageZendesk addMessageZendesk, CreateRequestZendesk createRequestZendesk) {
+      GetMessageZendesk getMessageZendesk, AddMessageZendesk addMessageZendesk,
+      CreateRequestZendesk createRequestZendesk) {
     this.shortcutPresenter = shortcutPresenter;
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
@@ -105,19 +106,19 @@ public class MessagePresenter implements Presenter {
     this.createRequestZendesk = createRequestZendesk;
   }
 
-  public void getMessageZendesk(String supportId) {
-    getMessageZendesk.setTypeSupport(0, supportId);
+  public void getMessageZendesk() {
+    getMessageZendesk.setTypeSupport(0);
     getMessageZendesk.execute(new DefaultSubscriber());
   }
 
-  public void addMessageZendesk(String supportId, String data, Uri uri) {
-    addMessageZendesk.setData(supportId, data, uri);
+  public void addMessageZendesk(String data, Uri uri) {
+    addMessageZendesk.setData(data, uri);
     addMessageZendesk.execute(new AddMessageZendeskSubscriber());
   }
 
   public void createRequestZendesk(String firstMessage) {
     createRequestZendesk.setData(firstMessage);
-    createRequestZendesk.execute(new DefaultSubscriber());
+    createRequestZendesk.execute(new AddMessageZendeskSubscriber());
   }
 
   private class AddMessageZendeskSubscriber extends DefaultSubscriber<Boolean> {

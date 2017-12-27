@@ -37,9 +37,9 @@ public interface ChatDataStore {
 
   Observable<List<Conversation>> getMessageSupport(int typeSupport);
 
-  Observable<List<Message>> getMessageZendesk(String supportId);
+  Observable<List<Message>> getMessageZendesk();
 
-  Observable<Boolean> addMessageZendesk(String supportId, String data, Uri uri);
+  Observable<Boolean> addMessageZendesk(String data, Uri uri);
 
   Observable createRequestZendesk(String data);
 }

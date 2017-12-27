@@ -11,7 +11,6 @@ public class GetMessageZendesk extends UseCase {
 
   private String lang;
   private int typeSupport;
-  private String supportId;
   private ChatRepository chatRepository;
 
   @Inject
@@ -21,9 +20,8 @@ public class GetMessageZendesk extends UseCase {
     this.chatRepository = chatRepository;
   }
 
-  public void setTypeSupport(int typeSupport, String supportId) {
+  public void setTypeSupport(int typeSupport) {
     this.typeSupport = typeSupport;
-    this.supportId = supportId;
   }
 
   public void setup(String lang) {
@@ -31,6 +29,6 @@ public class GetMessageZendesk extends UseCase {
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.chatRepository.getMessageZendesk(lang, typeSupport, supportId);
+    return this.chatRepository.getMessageZendesk(lang, typeSupport);
   }
 }

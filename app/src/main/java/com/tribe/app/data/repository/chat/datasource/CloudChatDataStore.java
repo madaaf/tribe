@@ -50,13 +50,10 @@ public class CloudChatDataStore implements ChatDataStore {
 
   @Override public Observable<List<Conversation>> getMessageSupport(int typeSupport) {
     return fileApi.getMessageSupport().doOnNext(messageSupport -> {
-      // chatCache.putMessagesSupport(messageSupport.get(typeSupport).getMessages());
-
       RealmList<MessageRealm> list = new RealmList<>();
       for (Message message : messageSupport.get(typeSupport).getMessages()) {
         list.add(messageRealmDataMapper.transform(message));
       }
-
       chatCache.putMessages(list, Shortcut.SUPPORT);
     });
   }
@@ -97,16 +94,16 @@ public class CloudChatDataStore implements ChatDataStore {
     }
   }
 
-  @Override public Observable<List<Message>> getMessageZendesk(String supportId) {
-    return rxZendesk.getComments(supportId).doOnNext(comments -> {
+  @Override public Observable<List<Message>> getMessageZendesk() {
+    return rxZendesk.getComments().doOnNext(comments -> {
       RealmList<MessageRealm> messageRealms = new RealmList<>();
       messageRealms.addAll(messageRealmDataMapper.transformMessages(comments));
       chatCache.putMessages(messageRealms, Shortcut.SUPPORT);
     });
   }
 
-  @Override public Observable<Boolean> addMessageZendesk(String supportId, String data, Uri uri) {
-    return rxZendesk.addMessageZendesk(supportId, data, uri);
+  @Override public Observable<Boolean> addMessageZendesk(String data, Uri uri) {
+    return rxZendesk.addMessageZendesk(data, uri);
   }
 
   @Override public Observable createRequestZendesk(String data) {
