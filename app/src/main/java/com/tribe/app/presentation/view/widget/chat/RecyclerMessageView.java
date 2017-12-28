@@ -48,13 +48,12 @@ import com.tribe.tribelivesdk.util.JsonUtils;
 import com.zendesk.sdk.model.access.Identity;
 import com.zendesk.sdk.model.access.JwtIdentity;
 import com.zendesk.sdk.model.push.PushRegistrationResponse;
-import com.zendesk.sdk.network.RequestProvider;
-import com.zendesk.sdk.network.UploadProvider;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
 import com.zendesk.service.ErrorResponse;
 import com.zendesk.service.ZendeskCallback;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -85,18 +84,13 @@ public class RecyclerMessageView extends IChat {
   private Context context;
   private LinearLayoutManager layoutManager;
   private MessageAdapter messageAdapter;
-  private static String supportId;
-
   private Shortcut shortcut;
-  private boolean receiverRegistered;
 
   private int type;
   private boolean load = false, errorLoadingMessages = false;
   private List<Message> unreadMessage = new ArrayList<>();
   private String[] arrIds = null;
   private String token;
-  private RequestProvider provider;
-  private UploadProvider uploadProvider;
 
   @BindView(R.id.recyclerViewMessageChat) RecyclerView recyclerView;
 
@@ -133,17 +127,13 @@ public class RecyclerMessageView extends IChat {
   }
 
   private void initZendesk() {
-    provider = ZendeskConfig.INSTANCE.provider().requestProvider();
-    uploadProvider = ZendeskConfig.INSTANCE.provider().uploadProvider();
     token = FirebaseInstanceId.getInstance().getToken();
-
     Identity jwtUserIdentity = new JwtIdentity(accessToken.getAccessToken());
     ZendeskConfig.INSTANCE.setIdentity(jwtUserIdentity);
     enablePushZendesk();
 
     if (haveRequestZendeskId()) {
-      supportId = supportIdPref.get();
-      Timber.i("old zendesk ticket :" + supportId);
+      Timber.i("old zendesk ticket :" + supportIdPref.get());
       getCommentZendesk();
     } else {
       Timber.i("initZendesk supportUserIdPref: "
@@ -161,6 +151,10 @@ public class RecyclerMessageView extends IChat {
    /* messageAdapter.setItems(messages, 0);
     scrollListToBottom();*/
     Timber.i("onSuccess load message support from static api");
+    // TODO MADA SET ANIMATION
+    for (Message m : messages) {
+      int nbrChar = m.getMessageContent().length();
+    }
   }
 
   private void getCommentZendesk() {
@@ -315,7 +309,7 @@ public class RecyclerMessageView extends IChat {
       messagePresenter.getIsTalking();
       messagePresenter.getIsReading();
     } else {
-      messagePresenter.getMessageSupport(shortcut.getTypeSupport());
+      if (!haveRequestZendeskId()) messagePresenter.getMessageSupport(shortcut.getTypeSupport());
     }
   }
 
@@ -427,6 +421,17 @@ public class RecyclerMessageView extends IChat {
     });
   }
 
+  private void sortMessageListZendesk(List<Message> list) {
+    Collections.sort(list, (o1, o2) -> {
+    /*  DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
+      DateTime d1 = parser.parseDateTime(o1.getCreationDate());
+      DateTime d2 = parser.parseDateTime(o2.getCreationDate());*/
+      Date d2 = dateUtils.stringDateToDateMessage(o1.getCreationDate());
+      Date d1 = dateUtils.stringDateToDateMessage(o2.getCreationDate());
+      return d2.compareTo(d1);
+    });
+  }
+
   public void onStartRecording() {
     messageAdapter.onStartRecording();
 
@@ -516,10 +521,17 @@ public class RecyclerMessageView extends IChat {
         Timber.e(" before sort  DISK " + m.toString());
       }
       Timber.e(" ");
-      sortMessageList(messages);
+      sortMessageListZendesk(unreadMessage);
       for (Message m : unreadMessage) {
         Timber.e(" after sort  DISK " + m.toString());
       }
+
+      sortMessageList(unreadMessage);
+
+      for (Message m : unreadMessage) {
+        Timber.e(" after sort  DISK 2 : " + m.toString());
+      }
+
       messageAdapter.setItems(unreadMessage, messageAdapter.getItemCount());
       scrollListToBottom();
     }

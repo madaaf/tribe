@@ -57,6 +57,18 @@ public class DateUtils {
     return sdf2.format(date);
   }
 
+  public Date stringDateToDateMessage(String StrDate) {
+    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+    Date dateToReturn = null;
+    try {
+      dateToReturn = sdf2.parse(StrDate);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    return dateToReturn;
+  }
+
   public Date stringDateToDate(String StrDate) {
     Date dateToReturn = null;
 

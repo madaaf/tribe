@@ -65,7 +65,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
     supportId = supportIdPref.get();
   }
 
-  public Observable<List<Message>> getComments() {
+  public Observable<List<Message>> getMessageZendesk() {
     messageListObservable = Observable.create((Subscriber<? super List<Message>> subscriber) -> {
       emitFriends(subscriber);
     }).onBackpressureBuffer().serialize();
@@ -97,7 +97,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
         Timber.i("onSuccess create zendesk request : " + createRequest.getId());
         supportIdPref.set(createRequest.getId());
         supportId = createRequest.getId();
-        getComments();
+        getMessageZendesk();
         subscriber.onNext(true);
         subscriber.onCompleted();
       }
@@ -202,7 +202,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
         Timber.i("onSuccess add comment to zendesk " + comment.getBody());
         subscriber.onNext(true);
         subscriber.onCompleted();
-        // getComments();
+        // getMessageZendesk();
       }
 
       @Override public void onError(ErrorResponse errorResponse) {

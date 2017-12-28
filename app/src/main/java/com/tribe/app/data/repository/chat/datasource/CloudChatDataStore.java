@@ -95,7 +95,7 @@ public class CloudChatDataStore implements ChatDataStore {
   }
 
   @Override public Observable<List<Message>> getMessageZendesk() {
-    return rxZendesk.getComments().doOnNext(comments -> {
+    return rxZendesk.getMessageZendesk().doOnNext(comments -> {
       RealmList<MessageRealm> messageRealms = new RealmList<>();
       messageRealms.addAll(messageRealmDataMapper.transformMessages(comments));
       chatCache.putMessages(messageRealms, Shortcut.SUPPORT);
