@@ -5,6 +5,8 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.net.Uri;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -147,14 +149,49 @@ public class RecyclerMessageView extends IChat {
     return supportIdPref.get() != null && !supportIdPref.get().isEmpty();
   }
 
+  private void setSupportTiping(boolean isTiping) {
+    User u = members.get(0);
+    u.setActive(isTiping);
+    u.setTyping(true);
+    u.setIsOnline(isTiping);
+    int pos = chatUserAdapter.getIndexOfUser(u);
+    chatUserAdapter.notifyItemChanged(pos, u);
+  }
+
+  int i = 0;
+
+  private void setCounter(List<Message> messages, int size) {
+    setSupportTiping(true);
+    int seconde = (messages.get(i).getMessageContent().length()) * 100;
+    CountDownTimer countDownTimer = new CountDownTimer(seconde, 1000) {
+      public void onTick(long millisUntilFinished) {
+        Timber.e((messages.get(i) + " " + millisUntilFinished / 1000));
+      }
+
+      public void onFinish() {
+        setSupportTiping(false);
+        messageAdapter.setItem(messages.get(i));
+        notifyDataSetChanged();
+        int pos = chatUserAdapter.getIndexOfUser(members.get(0));
+        chatUserAdapter.notifyItemChanged(pos, members.get(0));
+        scrollListToBottom();
+        i++;
+        if (i < size) {
+          Handler handler = new Handler();
+          handler.postDelayed(() -> {
+            setCounter(messages, size);
+          }, 1500);
+        }
+      }
+    };
+
+    countDownTimer.cancel();
+    countDownTimer.start();
+  }
+
   @Override public void successMessageSupport(List<Message> messages) {
-   /* messageAdapter.setItems(messages, 0);
-    scrollListToBottom();*/
-    Timber.i("onSuccess load message support from static api");
-    // TODO MADA SET ANIMATION
-    for (Message m : messages) {
-      int nbrChar = m.getMessageContent().length();
-    }
+    Timber.i("onSuccess load message support from static api " + messages.size());
+    setCounter(messages, messages.size());
   }
 
   private void getCommentZendesk() {
@@ -309,7 +346,8 @@ public class RecyclerMessageView extends IChat {
       messagePresenter.getIsTalking();
       messagePresenter.getIsReading();
     } else {
-      if (!haveRequestZendeskId()) messagePresenter.getMessageSupport(shortcut.getTypeSupport());
+      //if (!haveRequestZendeskId()) messagePresenter.getMessageSupport(shortcut.getTypeSupport());
+      messagePresenter.getMessageSupport(shortcut.getTypeSupport());
     }
   }
 
@@ -504,6 +542,9 @@ public class RecyclerMessageView extends IChat {
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
+    if (true) {
+      return;
+    }
     Timber.i("successLoadingMessageDisk " + messages.size());
     unreadMessage.clear();
     if (shortcut.isSupport()) {
