@@ -160,7 +160,7 @@ public class RecyclerMessageView extends IChat {
 
   int i = 0;
 
-  private void setCounter(List<Message> messages, int size) {
+  private void addMessageWithFakeAnimation(List<Message> messages, int size) {
     setSupportTiping(true);
     int seconde = (messages.get(i).getMessageContent().length()) * 100;
     CountDownTimer countDownTimer = new CountDownTimer(seconde, 1000) {
@@ -179,7 +179,7 @@ public class RecyclerMessageView extends IChat {
         if (i < size) {
           Handler handler = new Handler();
           handler.postDelayed(() -> {
-            setCounter(messages, size);
+            addMessageWithFakeAnimation(messages, size);
           }, 1500);
         }
       }
@@ -191,7 +191,7 @@ public class RecyclerMessageView extends IChat {
 
   @Override public void successMessageSupport(List<Message> messages) {
     Timber.i("onSuccess load message support from static api " + messages.size());
-    setCounter(messages, messages.size());
+    addMessageWithFakeAnimation(messages, messages.size());
   }
 
   private void getCommentZendesk() {
@@ -346,8 +346,7 @@ public class RecyclerMessageView extends IChat {
       messagePresenter.getIsTalking();
       messagePresenter.getIsReading();
     } else {
-      //if (!haveRequestZendeskId()) messagePresenter.getMessageSupport(shortcut.getTypeSupport());
-      messagePresenter.getMessageSupport(shortcut.getTypeSupport());
+      if (!haveRequestZendeskId()) messagePresenter.getMessageSupport(shortcut.getTypeSupport());
     }
   }
 
@@ -461,9 +460,6 @@ public class RecyclerMessageView extends IChat {
 
   private void sortMessageListZendesk(List<Message> list) {
     Collections.sort(list, (o1, o2) -> {
-    /*  DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
-      DateTime d1 = parser.parseDateTime(o1.getCreationDate());
-      DateTime d2 = parser.parseDateTime(o2.getCreationDate());*/
       Date d2 = dateUtils.stringDateToDateMessage(o1.getCreationDate());
       Date d1 = dateUtils.stringDateToDateMessage(o2.getCreationDate());
       return d2.compareTo(d1);
@@ -542,13 +538,12 @@ public class RecyclerMessageView extends IChat {
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messages) {
-    if (true) {
-      return;
-    }
     Timber.i("successLoadingMessageDisk " + messages.size());
     unreadMessage.clear();
     if (shortcut.isSupport()) {
-
+      if (!haveRequestZendeskId()) {
+        return;
+      }
       for (Message m : messages) {
         if ((!messageAdapter.getItems().contains(m) && messageAdapter.getItems().isEmpty())
             || (!messageAdapter.getItems().contains(m)
