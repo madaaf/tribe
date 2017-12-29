@@ -160,27 +160,34 @@ public class RecyclerMessageView extends IChat {
 
   int i = 0;
 
-  private void addMessageWithFakeAnimation(List<Message> messages, int size) {
+  private void addMessageWithFakeAnimation(List<Message> list) {
+    Timber.e("addMessageWithFakeAnimation " + list.size() + " i:" + i + " " + list.get(0)
+        .getMessageContent());
     setSupportTiping(true);
-    int seconde = (messages.get(i).getMessageContent().length()) * 100;
+    int seconde = (list.get(i).getMessageContent().length()) * 100;
+    seconde = (seconde < 1000) ? 1000 : seconde;
     CountDownTimer countDownTimer = new CountDownTimer(seconde, 1000) {
       public void onTick(long millisUntilFinished) {
-        Timber.e((messages.get(i) + " " + millisUntilFinished / 1000));
+        Timber.e(("ON TOCK " + list.get(i).getMessageContent() + " " + millisUntilFinished / 1000));
       }
 
       public void onFinish() {
+        Timber.e("ON FINISH " + i + "  " + list.get(i).getMessageContent());
         setSupportTiping(false);
-        messageAdapter.setItem(messages.get(i));
+        messageAdapter.setItem(list.get(i));
         notifyDataSetChanged();
         int pos = chatUserAdapter.getIndexOfUser(members.get(0));
         chatUserAdapter.notifyItemChanged(pos, members.get(0));
         scrollListToBottom();
-        i++;
-        if (i < size) {
+        if (i < list.size() - 1) {
           Handler handler = new Handler();
           handler.postDelayed(() -> {
-            addMessageWithFakeAnimation(messages, size);
-          }, 1500);
+            addMessageWithFakeAnimation(list);
+            i++;
+          }, 2000);
+        } else {
+          Timber.e("SOEF RESET ");
+          i = 0;
         }
       }
     };
@@ -191,7 +198,7 @@ public class RecyclerMessageView extends IChat {
 
   @Override public void successMessageSupport(List<Message> messages) {
     Timber.i("onSuccess load message support from static api " + messages.size());
-    addMessageWithFakeAnimation(messages, messages.size());
+    addMessageWithFakeAnimation(messages);
   }
 
   private void getCommentZendesk() {
@@ -544,31 +551,24 @@ public class RecyclerMessageView extends IChat {
       if (!haveRequestZendeskId()) {
         return;
       }
+      boolean addAnimation = false;
       for (Message m : messages) {
-        if ((!messageAdapter.getItems().contains(m) && messageAdapter.getItems().isEmpty())
-            || (!messageAdapter.getItems().contains(m)
+        if (messageAdapter.getItems().isEmpty()) {
+          unreadMessage.add(m); // put without animation
+          addAnimation = false;
+        } else if ((!messageAdapter.getItems().contains(m)
             && !messageAdapter.getItems().isEmpty()
             && !supportAuthorIdIsMe(m))) {
           unreadMessage.add(m);
+          addAnimation = true;
         }
       }
-
-      for (Message m : unreadMessage) {
-        Timber.e(" before sort  DISK " + m.toString());
-      }
-      Timber.e(" ");
-      sortMessageListZendesk(unreadMessage);
-      for (Message m : unreadMessage) {
-        Timber.e(" after sort  DISK " + m.toString());
-      }
-
       sortMessageList(unreadMessage);
-
-      for (Message m : unreadMessage) {
-        Timber.e(" after sort  DISK 2 : " + m.toString());
+      if (!addAnimation) {
+        messageAdapter.setItems(unreadMessage, messageAdapter.getItemCount());
+      } else {
+        addMessageWithFakeAnimation(unreadMessage);
       }
-
-      messageAdapter.setItems(unreadMessage, messageAdapter.getItemCount());
       scrollListToBottom();
     }
 
