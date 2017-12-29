@@ -671,8 +671,10 @@ public class HomeActivity extends BaseActivity
               List<HomeAdapterInterface> finalList = new ArrayList<>();
 
               if (!support.isRead()) {
+                Timber.e("SOEF ADD 1 ");
                 finalList.add(support);
               } else {
+                Timber.e("SOEF ADD 2 ");
                 recipientList.add(support);
               }
 
@@ -1343,10 +1345,15 @@ public class HomeActivity extends BaseActivity
   class NotificationReceiverSupport extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
-      Shortcut support = createShortcutSupport();
-      support.setRead(false);
-      support.setSingle(true);
-      onSupportUpdate.onNext(support);
+
+      NotificationPayload notificationPayload =
+          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+      if (notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
+        Shortcut support = createShortcutSupport();
+        support.setRead(false);
+        support.setSingle(true);
+        onSupportUpdate.onNext(support);
+      }
     }
   }
 }

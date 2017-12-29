@@ -643,7 +643,7 @@ public class RecyclerMessageView extends IChat {
    */
 
   @Override public void errorLoadingMessageDisk() {
-    Timber.w("errorLoadingMessageDisk");
+    Timber.e("errorLoadingMessageDisk");
   }
 
   @Override public void errorMessageCreation(int position) {
@@ -651,7 +651,7 @@ public class RecyclerMessageView extends IChat {
   }
 
   @Override public void errorLoadingMessage() {
-    Timber.w("errorLoadingMessage");
+    Timber.e("errorLoadingMessage");
     errorLoadingMessages = true;
   }
 

@@ -24,9 +24,6 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   public static final String SUPPORT_PICTURE =
       "https://static.tribe.pm/assets/support-avatar-love.png";
 
-/*  public final static String SUPPORT_HOME = "SUPPORT_HOME";
-  public final static String SUPPORT_SUGGEST = "SUPPORT_SUGGEST";*/
-
   private static final int ONE_MINUTE = 60 * 1000;
 
   private String id;
