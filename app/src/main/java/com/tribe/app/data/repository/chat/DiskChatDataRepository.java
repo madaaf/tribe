@@ -42,7 +42,7 @@ import rx.Observable;
         .map(messageRealmDataMapper::transform);
   }
 
-  @Override public Observable<List<Message>> getMessageZendesk(String lang, int typeSupport) {
+  @Override public Observable<List<Message>> getMessageZendesk() {
     return null;
   }
 
@@ -92,7 +92,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Conversation>> getMessageSupport(String lang, int typeSupport) {
+  @Override public Observable<List<Conversation>> getMessageSupport(String lang, String typeSupport) {
     return null;
   }
 

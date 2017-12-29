@@ -17,6 +17,7 @@ import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.RealmList;
+import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
 import rx.functions.Action1;
@@ -48,10 +49,18 @@ public class CloudChatDataStore implements ChatDataStore {
     this.rxZendesk = rxZendesk;
   }
 
-  @Override public Observable<List<Conversation>> getMessageSupport(int typeSupport) {
-    return fileApi.getMessageSupport().doOnNext(messageSupport -> {
+  @Override public Observable<List<Conversation>> getMessageSupport(String typeSupport) {
+    return fileApi.getMessageSupport().doOnNext(conversationList -> {
       RealmList<MessageRealm> list = new RealmList<>();
-      for (Message message : messageSupport.get(typeSupport).getMessages()) {
+
+      List<Message> messages = new ArrayList<>();
+      for (Conversation c : conversationList) {
+        if (c.getId().equals(typeSupport)) {
+          messages = c.getMessages();
+        }
+      }
+
+      for (Message message : messages) {
         list.add(messageRealmDataMapper.transform(message));
       }
       chatCache.putMessages(list, Shortcut.SUPPORT);

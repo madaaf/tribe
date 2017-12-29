@@ -39,6 +39,7 @@ public class PreferencesUtils {
   public static String MINUTES_OF_CALLS = "MINUTES_OF_CALLS";
   public static String SUPPORT_REQUEST_ID = "SUPPORT_REQUEST_ID";
   public static String SUPPORT_USER_ID = "SUPPORT_USER_ID";
+  public static String SUPPORT_IS_USED = "SUPPORT_IS_USED";
   public static String FULLSCREEN_NOTIFICATION_STATE = "FULLSCREEN_NOTIFICATION_STATE";
   public static String DATA_CHALLANGES_GAME = "DATA_CHALLANGES_GAME";
   public static String CHAT_SHORTCUT_DATA = "CHAT_SHORTCUT_DATA";

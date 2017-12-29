@@ -7,6 +7,7 @@ import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecorati
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,8 +24,8 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   public static final String SUPPORT_PICTURE =
       "https://static.tribe.pm/assets/support-avatar-love.png";
 
-  public final static int SUPPORT_HOME = 0;
-  public final static int SUPPORT_SUGGEST = 1;
+/*  public final static String SUPPORT_HOME = "SUPPORT_HOME";
+  public final static String SUPPORT_SUGGEST = "SUPPORT_SUGGEST";*/
 
   private static final int ONE_MINUTE = 60 * 1000;
 
@@ -44,7 +45,7 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   private String lastMessage;
   private Date leaveOnlineUntil;
   private String membersHash;
-  private int typeSupport = SUPPORT_HOME;
+  private String typeSupport = Conversation.TYPE_HOME;
 
   private boolean selected;
 
@@ -76,11 +77,11 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
     return single ? getSingleFriend().isInvisibleMode() : false;
   }
 
-  public int getTypeSupport() {
+  public String getTypeSupport() {
     return typeSupport;
   }
 
-  public void setTypeSupport(int typeSupport) {
+  public void setTypeSupport(String typeSupport) {
     this.typeSupport = typeSupport;
   }
 

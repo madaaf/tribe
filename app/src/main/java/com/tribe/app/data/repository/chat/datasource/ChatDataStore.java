@@ -35,7 +35,7 @@ public interface ChatDataStore {
 
   Observable<Boolean> imTyping(String[] userIds);
 
-  Observable<List<Conversation>> getMessageSupport(int typeSupport);
+  Observable<List<Conversation>> getMessageSupport(String typeSupport);
 
   Observable<List<Message>> getMessageZendesk();
 

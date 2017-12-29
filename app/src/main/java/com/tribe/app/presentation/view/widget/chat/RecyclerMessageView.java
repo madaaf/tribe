@@ -36,6 +36,8 @@ import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
+import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
 import com.tribe.app.presentation.utils.preferences.SupportRequestId;
 import com.tribe.app.presentation.utils.preferences.SupportUserId;
 import com.tribe.app.presentation.view.activity.LiveActivity;
@@ -45,6 +47,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.zendesk.sdk.model.access.Identity;
@@ -57,6 +60,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.joda.time.DateTime;
@@ -105,6 +109,7 @@ public class RecyclerMessageView extends IChat {
   @Inject TagManager tagManager;
   @Inject Navigator navigator;
   @Inject @SupportRequestId Preference<String> supportIdPref;
+  @Inject @SupportIsUsed Preference<Set<String>> supportIsUsed;
   @Inject @SupportUserId Preference<String> supportUserIdPref;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -194,11 +199,6 @@ public class RecyclerMessageView extends IChat {
 
     countDownTimer.cancel();
     countDownTimer.start();
-  }
-
-  @Override public void successMessageSupport(List<Message> messages) {
-    Timber.i("onSuccess load message support from static api " + messages.size());
-    addMessageWithFakeAnimation(messages);
   }
 
   private void getCommentZendesk() {
@@ -340,6 +340,8 @@ public class RecyclerMessageView extends IChat {
     messageAdapter.notifyDataSetChanged();
   }
 
+  private String getMessageSupport = "";
+
   public void onResumeView() {
     if (!messagePresenter.isAttached()) {
       messagePresenter.onViewAttached(this);
@@ -353,8 +355,31 @@ public class RecyclerMessageView extends IChat {
       messagePresenter.getIsTalking();
       messagePresenter.getIsReading();
     } else {
-      if (!haveRequestZendeskId()) messagePresenter.getMessageSupport(shortcut.getTypeSupport());
+      if (allowGetMessageSupport()) {
+        getMessageSupport = shortcut.getTypeSupport();
+        messagePresenter.getMessageSupport(shortcut.getTypeSupport());
+      }
     }
+  }
+
+  private boolean homeSupportIsAlreadyUsed() {
+    if (supportIsUsed.get() == null || supportIsUsed.get().isEmpty()) {
+      return false;
+    }
+    return supportIsUsed.get().contains(Conversation.TYPE_HOME);
+  }
+
+  private boolean suggestedGameIsAlreadyUsed() {
+    if (supportIsUsed.get() == null || supportIsUsed.get().isEmpty()) {
+      return false;
+    }
+    return supportIsUsed.get().contains(Conversation.TYPE_SUGGEST_GAME);
+  }
+
+  private boolean allowGetMessageSupport() {
+    return (!homeSupportIsAlreadyUsed() && shortcut.getTypeSupport().equals(Conversation.TYPE_HOME))
+        || (!suggestedGameIsAlreadyUsed() && shortcut.getTypeSupport()
+        .equals(Conversation.TYPE_SUGGEST_GAME));
   }
 
   @Override protected void onAttachedToWindow() {
@@ -544,17 +569,21 @@ public class RecyclerMessageView extends IChat {
     return m.getSupportAuthorId() != null && m.getSupportAuthorId().equals(supportUserIdPref.get());
   }
 
-  @Override public void successLoadingMessageDisk(List<Message> messages) {
+  @Override public void successMessageSupport(List<Message> messages) {
+    Timber.i("onSuccess load message support from static api " + messages.size());
+    addMessageWithFakeAnimation(messages);
+    PreferencesUtils.addToSet(supportIsUsed, shortcut.getTypeSupport());
+    Timber.e("ok " + supportIsUsed.get());
+  }
+
+  @Override public void successLoadingMessageDisk(List<Message> messages) { // TODO SOEF
     Timber.i("successLoadingMessageDisk " + messages.size());
     unreadMessage.clear();
     if (shortcut.isSupport()) {
-      if (!haveRequestZendeskId()) {
-        return;
-      }
       boolean addAnimation = false;
       for (Message m : messages) {
         if (messageAdapter.getItems().isEmpty()) {
-          unreadMessage.add(m); // put without animation
+          unreadMessage.add(m);
           addAnimation = false;
         } else if ((!messageAdapter.getItems().contains(m)
             && !messageAdapter.getItems().isEmpty()
@@ -563,6 +592,24 @@ public class RecyclerMessageView extends IChat {
           addAnimation = true;
         }
       }
+
+      // DELETE
+      List<Message> unreadMessageCopie = unreadMessage;
+
+      if (getMessageSupport.equals(Conversation.TYPE_SUGGEST_GAME)) {
+        for (Message m : unreadMessageCopie) {
+          if (m.getId().startsWith(Shortcut.SUPPORT + "_" + Conversation.TYPE_SUGGEST_GAME)) {
+            unreadMessage.remove(m);
+          }
+        }
+      } else if (getMessageSupport.equals(Conversation.TYPE_HOME)) {
+        for (Message m : unreadMessageCopie) {
+          if (m.getId().startsWith(Shortcut.SUPPORT + "_" + Conversation.TYPE_HOME)) {
+            unreadMessage.remove(m);
+          }
+        }
+      }
+
       sortMessageList(unreadMessage);
       if (!addAnimation) {
         messageAdapter.setItems(unreadMessage, messageAdapter.getItemCount());

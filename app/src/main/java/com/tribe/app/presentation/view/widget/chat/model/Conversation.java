@@ -8,8 +8,8 @@ import java.util.List;
 
 public class Conversation {
 
-  private final String ID_HOME = "home";
-  private final String ID_SUGGEST_GAME = "suggest_game";
+  public static final String TYPE_HOME = "home";
+  public static final String TYPE_SUGGEST_GAME = "suggest_game";
 
   private String id;
   private List<Message> messages;

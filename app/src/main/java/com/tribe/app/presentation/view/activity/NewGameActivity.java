@@ -15,6 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.solera.defrag.AnimationHandler;
 import com.solera.defrag.TraversalAnimation;
@@ -25,6 +26,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
@@ -32,7 +34,9 @@ import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
+import java.util.Set;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -56,6 +60,8 @@ public class NewGameActivity extends BaseActivity {
   }
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject @SupportIsUsed Preference<Set<String>> supportIsUsed;
 
   @BindView(R.id.btnBack) ImageView btnBack;
 
@@ -112,7 +118,7 @@ public class NewGameActivity extends BaseActivity {
 
   @OnClick(R.id.supportBtn) void onClickSupport() {
     Shortcut s = ShortcutUtil.createShortcutSupport();
-    s.setTypeSupport(Shortcut.SUPPORT_SUGGEST);
+    s.setTypeSupport(Conversation.TYPE_SUGGEST_GAME);
     navigator.navigateToChat(this, s, null, null, null, false);
   }
 

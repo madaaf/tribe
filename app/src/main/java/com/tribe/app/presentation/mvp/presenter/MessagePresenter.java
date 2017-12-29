@@ -107,7 +107,6 @@ public class MessagePresenter implements Presenter {
   }
 
   public void getMessageZendesk() {
-    getMessageZendesk.setTypeSupport(0);
     getMessageZendesk.execute(new DefaultSubscriber());
   }
 
@@ -154,7 +153,7 @@ public class MessagePresenter implements Presenter {
     onMessageRemovedFromDisk.execute(new GetDiskMessageRemovedSubscriber());
   }
 
-  public void getMessageSupport(int typeSupport) {
+  public void getMessageSupport(String typeSupport) {
     getMessageSupport.setTypeSupport(typeSupport);
     getMessageSupport.execute(new GetDiskMessageSupportSubscriber(typeSupport));
   }
@@ -333,9 +332,9 @@ public class MessagePresenter implements Presenter {
   }
 
   private class GetDiskMessageSupportSubscriber extends DefaultSubscriber<List<Conversation>> {
-    private int typeSupport;
+    private String typeSupport;
 
-    public GetDiskMessageSupportSubscriber(int typeSupport) {
+    public GetDiskMessageSupportSubscriber(String typeSupport) {
       this.typeSupport = typeSupport;
     }
 
@@ -348,7 +347,7 @@ public class MessagePresenter implements Presenter {
 
     @Override public void onNext(List<Conversation> conversations) {
       if (chatMVPView != null) {
-        if (typeSupport == Shortcut.SUPPORT_HOME) {
+        if (typeSupport.equals(Conversation.TYPE_HOME)) {
           chatMVPView.successMessageSupport(conversations.get(0).getMessages());
         } else {
           chatMVPView.successMessageSupport(conversations.get(1).getMessages());

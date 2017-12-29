@@ -42,7 +42,8 @@ import rx.Observable;
         .map(this.messageRealmDataMapper::transform);
   }
 
-  @Override public Observable<List<Conversation>> getMessageSupport(String lang, int typeSupport) {
+  @Override
+  public Observable<List<Conversation>> getMessageSupport(String lang, String typeSupport) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
     return userDataStore.getMessageSupport(typeSupport);
   }
@@ -55,7 +56,7 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm).getMessages());
   }
 
-  @Override public Observable<List<Message>> getMessageZendesk(String lang, int typeSupport) {
+  @Override public Observable<List<Message>> getMessageZendesk() {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
     return userDataStore.getMessageZendesk()
         .doOnError(Throwable::printStackTrace)
