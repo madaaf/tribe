@@ -26,6 +26,13 @@ public class Media {
     return value.replace(".", ":");
   }
 
+  public static String getDurationFormatted(float duration) {
+    Double time = (double) (duration / 100);
+    int size = (String.valueOf(time).length() > 4) ? 4 : String.valueOf(time).length();
+    String value = String.valueOf(Double.parseDouble(Double.toString(time).substring(0, size)));
+    return value.replace(".", ":");
+  }
+
   public int getDurationMs() {
     return (int) (duration * 1000);
   }

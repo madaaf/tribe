@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.utils.RXZendesk;
 
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.data.realm.MessageRealm;
@@ -27,6 +28,7 @@ import com.zendesk.service.ZendeskCallback;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -114,6 +116,19 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
     });
   }
 
+  private Float extractTimeFromAudioFile(String url) {
+    Float duration = 0f;
+    try {
+      MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+      retriever.setDataSource(url, new HashMap<>());
+      String durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+      duration = Float.parseFloat(durationStr) / 1000;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return duration;
+  }
+
   public void emitFriends(Subscriber subscriber) {
     List<Message> messages = new ArrayList<>();
     provider.getComments(supportId, new ZendeskCallback<CommentsResponse>() {
@@ -145,6 +160,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
               audio.setCreationDate(dateUtils.dateToDateForMessage(response.getCreatedAt()));
               Media i = new Media();
               i.setUrl(response.getAttachments().get(0).getContentUrl());
+              i.setDuration(extractTimeFromAudioFile(i.getUrl()));
               List<Media> list = new ArrayList<>();
               list.add(i);
               audio.setOriginal(i);

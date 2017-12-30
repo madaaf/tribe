@@ -77,7 +77,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     Media o = m.getOriginal();
     String time =
         (m.getTime() != null && !m.getTime().isEmpty()) ? m.getTime() : o.getDurationFormatted();
-    // String time = o.getDurationFormatted();
+
     vh.timerVoiceNote.setText(time);
 
     vh.pauseBtn.setOnClickListener(view -> {

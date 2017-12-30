@@ -8,7 +8,6 @@ import java.util.List;
 
 public class MessageAudio extends Message {
 
-
   private Media original;
   private List<Media> ressources;
   private String time;

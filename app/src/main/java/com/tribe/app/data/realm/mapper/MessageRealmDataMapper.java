@@ -76,7 +76,6 @@ import javax.inject.Singleton;
             ((MessageAudio) message).setOriginal(i);
           }
 
-          //((MessageAudio) message).setDuration();
           break;
       }
       if (message != null) {
@@ -137,7 +136,7 @@ import javax.inject.Singleton;
         case Message.MESSAGE_AUDIO:
           Media o2 = ((MessageAudio) message).getOriginal();
           messageRealm.setOriginal(userRealmDataMapper.transform(o2));
-          // messageRealm.setData(((MessageAudio) message).getEmoji());
+
           break;
       }
     }

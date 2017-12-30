@@ -129,12 +129,14 @@ public class ChatCacheImpl implements ChatCache {
             MediaRealm mediaRealmDB = realm1.where(MediaRealm.class)
                 .equalTo("url", message.getOriginal().getUrl())
                 .findFirst();
+            mediaRealmDB.setDuration(message.getOriginal().getDuration());
 
             if (mediaRealmDB == null) {
               mediaRealmDB = realm1.createObject(MediaRealm.class, message.getOriginal().getUrl());
               mediaRealmDB.setFilesize(message.getOriginal().getFilesize());
               mediaRealmDB.setHeight(message.getOriginal().getHeight());
               mediaRealmDB.setWidth(message.getOriginal().getWidth());
+              mediaRealmDB.setDuration(message.getOriginal().getDuration());
             }
             m.setOriginal(mediaRealmDB);
           }
