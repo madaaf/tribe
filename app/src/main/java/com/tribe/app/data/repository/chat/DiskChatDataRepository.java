@@ -96,7 +96,7 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable addMessageZendesk(String data, Uri uri) {
+  @Override public Observable addMessageZendesk(String typeMedia, String data, Uri uri) {
     return null;
   }
 

@@ -110,8 +110,8 @@ public class MessagePresenter implements Presenter {
     getMessageZendesk.execute(new DefaultSubscriber());
   }
 
-  public void addMessageZendesk(String data, Uri uri) {
-    addMessageZendesk.setData(data, uri);
+  public void addMessageZendesk(String typeMedia, String data, Uri uri) {
+    addMessageZendesk.setData(typeMedia, data, uri);
     addMessageZendesk.execute(new AddMessageZendeskSubscriber());
   }
 

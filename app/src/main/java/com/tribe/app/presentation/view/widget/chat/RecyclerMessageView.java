@@ -205,10 +205,10 @@ public class RecyclerMessageView extends IChat {
     messagePresenter.getMessageZendesk();
   }
 
-  private void addCommentZendesk(String data, Uri uri) {
+  private void addCommentZendesk(String typeMedia, String data, Uri uri) {
     String comment = (uri != null) ? uri.toString() : data;
     Timber.i("addCommentZendesk " + comment);
-    messagePresenter.addMessageZendesk(data, uri);
+    messagePresenter.addMessageZendesk(typeMedia, data, uri);
   }
 
   private void createZendeskRequest(String firstMessage) {
@@ -470,7 +470,7 @@ public class RecyclerMessageView extends IChat {
       if (!haveRequestZendeskId()) {
         createZendeskRequest(data);
       } else {
-        addCommentZendesk(data, uri);
+        addCommentZendesk(type, data, uri);
       }
     }
   }

@@ -486,22 +486,23 @@ public class ChatView extends IChat {
             "app/uploads/" + user.getId() + "/" + dateUtils.getUTCDateAsString() + suffix);
         uploadTask = riversRef.putStream(inputStream);
       } else if (type.equals(MESSAGE_AUDIO)) {
-        Uri file = Uri.fromFile(new File(audioFile));
+        uri = Uri.fromFile(new File(audioFile));
         StorageReference riversRef = storageRef.child("app/uploads/"
             + user.getId()
             + "/"
             + dateUtils.getUTCDateAsString()
-            + file.getLastPathSegment());
-        uploadTask = riversRef.putFile(file);
+            + uri.getLastPathSegment());
+        uploadTask = riversRef.putFile(uri);
       }
 
       String finalNetType = netType;
+      Uri finalUri = uri;
       uploadTask.addOnFailureListener(exception -> {
         Timber.e(exception.getMessage());
       }).addOnSuccessListener(taskSnapshot -> {
         Uri downloadUrl = taskSnapshot.getDownloadUrl();
         recyclerView.sendMessageToNetwork(arrIds, downloadUrl.toString(), finalNetType, position,
-            uri);
+            finalUri); // TODO SOEF
       });
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -796,7 +797,8 @@ public class ChatView extends IChat {
     message.setId(Message.PENDING);//+ UUID.randomUUID()
     recyclerView.sendMyMessageToAdapter(message);
     if (type.equals(MESSAGE_IMAGE) || type.equals(MESSAGE_AUDIO)) {
-      sendMedia(uri, fileName, 0, type);
+      sendMedia(uri, fileName, 0,
+          type); // TODO SOEF uri null filename = /storage/emulated/0/Android/data/com.tribe.app.debug/cache/2017-12-30T12-52-12.766ZS1IasY3K-audiorecord.mp4
     } else {
       String replaced = content.replace("\"", "“");
       recyclerView.sendMessageToNetwork(arrIds, replaced, realmType, 0, null);

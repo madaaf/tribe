@@ -12,6 +12,7 @@ public class AddMessageZendesk extends UseCase {
 
   private Uri uri;
   private String data;
+  private String typeMedia;
   private ChatRepository chatRepository;
 
   @Inject
@@ -21,12 +22,13 @@ public class AddMessageZendesk extends UseCase {
     this.chatRepository = chatRepository;
   }
 
-  public void setData(String data, Uri uri) {
+  public void setData(String typeMedia, String data, Uri uri) {
     this.data = data;
     this.uri = uri;
+    this.typeMedia = typeMedia;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.chatRepository.addMessageZendesk(data, uri);
+    return this.chatRepository.addMessageZendesk(typeMedia, data, uri);
   }
 }

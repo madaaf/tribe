@@ -2,6 +2,7 @@ package com.tribe.app.presentation.utils.RXZendesk;
 
 import android.net.Uri;
 import com.f2prateek.rx.preferences.Preference;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.preferences.SupportRequestId;
@@ -72,9 +73,9 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
     return messageListObservable;
   }
 
-  public Observable<Boolean> addMessageZendesk(String message, Uri uri) {
+  public Observable<Boolean> addMessageZendesk(String typeMedia, String message, Uri uri) {
     isMessageSend = Observable.create((Subscriber<? super Boolean> subscriber) -> {
-      isMessageSend(subscriber, message, uri);
+      isMessageSend(subscriber, typeMedia, message, uri);
     }).onBackpressureBuffer().serialize();
     return isMessageSend;
   }
@@ -171,14 +172,27 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
     });
   }
 
-  public void isMessageSend(Subscriber subscriber, String data, Uri uri) {
-    if (uri != null) {
+  private boolean isAttachement(String typeMedia) {
+    return (typeMedia.equals(MessageRealm.IMAGE) || typeMedia.equals(MessageRealm.AUDIO));
+  }
+
+  public void isMessageSend(Subscriber subscriber, String typeMedia, String data, Uri uri) {
+    String name = "";
+    String fileType = "";
+    if (typeMedia.equals(MessageRealm.IMAGE)) {
+      name = "image.jpg";
+      fileType = "image/jpg";
+    } else if (typeMedia.equals(MessageRealm.AUDIO)) {
+      name = "note.mp4";
+      fileType = "audio/mp4";
+    }
+    if (isAttachement(typeMedia)) {
       File fileToUpload = new File(uri.getPath());
-      uploadProvider.uploadAttachment("image.jpg", fileToUpload, "image/jpg",
+      uploadProvider.uploadAttachment(name, fileToUpload, fileType,
           new ZendeskCallback<UploadResponse>() {
             @Override public void onSuccess(UploadResponse uploadResponse) {
               Timber.i("success uploadAttachment to Zendesk" + uploadResponse.getAttachment());
-              sendToZendesk(subscriber, "image : ", uploadResponse.getToken());
+              sendToZendesk(subscriber, "attachment : ", uploadResponse.getToken());
             }
 
             @Override public void onError(ErrorResponse errorResponse) {

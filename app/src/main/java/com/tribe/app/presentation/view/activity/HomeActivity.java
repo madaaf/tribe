@@ -491,7 +491,7 @@ public class HomeActivity extends BaseActivity
             .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
                 recyclerViewFriends.getChildLayoutPosition(view))), searchView.onClickChat(),
         searchView.onMainClick())
-        .subscribe(item -> navigateToChat(item, TagManagerUtils.GESTURE_TAP))); // TODO SOEF
+        .subscribe(item -> navigateToChat(item, TagManagerUtils.GESTURE_TAP)));
 
     subscriptions.add(Observable.merge(homeGridAdapter.onLiveClick()
         .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
@@ -500,19 +500,18 @@ public class HomeActivity extends BaseActivity
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(item -> onClickItem(item)));
 
-    subscriptions.add(homeGridAdapter.onAddUser() // TODO MADA
-        .map(view -> {
-          HomeAdapterInterface user = (User) homeGridAdapter.getItemAtPosition(
-              recyclerViewFriends.getChildLayoutPosition(view));
-          int position = recyclerViewFriends.getChildAdapterPosition(view);
-          return new Pair(position, user);
-        }).doOnError(throwable -> throwable.printStackTrace()).subscribe(pair -> {
-          UserToAddAdapterDelegate.UserToAddViewHolder vh =
-              (UserToAddAdapterDelegate.UserToAddViewHolder) recyclerViewFriends.findViewHolderForAdapterPosition(
-                  (Integer) pair.first);
-          User user = (User) pair.second;
-          homeGridPresenter.createShortcutFromSuggestedFriend(vh, user.getId());
-        }));
+    subscriptions.add(homeGridAdapter.onAddUser().map(view -> {
+      HomeAdapterInterface user = (User) homeGridAdapter.getItemAtPosition(
+          recyclerViewFriends.getChildLayoutPosition(view));
+      int position = recyclerViewFriends.getChildAdapterPosition(view);
+      return new Pair(position, user);
+    }).doOnError(throwable -> throwable.printStackTrace()).subscribe(pair -> {
+      UserToAddAdapterDelegate.UserToAddViewHolder vh =
+          (UserToAddAdapterDelegate.UserToAddViewHolder) recyclerViewFriends.findViewHolderForAdapterPosition(
+              (Integer) pair.first);
+      User user = (User) pair.second;
+      homeGridPresenter.createShortcutFromSuggestedFriend(vh, user.getId());
+    }));
 
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(

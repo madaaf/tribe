@@ -63,9 +63,9 @@ import rx.Observable;
         .map(zendeskMessages -> zendeskMessages);
   }
 
-  @Override public Observable addMessageZendesk(String data, Uri uri) {
+  @Override public Observable addMessageZendesk(String typeMedia, String data, Uri uri) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
-    return userDataStore.addMessageZendesk(data, uri)
+    return userDataStore.addMessageZendesk(typeMedia, data, uri)
         .doOnError(Throwable::printStackTrace)
         .map(zendeskMessages -> zendeskMessages);
   }

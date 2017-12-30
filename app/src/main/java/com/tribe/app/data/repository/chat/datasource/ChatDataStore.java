@@ -39,7 +39,7 @@ public interface ChatDataStore {
 
   Observable<List<Message>> getMessageZendesk();
 
-  Observable<Boolean> addMessageZendesk(String data, Uri uri);
+  Observable<Boolean> addMessageZendesk(String typeMedia, String data, Uri uri);
 
   Observable createRequestZendesk(String data);
 }

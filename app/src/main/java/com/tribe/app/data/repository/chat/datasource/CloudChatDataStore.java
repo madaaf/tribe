@@ -111,8 +111,8 @@ public class CloudChatDataStore implements ChatDataStore {
     });
   }
 
-  @Override public Observable<Boolean> addMessageZendesk(String data, Uri uri) {
-    return rxZendesk.addMessageZendesk(data, uri);
+  @Override public Observable<Boolean> addMessageZendesk(String typeMedia, String data, Uri uri) {
+    return rxZendesk.addMessageZendesk(typeMedia, data, uri);
   }
 
   @Override public Observable createRequestZendesk(String data) {

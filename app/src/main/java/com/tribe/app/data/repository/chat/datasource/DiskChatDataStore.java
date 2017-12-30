@@ -40,7 +40,7 @@ public class DiskChatDataStore implements ChatDataStore {
     return null;
   }
 
-  @Override public Observable<Boolean> addMessageZendesk(String data, Uri uri) {
+  @Override public Observable<Boolean> addMessageZendesk(String typeMedia, String data, Uri uri) {
     return null;
   }
 
