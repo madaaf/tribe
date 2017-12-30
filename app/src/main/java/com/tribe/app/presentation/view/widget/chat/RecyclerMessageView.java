@@ -191,7 +191,6 @@ public class RecyclerMessageView extends IChat {
             i++;
           }, 2000);
         } else {
-          Timber.e("SOEF RESET ");
           i = 0;
         }
       }
@@ -357,7 +356,7 @@ public class RecyclerMessageView extends IChat {
     } else {
       if (allowGetMessageSupport()) {
         getMessageSupport = shortcut.getTypeSupport();
-        messagePresenter.getMessageSupport(shortcut.getTypeSupport());
+        messagePresenter.getMessageSupport(shortcut.getTypeSupport()); // TODO SOEF
       }
     }
   }
@@ -573,7 +572,6 @@ public class RecyclerMessageView extends IChat {
     Timber.i("onSuccess load message support from static api " + messages.size());
     addMessageWithFakeAnimation(messages);
     PreferencesUtils.addToSet(supportIsUsed, shortcut.getTypeSupport());
-    Timber.e("ok " + supportIsUsed.get());
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messages) { // TODO SOEF
@@ -593,8 +591,8 @@ public class RecyclerMessageView extends IChat {
         }
       }
 
-      // DELETE
-      List<Message> unreadMessageCopie = unreadMessage;
+      List<Message> unreadMessageCopie = new ArrayList<>();
+      unreadMessageCopie.addAll(unreadMessage);
 
       if (getMessageSupport.equals(Conversation.TYPE_SUGGEST_GAME)) {
         for (Message m : unreadMessageCopie) {
@@ -610,13 +608,15 @@ public class RecyclerMessageView extends IChat {
         }
       }
 
-      sortMessageList(unreadMessage);
-      if (!addAnimation) {
-        messageAdapter.setItems(unreadMessage, messageAdapter.getItemCount());
-      } else {
-        addMessageWithFakeAnimation(unreadMessage);
+      if (!unreadMessage.isEmpty()) {
+        sortMessageList(unreadMessage);
+        if (!addAnimation) {
+          messageAdapter.setItems(unreadMessage, messageAdapter.getItemCount());
+        } else {
+          addMessageWithFakeAnimation(unreadMessage);
+        }
+        scrollListToBottom();
       }
-      scrollListToBottom();
     }
 
     if (!shortcut.isSupport() && (errorLoadingMessages || !successLoadingMessage)) {

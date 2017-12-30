@@ -16,6 +16,7 @@ import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.notification.NotificationPayload;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
