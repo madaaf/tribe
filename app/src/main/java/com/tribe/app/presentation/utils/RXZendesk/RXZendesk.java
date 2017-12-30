@@ -110,6 +110,8 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
     });
   }
 
+  String previousId;
+
   public void emitFriends(Subscriber subscriber) {
     List<Message> messages = new ArrayList<>();
     provider.getComments(supportId, new ZendeskCallback<CommentsResponse>() {
@@ -124,6 +126,8 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
           }
         }
         for (CommentResponse response : commentsResponse.getComments()) {
+
+          // IMAGE MESSAGE
           if (!response.getAttachments().isEmpty()) {
             MessageImage image = new MessageImage();
             if (response.getId() != null) image.setId(response.getId().toString());
@@ -144,21 +148,22 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
             image.setType(MESSAGE_IMAGE);
             image.setSupportAuthorId(response.getAuthorId().toString());
             messages.add(image);
-          }
-          MessageText m = new MessageText();
-          if (response.getId() != null) m.setId(response.getId().toString());
-          if (response.getAuthorId() != null && response.getAuthorId()
-              .toString()
-              .equals(supportId)) {
-            m.setAuthor(ShortcutUtil.createUserSupport());
           } else {
-            m.setAuthor(user);
+            MessageText m = new MessageText();
+            if (response.getId() != null) m.setId(response.getId().toString());
+            if (response.getAuthorId() != null && response.getAuthorId()
+                .toString()
+                .equals(supportId)) {
+              m.setAuthor(ShortcutUtil.createUserSupport());
+            } else {
+              m.setAuthor(user);
+            }
+            m.setCreationDate(dateUtils.dateToDateForMessage(response.getCreatedAt()));
+            m.setMessage(response.getBody());
+            m.setType(MESSAGE_TEXT);
+            m.setSupportAuthorId(response.getAuthorId().toString());
+            messages.add(m);
           }
-          m.setCreationDate(dateUtils.dateToDateForMessage(response.getCreatedAt()));
-          m.setMessage(response.getBody());
-          m.setType(MESSAGE_TEXT);
-          m.setSupportAuthorId(response.getAuthorId().toString());
-          messages.add(m);
         }
 
         subscriber.onNext(messages);

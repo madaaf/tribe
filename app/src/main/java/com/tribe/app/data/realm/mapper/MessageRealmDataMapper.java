@@ -48,9 +48,13 @@ import javax.inject.Singleton;
           message = new MessageImage(messageRealm.getId());
           // ImageRealm o = messageRealm.getOriginal();
           List<ImageRealm> ressources = messageRealm.getAlts();
-          Image o = userRealmDataMapper.transformOriginalRealmList(ressources, false);
-          ((MessageImage) message).setOriginal(o);
-
+          if (!ressources.isEmpty()) {
+            Image o = userRealmDataMapper.transformOriginalRealmList(ressources, false);
+            ((MessageImage) message).setOriginal(o);
+          } else {
+            ImageRealm o = messageRealm.getOriginal();
+            ((MessageImage) message).setOriginal(userRealmDataMapper.transform(o));
+          }
             /*((MessageImage) message).setRessources(
               userRealmDataMapper.transformOriginalRealmList(ressources));*/
           message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));

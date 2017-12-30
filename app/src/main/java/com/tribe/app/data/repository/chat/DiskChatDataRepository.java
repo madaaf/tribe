@@ -37,9 +37,9 @@ import rx.Observable;
   @Override public Observable<List<Message>> loadMessages(String[] userIds, String o1, String o2) {
     final DiskChatDataStore chatDataStore =
         (DiskChatDataStore) this.chatDataStoreFactory.createDiskDataStore();
-    return chatDataStore.getMessages(userIds)
-        .doOnError(Throwable::printStackTrace)
-        .map(messageRealmDataMapper::transform);
+    return chatDataStore.getMessages(userIds).doOnError(Throwable::printStackTrace).map(list -> {
+      return messageRealmDataMapper.transform(list);
+    });
   }
 
   @Override public Observable<List<Message>> getMessageZendesk() {
@@ -92,7 +92,8 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Conversation>> getMessageSupport(String lang, String typeSupport) {
+  @Override
+  public Observable<List<Conversation>> getMessageSupport(String lang, String typeSupport) {
     return null;
   }
 

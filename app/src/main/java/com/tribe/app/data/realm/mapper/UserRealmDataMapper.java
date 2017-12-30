@@ -101,7 +101,13 @@ import javax.inject.Singleton;
         });
 
         int position = collection.indexOf(stamp);
-        ImageRealm imageSelected = collection.get(position - 1);
+        ImageRealm imageSelected;
+        if (position != 0) {
+          imageSelected = collection.get(position - 1);
+        } else {
+          imageSelected = stamp;
+        }
+
         original = transform(imageSelected);
       } else {
         ImageRealm imageSelected = collection.get(0);
@@ -181,7 +187,7 @@ import javax.inject.Singleton;
       userRealm.setRandom_banned_permanently(user.isRandom_banned_permanently());
       userRealm.setShortcuts(shortcutRealmDataMapper.transformList(user.getShortcutList()));
 
-      if (user.getMessages() != null && user.getMessageList()!=null) {
+      if (user.getMessages() != null && user.getMessageList() != null) {
         userRealm.setMessages(messageRealmDataMapper.transformMessages(user.getMessageList()));
       }
     }
