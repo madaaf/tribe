@@ -231,6 +231,7 @@ public class HomeActivity extends BaseActivity
   private RxPermissions rxPermissions;
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private String gesture;
+  private Shortcut supportShortcut = createShortcutSupport();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     getWindow().setBackgroundDrawableResource(android.R.color.black);
@@ -490,7 +491,7 @@ public class HomeActivity extends BaseActivity
             .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
                 recyclerViewFriends.getChildLayoutPosition(view))), searchView.onClickChat(),
         searchView.onMainClick())
-        .subscribe(item -> navigateToChat(item, TagManagerUtils.GESTURE_TAP)));
+        .subscribe(item -> navigateToChat(item, TagManagerUtils.GESTURE_TAP))); // TODO SOEF
 
     subscriptions.add(Observable.merge(homeGridAdapter.onLiveClick()
         .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
@@ -671,10 +672,8 @@ public class HomeActivity extends BaseActivity
               List<HomeAdapterInterface> finalList = new ArrayList<>();
 
               if (!support.isRead()) {
-                Timber.e("SOEF ADD 1 ");
                 finalList.add(support);
               } else {
-                Timber.e("SOEF ADD 2 ");
                 recipientList.add(support);
               }
 
@@ -887,7 +886,7 @@ public class HomeActivity extends BaseActivity
 
   @Override public void renderRecipientList(List<Recipient> recipientList) {
     if (recipientList != null) {
-      onSupportUpdate.onNext(createShortcutSupport());
+      onSupportUpdate.onNext(supportShortcut);
       onRecipientUpdates.onNext(recipientList);
       canEndRefresh = false;
     }
@@ -1063,6 +1062,9 @@ public class HomeActivity extends BaseActivity
   }
 
   private void navigateToChat(Recipient recipient, String gesture) {
+    if (recipient.isSupport()) {
+      supportShortcut.setRead(true);
+    }
     this.gesture = gesture;
     if (!recipient.isRead()) {
       String shortcutId = "";
@@ -1349,10 +1351,9 @@ public class HomeActivity extends BaseActivity
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
       if (notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
-        Shortcut support = createShortcutSupport();
-        support.setRead(false);
-        support.setSingle(true);
-        onSupportUpdate.onNext(support);
+        supportShortcut.setRead(false);
+        supportShortcut.setSingle(true);
+        onSupportUpdate.onNext(supportShortcut);
       }
     }
   }
