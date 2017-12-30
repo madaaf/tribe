@@ -26,7 +26,6 @@ import com.zendesk.service.ZendeskCallback;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -135,11 +134,12 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
             } else {
               image.setAuthor(user);
             }
-            image.setCreationDate(dateUtils.getUTCDateForMessage());
+            image.setCreationDate(dateUtils.dateToDateForMessage(response.getCreatedAt()));
             Image i = new Image();
             i.setUrl(response.getAttachments().get(0).getContentUrl());
             List<Image> list = new ArrayList<>();
             list.add(i);
+            image.setOriginal(i);
             image.setRessources(list);
             image.setType(MESSAGE_IMAGE);
             image.setSupportAuthorId(response.getAuthorId().toString());
@@ -154,8 +154,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
           } else {
             m.setAuthor(user);
           }
-          Date d = response.getCreatedAt();
-          m.setCreationDate(dateUtils.dateToDateForMessage(d));
+          m.setCreationDate(dateUtils.dateToDateForMessage(response.getCreatedAt()));
           m.setMessage(response.getBody());
           m.setType(MESSAGE_TEXT);
           m.setSupportAuthorId(response.getAuthorId().toString());

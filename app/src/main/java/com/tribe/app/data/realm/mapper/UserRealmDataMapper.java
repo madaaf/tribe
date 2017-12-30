@@ -198,6 +198,7 @@ import javax.inject.Singleton;
       originalRealm.setWidth(o.getWidth());
       originalRealm.setUrl(o.getUrl());
       originalRealm.setDuration(o.getDuration());
+      return originalRealm;
     }
     return null;
   }
