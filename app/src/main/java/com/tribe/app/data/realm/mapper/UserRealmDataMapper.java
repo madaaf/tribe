@@ -1,10 +1,10 @@
 package com.tribe.app.data.realm.mapper;
 
-import com.tribe.app.data.realm.ImageRealm;
+import com.tribe.app.data.realm.MediaRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Media;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,10 +70,10 @@ import javax.inject.Singleton;
     return user;
   }
 
-  public Image transform(ImageRealm o) {
-    Image original = null;
+  public Media transform(MediaRealm o) {
+    Media original = null;
     if (o != null) {
-      original = new Image();
+      original = new Media();
       original.setUrl(o.getUrl());
       original.setWidth(o.getWidth());
       original.setHeight(o.getHeight());
@@ -83,12 +83,12 @@ import javax.inject.Singleton;
     return original;
   }
 
-  public Image transformOriginalRealmList(List<ImageRealm> collection, boolean isAudio) {
-    List<Image> originalList = new ArrayList<>();
-    Image original = new Image();
+  public Media transformOriginalRealmList(List<MediaRealm> collection, boolean isAudio) {
+    List<Media> originalList = new ArrayList<>();
+    Media original = new Media();
 
     if (collection != null) {
-      ImageRealm stamp = new ImageRealm();
+      MediaRealm stamp = new MediaRealm();
       stamp.setUrl("STAMP");
       stamp.setWidth(String.valueOf(screenUtils.getWidthPx()));
       collection.add(stamp);
@@ -101,7 +101,7 @@ import javax.inject.Singleton;
         });
 
         int position = collection.indexOf(stamp);
-        ImageRealm imageSelected;
+        MediaRealm imageSelected;
         if (position != 0) {
           imageSelected = collection.get(position - 1);
         } else {
@@ -110,7 +110,7 @@ import javax.inject.Singleton;
 
         original = transform(imageSelected);
       } else {
-        ImageRealm imageSelected = collection.get(0);
+        MediaRealm imageSelected = collection.get(0);
         original = transform(imageSelected);
       }
       // originalList.add(original);
@@ -120,12 +120,12 @@ import javax.inject.Singleton;
     return original;
   }
 
-  public RealmList<ImageRealm> transformOriginalList(Collection<Image> collection) {
-    RealmList<ImageRealm> originalRealmList = new RealmList<>();
-    ImageRealm originalRealm;
+  public RealmList<MediaRealm> transformOriginalList(Collection<Media> collection) {
+    RealmList<MediaRealm> originalRealmList = new RealmList<>();
+    MediaRealm originalRealm;
 
     if (collection != null) {
-      for (Image original : collection) {
+      for (Media original : collection) {
         originalRealm = transform(original);
         if (originalRealm != null) {
           originalRealmList.add(originalRealm);
@@ -195,10 +195,10 @@ import javax.inject.Singleton;
     return userRealm;
   }
 
-  public ImageRealm transform(Image o) {
-    ImageRealm originalRealm = null;
+  public MediaRealm transform(Media o) {
+    MediaRealm originalRealm = null;
     if (o != null) {
-      originalRealm = new ImageRealm();
+      originalRealm = new MediaRealm();
       originalRealm.setFilesize(o.getFilesize());
       originalRealm.setHeight(o.getHeight());
       originalRealm.setWidth(o.getWidth());

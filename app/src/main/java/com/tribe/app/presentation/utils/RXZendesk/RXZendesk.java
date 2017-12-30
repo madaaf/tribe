@@ -8,8 +8,9 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.preferences.SupportRequestId;
 import com.tribe.app.presentation.utils.preferences.SupportUserId;
 import com.tribe.app.presentation.view.ShortcutUtil;
-import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Media;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
+import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import com.zendesk.sdk.model.request.Comment;
@@ -33,6 +34,7 @@ import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
 
+import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_AUDIO;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_IMAGE;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_TEXT;
 
@@ -41,6 +43,8 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
  */
 
 @Singleton public class RXZendesk {
+  private final String AUDIO_MEDIA_TYPE = "audio/mp4";
+  private final String IMAGE_MEDIA_TYPE = "image/jpg";
 
   private final RequestProvider provider;
   private final UploadProvider uploadProvider;
@@ -110,8 +114,6 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
     });
   }
 
-  String previousId;
-
   public void emitFriends(Subscriber subscriber) {
     List<Message> messages = new ArrayList<>();
     provider.getComments(supportId, new ZendeskCallback<CommentsResponse>() {
@@ -126,28 +128,51 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
           }
         }
         for (CommentResponse response : commentsResponse.getComments()) {
-
           // IMAGE MESSAGE
           if (!response.getAttachments().isEmpty()) {
-            MessageImage image = new MessageImage();
-            if (response.getId() != null) image.setId(response.getId().toString());
-            if (response.getAuthorId() != null && response.getAuthorId()
-                .toString()
-                .equals(supportId)) {
-              image.setAuthor(ShortcutUtil.createUserSupport());
+
+            if (response.getAttachments().get(0).getContentType() != null
+                && response.getAttachments().get(0).getContentType().equals(AUDIO_MEDIA_TYPE)) {
+              MessageAudio audio = new MessageAudio();
+              if (response.getId() != null) audio.setId(response.getId().toString());
+              if (response.getAuthorId() != null && response.getAuthorId()
+                  .toString()
+                  .equals(supportId)) {
+                audio.setAuthor(ShortcutUtil.createUserSupport());
+              } else {
+                audio.setAuthor(user);
+              }
+              audio.setCreationDate(dateUtils.dateToDateForMessage(response.getCreatedAt()));
+              Media i = new Media();
+              i.setUrl(response.getAttachments().get(0).getContentUrl());
+              List<Media> list = new ArrayList<>();
+              list.add(i);
+              audio.setOriginal(i);
+              audio.setRessources(list);
+              audio.setType(MESSAGE_AUDIO);
+              audio.setSupportAuthorId(response.getAuthorId().toString());
+              messages.add(audio);
             } else {
-              image.setAuthor(user);
+              MessageImage image = new MessageImage();
+              if (response.getId() != null) image.setId(response.getId().toString());
+              if (response.getAuthorId() != null && response.getAuthorId()
+                  .toString()
+                  .equals(supportId)) {
+                image.setAuthor(ShortcutUtil.createUserSupport());
+              } else {
+                image.setAuthor(user);
+              }
+              image.setCreationDate(dateUtils.dateToDateForMessage(response.getCreatedAt()));
+              Media i = new Media();
+              i.setUrl(response.getAttachments().get(0).getContentUrl());
+              List<Media> list = new ArrayList<>();
+              list.add(i);
+              image.setOriginal(i);
+              image.setRessources(list);
+              image.setType(MESSAGE_IMAGE);
+              image.setSupportAuthorId(response.getAuthorId().toString());
+              messages.add(image);
             }
-            image.setCreationDate(dateUtils.dateToDateForMessage(response.getCreatedAt()));
-            Image i = new Image();
-            i.setUrl(response.getAttachments().get(0).getContentUrl());
-            List<Image> list = new ArrayList<>();
-            list.add(i);
-            image.setOriginal(i);
-            image.setRessources(list);
-            image.setType(MESSAGE_IMAGE);
-            image.setSupportAuthorId(response.getAuthorId().toString());
-            messages.add(image);
           } else {
             MessageText m = new MessageText();
             if (response.getId() != null) m.setId(response.getId().toString());
@@ -185,10 +210,10 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
     String fileType = "";
     if (typeMedia.equals(MessageRealm.IMAGE)) {
       name = "image.jpg";
-      fileType = "image/jpg";
+      fileType = IMAGE_MEDIA_TYPE;
     } else if (typeMedia.equals(MessageRealm.AUDIO)) {
       name = "note.mp4";
-      fileType = "audio/mp4";
+      fileType = AUDIO_MEDIA_TYPE;
     }
     if (isAttachement(typeMedia)) {
       File fileToUpload = new File(uri.getPath());

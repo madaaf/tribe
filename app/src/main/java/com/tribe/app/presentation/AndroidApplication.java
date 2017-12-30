@@ -187,7 +187,7 @@ public class AndroidApplication extends Application {
                   .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
                   .addField("value", int.class);
 
-              schema.create("ImageRealm")
+              schema.create("MediaRealm")
                   .addField("url", String.class, FieldAttribute.PRIMARY_KEY)
                   .addField("filesize", Integer.class)
                   .addField("width", String.class)
@@ -201,8 +201,8 @@ public class AndroidApplication extends Application {
                   .addRealmObjectField("user", schema.get("UserRealm"))
                   .addField("data", String.class)
                   .addField("__typename", String.class)
-                  .addRealmObjectField("original", schema.get("ImageRealm"))
-                  .addRealmListField("alts", schema.get("ImageRealm"))
+                  .addRealmObjectField("original", schema.get("MediaRealm"))
+                  .addRealmListField("alts", schema.get("MediaRealm"))
                   .addField("action", String.class)
                   .addField("created_at", String.class)
                   .addField("threadId", String.class);

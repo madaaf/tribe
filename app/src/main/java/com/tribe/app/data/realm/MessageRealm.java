@@ -22,8 +22,8 @@ public class MessageRealm extends RealmObject {
   private UserRealm user;
   private String data;
   private String __typename;
-  private ImageRealm original;
-  private RealmList<ImageRealm> alts;
+  private MediaRealm original;
+  private RealmList<MediaRealm> alts;
   private String action;
   private String created_at;
   private String threadId;
@@ -61,11 +61,11 @@ public class MessageRealm extends RealmObject {
     return data;
   }
 
-  public RealmList<ImageRealm> getAlts() {
+  public RealmList<MediaRealm> getAlts() {
     return alts;
   }
 
-  public void setAlts(RealmList<ImageRealm> alts) {
+  public void setAlts(RealmList<MediaRealm> alts) {
     this.alts = alts;
   }
 
@@ -73,11 +73,11 @@ public class MessageRealm extends RealmObject {
     return __typename;
   }
 
-  public ImageRealm getOriginal() {
+  public MediaRealm getOriginal() {
     return original;
   }
 
-  public void setOriginal(ImageRealm original) {
+  public void setOriginal(MediaRealm original) {
     this.original = original;
   }
 

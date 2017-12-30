@@ -9,8 +9,8 @@ import java.util.List;
 
 public class MessageImage extends Message {
 
-  private Image original;
-  private List<Image> ressources;
+  private Media original;
+  private List<Media> ressources;
   private Uri uri;
 
   public MessageImage(String id) {
@@ -29,19 +29,19 @@ public class MessageImage extends Message {
     this.uri = uri;
   }
 
-  public List<Image> getRessources() {
+  public List<Media> getRessources() {
     return ressources;
   }
 
-  public void setRessources(List<Image> ressources) {
+  public void setRessources(List<Media> ressources) {
     this.ressources = ressources;
   }
 
-  public Image getOriginal() {
+  public Media getOriginal() {
     return original;
   }
 
-  public void setOriginal(Image original) {
+  public void setOriginal(Media original) {
     this.original = original;
   }
 

@@ -4,7 +4,7 @@ package com.tribe.app.presentation.view.widget.chat.model;
  * Created by madaaflak on 07/09/2017.
  */
 
-public class Image {
+public class Media {
 
   private String url;
   private Integer filesize;
@@ -12,7 +12,7 @@ public class Image {
   private String height;
   private float duration;
 
-  public Image() {
+  public Media() {
   }
 
   public float getDuration() {

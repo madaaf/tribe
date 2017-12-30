@@ -19,7 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Media;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -74,7 +74,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     MessageAudioViewHolder vh = (MessageAudioViewHolder) holder;
     itemsView.put(position, vh);
 
-    Image o = m.getOriginal();
+    Media o = m.getOriginal();
     String time =
         (m.getTime() != null && !m.getTime().isEmpty()) ? m.getTime() : o.getDurationFormatted();
     // String time = o.getDurationFormatted();
@@ -104,7 +104,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     }
 
     MessageAudio m = (MessageAudio) items.get(position);
-    Image o = m.getOriginal();
+    Media o = m.getOriginal();
     if (position == currentPlayingPosition) {
       if (mediaPlayer.isPlaying()) {
         mediaPlayer.pause();

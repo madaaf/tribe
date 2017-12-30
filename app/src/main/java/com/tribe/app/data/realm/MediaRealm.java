@@ -7,7 +7,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by madaaflak on 07/09/2017.
  */
 
-public class ImageRealm extends RealmObject {
+public class MediaRealm extends RealmObject {
 
   @PrimaryKey private String url;
   private Integer filesize;
@@ -15,7 +15,7 @@ public class ImageRealm extends RealmObject {
   private String height;
   private float duration;
 
-  public ImageRealm() {
+  public MediaRealm() {
   }
 
   public float getDuration() {

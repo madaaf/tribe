@@ -72,7 +72,7 @@ import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
-import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Media;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
@@ -773,7 +773,7 @@ public class ChatView extends IChat {
       case MESSAGE_IMAGE:
         realmType = MessageRealm.IMAGE;
         message = new MessageImage();
-        Image o = new Image();
+        Media o = new Media();
         o.setUrl(uri.toString());
         ((MessageImage) message).setOriginal(o);
         ((MessageImage) message).setUri(uri);
@@ -782,7 +782,7 @@ public class ChatView extends IChat {
         realmType = MessageRealm.AUDIO;
         message = new MessageAudio();
         // ((MessageAudio) message).setTime(content);
-        Image m = new Image();
+        Media m = new Media();
         m.setUrl(fileName);
         m.setDuration(audioDuration);
         ((MessageAudio) message).setOriginal(m);
@@ -797,8 +797,7 @@ public class ChatView extends IChat {
     message.setId(Message.PENDING);//+ UUID.randomUUID()
     recyclerView.sendMyMessageToAdapter(message);
     if (type.equals(MESSAGE_IMAGE) || type.equals(MESSAGE_AUDIO)) {
-      sendMedia(uri, fileName, 0,
-          type); // TODO SOEF uri null filename = /storage/emulated/0/Android/data/com.tribe.app.debug/cache/2017-12-30T12-52-12.766ZS1IasY3K-audiorecord.mp4
+      sendMedia(uri, fileName, 0, type);
     } else {
       String replaced = content.replace("\"", "“");
       recyclerView.sendMessageToNetwork(arrIds, replaced, realmType, 0, null);

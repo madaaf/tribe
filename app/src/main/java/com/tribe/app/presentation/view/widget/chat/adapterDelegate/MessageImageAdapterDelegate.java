@@ -16,7 +16,7 @@ import butterknife.BindView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.tribe.app.R;
-import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Media;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
 import java.util.List;
@@ -48,7 +48,7 @@ public class MessageImageAdapterDelegate extends BaseMessageAdapterDelegate {
     MessageImageViewHolder vh = (MessageImageViewHolder) holder;
     MessageImage m = (MessageImage) items.get(position);
 
-    Image o = m.getOriginal();
+    Media o = m.getOriginal();
     String lowUrlImage =
         (m.getRessources() != null && m.getRessources().get(0) != null) ? m.getRessources()
             .get(0)
