@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.app.data.realm.MediaRealm;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.tribelivesdk.util.JsonUtils;
@@ -239,8 +240,14 @@ public class ChatCacheImpl implements ChatCache {
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
+    String localIds = "";
+    if (userIds[0].equals(Shortcut.SUPPORT)) {
+      localIds = Shortcut.SUPPORT;
+    } else {
+      localIds = JsonUtils.arrayToJson(userIds);
+    }
     RealmResults<MessageRealm> ok =
-        realm.where(MessageRealm.class).equalTo("localId", "support").findAll(); // TODO SOEF
+        realm.where(MessageRealm.class).equalTo("localId", localIds).findAll();
 
     return ok.asObservable()
         .filter(RealmResults::isLoaded)
