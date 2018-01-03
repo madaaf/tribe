@@ -554,7 +554,7 @@ public class ChatView extends ChatMVPView {
                 JsonUtils.arrayToJson(arrIds)));
           }
 
-          if (onRecord) {
+          if (onRecord && arrIds != null) {
             context.startService(
                 WSService.getCallingSubscribeChat(context, CHAT_SUBSCRIBE_IMTALKING,
                     JsonUtils.arrayToJson(arrIds)));
