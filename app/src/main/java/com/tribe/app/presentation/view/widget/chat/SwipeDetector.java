@@ -485,7 +485,7 @@ public class SwipeDetector implements View.OnTouchListener {
 
     if (sendMessage && context.audioDuration > MIN_AUDIO_DURATION) {
       context.audioCount++;
-      context.sendMessageToAdapter(Message.MESSAGE_AUDIO, time, null);
+      context.sendMessageToAdapter(Message.MESSAGE_AUDIO, time, null, true);
     }
 
     context.editText.clearAnimation();
