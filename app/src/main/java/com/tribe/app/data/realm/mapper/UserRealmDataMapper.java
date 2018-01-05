@@ -1,19 +1,13 @@
 package com.tribe.app.data.realm.mapper;
 
-
 import android.content.Context;
-import com.tribe.app.data.realm.ImageRealm;
-import com.tribe.app.data.realm.UserRealm;
-import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.chat.model.Image;
-import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.app.data.realm.MediaRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.chat.model.Media;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -93,8 +87,9 @@ import javax.inject.Singleton;
 
       if (gameManager.getGames() != null) {
         for (Game game : gameManager.getGames()) {
-          if (game.getFriendLeader() != null &&
-              game.getFriendLeader().getId().equals(user.getId())) {
+          if (game.getFriendLeader() != null && game.getFriendLeader()
+              .getId()
+              .equals(user.getId())) {
             emojis.add(game.getEmoji());
           }
         }

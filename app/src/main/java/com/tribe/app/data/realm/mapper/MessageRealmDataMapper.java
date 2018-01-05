@@ -62,11 +62,12 @@ import javax.inject.Singleton;
         case Message.MESSAGE_EVENT:
           message = new MessageEvent(messageRealm.getId());
           ((MessageEvent) message).setAction(messageRealm.getAction());
-          ((MessageEvent) message).setUser(userRealmDataMapper.transform(messageRealm.getUser(), true));
+          ((MessageEvent) message).setUser(
+              userRealmDataMapper.transform(messageRealm.getUser(), true));
           break;
         case Message.MESSAGE_AUDIO:
           message = new MessageAudio(messageRealm.getId());
-          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
+          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor(), false)); //   TODO TIAGO
           List<MediaRealm> r = messageRealm.getAlts();
           if (!r.isEmpty()) {
             Media i = userRealmDataMapper.transformOriginalRealmList(r, true);
@@ -129,7 +130,8 @@ import javax.inject.Singleton;
           break;
         case Message.MESSAGE_EVENT:
           messageRealm.setAction(((MessageEvent) message).getAction());
-          messageRealm.setUser(userRealmDataMapper.transform(((MessageEvent) message).getUser(), true));
+          messageRealm.setUser(
+              userRealmDataMapper.transform(((MessageEvent) message).getUser(), true));
           break;
 
         case Message.MESSAGE_AUDIO:

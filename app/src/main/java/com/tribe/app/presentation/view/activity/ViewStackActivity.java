@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -21,11 +22,14 @@ import com.solera.defrag.TraversingOperation;
 import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -40,7 +44,7 @@ public abstract class ViewStackActivity extends BaseActivity {
 
   @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.btnBack) ImageView btnBack;
+  @Nullable @BindView(R.id.btnBack) ImageView btnBack;
 
   @BindView(R.id.viewNewAvatar) NewAvatarView newAvatarView;
 
@@ -107,9 +111,17 @@ public abstract class ViewStackActivity extends BaseActivity {
   protected abstract void endInit(Bundle savedInstanceState);
 
   protected abstract void computeTitle(boolean forward, View to);
+  /*
 
-  @OnClick(R.id.btnBack) void clickBack() {
+  @Nullable @OnClick(R.id.btnBack) void clickBack() {
     onBackPressed();
+  }
+  */
+
+  @OnClick(R.id.supportBtn) void onClickSupport() {
+    Shortcut s = ShortcutUtil.createShortcutSupport();
+    s.setTypeSupport(Conversation.TYPE_SUGGEST_GAME);
+    navigator.navigateToChat(this, s, null, null, null, false);
   }
 
   @Override public void onBackPressed() {
