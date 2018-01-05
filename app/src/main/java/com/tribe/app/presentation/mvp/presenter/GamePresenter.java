@@ -13,7 +13,9 @@ import com.tribe.app.domain.interactor.game.GetTriviaData;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
+import timber.log.Timber;
 
 public class GamePresenter implements Presenter {
 
@@ -197,9 +199,13 @@ public class GamePresenter implements Presenter {
   }
 
   public void getTriviaData() {
-    getTriviaData.execute(new DefaultSubscriber<List<TriviaQuestions>>() {
-      @Override public void onNext(List<TriviaQuestions> questionsList) {
-        if (questionsList != null && gameMVPView != null) gameMVPView.onTriviaData(questionsList);
+    getTriviaData.execute(new DefaultSubscriber<Map<String, List<TriviaQuestions>>>() {
+      @Override public void onError(Throwable e) {
+        Timber.e(e);
+      }
+
+      @Override public void onNext(Map<String, List<TriviaQuestions>> map) {
+        if (map != null && gameMVPView != null) gameMVPView.onTriviaData(map);
       }
     });
   }

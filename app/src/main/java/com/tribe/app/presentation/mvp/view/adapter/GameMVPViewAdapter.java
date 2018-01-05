@@ -5,6 +5,7 @@ import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by tiago on 11/12/2017.
@@ -29,7 +30,7 @@ public class GameMVPViewAdapter implements GameMVPView {
 
   }
 
-  @Override public void onTriviaData(List<TriviaQuestions> questionsList) {
+  @Override public void onTriviaData(Map<String, List<TriviaQuestions>> map) {
 
   }
 }

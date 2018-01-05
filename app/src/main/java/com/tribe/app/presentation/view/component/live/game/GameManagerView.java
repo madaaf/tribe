@@ -116,8 +116,11 @@ public class GameManagerView extends FrameLayout {
     }
 
     gameMVPViewAdapter = new GameMVPViewAdapter() {
-      @Override public void onTriviaData(List<TriviaQuestions> questionsList) {
-
+      @Override public void onTriviaData(Map<String, List<TriviaQuestions>> map) {
+        if (currentGameView != null && currentGameView instanceof GameTriviaView) {
+          GameTriviaView gameTriviaView = (GameTriviaView) currentGameView;
+          gameTriviaView.showCategories();
+        }
       }
     };
 

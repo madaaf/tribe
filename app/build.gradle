@@ -4,7 +4,6 @@ buildscript {
     maven { url 'https://maven.fabric.io/public' }
   }
   dependencies {
-    classpath 'me.tatarka:gradle-retrolambda:3.2.3'
     classpath 'io.fabric.tools:gradle:1.+'
   }
 }
@@ -17,8 +16,6 @@ repositories {
 }
 
 apply plugin: 'com.fernandocejas.frodo'
-apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'realm-android'
 
 android {
@@ -199,9 +196,9 @@ dependencies {
   def presentationTestDependencies = rootProject.ext.presentationTestDependencies
   def developmentDependencies = rootProject.ext.developmentDependencies
 
-  apt presentationDependencies.daggerCompiler
+  annotationProcessor presentationDependencies.daggerCompiler
   compile presentationDependencies.dagger
-  apt presentationDependencies.butterKnifeCompiler
+  annotationProcessor presentationDependencies.butterKnifeCompiler
   compile presentationDependencies.butterKnife
   compile presentationDependencies.appCompat
   compile presentationDependencies.designSupport
@@ -262,10 +259,10 @@ dependencies {
   //compile developmentDependencies.androidDevMetrics
   //compile developmentDependencies.takt
 
-  compile project(':AdapterDelegates')
-  compile project(':tribelivesdk')
-  compile project(':ViewNavigator')
-  compile project(':tokenlib')
+  implementation project(':AdapterDelegates')
+  implementation project(':tribelivesdk')
+  implementation project(':ViewNavigator')
+  implementation project(':tokenlib')
   compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
     transitive = true;
   }

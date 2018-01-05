@@ -257,4 +257,9 @@
     <attr format="boolean" name="tabActive"/>
   </declare-styleable>
 
+  <declare-styleable name="GameTriviaCategoryView">
+    <attr format="string" name="categoryTitle"/>
+    <attr format="integer" name="categoryIcon" />
+  </declare-styleable>
+
 </resources>

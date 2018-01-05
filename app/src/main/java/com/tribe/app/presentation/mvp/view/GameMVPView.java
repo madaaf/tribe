@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.trivia.TriviaQuestions;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by tiago on 01/18/2017.
@@ -19,5 +20,5 @@ public interface GameMVPView extends MVPView {
 
   void onFriendsScore(List<Score> scoreList, boolean cloud);
 
-  void onTriviaData(List<TriviaQuestions> questionsList);
+  void onTriviaData(Map<String, List<TriviaQuestions>> map);
 }
