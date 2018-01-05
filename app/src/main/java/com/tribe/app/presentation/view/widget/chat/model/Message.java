@@ -10,7 +10,8 @@ import java.io.Serializable;
 
 public class Message implements Serializable {
 
-  @StringDef({ MESSAGE_TEXT, MESSAGE_EMOJI, MESSAGE_IMAGE, MESSAGE_EVENT, MESSAGE_AUDIO }) public @interface Type {
+  @StringDef({ MESSAGE_TEXT, MESSAGE_EMOJI, MESSAGE_IMAGE, MESSAGE_EVENT, MESSAGE_AUDIO })
+  public @interface Type {
   }
 
   public static final String PENDING = "PENDING";
@@ -26,8 +27,18 @@ public class Message implements Serializable {
   private @Type String type;
   private String creationDate;
   private boolean isPending = false;
+  private String content;
+  private String supportAuthorId;
 
   public Message() {
+  }
+
+  public String getSupportAuthorId() {
+    return supportAuthorId;
+  }
+
+  public void setSupportAuthorId(String supportAuthorId) {
+    this.supportAuthorId = supportAuthorId;
   }
 
   public boolean isPending() {
@@ -46,7 +57,15 @@ public class Message implements Serializable {
     return author;
   }
 
+  public void setContent(String content) {
+    this.content = content;
+  }
+
   public String getContent() {
+    return content;
+  }
+
+  public String getMessageContent() {
     switch (type) {
       case MESSAGE_TEXT:
         return ((MessageText) this).getMessage();

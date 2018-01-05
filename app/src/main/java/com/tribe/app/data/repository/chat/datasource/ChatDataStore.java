@@ -1,7 +1,10 @@
 package com.tribe.app.data.repository.chat.datasource;
 
+import android.net.Uri;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 import rx.Observable;
 
@@ -31,4 +34,12 @@ public interface ChatDataStore {
   Observable<MessageRealm> onMessageRemoved();
 
   Observable<Boolean> imTyping(String[] userIds);
+
+  Observable<List<Conversation>> getMessageSupport(String typeSupport);
+
+  Observable<List<Message>> getMessageZendesk();
+
+  Observable<Boolean> addMessageZendesk(String typeMedia, String data, Uri uri);
+
+  Observable createRequestZendesk(String data);
 }

@@ -1,13 +1,17 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.net.Uri;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Shortcut;
-import com.tribe.app.domain.entity.User;
+import com.tribe.app.domain.interactor.chat.AddMessageZendesk;
 import com.tribe.app.domain.interactor.chat.CreateMessage;
+import com.tribe.app.domain.interactor.chat.CreateRequestZendesk;
 import com.tribe.app.domain.interactor.chat.GetMessageFromDisk;
 import com.tribe.app.domain.interactor.chat.GetMessageImageFromDisk;
+import com.tribe.app.domain.interactor.chat.GetMessageSupport;
+import com.tribe.app.domain.interactor.chat.GetMessageZendesk;
 import com.tribe.app.domain.interactor.chat.ImTyping;
 import com.tribe.app.domain.interactor.chat.IsReadingFromDisk;
 import com.tribe.app.domain.interactor.chat.IsTalkingFromDisk;
@@ -25,6 +29,7 @@ import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.PictureMVPView;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +59,15 @@ public class MessagePresenter implements Presenter {
   protected IsReadingFromDisk isReadingFromDisk;
   protected OnMessageReceivedFromDisk onMessageReceivedFromDisk;
   protected OnMessageRemovedFromDisk onMessageRemovedFromDisk;
+  protected GetMessageSupport getMessageSupport;
   protected ImTyping imTyping;
   protected CreateShortcut createShortcut;
   protected UpdateShortcut updateShortcut;
   protected GetShortcutForUserIds getShortcutForUserIds;
   protected RemoveMessage removeMessage;
+  protected GetMessageZendesk getMessageZendesk;
+  protected AddMessageZendesk addMessageZendesk;
+  protected CreateRequestZendesk createRequestZendesk;
 
   // SUBSCRIBERS
   private UpdateShortcutSubscriber updateShortcutSubscriber;
@@ -72,7 +81,9 @@ public class MessagePresenter implements Presenter {
       GetMessageImageFromDisk getMessageImageFromDisk, GetShortcutForUserIds getShortcutForUserIds,
       CreateShortcut createShortcut, IsTalkingFromDisk isTalkingFromDisk,
       IsReadingFromDisk isReadingFromDisk, RemoveMessage removeMessage,
-      OnMessageRemovedFromDisk onMessageRemovedFromDisk) {
+      OnMessageRemovedFromDisk onMessageRemovedFromDisk, GetMessageSupport getMessageSupport,
+      GetMessageZendesk getMessageZendesk, AddMessageZendesk addMessageZendesk,
+      CreateRequestZendesk createRequestZendesk) {
     this.shortcutPresenter = shortcutPresenter;
     this.userMessageInfos = userMessageInfos;
     this.createMessage = createMessage;
@@ -89,6 +100,39 @@ public class MessagePresenter implements Presenter {
     this.isReadingFromDisk = isReadingFromDisk;
     this.removeMessage = removeMessage;
     this.onMessageRemovedFromDisk = onMessageRemovedFromDisk;
+    this.getMessageSupport = getMessageSupport;
+    this.getMessageZendesk = getMessageZendesk;
+    this.addMessageZendesk = addMessageZendesk;
+    this.createRequestZendesk = createRequestZendesk;
+  }
+
+  public void getMessageZendesk() {
+    getMessageZendesk.execute(new DefaultSubscriber());
+  }
+
+  public void addMessageZendesk(String typeMedia, String data, Uri uri) {
+    addMessageZendesk.setData(typeMedia, data, uri);
+    addMessageZendesk.execute(new AddMessageZendeskSubscriber());
+  }
+
+  public void createRequestZendesk(String firstMessage) {
+    createRequestZendesk.setData(firstMessage);
+    createRequestZendesk.execute(new AddMessageZendeskSubscriber());
+  }
+
+  private class AddMessageZendeskSubscriber extends DefaultSubscriber<Boolean> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
+      if (chatMVPView != null) chatMVPView.errorAddMessageZendeskSubscriber();
+    }
+
+    @Override public void onNext(Boolean isMessageSend) {
+      if (chatMVPView != null) chatMVPView.successAddMessageZendeskSubscriber();
+    }
   }
 
   public void getMessageImage(String[] userIds) {
@@ -109,6 +153,11 @@ public class MessagePresenter implements Presenter {
     onMessageRemovedFromDisk.execute(new GetDiskMessageRemovedSubscriber());
   }
 
+  public void getMessageSupport(String typeSupport) {
+    getMessageSupport.setTypeSupport(typeSupport);
+    getMessageSupport.execute(new GetDiskMessageSupportSubscriber(typeSupport));
+  }
+
   public void quickShortcutForUserIds(String userIds) {
     if (shortcutForUserIdsSubscriber != null) {
       shortcutForUserIdsSubscriber.unsubscribe();
@@ -119,11 +168,6 @@ public class MessagePresenter implements Presenter {
     getShortcutForUserIds.setup(userIds);
     getShortcutForUserIds.execute(shortcutForUserIdsSubscriber);
   }
-
-/*  public void getDiskShortcut(String shortcutId) {
-    getDiskShortcut.setShortcutId(shortcutId);
-    getDiskShortcut.execute(new GetDiskShortcutSubscriber());
-  }*/
 
   public void imTypingMessage(String[] userIds) {
     imTyping.setUserIds(userIds);
@@ -150,6 +194,10 @@ public class MessagePresenter implements Presenter {
   public void loadMessage(String[] userIds, String dateBefore, String dateAfter) {
     userMessageInfos.setUserIds(userIds, dateBefore, dateAfter);
     userMessageInfos.execute(new LoadMessageSubscriber(dateAfter != null));
+  }
+
+  public void loadMessageZendesk() {
+
   }
 
   public void createMessage(String[] userIds, String data, String type, int positon) {
@@ -283,6 +331,31 @@ public class MessagePresenter implements Presenter {
     }
   }
 
+  private class GetDiskMessageSupportSubscriber extends DefaultSubscriber<List<Conversation>> {
+    private String typeSupport;
+
+    public GetDiskMessageSupportSubscriber(String typeSupport) {
+      this.typeSupport = typeSupport;
+    }
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      Timber.e(e.getMessage());
+    }
+
+    @Override public void onNext(List<Conversation> conversations) {
+      if (chatMVPView != null) {
+        if (typeSupport.equals(Conversation.TYPE_HOME)) {
+          chatMVPView.successMessageSupport(conversations.get(0).getMessages());
+        } else {
+          chatMVPView.successMessageSupport(conversations.get(1).getMessages());
+        }
+      }
+    }
+  }
+
   private class GetDiskMessageRemovedSubscriber extends DefaultSubscriber<Message> {
 
     @Override public void onCompleted() {
@@ -356,7 +429,7 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onError(Throwable e) {
-      Timber.e(e.getMessage());
+      Timber.e("LoadMessageDiskSubscriber " + e.getMessage());
       if (chatMVPView != null) chatMVPView.errorLoadingMessageDisk();
     }
 

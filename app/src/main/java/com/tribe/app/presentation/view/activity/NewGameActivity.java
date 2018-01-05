@@ -5,12 +5,44 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
+<<<<<<< HEAD
 import com.tribe.app.R;
+=======
+import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.solera.defrag.AnimationHandler;
+import com.solera.defrag.TraversalAnimation;
+import com.solera.defrag.TraversingOperation;
+import com.solera.defrag.TraversingState;
+import com.solera.defrag.ViewStack;
+import com.tribe.app.R;
+import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+>>>>>>> support
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
 import com.tribe.app.presentation.view.utils.GlideUtils;
+<<<<<<< HEAD
 import com.tribe.tribelivesdk.game.Game;
+=======
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.ViewStackHelper;
+import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
+import com.tribe.tribelivesdk.game.Game;
+import java.util.Set;
+import javax.inject.Inject;
+import rx.subscriptions.CompositeSubscription;
+>>>>>>> support
 
 import static android.view.View.GONE;
 
@@ -29,6 +61,27 @@ public class NewGameActivity extends ViewStackActivity {
     return intent;
   }
 
+<<<<<<< HEAD
+=======
+  @Inject ScreenUtils screenUtils;
+
+  @Inject @SupportIsUsed Preference<Set<String>> supportIsUsed;
+
+  @BindView(R.id.btnBack) ImageView btnBack;
+
+  @BindView(R.id.txtTitle) TextViewFont txtTitle;
+
+  @BindView(R.id.txtTitleTwo) TextViewFont txtTitleTwo;
+
+  @BindView(R.id.txtAction) TextViewFont txtAction;
+
+  @BindView(R.id.btnForward) ImageView btnForward;
+
+  @BindView(R.id.progressView) CircularProgressView progressView;
+
+  @BindView(R.id.viewNavigatorStack) ViewStack viewStack;
+
+>>>>>>> support
   // VIEWS
   private GamesStoreView viewGamesStore;
   private GamesMembersView viewGamesMembers;
@@ -49,7 +102,17 @@ public class NewGameActivity extends ViewStackActivity {
     super.onCreate(savedInstanceState);
   }
 
+<<<<<<< HEAD
   @Override protected void endInit(Bundle savedInstanceState) {
+=======
+  @OnClick(R.id.supportBtn) void onClickSupport() {
+    Shortcut s = ShortcutUtil.createShortcutSupport();
+    s.setTypeSupport(Conversation.TYPE_SUGGEST_GAME);
+    navigator.navigateToChat(this, s, null, null, null, false);
+  }
+
+  private void init(Bundle savedInstanceState) {
+>>>>>>> support
     txtTitle.setText(R.string.new_game_title);
 
     if (savedInstanceState == null) {

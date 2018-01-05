@@ -7,6 +7,7 @@ import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecorati
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.model.AvatarModel;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +18,11 @@ import java.util.Map;
  * Created by tiago on 09/10/2017.
  */
 public class Shortcut extends Recipient implements Serializable, LiveInviteAdapterSectionInterface {
+
+  public static final String SUPPORT = "support";
+  public static final String SUPPORT_DISPLAYNAME = "Live Support";
+  public static final String SUPPORT_PICTURE =
+      "https://static.tribe.pm/assets/support-avatar-love.png";
 
   private static final int ONE_MINUTE = 60 * 1000;
 
@@ -31,11 +37,12 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
   private boolean single;
   private @ShortcutRealm.ShortcutStatus String status;
   private Date last_activity_at;
-  private List<ShortcutLastSeen> shortcutLastSeen;
+  private List<ShortcutLastSeen> shortcutLastSeen = new ArrayList<>();
   private List<User> members;
   private String lastMessage;
   private Date leaveOnlineUntil;
   private String membersHash;
+  private String typeSupport = Conversation.TYPE_HOME;
 
   private boolean selected;
 
@@ -65,6 +72,14 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
 
   @Override public boolean isInvisible() {
     return single ? getSingleFriend().isInvisibleMode() : false;
+  }
+
+  public String getTypeSupport() {
+    return typeSupport;
+  }
+
+  public void setTypeSupport(String typeSupport) {
+    this.typeSupport = typeSupport;
   }
 
   @Override public boolean isFriend() {

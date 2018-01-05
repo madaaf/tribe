@@ -1,5 +1,6 @@
 package com.tribe.app.data.network;
 
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -13,4 +14,6 @@ public interface FileApi {
   @GET @Streaming Call<ResponseBody> downloadFileWithUrl(@Url String fileUrl);
 
   @GET Observable<List<String>> getDataForUrl(@Url String fileUrl);
+
+  @GET("/assets/support.json") Observable<List<Conversation>> getMessageSupport();
 }

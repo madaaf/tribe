@@ -37,6 +37,10 @@ public class ShortcutUtil {
       }
       idslist.clear();
     }
+
+    if (userIds.equals(Shortcut.SUPPORT)) {
+      return ShortcutUtil.createShortcutSupport();
+    }
     return notificationShortcut;
   }
 
@@ -68,22 +72,6 @@ public class ShortcutUtil {
       list.remove(user.getId());
     }
   }
-
-
-  /*public static List<String> removeMyId(List<String> one, User me) {
-    List<String> tempId = new ArrayList<>();
-    List<String> tempUser = new ArrayList<>();
-    tempUser.addAll(one);
-
-    for (String id : one) {
-      tempId.add(id);
-    }
-
-    if (tempId.contains(me.getId())) {
-      tempUser.remove(me.getId());
-    }
-    return tempUser;
-  }*/
 
   public static List<User> removeMe(List<User> one, User me) {
     List<String> tempId = new ArrayList<>();
@@ -121,5 +109,21 @@ public class ShortcutUtil {
       }
     }
     return s;
+  }
+
+  public static Shortcut createShortcutSupport() {
+    Shortcut shortcutSupport = new Shortcut(Shortcut.SUPPORT);
+    List<User> members = new ArrayList<User>();
+    members.add(createUserSupport());
+    shortcutSupport.setMembers(members);
+    shortcutSupport.setName(Shortcut.SUPPORT_DISPLAYNAME);
+    return shortcutSupport;
+  }
+
+  public static User createUserSupport() {
+    User u = new User(Shortcut.SUPPORT);
+    u.setDisplayName(Shortcut.SUPPORT_DISPLAYNAME);
+    u.setProfilePicture(Shortcut.SUPPORT_PICTURE);
+    return u;
   }
 }

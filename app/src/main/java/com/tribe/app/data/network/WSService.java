@@ -509,7 +509,7 @@ import timber.log.Timber;
           if (!shortcutRealm.isOnline()) {
             liveCache.removeOnline(shortcutRealm.getId());
           } else if (shortcutRealm.isOnline()) liveCache.putOnline(shortcutRealm.getId());
-          userCache.updateShortcut(shortcutRealm);
+           userCache.updateShortcut(shortcutRealm);
         }));
 
     persistentSubscriptions.add(jsonToModel.onShortcutRemoved()

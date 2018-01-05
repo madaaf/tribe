@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.net.Uri;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -16,8 +19,11 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.ShortcutLastSeen;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Shortcut;
@@ -27,24 +33,42 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
-import com.tribe.app.presentation.mvp.view.ChatMVPView;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
+import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
+import com.tribe.app.presentation.utils.preferences.SupportRequestId;
+import com.tribe.app.presentation.utils.preferences.SupportUserId;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import com.zendesk.sdk.model.access.Identity;
+import com.zendesk.sdk.model.access.JwtIdentity;
+import com.zendesk.sdk.model.push.PushRegistrationResponse;
+import com.zendesk.sdk.network.impl.ZendeskConfig;
+import com.zendesk.service.ErrorResponse;
+import com.zendesk.service.ZendeskCallback;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -56,7 +80,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
  * Created by madaaflak on 03/10/2017.
  */
 
-public class RecyclerMessageView extends ChatMVPView {
+public class RecyclerMessageView extends IChat {
 
   private static final int MAX_DURATION_MIN_DELETE_MESSAGE = 60;
   private static final long ONE_HOUR_DURATION = 1000 * 60 * 60; //1000 ms * 60 secondes * 60
@@ -66,27 +90,34 @@ public class RecyclerMessageView extends ChatMVPView {
   private Context context;
   private LinearLayoutManager layoutManager;
   private MessageAdapter messageAdapter;
-
   private Shortcut shortcut;
 
-  private int counterMessageNotSend, type;
+  private int type;
   private boolean load = false, errorLoadingMessages = false;
   private List<Message> unreadMessage = new ArrayList<>();
   private String[] arrIds = null;
+  private String token;
 
   @BindView(R.id.recyclerViewMessageChat) RecyclerView recyclerView;
 
   @Inject User user;
+  @Inject AccessToken accessToken;
   @Inject MessagePresenter messagePresenter;
   @Inject DateUtils dateUtils;
   @Inject ScreenUtils screenUtils;
+  @Inject StateManager stateManager;
+  @Inject TagManager tagManager;
+  @Inject Navigator navigator;
+  @Inject @SupportRequestId Preference<String> supportIdPref;
+  @Inject @SupportIsUsed Preference<Set<String>> supportIsUsed;
+  @Inject @SupportUserId Preference<String> supportUserIdPref;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Integer> onScrollRecyclerView = PublishSubject.create();
   private PublishSubject<Boolean> shortcutLastSeenUpdated = PublishSubject.create();
 
   public RecyclerMessageView(@NonNull Context context) {
-    super(context);
+    super(context, null);
     this.context = context;
     initView();
   }
@@ -100,6 +131,116 @@ public class RecyclerMessageView extends ChatMVPView {
       this.type = ChatView.FROM_CHAT;
     }
     initView();
+  }
+
+  private void initZendesk() {
+    token = FirebaseInstanceId.getInstance().getToken();
+    Identity jwtUserIdentity = new JwtIdentity(accessToken.getAccessToken());
+    ZendeskConfig.INSTANCE.setIdentity(jwtUserIdentity);
+    enablePushZendesk();
+
+    if (haveRequestZendeskId()) {
+      Timber.i("old zendesk ticket :" + supportIdPref.get());
+      getCommentZendesk();
+    } else {
+      Timber.i("initZendesk supportUserIdPref: "
+          + supportUserIdPref.get()
+          + " ticket: "
+          + supportIdPref.get());
+    }
+  }
+
+  private boolean haveRequestZendeskId() {
+    return supportIdPref.get() != null && !supportIdPref.get().isEmpty();
+  }
+
+  private void setSupportTiping(boolean isTiping) {
+    User u = members.get(0);
+    u.setActive(isTiping);
+    u.setTyping(true);
+    u.setIsOnline(isTiping);
+    int pos = chatUserAdapter.getIndexOfUser(u);
+    chatUserAdapter.notifyItemChanged(pos, u);
+  }
+
+  int i = 0;
+
+  private void addMessageWithFakeAnimation(List<Message> list) {
+    Timber.e("addMessageWithFakeAnimation " + list.size() + " i:" + i + " " + list.get(0)
+        .getMessageContent());
+    setSupportTiping(true);
+    int seconde = (list.get(i).getMessageContent().length()) * 100;
+    seconde = (seconde < 1000) ? 1000 : seconde;
+    CountDownTimer countDownTimer = new CountDownTimer(seconde, 1000) {
+      public void onTick(long millisUntilFinished) {
+        Timber.e(("ON TOCK " + list.get(i).getMessageContent() + " " + millisUntilFinished / 1000));
+      }
+
+      public void onFinish() {
+        Timber.e("ON FINISH " + i + "  " + list.get(i).getMessageContent());
+        setSupportTiping(false);
+        messageAdapter.setItem(list.get(i));
+        notifyDataSetChanged();
+        int pos = chatUserAdapter.getIndexOfUser(members.get(0));
+        chatUserAdapter.notifyItemChanged(pos, members.get(0));
+        scrollListToBottom();
+        if (i < list.size() - 1) {
+          Handler handler = new Handler();
+          handler.postDelayed(() -> {
+            addMessageWithFakeAnimation(list);
+            i++;
+          }, 2000);
+        } else {
+          i = 0;
+        }
+      }
+    };
+
+    countDownTimer.cancel();
+    countDownTimer.start();
+  }
+
+  private void getCommentZendesk() {
+    Timber.i("getCommentZendesk ");
+    messagePresenter.getMessageZendesk();
+  }
+
+  private void addCommentZendesk(String typeMedia, String data, Uri uri) {
+    String comment = (uri != null) ? uri.toString() : data;
+    Timber.i("addCommentZendesk " + comment);
+    messagePresenter.addMessageZendesk(typeMedia, data, uri);
+  }
+
+  private void createZendeskRequest(String firstMessage) {
+    Timber.i("createZendeskRequest " + firstMessage);
+    messagePresenter.createRequestZendesk(firstMessage);
+  }
+
+  private void enablePushZendesk() {
+    Timber.i("enablePushZendesk ");
+    ZendeskConfig.INSTANCE.enablePushWithIdentifier(token,
+        new ZendeskCallback<PushRegistrationResponse>() {
+          @Override public void onSuccess(PushRegistrationResponse pushRegistrationResponse) {
+            Timber.i("onSuccess enablePushZendesk " + pushRegistrationResponse);
+          }
+
+          @Override public void onError(ErrorResponse errorResponse) {
+            Timber.e("onError enablePushZendesk " + errorResponse);
+          }
+        });
+  }
+
+  private void disablePushZendesk() {
+    Timber.i("disablePushZendesk ");
+    ZendeskConfig.INSTANCE.disablePush(token, new ZendeskCallback<Void>() {
+      @Override public void onSuccess(Void aVoid) {
+        Timber.i("success disable PushZendesk ");
+      }
+
+      @Override public void onError(ErrorResponse errorResponse) {
+        Timber.e("onError disable PushZendesk " + errorResponse.getReason());
+      }
+    });
   }
 
   protected void initDependencyInjector() {
@@ -176,7 +317,7 @@ public class RecyclerMessageView extends ChatMVPView {
                   if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_UNSEND)) {
                     messagePresenter.removeMessage(m);
                   } else if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_COPY)) {
-                    copyToClipboard(m.getContent());
+                    copyToClipboard(m.getMessageContent());
                   }
                 }
                 return null;
@@ -198,10 +339,46 @@ public class RecyclerMessageView extends ChatMVPView {
     messageAdapter.notifyDataSetChanged();
   }
 
+  private String getMessageSupport = "";
+
   public void onResumeView() {
     if (!messagePresenter.isAttached()) {
       messagePresenter.onViewAttached(this);
     }
+
+    if (!shortcut.isSupport()) {
+      context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
+          JsonUtils.arrayToJson(arrIds)));
+      messagePresenter.updateShortcutForUserIds(arrIds);
+      messagePresenter.getIsTyping();
+      messagePresenter.getIsTalking();
+      messagePresenter.getIsReading();
+    } else {
+      if (allowGetMessageSupport()) {
+        getMessageSupport = shortcut.getTypeSupport();
+        messagePresenter.getMessageSupport(shortcut.getTypeSupport()); // TODO SOEF
+      }
+    }
+  }
+
+  private boolean homeSupportIsAlreadyUsed() {
+    if (supportIsUsed.get() == null || supportIsUsed.get().isEmpty()) {
+      return false;
+    }
+    return supportIsUsed.get().contains(Conversation.TYPE_HOME);
+  }
+
+  private boolean suggestedGameIsAlreadyUsed() {
+    if (supportIsUsed.get() == null || supportIsUsed.get().isEmpty()) {
+      return false;
+    }
+    return supportIsUsed.get().contains(Conversation.TYPE_SUGGEST_GAME);
+  }
+
+  private boolean allowGetMessageSupport() {
+    return (!homeSupportIsAlreadyUsed() && shortcut.getTypeSupport().equals(Conversation.TYPE_HOME))
+        || (!suggestedGameIsAlreadyUsed() && shortcut.getTypeSupport()
+        .equals(Conversation.TYPE_SUGGEST_GAME));
   }
 
   @Override protected void onAttachedToWindow() {
@@ -242,7 +419,7 @@ public class RecyclerMessageView extends ChatMVPView {
         if (dy < 0) {
           if (layoutManager.findFirstVisibleItemPosition() < 5 && !load) {
             String lasteDate = messageAdapter.getMessage(0).getCreationDate();
-            messagePresenter.loadMessage(arrIds, lasteDate, null);
+            if (!shortcut.isSupport()) messagePresenter.loadMessage(arrIds, lasteDate, null);
             load = true;
           }
         }
@@ -272,17 +449,29 @@ public class RecyclerMessageView extends ChatMVPView {
   public void setArrIds(String[] arrIds) {
     this.arrIds = arrIds;
     messageAdapter.setArrIds(arrIds);
-
-    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateForMessage(),
-        dateUtils.getUTCDateWithDeltaAsString(-(2 * ONE_HOUR_DURATION)));
-    messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateForMessage(), null);
-    messagePresenter.onMessageReceivedFromDisk();
-    messagePresenter.onMessageRemovedFromDisk();
-    messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateForMessage(), null);
+    if (!shortcut.isSupport()) {
+      messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString(),
+          dateUtils.getUTCDateWithDeltaAsString(-(2 * ONE_HOUR_DURATION)));
+      messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString(), null);
+      messagePresenter.onMessageReceivedFromDisk();
+      messagePresenter.onMessageRemovedFromDisk();
+      messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateForMessage(), null);
+    } else {
+      messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString(), null);
+    }
   }
 
-  public void sendMessageToNetwork(String[] arrIds, String data, String type, int position) {
-    messagePresenter.createMessage(arrIds, data, type, position);
+  public void sendMessageToNetwork(String[] arrIds, String data, String type, int position,
+      Uri uri) {
+    if (!shortcut.isSupport()) {
+      messagePresenter.createMessage(arrIds, data, type, position);
+    } else {
+      if (!haveRequestZendeskId()) {
+        createZendeskRequest(data);
+      } else {
+        addCommentZendesk(type, data, uri);
+      }
+    }
   }
 
   public void sendMyMessageToAdapter(Message pendingMessage) {
@@ -297,6 +486,25 @@ public class RecyclerMessageView extends ChatMVPView {
       DateTime d2 = parser.parseDateTime(o2.getCreationDate());
       return d1.compareTo(d2);
     });
+  }
+
+  private void sortMessageListZendesk(List<Message> list) {
+    Collections.sort(list, (o1, o2) -> {
+      Date d2 = dateUtils.stringDateToDateMessage(o1.getCreationDate());
+      Date d1 = dateUtils.stringDateToDateMessage(o2.getCreationDate());
+      return d2.compareTo(d1);
+    });
+  }
+
+  public void onStartRecording() {
+    messageAdapter.onStartRecording();
+
+    layoutManager.findViewByPosition(0);
+  }
+
+  public void setShortcut(Shortcut shortcut) {
+    this.shortcut = shortcut;
+    if (shortcut.isSupport()) initZendesk();
   }
 
   /**
@@ -352,9 +560,65 @@ public class RecyclerMessageView extends ChatMVPView {
     load = false;
   }
 
-  @Override public void successLoadingMessageDisk(List<Message> messages) {
+  private boolean supportAuthorIdIsMe(Message m) {
+    if (m.getSupportAuthorId() != null && m.getSupportAuthorId().equals(supportUserIdPref.get())) {
+      Timber.e("getSupportAuthorId " + m.getSupportAuthorId());
+    }
+    return m.getSupportAuthorId() != null && m.getSupportAuthorId().equals(supportUserIdPref.get());
+  }
+
+  @Override public void successMessageSupport(List<Message> messages) {
+    Timber.i("onSuccess load message support from static api " + messages.size());
+    addMessageWithFakeAnimation(messages);
+    PreferencesUtils.addToSet(supportIsUsed, shortcut.getTypeSupport());
+  }
+
+  @Override public void successLoadingMessageDisk(List<Message> messages) { // TODO SOEF
     Timber.i("successLoadingMessageDisk " + messages.size());
-    if (errorLoadingMessages || !successLoadingMessage) {
+    unreadMessage.clear();
+    if (shortcut.isSupport()) {
+      boolean addAnimation = false;
+      for (Message m : messages) {
+        if (messageAdapter.getItems().isEmpty()) {
+          unreadMessage.add(m);
+          addAnimation = false;
+        } else if ((!messageAdapter.getItems().contains(m)
+            && !messageAdapter.getItems().isEmpty()
+            && !supportAuthorIdIsMe(m))) {
+          unreadMessage.add(m);
+          addAnimation = true;
+        }
+      }
+
+      List<Message> unreadMessageCopie = new ArrayList<>();
+      unreadMessageCopie.addAll(unreadMessage);
+
+      if (getMessageSupport.equals(Conversation.TYPE_SUGGEST_GAME)) {
+        for (Message m : unreadMessageCopie) {
+          if (m.getId().startsWith(Shortcut.SUPPORT + "_" + Conversation.TYPE_SUGGEST_GAME)) {
+            unreadMessage.remove(m);
+          }
+        }
+      } else if (getMessageSupport.equals(Conversation.TYPE_HOME)) {
+        for (Message m : unreadMessageCopie) {
+          if (m.getId().startsWith(Shortcut.SUPPORT + "_" + Conversation.TYPE_HOME)) {
+            unreadMessage.remove(m);
+          }
+        }
+      }
+
+      if (!unreadMessage.isEmpty()) {
+        sortMessageList(unreadMessage);
+        if (!addAnimation) {
+          messageAdapter.setItems(unreadMessage, messageAdapter.getItemCount());
+        } else {
+          addMessageWithFakeAnimation(unreadMessage);
+        }
+        scrollListToBottom();
+      }
+    }
+
+    if (!shortcut.isSupport() && (errorLoadingMessages || !successLoadingMessage)) {
       Timber.i("message disk displayed " + messages.size());
       messageAdapter.setItems(messages, 0);
       scrollListToBottom();
@@ -367,20 +631,26 @@ public class RecyclerMessageView extends ChatMVPView {
     messageAdapter.updateItem(messageAdapter.getItemCount() - 1, message);
   }
 
+  @Override public void successAddMessageZendeskSubscriber() {
+    Timber.i("successAddMessageZendeskSubscriber ");
+    Message m = messageAdapter.getItem(messageAdapter.getItemCount() - 1);
+    messageAdapter.updateItem(messageAdapter.getItemCount() - 1, m);
+  }
+
   /**
    * ERROR NETWORK
    */
 
   @Override public void errorLoadingMessageDisk() {
-    Timber.w("errorLoadingMessageDisk");
+    Timber.e("errorLoadingMessageDisk");
   }
 
   @Override public void errorMessageCreation(int position) {
-    counterMessageNotSend++;
+
   }
 
   @Override public void errorLoadingMessage() {
-    Timber.w("errorLoadingMessage");
+    Timber.e("errorLoadingMessage");
     errorLoadingMessages = true;
   }
 
@@ -399,14 +669,6 @@ public class RecyclerMessageView extends ChatMVPView {
 
   @Override public void successRemovedMessage(Message m) {
     messageAdapter.removeItem(m);
-  }
-
-  public Observable<Integer> onScrollRecyclerView() {
-    return onScrollRecyclerView;
-  }
-
-  public void setShortcut(Shortcut shortcut) {
-    this.shortcut = shortcut;
   }
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
@@ -441,9 +703,75 @@ public class RecyclerMessageView extends ChatMVPView {
 
   }
 
-  public void onStartRecording() {
-    messageAdapter.onStartRecording();
+  @Override public void isTypingEvent(String userId, boolean typeEvent) {
+    if (userId.equals(user.getId())) {
+      return;
+    }
+    for (User u : members) {
+      if (u.getId().equals(userId)) {
+        if (!u.isActive()) {
+          u.setActive(true);
+          u.setTyping(typeEvent);
+          u.setIsOnline(true);
+          if (showOnlineUsers()) {
+            expendRecyclerViewGrp();
+          }
+          int pos = chatUserAdapter.getIndexOfUser(u);
+          chatUserAdapter.notifyItemChanged(pos, u);
+        }
 
-    layoutManager.findViewByPosition(0);
+        if (subscriptionList.get(userId) == null) {
+          Subscription subscribe = Observable.interval(10, TimeUnit.SECONDS)
+              .timeInterval()
+              .observeOn(AndroidSchedulers.mainThread())
+              .onBackpressureDrop()
+              .subscribe(avoid -> {
+                // Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
+                if (u.isActive()) {
+                  u.setActive(false);
+                  if (showOnlineUsers()) {
+                    shrankRecyclerViewGrp();
+                  }
+                  int i = chatUserAdapter.getIndexOfUser(u);
+                  chatUserAdapter.notifyItemChanged(i, u);
+                }
+              });
+
+          subscriptionList.put(userId, subscribe);
+          subscriptions.add(subscribe);
+        }
+      }
+    }
+  }
+
+  @Override public void isReadingUpdate(String userId) {
+    for (ShortcutLastSeen shortcutLastSeen : shortcut.getShortcutLastSeen()) {
+      if (shortcutLastSeen.getUserId().equals(userId)) {
+        shortcutLastSeen.setDate(dateUtils.getUTCDateAsString());
+      }
+    }
+    setShortcut(shortcut);
+    notifyDataSetChanged();
+  }
+
+  private void shrankRecyclerViewGrp() {
+    //   containerUsers.setVisibility(GONE);
+  }
+
+  private void expendRecyclerViewGrp() {
+    //  containerUsers.setVisibility(VISIBLE);
+  }
+
+  private boolean showOnlineUsers() {
+    return members.size() < 2 && fromShortcut == null;
+  }
+
+  public Observable<Integer> onScrollRecyclerView() {
+    return onScrollRecyclerView;
+  }
+
+  public void onReceiveZendeskNotif() {
+    Timber.i("onReceiveZendeskNotif");
+    getCommentZendesk();
   }
 }

@@ -57,6 +57,10 @@ public abstract class Recipient implements Serializable, BaseListInterface, Home
     return position;
   }
 
+  public boolean isSupport() {
+    return getId().equals(Shortcut.SUPPORT);
+  }
+
   public static int nullSafeComparator(final Recipient one, final Recipient two) {
     int res = ((Boolean) two.isLive()).compareTo(one.isLive());
     if (res != 0) return res;

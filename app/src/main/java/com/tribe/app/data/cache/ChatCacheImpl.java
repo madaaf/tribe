@@ -1,9 +1,10 @@
 package com.tribe.app.data.cache;
 
 import android.content.Context;
-import com.tribe.app.data.realm.ImageRealm;
+import com.tribe.app.data.realm.MediaRealm;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.tribelivesdk.util.JsonUtils;
@@ -99,6 +100,10 @@ public class ChatCacheImpl implements ChatCache {
     }
   }
 
+  @Override public void putMessagesSupport(List<Message> messages) {
+
+  }
+
   @Override public void putMessages(RealmList<MessageRealm> messages, String userIds) {
     Realm obsRealm = Realm.getDefaultInstance();
     try {
@@ -114,7 +119,7 @@ public class ChatCacheImpl implements ChatCache {
           } else {
             m = messageRealmDB;
           }
-
+          m.setSupportAuthorId(message.getSupportAuthorId());
           m.setLocalId(userIds);
           m.set__typename(message.get__typename());
           m.setData(message.getData());
@@ -122,34 +127,36 @@ public class ChatCacheImpl implements ChatCache {
           m.setCreated_at(message.getCreated_at());
 
           if (message.getOriginal() != null) {
-            ImageRealm imageRealmDB = realm1.where(ImageRealm.class)
+            MediaRealm mediaRealmDB = realm1.where(MediaRealm.class)
                 .equalTo("url", message.getOriginal().getUrl())
                 .findFirst();
+            mediaRealmDB.setDuration(message.getOriginal().getDuration());
 
-            if (imageRealmDB == null) {
-              imageRealmDB = realm1.createObject(ImageRealm.class, message.getOriginal().getUrl());
-              imageRealmDB.setFilesize(message.getOriginal().getFilesize());
-              imageRealmDB.setHeight(message.getOriginal().getHeight());
-              imageRealmDB.setWidth(message.getOriginal().getWidth());
+            if (mediaRealmDB == null) {
+              mediaRealmDB = realm1.createObject(MediaRealm.class, message.getOriginal().getUrl());
+              mediaRealmDB.setFilesize(message.getOriginal().getFilesize());
+              mediaRealmDB.setHeight(message.getOriginal().getHeight());
+              mediaRealmDB.setWidth(message.getOriginal().getWidth());
+              mediaRealmDB.setDuration(message.getOriginal().getDuration());
             }
-            m.setOriginal(imageRealmDB);
+            m.setOriginal(mediaRealmDB);
           }
 
           if (message.getAlts() != null) {
-            RealmList<ImageRealm> alts = new RealmList<>();
+            RealmList<MediaRealm> alts = new RealmList<>();
 
-            for (ImageRealm imageRealm : message.getAlts()) {
+            for (MediaRealm mediaRealm : message.getAlts()) {
 
-              ImageRealm imageRealmDB =
-                  realm1.where(ImageRealm.class).equalTo("url", imageRealm.getUrl()).findFirst();
+              MediaRealm mediaRealmDB =
+                  realm1.where(MediaRealm.class).equalTo("url", mediaRealm.getUrl()).findFirst();
 
-              if (imageRealmDB == null) {
-                imageRealmDB = realm1.createObject(ImageRealm.class, imageRealm.getUrl());
-                imageRealmDB.setFilesize(imageRealm.getFilesize());
-                imageRealmDB.setHeight(imageRealm.getHeight());
-                imageRealmDB.setWidth(imageRealm.getWidth());
+              if (mediaRealmDB == null) {
+                mediaRealmDB = realm1.createObject(MediaRealm.class, mediaRealm.getUrl());
+                mediaRealmDB.setFilesize(mediaRealm.getFilesize());
+                mediaRealmDB.setHeight(mediaRealm.getHeight());
+                mediaRealmDB.setWidth(mediaRealm.getWidth());
               }
-              alts.add(imageRealmDB);
+              alts.add(mediaRealmDB);
             }
             m.setAlts(alts);
           }
@@ -233,9 +240,14 @@ public class ChatCacheImpl implements ChatCache {
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
-    RealmResults<MessageRealm> ok = realm.where(MessageRealm.class)
-        .equalTo("localId", JsonUtils.arrayToJson(userIds))
-        .findAll();
+    String localIds = "";
+    if (userIds[0].equals(Shortcut.SUPPORT)) {
+      localIds = Shortcut.SUPPORT;
+    } else {
+      localIds = JsonUtils.arrayToJson(userIds);
+    }
+    RealmResults<MessageRealm> ok =
+        realm.where(MessageRealm.class).equalTo("localId", localIds).findAll();
 
     return ok.asObservable()
         .filter(RealmResults::isLoaded)

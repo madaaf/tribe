@@ -1,15 +1,23 @@
 package com.tribe.app.data.repository.chat.datasource;
 
 import android.content.Context;
+import android.net.Uri;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
+import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.presentation.utils.RXZendesk.RXZendesk;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
+import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import io.realm.RealmList;
+import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
 import rx.functions.Action1;
@@ -24,13 +32,38 @@ public class CloudChatDataStore implements ChatDataStore {
   private final TribeApi tribeApi;
   private ChatCache chatCache;
   private UserCache userCache;
+  private FileApi fileApi;
+  private MessageRealmDataMapper messageRealmDataMapper;
+  private final RXZendesk rxZendesk;
 
-  public CloudChatDataStore(Context context, TribeApi tribeApi, ChatCache chatCache,
-      UserCache userCache) {
+  public CloudChatDataStore(Context context, TribeApi tribeApi, FileApi fileApi,
+      ChatCache chatCache, UserCache userCache, MessageRealmDataMapper messageRealmDataMapper,
+      RXZendesk rxZendesk) {
     this.context = context;
     this.tribeApi = tribeApi;
     this.chatCache = chatCache;
     this.userCache = userCache;
+    this.fileApi = fileApi;
+    this.messageRealmDataMapper = messageRealmDataMapper;
+    this.rxZendesk = rxZendesk;
+  }
+
+  @Override public Observable<List<Conversation>> getMessageSupport(String typeSupport) {
+    return fileApi.getMessageSupport().doOnNext(conversationList -> {
+      RealmList<MessageRealm> list = new RealmList<>();
+
+      List<Message> messages = new ArrayList<>();
+      for (Conversation c : conversationList) {
+        if (c.getId().equals(typeSupport)) {
+          messages = c.getMessages();
+        }
+      }
+
+      for (Message message : messages) {
+        list.add(messageRealmDataMapper.transform(message));
+      }
+      chatCache.putMessages(list, Shortcut.SUPPORT);
+    });
   }
 
   @Override
@@ -66,6 +99,22 @@ public class CloudChatDataStore implements ChatDataStore {
               JsonUtils.arrayToJson(userIds), dateBefore, dateAfter))
           .doOnNext(messageRealm -> refactorMessages.call(userIds));
     }
+  }
+
+  @Override public Observable<List<Message>> getMessageZendesk() {
+    return rxZendesk.getMessageZendesk().doOnNext(comments -> {
+      RealmList<MessageRealm> messageRealms = new RealmList<>();
+      messageRealms.addAll(messageRealmDataMapper.transformMessages(comments));
+      chatCache.putMessages(messageRealms, Shortcut.SUPPORT);
+    });
+  }
+
+  @Override public Observable<Boolean> addMessageZendesk(String typeMedia, String data, Uri uri) {
+    return rxZendesk.addMessageZendesk(typeMedia, data, uri);
+  }
+
+  @Override public Observable createRequestZendesk(String data) {
+    return rxZendesk.createRequestZendesk(data);
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {

@@ -42,7 +42,6 @@ import com.tribe.app.R;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
-import com.tribe.app.domain.ShortcutLastSeen;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
@@ -52,7 +51,6 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
-import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
@@ -74,7 +72,7 @@ import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
-import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Media;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
@@ -109,7 +107,7 @@ import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_
  * Created by madaaflak on 05/09/2017.
  */
 
-public class ChatView extends ChatMVPView {
+public class ChatView extends IChat {
 
   private final static int INTERVAL_IM_TYPING = 2;
   protected static int ANIM_DURATION = 300;
@@ -118,6 +116,7 @@ public class ChatView extends ChatMVPView {
 
   public final static int FROM_CHAT = 0;
   public final static int FROM_LIVE = 1;
+
   private final static String TYPE_NORMAL = "TYPE_NORMAL";
   private final static String TYPE_LIVE = "TYPE_LIVE";
   private final static String TYPE_ONLINE = "TYPE_ONLINE";
@@ -125,9 +124,8 @@ public class ChatView extends ChatMVPView {
   private LayoutInflater inflater;
   private Unbinder unbinder;
   private Context context;
-  private ChatUserAdapter chatUserAdapter;
+
   private LinearLayoutManager layoutManagerGrp;
-  private List<User> members = new ArrayList<>();
   private ChatView chatView;
   private String editTextString, typePulseAnim = TYPE_NORMAL;
   protected int type, widthRefExpended, widthRefInit, containerUsersHeight, refMaxExpendedWidth,
@@ -139,7 +137,6 @@ public class ChatView extends ChatMVPView {
 
   protected String fileName = null;
   public Float audioDuration = 0f;
-  private Shortcut fromShortcut = null;
   private boolean hideVideoCallBtn = false;
   private Map<String, Object> tagMap;
   private String section, gesture;
@@ -194,12 +191,11 @@ public class ChatView extends ChatMVPView {
   @Inject TagManager tagManager;
 
   protected CompositeSubscription subscriptions = new CompositeSubscription();
-  private Map<String, Subscription> subscriptionList = new HashMap<>();
 
   private RxPermissions rxPermissions;
 
   public ChatView(@NonNull Context context, int type) {
-    super(context);
+    super(context, null);
     this.type = type;
     initView(context);
   }
@@ -301,6 +297,7 @@ public class ChatView extends ChatMVPView {
         String shotcutId = (shortcut != null) ? shortcut.getId() : null;
         Timber.e("MEMBERS NULL IN SHORTCUT " + shotcutId);
       }
+
       title.setTextColor(Color.BLACK);
     }
   }
@@ -310,12 +307,6 @@ public class ChatView extends ChatMVPView {
       return;
     }
     recyclerView.onResumeView();
-    context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
-        JsonUtils.arrayToJson(arrIds)));
-    messagePresenter.updateShortcutForUserIds(arrIds);
-    messagePresenter.getIsTyping();
-    messagePresenter.getIsTalking();
-    messagePresenter.getIsReading();
   }
 
   public void dispose() {
@@ -405,6 +396,7 @@ public class ChatView extends ChatMVPView {
         }
 
         setTypeChatUX();
+        setTypeChatUXSupport();
 
        /* if (showOnlineUsers()) {
           containerUsers.setVisibility(VISIBLE);
@@ -413,11 +405,6 @@ public class ChatView extends ChatMVPView {
         }*/
       }
     });
-  }
-
-  private boolean showOnlineUsers() {
-    return true;
-    // return members.size() < 2 && fromShortcut == null; // TODO
   }
 
   private void initVoiceCallPerm(SwipeDetector moveListener) {
@@ -435,6 +422,25 @@ public class ChatView extends ChatMVPView {
             stateManager.addTutorialKey(StateManager.NEVER_ASK_AGAIN_MICRO_PERMISSION);
           }
         }));
+  }
+
+  private void setTypeChatUXSupport() {
+    if (isSupport()) {
+      voiceNoteBtn.setTranslationX(
+          editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(5)
+              + videoCallBtn.getWidth());
+      pictoVoiceNote.setTranslationX(
+          voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
+
+      widthRefInit = refInit.getWidth();
+      videoCallBtn.getLayoutParams().height = 0;
+      videoCallBtn.getLayoutParams().width = 0;
+      videoCallBtn.setImageDrawable(null);
+      layoutPulse.setVisibility(GONE);
+
+      RelativeLayout.LayoutParams op = (RelativeLayout.LayoutParams) editText.getLayoutParams();
+      op.addRule(RelativeLayout.START_OF, btnSendLikeContainer.getId());
+    }
   }
 
   private void setTypeChatUX() {
@@ -487,21 +493,23 @@ public class ChatView extends ChatMVPView {
             "app/uploads/" + user.getId() + "/" + dateUtils.getUTCDateAsString() + suffix);
         uploadTask = riversRef.putStream(inputStream);
       } else if (type.equals(MESSAGE_AUDIO)) {
-        Uri file = Uri.fromFile(new File(audioFile));
+        uri = Uri.fromFile(new File(audioFile));
         StorageReference riversRef = storageRef.child("app/uploads/"
             + user.getId()
             + "/"
             + dateUtils.getUTCDateAsString()
-            + file.getLastPathSegment());
-        uploadTask = riversRef.putFile(file);
+            + uri.getLastPathSegment());
+        uploadTask = riversRef.putFile(uri);
       }
 
       String finalNetType = netType;
+      Uri finalUri = uri;
       uploadTask.addOnFailureListener(exception -> {
         Timber.e(exception.getMessage());
       }).addOnSuccessListener(taskSnapshot -> {
         Uri downloadUrl = taskSnapshot.getDownloadUrl();
-        recyclerView.sendMessageToNetwork(arrIds, downloadUrl.toString(), finalNetType, position);
+        recyclerView.sendMessageToNetwork(arrIds, downloadUrl.toString(), finalNetType, position,
+            finalUri); // TODO SOEF
       });
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -517,10 +525,6 @@ public class ChatView extends ChatMVPView {
       } else if (blurBackEditText.getAlpha() != 0f) {
         blurBackEditText.animate().alpha(0f).setDuration(ANIM_DURATION_FAST).start();
       }
-    }));
-
-    subscriptions.add(chatUserAdapter.onQuickChat().subscribe(id -> {
-      messagePresenter.quickShortcutForUserIds(id);
     }));
 
     subscriptions.add(RxView.clicks(uploadImageBtn)
@@ -602,6 +606,10 @@ public class ChatView extends ChatMVPView {
             switchLikeToSendBtn(true);
           }
         }));
+
+    subscriptions.add(chatUserAdapter.onQuickChat().subscribe(id -> {
+      messagePresenter.quickShortcutForUserIds(id);
+    }));
   }
 
   private void switchLikeToSendBtn(boolean fromLikeToSend) {
@@ -684,8 +692,12 @@ public class ChatView extends ChatMVPView {
     videoCallBtn.setImageDrawable(null);
   }
 
+  private boolean isSupport() {
+    return (shortcut != null && shortcut.isSupport());
+  }
+
   private void expendEditText() {
-    if (type == FROM_LIVE) {
+    if (type == FROM_LIVE || isSupport()) {
       return;
     }
     btnSendLikeContainer.animate()
@@ -713,7 +725,7 @@ public class ChatView extends ChatMVPView {
   }
 
   private void shrankEditText() {
-    if (type == FROM_LIVE) {
+    if (type == FROM_LIVE || isSupport()) {
       return;
     }
     btnSendLikeContainer.animate()
@@ -768,7 +780,7 @@ public class ChatView extends ChatMVPView {
       case MESSAGE_IMAGE:
         realmType = MessageRealm.IMAGE;
         message = new MessageImage();
-        Image o = new Image();
+        Media o = new Media();
         o.setUrl(uri.toString());
         ((MessageImage) message).setOriginal(o);
         ((MessageImage) message).setUri(uri);
@@ -777,7 +789,7 @@ public class ChatView extends ChatMVPView {
         realmType = MessageRealm.AUDIO;
         message = new MessageAudio();
         // ((MessageAudio) message).setTime(content);
-        Image m = new Image();
+        Media m = new Media();
         m.setUrl(fileName);
         m.setDuration(audioDuration);
         ((MessageAudio) message).setOriginal(m);
@@ -795,7 +807,7 @@ public class ChatView extends ChatMVPView {
       sendMedia(uri, fileName, 0, type);
     } else {
       String replaced = content.replace("\"", "“");
-      recyclerView.sendMessageToNetwork(arrIds, replaced, realmType, 0);
+      recyclerView.sendMessageToNetwork(arrIds, replaced, realmType, 0, null);
     }
   }
 
@@ -837,7 +849,7 @@ public class ChatView extends ChatMVPView {
       chatShortcutData.set(jsonString);
     }
 
-    if (subscriptions != null && subscriptions.hasSubscriptions()) {
+    if (subscriptionList != null && subscriptions != null && subscriptions.hasSubscriptions()) {
 
       Iterator it = subscriptionList.entrySet().iterator();
       while (it.hasNext()) {
@@ -966,8 +978,10 @@ public class ChatView extends ChatMVPView {
     return false;
   }
 
-  private void setPulseAnimation(String type) {
-    if (hideVideoCallBtn || this.type == (FROM_LIVE)) return;
+  public void setPulseAnimation(String type) {
+    if (hideVideoCallBtn || this.type == FROM_LIVE || isSupport()) {
+      return;
+    }
     this.typePulseAnim = type;
     switch (type) {
       case TYPE_NORMAL:
@@ -993,91 +1007,7 @@ public class ChatView extends ChatMVPView {
     }
   }
 
-  private void shrankRecyclerViewGrp() {
-    //   containerUsers.setVisibility(GONE);
-  }
-
-  private void expendRecyclerViewGrp() {
-    //  containerUsers.setVisibility(VISIBLE);
-  }
-
-  @Override public void isTypingEvent(String userId, boolean typeEvent) {
-    if (userId.equals(user.getId())) {
-      return;
-    }
-    for (User u : members) {
-      if (u.getId().equals(userId)) {
-        if (!u.isActive()) {
-          u.setActive(true);
-          u.setTyping(typeEvent);
-          u.setIsOnline(true);
-          if (showOnlineUsers()) {
-            expendRecyclerViewGrp();
-          }
-          int pos = chatUserAdapter.getIndexOfUser(u);
-          chatUserAdapter.notifyItemChanged(pos, u);
-        }
-
-        if (subscriptionList.get(userId) == null) {
-          Subscription subscribe = Observable.interval(10, TimeUnit.SECONDS)
-              .timeInterval()
-              .observeOn(AndroidSchedulers.mainThread())
-              .onBackpressureDrop()
-              .subscribe(avoid -> {
-                // Timber.w("CLOCK ==> : " + avoid.getValue() + " " + u.toString());
-                if (u.isActive()) {
-                  u.setActive(false);
-                  if (showOnlineUsers()) {
-                    shrankRecyclerViewGrp();
-                  }
-                  int i = chatUserAdapter.getIndexOfUser(u);
-                  chatUserAdapter.notifyItemChanged(i, u);
-                }
-              });
-
-          subscriptionList.put(userId, subscribe);
-          subscriptions.add(subscribe);
-        }
-      }
-    }
-  }
-
-  @Override public void onShortcutUpdate(Shortcut shortcut) {
-    boolean isOnline = false;
-    boolean isLive = false;
-    for (User u : shortcut.getMembers()) {
-      if (u.isOnline()) isOnline = true;
-    }
-    chatUserAdapter.setItems(shortcut.getMembers());
-
-    if (shortcut.isLive()) {
-      setPulseAnimation(TYPE_LIVE);
-    } else if (shortcut.isOnline() || isOnline) {
-      setPulseAnimation(TYPE_ONLINE);
-    } else {
-      setPulseAnimation(TYPE_NORMAL);
-    }
-    recyclerView.setShortcut(shortcut);
-    recyclerView.notifyDataSetChanged();
-  }
-
   @Override public void errorShortcutUpdate() {
-  }
-
-  @Override public void isReadingUpdate(String userId) {
-    for (ShortcutLastSeen shortcutLastSeen : shortcut.getShortcutLastSeen()) {
-      if (shortcutLastSeen.getUserId().equals(userId)) {
-        shortcutLastSeen.setDate(dateUtils.getUTCDateAsString());
-      }
-    }
-    recyclerView.setShortcut(shortcut);
-    recyclerView.notifyDataSetChanged();
-  }
-
-  @Override public void onQuickShortcutUpdated(Shortcut shortcutQuickChat) {
-    tagManager.trackEvent(TagManagerUtils.Shortcut);
-    navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut,
-        TagManagerUtils.GESTURE_TAP, TagManagerUtils.SECTION_SHORTCUT, false);
   }
 
   public void setFromShortcut(Shortcut fromShortcut) {
@@ -1119,6 +1049,25 @@ public class ChatView extends ChatMVPView {
     return super.dispatchKeyEvent(event);
   }
 
+  @Override public void onShortcutUpdate(Shortcut shortcut) {
+    boolean isOnline = false;
+    boolean isLive = false;
+    for (User u : shortcut.getMembers()) {
+      if (u.isOnline()) isOnline = true;
+    }
+    chatUserAdapter.setItems(shortcut.getMembers());
+
+    if (shortcut.isLive()) {
+      setPulseAnimation(TYPE_LIVE);
+    } else if (shortcut.isOnline() || isOnline) {
+      setPulseAnimation(TYPE_ONLINE);
+    } else {
+      setPulseAnimation(TYPE_NORMAL);
+    }
+    recyclerView.setShortcut(shortcut);
+    recyclerView.notifyDataSetChanged();
+  }
+
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
 
   }
@@ -1153,7 +1102,17 @@ public class ChatView extends ChatMVPView {
 
   }
 
+  @Override public void onQuickShortcutUpdated(Shortcut shortcutQuickChat) {
+    tagManager.trackEvent(TagManagerUtils.Shortcut);
+    navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut,
+        TagManagerUtils.GESTURE_TAP, TagManagerUtils.SECTION_SHORTCUT, false);
+  }
+
   public void onStartRecording() {
     recyclerView.onStartRecording();
+  }
+
+  public void onReceiveZendeskNotif() {
+    recyclerView.onReceiveZendeskNotif();
   }
 }

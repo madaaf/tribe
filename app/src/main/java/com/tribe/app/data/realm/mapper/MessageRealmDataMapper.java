@@ -1,8 +1,8 @@
 package com.tribe.app.data.realm.mapper;
 
-import com.tribe.app.data.realm.ImageRealm;
+import com.tribe.app.data.realm.MediaRealm;
 import com.tribe.app.data.realm.MessageRealm;
-import com.tribe.app.presentation.view.widget.chat.model.Image;
+import com.tribe.app.presentation.view.widget.chat.model.Media;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
@@ -46,11 +46,15 @@ import javax.inject.Singleton;
           break;
         case Message.MESSAGE_IMAGE:
           message = new MessageImage(messageRealm.getId());
-          // ImageRealm o = messageRealm.getOriginal();
-          List<ImageRealm> ressources = messageRealm.getAlts();
-          Image o = userRealmDataMapper.transformOriginalRealmList(ressources, false);
-          ((MessageImage) message).setOriginal(o);
-
+          // MediaRealm o = messageRealm.getOriginal();
+          List<MediaRealm> ressources = messageRealm.getAlts();
+          if (!ressources.isEmpty()) {
+            Media o = userRealmDataMapper.transformOriginalRealmList(ressources, false);
+            ((MessageImage) message).setOriginal(o);
+          } else {
+            MediaRealm o = messageRealm.getOriginal();
+            ((MessageImage) message).setOriginal(userRealmDataMapper.transform(o));
+          }
             /*((MessageImage) message).setRessources(
               userRealmDataMapper.transformOriginalRealmList(ressources));*/
           message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor(), true));
@@ -62,15 +66,20 @@ import javax.inject.Singleton;
           break;
         case Message.MESSAGE_AUDIO:
           message = new MessageAudio(messageRealm.getId());
-          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor(), true));
-          List<ImageRealm> r = messageRealm.getAlts();
-          Image i = userRealmDataMapper.transformOriginalRealmList(r, true);
-          ((MessageAudio) message).setOriginal(i);
-          //((MessageAudio) message).setDuration();
+          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor()));
+          List<MediaRealm> r = messageRealm.getAlts();
+          if (!r.isEmpty()) {
+            Media i = userRealmDataMapper.transformOriginalRealmList(r, true);
+            ((MessageAudio) message).setOriginal(i);
+          } else {
+            Media i = userRealmDataMapper.transform(messageRealm.getOriginal());
+            ((MessageAudio) message).setOriginal(i);
+          }
           break;
       }
       if (message != null) {
         message.setType(messageRealm.get__typename());
+        message.setSupportAuthorId(messageRealm.getSupportAuthorId());
         message.setCreationDate(messageRealm.getCreated_at());
       }
     }
@@ -96,12 +105,13 @@ import javax.inject.Singleton;
     return messageList;
   }
 
-  private MessageRealm transform(Message message) {
+  public MessageRealm transform(Message message) {
     MessageRealm messageRealm = null;
     if (message != null) {
       messageRealm = new MessageRealm(message.getId());
       messageRealm.setAuthor(userRealmDataMapper.transform(message.getAuthor(), true));
       messageRealm.set__typename(message.getType());
+      messageRealm.setSupportAuthorId(message.getSupportAuthorId());
       messageRealm.setCreated_at(message.getCreationDate());
 
       switch (message.getType()) {
@@ -112,9 +122,9 @@ import javax.inject.Singleton;
           messageRealm.setData(((MessageEmoji) message).getEmoji());
           break;
         case Message.MESSAGE_IMAGE:
-          Image o = ((MessageImage) message).getOriginal();
+          Media o = ((MessageImage) message).getOriginal();
           messageRealm.setOriginal(userRealmDataMapper.transform(o));
-          //List<Image> ressources = ((MessageImage) message).getRessources();
+          //List<Media> ressources = ((MessageImage) message).getRessources();
           //messageRealm.setAlts(userRealmDataMapper.transformOriginalList(ressources));
           break;
         case Message.MESSAGE_EVENT:
@@ -123,9 +133,9 @@ import javax.inject.Singleton;
           break;
 
         case Message.MESSAGE_AUDIO:
-          Image o2 = ((MessageImage) message).getOriginal();
+          Media o2 = ((MessageAudio) message).getOriginal();
           messageRealm.setOriginal(userRealmDataMapper.transform(o2));
-          // messageRealm.setData(((MessageAudio) message).getEmoji());
+
           break;
       }
     }

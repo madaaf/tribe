@@ -4,24 +4,26 @@ import android.graphics.Canvas;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Pair;
+import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.viewholder.RecipientHomeViewHolder;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
-public class HomeListTouchHelperCallback extends ItemTouchHelper.Callback {
+public class HomeListTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
 
   public static final float ALPHA_FULL = 1.0f;
 
-  private final ItemTouchHelperAdapter adapter;
+  private final HomeListAdapter adapter;
 
   // OBSERVABLES
   private PublishSubject<Pair<Integer, Float>> onDxChange = PublishSubject.create();
   private PublishSubject<Integer> onSwipedItem = PublishSubject.create();
 
-  public HomeListTouchHelperCallback(ItemTouchHelperAdapter adapter) {
+  public HomeListTouchHelperCallback(int dragDirs, int swipeDirs, HomeListAdapter adapter) {
+    super(dragDirs, swipeDirs);
     this.adapter = adapter;
   }
-
+  
   @Override public boolean isLongPressDragEnabled() {
     return false;
   }
@@ -34,6 +36,10 @@ public class HomeListTouchHelperCallback extends ItemTouchHelper.Callback {
   public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
     final int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
     final int swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
+
+    if (viewHolder.getAdapterPosition() == adapter.getSupportPosition()) {
+      return makeMovementFlags(0, 0);
+    }
     return makeMovementFlags(dragFlags, swipeFlags);
   }
 

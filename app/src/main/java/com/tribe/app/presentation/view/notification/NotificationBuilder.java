@@ -1,9 +1,7 @@
 package com.tribe.app.presentation.view.notification;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
@@ -34,7 +32,6 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
-import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import java.util.Date;
 import java.util.List;
@@ -65,6 +62,12 @@ import javax.inject.Singleton;
 
   public void sendBundledNotification(RemoteMessage remoteMessage) {
     NotificationPayload notificationPayload = getPayload(remoteMessage);
+
+    if (notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
+      Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
+      intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD, notificationPayload);
+      application.sendBroadcast(intentUnique);
+    }
 
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
       if (notificationPayload.getBadge() > 0) {
@@ -163,6 +166,7 @@ import javax.inject.Singleton;
     return builder.build();
   }
 
+
   private boolean showMessageNotification(Context context,
       LiveNotificationView liveNotificationView, NotificationPayload notificationPayload) {
     if (liveNotificationView.getContainer() != null) {
@@ -220,6 +224,7 @@ import javax.inject.Singleton;
     }
     return true;
   }
+
 
   private PendingIntent getIntentFromPayload(NotificationPayload payload) {
     Class pendingClass = getClassFromPayload(payload);

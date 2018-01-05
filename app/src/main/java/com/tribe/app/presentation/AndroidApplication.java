@@ -44,6 +44,7 @@ import com.tribe.tribelivesdk.filters.Filter;
 import com.tribe.tribelivesdk.filters.lut3d.FilterManager;
 import com.tribe.tribelivesdk.filters.lut3d.LUT3DFilter;
 import com.tribe.tribelivesdk.game.GameManager;
+import com.zendesk.sdk.network.impl.ZendeskConfig;
 import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
 import io.realm.FieldAttribute;
@@ -89,6 +90,19 @@ public class AndroidApplication extends Application {
     initFilters();
     initGameManager();
     JodaTimeAndroid.init(this);
+    initZendesk();
+  }
+
+  private void initZendesk() {
+    if (BuildConfig.DEBUG) {
+      ZendeskConfig.INSTANCE.init(this, "https://heytribe.zendesk.com",
+          "be1b539ac3ad6095d312d9a6e2732ae4c6f333496dc5d2f6",
+          "mobile_sdk_client_94f2987ca018d588bebf");
+    } else {
+      ZendeskConfig.INSTANCE.init(this, "https://heytribe.zendesk.com",
+          "5fdc28397e33b96f6ca4af8e6823bb94dfbd398dbdf4f8fb",
+          "mobile_sdk_client_8695d36d057f0767aeb7");
+    }
   }
 
   @Override protected void attachBaseContext(Context base) {
@@ -175,7 +189,7 @@ public class AndroidApplication extends Application {
                   .addField("id", String.class, FieldAttribute.PRIMARY_KEY)
                   .addField("value", int.class);
 
-              schema.create("ImageRealm")
+              schema.create("MediaRealm")
                   .addField("url", String.class, FieldAttribute.PRIMARY_KEY)
                   .addField("filesize", Integer.class)
                   .addField("width", String.class)
@@ -189,8 +203,8 @@ public class AndroidApplication extends Application {
                   .addRealmObjectField("user", schema.get("UserRealm"))
                   .addField("data", String.class)
                   .addField("__typename", String.class)
-                  .addRealmObjectField("original", schema.get("ImageRealm"))
-                  .addRealmListField("alts", schema.get("ImageRealm"))
+                  .addRealmObjectField("original", schema.get("MediaRealm"))
+                  .addRealmListField("alts", schema.get("MediaRealm"))
                   .addField("action", String.class)
                   .addField("created_at", String.class)
                   .addField("threadId", String.class);

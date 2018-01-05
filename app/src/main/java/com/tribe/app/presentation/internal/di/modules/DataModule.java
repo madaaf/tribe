@@ -26,6 +26,9 @@ import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
+import com.tribe.app.presentation.utils.preferences.SupportRequestId;
+import com.tribe.app.presentation.utils.preferences.SupportUserId;
 import com.tribe.app.presentation.utils.preferences.Theme;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
@@ -122,6 +125,21 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @MinutesOfCalls Preference<Float> provideMinutesOfCalls(Context context,
       RxSharedPreferences prefs) {
     return prefs.getFloat(PreferencesUtils.MINUTES_OF_CALLS, 0f);
+  }
+
+  @Provides @Singleton @SupportRequestId Preference<String> provideSupportRequestId(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.SUPPORT_REQUEST_ID, "");
+  }
+
+  @Provides @Singleton @SupportUserId Preference<String> provideSupportUserId(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.SUPPORT_USER_ID, "");
+  }
+
+  @Provides @Singleton @SupportIsUsed Preference<Set<String>> provideSupportIsUsed(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getStringSet(PreferencesUtils.SUPPORT_IS_USED,  new HashSet<>());
   }
 
   @Provides @Singleton @IsGroupCreated Preference<Boolean> provideIsGroupCreated(Context context,

@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -129,6 +130,7 @@ import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 import static android.view.View.VISIBLE;
+import static com.tribe.app.presentation.view.ShortcutUtil.createShortcutSupport;
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, ShortcutMVPView, HomeGridMVPView,
@@ -210,6 +212,7 @@ public class HomeActivity extends BaseActivity
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private Scheduler singleThreadExecutor;
   private PublishSubject<List<Recipient>> onRecipientUpdates = PublishSubject.create();
+  private PublishSubject<Shortcut> onSupportUpdate = PublishSubject.create();
   private PublishSubject<List<Contact>> onNewContactsOnApp = PublishSubject.create();
   private PublishSubject<List<Contact>> onNewContactsInvite = PublishSubject.create();
   private PublishSubject<List<Contact>> onNewContactsFBInvite = PublishSubject.create();
@@ -220,6 +223,7 @@ public class HomeActivity extends BaseActivity
   private ItemTouchHelper itemTouchHelper;
   private List<HomeAdapterInterface> latestRecipientList;
   private TribeBroadcastReceiver notificationReceiver;
+  private NotificationReceiverSupport notificationReceiverSupport;
   private boolean shouldOverridePendingTransactions = false, receiverRegistered = false, hasSynced =
       false, canEndRefresh = false, finish = false, searchViewDisplayed = false, isSwipingChat =
       false, shouldNavigateToChat = false;
@@ -227,6 +231,7 @@ public class HomeActivity extends BaseActivity
   private RxPermissions rxPermissions;
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private String gesture;
+  private Shortcut supportShortcut = createShortcutSupport();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     getWindow().setBackgroundDrawableResource(android.R.color.black);
@@ -336,8 +341,14 @@ public class HomeActivity extends BaseActivity
 
     if (!receiverRegistered) {
       if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
+      if (notificationReceiverSupport == null) {
+        notificationReceiverSupport = new NotificationReceiverSupport();
+      }
 
       registerReceiver(notificationReceiver,
+          new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
+
+      registerReceiver(notificationReceiverSupport,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
 
       subscriptions.add(notificationReceiver.onDeclineInvitation()
@@ -361,6 +372,7 @@ public class HomeActivity extends BaseActivity
   @Override protected void onPause() {
     if (receiverRegistered) {
       unregisterReceiver(notificationReceiver);
+      unregisterReceiver(notificationReceiverSupport);
       receiverRegistered = false;
     }
 
@@ -493,19 +505,18 @@ public class HomeActivity extends BaseActivity
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(item -> onClickItem(item)));
 
-    subscriptions.add(homeGridAdapter.onAddUser() // TODO MADA
-        .map(view -> {
-          HomeAdapterInterface user = (User) homeGridAdapter.getItemAtPosition(
-              recyclerViewFriends.getChildLayoutPosition(view));
-          int position = recyclerViewFriends.getChildAdapterPosition(view);
-          return new Pair(position, user);
-        }).doOnError(throwable -> throwable.printStackTrace()).subscribe(pair -> {
-          UserToAddAdapterDelegate.UserToAddViewHolder vh =
-              (UserToAddAdapterDelegate.UserToAddViewHolder) recyclerViewFriends.findViewHolderForAdapterPosition(
-                  (Integer) pair.first);
-          User user = (User) pair.second;
-          homeGridPresenter.createShortcutFromSuggestedFriend(vh, user.getId());
-        }));
+    subscriptions.add(homeGridAdapter.onAddUser().map(view -> {
+      HomeAdapterInterface user = (User) homeGridAdapter.getItemAtPosition(
+          recyclerViewFriends.getChildLayoutPosition(view));
+      int position = recyclerViewFriends.getChildAdapterPosition(view);
+      return new Pair(position, user);
+    }).doOnError(throwable -> throwable.printStackTrace()).subscribe(pair -> {
+      UserToAddAdapterDelegate.UserToAddViewHolder vh =
+          (UserToAddAdapterDelegate.UserToAddViewHolder) recyclerViewFriends.findViewHolderForAdapterPosition(
+              (Integer) pair.first);
+      User user = (User) pair.second;
+      homeGridPresenter.createShortcutFromSuggestedFriend(vh, user.getId());
+    }));
 
     subscriptions.add(Observable.merge(homeGridAdapter.onClickMore(), homeGridAdapter.onLongClick())
         .map(view -> homeGridAdapter.getItemAtPosition(
@@ -659,12 +670,20 @@ public class HomeActivity extends BaseActivity
           }
         }));
 
-    subscriptions.add(Observable.combineLatest(onRecipientUpdates.onBackpressureBuffer(),
-        onNewContactsOnApp.onBackpressureBuffer(), onNewContactsInvite.onBackpressureBuffer(),
-        onNewContactsFBInvite.onBackpressureBuffer(),
-        (recipientList, contactsOnApp, contactsInvite, contactsFBInvite) -> {
-          List<HomeAdapterInterface> finalList = new ArrayList<>();
-          Set<String> addedUsers = new HashSet<>();
+
+    subscriptions.add(
+        Observable.combineLatest(onRecipientUpdates.onBackpressureBuffer(), onNewContactsOnApp,
+            onNewContactsInvite, onNewContactsFBInvite, onSupportUpdate,
+            (recipientList, contactsOnApp, contactsInvite, contactsFBInvite, support) -> {
+              List<HomeAdapterInterface> finalList = new ArrayList<>();
+
+              if (!support.isRead()) {
+                finalList.add(support);
+              } else {
+                recipientList.add(support);
+              }
+
+              Set<String> addedUsers = new HashSet<>();
 
           int realFriendsCount = 0;
 
@@ -723,20 +742,19 @@ public class HomeActivity extends BaseActivity
             homeGridAdapter.setItems(temp);
           }
 
-          latestRecipientList.clear();
-          latestRecipientList.addAll(temp); // TODO #2
-
-          return diffResult;
-        }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
-      if (diffResult != null) {
-        diffResult.dispatchUpdatesTo(homeGridAdapter);
-        layoutManager.scrollToPositionWithOffset(0, 0);
-      } else {
-        homeGridAdapter.setItems(latestRecipientList);
-        homeGridAdapter.notifyDataSetChanged();
-        if (latestRecipientList.size() != 0) layoutManager.scrollToPositionWithOffset(0, 0);
-      }
-    }));
+              latestRecipientList.clear();
+              latestRecipientList.addAll(temp); // TODO #2
+              return diffResult;
+            }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
+          if (diffResult != null) {
+            diffResult.dispatchUpdatesTo(homeGridAdapter);
+            layoutManager.scrollToPositionWithOffset(0, 0);
+          } else {
+            homeGridAdapter.setItems(latestRecipientList);
+            homeGridAdapter.notifyDataSetChanged();
+            if (latestRecipientList.size() != 0) layoutManager.scrollToPositionWithOffset(0, 0);
+          }
+        }));
   }
 
   private void initNewCall() {
@@ -878,6 +896,7 @@ public class HomeActivity extends BaseActivity
 
   @Override public void renderRecipientList(List<Recipient> recipientList) {
     if (recipientList != null) {
+      onSupportUpdate.onNext(supportShortcut);
       onRecipientUpdates.onNext(recipientList);
       canEndRefresh = false;
     }
@@ -1059,6 +1078,9 @@ public class HomeActivity extends BaseActivity
   }
 
   private void navigateToChat(Recipient recipient, String gesture) {
+    if (recipient.isSupport()) {
+      supportShortcut.setRead(true);
+    }
     this.gesture = gesture;
     if (!recipient.isRead()) {
       String shortcutId = "";
@@ -1238,7 +1260,7 @@ public class HomeActivity extends BaseActivity
     viewFadeInSwipe.setAlpha(0);
     viewLiveFake.setTranslationX(screenUtils.getWidthPx());
 
-    HomeListTouchHelperCallback callback = new HomeListTouchHelperCallback(homeGridAdapter);
+    HomeListTouchHelperCallback callback = new HomeListTouchHelperCallback(0, 0, homeGridAdapter);
 
     if (itemTouchHelper == null) {
       itemTouchHelper = new ItemTouchHelper(callback);
@@ -1248,6 +1270,10 @@ public class HomeActivity extends BaseActivity
     itemTouchHelper.attachToRecyclerView(recyclerViewFriends);
 
     subscriptions.add(callback.onDxChange().subscribe(pairPosDx -> {
+      if (pairPosDx.first == homeGridAdapter.getSupportPosition()) {
+        return;
+      }
+
       if (pairPosDx.second == 0) {
         viewFadeInSwipe.setVisibility(View.GONE);
         viewFadeInSwipe.setAlpha(0);
@@ -1279,7 +1305,7 @@ public class HomeActivity extends BaseActivity
       if (homeGridAdapter.getItemAtPosition(position) instanceof Recipient) {
         Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(position);
 
-        if (!isSwipingChat) {
+        if (!isSwipingChat && !recipient.isSupport()) {
           navigator.navigateToLiveFromSwipe(this, recipient,
               recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
                   : LiveActivity.SOURCE_GRID, recipient.getSectionTag());
@@ -1347,4 +1373,20 @@ public class HomeActivity extends BaseActivity
   @Override public void onShortcut(Shortcut shortcut) {
 
   }
+
+  class NotificationReceiverSupport extends BroadcastReceiver {
+
+    @Override public void onReceive(Context context, Intent intent) {
+
+      NotificationPayload notificationPayload =
+          (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+      if (notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
+        supportShortcut.setRead(false);
+        supportShortcut.setSingle(true);
+        onSupportUpdate.onNext(supportShortcut);
+      }
+    }
+  }
 }
+
+

@@ -1,11 +1,13 @@
 package com.tribe.app.data.repository.chat;
 
+import android.net.Uri;
 import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStore;
 import com.tribe.app.data.repository.chat.datasource.ChatDataStoreFactory;
 import com.tribe.app.domain.interactor.chat.ChatRepository;
 import com.tribe.app.presentation.utils.DateUtils;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.List;
 import javax.inject.Inject;
@@ -40,11 +42,37 @@ import rx.Observable;
         .map(this.messageRealmDataMapper::transform);
   }
 
-  @Override public Observable<List<Message>> loadMessages(String[] userIds, String dateBefore, String dateAfter) {
+  @Override
+  public Observable<List<Conversation>> getMessageSupport(String lang, String typeSupport) {
+    final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
+    return userDataStore.getMessageSupport(typeSupport);
+  }
+
+  @Override public Observable<List<Message>> loadMessages(String[] userIds, String dateBefore,
+      String dateAfter) {
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
     return userDataStore.loadMessages(userIds, dateBefore, dateAfter)
         .doOnError(Throwable::printStackTrace)
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true).getMessages());
+  }
+
+  @Override public Observable<List<Message>> getMessageZendesk() {
+    final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
+    return userDataStore.getMessageZendesk()
+        .doOnError(Throwable::printStackTrace)
+        .map(zendeskMessages -> zendeskMessages);
+  }
+
+  @Override public Observable addMessageZendesk(String typeMedia, String data, Uri uri) {
+    final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
+    return userDataStore.addMessageZendesk(typeMedia, data, uri)
+        .doOnError(Throwable::printStackTrace)
+        .map(zendeskMessages -> zendeskMessages);
+  }
+
+  @Override public Observable createRequestZendesk(String data) {
+    final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
+    return userDataStore.createRequestZendesk(data);
   }
 
   @Override public Observable<List<Message>> getMessagesImage(String[] userIds) {

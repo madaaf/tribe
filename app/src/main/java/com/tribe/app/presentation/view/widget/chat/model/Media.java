@@ -4,7 +4,7 @@ package com.tribe.app.presentation.view.widget.chat.model;
  * Created by madaaflak on 07/09/2017.
  */
 
-public class Image {
+public class Media {
 
   private String url;
   private Integer filesize;
@@ -12,7 +12,7 @@ public class Image {
   private String height;
   private float duration;
 
-  public Image() {
+  public Media() {
   }
 
   public float getDuration() {
@@ -20,6 +20,13 @@ public class Image {
   }
 
   public String getDurationFormatted() {
+    Double time = (double) (duration / 100);
+    int size = (String.valueOf(time).length() > 4) ? 4 : String.valueOf(time).length();
+    String value = String.valueOf(Double.parseDouble(Double.toString(time).substring(0, size)));
+    return value.replace(".", ":");
+  }
+
+  public static String getDurationFormatted(float duration) {
     Double time = (double) (duration / 100);
     int size = (String.valueOf(time).length() > 4) ? 4 : String.valueOf(time).length();
     String value = String.valueOf(Double.parseDouble(Double.toString(time).substring(0, size)));

@@ -8,9 +8,8 @@ import java.util.List;
 
 public class MessageAudio extends Message {
 
-
-  private Image original;
-  private List<Image> ressources;
+  private Media original;
+  private List<Media> ressources;
   private String time;
   private boolean pause = true;
 
@@ -22,19 +21,19 @@ public class MessageAudio extends Message {
     this.pause = pause;
   }
 
-  public Image getOriginal() {
+  public Media getOriginal() {
     return original;
   }
 
-  public void setOriginal(Image original) {
+  public void setOriginal(Media original) {
     this.original = original;
   }
 
-  public List<Image> getRessources() {
+  public List<Media> getRessources() {
     return ressources;
   }
 
-  public void setRessources(List<Image> ressources) {
+  public void setRessources(List<Media> ressources) {
     this.ressources = ressources;
   }
 
