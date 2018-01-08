@@ -16,7 +16,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.domain.entity.trivia.TriviaQuestions;
+import com.tribe.app.domain.entity.trivia.TriviaCategoryEnum;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -116,8 +117,12 @@ public class GameManagerView extends FrameLayout {
     }
 
     gameMVPViewAdapter = new GameMVPViewAdapter() {
-      @Override public void onTriviaData(Map<String, List<TriviaQuestions>> map) {
+      @Override public void onTriviaData(Map<String, List<TriviaQuestion>> map) {
         if (currentGameView != null && currentGameView instanceof GameTriviaView) {
+          for (String key : map.keySet()) {
+            TriviaCategoryEnum.setQuestionsForCategory(key, map.get(key));
+          }
+
           GameTriviaView gameTriviaView = (GameTriviaView) currentGameView;
           gameTriviaView.showCategories();
         }

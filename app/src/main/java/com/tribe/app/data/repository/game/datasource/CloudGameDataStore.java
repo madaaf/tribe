@@ -16,7 +16,7 @@ import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.trivia.TriviaCategoryEnum;
-import com.tribe.app.domain.entity.trivia.TriviaQuestions;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import java.lang.reflect.Type;
@@ -129,7 +129,7 @@ public class CloudGameDataStore implements GameDataStore {
         .doOnNext(scoreRealmList -> gameCache.updateLeaderboard(gameId, true, scoreRealmList));
   }
 
-  @Override public Observable<Map<String, List<TriviaQuestions>>> getTriviaData() {
+  @Override public Observable<Map<String, List<TriviaQuestion>>> getTriviaData() {
     if (gameCache.getTriviaData() != null && gameCache.getTriviaData().size() > 0) {
       return Observable.just(gameCache.getTriviaData());
     }
@@ -160,7 +160,7 @@ public class CloudGameDataStore implements GameDataStore {
   }
 
   class TriviaQuestionsTransformer
-      implements Observable.Transformer<List<TriviaQuestions>, CategoryEntity> {
+      implements Observable.Transformer<List<TriviaQuestion>, CategoryEntity> {
 
     private String category;
 
@@ -169,7 +169,7 @@ public class CloudGameDataStore implements GameDataStore {
     }
 
     @Override
-    public Observable<CategoryEntity> call(Observable<List<TriviaQuestions>> listObservable) {
+    public Observable<CategoryEntity> call(Observable<List<TriviaQuestion>> listObservable) {
       return listObservable.map(questionsList -> {
         CategoryEntity categoryEntity = new CategoryEntity();
         categoryEntity.setId(category);
@@ -179,9 +179,9 @@ public class CloudGameDataStore implements GameDataStore {
     }
   }
 
-  private Observable.Transformer<List<CategoryEntity>, Map<String, List<TriviaQuestions>>>
+  private Observable.Transformer<List<CategoryEntity>, Map<String, List<TriviaQuestion>>>
       listCategoryMapTransformer = listObservable -> listObservable.map(lists -> {
-    Map<String, List<TriviaQuestions>> result = new HashMap<>();
+    Map<String, List<TriviaQuestion>> result = new HashMap<>();
 
     for (CategoryEntity categoryEntity : lists) {
       result.put(categoryEntity.getId(), categoryEntity.getQuestions());

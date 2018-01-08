@@ -17,6 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.trivia.TriviaCategoryEnum;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
@@ -24,7 +25,9 @@ import com.tribe.app.presentation.view.widget.CircularProgressBar;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
@@ -36,7 +39,6 @@ import rx.android.schedulers.AndroidSchedulers;
 
 public class GameTriviaView extends GameViewWithRanking {
 
-  // VARIABLES
   @BindView(R.id.layoutConstraint) ConstraintLayout layoutConstraint;
   @BindView(R.id.viewCategoryMovies) GameTriviaCategoryView viewCategorieMovies;
   @BindView(R.id.viewCategoryMusic) GameTriviaCategoryView viewCategorieMusic;
@@ -50,6 +52,10 @@ public class GameTriviaView extends GameViewWithRanking {
   @BindView(R.id.txtTriviaTitle) TextViewFont txtTitle;
   @BindView(R.id.groupInit) Group groupInit;
   @BindView(R.id.progressBar) CircularProgressBar progressBar;
+  @BindView(R.id.viewAnswers) GameTriviaAnswersView viewAnswers;
+
+  // VARIABLES
+  private TriviaCategoryEnum category;
 
   public GameTriviaView(@NonNull Context context) {
     super(context);
@@ -130,12 +136,29 @@ public class GameTriviaView extends GameViewWithRanking {
   }
 
   public void selectCategory(TriviaCategoryEnum triviaCategoryEnum) {
+    category = triviaCategoryEnum;
+
     TextViewCompat.setTextAppearance(txtTitle, R.style.Headline_White_2);
     txtTitle.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
 
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(getContext(), R.layout.view_game_trivia_title_only);
     animateLayoutWithConstraintSet(constraintSet);
+
+    subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> startFirstQuestion()));
+  }
+
+  public void startFirstQuestion() {
+    ConstraintSet constraintSet = new ConstraintSet();
+    constraintSet.clone(getContext(), R.layout.view_game_trivia_question);
+    animateLayoutWithConstraintSet(constraintSet);
+
+    Collections.shuffle(category.getQuestions());
+    TriviaQuestion triviaQuestion = category.getQuestions().get(0);
+    txtTitle.setText(triviaQuestion.getQuestion());
+    viewAnswers.initQuestion(triviaQuestion);
   }
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,

@@ -6,7 +6,7 @@ import java.util.List;
  * Created by tiago on 21/12/2017.
  */
 
-public class TriviaQuestions {
+public class TriviaQuestion {
 
   private String id;
   private String question;

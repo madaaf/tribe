@@ -2,7 +2,7 @@ package com.tribe.app.presentation.mvp.view;
 
 import android.content.Context;
 import com.tribe.app.domain.entity.Score;
-import com.tribe.app.domain.entity.trivia.TriviaQuestions;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import java.util.List;
 import java.util.Map;
 
@@ -20,5 +20,5 @@ public interface GameMVPView extends MVPView {
 
   void onFriendsScore(List<Score> scoreList, boolean cloud);
 
-  void onTriviaData(Map<String, List<TriviaQuestions>> map);
+  void onTriviaData(Map<String, List<TriviaQuestion>> map);
 }

@@ -184,17 +184,40 @@
       android:id="@+id/progressBarBackground"
       android:layout_width="50dp"
       android:layout_height="50dp"
+      android:background="@drawable/shape_ring_white10_5dp"
       app:layout_constraintBottom_toTopOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      android:background="@drawable/shape_ring_white10_5dp"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtQuestion"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/margin_horizontal"
+      android:gravity="center"
+      app:layout_constraintBottom_toTopOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      style="@style/Title24.2.White"
       />
 
   <android.support.constraint.Group
-      android:id="@+id/groupProgressBar"
-      android:layout_width="wrap_content"
+      android:id="@+id/groupTop"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:layout_marginTop="45dp"
+      app:constraint_referenced_ids="progressBar, progressBarBackground, txtQuestionCount"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaAnswersView
+      android:id="@+id/viewAnswers"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
-      app:constraint_referenced_ids="progressBar, progressBarBackground"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="parent"
       />
 
 </android.support.constraint.ConstraintLayout>

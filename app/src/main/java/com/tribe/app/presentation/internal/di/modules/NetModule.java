@@ -65,7 +65,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
-import com.tribe.app.domain.entity.trivia.TriviaQuestions;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.utils.DateUtils;
@@ -190,7 +190,7 @@ import timber.log.Timber;
         .registerTypeAdapter(new TypeToken<List<ScoreRealm>>() {
         }.getType(), new ScoreRealmListDeserializer())
         .registerTypeAdapter(AddScoreEntity.class, new AddScoreDeserializer())
-        .registerTypeAdapter(new TypeToken<List<TriviaQuestions>>() {
+        .registerTypeAdapter(new TypeToken<List<TriviaQuestion>>() {
         }.getType(), new TriviaQuestionsDeserializer())
         .create();
   }

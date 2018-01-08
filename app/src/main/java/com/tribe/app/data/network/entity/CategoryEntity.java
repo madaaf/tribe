@@ -1,6 +1,6 @@
 package com.tribe.app.data.network.entity;
 
-import com.tribe.app.domain.entity.trivia.TriviaQuestions;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import java.util.List;
 
 /**
@@ -10,7 +10,7 @@ import java.util.List;
 public class CategoryEntity {
 
   private String id;
-  private List<TriviaQuestions> questions;
+  private List<TriviaQuestion> questions;
 
   public String getId() {
     return id;
@@ -20,11 +20,11 @@ public class CategoryEntity {
     this.id = id;
   }
 
-  public List<TriviaQuestions> getQuestions() {
+  public List<TriviaQuestion> getQuestions() {
     return questions;
   }
 
-  public void setQuestions(List<TriviaQuestions> questions) {
+  public void setQuestions(List<TriviaQuestion> questions) {
     this.questions = questions;
   }
 }

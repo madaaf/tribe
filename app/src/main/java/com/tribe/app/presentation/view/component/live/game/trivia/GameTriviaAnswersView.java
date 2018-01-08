@@ -7,15 +7,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import butterknife.BindView;
+import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.TextViewFont;
+import java.util.Collections;
+import java.util.List;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -23,13 +24,13 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 12/21/2017.
  */
 
-public class GameTriviaQuestionsView extends LinearLayout {
+public class GameTriviaAnswersView extends LinearLayout {
 
   @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.imgIcon) ImageView imgIcon;
-
-  @BindView(R.id.txtTitle) TextViewFont txtTitle;
+  @BindViews({
+      R.id.viewAnswerFirst, R.id.viewAnswerSecond, R.id.viewAnswerThird, R.id.viewAnswerFourth
+  }) List<GameTriviaAnswerView> listAnswerViews;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -39,11 +40,11 @@ public class GameTriviaQuestionsView extends LinearLayout {
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
-  public GameTriviaQuestionsView(@NonNull Context context) {
+  public GameTriviaAnswersView(@NonNull Context context) {
     super(context);
   }
 
-  public GameTriviaQuestionsView(@NonNull Context context, @Nullable AttributeSet attrs) {
+  public GameTriviaAnswersView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
 
     TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.GameTriviaCategoryView);
@@ -74,28 +75,28 @@ public class GameTriviaQuestionsView extends LinearLayout {
   }
 
   private void initUI() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_game_trivia_category, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_game_trivia_answers_view, this);
     unbinder = ButterKnife.bind(this);
 
-    setTitle(title);
-    setIcon(icon);
+    setOrientation(VERTICAL);
   }
 
   private void initSubscriptions() {
 
   }
 
-  private void setIcon(Drawable drawable) {
-    imgIcon.setImageDrawable(drawable);
-  }
-
-  private void setTitle(String title) {
-    txtTitle.setText(title);
-  }
-
   /**
    * PUBLIC
    */
+
+  public void initQuestion(TriviaQuestion triviaQuestion) {
+    Collections.shuffle(listAnswerViews);
+    GameTriviaAnswerView rightAnswer = listAnswerViews.get(0);
+    rightAnswer.initAnswer(triviaQuestion.getAnswer());
+
+    for (int i = 1; i < listAnswerViews.size() - 1; i++)
+      listAnswerViews.get(i).initAnswer(triviaQuestion.getAlternativeAnswers().get(i));
+  }
 
   /**
    * OBSERVABLES

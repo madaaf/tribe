@@ -15,7 +15,7 @@ public enum TriviaCategoryEnum {
 
   private int id;
   private String category;
-  private List<TriviaQuestions> questions;
+  private List<TriviaQuestion> questions;
 
   TriviaCategoryEnum(int id, String category) {
     this.id = id;
@@ -42,11 +42,17 @@ public enum TriviaCategoryEnum {
     return category;
   }
 
-  public void setQuestions(List<TriviaQuestions> questions) {
+  public void setQuestions(List<TriviaQuestion> questions) {
     this.questions = questions;
   }
 
-  public List<TriviaQuestions> getQuestions() {
+  public List<TriviaQuestion> getQuestions() {
     return questions;
+  }
+
+  public static void setQuestionsForCategory(String key, List<TriviaQuestion> questions) {
+    for (TriviaCategoryEnum category : getCategories()) {
+      if (category.getCategory().equals(key)) category.setQuestions(questions);
+    }
   }
 }

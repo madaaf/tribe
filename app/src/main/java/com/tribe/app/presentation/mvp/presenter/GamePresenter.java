@@ -1,7 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.domain.entity.Score;
-import com.tribe.app.domain.entity.trivia.TriviaQuestions;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.game.GetCloudFriendsScores;
 import com.tribe.app.domain.interactor.game.GetCloudGameLeaderboard;
@@ -199,12 +199,12 @@ public class GamePresenter implements Presenter {
   }
 
   public void getTriviaData() {
-    getTriviaData.execute(new DefaultSubscriber<Map<String, List<TriviaQuestions>>>() {
+    getTriviaData.execute(new DefaultSubscriber<Map<String, List<TriviaQuestion>>>() {
       @Override public void onError(Throwable e) {
         Timber.e(e);
       }
 
-      @Override public void onNext(Map<String, List<TriviaQuestions>> map) {
+      @Override public void onNext(Map<String, List<TriviaQuestion>> map) {
         if (map != null && gameMVPView != null) gameMVPView.onTriviaData(map);
       }
     });

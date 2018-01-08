@@ -8,17 +8,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import com.tribe.app.domain.entity.trivia.TriviaQuestions;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TriviaQuestionsDeserializer implements JsonDeserializer<List<TriviaQuestions>> {
+public class TriviaQuestionsDeserializer implements JsonDeserializer<List<TriviaQuestion>> {
 
-  @Override public List<TriviaQuestions> deserialize(JsonElement je, Type typeOfT,
+  @Override public List<TriviaQuestion> deserialize(JsonElement je, Type typeOfT,
       JsonDeserializationContext context) throws JsonParseException {
     JsonArray results = je.getAsJsonObject().getAsJsonArray("results");
-    List<TriviaQuestions> triviaQuestionsList = new ArrayList<>();
+    List<TriviaQuestion> triviaQuestionsList = new ArrayList<>();
     Gson gson = new Gson();
     Type listType = new TypeToken<List<String>>() {
     }.getType();
@@ -27,7 +27,7 @@ public class TriviaQuestionsDeserializer implements JsonDeserializer<List<Trivia
       for (final JsonElement jsonElement : results) {
         if (!jsonElement.isJsonNull()) {
           JsonObject jo = jsonElement.getAsJsonObject();
-          TriviaQuestions triviaQuestions = new TriviaQuestions();
+          TriviaQuestion triviaQuestions = new TriviaQuestion();
           triviaQuestions.setAnswer(jo.get("correct_answer").getAsString());
           triviaQuestions.setAlternativeAnswers(
               gson.fromJson(jo.get("incorrect_answers"), listType));

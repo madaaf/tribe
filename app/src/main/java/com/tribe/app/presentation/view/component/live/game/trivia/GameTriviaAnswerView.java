@@ -1,10 +1,12 @@
 package com.tribe.app.presentation.view.component.live.game.trivia;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.animation.DecelerateInterpolator;
@@ -15,6 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
@@ -97,20 +100,64 @@ public class GameTriviaAnswerView extends FrameLayout {
    * PUBLIC
    */
 
+  public void initAnswer(String answer) {
+    setType(QUESTION);
+    txtAnswer.setText(answer);
+  }
+
   public void setType(@CellType int type) {
+    if (type != WRONG_ANSWER) {
+      TextViewCompat.setTextAppearance(txtAnswer, R.style.Headline_White_2);
+      txtAnswer.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
+    } else {
+      TextViewCompat.setTextAppearance(txtAnswer, R.style.Headline_Black_2);
+      txtAnswer.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
+    }
+
     switch (type) {
       case QUESTION:
+        imgGuessed.setAlpha(0f);
+        imgNotGuessed.setAlpha(0f);
+        background.setColor(Color.WHITE);
         break;
 
       case RIGHT_ANSWER_GUESSED:
-        imgGuessed.animate().alpha(1).setInterpolator(new DecelerateInterpolator()).setDuration(DURATION).start();
-        imgNotGuessed.animate().alpha(0).setInterpolator(new DecelerateInterpolator()).setDuration(DURATION).start();
+        background.setColor(Color.WHITE);
+        imgGuessed.animate()
+            .alpha(1)
+            .setInterpolator(new DecelerateInterpolator())
+            .setDuration(DURATION)
+            .start();
+        imgNotGuessed.animate()
+            .alpha(0)
+            .setInterpolator(new DecelerateInterpolator())
+            .setDuration(DURATION)
+            .start();
         break;
 
       case RIGHT_ANSWER_NOT_GUESSED:
+        background.setColor(Color.WHITE);
+        imgGuessed.animate()
+            .alpha(0)
+            .setInterpolator(new DecelerateInterpolator())
+            .setDuration(DURATION)
+            .start();
+
+        imgNotGuessed.animate()
+            .alpha(1)
+            .setInterpolator(new DecelerateInterpolator())
+            .setDuration(DURATION)
+            .start();
         break;
 
       case WRONG_ANSWER:
+        imgGuessed.setAlpha(0f);
+        imgNotGuessed.setAlpha(0f);
+        background.setColor(Color.WHITE);
+        animate().alpha(0.2f)
+            .setInterpolator(new DecelerateInterpolator())
+            .setDuration(DURATION)
+            .start();
         break;
     }
   }
