@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
 import rx.functions.Action1;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 12/09/2017.
@@ -87,6 +88,7 @@ public class CloudChatDataStore implements ChatDataStore {
     if (dateAfter == null) {
       req = context.getString(R.string.messages_details_before, JsonUtils.arrayToJson(userIds),
           dateBefore, null, context.getString(R.string.messagefragment_info));
+      Timber.i(req);
       return this.tribeApi.getUserMessage(req)
           .doOnNext(userRealm -> chatCache.putMessages(userRealm.getMessages(),
               JsonUtils.arrayToJson(userIds)))
@@ -94,6 +96,7 @@ public class CloudChatDataStore implements ChatDataStore {
     } else {
       req = context.getString(R.string.messages_details_between, JsonUtils.arrayToJson(userIds),
           dateBefore, dateAfter, context.getString(R.string.messagefragment_info));
+      Timber.i(req);
       return this.tribeApi.getUserMessage(req)
           .doOnNext(userRealm -> chatCache.deleteRemovedMessageFromCache(userRealm.getMessages(),
               JsonUtils.arrayToJson(userIds), dateBefore, dateAfter))

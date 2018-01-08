@@ -108,6 +108,15 @@
   <color name="red.pulse">#80F9474C</color>
   <color name="red.hangup">#F61D47</color>
 
+
+  <color name="heart">#FB7FAC</color>
+  <color name="heart.purple">#BE9DFF</color>
+  <color name="heart.blue">#20A6FD</color>
+  <color name="heart.green">#30DF92</color>
+  <color name="heart.orange">#FA6F00</color>
+  <color name="heart.yellow">#F7E717</color>
+  <color name="heart.black">#000</color>
+
   <!-- ORANGES -->
   <color name="orange.recent">#FFA496</color>
 

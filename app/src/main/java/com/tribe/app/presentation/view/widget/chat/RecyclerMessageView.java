@@ -49,6 +49,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapter;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
+import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.zendesk.sdk.model.access.Identity;
 import com.zendesk.sdk.model.access.JwtIdentity;
@@ -289,9 +290,9 @@ public class RecyclerMessageView extends IChat {
 
       for (User user : shortcut.getMembers()) {
         if (lastSeenListId.contains(user.getId())) {
-          lastSeenString += user.getDisplayName().substring(0, 1).toUpperCase() +
-              user.getDisplayName().substring(1) +
-              ", ";
+          lastSeenString +=
+              user.getDisplayName().substring(0, 1).toUpperCase() + user.getDisplayName()
+                  .substring(1) + ", ";
         }
       }
 
@@ -301,13 +302,13 @@ public class RecyclerMessageView extends IChat {
     }));
 
     subscriptions.add(messageAdapter.onLongClickItem().subscribe(m -> {
-      Timber.i("on long click message " +
-          dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString()));
+      Timber.i("on long click message " + dateUtils.getDiffDate(m.getCreationDate(),
+          dateUtils.getUTCDateAsString()));
       boolean enableUnsendMessage = false;
-      if (!m.getType().equals(MESSAGE_EVENT) &&
-          m.getAuthor().getId().equals(user.getId()) &&
-          dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString()) <
-              MAX_DURATION_MIN_DELETE_MESSAGE) {
+      if (!m.getType().equals(MESSAGE_EVENT)
+          && m.getAuthor().getId().equals(user.getId())
+          && dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString())
+          < MAX_DURATION_MIN_DELETE_MESSAGE) {
         enableUnsendMessage = true;
       }
       subscriptions.add(
@@ -627,6 +628,10 @@ public class RecyclerMessageView extends IChat {
   }
 
   @Override public void successMessageCreated(Message message, int position) {
+    if (message instanceof MessageEmoji) {
+      //((MessageEmoji) message).isUpdating();
+      Timber.i("MESSAG ECREATE " + ((MessageEmoji) message).isUpdating());
+    }
     Timber.i("successMessageCreated " + message.getId());
     messageAdapter.updateItem(messageAdapter.getItemCount() - 1, message);
   }
@@ -773,5 +778,12 @@ public class RecyclerMessageView extends IChat {
   public void onReceiveZendeskNotif() {
     Timber.i("onReceiveZendeskNotif");
     getCommentZendesk();
+  }
+
+  public void updateItem(String color, boolean isUpdating) {
+    Message m = messageAdapter.getMessage(messageAdapter.getItemCount() - 1);
+    ((MessageEmoji) m).setEmoji(color);
+    ((MessageEmoji) m).setUpdating(isUpdating);
+    messageAdapter.updateItem(messageAdapter.getItemCount() - 1, m);
   }
 }

@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import com.tribe.app.R;
@@ -39,15 +40,25 @@ public class MessageEmojiAdapterDelegate extends BaseMessageAdapterDelegate {
     MessageEmojiViewHolder vh = (MessageEmojiViewHolder) holder;
     MessageEmoji m = (MessageEmoji) items.get(position);
 
-    vh.emoji.setText(m.getEmoji());
-
     setPendingBehavior(m, vh.container);
+    vh.emoji2.setScaleX(0);
+    vh.emoji2.setScaleY(0);
+
+    if (m.isUpdating()) {
+      if (position == items.size() - 1) {
+        vh.emoji2.animate().scaleX(1).scaleY(1).setDuration(200)
+            // .withEndAction(() -> vh.emoji.setText(m.getEmoji()))
+            .setInterpolator(new AccelerateDecelerateInterpolator()).start();
+        vh.emoji2.setText(m.getEmoji());
+      }
+    } else {
+      vh.emoji.setText(m.getEmoji());
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,
       @NonNull RecyclerView.ViewHolder holder, int position, List<Object> payloads) {
     MessageEmojiViewHolder vh = (MessageEmojiViewHolder) holder;
-
     MessageEmoji m = (MessageEmoji) items.get(position);
     if (m.isPending()) {
       vh.container.setAlpha(0.4f);
@@ -63,6 +74,7 @@ public class MessageEmojiAdapterDelegate extends BaseMessageAdapterDelegate {
 
   static class MessageEmojiViewHolder extends BaseTextViewHolder {
     @BindView(R.id.emoji) public TextViewFont emoji;
+    @BindView(R.id.emoji2) public TextViewFont emoji2;
     @BindView(R.id.container) public LinearLayout container;
 
     @Override protected ViewGroup getLayoutContent() {

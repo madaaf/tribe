@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -142,6 +143,18 @@ public class ChatView extends IChat {
   private String section, gesture;
   protected int heartCount = 0, textCount = 0, audioCount = 0, imageCount = 0;
   boolean onRecord = false;
+  private int heartsCounter = 0;
+  private boolean isRunning = false;
+  private boolean firstTick = true;
+  private String[] hearts = new String[] {
+      "\u2764", // "default"
+      "\uD83D\uDC9C", // purple
+      "\uD83D\uDC99", // blue
+      "\uD83D\uDC9A", //green
+      "\uD83E\uDDE1",// orange
+      "\uD83D\uDC9B", // yellow
+      "\uD83D\uDDA4" // black
+  };
 
   @BindView(R.id.editText) EditTextFont editText;
   @BindView(R.id.recyclerViewChat) RecyclerMessageView recyclerView;
@@ -533,12 +546,12 @@ public class ChatView extends IChat {
         .flatMap(aVoid -> DialogFactory.showBottomSheetForCamera(context), ((aVoid, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
             subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
-              sendMessageToAdapter(MESSAGE_IMAGE, null, uri);
+              sendMessageToAdapter(MESSAGE_IMAGE, null, uri, true);
               imageCount++;
             }));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
             subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
-              sendMessageToAdapter(MESSAGE_IMAGE, null, uri);
+              sendMessageToAdapter(MESSAGE_IMAGE, null, uri, true);
               imageCount++;
             }));
           }
@@ -762,7 +775,8 @@ public class ChatView extends IChat {
     chatUserAdapter.setItems(members);
   }
 
-  protected void sendMessageToAdapter(@Message.Type String type, String content, Uri uri) {
+  protected void sendMessageToAdapter(@Message.Type String type, String content, Uri uri,
+      boolean sendToNetwork) {
     Message message = null;
     String realmType = null;
 
@@ -803,6 +817,10 @@ public class ChatView extends IChat {
     message.setPending(true);
     message.setId(Message.PENDING);//+ UUID.randomUUID()
     recyclerView.sendMyMessageToAdapter(message);
+    if (sendToNetwork) sendToNetwork(type, content, realmType, uri);
+  }
+
+  private void sendToNetwork(@Message.Type String type, String content, String realmType, Uri uri) {
     if (type.equals(MESSAGE_IMAGE) || type.equals(MESSAGE_AUDIO)) {
       sendMedia(uri, fileName, 0, type);
     } else {
@@ -879,9 +897,58 @@ public class ChatView extends IChat {
     super.onDetachedFromWindow();
   }
 
+  private void ok() {
+
+  }
+
   @OnClick(R.id.likeBtn) void onClickLike() {
     heartCount++;
-    sendMessage();
+    sendHeartMessage();
+  }
+
+  private void sendHeartMessage() {
+    int seconde = 4000;
+    if (!isRunning) {
+      CountDownTimer countDownTimer = new CountDownTimer(seconde, 1000) {
+        public void onTick(long millisUntilFinished) {
+          isRunning = true;
+          if (firstTick) {
+            firstTick = false;
+            editText.setText("");
+            sendBtn.animate()
+                .scaleX(1.3f)
+                .scaleY(1.3f)
+                .setDuration(ANIM_DURATION)
+                .withEndAction(() -> sendBtn.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(ANIM_DURATION)
+                    .start())
+                .start();
+            sendMessageToAdapter(MESSAGE_EMOJI, hearts[0], null, false);
+          }
+        }
+
+        public void onFinish() {
+          firstTick = true;
+          isRunning = false;
+          sendToNetwork(MESSAGE_EMOJI, hearts[heartsCounter], MessageRealm.EMOJI, null);
+          recyclerView.updateItem(hearts[heartsCounter], false);
+          heartsCounter = 0;
+        }
+      };
+
+      countDownTimer.cancel();
+      countDownTimer.start();
+    } else {
+      if (heartsCounter < hearts.length - 1) {
+        heartsCounter++;
+      } else {
+        heartsCounter = 0;
+      }
+
+      recyclerView.updateItem(hearts[heartsCounter], true);
+    }
   }
 
   @OnClick(R.id.sendBtn) void onClickSend() {
@@ -891,9 +958,9 @@ public class ChatView extends IChat {
     String editedMessage = m.replaceAll("\n", "\"n");
     if (!editedMessage.isEmpty()) {
       if (StringUtils.isOnlyEmoji(editedMessage)) {
-        sendMessageToAdapter(MESSAGE_EMOJI, editedMessage, null);
+        sendMessageToAdapter(MESSAGE_EMOJI, editedMessage, null, true);
       } else {
-        sendMessageToAdapter(MESSAGE_TEXT, editedMessage, null);
+        sendMessageToAdapter(MESSAGE_TEXT, editedMessage, null, true);
       }
     }
     editText.setText("");
@@ -954,18 +1021,6 @@ public class ChatView extends IChat {
     Bundle bundle = new Bundle();
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.SAVE);
     tagManager.trackEvent(TagManagerUtils.EditGroupName, bundle);
-  }
-
-  private void sendMessage() {
-    editText.setText("");
-    sendBtn.animate()
-        .scaleX(1.3f)
-        .scaleY(1.3f)
-        .setDuration(ANIM_DURATION)
-        .withEndAction(
-            () -> sendBtn.animate().scaleX(1f).scaleY(1f).setDuration(ANIM_DURATION).start())
-        .start();
-    sendMessageToAdapter(MESSAGE_EMOJI, "\u2764", null);
   }
 
   @OnTouch(R.id.editText) boolean onClickEditText() {
