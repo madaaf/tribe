@@ -346,7 +346,7 @@ public class MessagePresenter implements Presenter {
     }
 
     @Override public void onNext(List<Conversation> conversations) {
-      if (chatMVPView != null) {
+      if (chatMVPView != null && !conversations.isEmpty()) {
         if (typeSupport.equals(Conversation.TYPE_HOME)) {
           chatMVPView.successMessageSupport(conversations.get(0).getMessages());
         } else {

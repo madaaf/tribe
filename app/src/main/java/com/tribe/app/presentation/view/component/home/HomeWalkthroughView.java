@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.home;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -21,6 +22,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -71,6 +73,7 @@ public class HomeWalkthroughView extends FrameLayout {
 
   // OBSERVABLES
   private Unbinder unbinder;
+  private Context context;
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
   public HomeWalkthroughView(Context context) {
@@ -107,12 +110,11 @@ public class HomeWalkthroughView extends FrameLayout {
   }
 
   private void init(Context context, AttributeSet attrs) {
-
+    this.context = context;
   }
 
   private void initUI() {
     setVisibility(View.GONE);
-
     gradientDrawable = new GradientDrawable();
     gradientDrawable.setShape(GradientDrawable.RECTANGLE);
     gradientDrawable.setCornerRadius(screenUtils.dpToPx(5));
@@ -143,9 +145,8 @@ public class HomeWalkthroughView extends FrameLayout {
 
   private void initSubscriptions() {
     subscriptions.add(viewVideo.onProgress().subscribe(time -> {
-      if ((time >= 4200 && step == STEP_SLIDE_TO_CHAT) ||
-          (time >= 6495 && step == STEP_SLIDE_TO_VIDEO) ||
-          (time >= 13000 && step == STEP_HAVE_FUN_GAMES)) {
+      if ((time >= 4200 && step == STEP_SLIDE_TO_CHAT) || (time >= 6495
+          && step == STEP_SLIDE_TO_VIDEO) || (time >= 13000 && step == STEP_HAVE_FUN_GAMES)) {
         btnNext.setEnabled(true);
 
         if (step == STEP_SLIDE_TO_VIDEO) {
@@ -328,6 +329,9 @@ public class HomeWalkthroughView extends FrameLayout {
           @Override public void onAnimationEnd(Animator animation) {
             setVisibility(View.GONE);
             tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_WalkthroughCompleted);
+
+            TribeBroadcastReceiver receiver = new TribeBroadcastReceiver((Activity) context);
+            receiver.notifiyStaticNotifSupport(context);
           }
         })
         .start();

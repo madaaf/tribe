@@ -570,8 +570,23 @@ public class RecyclerMessageView extends IChat {
 
   @Override public void successMessageSupport(List<Message> messages) {
     Timber.i("onSuccess load message support from static api " + messages.size());
-    addMessageWithFakeAnimation(messages);
-    PreferencesUtils.addToSet(supportIsUsed, shortcut.getTypeSupport());
+    if (shortcut.getTypeSupport().equals(Conversation.TYPE_HOME)) {
+      List<Message> factoredMessaged = new ArrayList<>();
+      for (int i = 0; i < messages.size(); i++) {
+        Message m = messages.get(i);
+        if (i != 0) factoredMessaged.add(m);
+      }
+      // add first message without
+      messageAdapter.setItem(messages.get(0));
+      notifyDataSetChanged();
+
+      // add first message without
+      if (!factoredMessaged.isEmpty()) addMessageWithFakeAnimation(factoredMessaged);
+      PreferencesUtils.addToSet(supportIsUsed, shortcut.getTypeSupport());
+    } else {
+      if (!messages.isEmpty()) addMessageWithFakeAnimation(messages);
+      PreferencesUtils.addToSet(supportIsUsed, shortcut.getTypeSupport());
+    }
   }
 
   @Override public void successLoadingMessageDisk(List<Message> messages) { // TODO SOEF

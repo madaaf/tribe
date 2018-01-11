@@ -67,6 +67,11 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
     computeNotificationPayload(context, notificationPayload);
   }
 
+  public void notifiyStaticNotifSupport(Context context) {
+    NotificationPayload payload = NotificationPayload.createSupportNotificationPayload();
+    computeNotificationPayload(context, payload);
+  }
+
   private boolean showMessageNotification(Context context,
       LiveNotificationView liveNotificationView, NotificationPayload notificationPayload) {
     if (liveNotificationView.getContainer() != null) {
@@ -130,7 +135,7 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
    * PUBLIC
    */
 
-  public void computeNotificationPayload(Context context,NotificationPayload notificationPayload) {
+  public void computeNotificationPayload(Context context, NotificationPayload notificationPayload) {
     LiveNotificationView liveNotificationView =
         NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
@@ -167,7 +172,6 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
       onShowNotificationLive.onNext(Pair.create(notificationPayload, liveNotificationView));
     }
   }
-
 
   /**
    * OBSERVABLES

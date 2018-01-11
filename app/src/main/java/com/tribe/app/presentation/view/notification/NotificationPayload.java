@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.notification;
 
 import android.support.annotation.StringDef;
 import com.google.gson.JsonArray;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.utils.StringUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class NotificationPayload implements Serializable {
   public static final String ACTION_JOINED = "joined";
   public static final String ACTION_LEFT = "left";
   public static final String CLICK_ACTION_GAME_LEADER = "game_friend_leader";
+  public static final String BODY_NEW_MESSAGE = "New message";
 
   private String user_id;
   private String body;
@@ -202,9 +204,8 @@ public class NotificationPayload implements Serializable {
   }
 
   public boolean isLive() {
-    return click_action == null ||
-        click_action.equals(CLICK_ACTION_BUZZ) ||
-        click_action.equals(CLICK_ACTION_LIVE);
+    return click_action == null || click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(
+        CLICK_ACTION_LIVE);
   }
 
   public boolean isUserCall() {
@@ -219,5 +220,18 @@ public class NotificationPayload implements Serializable {
 
     return (that.user_id != null ? user_id.equals(that.user_id)
         : (session_id != null ? session_id.equals(that.session_id) : session_id == null));
+  }
+
+  public static NotificationPayload createSupportNotificationPayload() {
+    NotificationPayload notificationPayloadSupport = new NotificationPayload();
+    notificationPayloadSupport.setBody(NotificationPayload.BODY_NEW_MESSAGE);
+    notificationPayloadSupport.setClickAction(NotificationPayload.CLICK_ACTION_MESSAGE);
+    notificationPayloadSupport.setTitle(Shortcut.SUPPORT_DISPLAYNAME);
+    notificationPayloadSupport.setUserDisplayName(Shortcut.SUPPORT_DISPLAYNAME);
+    notificationPayloadSupport.setUserId(Shortcut.SUPPORT);
+    notificationPayloadSupport.setUserPicture(Shortcut.SUPPORT_PICTURE);
+    notificationPayloadSupport.setUsers_ids(Shortcut.SUPPORT);
+    notificationPayloadSupport.setSound("message.caf");
+    return notificationPayloadSupport;
   }
 }
