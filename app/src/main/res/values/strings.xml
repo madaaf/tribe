@@ -439,6 +439,9 @@
 	<string name="live_members_menu_less">Less</string>
 	<string name="live_members_menu_added">Added</string>
 	<string name="live_members_drop_zone">DROP HERE</string>
+	<string name="live_members_invite_sms_ios">Invite on iMessage</string>
+	<string name="live_members_invite_sms_android">Invite by SMS</string>
+	<string name="live_members_invite_messenger">Invite on Messenger</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profile</string>
@@ -953,6 +956,7 @@
 	<!-- Leaderboards -->
 	<string name="leaderboards_title">Leaderboards</string>
 	<string name="leaderboards_score">Best score</string>
+	<string name="leaderboards_your_score">Your best score</string>
 	<string name="leaderboards_no_score">No score</string>
 	<string name="leaderboards_friends">Friends</string>
 	<string name="leaderboards_overall">Overall</string>
@@ -968,8 +972,6 @@
 	
 	<!-- Game Mode -->
 	<string name="gamemode_title">Game mode</string>
-	<string name="gamemode_alone_title">PLAY ALONE</string>
-	<string name="gamemode_alone_subtitle">Practice your skills!</string>
-	<string name="gamemode_multi_title">LIVE MULTIPLAYER</string>
-	<string name="gamemode_multi_subtitle">Battle your friends!</string>
+	<string name="gamemode_alone_title">SOLO TRAINING</string>
+	<string name="gamemode_multi_title">MULTIPLAYER</string>
 </resources>

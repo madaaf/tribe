@@ -439,6 +439,9 @@
 	<string name="live_members_menu_less">Moins</string>
 	<string name="live_members_menu_added">Invité</string>
 	<string name="live_members_drop_zone">RELACHE ICI</string>
+	<string name="live_members_invite_sms_ios">Inviter sur iMessage</string>
+	<string name="live_members_invite_sms_android">Inviter par SMS</string>
+	<string name="live_members_invite_messenger">Inviter sur Messenger</string>
 	
 	<!-- Profile -->
 	<string name="profile_title">Profil</string>
@@ -953,6 +956,7 @@
 	<!-- Leaderboards -->
 	<string name="leaderboards_title">Classements</string>
 	<string name="leaderboards_score">Meilleur score</string>
+	<string name="leaderboards_your_score">Votre meilleur score</string>
 	<string name="leaderboards_no_score">Pas de score</string>
 	<string name="leaderboards_friends">Amis</string>
 	<string name="leaderboards_overall">Global</string>
@@ -968,8 +972,6 @@
 	
 	<!-- Game Mode -->
 	<string name="gamemode_title">Mode de jeu</string>
-	<string name="gamemode_alone_title">SEUL</string>
-	<string name="gamemode_alone_subtitle">Entrainez vous !</string>
+	<string name="gamemode_alone_title">ENTRAINEMENT</string>
 	<string name="gamemode_multi_title">MULTIJOUEUR</string>
-	<string name="gamemode_multi_subtitle">Jouez avec vos amis !</string>
 </resources>

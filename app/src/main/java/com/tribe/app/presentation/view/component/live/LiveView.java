@@ -3,12 +3,14 @@ package com.tribe.app.presentation.view.component.live;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.CountDownTimer;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
@@ -79,6 +81,7 @@ import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_
 public class LiveView extends FrameLayout {
 
   public static final int LIVE_MAX = 8;
+  public static final int WAITING_SECONDE = 4;
 
   private static final int DURATION = 300;
 
@@ -749,7 +752,8 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || live.getRoom() != null && live.getRoom().acceptsRandom()) {
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || live.getRoom() != null && live.getRoom()
+        .acceptsRandom()) {
       viewControlsLive.btnChat.setVisibility(INVISIBLE);
       viewRinging.setVisibility(INVISIBLE);
     }
@@ -764,13 +768,38 @@ public class LiveView extends FrameLayout {
     viewLiveInvite.setLive(live);
 
     viewRinging.setLive(live);
-    viewRinging.startRinging();
 
     if (StringUtils.isEmpty(live.getGameId())) {
-      tempSubscriptions.add(Observable.timer(3000, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> onShouldJoinRoom.onNext(null)));
+      viewRinging.getViewTreeObserver()
+          .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+              viewRinging.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+              String txt = getContext().getString(R.string.live_ringing_in, WAITING_SECONDE);
+              viewRinging.setPictoCamera(txt);
+
+              CountDownTimer countDownTimer = new CountDownTimer(WAITING_SECONDE * 1000, 1000) {
+                public void onTick(long millisUntilFinished) {
+                  String txt =
+                      getContext().getString(R.string.live_ringing_in, millisUntilFinished / 1000);
+                  if (viewRinging != null) viewRinging.setTextTimer(txt);
+                }
+
+                public void onFinish() {
+                  if (viewRinging != null) {
+                    viewRinging.onFInish();
+                    viewRinging.startRinging();
+                  }
+                  onShouldJoinRoom.onNext(null);
+                }
+              };
+
+              countDownTimer.cancel();
+              countDownTimer.start();
+            }
+          });
     } else {
+      viewRinging.startRinging();
       onShouldJoinRoom.onNext(null);
     }
   }

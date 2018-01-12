@@ -97,8 +97,6 @@ public class LiveRingingView extends RelativeLayout {
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_live_chat_ringing, this);
     unbinder = ButterKnife.bind(this);
-
-    initViews();
   }
 
   private void initResources() {
@@ -143,7 +141,7 @@ public class LiveRingingView extends RelativeLayout {
       params.gravity = Gravity.CENTER;
       imageView.setImageResource(drawableId);
 
-      if (drawableId == R.drawable.picto_camera_0) {
+      if (drawableId == R.drawable.picto_camera_0) { // SOEF
         imageView.setAlpha(ALPHA_CAM_WHITE_INIT);
       } else {
         imageView.setAlpha(0f);
@@ -211,6 +209,28 @@ public class LiveRingingView extends RelativeLayout {
 
       txtRinging.setText(getResources().getString(R.string.live_members_ringing) + " " + name);
     }
+  }
+
+  public void onFInish() {
+    layoutCameras.removeAllViews();
+    initViews();
+  }
+
+  public void setPictoCamera(String txt) {
+    layoutCameras.removeAllViews();
+    ImageView imageView = new ImageView(getContext());
+    imageView.setImageResource(R.drawable.picto_camera_0);
+    imageView.setScaleX(SCALE_INIT);
+    imageView.setScaleY(SCALE_INIT);
+    layoutCameras.addView(imageView);
+    txtRinging.setAlpha(1f);
+    txtRinging.setText(txt);
+  }
+
+  public void setTextTimer(String txt) {
+    txtRinging.setText(txt);
+    txtRinging.setAlpha(1);
+    txtRinging.animate().alpha(0f).setDuration(1000).start();
   }
 
   private void setRoom(Room room) {

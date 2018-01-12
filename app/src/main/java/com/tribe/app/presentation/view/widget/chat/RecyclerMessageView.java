@@ -172,7 +172,7 @@ public class RecyclerMessageView extends IChat {
     seconde = (seconde < 1000) ? 1000 : seconde;
     CountDownTimer countDownTimer = new CountDownTimer(seconde, 1000) {
       public void onTick(long millisUntilFinished) {
-
+        //Timber.i(("ON TOCK " + list.get(i).getMessageContent() + " " + millisUntilFinished / 1000));
       }
 
       public void onFinish() {
@@ -354,7 +354,7 @@ public class RecyclerMessageView extends IChat {
     } else {
       if (allowGetMessageSupport()) {
         getMessageSupport = shortcut.getTypeSupport();
-        messagePresenter.getMessageSupport(shortcut.getTypeSupport()); // TODO SOEF
+        messagePresenter.getMessageSupport(shortcut.getTypeSupport());
       }
     }
   }
@@ -586,7 +586,7 @@ public class RecyclerMessageView extends IChat {
     }
   }
 
-  @Override public void successLoadingMessageDisk(List<Message> messages) { // TODO SOEF
+  @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.i("successLoadingMessageDisk " + messages.size());
     unreadMessage.clear();
     if (shortcut.isSupport()) {
