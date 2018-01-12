@@ -167,18 +167,15 @@ public class RecyclerMessageView extends IChat {
   int i = 0;
 
   private void addMessageWithFakeAnimation(List<Message> list) {
-    Timber.e("addMessageWithFakeAnimation " + list.size() + " i:" + i + " " + list.get(0)
-        .getMessageContent());
     setSupportTiping(true);
     int seconde = (list.get(i).getMessageContent().length()) * 100;
     seconde = (seconde < 1000) ? 1000 : seconde;
     CountDownTimer countDownTimer = new CountDownTimer(seconde, 1000) {
       public void onTick(long millisUntilFinished) {
-        Timber.e(("ON TOCK " + list.get(i).getMessageContent() + " " + millisUntilFinished / 1000));
+
       }
 
       public void onFinish() {
-        Timber.e("ON FINISH " + i + "  " + list.get(i).getMessageContent());
         setSupportTiping(false);
         messageAdapter.setItem(list.get(i));
         notifyDataSetChanged();
@@ -800,5 +797,9 @@ public class RecyclerMessageView extends IChat {
     ((MessageEmoji) m).setEmoji(color);
     ((MessageEmoji) m).setUpdating(isUpdating);
     messageAdapter.updateItem(messageAdapter.getItemCount() - 1, m);
+  }
+
+  public void onFinish() {
+    disablePushZendesk();
   }
 }

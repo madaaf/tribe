@@ -118,6 +118,7 @@ public class ChatActivity extends BaseActivity {
       setResult(Activity.RESULT_OK, resultIntent);
     }
     super.finish();
+    chatView.onFinish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_left);
   }
 

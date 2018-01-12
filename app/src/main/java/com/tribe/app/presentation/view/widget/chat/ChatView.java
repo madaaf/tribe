@@ -1170,4 +1170,8 @@ public class ChatView extends IChat {
   public void onReceiveZendeskNotif() {
     recyclerView.onReceiveZendeskNotif();
   }
+
+  public void onFinish() {
+    recyclerView.onFinish();
+  }
 }
