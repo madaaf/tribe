@@ -22,12 +22,13 @@
       android:id="@+id/txtTriviaTitle"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/vertical_margin_large"
       android:gravity="center"
       android:text="@string/game_trivia_status_pick_category"
-      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintBottom_toTopOf="@+id/viewAnswers"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/txtQuestion"
       />
 
   <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
@@ -165,23 +166,22 @@
       android:id="@+id/progressBar"
       android:layout_width="50dp"
       android:layout_height="50dp"
-      android:layout_marginTop="45dp"
       app:layout_constraintBottom_toTopOf="@+id/txtQuestion"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_chainStyle="packed"
       />
 
   <View
       android:id="@+id/progressBarBackground"
       android:layout_width="50dp"
       android:layout_height="50dp"
-      android:layout_marginTop="45dp"
       android:background="@drawable/shape_ring_white10_5dp"
-      app:layout_constraintBottom_toTopOf="@+id/txtQuestion"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintBottom_toBottomOf="@id/progressBar"
+      app:layout_constraintEnd_toEndOf="@id/progressBar"
+      app:layout_constraintStart_toStartOf="@id/progressBar"
+      app:layout_constraintTop_toTopOf="@id/progressBar"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
@@ -201,8 +201,11 @@
       android:id="@+id/txtQuestion"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_margin="@dimen/margin_horizontal"
+      android:layout_marginEnd="@dimen/horizontal_margin"
+      android:layout_marginStart="@dimen/horizontal_margin"
+      android:layout_marginTop="@dimen/vertical_margin_small"
       android:gravity="center"
+      app:layout_constraintBottom_toTopOf="@+id/txtTriviaTitle"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@id/progressBar"
@@ -233,6 +236,9 @@
       android:id="@+id/viewAnswers"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/horizontal_margin"
+      android:layout_marginStart="@dimen/horizontal_margin"
+      android:layout_marginTop="@dimen/vertical_margin_small"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"

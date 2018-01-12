@@ -17,22 +17,40 @@ public class TriviaQuestionsDeserializer implements JsonDeserializer<List<Trivia
 
   @Override public List<TriviaQuestion> deserialize(JsonElement je, Type typeOfT,
       JsonDeserializationContext context) throws JsonParseException {
-    JsonArray results = je.getAsJsonObject().getAsJsonArray("results");
+
     List<TriviaQuestion> triviaQuestionsList = new ArrayList<>();
     Gson gson = new Gson();
     Type listType = new TypeToken<List<String>>() {
     }.getType();
 
-    if (results != null) {
-      for (final JsonElement jsonElement : results) {
-        if (!jsonElement.isJsonNull()) {
-          JsonObject jo = jsonElement.getAsJsonObject();
-          TriviaQuestion triviaQuestions = new TriviaQuestion();
-          triviaQuestions.setAnswer(jo.get("correct_answer").getAsString());
-          triviaQuestions.setAlternativeAnswers(
-              gson.fromJson(jo.get("incorrect_answers"), listType));
-          triviaQuestions.setQuestion(jo.get("question").getAsString());
-          triviaQuestionsList.add(triviaQuestions);
+    if (je.isJsonObject()) {
+      JsonArray results = je.getAsJsonObject().getAsJsonArray("results");
+
+      if (results != null) {
+        for (final JsonElement jsonElement : results) {
+          if (!jsonElement.isJsonNull()) {
+            JsonObject jo = jsonElement.getAsJsonObject();
+            TriviaQuestion triviaQuestion = new TriviaQuestion();
+            triviaQuestion.setAnswer(jo.get("correct_answer").getAsString());
+            triviaQuestion.setAlternativeAnswers(
+                gson.fromJson(jo.get("incorrect_answers"), listType));
+            triviaQuestion.setQuestion(jo.get("question").getAsString());
+            triviaQuestionsList.add(triviaQuestion);
+          }
+        }
+      }
+    } else {
+      JsonArray jsonArray = je.getAsJsonArray();
+
+      for (JsonElement triviaQuestionElement : jsonArray) {
+        if (triviaQuestionElement != null && !triviaQuestionElement.isJsonNull() && triviaQuestionElement.isJsonObject()) {
+          JsonObject obj = triviaQuestionElement.getAsJsonObject();
+          TriviaQuestion triviaQuestion = new TriviaQuestion();
+          triviaQuestion.setId(obj.get("id").getAsString());
+          triviaQuestion.setAnswer(obj.get("answer").getAsString());
+          triviaQuestion.setQuestion(obj.get("question").getAsString());
+          triviaQuestion.setAlternativeAnswers(gson.fromJson(obj.get("alternativeAnswers"), listType));
+          triviaQuestionsList.add(triviaQuestion);
         }
       }
     }

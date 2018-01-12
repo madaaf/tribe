@@ -1154,6 +1154,7 @@ public class LiveView extends FrameLayout {
       String tagDuration = gameId + TagManagerUtils.tagGameDurationSuffix;
 
       callGameDurationSubscription = Observable.interval(1, TimeUnit.SECONDS)
+          .onBackpressureBuffer()
           .observeOn(AndroidSchedulers.mainThread())
           .doOnUnsubscribe(() -> {
             double durationGame = getDuration(startedAt);

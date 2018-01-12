@@ -50,6 +50,8 @@ public class GameTriviaView extends GameViewWithRanking {
   @BindView(R.id.viewCategoryWorld) GameTriviaCategoryView viewCategorieWorld;
   @BindView(R.id.viewCategoryGames) GameTriviaCategoryView viewCategorieGames;
   @BindView(R.id.txtTriviaTitle) TextViewFont txtTitle;
+  @BindView(R.id.txtQuestion) TextViewFont txtQuestion;
+  @BindView(R.id.txtQuestionCount) TextViewFont txtQuestionCount;
   @BindView(R.id.groupInit) Group groupInit;
   @BindView(R.id.progressBar) CircularProgressBar progressBar;
   @BindView(R.id.viewAnswers) GameTriviaAnswersView viewAnswers;
@@ -157,7 +159,9 @@ public class GameTriviaView extends GameViewWithRanking {
 
     Collections.shuffle(category.getQuestions());
     TriviaQuestion triviaQuestion = category.getQuestions().get(0);
-    txtTitle.setText(triviaQuestion.getQuestion());
+    txtQuestion.setText(triviaQuestion.getQuestion());
+    txtTitle.setText(R.string.game_trivia_status_guess);
+    txtQuestionCount.setText("1");
     viewAnswers.initQuestion(triviaQuestion);
   }
 

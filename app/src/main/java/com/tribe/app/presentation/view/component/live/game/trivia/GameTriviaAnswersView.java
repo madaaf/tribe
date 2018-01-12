@@ -1,11 +1,11 @@
 package com.tribe.app.presentation.view.component.live.game.trivia;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import butterknife.BindViews;
@@ -15,8 +15,8 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -34,8 +34,7 @@ public class GameTriviaAnswersView extends LinearLayout {
 
   // VARIABLES
   private Unbinder unbinder;
-  private String title;
-  private Drawable icon;
+  private Integer[] colors;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -46,12 +45,6 @@ public class GameTriviaAnswersView extends LinearLayout {
 
   public GameTriviaAnswersView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
-
-    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.GameTriviaCategoryView);
-    icon = a.getDrawable(R.styleable.GameTriviaCategoryView_categoryIcon);
-    title = a.getString(R.styleable.GameTriviaCategoryView_categoryTitle);
-    a.recycle();
-
     init();
   }
 
@@ -66,7 +59,10 @@ public class GameTriviaAnswersView extends LinearLayout {
   }
 
   private void initResources() {
-
+    colors = new Integer[] {
+        R.color.trivia_answer_1, R.color.trivia_answer_2, R.color.trivia_answer_3,
+        R.color.trivia_answer_4
+    };
   }
 
   private void initDependencyInjector() {
@@ -79,6 +75,7 @@ public class GameTriviaAnswersView extends LinearLayout {
     unbinder = ButterKnife.bind(this);
 
     setOrientation(VERTICAL);
+    setGravity(Gravity.CENTER);
   }
 
   private void initSubscriptions() {
@@ -90,12 +87,17 @@ public class GameTriviaAnswersView extends LinearLayout {
    */
 
   public void initQuestion(TriviaQuestion triviaQuestion) {
-    Collections.shuffle(listAnswerViews);
-    GameTriviaAnswerView rightAnswer = listAnswerViews.get(0);
+    int random = new Random().nextInt(listAnswerViews.size());
+    GameTriviaAnswerView rightAnswer = listAnswerViews.get(random);
     rightAnswer.initAnswer(triviaQuestion.getAnswer());
+    rightAnswer.setAnswerBackground(ContextCompat.getColor(getContext(), colors[random]));
 
-    for (int i = 1; i < listAnswerViews.size() - 1; i++)
-      listAnswerViews.get(i).initAnswer(triviaQuestion.getAlternativeAnswers().get(i));
+    for (int i = 0; i < listAnswerViews.size() - 1; i++) {
+      if (i != random) {
+        listAnswerViews.get(i).initAnswer(triviaQuestion.getAlternativeAnswers().get(i));
+        listAnswerViews.get(i).setAnswerBackground(ContextCompat.getColor(getContext(), colors[i]));
+      }
+    }
   }
 
   /**

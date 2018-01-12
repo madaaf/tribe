@@ -31,11 +31,11 @@ public class GameTriviaAnswerView extends FrameLayout {
 
   private static final int DURATION = 300;
 
-  @IntDef({ QUESTION, RIGHT_ANSWER_GUESSED, RIGHT_ANSWER_NOT_GUESSED, WRONG_ANSWER })
+  @IntDef({ ANSWER, RIGHT_ANSWER_GUESSED, RIGHT_ANSWER_NOT_GUESSED, WRONG_ANSWER })
   public @interface CellType {
   }
 
-  public static final int QUESTION = 0;
+  public static final int ANSWER = 0;
   public static final int RIGHT_ANSWER_GUESSED = 1;
   public static final int RIGHT_ANSWER_NOT_GUESSED = 2;
   public static final int WRONG_ANSWER = 3;
@@ -90,6 +90,7 @@ public class GameTriviaAnswerView extends FrameLayout {
     background = new GradientDrawable();
     background.setShape(GradientDrawable.RECTANGLE);
     background.setCornerRadius(screenUtils.dpToPx(6));
+    setBackground(background);
   }
 
   private void initSubscriptions() {
@@ -101,8 +102,12 @@ public class GameTriviaAnswerView extends FrameLayout {
    */
 
   public void initAnswer(String answer) {
-    setType(QUESTION);
+    setType(ANSWER);
     txtAnswer.setText(answer);
+  }
+
+  public void setAnswerBackground(int color) {
+    background.setColor(color);
   }
 
   public void setType(@CellType int type) {
@@ -115,10 +120,9 @@ public class GameTriviaAnswerView extends FrameLayout {
     }
 
     switch (type) {
-      case QUESTION:
+      case ANSWER:
         imgGuessed.setAlpha(0f);
         imgNotGuessed.setAlpha(0f);
-        background.setColor(Color.WHITE);
         break;
 
       case RIGHT_ANSWER_GUESSED:
