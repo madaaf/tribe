@@ -160,7 +160,9 @@ public class LiveRingingView extends RelativeLayout {
         .setDuration(DURATION_INIT)
         .alpha(1)
         .setInterpolator(new DecelerateInterpolator());
-
+    if (views == null) {
+      initViews();
+    }
     for (int i = views.size() - 1; i >= 0; i--) {
       View view = views.get(i);
       view.animate()

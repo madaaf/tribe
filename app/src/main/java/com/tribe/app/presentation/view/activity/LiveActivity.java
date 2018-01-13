@@ -425,10 +425,6 @@ public class LiveActivity extends BaseActivity
         .inject(this);
   }
 
-  private void ok() {
-
-  }
-
   private void initRoom() {
     livePresenter.onViewAttached(this);
 
