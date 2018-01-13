@@ -49,6 +49,8 @@ public class Game {
   public static final String GAME_TRIVIA = "trivia";
   public static final String GAME_SUPPORT = "GAME_SUPPORT";
   public static final String GAME_LOGO = "GAME_LOGO";
+  public static final String GAME_BIRD_RUSH = "birdRush";
+
 
   // VARIABLE
   protected Context context;
@@ -88,9 +90,11 @@ public class Game {
     this.id = id;
     this.localFrameDifferent = id.equals(GAME_POST_IT);
     this.hasView = !id.equals(GAME_POST_IT);
-    this.isOverLive =
-        id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
     this.isNotOverLiveWithScores = id.equals(GAME_TRIVIA);
+     this.isOverLive = id.equals(GAME_INVADERS)
+        || id.equals(GAME_BIRD_RUSH)
+        || id.equals(GAME_SPEED_RACER)
+        || id.equals(GAME_SLICE_FRUIT);
     this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
     this.needsLandscape = id.equals(GAME_SLICE_FRUIT);
     this.peerList = new ArrayList<>();

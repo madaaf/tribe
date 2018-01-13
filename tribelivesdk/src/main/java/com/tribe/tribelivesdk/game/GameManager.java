@@ -36,7 +36,7 @@ import rx.subscriptions.CompositeSubscription;
 
   public static final String[] playableGames = {
       Game.GAME_SLICE_FRUIT, Game.GAME_DRAW, Game.GAME_SPEED_RACER, Game.GAME_CHALLENGE,
-      Game.GAME_INVADERS, Game.GAME_POST_IT, Game.GAME_TRIVIA
+     Game.GAME_INVADERS, Game.GAME_POST_IT, Game.GAME_BIRD_RUSH
   };
 
   // VARIABLES
@@ -95,6 +95,7 @@ import rx.subscriptions.CompositeSubscription;
       }
     }
   }
+
 
   public void initSubscriptions() {
     for (Game game : gameList) {

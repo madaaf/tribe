@@ -141,7 +141,7 @@ public class LiveRingingView extends RelativeLayout {
       params.gravity = Gravity.CENTER;
       imageView.setImageResource(drawableId);
 
-      if (drawableId == R.drawable.picto_camera_0) { // SOEF
+      if (drawableId == R.drawable.picto_camera_0) {
         imageView.setAlpha(ALPHA_CAM_WHITE_INIT);
       } else {
         imageView.setAlpha(0f);
