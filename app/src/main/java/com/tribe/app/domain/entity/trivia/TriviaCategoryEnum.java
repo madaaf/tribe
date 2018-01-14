@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity.trivia;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -32,6 +33,12 @@ public enum TriviaCategoryEnum {
     }
 
     return null;
+  }
+
+  public static List<TriviaQuestion> getRandomQuestions(int nb, TriviaCategoryEnum category) {
+    List<TriviaQuestion> list = new ArrayList<>(category.getQuestions());
+    Collections.shuffle(list);
+    return list.subList(0, nb);
   }
 
   public int getId() {

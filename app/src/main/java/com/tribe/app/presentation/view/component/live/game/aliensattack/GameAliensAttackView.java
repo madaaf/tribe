@@ -77,10 +77,10 @@ public class GameAliensAttackView extends GameViewWithEngine {
     subscriptionsRoom.add(webRTCRoom.onGameMessage()
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(jsonObject -> {
-          if (jsonObject.has(game.getId())) {
+        .subscribe(pair -> {
+          if (pair.second.has(game.getId())) {
             try {
-              JSONObject message = jsonObject.getJSONObject(game.getId());
+              JSONObject message = pair.second.getJSONObject(game.getId());
               if (message.has(ACTION_KEY)) {
                 String actionKey = message.getString(ACTION_KEY);
                 if (actionKey.equals(ACTION_POP_ALIEN)) {

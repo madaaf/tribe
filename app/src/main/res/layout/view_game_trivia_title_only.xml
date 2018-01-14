@@ -200,6 +200,18 @@
       app:constraint_referenced_ids="progressBar, progressBarBackground, txtQuestionCount"
       />
 
+  <ImageView
+      android:id="@+id/imgBackground"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:scaleType="fitCenter"
+      android:src="@drawable/game_trivia_bg"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="parent"
+      />
+
   <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaAnswersView
       android:id="@+id/viewAnswers"
       android:layout_width="0dp"

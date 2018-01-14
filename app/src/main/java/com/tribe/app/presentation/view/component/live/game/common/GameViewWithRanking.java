@@ -11,6 +11,7 @@ import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -83,10 +84,10 @@ public abstract class GameViewWithRanking extends GameView {
     subscriptionsRoom.add(webRTCRoom.onGameMessage()
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(jsonObject -> receiveMessage(jsonObject)));
+        .subscribe(pair -> receiveMessage(pair.first, pair.second)));
   }
 
-  private void receiveMessage(JSONObject jsonObject) {
+  protected void receiveMessage(TribeSession tribeSession, JSONObject jsonObject) {
     if (jsonObject.has(game.getId())) {
       try {
         JSONObject message = jsonObject.getJSONObject(game.getId());
@@ -219,7 +220,7 @@ public abstract class GameViewWithRanking extends GameView {
 
     JSONObject jsonObject = getCompleteContextPayload(key, contextMap);
     webRTCRoom.sendToPeers(jsonObject, true);
-    receiveMessage(jsonObject);
+    receiveMessage(null, jsonObject);
   }
 
   /**
@@ -334,6 +335,10 @@ public abstract class GameViewWithRanking extends GameView {
   public void dispose() {
     super.dispose();
     subscriptionsSession.unsubscribe();
+  }
+
+  public int getScore(String userId) {
+    return mapRankingById.get(userId);
   }
 
   /**

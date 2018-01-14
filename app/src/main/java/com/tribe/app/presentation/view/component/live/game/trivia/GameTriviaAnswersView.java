@@ -18,6 +18,8 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
 import java.util.Random;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -38,6 +40,9 @@ public class GameTriviaAnswersView extends LinearLayout {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private CompositeSubscription questionSubscriptions = new CompositeSubscription();
+  private PublishSubject<Void> onAnsweredRight = PublishSubject.create();
+  private PublishSubject<Void> onAnsweredWrong = PublishSubject.create();
 
   public GameTriviaAnswersView(@NonNull Context context) {
     super(context);
@@ -92,10 +97,17 @@ public class GameTriviaAnswersView extends LinearLayout {
     rightAnswer.initAnswer(triviaQuestion.getAnswer());
     rightAnswer.setAnswerBackground(ContextCompat.getColor(getContext(), colors[random]));
 
+    questionSubscriptions.add(
+        rightAnswer.onClick().subscribe(aVoid -> onAnsweredRight.onNext(null)));
+
     for (int i = 0; i < listAnswerViews.size() - 1; i++) {
       if (i != random) {
-        listAnswerViews.get(i).initAnswer(triviaQuestion.getAlternativeAnswers().get(i));
-        listAnswerViews.get(i).setAnswerBackground(ContextCompat.getColor(getContext(), colors[i]));
+        GameTriviaAnswerView answerView = listAnswerViews.get(i);
+        answerView.initAnswer(triviaQuestion.getAlternativeAnswers().get(i));
+        answerView.setAnswerBackground(ContextCompat.getColor(getContext(), colors[i]));
+
+        questionSubscriptions.add(
+            answerView.onClick().subscribe(aVoid -> onAnsweredWrong.onNext(null)));
       }
     }
   }
@@ -104,4 +116,11 @@ public class GameTriviaAnswersView extends LinearLayout {
    * OBSERVABLES
    */
 
+  public Observable<Void> onAnsweredRight() {
+    return onAnsweredRight;
+  }
+
+  public Observable<Void> onAnsweredWrong() {
+    return onAnsweredWrong;
+  }
 }

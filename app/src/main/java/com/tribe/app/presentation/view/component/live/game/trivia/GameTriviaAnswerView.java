@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -21,6 +22,8 @@ import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -51,9 +54,11 @@ public class GameTriviaAnswerView extends FrameLayout {
   // VARIABLES
   private Unbinder unbinder;
   private GradientDrawable background;
+  private String answer;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Void> onClick = PublishSubject.create();
 
   public GameTriviaAnswerView(@NonNull Context context) {
     super(context);
@@ -91,6 +96,10 @@ public class GameTriviaAnswerView extends FrameLayout {
     background.setShape(GradientDrawable.RECTANGLE);
     background.setCornerRadius(screenUtils.dpToPx(6));
     setBackground(background);
+
+    setClickable(true);
+    setForeground(ContextCompat.getDrawable(getContext(), R.drawable.selectable_button));
+    setOnClickListener(v -> onClick.onNext(null));
   }
 
   private void initSubscriptions() {
@@ -102,6 +111,7 @@ public class GameTriviaAnswerView extends FrameLayout {
    */
 
   public void initAnswer(String answer) {
+    this.answer = answer;
     setType(ANSWER);
     txtAnswer.setText(answer);
   }
@@ -170,4 +180,7 @@ public class GameTriviaAnswerView extends FrameLayout {
    * OBSERVABLES
    */
 
+  public Observable<Void> onClick() {
+    return onClick;
+  }
 }

@@ -50,6 +50,7 @@ import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAlie
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackBackground;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
+import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
 import com.tribe.app.presentation.view.component.onboarding.PhoneNumberView;
@@ -210,6 +211,8 @@ import dagger.Component;
   void inject(GameManagerView gameManagerView);
 
   void inject(GameView gameView);
+
+  void inject(GameTriviaView gameTriviaView);
 
   void inject(GameChallengesView gameChallengesView);
 

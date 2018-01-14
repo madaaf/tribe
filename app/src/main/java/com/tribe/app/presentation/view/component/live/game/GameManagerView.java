@@ -116,19 +116,6 @@ public class GameManagerView extends FrameLayout {
       mapGameData = new HashMap<>();
     }
 
-    gameMVPViewAdapter = new GameMVPViewAdapter() {
-      @Override public void onTriviaData(Map<String, List<TriviaQuestion>> map) {
-        if (currentGameView != null && currentGameView instanceof GameTriviaView) {
-          for (String key : map.keySet()) {
-            TriviaCategoryEnum.setQuestionsForCategory(key, map.get(key));
-          }
-
-          GameTriviaView gameTriviaView = (GameTriviaView) currentGameView;
-          gameTriviaView.showCategories();
-        }
-      }
-    };
-
     setBackground(null);
 
     initSubscriptions();
@@ -165,10 +152,6 @@ public class GameManagerView extends FrameLayout {
           if (currentGameView instanceof GameChallengesView) {
             GameChallengesView gameChallengesView = (GameChallengesView) currentGameView;
             gameChallengesView.displayPopup();
-          }
-
-          if (currentGameView instanceof GameTriviaView) {
-            gamePresenter.getTriviaData();
           }
 
           currentGameView.setNextGame();
@@ -258,6 +241,7 @@ public class GameManagerView extends FrameLayout {
       gameView = gameAlienAttacksView;
     } else if (game.getId().equals(Game.GAME_TRIVIA)) {
       GameTriviaView gameTriviaView = new GameTriviaView(getContext());
+      subscriptionsGame.add(gameTriviaView.onAddScore().subscribe(onAddScore));
       gameView = gameTriviaView;
     } else if (game.isWeb()) {
       GameWebView gameWebView = new GameWebView(getContext());
