@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.ViewTreeObserver;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
@@ -27,11 +28,11 @@ import timber.log.Timber;
 
 public class GameBirdRushView extends GameViewWithEngine {
 
-  // VARIABLES
+  private static final Long SPEED_BACK_SCROLL = 5000L;
   private boolean startedAsSingle = false, didRestartWhenReady = false;
 
-  final ImageView backgroundOne = (ImageView) findViewById(R.id.background_one);
-  final ImageView backgroundTwo = (ImageView) findViewById(R.id.background_two);
+  @BindView(R.id.background_one) ImageView backgroundOne;
+  @BindView(R.id.background_two) ImageView backgroundTwo;
 
   private ValueAnimator animator;
 
@@ -48,21 +49,24 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     inflater.inflate(R.layout.view_game_bird_rush, this, true);
     unbinder = ButterKnife.bind(this);
+    setBackScrolling();
+  }
+
+  private void setBackScrolling() {
     Timber.e("SOEF ");
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        Timber.e("SOEF ok");
         animator = ValueAnimator.ofFloat(0.0f, 1.0f);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setInterpolator(new LinearInterpolator());
-        animator.setDuration(10000L);
+        animator.setDuration(SPEED_BACK_SCROLL);
         animator.addUpdateListener(animation -> {
           final float progress = (float) animation.getAnimatedValue();
           final float width = backgroundOne.getWidth();
           final float translationX = -width * progress;
           backgroundOne.setTranslationX(translationX);
-          backgroundTwo.setTranslationX(translationX - width);
+          backgroundTwo.setTranslationX(translationX + width);
         });
         animator.start();
       }
