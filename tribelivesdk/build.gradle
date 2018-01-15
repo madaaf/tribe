@@ -1,6 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'me.tatarka.retrolambda'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
   def globalConfiguration = rootProject.extensions.getByName("ext")
@@ -49,6 +47,7 @@ android {
       jniLibs.srcDir('src/main/jniLibs/')
     }
   }
+  buildToolsVersion '26.0.2'
 }
 
 dependencies {
@@ -67,7 +66,7 @@ dependencies {
   compile presentationDependencies.guava
   compile presentationDependencies.googleVision
 
-  apt presentationDependencies.daggerCompiler
+  annotationProcessor presentationDependencies.daggerCompiler
   compile presentationDependencies.dagger
 
   compile presentationDependencies.rxJava
