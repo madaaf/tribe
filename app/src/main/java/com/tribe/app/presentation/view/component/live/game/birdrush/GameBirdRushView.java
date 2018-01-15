@@ -5,6 +5,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.ViewTreeObserver;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
@@ -31,7 +33,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   final ImageView backgroundOne = (ImageView) findViewById(R.id.background_one);
   final ImageView backgroundTwo = (ImageView) findViewById(R.id.background_two);
 
-  final ValueAnimator animator = ValueAnimator.ofFloat(0.0f, 1.0f);
+  private ValueAnimator animator;
 
   public GameBirdRushView(@NonNull Context context) {
     super(context);
@@ -46,18 +48,25 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     inflater.inflate(R.layout.view_game_bird_rush, this, true);
     unbinder = ButterKnife.bind(this);
-/*
-    animator.setRepeatCount(ValueAnimator.INFINITE);
-    animator.setInterpolator(new LinearInterpolator());
-    animator.setDuration(10000L);
-    animator.addUpdateListener(animation -> {
-      final float progress = (float) animation.getAnimatedValue();
-      final float width = backgroundOne.getWidth();
-      final float translationX = width * progress;
-      backgroundOne.setTranslationX(translationX);
-      backgroundTwo.setTranslationX(translationX - width);
+    Timber.e("SOEF ");
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override public void onGlobalLayout() {
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        Timber.e("SOEF ok");
+        animator = ValueAnimator.ofFloat(0.0f, 1.0f);
+        animator.setRepeatCount(ValueAnimator.INFINITE);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setDuration(10000L);
+        animator.addUpdateListener(animation -> {
+          final float progress = (float) animation.getAnimatedValue();
+          final float width = backgroundOne.getWidth();
+          final float translationX = -width * progress;
+          backgroundOne.setTranslationX(translationX);
+          backgroundTwo.setTranslationX(translationX - width);
+        });
+        animator.start();
+      }
     });
-    animator.start();*/
   }
 
   @Override protected GameEngine generateEngine() {
