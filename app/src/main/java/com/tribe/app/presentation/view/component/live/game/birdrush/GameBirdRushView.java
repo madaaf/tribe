@@ -1,9 +1,11 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.widget.ImageView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
@@ -26,6 +28,11 @@ public class GameBirdRushView extends GameViewWithEngine {
   // VARIABLES
   private boolean startedAsSingle = false, didRestartWhenReady = false;
 
+  final ImageView backgroundOne = (ImageView) findViewById(R.id.background_one);
+  final ImageView backgroundTwo = (ImageView) findViewById(R.id.background_two);
+
+  final ValueAnimator animator = ValueAnimator.ofFloat(0.0f, 1.0f);
+
   public GameBirdRushView(@NonNull Context context) {
     super(context);
   }
@@ -39,6 +46,18 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     inflater.inflate(R.layout.view_game_bird_rush, this, true);
     unbinder = ButterKnife.bind(this);
+/*
+    animator.setRepeatCount(ValueAnimator.INFINITE);
+    animator.setInterpolator(new LinearInterpolator());
+    animator.setDuration(10000L);
+    animator.addUpdateListener(animation -> {
+      final float progress = (float) animation.getAnimatedValue();
+      final float width = backgroundOne.getWidth();
+      final float translationX = width * progress;
+      backgroundOne.setTranslationX(translationX);
+      backgroundTwo.setTranslationX(translationX - width);
+    });
+    animator.start();*/
   }
 
   @Override protected GameEngine generateEngine() {
