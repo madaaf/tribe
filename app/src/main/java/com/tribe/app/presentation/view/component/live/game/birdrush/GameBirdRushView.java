@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -8,9 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -100,39 +101,49 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   }
 
+  ValueAnimator va;
+
   public void jump() {
-    Timber.e("OK " + bird.getX() + " " + bird.getY() + " " + bird.getLeft() + " " + bird.getTop());
-    Animation animation =
-        new TranslateAnimation(bird.getLeft(), bird.getLeft(), bird.getY(), bird.getTop() - 200);
-    animation.setDuration(1000);
-    animation.setFillAfter(true);
-    bird.startAnimation(animation);
+
+    if (va != null) {
+      va.cancel();
+      // bird.clearAnimation();
+    }
+    va = ValueAnimator.ofFloat(bird.getY(), bird.getY() - 100);
+    va.setDuration(100);
+    va.addUpdateListener(animation -> {
+      Float value = (float) animation.getAnimatedValue();
+      Timber.e("SOEF VALUE " + value + " " + bird.getTop());
+      bird.setY(value);
+    });
+    va.addListener(new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        super.onAnimationEnd(animation);
+        down();
+      }
+    });
+    //va.addUpdateListener() ;
+    va.start();
   }
 
   public void down() {
+    if (va != null) {
+      va.cancel();
+      // bird.clearAnimation();
+    }
+    
+    va = ValueAnimator.ofFloat(bird.getY(), bird.getY() + screenUtils.getHeightPx());
+    va.setDuration(1000);
+    va.setInterpolator(new AccelerateInterpolator());
+    va.addUpdateListener(animation -> {
+      Float value = (float) animation.getAnimatedValue();
+      Timber.e("SOEF VALUE " + value + " " + bird.getTop() + " " + screenUtils.getHeightPx());
+      bird.setY(value);
+    });
 
+    //va.addUpdateListener() ;
+    va.start();
   }
-
-  int i = 0;
-
- /* public void jump() {
-    i++;
-    Timber.e("JUMP " + bird.getTop() + " " + bird.getY());
-    //bird.clearAnimation();
-    bird.animate()
-        .translationY(-200 * i)
-        .setInterpolator(new AccelerateDecelerateInterpolator())
-        .setDuration(1000)
-        .withEndAction(() -> down())
-        .start();
-    //
-  }
-
-  public void down() {
-    Timber.e("AFTER JUMP " + bird.getTop() + " " + bird.getY());
-    // bird.clearAnimation();
-    // bird.animate().translationY(500).setDuration(1000).start();
-  }*/
 
   private void setBackScrolling() {
     Timber.e("SOEF ");
