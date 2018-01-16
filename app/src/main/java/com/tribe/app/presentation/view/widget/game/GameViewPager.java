@@ -10,6 +10,7 @@ import android.view.MotionEvent;
  */
 
 public class GameViewPager extends ViewPager {
+
   public GameViewPager(Context context) {
     super(context);
   }
