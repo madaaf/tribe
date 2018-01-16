@@ -17,8 +17,10 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -37,12 +39,13 @@ public class GameTriviaAnswersView extends LinearLayout {
   // VARIABLES
   private Unbinder unbinder;
   private Integer[] colors;
+  private GameTriviaAnswerView rightAnswerView, clickedAnswerView;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private CompositeSubscription questionSubscriptions = new CompositeSubscription();
-  private PublishSubject<Void> onAnsweredRight = PublishSubject.create();
-  private PublishSubject<Void> onAnsweredWrong = PublishSubject.create();
+  private PublishSubject<GameTriviaAnswerView> onAnsweredRight = PublishSubject.create();
+  private PublishSubject<GameTriviaAnswerView> onAnsweredWrong = PublishSubject.create();
 
   public GameTriviaAnswersView(@NonNull Context context) {
     super(context);
@@ -92,35 +95,61 @@ public class GameTriviaAnswersView extends LinearLayout {
    */
 
   public void initQuestion(TriviaQuestion triviaQuestion) {
+    if (questionSubscriptions != null) questionSubscriptions.clear();
+
     int random = new Random().nextInt(listAnswerViews.size());
-    GameTriviaAnswerView rightAnswer = listAnswerViews.get(random);
-    rightAnswer.initAnswer(triviaQuestion.getAnswer());
-    rightAnswer.setAnswerBackground(ContextCompat.getColor(getContext(), colors[random]));
+    rightAnswerView = listAnswerViews.get(random);
+    rightAnswerView.initAnswer(triviaQuestion.getAnswer(),
+        ContextCompat.getColor(getContext(), colors[random]));
 
     questionSubscriptions.add(
-        rightAnswer.onClick().subscribe(aVoid -> onAnsweredRight.onNext(null)));
+        rightAnswerView.onClick().subscribe(value -> onAnsweredRight.onNext(rightAnswerView)));
 
-    for (int i = 0; i < listAnswerViews.size() - 1; i++) {
+    for (int i = 0; i < listAnswerViews.size(); i++) {
       if (i != random) {
         GameTriviaAnswerView answerView = listAnswerViews.get(i);
-        answerView.initAnswer(triviaQuestion.getAlternativeAnswers().get(i));
-        answerView.setAnswerBackground(ContextCompat.getColor(getContext(), colors[i]));
+        answerView.initAnswer((i > random ? triviaQuestion.getAlternativeAnswers().get(i - 1)
+                : triviaQuestion.getAlternativeAnswers().get(i)),
+            ContextCompat.getColor(getContext(), colors[i]));
 
         questionSubscriptions.add(
-            answerView.onClick().subscribe(aVoid -> onAnsweredWrong.onNext(null)));
+            answerView.onClick().subscribe(value -> onAnsweredWrong.onNext(answerView)));
       }
     }
+  }
+
+  public void computeAnswers(GameTriviaAnswerView clickedAnswer, boolean isRight) {
+    this.clickedAnswerView = clickedAnswer;
+    if (isRight) {
+      clickedAnswerView.showRightAnswer();
+    } else {
+      clickedAnswerView.showWrongAnswer();
+    }
+
+    for (int i = 0; i < listAnswerViews.size(); i++) {
+      GameTriviaAnswerView answerView = listAnswerViews.get(i);
+      if (answerView != clickedAnswerView) answerView.showBogusAnswer();
+    }
+  }
+
+  public void animateAnswerResult() {
+    if (clickedAnswerView == rightAnswerView) return;
+    clickedAnswerView.animateBogusAnswer();
+
+    subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> rightAnswerView.animateRightAnswer()));
   }
 
   /**
    * OBSERVABLES
    */
 
-  public Observable<Void> onAnsweredRight() {
+  public Observable<GameTriviaAnswerView> onAnsweredRight() {
     return onAnsweredRight;
   }
 
-  public Observable<Void> onAnsweredWrong() {
+  public Observable<GameTriviaAnswerView> onAnsweredWrong() {
     return onAnsweredWrong;
   }
 }

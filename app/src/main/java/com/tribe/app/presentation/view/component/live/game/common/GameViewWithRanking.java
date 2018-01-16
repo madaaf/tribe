@@ -338,7 +338,8 @@ public abstract class GameViewWithRanking extends GameView {
   }
 
   public int getScore(String userId) {
-    return mapRankingById.get(userId);
+    if (mapRankingById.containsKey(userId)) return mapRankingById.get(userId);
+    return 0;
   }
 
   /**

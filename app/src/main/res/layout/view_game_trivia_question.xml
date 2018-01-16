@@ -199,12 +199,12 @@
 
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtQuestion"
-      android:layout_width="0dp"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="@dimen/horizontal_margin"
-      android:layout_marginStart="@dimen/horizontal_margin"
       android:layout_marginTop="@dimen/vertical_margin_small"
       android:gravity="center"
+      android:paddingEnd="100dp"
+      android:paddingStart="100dp"
       app:layout_constraintBottom_toTopOf="@+id/txtTriviaTitle"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"

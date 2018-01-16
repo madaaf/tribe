@@ -1,24 +1,29 @@
 package com.tribe.app.presentation.view.component.live.game.trivia;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FontUtils;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
@@ -30,20 +35,13 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 12/21/2017.
  */
 
-public class GameTriviaAnswerView extends FrameLayout {
+public class GameTriviaAnswerView extends LinearLayout {
 
   private static final int DURATION = 300;
 
-  @IntDef({ ANSWER, RIGHT_ANSWER_GUESSED, RIGHT_ANSWER_NOT_GUESSED, WRONG_ANSWER })
-  public @interface CellType {
-  }
-
-  public static final int ANSWER = 0;
-  public static final int RIGHT_ANSWER_GUESSED = 1;
-  public static final int RIGHT_ANSWER_NOT_GUESSED = 2;
-  public static final int WRONG_ANSWER = 3;
-
   @Inject ScreenUtils screenUtils;
+
+  @BindView(R.id.layoutIcon) FrameLayout layoutIcon;
 
   @BindView(R.id.imgNotGuessed) ImageView imgNotGuessed;
 
@@ -55,10 +53,16 @@ public class GameTriviaAnswerView extends FrameLayout {
   private Unbinder unbinder;
   private GradientDrawable background;
   private String answer;
+  private int color;
+
+  // RESOURCES
+  private int paddingHorizontalWithIcon, paddingVerticalWithIcon, paddingHorizontal,
+      paddingVertical;
+  private int redColor, greenColor;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Void> onClick = PublishSubject.create();
+  private PublishSubject<String> onClick = PublishSubject.create();
 
   public GameTriviaAnswerView(@NonNull Context context) {
     super(context);
@@ -70,8 +74,8 @@ public class GameTriviaAnswerView extends FrameLayout {
   }
 
   public void init() {
-    initResources();
     initDependencyInjector();
+    initResources();
     initUI();
   }
 
@@ -80,7 +84,12 @@ public class GameTriviaAnswerView extends FrameLayout {
   }
 
   private void initResources() {
-
+    paddingHorizontal = screenUtils.dpToPx(25);
+    paddingVertical = screenUtils.dpToPx(15);
+    paddingHorizontalWithIcon = screenUtils.dpToPx(15);
+    paddingVerticalWithIcon = screenUtils.dpToPx(10);
+    redColor = ContextCompat.getColor(getContext(), R.color.red);
+    greenColor = ContextCompat.getColor(getContext(), R.color.green_status);
   }
 
   private void initDependencyInjector() {
@@ -98,89 +107,141 @@ public class GameTriviaAnswerView extends FrameLayout {
     setBackground(background);
 
     setClickable(true);
-    setForeground(ContextCompat.getDrawable(getContext(), R.drawable.selectable_button));
-    setOnClickListener(v -> onClick.onNext(null));
+    setGravity(Gravity.CENTER);
+    setOrientation(HORIZONTAL);
+    setOnClickListener(v -> onClick.onNext(answer));
+    setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
   }
 
   private void initSubscriptions() {
 
   }
 
+  private void setDefaultStyle() {
+    TextViewCompat.setTextAppearance(txtAnswer, R.style.Headline_White_2);
+    txtAnswer.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
+    setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+  }
+
+  private void setRedStyle() {
+    txtAnswer.setTextColor(redColor);
+  }
+
+  private void setGreenStyle() {
+    txtAnswer.setTextColor(greenColor);
+  }
+
   /**
    * PUBLIC
    */
 
-  public void initAnswer(String answer) {
+  public void initAnswer(String answer, int color) {
+    setLayoutTransition(null);
+
     this.answer = answer;
-    setType(ANSWER);
+    this.color = color;
+    layoutIcon.setVisibility(View.GONE);
+    setAlpha(1);
     txtAnswer.setText(answer);
-  }
-
-  public void setAnswerBackground(int color) {
     background.setColor(color);
+    setDefaultStyle();
   }
 
-  public void setType(@CellType int type) {
-    if (type != WRONG_ANSWER) {
-      TextViewCompat.setTextAppearance(txtAnswer, R.style.Headline_White_2);
-      txtAnswer.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
-    } else {
-      TextViewCompat.setTextAppearance(txtAnswer, R.style.Headline_Black_2);
-      txtAnswer.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
-    }
+  public void showRightAnswer() {
+    setAlpha(1f);
+    background.setColor(Color.WHITE);
+    layoutIcon.setVisibility(View.VISIBLE);
+    setGreenStyle();
 
-    switch (type) {
-      case ANSWER:
-        imgGuessed.setAlpha(0f);
-        imgNotGuessed.setAlpha(0f);
-        break;
+    imgGuessed.animate()
+        .alpha(1)
+        .setInterpolator(new DecelerateInterpolator())
+        .setDuration(DURATION)
+        .start();
 
-      case RIGHT_ANSWER_GUESSED:
-        background.setColor(Color.WHITE);
-        imgGuessed.animate()
-            .alpha(1)
-            .setInterpolator(new DecelerateInterpolator())
-            .setDuration(DURATION)
-            .start();
-        imgNotGuessed.animate()
-            .alpha(0)
-            .setInterpolator(new DecelerateInterpolator())
-            .setDuration(DURATION)
-            .start();
-        break;
+    imgNotGuessed.animate()
+        .alpha(0)
+        .setInterpolator(new DecelerateInterpolator())
+        .setDuration(DURATION)
+        .start();
 
-      case RIGHT_ANSWER_NOT_GUESSED:
-        background.setColor(Color.WHITE);
-        imgGuessed.animate()
-            .alpha(0)
-            .setInterpolator(new DecelerateInterpolator())
-            .setDuration(DURATION)
-            .start();
+    setPadding(paddingHorizontalWithIcon, paddingVerticalWithIcon, paddingHorizontalWithIcon,
+        paddingVerticalWithIcon);
+  }
 
-        imgNotGuessed.animate()
-            .alpha(1)
-            .setInterpolator(new DecelerateInterpolator())
-            .setDuration(DURATION)
-            .start();
-        break;
+  public void showWrongAnswer() {
+    setAlpha(1f);
+    background.setColor(Color.WHITE);
+    layoutIcon.setVisibility(View.VISIBLE);
+    setRedStyle();
 
-      case WRONG_ANSWER:
-        imgGuessed.setAlpha(0f);
-        imgNotGuessed.setAlpha(0f);
-        background.setColor(Color.WHITE);
-        animate().alpha(0.2f)
-            .setInterpolator(new DecelerateInterpolator())
-            .setDuration(DURATION)
-            .start();
-        break;
-    }
+    imgGuessed.animate()
+        .alpha(0)
+        .setInterpolator(new DecelerateInterpolator())
+        .setDuration(DURATION)
+        .start();
+
+    imgNotGuessed.animate()
+        .alpha(1)
+        .setInterpolator(new DecelerateInterpolator())
+        .setDuration(DURATION)
+        .start();
+
+    setPadding(paddingHorizontalWithIcon, paddingVerticalWithIcon, paddingHorizontalWithIcon,
+        paddingVerticalWithIcon);
+  }
+
+  public void showBogusAnswer() {
+    setDefaultStyle();
+    background.setColor(color);
+    layoutIcon.setVisibility(View.GONE);
+    setAlpha(0.2f);
+  }
+
+  public void animateBogusAnswer() {
+    LayoutTransition layoutTransition = new LayoutTransition();
+    layoutTransition.setDuration(DURATION);
+    layoutTransition.addTransitionListener(new LayoutTransition.TransitionListener() {
+      @Override
+      public void startTransition(LayoutTransition transition, ViewGroup container, View view,
+          int transitionType) {
+      }
+
+      @Override
+      public void endTransition(LayoutTransition transition, ViewGroup container, View view,
+          int transitionType) {
+        setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+      }
+    });
+    setLayoutTransition(layoutTransition);
+    layoutIcon.setVisibility(View.GONE);
+
+    animate().alpha(0.2f).setDuration(300).setInterpolator(new DecelerateInterpolator()).start();
+
+    AnimationUtils.animateBGColor(this, Color.WHITE, color, DURATION);
+    AnimationUtils.animateTextColor(txtAnswer, redColor, Color.WHITE, DURATION);
+  }
+
+  public void animateRightAnswer() {
+    animate().alpha(1f).setDuration(300).setInterpolator(new DecelerateInterpolator()).start();
+
+    AnimationUtils.animateBGColor(this, color, Color.WHITE, DURATION);
+    AnimationUtils.animateTextColor(txtAnswer, Color.WHITE, greenColor, DURATION);
+
+    imgGuessed.setAlpha(1f);
+    imgNotGuessed.setAlpha(0f);
+    layoutIcon.setVisibility(View.VISIBLE);
+  }
+
+  public String getAnswer() {
+    return answer;
   }
 
   /**
    * OBSERVABLES
    */
 
-  public Observable<Void> onClick() {
+  public Observable<String> onClick() {
     return onClick;
   }
 }

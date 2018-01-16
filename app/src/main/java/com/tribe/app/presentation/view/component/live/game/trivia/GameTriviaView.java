@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.component.live.game.trivia;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -7,13 +8,16 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.constraint.Group;
-import android.support.transition.AutoTransition;
+import android.support.transition.ChangeBounds;
 import android.support.transition.Transition;
 import android.support.transition.TransitionListenerAdapter;
 import android.support.transition.TransitionManager;
+import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -23,22 +27,29 @@ import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.CircularProgressBar;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 /**
@@ -85,6 +96,7 @@ public class GameTriviaView extends GameViewWithRanking {
   @BindView(R.id.groupInit) Group groupInit;
   @BindView(R.id.progressBar) CircularProgressBar progressBar;
   @BindView(R.id.viewAnswers) GameTriviaAnswersView viewAnswers;
+  @BindView(R.id.imgBackground) ImageView imgBackground;
 
   // VARIABLES
   private TriviaCategoryEnum category;
@@ -94,6 +106,10 @@ public class GameTriviaView extends GameViewWithRanking {
   private boolean categoryAll = false, weHaveAWinner = false;
   private String rightAnswer;
   private int nbAnswers = 0, nbPlayingPeers = 0;
+  private ValueAnimator rotationRaysAnimator;
+
+  // SUBSCRIPTIONS
+  protected Subscription rightAnswerSubscription, wrongAnswerSubscription;
 
   public GameTriviaView(@NonNull Context context) {
     super(context);
@@ -131,7 +147,7 @@ public class GameTriviaView extends GameViewWithRanking {
 
     progressBar.setProgressColor(Color.WHITE);
     progressBar.setProgressWidth(screenUtils.dpToPx(5));
-    progressBar.setProgress(10);
+    progressBar.setProgress((100 / NB_QUESTIONS));
 
     gameMVPViewAdapter = new GameMVPViewAdapter() {
       @Override public void onTriviaData(Map<String, List<TriviaQuestion>> map) {
@@ -169,21 +185,25 @@ public class GameTriviaView extends GameViewWithRanking {
   }
 
   private void showCategories() {
+    soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK, SoundManager.SOUND_MID);
+
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(layoutConstraint);
     constraintSet.setAlpha(R.id.groupInit, 1);
-    animateLayoutWithConstraintSet(constraintSet, true);
+    animateLayoutWithConstraintSet(constraintSet, true, null);
   }
 
-  private void animateLayoutWithConstraintSet(ConstraintSet constraintSet, boolean animated) {
-    AutoTransition autoTransition = new AutoTransition();
-    autoTransition.setDuration(animated ? 300 : 0);
-    autoTransition.addListener(new TransitionListenerAdapter() {
+  private void animateLayoutWithConstraintSet(ConstraintSet constraintSet, boolean animated,
+      LabelListener labelListener) {
+    Transition transition = new ChangeBounds();
+    transition.setDuration(animated ? 500 : 0);
+    transition.setInterpolator(new OvershootInterpolator(0.75f));
+    transition.addListener(new TransitionListenerAdapter() {
       @Override public void onTransitionEnd(@NonNull Transition transition) {
-        super.onTransitionEnd(transition);
+        if (labelListener != null) labelListener.call();
       }
     });
-    TransitionManager.beginDelayedTransition(layoutConstraint, autoTransition);
+    TransitionManager.beginDelayedTransition(layoutConstraint, transition);
     constraintSet.applyTo(layoutConstraint);
   }
 
@@ -242,6 +262,15 @@ public class GameTriviaView extends GameViewWithRanking {
   }
 
   private void nextQuestion() {
+    Collection<Integer> rankings = mapRanking.values();
+    List<String> leadersDisplayName = new ArrayList<>();
+    int maxRanking = rankings != null && rankings.size() > 0 ? Collections.max(rankings) : 0;
+    for (TribeGuest tribeGuest : mapRanking.keySet()) {
+      if (mapRanking.get(tribeGuest) == maxRanking) {
+        leadersDisplayName.add(tribeGuest.getDisplayName());
+      }
+    }
+
     if (questions != null && questions.size() > 0) {
       TriviaQuestion question = questions.remove(0);
       rightAnswer = question.getAnswer();
@@ -254,6 +283,10 @@ public class GameTriviaView extends GameViewWithRanking {
 
       nbPlayingPeers = 1 + nbPlayersThatCanPlay;
       sendAction(ACTION_SHOW_QUESTION, getShowQuestionPayload(question));
+    } else if (leadersDisplayName != null && leadersDisplayName.size() > 0) {
+      sendAction(ACTION_HIDE_GAME, getHideGamePayload(leadersDisplayName));
+    } else {
+      sendAction(ACTION_HIDE_GAME, getHideGamePayload(null));
     }
   }
 
@@ -269,10 +302,13 @@ public class GameTriviaView extends GameViewWithRanking {
             categoryTitle = message.getString(TITLE_KEY);
             categoryAll = message.has(ALL_KEY) ? message.getBoolean(ALL_KEY) : false;
           } else if (actionKey.equals(ACTION_SHOW_QUESTION)) {
+            soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK, SoundManager.SOUND_MID);
             currentMasterId = tribeSession == null ? currentUser.getId() : tribeSession.getUserId();
             preloadQuestion(message, tribeSession);
             weHaveAWinner = false;
           } else if (actionKey.equals(ACTION_END_QUESTION)) {
+            soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK_ANSWER, SoundManager.SOUND_MID);
+
             if (message.has(WINNER_KEY)) {
               TribeGuest guest = peerMap.get(message.getString(WINNER_KEY));
               if (guest.getId().equals(currentUser.getId())) {
@@ -283,10 +319,34 @@ public class GameTriviaView extends GameViewWithRanking {
                   guest.getDisplayName());
               showInstructions(Arrays.asList(new String[] { text }), true, true, false,
                   finished -> {
-
+                    if (finished) {
+                      txtTitle.setText(text);
+                      viewAnswers.animateAnswerResult();
+                    }
                   });
             } else {
-
+              String text = getResources().getString(R.string.game_song_pop_status_no_winner);
+              showInstructions(Arrays.asList(new String[] { text }), true, true, false,
+                  finished -> {
+                    if (finished) {
+                      txtTitle.setText(text);
+                      viewAnswers.animateAnswerResult();
+                    }
+                  });
+            }
+          }
+        } else if (message.has(ANSWER_KEY)) {
+          String answer = message.getString(ANSWER_KEY);
+          if (answer.equals(ANSWER_GUESS)) {
+            nbAnswers++;
+            if (message.getString(NAME_KEY).equals(rightAnswer)) {
+              if (!weHaveAWinner) {
+                weHaveAWinner = true;
+                endQuestion(true, tribeSession);
+              }
+            } else {
+              weHaveAWinner = true;
+              endQuestion(false, tribeSession);
             }
           }
         }
@@ -300,10 +360,13 @@ public class GameTriviaView extends GameViewWithRanking {
 
   private void showInstructions(List<String> steps, boolean disappearAnimated,
       boolean automaticallyReappear, boolean showRays, InstructionsListener completionListener) {
+    TextViewCompat.setTextAppearance(txtTitle, R.style.Title24_2_White);
+    txtTitle.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
+
     updateSteps(steps, false, () -> {
       if (completionListener != null) completionListener.finished(false);
       if (automaticallyReappear) {
-        showQuestions(true, showRays, (LabelListener) () -> completionListener.finished(true));
+        showQuestions(true, showRays, () -> completionListener.finished(true));
       }
     });
 
@@ -326,16 +389,43 @@ public class GameTriviaView extends GameViewWithRanking {
   }
 
   private void showQuestions(boolean animated, boolean showRays, LabelListener completionListener) {
+    TextViewCompat.setTextAppearance(txtTitle, R.style.Headline_White_2);
+    txtTitle.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
+
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(getContext(), R.layout.view_game_trivia_question);
-    animateLayoutWithConstraintSet(constraintSet, animated);
-    if (completionListener != null) completionListener.call();
+    if (!showRays) {
+      constraintSet.connect(R.id.imgBackground, ConstraintSet.TOP, layoutConstraint.getId(),
+          ConstraintSet.BOTTOM);
+    }
+
+    animateLayoutWithConstraintSet(constraintSet, animated, () -> {
+      //if (rotationRaysAnimator != null) {
+      //  rotationRaysAnimator.cancel();
+      //  rotationRaysAnimator = null;
+      //}
+      //
+      //imgBackground.setScaleType(ImageView.ScaleType.MATRIX);
+      //rotationRaysAnimator = ValueAnimator.ofFloat(0, 360);
+      //rotationRaysAnimator.setDuration(300);
+      //rotationRaysAnimator.setInterpolator(new DecelerateInterpolator());
+      //rotationRaysAnimator.setRepeatCount(ValueAnimator.INFINITE);
+      //rotationRaysAnimator.setRepeatMode(ValueAnimator.RESTART);
+      //rotationRaysAnimator.addUpdateListener(animation -> {
+      //  float rotation = (float) animation.getAnimatedValue();
+      //  imgBackground.setPivotX(imgBackground.getDrawable().getBounds().width() / 2);
+      //  imgBackground.setPivotY(imgBackground.getDrawable().getBounds().height() / 2);
+      //  imgBackground.setRotation(rotation);
+      //});
+      //rotationRaysAnimator.start();
+      if (completionListener != null) completionListener.call();
+    });
   }
 
   private void showInstructions(boolean animated, LabelListener completionListener) {
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(getContext(), R.layout.view_game_trivia_title_only);
-    animateLayoutWithConstraintSet(constraintSet, animated);
+    animateLayoutWithConstraintSet(constraintSet, animated, null);
     if (completionListener != null) completionListener.call();
   }
 
@@ -345,6 +435,7 @@ public class GameTriviaView extends GameViewWithRanking {
         TriviaQuestion currentQuestion = new TriviaQuestion(message.getJSONObject(QUESTION_KEY));
         int questionCount = message.has(NB_QUESTION_KEY) ? message.getInt(NB_QUESTION_KEY) : 1;
 
+        soundManager.playSound(SoundManager.TRIVIA_ANSWER_FIRST_WIN, SoundManager.SOUND_MAX);
         List<String> steps = Arrays.asList(
             new String[] { getResources().getString(R.string.game_trivia_status_guess) });
         showInstructions(steps, true, true, true, finished -> {
@@ -353,6 +444,8 @@ public class GameTriviaView extends GameViewWithRanking {
 
         txtQuestion.setText(currentQuestion.getQuestion());
         txtQuestionCount.setText("" + questionCount);
+
+        progressBar.setProgress((100 / NB_QUESTIONS) * questionCount);
       } catch (JSONException ex) {
         ex.printStackTrace();
       }
@@ -361,6 +454,36 @@ public class GameTriviaView extends GameViewWithRanking {
 
   private void setupAnswers(TriviaQuestion triviaQuestion, TribeSession tribeSession) {
     viewAnswers.initQuestion(triviaQuestion);
+
+    if (rightAnswerSubscription != null) rightAnswerSubscription.unsubscribe();
+    if (wrongAnswerSubscription != null) wrongAnswerSubscription.unsubscribe();
+
+    rightAnswerSubscription = viewAnswers.onAnsweredRight().subscribe(clickedAnswer -> {
+      soundManager.playSound(SoundManager.TRIVIA_WON, SoundManager.SOUND_MAX);
+      sendAnswer(tribeSession, ANSWER_GUESS, getAnswerPayload(clickedAnswer.getAnswer()));
+      viewAnswers.computeAnswers(clickedAnswer, true);
+    });
+
+    wrongAnswerSubscription = viewAnswers.onAnsweredWrong().subscribe(clickedAnswer -> {
+      soundManager.playSound(SoundManager.TRIVIA_LOST, SoundManager.SOUND_MAX);
+      txtTitle.setText(R.string.game_trivia_status_wrong_answer);
+      sendAnswer(tribeSession, ANSWER_GUESS, getAnswerPayload(clickedAnswer.getAnswer()));
+      viewAnswers.computeAnswers(clickedAnswer, false);
+    });
+  }
+
+  private void endQuestion(boolean isWinner, TribeSession tribeSession) {
+    if (isWinner) {
+      String winnerId = tribeSession != null ? tribeSession.getUserId() : currentUser.getId();
+      sendAction(ACTION_END_QUESTION, getWinnerPayload(winnerId));
+      addPoints(1, winnerId, true);
+    } else {
+      sendAction(ACTION_END_QUESTION, new JSONObject());
+    }
+
+    subscriptions.add(Observable.timer(6, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> nextQuestion()));
   }
 
   protected interface InstructionsListener {
@@ -379,6 +502,14 @@ public class GameTriviaView extends GameViewWithRanking {
     receiveMessage(null, game);
   }
 
+  private void sendAnswer(TribeSession tribeSession, String answer, JSONObject obj) {
+    JSONObject game = new JSONObject();
+    JsonUtils.jsonPut(obj, ANSWER_KEY, answer);
+    JsonUtils.jsonPut(game, this.game.getId(), obj);
+    if (tribeSession != null) webRTCRoom.sendToUser(tribeSession.getUserId(), game, true);
+    receiveMessage(null, game);
+  }
+
   private JSONObject getCategorySelectionPayload(TriviaCategoryEnum category) {
     JSONObject obj = new JSONObject();
     JsonUtils.jsonPut(obj, TITLE_KEY, category.getCategory());
@@ -392,18 +523,40 @@ public class GameTriviaView extends GameViewWithRanking {
     return obj;
   }
 
+  private JSONObject getAnswerPayload(String value) {
+    JSONObject obj = new JSONObject();
+    JsonUtils.jsonPut(obj, NAME_KEY, value);
+    return obj;
+  }
+
+  private JSONObject getWinnerPayload(String winnerId) {
+    JSONObject obj = new JSONObject();
+    JsonUtils.jsonPut(obj, WINNER_KEY, winnerId);
+    return obj;
+  }
+
+  private JSONObject getHideGamePayload(List<String> displayNames) {
+    JSONObject obj = new JSONObject();
+    JsonUtils.jsonPut(obj, SHOW_WINNER_KEY, true);
+
+    if (displayNames != null) {
+      JSONArray displayNamesObj = new JSONArray();
+      for (String name : displayNames) {
+        displayNamesObj.put(name);
+      }
+
+      JsonUtils.jsonPut(obj, WINNERS_NAMES_KEY, displayNamesObj);
+    }
+
+    return obj;
+  }
+
   /**
    * PUBLIC
    */
 
   public void initSubscriptions() {
-    subscriptions.add(viewAnswers.onAnsweredRight().subscribe(aVoid -> {
 
-    }));
-
-    subscriptions.add(viewAnswers.onAnsweredWrong().subscribe(aVoid -> {
-
-    }));
   }
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
