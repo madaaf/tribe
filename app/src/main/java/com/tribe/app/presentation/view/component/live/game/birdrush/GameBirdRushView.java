@@ -21,7 +21,6 @@ import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
-import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -53,6 +52,7 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   private ValueAnimator animator;
   private BirdController controller;
+  private Double delay = null;
 
   private Drawable[] birds = new Drawable[] {
       ContextCompat.getDrawable(getContext(), R.drawable.game_bird1),
@@ -78,35 +78,46 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @Override protected void initView(Context context) {
     super.initView(context);
-
     inflater.inflate(R.layout.view_game_bird_rush, this, true);
     unbinder = ButterKnife.bind(this);
     setBackScrolling();
-    setTimer();
     controller = new BirdController(context);
 
     initSubscriptions();
-    down();
+    setTimer();
+    fallBird();
     setOnTouchListener(controller);
   }
 
+
+  BirdRushObstacle obs = null;
   private void setTimer() {
-    Observable.timer(1000, TimeUnit.MILLISECONDS)
+    GameBirdRushEngine ok = new GameBirdRushEngine(context, GameBirdRushEngine.Level.MEDIUM);
+    subscriptions.add(Observable.interval(3000, 100, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          Timber.e("a Long " + aLong);
-        });
+          aLong = aLong * 100;
+          // init first obstacle
+          if (aLong == 0L) {
+            obs = ok.generateObstacle();
+            delay = (obs.getNextSpawnDelay() + aLong);
+            animateObstacle(obs);
+          }
+          // init next obstacle
+          if (delay != null && (delay == aLong.doubleValue())) {
+            obs = ok.generateObstacle();
+            delay = (obs.getNextSpawnDelay()) + aLong;
+            animateObstacle(obs);
+          }
+        }));
   }
 
   @Override protected void onFinishInflate() {
     super.onFinishInflate();
   }
 
-  private void initObstacle() {
+  private void animateObstacle(BirdRushObstacle model) {
     Timber.e("SOEF ADD OBSTACLE");
-    Float heightRatio = 0.5f;
-    Float start = 0.5f;
-
     ImageView obstacle = new ImageView(context);
     obstacle.setScaleType(ImageView.ScaleType.FIT_XY);
     FrameLayout.LayoutParams params =
@@ -116,22 +127,20 @@ public class GameBirdRushView extends GameViewWithEngine {
     obstacle.setImageDrawable(
         ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle));
     obstacle.setLayoutParams(params);
-    int height = Math.round(heightRatio * screenUtils.getHeightPx());
+    int height = Math.round(model.getHeightRatio() * screenUtils.getHeightPx());
     int width = 75;
     obstacle.getLayoutParams().height = height;
     obstacle.getLayoutParams().width = width;
 
     addView(obstacle);
     obstacle.setTranslationX(obstacle.getWidth());
-    obstacle.setY(start * screenUtils.getHeightPx() - height / 2);
-    Timber.e("- (obstacle.getHeight() / 2)" + -(obstacle.getHeight() / 2));
-
+    obstacle.setY(model.getStart() * screenUtils.getHeightPx() - height / 2);
     obstacle.animate().translationX(-screenUtils.getWidthPx() - width).setDuration(5000).start();
 
     // TRANSLATION
-
     ValueAnimator trans =
-        ValueAnimator.ofFloat(obstacle.getY(), obstacle.getY() - 25, obstacle.getY() + 25);
+        ValueAnimator.ofFloat(obstacle.getY(), obstacle.getY() - model.getTranslation().getY(),
+            obstacle.getY() + model.getTranslation().getY());
     trans.setDuration(1000);
     trans.addUpdateListener(animation -> {
       Float value = (float) animation.getAnimatedValue();
@@ -142,8 +151,8 @@ public class GameBirdRushView extends GameViewWithEngine {
     trans.start();
 
     // ROTATION
-
-    ValueAnimator rotation = ValueAnimator.ofFloat(0f, -5f, 0f, 5f);
+    ValueAnimator rotation = ValueAnimator.ofFloat(0f, -model.getRotation().getAngle(), 0f,
+        model.getRotation().getAngle());
     rotation.setDuration(5000);
     rotation.addUpdateListener(animation -> {
       Float value = (float) animation.getAnimatedValue();
@@ -168,10 +177,8 @@ public class GameBirdRushView extends GameViewWithEngine {
   ValueAnimator va;
 
   public void jump() {
-
     if (va != null) {
       va.cancel();
-      // bird.clearAnimation();
     }
     va = ValueAnimator.ofFloat(bird.getY(), bird.getY() - 100);
     va.setDuration(100);
@@ -182,14 +189,13 @@ public class GameBirdRushView extends GameViewWithEngine {
     va.addListener(new AnimatorListenerAdapter() {
       @Override public void onAnimationEnd(Animator animation) {
         super.onAnimationEnd(animation);
-        down();
+        fallBird();
       }
     });
-    //va.addUpdateListener() ;
     va.start();
   }
 
-  public void down() {
+  public void fallBird() {
     if (va != null) {
       va.cancel();
     }
@@ -201,13 +207,10 @@ public class GameBirdRushView extends GameViewWithEngine {
       Float value = (float) animation.getAnimatedValue();
       bird.setY(value);
     });
-
-    //va.addUpdateListener() ;
     va.start();
   }
 
   private void setBackScrolling() {
-    Timber.e("SOEF ");
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -226,7 +229,6 @@ public class GameBirdRushView extends GameViewWithEngine {
         animator.addListener(new AnimatorListenerAdapter() {
           @Override public void onAnimationRepeat(Animator animation) {
             super.onAnimationRepeat(animation);
-            initObstacle();
           }
         });
         animator.start();
@@ -235,7 +237,8 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   @Override protected GameEngine generateEngine() {
-    return new GameAliensAttackEngine(context);
+    // return new GameBirdRushEngine(context, GameBirdRushEngine.Level.MEDIUM);
+    return null;
   }
 
   @Override protected int getSoundtrack() {
@@ -249,12 +252,6 @@ public class GameBirdRushView extends GameViewWithEngine {
   @Override protected void gameOver(String winnerId, boolean isLocal) {
     Timber.d("Game over : " + winnerId);
     super.gameOver(winnerId, isLocal);
-  }
-
-  private void killAlien() {
-    if (!pending) {
-      addPoints(1, currentUser.getId(), true);
-    }
   }
 
   @Override protected void startMasterEngine() {

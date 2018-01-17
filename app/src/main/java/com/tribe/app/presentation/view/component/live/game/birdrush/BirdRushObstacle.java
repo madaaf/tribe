@@ -22,10 +22,67 @@ public class BirdRushObstacle {
   private Translation translation; // en px
   private Rotation rotation;
 
+  public BirdRushObstacle(String id, Double nextSpawnDelay, Float start, Float heightRatio,
+      Float speed, Translation translation, Rotation rotation) {
+    this.id = id;
+    this.nextSpawnDelay = nextSpawnDelay;
+    this.start = start;
+    this.heightRatio = heightRatio;
+    this.speed = speed;
+    this.translation = translation;
+    this.rotation = rotation;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public Double getNextSpawnDelay() {
+    return nextSpawnDelay;
+  }
+
+  public Float getStart() {
+    return start;
+  }
+
+  public Float getHeightRatio() {
+    return heightRatio;
+  }
+
+  public Float getSpeed() {
+    return speed;
+  }
+
+  public Translation getTranslation() {
+    return translation;
+  }
+
+  public Rotation getRotation() {
+    return rotation;
+  }
+
   public static class Translation {
     private Float x;
     private Float y;
     private Double Duration;
+
+    public Translation(Float x, Float y, Double duration) {
+      this.x = x;
+      this.y = y;
+      Duration = duration;
+    }
+
+    public Float getX() {
+      return x;
+    }
+
+    public Float getY() {
+      return y;
+    }
+
+    public Double getDuration() {
+      return Duration;
+    }
   }
 
   public static class Rotation {
@@ -35,6 +92,14 @@ public class BirdRushObstacle {
     public Rotation(Float angle, Double duration) {
       this.angle = angle;
       Duration = duration;
+    }
+
+    public Float getAngle() {
+      return angle;
+    }
+
+    public Double getDuration() {
+      return Duration;
     }
   }
 

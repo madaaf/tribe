@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackAlienView;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import java.util.Random;
+import java.util.UUID;
 import rx.Subscription;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
@@ -36,20 +37,55 @@ public class GameBirdRushEngine extends GameEngine {
 
   }
 
-  private void translation() {
-
+  public GameBirdRushEngine(Context context, Level level) {
+    super(context);
+    this.level = level;
   }
 
-  private void id() {
+  public BirdRushObstacle generateObstacle() {
+    return new BirdRushObstacle(id(), nextSpawnDelay(), startYPos(), heightRatio(), 100f,
+        translation(), rotation());
+  }
 
+  private String id() {
+    return UUID.randomUUID().toString();
   }
 
   private Float startYPos() {
     return randFloat(0.15f, 0.95f);
   }
 
-  private BirdRushObstacle.Rotation k() {
+  private Double nextSpawnDelay() {
+    switch (level) {
+      case MEDIUM:
+        return 1500D;
+      case HARD:
+        return 1400D;
+      case EXTREME:
+        return 1300D;
+      case ALIEN:
+        return 1200D;
+    }
 
+    return null;
+  }
+
+  private BirdRushObstacle.Translation translation() {
+    switch (level) {
+      case MEDIUM:
+        return new BirdRushObstacle.Translation(0f, randFloat(20f, 25f), randDouble(0.9d, 1.1d));
+      case HARD:
+        return new BirdRushObstacle.Translation(0f, randFloat(25f, 30f), randDouble(0.7d, 0.9d));
+      case EXTREME:
+        return new BirdRushObstacle.Translation(0f, randFloat(30f, 35f), randDouble(0.6d, 0.7d));
+      case ALIEN:
+        return new BirdRushObstacle.Translation(0f, randFloat(35f, 40f), randDouble(0.5d, 0.6d));
+    }
+
+    return null;
+  }
+
+  private BirdRushObstacle.Rotation rotation() {
     switch (level) {
       case MEDIUM:
         return new BirdRushObstacle.Rotation(5f, randDouble(0.5d, 0.6d));
@@ -67,7 +103,7 @@ public class GameBirdRushEngine extends GameEngine {
   private Float heightRatio() {
     switch (level) {
       case MEDIUM:
-        return randFloat(0.25f, 0.3f);
+        return randFloat(0.1f, 0.8f); // TODO SOEF
       case HARD:
         return randFloat(0.25f, 0.35f);
       case EXTREME:
