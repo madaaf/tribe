@@ -27,9 +27,11 @@ import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.CircularProgressBar;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -76,7 +78,7 @@ public class GameTriviaView extends GameViewWithRanking {
   private static final String ACTION_END_QUESTION = "endQuestion";
   private static final String ACTION_HIDE_GAME = "hideGame";
 
-  private static final int NB_QUESTIONS = 12;
+  private static final int NB_QUESTIONS = 1;
 
   @Inject GamePresenter gamePresenter;
 
@@ -188,7 +190,7 @@ public class GameTriviaView extends GameViewWithRanking {
     soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK, SoundManager.SOUND_MID);
 
     ConstraintSet constraintSet = new ConstraintSet();
-    constraintSet.clone(layoutConstraint);
+    constraintSet.clone(getContext(), R.layout.view_game_trivia);
     constraintSet.setAlpha(R.id.groupInit, 1);
     animateLayoutWithConstraintSet(constraintSet, true, null);
   }
@@ -334,6 +336,22 @@ public class GameTriviaView extends GameViewWithRanking {
                     }
                   });
             }
+          } else if (actionKey.equals(ACTION_HIDE_GAME)) {
+            if (message.has(SHOW_WINNER_KEY)) {
+              if (message.has(WINNERS_NAMES_KEY)) {
+                JSONArray array = message.getJSONArray(WINNERS_NAMES_KEY);
+                showResults(array);
+              } else {
+                showResults(null);
+              }
+
+              return;
+            }
+
+            subscriptionsRoom.clear();
+            subscriptionsRoom.add(Observable.timer(10, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> stop()));
           }
         } else if (message.has(ANSWER_KEY)) {
           String answer = message.getString(ANSWER_KEY);
@@ -486,6 +504,72 @@ public class GameTriviaView extends GameViewWithRanking {
         .subscribe(aLong -> nextQuestion()));
   }
 
+  private void showResults(JSONArray winnerNames) {
+    soundManager.playSound(SoundManager.TRIVIA_ANSWER_FIRST_WIN, SoundManager.SOUND_MID);
+
+    boolean isWinner = winnerNames != null && winnerNames.length() > 0;
+    String instruction = "";
+
+    if (isWinner) {
+      try {
+        if (winnerNames.length() == 1) {
+          instruction = getResources().getString(R.string.game_song_pop_status_winner_step,
+              winnerNames.getString(0));
+        } else {
+          String winners = "";
+
+          for (int i = 0; i < winnerNames.length(); i++) {
+            winners += winnerNames.get(i);
+
+            if (i < winnerNames.length() - 1) winners += ", ";
+          }
+
+          instruction =
+              getResources().getString(R.string.game_song_pop_status_winners_step, winners);
+        }
+      } catch (JSONException ex) {
+        ex.printStackTrace();
+      }
+    } else {
+      instruction = getResources().getString(R.string.game_song_pop_status_no_winner_step);
+    }
+
+    showInstructions(Arrays.asList(new String[] { instruction }), true, false, false,
+        new InstructionsListener() {
+          @Override public void finished(boolean finished) {
+            if (!finished) {
+              subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(aLong -> subscriptions.add(
+                      DialogFactory.dialogMultipleChoices(getContext(), EmojiParser.demojizedText(
+                          getContext().getString(R.string.game_song_pop_new_popup_title)),
+                          EmojiParser.demojizedText(
+                              getContext().getString(R.string.game_song_pop_new_popup_description)),
+                          EmojiParser.demojizedText(
+                              getContext().getString(R.string.game_song_pop_new_popup_again)),
+                          EmojiParser.demojizedText(
+                              getContext().getString(R.string.game_song_pop_new_popup_other)),
+                          EmojiParser.demojizedText(
+                              getContext().getString(R.string.game_song_pop_new_popup_stop)))
+                          .subscribe(integer -> {
+                            switch (integer) {
+                              case 0:
+                                onRestart.onNext(game);
+                                showCategories();
+                                break;
+                              case 1:
+                                onPlayOtherGame.onNext(null);
+                                break;
+                              case 2:
+                                onStop.onNext(game);
+                                break;
+                            }
+                          }))));
+            }
+          }
+        });
+  }
+
   protected interface InstructionsListener {
     void finished(boolean finished);
   }
@@ -568,6 +652,7 @@ public class GameTriviaView extends GameViewWithRanking {
 
   @Override public void stop() {
     super.stop();
+    soundManager.cancelMediaPlayer();
   }
 
   @Override public void dispose() {

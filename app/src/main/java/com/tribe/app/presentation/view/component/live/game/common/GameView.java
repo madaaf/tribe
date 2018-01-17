@@ -71,6 +71,9 @@ public abstract class GameView extends FrameLayout {
   protected CompositeSubscription subscriptionsRoom = new CompositeSubscription();
   protected Observable<Map<String, TribeGuest>> peerMapObservable;
   protected PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
+  protected PublishSubject<Game> onRestart = PublishSubject.create();
+  protected PublishSubject<Game> onStop = PublishSubject.create();
+  protected PublishSubject<Void> onPlayOtherGame = PublishSubject.create();
 
   public GameView(@NonNull Context context) {
     super(context);
@@ -249,5 +252,17 @@ public abstract class GameView extends FrameLayout {
 
   public Observable<Pair<String, Integer>> onAddScore() {
     return onAddScore;
+  }
+
+  public Observable<Game> onRestart() {
+    return onRestart;
+  }
+
+  public Observable<Game> onStop() {
+    return onStop;
+  }
+
+  public Observable<Void> onPlayOtherGame() {
+    return onPlayOtherGame;
   }
 }

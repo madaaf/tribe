@@ -109,7 +109,10 @@ public class GameTriviaAnswerView extends LinearLayout {
     setClickable(true);
     setGravity(Gravity.CENTER);
     setOrientation(HORIZONTAL);
-    setOnClickListener(v -> onClick.onNext(answer));
+    setOnClickListener(v -> {
+      onClick.onNext(answer);
+      setClickable(false);
+    });
     setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
   }
 
@@ -145,6 +148,7 @@ public class GameTriviaAnswerView extends LinearLayout {
     txtAnswer.setText(answer);
     background.setColor(color);
     setDefaultStyle();
+    setClickable(true);
   }
 
   public void showRightAnswer() {

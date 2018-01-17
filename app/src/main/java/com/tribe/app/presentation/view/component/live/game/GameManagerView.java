@@ -16,8 +16,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.domain.entity.trivia.TriviaCategoryEnum;
-import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -81,6 +79,8 @@ public class GameManagerView extends FrameLayout {
   private CompositeSubscription subscriptionsGame = new CompositeSubscription();
   private BehaviorSubject<Map<String, TribeGuest>> onPeerMapChange = BehaviorSubject.create();
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
+  private PublishSubject<Game> onStopGame = PublishSubject.create();
+  private PublishSubject<Void> onPlayOtherGame = PublishSubject.create();
   private PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
 
   public GameManagerView(@NonNull Context context) {
@@ -242,6 +242,11 @@ public class GameManagerView extends FrameLayout {
     } else if (game.getId().equals(Game.GAME_TRIVIA)) {
       GameTriviaView gameTriviaView = new GameTriviaView(getContext());
       subscriptionsGame.add(gameTriviaView.onAddScore().subscribe(onAddScore));
+      subscriptionsGame.add(gameTriviaView.onStop().subscribe(onStopGame));
+      subscriptionsGame.add(gameTriviaView.onRestart().subscribe(onRestartGame));
+      subscriptionsGame.add(gameTriviaView.onPlayOtherGame()
+          .doOnNext(aVoid -> onStopGame.onNext(currentGame))
+          .subscribe(onPlayOtherGame));
       gameView = gameTriviaView;
     } else if (game.isWeb()) {
       GameWebView gameWebView = new GameWebView(getContext());
@@ -289,5 +294,13 @@ public class GameManagerView extends FrameLayout {
 
   public Observable<Pair<String, Integer>> onAddScore() {
     return onAddScore;
+  }
+
+  public Observable<Game> onStopGame() {
+    return onStopGame;
+  }
+
+  public Observable<Void> onPlayOtherGame() {
+    return onPlayOtherGame;
   }
 }

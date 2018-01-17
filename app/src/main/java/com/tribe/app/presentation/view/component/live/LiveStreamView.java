@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -20,6 +21,8 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -53,6 +56,7 @@ public abstract class LiveStreamView extends LinearLayout {
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
+  protected PublishSubject<Pair<Integer, String>> onScoreChange = PublishSubject.create();
 
   public LiveStreamView(Context context) {
     super(context);
@@ -109,6 +113,7 @@ public abstract class LiveStreamView extends LinearLayout {
 
     txtScore.setText("" + score);
     txtEmoji.setText(emoji);
+    onScoreChange.onNext(Pair.create(score, emoji));
   }
 
   public void bounceView() {
@@ -147,4 +152,8 @@ public abstract class LiveStreamView extends LinearLayout {
   /////////////////
   // OBSERVABLES //
   /////////////////
+
+  public Observable<Pair<Integer, String>> onScoreChange() {
+    return onScoreChange;
+  }
 }
