@@ -421,10 +421,13 @@
     <item name="android:textColor">@color/red</item>
   </style>
 
+  <style name="Headline.Green" parent="@style/Headline">
+    <item name="android:textColor">@color/green.status</item>
+  </style>
+
   <style name="Headline.Black40" parent="@style/Headline">
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>
-
 
   <style name="Headline.Black.1" parent="@style/Headline.Black">
     <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
@@ -461,6 +464,10 @@
 
   <style name="Headline.BlueText.2" parent="Headline.White.2">
     <item name="android:textColor">@color/blue.text</item>
+  </style>
+
+  <style name="Headline.Green.2" parent="Headline.Green">
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
   </style>
 
   <style name="Giant">
@@ -584,6 +591,18 @@
 
   <style name="GameBody.1.White40" parent="@style/GameBody.1">
     <item name="android:textColor">@color/white.opacity.40</item>
+  </style>
+
+  <style name="Title24">
+    <item name="android:textSize">24sp</item>
+  </style>
+
+  <style name="Title24.2" parent="Title24">
+    <item name="customFont">ProximaNovaSoft-Bold.ttf</item>
+  </style>
+
+  <style name="Title24.2.White" parent="Title24.2">
+    <item name="android:textColor">@android:color/white</item>
   </style>
 
   <!--Alerter-->

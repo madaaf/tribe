@@ -6,13 +6,14 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.tribe.app.data.network.entity.GameDataEntity;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataGameDeserializer implements JsonDeserializer<List<String>> {
+public class DataGameDeserializer implements JsonDeserializer<GameDataEntity> {
 
   private static String GAME_POST_IT = "names";
   private static String GAME_CHALLENGES = "challenges";
@@ -23,8 +24,9 @@ public class DataGameDeserializer implements JsonDeserializer<List<String>> {
     this.lang = DeviceUtils.getLanguage(context);
   }
 
-  @Override public List<String> deserialize(JsonElement json, Type typeOfT,
+  @Override public GameDataEntity deserialize(JsonElement json, Type typeOfT,
       JsonDeserializationContext context) throws JsonParseException {
+    GameDataEntity gameDataEntity = new GameDataEntity();
     List<String> nameList = new ArrayList<>();
 
     JsonObject results = null;
@@ -46,6 +48,8 @@ public class DataGameDeserializer implements JsonDeserializer<List<String>> {
       }
     }
 
-    return nameList;
+    gameDataEntity.setData(nameList);
+
+    return gameDataEntity;
   }
 }

@@ -21,7 +21,6 @@ import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.app.presentation.view.widget.game.GameDrawViewPagerAdapter;
 import com.tribe.app.presentation.view.widget.game.GameViewPager;
 import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;

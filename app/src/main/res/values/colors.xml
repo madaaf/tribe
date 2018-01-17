@@ -266,4 +266,10 @@
   <color name="dice.4">#FFD93D</color>
   <color name="dice.5">#FF6F00</color>
   <color name="dice.6">#F779D5</color>
+
+  <!-- Trivia -->
+  <color name="trivia.answer.1">#FF45CD</color>
+  <color name="trivia.answer.2">#7F7BFF</color>
+  <color name="trivia.answer.3">#00FFE9</color>
+  <color name="trivia.answer.4">#FEBE00</color>
 </resources>

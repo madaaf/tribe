@@ -226,7 +226,6 @@ public class LiveInviteView extends FrameLayout
         .subscribe(item -> {
           Shortcut shortcut = (Shortcut) item;
           if (shortcut.getId().equals(Shortcut.ID_EMPTY)) {
-
             subscriptions.add(DialogFactory.dialogMultipleChoices(getContext(),
                 EmojiParser.demojizedText(getContext().getString(R.string.empty_call_popup_title)),
                 EmojiParser.demojizedText(

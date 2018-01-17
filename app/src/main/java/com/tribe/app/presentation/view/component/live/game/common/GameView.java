@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -35,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscription;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -67,6 +70,10 @@ public abstract class GameView extends FrameLayout {
   protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected CompositeSubscription subscriptionsRoom = new CompositeSubscription();
   protected Observable<Map<String, TribeGuest>> peerMapObservable;
+  protected PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
+  protected PublishSubject<Game> onRestart = PublishSubject.create();
+  protected PublishSubject<Game> onStop = PublishSubject.create();
+  protected PublishSubject<Void> onPlayOtherGame = PublishSubject.create();
 
   public GameView(@NonNull Context context) {
     super(context);
@@ -172,6 +179,10 @@ public abstract class GameView extends FrameLayout {
     addView(txtViewLandscape, paramsLandscape);
   }
 
+  protected interface LabelListener {
+    void call();
+  }
+
   /**
    * PUBLIC
    */
@@ -238,4 +249,20 @@ public abstract class GameView extends FrameLayout {
   /**
    * OBSERVABLE
    */
+
+  public Observable<Pair<String, Integer>> onAddScore() {
+    return onAddScore;
+  }
+
+  public Observable<Game> onRestart() {
+    return onRestart;
+  }
+
+  public Observable<Game> onStop() {
+    return onStop;
+  }
+
+  public Observable<Void> onPlayOtherGame() {
+    return onPlayOtherGame;
+  }
 }

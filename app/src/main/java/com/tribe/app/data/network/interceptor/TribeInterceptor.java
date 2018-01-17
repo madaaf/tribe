@@ -4,9 +4,9 @@ import android.content.Context;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.util.TribeApiUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 import java.io.IOException;
 import java.util.List;
-
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -26,8 +26,9 @@ public class TribeInterceptor implements Interceptor {
   }
 
   @Override public Response intercept(Chain chain) throws IOException {
-    if (tribeAuthorizer == null || tribeAuthorizer.getAccessToken() == null || StringUtils.isEmpty(
-        tribeAuthorizer.getAccessToken().getAccessToken())) {
+    if (tribeAuthorizer == null ||
+        tribeAuthorizer.getAccessToken() == null ||
+        StringUtils.isEmpty(tribeAuthorizer.getAccessToken().getAccessToken())) {
       return new okhttp3.Response.Builder().code(600).request(chain.request()).build();
     }
 
@@ -36,7 +37,7 @@ public class TribeInterceptor implements Interceptor {
 
     // Avoid anonymous requests, excepted on getRoomParameters.
     if (tribeAuthorizer.getAccessToken().isAnonymous() &&
-            !customAnnotations.contains("CanBeAnonymous")) {
+        !customAnnotations.contains("CanBeAnonymous")) {
 
       return new okhttp3.Response.Builder().code(600).request(chain.request()).build();
     }
@@ -44,10 +45,12 @@ public class TribeInterceptor implements Interceptor {
     Request.Builder requestBuilder =
         original.newBuilder().header("Content-type", "application/json").removeHeader("@");
 
-    requestBuilder.header("Authorization",
-        tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken()
-            .getAccessToken());
-    TribeApiUtils.appendTribeHeaders(context, tribeAuthorizer.getAccessToken().getUserId(), requestBuilder);
+    requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType() +
+        " " +
+        tribeAuthorizer.getAccessToken().getAccessToken());
+    requestBuilder.header("Accept-Language", DeviceUtils.getLanguage(context));
+    TribeApiUtils.appendTribeHeaders(context, tribeAuthorizer.getAccessToken().getUserId(),
+        requestBuilder);
     requestBuilder.method(original.method(), original.body());
 
     Request request = requestBuilder.build();

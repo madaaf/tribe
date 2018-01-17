@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -114,6 +115,8 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
+  @BindView(R.id.layoutScoresOverLive) LinearLayout layoutScoresOverLive;
+
   @BindView(R.id.viewControlsLive) LiveControlsView viewControlsLive;
 
   @BindView(R.id.viewDarkOverlay) View viewDarkOverlay;
@@ -149,6 +152,7 @@ public class LiveView extends FrameLayout {
   private GameManager gameManager;
   private String fbId;
   private GameManagerView viewGameManager;
+  private Map<String, LiveRowViewScores> mapScoreViews;
 
   // RESOURCES
   private int statusBarHeight;
@@ -324,6 +328,14 @@ public class LiveView extends FrameLayout {
     initUI();
     initSubscriptions();
 
+    LiveRowViewScores rowViewScore = new LiveRowViewScores(getContext());
+    rowViewScore.setGuest(user.asTribeGuest());
+    layoutScoresOverLive.addView(rowViewScore);
+    mapScoreViews.put(rowViewScore.getGuest().getId(), rowViewScore);
+    persistentSubscriptions.add(viewLocalLive.onScoreChange()
+        .subscribe(
+            integerStringPair -> mapScoreViews.get(user.getId()).updateScores(integerStringPair)));
+
     super.onFinishInflate();
   }
 
@@ -355,6 +367,7 @@ public class LiveView extends FrameLayout {
     liveRowViewMap = new ObservableRxHashMap<>();
     tribeGuestMap = new ObservableRxHashMap<>();
     tagMap = new HashMap<>();
+    mapScoreViews = new HashMap<>();
 
     viewGameManager = new GameManagerView(getContext());
   }
@@ -442,8 +455,10 @@ public class LiveView extends FrameLayout {
     viewGameManager.initLiveViewsObservable(viewRoom.onLiveViewsChange());
 
     gameManager.initUIControlsStartGame(viewControlsLive.onStartGame());
-    gameManager.initUIControlsRestartGame(viewControlsLive.onRestartGame());
-    gameManager.initUIControlsStopGame(viewControlsLive.onStopGame());
+    gameManager.initUIControlsRestartGame(
+        Observable.merge(viewControlsLive.onRestartGame(), viewGameManager.onRestartGame()));
+    gameManager.initUIControlsStopGame(
+        Observable.merge(viewControlsLive.onStopGame(), viewGameManager.onStopGame()));
     gameManager.initUIControlsResetGame(viewControlsLive.onResetScores());
 
     persistentSubscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
@@ -752,8 +767,8 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || live.getRoom() != null && live.getRoom()
-        .acceptsRandom()) {
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE) ||
+        live.getRoom() != null && live.getRoom().acceptsRandom()) {
       viewControlsLive.btnChat.setVisibility(INVISIBLE);
       viewRinging.setVisibility(INVISIBLE);
     }
@@ -885,6 +900,15 @@ public class LiveView extends FrameLayout {
         liveRowView.setPeerView(remotePeer.getPeerView());
         liveRowView.setId(View.generateViewId());
         viewRoom.addViewConstraint(remotePeer.getSession().getUserId(), liveRowView);
+
+        LiveRowViewScores liveRowViewScores = new LiveRowViewScores(getContext());
+        liveRowViewScores.setGuest(liveRowView.getGuest());
+        LinearLayout.LayoutParams params =
+            new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, screenUtils.dpToPx(5), 0, 0);
+        layoutScoresOverLive.addView(liveRowViewScores, params);
+        mapScoreViews.put(liveRowView.getGuest().getId(), liveRowViewScores);
       }
 
       liveRowViewMap.put(remotePeer.getSession().getUserId(), liveRowView);
@@ -899,6 +923,11 @@ public class LiveView extends FrameLayout {
           return o;
         }
       }).subscribe(onRemotePeerClick));
+
+      final LiveRowView finalLiveRowView = liveRowView;
+      tempSubscriptions.add(liveRowView.onScoreChange()
+          .subscribe(integerStringPair -> mapScoreViews.get(finalLiveRowView.getGuest().getId())
+              .updateScores(integerStringPair)));
     }
   }
 
@@ -907,6 +936,9 @@ public class LiveView extends FrameLayout {
       LiveRowView liveRowView = liveRowViewMap.remove(userId, true);
       liveRowView.dispose();
       viewRoom.removeView(liveRowView);
+
+      LiveRowViewScores liveRowViewScores = mapScoreViews.remove(userId);
+      layoutScoresOverLive.removeView(liveRowViewScores);
     }
 
     tribeGuestMap.remove(userId, true);
@@ -1075,6 +1107,13 @@ public class LiveView extends FrameLayout {
 
     int indexOfViewRoom = indexOfChild(viewRoom);
 
+    if (game.isNotOverLiveWithScores()) {
+      layoutScoresOverLive.setVisibility(View.VISIBLE);
+      for (LiveRowViewScores lrvs : mapScoreViews.values()) lrvs.show();
+    } else {
+      layoutScoresOverLive.setVisibility(View.GONE);
+    }
+
     if (game.isOverLive()) {
       viewRoom.setType(LiveRoomView.TYPE_LIST);
       if (viewGameManager.getParent() == null) {
@@ -1083,6 +1122,7 @@ public class LiveView extends FrameLayout {
       }
     } else {
       viewRoom.setType(LiveRoomView.TYPE_GRID);
+
       if (viewGameManager.getParent() == null) {
         viewGameManager.setBackground(null);
         addViewGameManagerAtPosition(indexOfViewRoom + 1);
@@ -1102,6 +1142,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void stopGame() {
+    layoutScoresOverLive.setVisibility(View.GONE);
     endGameStats();
     onTouchEnabled.onNext(true);
     gameManager.setCurrentGame(null);
@@ -1183,6 +1224,7 @@ public class LiveView extends FrameLayout {
       String tagDuration = gameId + TagManagerUtils.tagGameDurationSuffix;
 
       callGameDurationSubscription = Observable.interval(1, TimeUnit.SECONDS)
+          .onBackpressureBuffer()
           .observeOn(AndroidSchedulers.mainThread())
           .doOnUnsubscribe(() -> {
             double durationGame = getDuration(startedAt);
@@ -1379,7 +1421,7 @@ public class LiveView extends FrameLayout {
   }
 
   public Observable<Void> openGameStore() {
-    return viewControlsLive.openGameStore();
+    return Observable.merge(viewControlsLive.openGameStore(), viewGameManager.onPlayOtherGame());
   }
 
   public Observable<Void> onSwipeUp() {

@@ -2,6 +2,8 @@ package com.tribe.app.data.network;
 
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import java.util.List;
+import com.tribe.app.data.network.entity.GameDataEntity;
+import com.tribe.app.data.network.entity.TriviaCategoriesHolder;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -16,4 +18,9 @@ public interface FileApi {
   @GET Observable<List<String>> getDataForUrl(@Url String fileUrl);
 
   @GET("/assets/support.json") Observable<List<Conversation>> getMessageSupport();
+
+  @GET Observable<GameDataEntity> getDataForUrl(@Url String fileUrl);
+
+  @GET("https://static.tribe.pm/games/trivia_fr.json")
+  Observable<TriviaCategoriesHolder> getTriviaData();
 }

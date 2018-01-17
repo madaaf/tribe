@@ -79,6 +79,11 @@ public class CircularProgressBar extends View {
     return (maxSweepAngle / maxProgress) * progress;
   }
 
+  public void setProgress(int progress) {
+    sweepAngle = calcSweepAngleFromProgress(progress);
+    invalidate();
+  }
+
   /**
    * Set progress of the circular progress bar.
    *

@@ -8,7 +8,9 @@ import com.tribe.app.data.repository.game.datasource.GameDataStoreFactory;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.interactor.game.GameRepository;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
@@ -59,5 +61,10 @@ import rx.Observable;
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
     return gameDataStore.getFriendsScore(gameId)
         .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
+  }
+
+  @Override public Observable<Map<String, List<TriviaQuestion>>> getTriviaData() {
+    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
+    return gameDataStore.getTriviaData();
   }
 }

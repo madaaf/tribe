@@ -46,6 +46,7 @@ public class Game {
   public static final String GAME_BEATS = "beats";
   public static final String GAME_SPEED_RACER = "speedracer";
   public static final String GAME_SLICE_FRUIT = "slicefruit";
+  public static final String GAME_TRIVIA = "trivia";
 
   // VARIABLE
   protected Context context;
@@ -65,7 +66,7 @@ public class Game {
   protected String __typename;
   protected String url;
   protected boolean localFrameDifferent = false, hasView = false, isOverLive = false, isWeb = false,
-      isUserAction = false, needsLandscape = false;
+      isUserAction = false, needsLandscape = false, isNotOverLiveWithScores = false;
   protected List<TribeGuest> peerList;
   protected List<String> dataList;
   protected String previousGuestId = null;
@@ -87,6 +88,7 @@ public class Game {
     this.hasView = !id.equals(GAME_POST_IT);
     this.isOverLive =
         id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
+    this.isNotOverLiveWithScores = id.equals(GAME_TRIVIA);
     this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
     this.needsLandscape = id.equals(GAME_SLICE_FRUIT);
     this.peerList = new ArrayList<>();
@@ -108,6 +110,10 @@ public class Game {
 
   public boolean isOverLive() {
     return isOverLive;
+  }
+
+  public boolean isNotOverLiveWithScores() {
+    return isNotOverLiveWithScores;
   }
 
   public boolean isWeb() {

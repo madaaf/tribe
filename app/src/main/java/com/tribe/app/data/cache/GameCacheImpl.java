@@ -4,11 +4,14 @@ import android.content.Context;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 
 /**
@@ -17,9 +20,11 @@ import javax.inject.Inject;
 public class GameCacheImpl implements GameCache {
 
   private Context context;
+  private Map<String, List<TriviaQuestion>> mapTrivia;
 
   @Inject public GameCacheImpl(Context context) {
     this.context = context;
+    mapTrivia = new HashMap<>();
   }
 
   @Override public void putGames(List<GameRealm> gameRealmList) {
@@ -164,5 +169,14 @@ public class GameCacheImpl implements GameCache {
     }
 
     return null;
+  }
+
+  @Override public void setTriviaData(Map<String, List<TriviaQuestion>> mapTrivia) {
+    this.mapTrivia.clear();
+    this.mapTrivia.putAll(mapTrivia);
+  }
+
+  @Override public Map<String, List<TriviaQuestion>> getTriviaData() {
+    return mapTrivia;
   }
 }

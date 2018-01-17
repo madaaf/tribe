@@ -71,7 +71,6 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   protected PublishSubject<Boolean> isGameReady = PublishSubject.create();
   protected BehaviorSubject<Boolean> onGameReady = BehaviorSubject.create();
   protected PublishSubject<String> onMessage = PublishSubject.create();
-  protected PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
 
   public GameViewWithEngine(@NonNull Context context) {
     super(context);
@@ -137,7 +136,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     subscriptionsRoom.add(webRTCRoom.onGameMessage()
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(jsonObject -> {
+        .subscribe(pair -> {
+          JSONObject jsonObject = pair.second;
           if (jsonObject.has(game.getId())) {
             try {
               JSONObject message = jsonObject.getJSONObject(game.getId());
@@ -365,10 +365,6 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
           if (txtMessage != null) removeView(txtMessage);
           if (completionListener != null) completionListener.call();
         }));
-  }
-
-  protected interface LabelListener {
-    void call();
   }
 
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
@@ -670,6 +666,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   public void dispose() {
     super.dispose();
+
     if (txtMessage != null) {
       txtMessage.clearAnimation();
       txtMessage.animate().setDuration(0).setListener(null).start();
@@ -685,7 +682,4 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
    * OBSERVABLE
    */
 
-  public Observable<Pair<String, Integer>> onAddScore() {
-    return onAddScore;
-  }
 }

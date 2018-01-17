@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <com.tribe.app.presentation.view.widget.avatar.AvatarView
+      android:id="@+id/viewAvatar"
+      android:layout_width="@dimen/avatar_size_chat"
+      android:layout_height="@dimen/avatar_size_chat"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtScore"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_marginStart="@dimen/horizontal_margin_smaller"
+      android:alpha="0.5"
+      android:gravity="center"
+      android:maxLines="1"
+      android:text="0"
+      android:visibility="visible"
+      style="@style/Headline.White.2"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtEmoji"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_marginStart="@dimen/horizontal_margin_smaller"
+      android:gravity="center"
+      android:maxLines="1"
+      android:text="\uD83D\uDCA9"
+      android:visibility="visible"
+      style="@style/Headline.White.2"
+      />
+</merge>

@@ -19,6 +19,7 @@ import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.GrowthApi;
 import com.tribe.app.data.network.LoginApi;
 import com.tribe.app.data.network.LookupApi;
+import com.tribe.app.data.network.OpentdbApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.AddScoreDeserializer;
@@ -44,9 +45,11 @@ import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
 import com.tribe.app.data.network.deserializer.ShortcutRealmDeserializer;
 import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
+import com.tribe.app.data.network.deserializer.TriviaQuestionsDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
 import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
+import com.tribe.app.data.network.entity.GameDataEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
@@ -63,6 +66,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
 import com.tribe.app.presentation.utils.DateUtils;
@@ -189,10 +193,9 @@ import timber.log.Timber;
         .registerTypeAdapter(RoomLinkEntity.class, new RoomLinkDeserializer())
         .registerTypeAdapter(BookRoomLinkEntity.class, new BookRoomLinkDeserializer())
         .registerTypeAdapter(RemoveMessageEntity.class, new RemoveMessageDeserializer())
-        .registerTypeAdapter(new TypeToken<List<String>>() {
-        }.getType(), dataGameDeserializer)
         .registerTypeAdapter(new TypeToken<List<Conversation>>() {
         }.getType(), dataSupportMessageDeserializer)
+        .registerTypeAdapter(GameDataEntity.class, dataGameDeserializer)
         .registerTypeAdapter(ShortcutRealm.class, new ShortcutRealmDeserializer())
         .registerTypeAdapter(new TypeToken<List<GameRealm>>() {
         }.getType(), new GameListDeserializer())
@@ -200,6 +203,8 @@ import timber.log.Timber;
         .registerTypeAdapter(new TypeToken<List<ScoreRealm>>() {
         }.getType(), new ScoreRealmListDeserializer())
         .registerTypeAdapter(AddScoreEntity.class, new AddScoreDeserializer())
+        .registerTypeAdapter(new TypeToken<List<TriviaQuestion>>() {
+        }.getType(), new TriviaQuestionsDeserializer())
         .create();
   }
 
@@ -267,6 +272,11 @@ import timber.log.Timber;
   }
 
   @Provides @PerApplication @Named("fileApiOKHttp") OkHttpClient provideOkHttpClientFile(
+      Context context) {
+    return createOkHttpClient(context).build();
+  }
+
+  @Provides @PerApplication @Named("opentdbOKHttp") OkHttpClient provideOpentdbOKHttp(
       Context context) {
     return createOkHttpClient(context).build();
   }
@@ -545,6 +555,30 @@ import timber.log.Timber;
         //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
         .build()
         .create(FileApi.class);
+  }
+
+  @Provides @PerApplication OpentdbApi provideOpentdbApi(Gson gson,
+      @Named("opentdbOKHttp") OkHttpClient okHttpClient) {
+    OkHttpClient.Builder httpClientBuilder = okHttpClient.newBuilder();
+
+    httpClientBuilder.connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS);
+
+    if (BuildConfig.DEBUG) {
+      HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+      loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+      httpClientBuilder.addInterceptor(loggingInterceptor);
+      httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
+    }
+
+    return new Retrofit.Builder().baseUrl(BuildConfig.OPENTDB_URL)
+        .callFactory(httpClientBuilder.build())
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .addCallAdapterFactory(RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io()))
+        //.addCallAdapterFactory(RxErrorHandlingCallAdapterFactory.create())
+        .build()
+        .create(OpentdbApi.class);
   }
 
   @Provides @PerApplication LoginApi provideLoginApi(Gson gson,

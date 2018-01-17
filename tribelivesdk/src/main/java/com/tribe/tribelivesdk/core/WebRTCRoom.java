@@ -639,7 +639,7 @@ public class WebRTCRoom {
     return onNewDrawReceived;
   }
 
-  public Observable<JSONObject> onGameMessage() {
+  public Observable<Pair<TribeSession, JSONObject>> onGameMessage() {
     return jsonToModel.onGameMessage();
   }
 }

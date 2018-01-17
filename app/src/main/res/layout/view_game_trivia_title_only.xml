@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutConstraint"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+  <View
+      android:id="@+id/viewBackground"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:background="@color/black.opacity.60"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtTriviaTitle"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:text="@string/game_trivia_status_pick_category"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
+      android:id="@+id/viewCategoryMovies"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:categoryIcon="@drawable/game_trivia_movies"
+      app:categoryTitle="@string/game_trivia_category_movies"
+      app:layout_constraintBottom_toTopOf="@+id/viewCategoryCelebs"
+      app:layout_constraintEnd_toStartOf="@+id/viewCategoryMusic"
+      app:layout_constraintHorizontal_chainStyle="spread"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="parent"
+      app:layout_constraintVertical_chainStyle="packed"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
+      android:id="@+id/viewCategoryMusic"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:categoryIcon="@drawable/game_trivia_music"
+      app:categoryTitle="@string/game_trivia_category_music"
+      app:layout_constraintBottom_toTopOf="@+id/viewCategorySports"
+      app:layout_constraintEnd_toStartOf="@+id/viewCategoryTV"
+      app:layout_constraintStart_toEndOf="@id/viewCategoryMovies"
+      app:layout_constraintTop_toBottomOf="parent"
+      app:layout_constraintVertical_chainStyle="packed"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
+      android:id="@+id/viewCategoryTV"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:categoryIcon="@drawable/game_trivia_tv"
+      app:categoryTitle="@string/game_trivia_category_tv"
+      app:layout_constraintBottom_toTopOf="@+id/viewCategoryGeeks"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@id/viewCategoryMusic"
+      app:layout_constraintTop_toBottomOf="parent"
+      app:layout_constraintVertical_chainStyle="packed"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
+      android:id="@+id/viewCategoryCelebs"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="30dp"
+      app:categoryIcon="@drawable/game_trivia_celebs"
+      app:categoryTitle="@string/game_trivia_category_celebs"
+      app:layout_constraintBottom_toTopOf="@+id/viewCategoryGeneral"
+      app:layout_constraintEnd_toStartOf="@+id/viewCategorySports"
+      app:layout_constraintHorizontal_chainStyle="spread"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/viewCategoryMovies"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
+      android:id="@+id/viewCategorySports"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="30dp"
+      app:categoryIcon="@drawable/game_trivia_sports"
+      app:categoryTitle="@string/game_trivia_category_sports"
+      app:layout_constraintBottom_toTopOf="@+id/viewCategoryWorld"
+      app:layout_constraintEnd_toStartOf="@+id/viewCategoryGeeks"
+      app:layout_constraintStart_toEndOf="@id/viewCategoryCelebs"
+      app:layout_constraintTop_toBottomOf="@id/viewCategoryMusic"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
+      android:id="@+id/viewCategoryGeeks"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="30dp"
+      app:categoryIcon="@drawable/game_trivia_geeks"
+      app:categoryTitle="@string/game_trivia_category_geeks"
+      app:layout_constraintBottom_toTopOf="@+id/viewCategoryGames"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@id/viewCategorySports"
+      app:layout_constraintTop_toBottomOf="@id/viewCategoryTV"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
+      android:id="@+id/viewCategoryGeneral"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="30dp"
+      app:categoryIcon="@drawable/game_trivia_general"
+      app:categoryTitle="@string/game_trivia_category_general"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@+id/viewCategoryWorld"
+      app:layout_constraintHorizontal_chainStyle="spread"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/viewCategoryCelebs"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
+      android:id="@+id/viewCategoryWorld"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="30dp"
+      app:categoryIcon="@drawable/game_trivia_world"
+      app:categoryTitle="@string/game_trivia_category_world"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@+id/viewCategoryGames"
+      app:layout_constraintStart_toEndOf="@id/viewCategoryGeneral"
+      app:layout_constraintTop_toBottomOf="@id/viewCategorySports"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
+      android:id="@+id/viewCategoryGames"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="30dp"
+      app:categoryIcon="@drawable/game_trivia_games"
+      app:categoryTitle="@string/game_trivia_category_games"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toEndOf="@id/viewCategoryWorld"
+      app:layout_constraintTop_toBottomOf="@id/viewCategoryGeeks"
+      />
+
+  <android.support.constraint.Group
+      android:id="@+id/groupInit"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:alpha="0"
+      app:constraint_referenced_ids="txtTriviaTitle, viewCategoryMovies,
+      viewCategoryMusic, viewCategoryTV, viewCategoryCelebs,
+      viewCategorySports, viewCategoryGeeks, viewCategoryGeneral,
+      viewCategoryWorld, viewCategoryGames"
+      />
+
+  <com.tribe.app.presentation.view.widget.CircularProgressBar
+      android:id="@+id/progressBar"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      app:layout_constraintBottom_toTopOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      />
+
+  <View
+      android:id="@+id/progressBarBackground"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:background="@drawable/shape_ring_white10_5dp"
+      app:layout_constraintBottom_toTopOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtQuestion"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/margin_horizontal"
+      android:gravity="center"
+      app:layout_constraintBottom_toTopOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      style="@style/Title24.2.White"
+      />
+
+  <android.support.constraint.Group
+      android:id="@+id/groupTop"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:layout_marginTop="45dp"
+      app:constraint_referenced_ids="progressBar, progressBarBackground, txtQuestionCount"
+      />
+
+  <ImageView
+      android:id="@+id/imgBackground"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:scaleType="fitCenter"
+      android:src="@drawable/game_trivia_bg"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="parent"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaAnswersView
+      android:id="@+id/viewAnswers"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="parent"
+      />
+
+</android.support.constraint.ConstraintLayout>

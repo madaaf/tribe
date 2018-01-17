@@ -40,6 +40,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_ROULETTE;
 
@@ -94,6 +95,7 @@ public class LiveRoomView extends FrameLayout {
 
   @BindView(R.id.diceLayoutRoomView) DiceView diceView;
 
+  private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Void> onShouldCloseInvites = PublishSubject.create();
   private PublishSubject<Void> onChangeCallRouletteRoom = PublishSubject.create();
   private BehaviorSubject<Map<String, LiveStreamView>> onViews = BehaviorSubject.create();
@@ -320,6 +322,7 @@ public class LiveRoomView extends FrameLayout {
   /////////////////
   //   PUBLIC    //
   /////////////////
+
   public LiveRowView getLiveRowViewFromId(String userId) {
     LiveRowView row = null;
 
@@ -363,7 +366,7 @@ public class LiveRoomView extends FrameLayout {
 
     if (type == TYPE_GRID) {
       setBackgroundColor(Color.BLACK);
-    } else {
+    } else if (type == TYPE_LIST) {
       translation = (getMeasuredHeight() >> 1) - screenUtils.dpToPx(60);
       setBackgroundColor(Color.TRANSPARENT);
     }
@@ -464,7 +467,7 @@ public class LiveRoomView extends FrameLayout {
     guidelineInUse.add(guideline);
   }
 
-  private void addViewToContainer(int childCount, View view) {
+  private void addViewToContainer(int childCount, LiveRowView view) {
     ConstraintLayout.LayoutParams params =
         new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
             ConstraintLayout.LayoutParams.MATCH_CONSTRAINT);

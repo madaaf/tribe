@@ -2,7 +2,9 @@ package com.tribe.app.data.cache;
 
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import java.util.List;
+import java.util.Map;
 import javax.inject.Singleton;
 
 /**
@@ -21,4 +23,8 @@ import javax.inject.Singleton;
   List<ScoreRealm> getGameLeaderboard(String gameId, boolean friendsOnly);
 
   List<ScoreRealm> getUserLeaderboard(String userId);
+
+  void setTriviaData(Map<String, List<TriviaQuestion>> mapTrivia);
+
+  Map<String, List<TriviaQuestion>> getTriviaData();
 }
