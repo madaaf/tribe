@@ -171,7 +171,7 @@ public class JsonToModel {
       } else if (localWebSocketType.equals(WebRTCRoom.MESSAGE_MESSAGE)) {
 
         JSONObject d = object.getJSONObject("d");
-        Timber.d("Received message app");
+        Timber.d("Received message app : " + d);
 
         JSONObject session = d.getJSONObject("from");
         TribeSession tribeSession =

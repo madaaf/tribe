@@ -328,6 +328,9 @@ public class LiveView extends FrameLayout {
     rowViewScore.setGuest(user.asTribeGuest());
     layoutScoresOverLive.addView(rowViewScore);
     mapScoreViews.put(rowViewScore.getGuest().getId(), rowViewScore);
+    persistentSubscriptions.add(viewLocalLive.onScoreChange()
+        .subscribe(
+            integerStringPair -> mapScoreViews.get(user.getId()).updateScores(integerStringPair)));
 
     super.onFinishInflate();
   }
@@ -870,14 +873,13 @@ public class LiveView extends FrameLayout {
         liveRowView.setId(View.generateViewId());
         viewRoom.addViewConstraint(remotePeer.getSession().getUserId(), liveRowView);
 
-        LiveRowView finalLiveRowView = liveRowView;
-        tempSubscriptions.add(liveRowView.onScoreChange.subscribe(integerStringPair -> mapScoreViews
-            .get(finalLiveRowView.getGuest().getId())
-            .updateScores(integerStringPair)));
-
         LiveRowViewScores liveRowViewScores = new LiveRowViewScores(getContext());
         liveRowViewScores.setGuest(liveRowView.getGuest());
-        layoutScoresOverLive.addView(liveRowViewScores);
+        LinearLayout.LayoutParams params =
+            new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, screenUtils.dpToPx(5), 0, 0);
+        layoutScoresOverLive.addView(liveRowViewScores, params);
         mapScoreViews.put(liveRowView.getGuest().getId(), liveRowViewScores);
       }
 
@@ -893,6 +895,11 @@ public class LiveView extends FrameLayout {
           return o;
         }
       }).subscribe(onRemotePeerClick));
+
+      final LiveRowView finalLiveRowView = liveRowView;
+      tempSubscriptions.add(liveRowView.onScoreChange()
+          .subscribe(integerStringPair -> mapScoreViews.get(finalLiveRowView.getGuest().getId())
+              .updateScores(integerStringPair)));
     }
   }
 
@@ -1074,6 +1081,7 @@ public class LiveView extends FrameLayout {
 
     if (game.isNotOverLiveWithScores()) {
       layoutScoresOverLive.setVisibility(View.VISIBLE);
+      for (LiveRowViewScores lrvs : mapScoreViews.values()) lrvs.show();
     } else {
       layoutScoresOverLive.setVisibility(View.GONE);
     }

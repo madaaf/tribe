@@ -33,8 +33,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public abstract class GameViewWithRanking extends GameView {
 
-  private static final String SCORES_KEY = "scores";
-  private static final String CONTEXT_KEY = "context";
+  protected static final String SCORES_KEY = "scores";
+  protected static final String CONTEXT_KEY = "context";
 
   // VARIABLES
   protected Map<TribeGuest, RankingStatus> mapStatuses;

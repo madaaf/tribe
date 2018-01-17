@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -78,7 +79,7 @@ public class GameTriviaView extends GameViewWithRanking {
   private static final String ACTION_END_QUESTION = "endQuestion";
   private static final String ACTION_HIDE_GAME = "hideGame";
 
-  private static final int NB_QUESTIONS = 1;
+  private static final int NB_QUESTIONS = 2;
 
   @Inject GamePresenter gamePresenter;
 
@@ -283,7 +284,7 @@ public class GameTriviaView extends GameViewWithRanking {
         if (guest.canPlayGames(game.getId())) nbPlayersThatCanPlay++;
       }
 
-      nbPlayingPeers = 1 + nbPlayersThatCanPlay;
+      nbPlayingPeers = nbPlayersThatCanPlay;
       sendAction(ACTION_SHOW_QUESTION, getShowQuestionPayload(question));
     } else if (leadersDisplayName != null && leadersDisplayName.size() > 0) {
       sendAction(ACTION_HIDE_GAME, getHideGamePayload(leadersDisplayName));
@@ -306,6 +307,7 @@ public class GameTriviaView extends GameViewWithRanking {
           } else if (actionKey.equals(ACTION_SHOW_QUESTION)) {
             soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK, SoundManager.SOUND_MID);
             currentMasterId = tribeSession == null ? currentUser.getId() : tribeSession.getUserId();
+            game.setCurrentMaster(peerMap.get(currentMasterId));
             preloadQuestion(message, tribeSession);
             weHaveAWinner = false;
           } else if (actionKey.equals(ACTION_END_QUESTION)) {
@@ -362,7 +364,7 @@ public class GameTriviaView extends GameViewWithRanking {
                 weHaveAWinner = true;
                 endQuestion(true, tribeSession);
               }
-            } else {
+            } else if (nbAnswers == nbPlayingPeers) {
               weHaveAWinner = true;
               endQuestion(false, tribeSession);
             }
@@ -555,6 +557,10 @@ public class GameTriviaView extends GameViewWithRanking {
                             switch (integer) {
                               case 0:
                                 onRestart.onNext(game);
+                                game.getContextMap()
+                                    .put(SCORES_KEY, new HashMap<String, Integer>());
+                                resetLiveScores();
+                                updateRanking(null);
                                 showCategories();
                                 break;
                               case 1:
@@ -590,8 +596,11 @@ public class GameTriviaView extends GameViewWithRanking {
     JSONObject game = new JSONObject();
     JsonUtils.jsonPut(obj, ANSWER_KEY, answer);
     JsonUtils.jsonPut(game, this.game.getId(), obj);
-    if (tribeSession != null) webRTCRoom.sendToUser(tribeSession.getUserId(), game, true);
-    receiveMessage(null, game);
+    if (tribeSession != null) {
+      webRTCRoom.sendToUser(tribeSession.getUserId(), game, true);
+    } else {
+      receiveMessage(null, game);
+    }
   }
 
   private JSONObject getCategorySelectionPayload(TriviaCategoryEnum category) {

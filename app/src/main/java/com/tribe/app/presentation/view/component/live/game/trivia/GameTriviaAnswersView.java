@@ -134,7 +134,7 @@ public class GameTriviaAnswersView extends LinearLayout {
 
   public void animateAnswerResult() {
     if (clickedAnswerView == rightAnswerView) return;
-    clickedAnswerView.animateBogusAnswer();
+    if (clickedAnswerView != null) clickedAnswerView.animateBogusAnswer();
 
     subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())

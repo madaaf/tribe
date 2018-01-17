@@ -8,8 +8,8 @@ ext {
   //Android
   androidBuildToolsVersion = "27.0.3"
   androidMinSdkVersion = 18
-  androidTargetSdkVersion = 27
-  androidCompileSdkVersion = 27
+  androidTargetSdkVersion = 26
+  androidCompileSdkVersion = 26
 
   compat = '27.0.2'
 

@@ -62,7 +62,7 @@ public class LiveRowViewScores extends LinearLayout {
   }
 
   private void initResources() {
-    avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
+    avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_chat);
   }
 
   ////////////
@@ -76,11 +76,14 @@ public class LiveRowViewScores extends LinearLayout {
 
   public void updateScores(Pair<Integer, String> pair) {
     this.txtEmoji.setText(pair.second);
-    this.txtScore.setText(pair.first);
+    this.txtScore.setText("" + pair.first);
   }
 
   public void setGuest(TribeGuest tribeGuest) {
     this.guest = tribeGuest;
+  }
+
+  public void show() {
     viewAvatar.load(guest.getPicture());
   }
 

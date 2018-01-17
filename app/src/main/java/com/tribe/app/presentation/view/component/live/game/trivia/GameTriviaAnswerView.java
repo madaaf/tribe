@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.component.live.game.trivia;
 
-import android.animation.LayoutTransition;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -12,7 +11,6 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -23,7 +21,6 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FontUtils;
-import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
@@ -203,38 +200,52 @@ public class GameTriviaAnswerView extends LinearLayout {
   }
 
   public void animateBogusAnswer() {
-    LayoutTransition layoutTransition = new LayoutTransition();
-    layoutTransition.setDuration(DURATION);
-    layoutTransition.addTransitionListener(new LayoutTransition.TransitionListener() {
-      @Override
-      public void startTransition(LayoutTransition transition, ViewGroup container, View view,
-          int transitionType) {
-      }
+    //LayoutTransition layoutTransition = new LayoutTransition();
+    //layoutTransition.setDuration(DURATION);
+    //layoutTransition.addTransitionListener(new LayoutTransition.TransitionListener() {
+    //  @Override
+    //  public void startTransition(LayoutTransition transition, ViewGroup container, View view,
+    //      int transitionType) {
+    //  }
+    //
+    //  @Override
+    //  public void endTransition(LayoutTransition transition, ViewGroup container, View view,
+    //      int transitionType) {
+    //
+    //  }
+    //});
+    //setLayoutTransition(layoutTransition);
+    //layoutIcon.setVisibility(View.GONE);
 
-      @Override
-      public void endTransition(LayoutTransition transition, ViewGroup container, View view,
-          int transitionType) {
-        setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
-      }
-    });
-    setLayoutTransition(layoutTransition);
+    //animate().alpha(0.2f).setDuration(300).setInterpolator(new DecelerateInterpolator()).start();
+    //
+    //AnimationUtils.animateBGColor(this, Color.WHITE, color, DURATION);
+    //AnimationUtils.animateTextColor(txtAnswer, redColor, Color.WHITE, DURATION);
+    //
+
+    setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
     layoutIcon.setVisibility(View.GONE);
-
-    animate().alpha(0.2f).setDuration(300).setInterpolator(new DecelerateInterpolator()).start();
-
-    AnimationUtils.animateBGColor(this, Color.WHITE, color, DURATION);
-    AnimationUtils.animateTextColor(txtAnswer, redColor, Color.WHITE, DURATION);
+    setAlpha(0.2f);
+    background.setColor(color);
+    txtAnswer.setTextColor(Color.WHITE);
   }
 
   public void animateRightAnswer() {
-    animate().alpha(1f).setDuration(300).setInterpolator(new DecelerateInterpolator()).start();
+    setAlpha(1f);
+    background.setColor(Color.WHITE);
+    txtAnswer.setTextColor(greenColor);
 
-    AnimationUtils.animateBGColor(this, color, Color.WHITE, DURATION);
-    AnimationUtils.animateTextColor(txtAnswer, Color.WHITE, greenColor, DURATION);
+    //animate().alpha(1f).setDuration(300).setInterpolator(new DecelerateInterpolator()).start();
+    //
+    //AnimationUtils.animateBGColor(this, color, Color.WHITE, DURATION);
+    //AnimationUtils.animateTextColor(txtAnswer, Color.WHITE, greenColor, DURATION);
 
     imgGuessed.setAlpha(1f);
     imgNotGuessed.setAlpha(0f);
     layoutIcon.setVisibility(View.VISIBLE);
+
+    setPadding(paddingHorizontalWithIcon, paddingVerticalWithIcon, paddingHorizontalWithIcon,
+        paddingVerticalWithIcon);
   }
 
   public String getAnswer() {

@@ -4,8 +4,8 @@
 
   <com.tribe.app.presentation.view.widget.avatar.AvatarView
       android:id="@+id/viewAvatar"
-      android:layout_width="@dimen/avatar_size_small"
-      android:layout_height="@dimen/avatar_size_small"
+      android:layout_width="@dimen/avatar_size_chat"
+      android:layout_height="@dimen/avatar_size_chat"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
@@ -24,7 +24,7 @@
 
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtEmoji"
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:layout_marginStart="@dimen/horizontal_margin_smaller"

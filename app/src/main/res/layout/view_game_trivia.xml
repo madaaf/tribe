@@ -33,7 +33,7 @@
 
   <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
       android:id="@+id/viewCategoryMovies"
-      android:layout_width="wrap_content"
+      android:layout_width="50dp"
       android:layout_height="wrap_content"
       android:clickable="true"
       app:categoryIcon="@drawable/game_trivia_movies"
@@ -48,7 +48,7 @@
 
   <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
       android:id="@+id/viewCategoryMusic"
-      android:layout_width="wrap_content"
+      android:layout_width="50dp"
       android:layout_height="wrap_content"
       android:clickable="true"
       app:categoryIcon="@drawable/game_trivia_music"
@@ -62,7 +62,7 @@
 
   <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
       android:id="@+id/viewCategoryTV"
-      android:layout_width="wrap_content"
+      android:layout_width="50dp"
       android:layout_height="wrap_content"
       android:clickable="true"
       app:categoryIcon="@drawable/game_trivia_tv"
@@ -76,7 +76,7 @@
 
   <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
       android:id="@+id/viewCategoryCelebs"
-      android:layout_width="wrap_content"
+      android:layout_width="50dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="30dp"
       android:clickable="true"
@@ -91,7 +91,7 @@
 
   <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
       android:id="@+id/viewCategorySports"
-      android:layout_width="wrap_content"
+      android:layout_width="50dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="30dp"
       android:clickable="true"
@@ -105,7 +105,7 @@
 
   <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
       android:id="@+id/viewCategoryGeeks"
-      android:layout_width="wrap_content"
+      android:layout_width="50dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="30dp"
       android:clickable="true"
@@ -119,7 +119,7 @@
 
   <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
       android:id="@+id/viewCategoryGeneral"
-      android:layout_width="wrap_content"
+      android:layout_width="50dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="30dp"
       android:clickable="true"
@@ -134,7 +134,7 @@
 
   <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
       android:id="@+id/viewCategoryWorld"
-      android:layout_width="wrap_content"
+      android:layout_width="50dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="30dp"
       android:clickable="true"
@@ -148,7 +148,7 @@
 
   <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView
       android:id="@+id/viewCategoryGames"
-      android:layout_width="wrap_content"
+      android:layout_width="50dp"
       android:layout_height="wrap_content"
       android:layout_marginTop="30dp"
       android:clickable="true"
