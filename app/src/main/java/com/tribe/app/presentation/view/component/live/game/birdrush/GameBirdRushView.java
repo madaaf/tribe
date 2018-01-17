@@ -9,9 +9,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,8 +29,10 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -77,6 +82,7 @@ public class GameBirdRushView extends GameViewWithEngine {
     inflater.inflate(R.layout.view_game_bird_rush, this, true);
     unbinder = ButterKnife.bind(this);
     setBackScrolling();
+    setTimer();
     controller = new BirdController(context);
 
     initSubscriptions();
@@ -84,9 +90,71 @@ public class GameBirdRushView extends GameViewWithEngine {
     setOnTouchListener(controller);
   }
 
-  @Override protected void onFinishInflate() {
+  private void setTimer() {
+    Observable.timer(1000, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          Timber.e("a Long " + aLong);
+        });
+  }
 
+  @Override protected void onFinishInflate() {
     super.onFinishInflate();
+  }
+
+  private void initObstacle() {
+    Timber.e("SOEF ADD OBSTACLE");
+    Float heightRatio = 0.5f;
+    Float start = 0.5f;
+
+    ImageView obstacle = new ImageView(context);
+    obstacle.setScaleType(ImageView.ScaleType.FIT_XY);
+    FrameLayout.LayoutParams params =
+        new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT);
+    params.gravity = Gravity.END;
+    obstacle.setImageDrawable(
+        ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle));
+    obstacle.setLayoutParams(params);
+    int height = Math.round(heightRatio * screenUtils.getHeightPx());
+    int width = 75;
+    obstacle.getLayoutParams().height = height;
+    obstacle.getLayoutParams().width = width;
+
+    addView(obstacle);
+    obstacle.setTranslationX(obstacle.getWidth());
+    obstacle.setY(start * screenUtils.getHeightPx() - height / 2);
+    Timber.e("- (obstacle.getHeight() / 2)" + -(obstacle.getHeight() / 2));
+
+    obstacle.animate().translationX(-screenUtils.getWidthPx() - width).setDuration(5000).start();
+
+    // TRANSLATION
+
+    ValueAnimator trans =
+        ValueAnimator.ofFloat(obstacle.getY(), obstacle.getY() - 25, obstacle.getY() + 25);
+    trans.setDuration(1000);
+    trans.addUpdateListener(animation -> {
+      Float value = (float) animation.getAnimatedValue();
+      obstacle.setY(value);
+    });
+    trans.setRepeatCount(Animation.INFINITE);
+    trans.setRepeatMode(ValueAnimator.REVERSE);
+    trans.start();
+
+    // ROTATION
+
+    ValueAnimator rotation = ValueAnimator.ofFloat(0f, -5f, 0f, 5f);
+    rotation.setDuration(5000);
+    rotation.addUpdateListener(animation -> {
+      Float value = (float) animation.getAnimatedValue();
+      obstacle.setPivotX(width / 2);
+      obstacle.setPivotY(height / 2);
+      obstacle.setRotation(value);
+    });
+    rotation.setInterpolator(new LinearInterpolator());
+    rotation.setRepeatCount(Animation.INFINITE);
+    rotation.setRepeatMode(ValueAnimator.REVERSE);
+    rotation.start();
   }
 
   private void initSubscriptions() {
@@ -95,10 +163,6 @@ public class GameBirdRushView extends GameViewWithEngine {
     subscriptions.add(controller.onTap().subscribe(aVoid -> {
       jump();
     }));
-  }
-
-  public void animateBurd() {
-
   }
 
   ValueAnimator va;
@@ -113,7 +177,6 @@ public class GameBirdRushView extends GameViewWithEngine {
     va.setDuration(100);
     va.addUpdateListener(animation -> {
       Float value = (float) animation.getAnimatedValue();
-      Timber.e("SOEF VALUE " + value + " " + bird.getTop());
       bird.setY(value);
     });
     va.addListener(new AnimatorListenerAdapter() {
@@ -129,15 +192,13 @@ public class GameBirdRushView extends GameViewWithEngine {
   public void down() {
     if (va != null) {
       va.cancel();
-      // bird.clearAnimation();
     }
-    
+
     va = ValueAnimator.ofFloat(bird.getY(), bird.getY() + screenUtils.getHeightPx());
     va.setDuration(1000);
     va.setInterpolator(new AccelerateInterpolator());
     va.addUpdateListener(animation -> {
       Float value = (float) animation.getAnimatedValue();
-      Timber.e("SOEF VALUE " + value + " " + bird.getTop() + " " + screenUtils.getHeightPx());
       bird.setY(value);
     });
 
@@ -160,6 +221,13 @@ public class GameBirdRushView extends GameViewWithEngine {
           final float translationX = -width * progress;
           backgroundOne.setTranslationX(translationX);
           backgroundTwo.setTranslationX(translationX + width);
+        });
+
+        animator.addListener(new AnimatorListenerAdapter() {
+          @Override public void onAnimationRepeat(Animator animation) {
+            super.onAnimationRepeat(animation);
+            initObstacle();
+          }
         });
         animator.start();
       }
