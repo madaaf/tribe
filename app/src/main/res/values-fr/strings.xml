@@ -722,7 +722,7 @@
 	<string name="game_aliens_attack_waiting_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE</string>
 	<string name="game_bird_rush">Bird Rush!</string>
 	<string name="game_bird_rush_title">BIRD\nRUSH</string>
-	<string name="game_bird_rush_lets_go">TAP, TAP, TAP POUR VOLER !</string>
+	<string name="game_bird_rush_lets_go">TAP N\'IMPORTE OÙ POUR VOLER !</string>
 	<string name="game_bird_rush_you_won">TU AS GAGNÉ !</string>
 	<string name="game_bird_rush_someone_won">%1$s A GAGNÉ !</string>
 	<string name="game_bird_rush_you_lost">TU AS PERDU</string>

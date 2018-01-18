@@ -15,8 +15,6 @@ public interface FileApi {
 
   @GET @Streaming Call<ResponseBody> downloadFileWithUrl(@Url String fileUrl);
 
-  @GET Observable<List<String>> getDataForUrl(@Url String fileUrl);
-
   @GET("/assets/support.json") Observable<List<Conversation>> getMessageSupport();
 
   @GET Observable<GameDataEntity> getDataForUrl(@Url String fileUrl);

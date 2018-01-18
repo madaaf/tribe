@@ -29,7 +29,6 @@ public class MessageRealm extends RealmObject {
   private String threadId;
   private String supportAuthorId;
 
-
   public MessageRealm() {
   }
 

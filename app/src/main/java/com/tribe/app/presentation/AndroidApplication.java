@@ -47,9 +47,11 @@ import com.tribe.tribelivesdk.game.GameManager;
 import com.zendesk.sdk.network.impl.ZendeskConfig;
 import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
+import io.realm.DynamicRealmObject;
 import io.realm.FieldAttribute;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import io.realm.RealmList;
 import io.realm.RealmObjectSchema;
 import io.realm.RealmSchema;
 import io.realm.exceptions.RealmMigrationNeededException;
@@ -147,7 +149,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(12)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(13)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -306,6 +308,50 @@ public class AndroidApplication extends Application {
                   .addRealmObjectField("friendLeaderScoreUser", schema.get("ScoreUserRealm"));
 
               schema.get("UserRealm").addRealmListField("scores", schema.get("ScoreRealm"));
+            }
+
+            oldVersion++;
+          }
+
+          if (oldVersion == 12) {
+            if (schema.get("MediaRealm") == null) {
+              schema.create("MediaRealm")
+                  .addField("url", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
+                  .addField("filesize", Integer.class)
+                  .addField("width", String.class)
+                  .addField("height", String.class)
+                  .addField("duration", float.class);
+
+              schema.create("MessageRealm")
+                  .addRealmObjectField("original_tmp", schema.get("MediaRealm"))
+                  .transform(obj -> {
+                    DynamicRealmObject children = obj.getObject("original");
+                    DynamicRealmObject migratedChildren = obj.getObject("original_tmp");
+                    migratedChildren.set("url", children.getString("url"));
+                    migratedChildren.set("filesize", children.getInt("filesize"));
+                    migratedChildren.set("width", children.getString("width"));
+                    migratedChildren.set("height", children.getString("height"));
+                    migratedChildren.set("duration", children.getFloat("duration"));
+                  })
+                  .removeField("original")
+                  .renameField("original_tmp", "original")
+                  .addRealmListField("alts_tmp", schema.get("MediaRealm"))
+                  .transform(obj -> {
+                    RealmList<DynamicRealmObject> children = obj.getList("alts");
+                    RealmList<DynamicRealmObject> migratedChildren = obj.getList("alts_tmp");
+                    for (DynamicRealmObject child : children) {
+                      DynamicRealmObject newChild = realm.createObject("MediaRealm");
+                      newChild.set("url", child.getString("url"));
+                      newChild.set("filesize", child.getInt("filesize"));
+                      newChild.set("width", child.getString("width"));
+                      newChild.set("height", child.getString("height"));
+                      newChild.set("duration", child.getFloat("duration"));
+                      migratedChildren.add(newChild);
+                    }
+                  })
+                  .removeField("alts")
+                  .renameField("alts_tmp", "alts")
+                  .addField("supportAuthorId", String.class);
             }
 
             oldVersion++;
