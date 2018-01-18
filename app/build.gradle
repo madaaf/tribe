@@ -163,6 +163,7 @@ android {
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link}\""
       buildConfigField "String", "MIXPANEL_GOOGLE_API", "\"${mixpanel_google_prod}\""
       buildConfigField "String", "TRIBE_ORIGIN", "\"${tribe_url_origin}\""
+      buildConfigField "String", "OPENTDB_URL", "\"${tribe_opentdb_url}\""
 
       proguardFiles getDefaultProguardFile('proguard-android.txt'),
           'proguard-google-play-services.pro',
