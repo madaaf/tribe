@@ -79,7 +79,7 @@ public class GameTriviaView extends GameViewWithRanking {
   private static final String ACTION_END_QUESTION = "endQuestion";
   private static final String ACTION_HIDE_GAME = "hideGame";
 
-  private static final int NB_QUESTIONS = 2;
+  private static final int NB_QUESTIONS = 12;
 
   @Inject GamePresenter gamePresenter;
 
