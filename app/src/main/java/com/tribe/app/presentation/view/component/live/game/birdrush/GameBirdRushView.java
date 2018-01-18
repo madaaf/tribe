@@ -11,13 +11,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
-import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
@@ -50,6 +50,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   @BindView(R.id.background_one) ImageView backgroundOne;
   @BindView(R.id.background_two) ImageView backgroundTwo;
   @BindView(R.id.bird) ImageView bird;
+  @BindView(R.id.gameOver) TextView gameOver;
 
   @Inject ScreenUtils screenUtils;
 
@@ -71,6 +72,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   // OBSERVABLES
   protected CompositeSubscription subscriptions;
   private Map<BirdRushObstacle, ImageView> obstacleVisibleScreen = new HashMap<>();
+  private Map<BirdRushObstacle, ImageView> obstacleVisibleScreenBis = new HashMap<>();
 
   public GameBirdRushView(@NonNull Context context) {
     super(context);
@@ -100,31 +102,33 @@ public class GameBirdRushView extends GameViewWithEngine {
     Timber.e("ok on DRAw");
   }
 
-  View v;
+  ImageView v;
 
   private void setTimer() {
     GameBirdRushEngine ok = new GameBirdRushEngine(context, GameBirdRushEngine.Level.MEDIUM);
     subscriptions.add(Observable.interval(3000, 100, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          displayMovingObstacle();
           aLong = aLong * 100;
-
           // init first obstacle
           if (aLong == 0L) {
             obs = ok.generateObstacle();
             delay = (obs.getNextSpawnDelay() + aLong);
             v = animateObstacle(obs);
           }
+
           if (v != null) {
             Timber.w("OBSERVALE ok : " + v.getX() + "  " + v.getY());
           }
+/*
           // init next obstacle
           if (delay != null && (delay == aLong.doubleValue())) {
             obs = ok.generateObstacle();
             delay = (obs.getNextSpawnDelay()) + aLong;
             animateObstacle(obs);
           }
+*/
+          displayMovingObstacle(v, obs);
         }));
   }
 
@@ -132,26 +136,70 @@ public class GameBirdRushView extends GameViewWithEngine {
     super.onFinishInflate();
   }
 
-  private void displayMovingObstacle() {
+  private void displayMovingObstacle(ImageView obsclView, BirdRushObstacle b) {
     if (obstacleVisibleScreen != null && !obstacleVisibleScreen.isEmpty()) {
+      for (Map.Entry<BirdRushObstacle, ImageView> entry : obstacleVisibleScreen.entrySet()) {
 
-      Map.Entry<BirdRushObstacle, ImageView> entry =
-          obstacleVisibleScreen.entrySet().iterator().next();
-      ImageView value = entry.getValue();
-      Timber.w("OBSERVALE " + value.getX() + "  " + value.getY());
-
+      }
       /*value.getViewTreeObserver()
           .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @SuppressLint("NewApi") @Override public void onGlobalLayout() {
               Timber.w("OBSERVALE " + value.getX() + "  " + value.getY());
             }
-          });*/
+          });
+
+      BirdRushObstacle b = entry.getKey();
+      ImageView i = entry.getValue();
+      */
     }
+
+    if (obsclView != null
+        && b != null
+        && obsclView.getX() > 0
+        && obsclView.getX() > screenUtils.getWidthPx() / 2) {
+      if (obsclView.getX() - obsclView.getWidth() < (screenUtils.getWidthPx() / 2)) {
+        if (isBetween(obsclView.getY(), obsclView.getY() + obsclView.getHeight(), bird.getY())) {
+          gameOver(obsclView);
+        }
+      }
+    }
+    Timber.w("OBSERVALE ok1 : "
+        + b.getId()
+        + " "
+        + bird.getY()
+        + "  "
+        + (bird.getY() + bird.getHeight())
+        + " "
+        + obsclView.getY()
+        + obstacleVisibleScreen.size());
+  }
+
+  private void gameOver(ImageView obstacle) {
+    setOnTouchListener(null);
+    gameOver.setVisibility(VISIBLE);
+    fallBird();
+    // obstacle.getAnimation().cancel();
+    obstacle.clearAnimation();
+    obstacle.setImageDrawable(
+        ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle_red));
+
+    animator.cancel();
+    obstacle.animate().cancel();
+    backgroundOne.clearAnimation();
+    backgroundTwo.clearAnimation();
+  }
+
+  private boolean isBetween(float x1, float x2, float pos) {
+    if (pos > x1 && pos < x2) {
+      return true;
+    }
+    return false;
   }
 
   private ImageView animateObstacle(BirdRushObstacle model) {
     ImageView obstacle = new ImageView(context);
     obstacleVisibleScreen.put(model, obstacle);
+    obstacleVisibleScreenBis = obstacleVisibleScreen;
     obstacle.setScaleType(ImageView.ScaleType.FIT_XY);
     FrameLayout.LayoutParams params =
         new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
@@ -170,7 +218,7 @@ public class GameBirdRushView extends GameViewWithEngine {
     obstacle.setY(model.getStart() * screenUtils.getHeightPx() - height / 2);
     obstacle.animate()
         .translationX(-screenUtils.getWidthPx() - 2 * width)
-        .setDuration(5000)
+        .setDuration(SPEED_BACK_SCROLL)
         .start();
 
     // TRANSLATION
