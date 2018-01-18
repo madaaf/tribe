@@ -3,6 +3,8 @@ package com.tribe.app.presentation.view.component.live.game.birdrush;
 import android.content.Context;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackAlienView;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import rx.Subscription;
@@ -36,6 +38,7 @@ public class GameBirdRushEngine extends GameEngine {
     }
 
   }
+
 
   public GameBirdRushEngine(Context context, Level level) {
     super(context);
@@ -103,7 +106,7 @@ public class GameBirdRushEngine extends GameEngine {
   private Float heightRatio() {
     switch (level) {
       case MEDIUM:
-        return randFloat(0.1f, 0.8f); // TODO SOEF
+        return randFloat(0.25f, 0.3f);
       case HARD:
         return randFloat(0.25f, 0.35f);
       case EXTREME:
