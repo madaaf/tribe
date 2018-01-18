@@ -6,11 +6,15 @@ import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
 import com.tribe.app.presentation.view.utils.GlideUtils;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameFooter;
 
 import static android.view.View.GONE;
 
@@ -99,13 +103,21 @@ public class NewGameActivity extends ViewStackActivity {
     viewGamesStore = (GamesStoreView) viewStack.push(R.layout.view_game_store);
 
     subscriptions.add(viewGamesStore.onGameClick().subscribe(game -> {
-      if (isFromHome) {
-        setupMembersView(game);
+      if (game instanceof GameFooter) {
+        if (game.getId().equals(Game.GAME_SUPPORT)) {
+          Shortcut s = ShortcutUtil.createShortcutSupport();
+          s.setTypeSupport(Conversation.TYPE_SUGGEST_GAME);
+          navigator.navigateToChat(this, s, null, null, null, false);
+        }
       } else {
-        Intent intent = new Intent();
-        if (game != null) intent.putExtra(GAME_ID, game.getId());
-        setResult(RESULT_OK, intent);
-        finish();
+        if (isFromHome) {
+          setupMembersView(game);
+        } else {
+          Intent intent = new Intent();
+          if (game != null) intent.putExtra(GAME_ID, game.getId());
+          setResult(RESULT_OK, intent);
+          finish();
+        }
       }
     }));
   }

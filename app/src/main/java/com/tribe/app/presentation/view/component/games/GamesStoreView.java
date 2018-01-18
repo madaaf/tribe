@@ -18,6 +18,7 @@ import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecorati
 import com.tribe.app.presentation.view.adapter.manager.GamesLayoutManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameFooter;
 import com.tribe.tribelivesdk.game.GameManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,11 +89,19 @@ public class GamesStoreView extends FrameLayout {
         ContextCompat.getColor(getContext(), R.color.grey_divider), screenUtils.dpToPx(0.5f)));
 
     items.addAll(gameManager.getGames());
-    gameAdapter.setItems(items);
+    addFooterItem();
 
+    gameAdapter.setItems(items);
     subscriptions.add(gameAdapter.onClick()
         .map(view -> gameAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view)))
         .subscribe(onGameClick));
+  }
+
+  private void addFooterItem() {
+    GameFooter gameSupport = new GameFooter(getContext(), Game.GAME_SUPPORT);
+    GameFooter gameFooter = new GameFooter(getContext(), Game.GAME_LOGO);
+    items.add(gameSupport);
+    items.add(gameFooter);
   }
 
   protected ApplicationComponent getApplicationComponent() {

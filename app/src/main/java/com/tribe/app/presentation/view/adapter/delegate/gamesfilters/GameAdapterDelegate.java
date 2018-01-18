@@ -23,6 +23,7 @@ import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameFooter;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -57,7 +58,8 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
   }
 
   @Override public boolean isForViewType(@NonNull List<Game> items, int position) {
-    return true;
+    Game g = items.get(position);
+    return !(g instanceof GameFooter);
   }
 
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {

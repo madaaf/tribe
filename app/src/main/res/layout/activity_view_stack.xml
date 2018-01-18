@@ -6,57 +6,13 @@
     android:background="@android:color/white"
     >
 
-  <ScrollView
+  <com.solera.defrag.ViewStack
+      android:id="@+id/viewNavigatorStack"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
-
-      >
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
-      <com.solera.defrag.ViewStack
-          android:id="@+id/viewNavigatorStack"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/top_bar_height_small"
-          android:background="@null"
-          />
-
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="@dimen/divider_size"
-          android:background="@color/grey.light"
-          />
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/supportBtn"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center"
-          android:layout_margin="20dp"
-          android:text="@string/new_game_suggest"
-          style="@style/Title.2.Black40"
-          />
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="@dimen/divider_size"
-          android:background="@color/grey.light"
-          />
-      <ImageView
-          android:id="@+id/imgLogo"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center"
-          android:layout_marginBottom="100dp"
-          android:layout_marginTop="30dp"
-          android:src="@drawable/picto_tribe_logo_black"
-          />
-
-    </LinearLayout>
-
-  </ScrollView>
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/top_bar_height_small"
+      android:background="@null"
+      />
 
   <View
       android:layout_width="match_parent"

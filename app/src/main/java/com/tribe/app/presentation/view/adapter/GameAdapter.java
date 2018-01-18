@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.FooterAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GameAdapterDelegate;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
@@ -21,6 +21,7 @@ public class GameAdapter extends RecyclerView.Adapter {
   // DELEGATES
   private RxAdapterDelegatesManager delegatesManager;
   private GameAdapterDelegate gameAdapterDelegate;
+  private FooterAdapterDelegate footerAdapterDelegate;
 
   // VARIABLES
   private List<Game> items;
@@ -35,6 +36,9 @@ public class GameAdapter extends RecyclerView.Adapter {
 
     gameAdapterDelegate = new GameAdapterDelegate(context);
     delegatesManager.addDelegate(gameAdapterDelegate);
+
+    footerAdapterDelegate = new FooterAdapterDelegate(context);
+    delegatesManager.addDelegate(footerAdapterDelegate);
 
     setHasStableIds(true);
   }
@@ -94,6 +98,6 @@ public class GameAdapter extends RecyclerView.Adapter {
    */
 
   public Observable<View> onClick() {
-    return gameAdapterDelegate.onClick();
+    return Observable.merge(gameAdapterDelegate.onClick(), footerAdapterDelegate.onClick());
   }
 }
