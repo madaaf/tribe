@@ -50,13 +50,14 @@ public class GameBirdRushView extends GameViewWithEngine {
   @BindView(R.id.background_one) ImageView backgroundOne;
   @BindView(R.id.background_two) ImageView backgroundTwo;
   @BindView(R.id.bird) ImageView bird;
-  @BindView(R.id.gameOver) TextView gameOver;
+  @BindView(R.id.gameOver) TextView gameOverLabel;
 
   @Inject ScreenUtils screenUtils;
 
   private ValueAnimator animator;
   private BirdController controller;
   private Double delay = null;
+  private boolean gameOver = false;
 
   private Drawable[] birds = new Drawable[] {
       ContextCompat.getDrawable(getContext(), R.drawable.game_bird1),
@@ -109,6 +110,7 @@ public class GameBirdRushView extends GameViewWithEngine {
     subscriptions.add(Observable.interval(3000, 100, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
+          if (gameOver) return;
           aLong = aLong * 100;
           // init first obstacle
           if (aLong == 0L) {
@@ -120,14 +122,14 @@ public class GameBirdRushView extends GameViewWithEngine {
           if (v != null) {
             Timber.w("OBSERVALE ok : " + v.getX() + "  " + v.getY());
           }
-/*
+
           // init next obstacle
           if (delay != null && (delay == aLong.doubleValue())) {
             obs = ok.generateObstacle();
             delay = (obs.getNextSpawnDelay()) + aLong;
-            animateObstacle(obs);
+            v = animateObstacle(obs);
           }
-*/
+
           displayMovingObstacle(v, obs);
         }));
   }
@@ -136,47 +138,49 @@ public class GameBirdRushView extends GameViewWithEngine {
     super.onFinishInflate();
   }
 
-  private void displayMovingObstacle(ImageView obsclView, BirdRushObstacle b) {
+  private void displayMovingObstacle(ImageView obsclVeiew, BirdRushObstacle eb) {
     if (obstacleVisibleScreen != null && !obstacleVisibleScreen.isEmpty()) {
       for (Map.Entry<BirdRushObstacle, ImageView> entry : obstacleVisibleScreen.entrySet()) {
+        BirdRushObstacle b = entry.getKey();
+        ImageView obsclView = entry.getValue();
 
-      }
-      /*value.getViewTreeObserver()
-          .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @SuppressLint("NewApi") @Override public void onGlobalLayout() {
-              Timber.w("OBSERVALE " + value.getX() + "  " + value.getY());
+        if (obsclView != null
+            && b != null
+            && obsclView.getX() > 0
+            && obsclView.getX() > screenUtils.getWidthPx() / 2) {
+
+          if (obsclView.getX() - obsclView.getWidth() < (screenUtils.getWidthPx() / 2)) {
+            if (isBetween(obsclView.getY(), obsclView.getY() + obsclView.getHeight(),
+                bird.getY())) {
+              gameOver(obsclView);
             }
-          });
+          }
+          Timber.w("OBSERVALE ok1 : "
+              + b.getId()
+              + " "
+              + obsclView.getX()
+              + " "
+              + screenUtils.getWidthPx() / 2);
 
-      BirdRushObstacle b = entry.getKey();
-      ImageView i = entry.getValue();
-      */
-    }
+          //obsclView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle_blue));
+        } else {
+          Timber.e("OBSERVALE ok1 : "
+              + b.getId()
+              + " "
+              + obsclView.getX()
+              + " "
+              + screenUtils.getWidthPx() / 2);
 
-    if (obsclView != null
-        && b != null
-        && obsclView.getX() > 0
-        && obsclView.getX() > screenUtils.getWidthPx() / 2) {
-      if (obsclView.getX() - obsclView.getWidth() < (screenUtils.getWidthPx() / 2)) {
-        if (isBetween(obsclView.getY(), obsclView.getY() + obsclView.getHeight(), bird.getY())) {
-          gameOver(obsclView);
+          //obsclView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle_red));
         }
       }
     }
-    Timber.w("OBSERVALE ok1 : "
-        + b.getId()
-        + " "
-        + bird.getY()
-        + "  "
-        + (bird.getY() + bird.getHeight())
-        + " "
-        + obsclView.getY()
-        + obstacleVisibleScreen.size());
   }
 
   private void gameOver(ImageView obstacle) {
+    gameOver = true;
     setOnTouchListener(null);
-    gameOver.setVisibility(VISIBLE);
+    gameOverLabel.setVisibility(VISIBLE);
     fallBird();
     // obstacle.getAnimation().cancel();
     obstacle.clearAnimation();
@@ -184,7 +188,11 @@ public class GameBirdRushView extends GameViewWithEngine {
         ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle_red));
 
     animator.cancel();
-    obstacle.animate().cancel();
+    for (Map.Entry<BirdRushObstacle, ImageView> entry : obstacleVisibleScreen.entrySet()) {
+      ImageView obsclView = entry.getValue();
+      obsclView.animate().cancel();
+    }
+
     backgroundOne.clearAnimation();
     backgroundTwo.clearAnimation();
   }
