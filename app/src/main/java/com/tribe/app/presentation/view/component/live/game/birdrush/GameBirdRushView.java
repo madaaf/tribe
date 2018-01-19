@@ -120,7 +120,7 @@ public class GameBirdRushView extends GameViewWithEngine {
           }
 
           if (v != null) {
-            Timber.w("OBSERVALE ok : " + v.getX() + "  " + v.getY());
+            //Timber.w("OBSERVALE ok : " + v.getX() + "  " + v.getY());
           }
 
           // init next obstacle
@@ -155,21 +155,22 @@ public class GameBirdRushView extends GameViewWithEngine {
               gameOver(obsclView);
             }
           }
+          /*
           Timber.w("OBSERVALE ok1 : "
               + b.getId()
               + " "
               + obsclView.getX()
               + " "
-              + screenUtils.getWidthPx() / 2);
+              + screenUtils.getWidthPx() / 2);*/
 
           //obsclView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle_blue));
         } else {
-          Timber.e("OBSERVALE ok1 : "
+         /* Timber.e("OBSERVALE ok1 : "
               + b.getId()
               + " "
               + obsclView.getX()
               + " "
-              + screenUtils.getWidthPx() / 2);
+              + screenUtils.getWidthPx() / 2);*/
 
           //obsclView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle_red));
         }
@@ -336,8 +337,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   @Override protected GameEngine generateEngine() {
-    // return new GameBirdRushEngine(context, GameBirdRushEngine.Level.MEDIUM);
-    return null;
+    return new GameBirdRushEngine(context, GameBirdRushEngine.Level.MEDIUM);
   }
 
   @Override protected int getSoundtrack() {
@@ -367,7 +367,8 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    wordingPrefix = "game_aliens_attack_";
+    wordingPrefix = "game_bird_rush_";
+    super.start(game, mapObservable, liveViewsObservable, userId);
   }
 
   @Override public void stop() {
