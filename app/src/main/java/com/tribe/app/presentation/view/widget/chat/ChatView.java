@@ -323,6 +323,7 @@ public class ChatView extends IChat {
   }
 
   public void dispose() {
+    if (subscriptions != null) subscriptions.unsubscribe();
     if (arrIds != null) {
       context.startService(
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
