@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.component.live.game.trivia;
+package com.tribe.app.presentation.view.component.live.game.common;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -28,30 +28,30 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 12/21/2017.
  */
 
-public class GameTriviaAnswersView extends LinearLayout {
+public class GameAnswersView extends LinearLayout {
 
   @Inject ScreenUtils screenUtils;
 
   @BindViews({
       R.id.viewAnswerFirst, R.id.viewAnswerSecond, R.id.viewAnswerThird, R.id.viewAnswerFourth
-  }) List<GameTriviaAnswerView> listAnswerViews;
+  }) List<GameAnswerView> listAnswerViews;
 
   // VARIABLES
   private Unbinder unbinder;
   private Integer[] colors;
-  private GameTriviaAnswerView rightAnswerView, clickedAnswerView;
+  private GameAnswerView rightAnswerView, clickedAnswerView;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private CompositeSubscription questionSubscriptions = new CompositeSubscription();
-  private PublishSubject<GameTriviaAnswerView> onAnsweredRight = PublishSubject.create();
-  private PublishSubject<GameTriviaAnswerView> onAnsweredWrong = PublishSubject.create();
+  private PublishSubject<GameAnswerView> onAnsweredRight = PublishSubject.create();
+  private PublishSubject<GameAnswerView> onAnsweredWrong = PublishSubject.create();
 
-  public GameTriviaAnswersView(@NonNull Context context) {
+  public GameAnswersView(@NonNull Context context) {
     super(context);
   }
 
-  public GameTriviaAnswersView(@NonNull Context context, @Nullable AttributeSet attrs) {
+  public GameAnswersView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     init();
   }
@@ -79,7 +79,7 @@ public class GameTriviaAnswersView extends LinearLayout {
   }
 
   private void initUI() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_game_trivia_answers_view, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_game_answers_view, this);
     unbinder = ButterKnife.bind(this);
 
     setOrientation(VERTICAL);
@@ -107,7 +107,7 @@ public class GameTriviaAnswersView extends LinearLayout {
 
     for (int i = 0; i < listAnswerViews.size(); i++) {
       if (i != random) {
-        GameTriviaAnswerView answerView = listAnswerViews.get(i);
+        GameAnswerView answerView = listAnswerViews.get(i);
         answerView.initAnswer((i > random ? triviaQuestion.getAlternativeAnswers().get(i - 1)
                 : triviaQuestion.getAlternativeAnswers().get(i)),
             ContextCompat.getColor(getContext(), colors[i]));
@@ -118,7 +118,7 @@ public class GameTriviaAnswersView extends LinearLayout {
     }
   }
 
-  public void computeAnswers(GameTriviaAnswerView clickedAnswer, boolean isRight) {
+  public void computeAnswers(GameAnswerView clickedAnswer, boolean isRight) {
     this.clickedAnswerView = clickedAnswer;
     if (isRight) {
       clickedAnswerView.showRightAnswer();
@@ -127,7 +127,7 @@ public class GameTriviaAnswersView extends LinearLayout {
     }
 
     for (int i = 0; i < listAnswerViews.size(); i++) {
-      GameTriviaAnswerView answerView = listAnswerViews.get(i);
+      GameAnswerView answerView = listAnswerViews.get(i);
       if (answerView != clickedAnswerView) answerView.showBogusAnswer();
     }
   }
@@ -145,11 +145,11 @@ public class GameTriviaAnswersView extends LinearLayout {
    * OBSERVABLES
    */
 
-  public Observable<GameTriviaAnswerView> onAnsweredRight() {
+  public Observable<GameAnswerView> onAnsweredRight() {
     return onAnsweredRight;
   }
 
-  public Observable<GameTriviaAnswerView> onAnsweredWrong() {
+  public Observable<GameAnswerView> onAnsweredWrong() {
     return onAnsweredWrong;
   }
 }

@@ -23,6 +23,7 @@ import com.tribe.app.data.network.OpentdbApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.deserializer.AddScoreDeserializer;
+import com.tribe.app.data.network.deserializer.BattleMusicPlaylistDeserializer;
 import com.tribe.app.data.network.deserializer.BookRoomLinkDeserializer;
 import com.tribe.app.data.network.deserializer.BooleanTypeAdapter;
 import com.tribe.app.data.network.deserializer.CollectionAdapter;
@@ -66,6 +67,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
+import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.scope.PerApplication;
@@ -205,6 +207,8 @@ import timber.log.Timber;
         .registerTypeAdapter(AddScoreEntity.class, new AddScoreDeserializer())
         .registerTypeAdapter(new TypeToken<List<TriviaQuestion>>() {
         }.getType(), new TriviaQuestionsDeserializer())
+        .registerTypeAdapter(new TypeToken<List<BattleMusicPlaylist>>() {
+        }.getType(), new BattleMusicPlaylistDeserializer())
         .create();
   }
 
@@ -424,9 +428,9 @@ import timber.log.Timber;
           clearLock();
         }
 
-        if (responseRefresh != null
-            && responseRefresh.isSuccessful()
-            && responseRefresh.body() != null) {
+        if (responseRefresh != null &&
+            responseRefresh.isSuccessful() &&
+            responseRefresh.body() != null) {
           AccessToken newAccessToken = responseRefresh.body();
           Timber.d("New access_token : " + newAccessToken.getAccessToken());
           Timber.d("New refresh_token : " + newAccessToken.getRefreshToken());
@@ -511,10 +515,10 @@ import timber.log.Timber;
 
     @Override public okhttp3.Response intercept(Chain chain) throws IOException {
 
-      if (tribeAuthorizer != null
-          && tribeAuthorizer.getAccessToken() != null
-          && tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null
-          && tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
+      if (tribeAuthorizer != null &&
+          tribeAuthorizer.getAccessToken() != null &&
+          tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null &&
+          tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
 
         Timber.d(
             "The token has expired, we know it locally, so we automatically launch a refresh before hitting the backend.");
@@ -598,13 +602,16 @@ import timber.log.Timber;
 
       List<String> customAnnotations = original.headers("@");
       if (customAnnotations.contains("UseUserToken")) {
-        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken().getAccessToken());
+        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType() +
+            " " +
+            tribeAuthorizer.getAccessToken().getAccessToken());
 
         TribeApiUtils.appendTribeHeaders(context, tribeAuthorizer.getAccessToken().getUserId(),
             requestBuilder);
       } else {
-        byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
-            tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
+        byte[] data = (tribeAuthorizer.getApiClient() +
+            ":" +
+            DateUtils.unifyDate(tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
         requestBuilder.header("Authorization", "Basic " + base64);

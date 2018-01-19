@@ -1,8 +1,10 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.game.GetBattleMusicData;
 import com.tribe.app.domain.interactor.game.GetCloudFriendsScores;
 import com.tribe.app.domain.interactor.game.GetCloudGameLeaderboard;
 import com.tribe.app.domain.interactor.game.GetCloudUserLeaderboard;
@@ -32,6 +34,7 @@ public class GamePresenter implements Presenter {
   private GetCloudFriendsScores cloudFriendsScores;
   private GetDiskFriendsScores diskFriendsScores;
   private GetTriviaData getTriviaData;
+  private GetBattleMusicData getBattleMusicData;
 
   // SUBSCRIBERS
   private GameLeaderboardSubscriber cloudGameLeaderboardSubscriber;
@@ -44,7 +47,8 @@ public class GamePresenter implements Presenter {
   @Inject public GamePresenter(GetCloudGameLeaderboard cloudGameLeaderboard,
       GetDiskGameLeaderboard diskGameLeaderboard, GetCloudUserLeaderboard cloudUserLeaderboard,
       GetDiskUserLeaderboard diskUserLeaderboard, GetDiskFriendsScores diskFriendsScores,
-      GetCloudFriendsScores cloudFriendsScores, GetTriviaData getTriviaData) {
+      GetCloudFriendsScores cloudFriendsScores, GetTriviaData getTriviaData,
+      GetBattleMusicData getBattleMusicData) {
     this.cloudGameLeaderboard = cloudGameLeaderboard;
     this.diskGameLeaderboard = diskGameLeaderboard;
     this.cloudUserLeaderboard = cloudUserLeaderboard;
@@ -52,6 +56,7 @@ public class GamePresenter implements Presenter {
     this.diskFriendsScores = diskFriendsScores;
     this.cloudFriendsScores = cloudFriendsScores;
     this.getTriviaData = getTriviaData;
+    this.getBattleMusicData = getBattleMusicData;
   }
 
   @Override public void onViewDetached() {
@@ -62,6 +67,7 @@ public class GamePresenter implements Presenter {
     cloudFriendsScores.unsubscribe();
     diskFriendsScores.unsubscribe();
     getTriviaData.unsubscribe();
+    getBattleMusicData.unsubscribe();
     gameMVPView = null;
   }
 
@@ -206,6 +212,18 @@ public class GamePresenter implements Presenter {
 
       @Override public void onNext(Map<String, List<TriviaQuestion>> map) {
         if (map != null && gameMVPView != null) gameMVPView.onTriviaData(map);
+      }
+    });
+  }
+
+  public void getBattleMusicData() {
+    getTriviaData.execute(new DefaultSubscriber<Map<String, BattleMusicPlaylist>>() {
+      @Override public void onError(Throwable e) {
+        Timber.e(e);
+      }
+
+      @Override public void onNext(Map<String, BattleMusicPlaylist> map) {
+        if (map != null && gameMVPView != null) gameMVPView.onBattleMusicData(map);
       }
     });
   }

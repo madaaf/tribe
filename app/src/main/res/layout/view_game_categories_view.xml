@@ -2,28 +2,28 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     >
 
-  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaAnswerView
-      android:id="@+id/viewAnswerFirst"
+  <com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoryView
+      android:id="@+id/viewCategoryFirst"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       />
 
-  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaAnswerView
-      android:id="@+id/viewAnswerSecond"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="10dp"
-      />
-
-  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaAnswerView
-      android:id="@+id/viewAnswerThird"
+  <com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoryView
+      android:id="@+id/viewCategorySecond"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="10dp"
       />
 
-  <com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaAnswerView
-      android:id="@+id/viewAnswerFourth"
+  <com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoryView
+      android:id="@+id/viewCategoryThird"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="10dp"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoryView
+      android:id="@+id/viewCategoryFourth"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="10dp"

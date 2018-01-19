@@ -1,4 +1,4 @@
-package com.tribe.app.presentation.view.component.live.game.trivia;
+package com.tribe.app.presentation.view.component.live.game.common;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -32,7 +32,7 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 12/21/2017.
  */
 
-public class GameTriviaAnswerView extends LinearLayout {
+public class GameAnswerView extends LinearLayout {
 
   private static final int DURATION = 300;
 
@@ -61,11 +61,11 @@ public class GameTriviaAnswerView extends LinearLayout {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<String> onClick = PublishSubject.create();
 
-  public GameTriviaAnswerView(@NonNull Context context) {
+  public GameAnswerView(@NonNull Context context) {
     super(context);
   }
 
-  public GameTriviaAnswerView(@NonNull Context context, @Nullable AttributeSet attrs) {
+  public GameAnswerView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     init();
   }
@@ -95,7 +95,7 @@ public class GameTriviaAnswerView extends LinearLayout {
   }
 
   private void initUI() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_game_trivia_answer, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_game_answer, this);
     unbinder = ButterKnife.bind(this);
 
     background = new GradientDrawable();

@@ -30,6 +30,7 @@ import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
+import com.tribe.app.presentation.view.component.live.game.common.GameAnswersView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -98,7 +99,7 @@ public class GameTriviaView extends GameViewWithRanking {
   @BindView(R.id.txtQuestionCount) TextViewFont txtQuestionCount;
   @BindView(R.id.groupInit) Group groupInit;
   @BindView(R.id.progressBar) CircularProgressBar progressBar;
-  @BindView(R.id.viewAnswers) GameTriviaAnswersView viewAnswers;
+  @BindView(R.id.viewAnswers) GameAnswersView viewAnswers;
   @BindView(R.id.imgBackground) ImageView imgBackground;
 
   // VARIABLES

@@ -15,6 +15,7 @@ import com.tribe.app.data.network.entity.CategoryEntity;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaCategoryEnum;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -185,6 +186,28 @@ public class CloudGameDataStore implements GameDataStore {
 
     for (CategoryEntity categoryEntity : lists) {
       result.put(categoryEntity.getId(), categoryEntity.getQuestions());
+    }
+
+    return result;
+  });
+
+  @Override public Observable<Map<String, BattleMusicPlaylist>> getBattleMusicData() {
+    if (gameCache.getBattleMusicData() != null && gameCache.getBattleMusicData().size() > 0) {
+      return Observable.just(gameCache.getBattleMusicData());
+    }
+
+    return fileApi.getBattleMusicData()
+        .compose(listBattleMusicMapTransformer)
+        .doOnNext(stringListMap -> gameCache.setBattleMusicData(stringListMap))
+        .doOnError(Throwable::printStackTrace);
+  }
+
+  private Observable.Transformer<List<BattleMusicPlaylist>, Map<String, BattleMusicPlaylist>>
+      listBattleMusicMapTransformer = listObservable -> listObservable.map(lists -> {
+    Map<String, BattleMusicPlaylist> result = new HashMap<>();
+
+    for (BattleMusicPlaylist battleMusicPlaylist : lists) {
+      result.put(battleMusicPlaylist.getTitle(), battleMusicPlaylist);
     }
 
     return result;

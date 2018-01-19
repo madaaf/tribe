@@ -33,7 +33,7 @@ public class Game {
   public static final String GAME_POST_IT = "post-it";
   public static final String GAME_DRAW = "draw";
   public static final String GAME_CHALLENGE = "challenges";
-  public static final String GAME_BATTLE_MUSIC = "battlemusic";
+  public static final String GAME_BATTLE_MUSIC = "song-pop2";
   public static final String GAME_SCREAM = "scream";
   public static final String GAME_INVADERS = "aliens-attack";
   public static final String GAME_DROP_IT = "dropit";
