@@ -15,19 +15,19 @@ public class BirdRushObstacle {
   private final String ROTATION_KEY = "rotation";
 
   private String id;
-  private Double nextSpawnDelay;
+  private Double nextSpawn;
   private Float start; // position Y ratio
-  private Float heightRatio;
+  private Float height;
   private Float speed; // sec/
   private Translation translation; // en px
   private Rotation rotation;
 
-  public BirdRushObstacle(String id, Double nextSpawnDelay, Float start, Float heightRatio,
-      Float speed, Translation translation, Rotation rotation) {
+  public BirdRushObstacle(String id, Double nextSpawn, Float start, Float height, Float speed,
+      Translation translation, Rotation rotation) {
     this.id = id;
-    this.nextSpawnDelay = nextSpawnDelay;
+    this.nextSpawn = nextSpawn;
     this.start = start;
-    this.heightRatio = heightRatio;
+    this.height = height;
     this.speed = speed;
     this.translation = translation;
     this.rotation = rotation;
@@ -37,16 +37,16 @@ public class BirdRushObstacle {
     return id;
   }
 
-  public Double getNextSpawnDelay() {
-    return nextSpawnDelay;
+  public Double getNextSpawn() {
+    return nextSpawn;
   }
 
   public Float getStart() {
     return start;
   }
 
-  public Float getHeightRatio() {
-    return heightRatio;
+  public Float getHeight() {
+    return height;
   }
 
   public Float getSpeed() {
@@ -64,12 +64,12 @@ public class BirdRushObstacle {
   public static class Translation {
     private Float x;
     private Float y;
-    private Double Duration;
+    private Double duration;
 
     public Translation(Float x, Float y, Double duration) {
       this.x = x;
       this.y = y;
-      Duration = duration;
+      this.duration = duration;
     }
 
     public Float getX() {
@@ -81,17 +81,21 @@ public class BirdRushObstacle {
     }
 
     public Double getDuration() {
-      return Duration;
+      return duration;
+    }
+
+    @Override public String toString() {
+      return "Translation{" + "x=" + x + ", y=" + y + ", duration=" + duration + '}';
     }
   }
 
   public static class Rotation {
+    private Double duration;
     private Float angle;
-    private Double Duration;
 
     public Rotation(Float angle, Double duration) {
+      this.duration = duration;
       this.angle = angle;
-      Duration = duration;
     }
 
     public Float getAngle() {
@@ -99,11 +103,31 @@ public class BirdRushObstacle {
     }
 
     public Double getDuration() {
-      return Duration;
+      return duration;
+    }
+
+    @Override public String toString() {
+      return "Rotation{" + "angle=" + angle + ", duration=" + duration + '}';
     }
   }
 
-  public void init() {
-
+  @Override public String toString() {
+    return "BirdRushObstacle{"
+        + "id='"
+        + id
+        + '\''
+        + ", nextSpawn="
+        + nextSpawn
+        + ", start="
+        + start
+        + ", height="
+        + height
+        + ", speed="
+        + speed
+        + ", translation="
+        + translation
+        + ", rotation="
+        + rotation
+        + '}';
   }
 }

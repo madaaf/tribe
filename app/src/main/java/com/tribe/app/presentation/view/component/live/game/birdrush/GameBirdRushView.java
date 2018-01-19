@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.google.gson.Gson;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
@@ -29,10 +30,15 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
@@ -43,6 +49,10 @@ import timber.log.Timber;
  */
 
 public class GameBirdRushView extends GameViewWithEngine {
+
+  private static final String BIRD_ACTION_ADD_OBSTACLE = "addObstacles";
+  private static final String BIRD_ACTION_PLAYER_TAP = "playerTap";
+  private static final String BIRD_KEY_OBSTACLE = "obstacles";
 
   private static final Long SPEED_BACK_SCROLL = 5000L;
   private boolean startedAsSingle = false, didRestartWhenReady = false;
@@ -115,7 +125,7 @@ public class GameBirdRushView extends GameViewWithEngine {
           // init first obstacle
           if (aLong == 0L) {
             obs = ok.generateObstacle();
-            delay = (obs.getNextSpawnDelay() + aLong);
+            delay = (obs.getNextSpawn() + aLong);
             v = animateObstacle(obs);
           }
 
@@ -126,7 +136,7 @@ public class GameBirdRushView extends GameViewWithEngine {
           // init next obstacle
           if (delay != null && (delay == aLong.doubleValue())) {
             obs = ok.generateObstacle();
-            delay = (obs.getNextSpawnDelay()) + aLong;
+            delay = (obs.getNextSpawn()) + aLong;
             v = animateObstacle(obs);
           }
 
@@ -217,7 +227,7 @@ public class GameBirdRushView extends GameViewWithEngine {
     obstacle.setImageDrawable(
         ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle));
     obstacle.setLayoutParams(params);
-    int height = Math.round(model.getHeightRatio() * screenUtils.getHeightPx());
+    int height = Math.round(model.getHeight() * screenUtils.getHeightPx());
     int width = 75;
     obstacle.getLayoutParams().height = height;
     obstacle.getLayoutParams().width = width;
@@ -346,6 +356,33 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @Override protected void initWebRTCRoomSubscriptions() {
     super.initWebRTCRoomSubscriptions();
+    subscriptionsRoom.add(webRTCRoom.onGameMessage()
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(pair -> {
+          if (pair.second.has(game.getId())) {
+            try {
+              JSONObject message = pair.second.getJSONObject(game.getId());
+              if (message.has(ACTION_KEY)) {
+                String actionKey = message.getString(ACTION_KEY);
+                if (actionKey.equals(BIRD_ACTION_ADD_OBSTACLE)) {
+                  JSONArray jsonObstacles = message.getJSONArray(BIRD_KEY_OBSTACLE);
+                  List<BirdRushObstacle> obstacles = transform(jsonObstacles);
+                  Timber.e("ijd" + obstacles.toString());
+                } else if (actionKey.equals(BIRD_ACTION_PLAYER_TAP)) {
+                  PlayerTap playerTap =
+                      new PlayerTap((Double) message.get("x"), (Double) message.get("y"));
+
+                  Timber.e("ijd" + playerTap.toString());
+                } else {
+                  Timber.e("SOEF ANOTHER ACTION  " + actionKey);
+                }
+              }
+            } catch (JSONException e) {
+              e.printStackTrace();
+            }
+          }
+        }));
   }
 
   @Override protected void gameOver(String winnerId, boolean isLocal) {
@@ -383,6 +420,18 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @Override public void setNextGame() {
 
+  }
+
+  private ArrayList<BirdRushObstacle> transform(JSONArray jArray) throws JSONException {
+    ArrayList<BirdRushObstacle> listdata = new ArrayList<>();
+    if (jArray != null) {
+      for (int i = 0; i < jArray.length(); i++) {
+        BirdRushObstacle obj =
+            new Gson().fromJson(String.valueOf(jArray.get(i)), BirdRushObstacle.class);
+        listdata.add(obj);
+      }
+    }
+    return listdata;
   }
 
   /**

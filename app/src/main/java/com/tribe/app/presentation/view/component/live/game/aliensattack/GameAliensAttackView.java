@@ -249,7 +249,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
   private JSONObject getAlienPayload(JSONObject alienJson) {
     JSONObject obj = new JSONObject();
     JSONObject game = new JSONObject();
-    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_POP_ALIEN);
+    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_POP_ALIEN); // SOEF
     JsonUtils.jsonPut(game, ALIEN_KEY, alienJson);
     JsonUtils.jsonPut(obj, this.game.getId(), game);
     return obj;
