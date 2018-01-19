@@ -323,11 +323,12 @@ public class ChatView extends IChat {
   }
 
   public void dispose() {
+    subscriptions.unsubscribe();
     if (arrIds != null) {
       context.startService(
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
       messagePresenter.onViewDetached();
-      recyclerView.onDetachedFromWindow();
+      recyclerView.onDetachedFromWindow(); //SOEF
     }
   }
 

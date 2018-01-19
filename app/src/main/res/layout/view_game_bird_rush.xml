@@ -33,25 +33,13 @@
         android:layout_gravity="center"
         android:background="@color/red"
         />
+
     <ImageView
         android:id="@+id/bird"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|center_horizontal"
         android:background="@drawable/game_bird1"
-        />
-
-
-    <TextView
-        android:id="@+id/gameOver"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center_horizontal"
-        android:text="GAME OVER"
-        android:textColor="@color/red"
-        android:textSize="30dp"
-        android:visibility="gone"
-
         />
 
   </FrameLayout>
