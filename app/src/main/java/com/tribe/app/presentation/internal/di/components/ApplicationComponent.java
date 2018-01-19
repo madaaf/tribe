@@ -88,6 +88,7 @@ import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapter
 import com.tribe.app.presentation.view.adapter.delegate.friend.ManageShortcutListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.RecipientListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.friend.UserListAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.FooterAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GameAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFiltersAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
@@ -281,6 +282,8 @@ public interface ApplicationComponent {
   void inject(HomeWalkthroughVideoView homeWalkthroughVideoView);
 
   void inject(GameAdapterDelegate gameAdapterDelegate);
+
+  void inject(FooterAdapterDelegate footerAdapterDelegate);
 
   void inject(LiveHangUpView liveHangUpView);
 

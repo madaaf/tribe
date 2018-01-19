@@ -47,6 +47,8 @@ public class Game {
   public static final String GAME_SPEED_RACER = "speedracer";
   public static final String GAME_SLICE_FRUIT = "slicefruit";
   public static final String GAME_TRIVIA = "trivia";
+  public static final String GAME_SUPPORT = "GAME_SUPPORT";
+  public static final String GAME_LOGO = "GAME_LOGO";
 
   // VARIABLE
   protected Context context;
