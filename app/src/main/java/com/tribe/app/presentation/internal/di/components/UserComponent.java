@@ -48,6 +48,7 @@ import com.tribe.app.presentation.view.component.live.game.GameDrawView;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackAlienView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackBackground;
+import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushBackground;
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
@@ -222,6 +223,8 @@ import dagger.Component;
   void inject(GameDrawView gameDrawView);
 
   void inject(GameAliensAttackBackground gameAliensAttackBackground);
+
+  void inject(GameBirdRushBackground gameBirdRushBackground);
 
   void inject(GameAliensAttackAlienView gameAliensAttackAlienView);
 

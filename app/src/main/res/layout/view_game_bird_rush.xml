@@ -1,47 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  <com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushBackground
+      android:id="@+id/viewBackground"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      >
+      android:layout_gravity="center"
+      />
 
-    <ImageView
-        android:id="@+id/background_one"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/game_birdsrush_sky"
-        />
+  <FrameLayout
+      android:id="@+id/viewBirds"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      />
 
-    <ImageView
-        android:id="@+id/background_two"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/game_birdsrush_sky"
-        />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2px"
-        android:layout_gravity="center"
-        android:background="@color/red"
-        />
-
-    <View
-        android:layout_width="2px"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:background="@color/red"
-        />
-
-    <ImageView
-        android:id="@+id/bird"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|center_horizontal"
-        android:background="@drawable/game_bird1"
-        />
-
-  </FrameLayout>
-
+  <ImageView
+      android:id="@+id/bird"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center|center_horizontal"
+      android:background="@drawable/game_bird1"
+      />
 </merge>
+
