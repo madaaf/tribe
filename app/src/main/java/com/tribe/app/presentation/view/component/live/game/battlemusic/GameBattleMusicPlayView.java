@@ -1,0 +1,194 @@
+package com.tribe.app.presentation.view.component.live.game.battlemusic;
+
+import android.animation.LayoutTransition;
+import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.FrameLayout;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
+import com.tribe.app.R;
+import com.tribe.app.domain.entity.battlemusic.BattleMusicTrack;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.view.component.PlayPauseBtnView;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StreamAudioPlayer;
+import com.tribe.app.presentation.view.widget.TextViewFont;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
+
+/**
+ * Created by tiago on 01/18/2018
+ */
+
+public class GameBattleMusicPlayView extends FrameLayout {
+
+  @Inject ScreenUtils screenUtils;
+
+  @BindView(R.id.viewBgProgress) View viewBgProgress;
+  @BindView(R.id.viewBgBlack) View viewBgBlack;
+  @BindView(R.id.viewBgGreen) View viewBgGreen;
+  @BindView(R.id.viewPlayPauseBtn) PlayPauseBtnView viewPlayPauseBtn;
+  @BindView(R.id.progressBar) CircularProgressView progressBar;
+  @BindView(R.id.txtCount) TextViewFont txtCount;
+
+  // VARIABLES
+  private Unbinder unbinder;
+  private boolean pause = true;
+  private StreamAudioPlayer audioPlayer;
+  private BattleMusicTrack track;
+  private boolean buffered = false;
+
+  // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Void> onPlay = PublishSubject.create();
+
+  public GameBattleMusicPlayView(@NonNull Context context) {
+    super(context);
+  }
+
+  public GameBattleMusicPlayView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    super(context, attrs);
+    init();
+  }
+
+  private void init() {
+    initResources();
+    initDependencyInjector();
+    initUI();
+  }
+
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+  }
+
+  private void initResources() {
+
+  }
+
+  private void initDependencyInjector() {
+    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
+        .inject(this);
+  }
+
+  private void initUI() {
+    LayoutInflater.from(getContext()).inflate(R.layout.view_game_battlemusic_play, this);
+    unbinder = ButterKnife.bind(this);
+
+    GradientDrawable background = new GradientDrawable();
+    background.setShape(GradientDrawable.OVAL);
+    background.setColor(ContextCompat.getColor(getContext(), R.color.white_opacity_10));
+    viewBgProgress.setBackground(background);
+
+    background = new GradientDrawable();
+    background.setShape(GradientDrawable.OVAL);
+    background.setColor(ContextCompat.getColor(getContext(), R.color.black_almost));
+    viewBgBlack.setBackground(background);
+
+    background = new GradientDrawable();
+    background.setShape(GradientDrawable.OVAL);
+    background.setColor(ContextCompat.getColor(getContext(), R.color.green_status));
+    viewBgGreen.setBackground(background);
+
+    audioPlayer = new StreamAudioPlayer(getContext());
+
+    setLayoutTransition(new LayoutTransition());
+  }
+
+  private void initSubscriptions() {
+
+  }
+
+  /**
+   * ON CLICK
+   */
+
+  @OnClick(R.id.viewPlayPauseBtn) void click() {
+    viewPlayPauseBtn.switchPauseToPlayBtn(!pause);
+
+    if (pause) {
+      audioPlayer.play();
+    } else {
+      audioPlayer.stop();
+    }
+
+    pause = !pause;
+  }
+
+  /**
+   * PUBLIC
+   */
+
+  public void initTrack(BattleMusicTrack track) {
+    this.track = track;
+    subscriptions.clear();
+    buffered = false;
+    audioPlayer.prepare(track.getUrl());
+    viewPlayPauseBtn.setVisibility(View.GONE);
+    progressBar.setVisibility(VISIBLE);
+  }
+
+  public void play() {
+    if (!pause) return;
+
+    viewPlayPauseBtn.switchPauseToPlayBtn(!pause);
+    audioPlayer.play();
+    pause = !pause;
+  }
+
+  public void stop() {
+    if (pause) return;
+
+    viewPlayPauseBtn.switchPauseToPlayBtn(!pause);
+    audioPlayer.stop();
+    pause = !pause;
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<Boolean> onBuffered() {
+    return audioPlayer.onBuffered().doOnNext(aBoolean -> {
+      if (buffered) return;
+
+      progressBar.setVisibility(GONE);
+      buffered = true;
+
+      subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> txtCount.setText("3")));
+
+      subscriptions.add(Observable.timer(2, TimeUnit.SECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> txtCount.setText("2")));
+
+      subscriptions.add(Observable.timer(3, TimeUnit.SECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> txtCount.setText("1")));
+
+      subscriptions.add(Observable.timer(4, TimeUnit.SECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            txtCount.setText("");
+            onPlay.onNext(null);
+          }));
+    });
+  }
+
+  public Observable<Void> onPlay() {
+    return onPlay;
+  }
+}

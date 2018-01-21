@@ -217,7 +217,7 @@ public class GamePresenter implements Presenter {
   }
 
   public void getBattleMusicData() {
-    getTriviaData.execute(new DefaultSubscriber<Map<String, BattleMusicPlaylist>>() {
+    getBattleMusicData.execute(new DefaultSubscriber<Map<String, BattleMusicPlaylist>>() {
       @Override public void onError(Throwable e) {
         Timber.e(e);
       }

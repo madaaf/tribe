@@ -8,12 +8,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicTrack;
-import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BattleMusicPlaylistDeserializer implements JsonDeserializer<List<BattleMusicPlaylist>> {
+public class BattleMusicPlaylistDeserializer
+    implements JsonDeserializer<List<BattleMusicPlaylist>> {
 
   @Override public List<BattleMusicPlaylist> deserialize(JsonElement je, Type typeOfT,
       JsonDeserializationContext context) throws JsonParseException {
@@ -36,12 +36,13 @@ public class BattleMusicPlaylistDeserializer implements JsonDeserializer<List<Ba
 
               for (final JsonElement trackJson : tracksArray) {
                 if (!trackJson.isJsonNull()) {
+                  JsonObject trackJsonObject = trackJson.getAsJsonObject();
                   BattleMusicTrack track = new BattleMusicTrack();
-                  track.setArtist(jo.get("artist").getAsString());
-                  track.setId(jo.get("id").getAsString());
-                  track.setImage(jo.get("image").getAsString());
-                  track.setName(jo.get("name").getAsString());
-                  track.setUrl(jo.get("url").getAsString());
+                  track.setArtist(trackJsonObject.get("artist").getAsString());
+                  track.setId(trackJsonObject.get("id").getAsString());
+                  track.setImage(trackJsonObject.get("image").getAsString());
+                  track.setName(trackJsonObject.get("name").getAsString());
+                  track.setUrl(trackJsonObject.get("url").getAsString());
                   tracks.add(track);
                 }
               }

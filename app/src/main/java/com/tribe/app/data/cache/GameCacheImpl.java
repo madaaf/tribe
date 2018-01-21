@@ -27,6 +27,7 @@ public class GameCacheImpl implements GameCache {
   @Inject public GameCacheImpl(Context context) {
     this.context = context;
     mapTrivia = new HashMap<>();
+    mapBattleMusic = new HashMap<>();
   }
 
   @Override public void putGames(List<GameRealm> gameRealmList) {

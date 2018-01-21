@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutConstraint"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+  <View
+      android:id="@+id/viewBackground"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:background="@color/black.opacity.60"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicPlayView
+      android:id="@+id/viewPlay"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintBottom_toTopOf="@+id/txtTitle"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_chainStyle="packed"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtTitle"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="30dp"
+      android:gravity="center"
+      android:text="@string/game_song_pop_status_pick_playlist"
+      app:layout_constraintBottom_toTopOf="@+id/viewAnswers"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/viewPlay"
+      style="@style/Headline.White.2"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoriesView
+      android:id="@+id/viewCategories"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="15dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="parent"
+      />
+
+  <android.support.constraint.Group
+      android:id="@+id/groupInit"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:alpha="0"
+      app:constraint_referenced_ids="txtTitle, viewCategories, viewPlay"
+      />
+
+  <com.tribe.app.presentation.view.component.live.game.common.GameAnswersView
+      android:id="@+id/viewAnswers"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="15dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/txtTitle"
+      />
+
+</android.support.constraint.ConstraintLayout>

@@ -1,6 +1,5 @@
 package com.tribe.app.domain.entity.battlemusic;
 
-import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +32,25 @@ public class BattleMusicPlaylist {
   public List<BattleMusicTrack> getRandomTracks(int nb) {
     List<BattleMusicTrack> list = new ArrayList<>(tracks);
     Collections.shuffle(list);
-    return list.subList(0, nb);
+    List<BattleMusicTrack> results = new ArrayList<>(list.subList(0, nb));
+
+    for (BattleMusicTrack track : results) {
+      List<String> alternativeAnswers = new ArrayList<>();
+      Collections.shuffle(list);
+
+      int count = 0, i = 0;
+      while (count < 3) {
+        BattleMusicTrack newTrack = list.get(i);
+        if (newTrack.getId() != track.getId()) {
+          alternativeAnswers.add(newTrack.getName());
+          count++;
+        }
+        i++;
+      }
+
+      track.setAlternativeAnswers(alternativeAnswers);
+    }
+
+    return results;
   }
 }

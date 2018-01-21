@@ -75,7 +75,7 @@ public class FooterAdapterDelegate extends RxAdapterDelegate<List<GameFooter>> {
 
     if (item.getId().equals(Game.GAME_LOGO)) {
       vh.imgLogo.setVisibility(View.VISIBLE);
-      return;you
+      return;
     } else {
       vh.imgLogo.setVisibility(View.GONE);
     }

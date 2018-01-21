@@ -30,6 +30,7 @@ import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
+import com.tribe.app.presentation.view.component.live.game.common.GameAnswerView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswersView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
 import com.tribe.app.presentation.view.utils.DialogFactory;
@@ -474,7 +475,8 @@ public class GameTriviaView extends GameViewWithRanking {
   }
 
   private void setupAnswers(TriviaQuestion triviaQuestion, TribeSession tribeSession) {
-    viewAnswers.initQuestion(triviaQuestion);
+    viewAnswers.initQuestion(triviaQuestion.getAnswer(), triviaQuestion.getAlternativeAnswers(),
+        GameAnswerView.TYPE_TRIVIA);
 
     if (rightAnswerSubscription != null) rightAnswerSubscription.unsubscribe();
     if (wrongAnswerSubscription != null) wrongAnswerSubscription.unsubscribe();

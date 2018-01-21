@@ -90,7 +90,7 @@ public class Game {
     this.hasView = !id.equals(GAME_POST_IT);
     this.isOverLive =
         id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
-    this.isNotOverLiveWithScores = id.equals(GAME_TRIVIA);
+    this.isNotOverLiveWithScores = id.equals(GAME_TRIVIA) || id.equals(GAME_BATTLE_MUSIC);
     this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
     this.needsLandscape = id.equals(GAME_SLICE_FRUIT);
     this.peerList = new ArrayList<>();

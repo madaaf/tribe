@@ -250,6 +250,7 @@ dependencies {
   compile presentationDependencies.constraintLayout
   compile presentationDependencies.AVLoadingIndicatorView
   compile group: 'com.zendesk', name: 'sdk-providers', version: '1.11.0.1'
+  compile presentationDependencies.exoPlayer
 
 
   //androidTestCompile presentationTestDependencies.mockito

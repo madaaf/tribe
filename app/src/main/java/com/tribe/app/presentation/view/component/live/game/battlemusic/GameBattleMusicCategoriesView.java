@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
@@ -70,7 +69,7 @@ public class GameBattleMusicCategoriesView extends LinearLayout {
   }
 
   private void initUI() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_game_battlemusic_category, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_game_battlemusic_categories_view, this);
     unbinder = ButterKnife.bind(this);
 
     setOrientation(VERTICAL);
@@ -85,13 +84,6 @@ public class GameBattleMusicCategoriesView extends LinearLayout {
    * ON CLICK
    */
 
-  @OnClick({
-      R.id.viewCategoryFirst, R.id.viewCategorySecond, R.id.viewCategoryThird,
-      R.id.viewCategoryFourth
-  }) void onCategorySelect(GameBattleMusicCategoryView categoryView) {
-    onPlaylistSelected.onNext(categoryView.getPlaylist());
-  }
-
   /**
    * PUBLIC
    */
@@ -100,6 +92,9 @@ public class GameBattleMusicCategoriesView extends LinearLayout {
     for (int i = 0; i < playlists.size(); i++) {
       BattleMusicPlaylist playlist = playlists.get(i);
       listCategoryViews.get(i).setPlaylist(playlist);
+
+      subscriptions.add(
+          listCategoryViews.get(i).onClick().subscribe(v -> onPlaylistSelected.onNext(playlist)));
     }
   }
 

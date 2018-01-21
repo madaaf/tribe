@@ -1,8 +1,10 @@
 package com.tribe.app.presentation.view.component.live.game.common;
 
+import android.animation.LayoutTransition;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -11,7 +13,6 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,7 +23,10 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -33,6 +37,13 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class GameAnswerView extends LinearLayout {
+
+  @IntDef({ TYPE_TRIVIA, TYPE_BATTLE_MUSIC }) @Retention(RetentionPolicy.SOURCE)
+  public @interface AnswerType {
+  }
+
+  public static final int TYPE_TRIVIA = 0;
+  public static final int TYPE_BATTLE_MUSIC = 1;
 
   private static final int DURATION = 300;
 
@@ -51,10 +62,9 @@ public class GameAnswerView extends LinearLayout {
   private GradientDrawable background;
   private String answer;
   private int color;
+  private @AnswerType int type;
 
   // RESOURCES
-  private int paddingHorizontalWithIcon, paddingVerticalWithIcon, paddingHorizontal,
-      paddingVertical;
   private int redColor, greenColor;
 
   // OBSERVABLES
@@ -81,10 +91,6 @@ public class GameAnswerView extends LinearLayout {
   }
 
   private void initResources() {
-    paddingHorizontal = screenUtils.dpToPx(25);
-    paddingVertical = screenUtils.dpToPx(15);
-    paddingHorizontalWithIcon = screenUtils.dpToPx(15);
-    paddingVerticalWithIcon = screenUtils.dpToPx(10);
     redColor = ContextCompat.getColor(getContext(), R.color.red);
     greenColor = ContextCompat.getColor(getContext(), R.color.green_status);
   }
@@ -100,17 +106,22 @@ public class GameAnswerView extends LinearLayout {
 
     background = new GradientDrawable();
     background.setShape(GradientDrawable.RECTANGLE);
-    background.setCornerRadius(screenUtils.dpToPx(6));
     setBackground(background);
 
     setClickable(true);
     setGravity(Gravity.CENTER);
     setOrientation(HORIZONTAL);
+
+    LayoutTransition transition = new LayoutTransition();
+    transition.setDuration(300);
+    setLayoutTransition(transition);
+
+    setMinimumHeight(screenUtils.dpToPx(51));
+
     setOnClickListener(v -> {
       onClick.onNext(answer);
       setClickable(false);
     });
-    setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
   }
 
   private void initSubscriptions() {
@@ -118,9 +129,16 @@ public class GameAnswerView extends LinearLayout {
   }
 
   private void setDefaultStyle() {
-    TextViewCompat.setTextAppearance(txtAnswer, R.style.Headline_White_2);
+    if (type == TYPE_TRIVIA) {
+      TextViewCompat.setTextAppearance(txtAnswer, R.style.Headline_White_2);
+    } else {
+      TextViewCompat.setTextAppearance(txtAnswer, R.style.Headline_Black_2);
+    }
+
     txtAnswer.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
-    setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+    layoutIcon.setVisibility(View.GONE);
+    UIUtils.changeLeftMarginOfView(txtAnswer, screenUtils.dpToPx(25));
+    setClickable(true);
   }
 
   private void setRedStyle() {
@@ -135,61 +153,44 @@ public class GameAnswerView extends LinearLayout {
    * PUBLIC
    */
 
-  public void initAnswer(String answer, int color) {
-    setLayoutTransition(null);
+  public void initAnswer(String answer, int color, @AnswerType int type) {
+    this.type = type;
 
     this.answer = answer;
     this.color = color;
-    layoutIcon.setVisibility(View.GONE);
     setAlpha(1);
     txtAnswer.setText(answer);
     background.setColor(color);
+
+    if (type == TYPE_BATTLE_MUSIC) {
+      background.setCornerRadius(screenUtils.dpToPx(400));
+    } else {
+      background.setCornerRadius(screenUtils.dpToPx(6));
+    }
+
     setDefaultStyle();
-    setClickable(true);
   }
 
   public void showRightAnswer() {
     setAlpha(1f);
     background.setColor(Color.WHITE);
-    layoutIcon.setVisibility(View.VISIBLE);
     setGreenStyle();
 
-    imgGuessed.animate()
-        .alpha(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-
-    imgNotGuessed.animate()
-        .alpha(0)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-
-    setPadding(paddingHorizontalWithIcon, paddingVerticalWithIcon, paddingHorizontalWithIcon,
-        paddingVerticalWithIcon);
+    imgGuessed.setVisibility(View.VISIBLE);
+    imgNotGuessed.setVisibility(View.GONE);
+    layoutIcon.setVisibility(View.VISIBLE);
+    UIUtils.changeLeftMarginOfView(txtAnswer, 0);
   }
 
   public void showWrongAnswer() {
     setAlpha(1f);
     background.setColor(Color.WHITE);
-    layoutIcon.setVisibility(View.VISIBLE);
     setRedStyle();
 
-    imgGuessed.animate()
-        .alpha(0)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-
-    imgNotGuessed.animate()
-        .alpha(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-
-    setPadding(paddingHorizontalWithIcon, paddingVerticalWithIcon, paddingHorizontalWithIcon,
-        paddingVerticalWithIcon);
+    imgGuessed.setVisibility(View.GONE);
+    imgNotGuessed.setVisibility(View.VISIBLE);
+    layoutIcon.setVisibility(View.VISIBLE);
+    UIUtils.changeLeftMarginOfView(txtAnswer, 0);
   }
 
   public void showBogusAnswer() {
@@ -200,31 +201,8 @@ public class GameAnswerView extends LinearLayout {
   }
 
   public void animateBogusAnswer() {
-    //LayoutTransition layoutTransition = new LayoutTransition();
-    //layoutTransition.setDuration(DURATION);
-    //layoutTransition.addTransitionListener(new LayoutTransition.TransitionListener() {
-    //  @Override
-    //  public void startTransition(LayoutTransition transition, ViewGroup container, View view,
-    //      int transitionType) {
-    //  }
-    //
-    //  @Override
-    //  public void endTransition(LayoutTransition transition, ViewGroup container, View view,
-    //      int transitionType) {
-    //
-    //  }
-    //});
-    //setLayoutTransition(layoutTransition);
-    //layoutIcon.setVisibility(View.GONE);
-
-    //animate().alpha(0.2f).setDuration(300).setInterpolator(new DecelerateInterpolator()).start();
-    //
-    //AnimationUtils.animateBGColor(this, Color.WHITE, color, DURATION);
-    //AnimationUtils.animateTextColor(txtAnswer, redColor, Color.WHITE, DURATION);
-    //
-
-    setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
     layoutIcon.setVisibility(View.GONE);
+    UIUtils.changeLeftMarginOfView(txtAnswer, screenUtils.dpToPx(25));
     setAlpha(0.2f);
     background.setColor(color);
     txtAnswer.setTextColor(Color.WHITE);
@@ -234,18 +212,10 @@ public class GameAnswerView extends LinearLayout {
     setAlpha(1f);
     background.setColor(Color.WHITE);
     txtAnswer.setTextColor(greenColor);
-
-    //animate().alpha(1f).setDuration(300).setInterpolator(new DecelerateInterpolator()).start();
-    //
-    //AnimationUtils.animateBGColor(this, color, Color.WHITE, DURATION);
-    //AnimationUtils.animateTextColor(txtAnswer, Color.WHITE, greenColor, DURATION);
-
-    imgGuessed.setAlpha(1f);
-    imgNotGuessed.setAlpha(0f);
+    imgGuessed.setVisibility(View.VISIBLE);
+    imgNotGuessed.setVisibility(View.GONE);
     layoutIcon.setVisibility(View.VISIBLE);
-
-    setPadding(paddingHorizontalWithIcon, paddingVerticalWithIcon, paddingHorizontalWithIcon,
-        paddingVerticalWithIcon);
+    UIUtils.changeLeftMarginOfView(txtAnswer, 0);
   }
 
   public String getAnswer() {

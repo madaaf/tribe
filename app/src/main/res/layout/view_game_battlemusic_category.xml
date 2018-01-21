@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="horizontal"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     >
 
   <ImageView
       android:id="@+id/imgIcon"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_marginStart="12.5dp"
+      android:layout_marginEnd="12.5dp"
       android:scaleType="centerInside"
-      android:layout_marginEnd="10dp"
+      android:layout_gravity="center"
       android:src="@drawable/game_trivia_picto_guessed"
+      android:visibility="gone"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtName"
       android:layout_width="wrap_content"
       android:layout_height="match_parent"
+      android:layout_marginStart="@dimen/horizontal_margin_large"
+      android:layout_marginEnd="@dimen/horizontal_margin_large"
       android:gravity="center_vertical"
       android:maxLines="1"
-      style="@style/Headline.White.2"
-      android:text="LOL"
+      style="@style/Headline.Black.2"
       />
 
-</LinearLayout>
+</merge>

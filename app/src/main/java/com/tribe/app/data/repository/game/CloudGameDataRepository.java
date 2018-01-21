@@ -7,9 +7,9 @@ import com.tribe.app.data.repository.game.datasource.GameDataStore;
 import com.tribe.app.data.repository.game.datasource.GameDataStoreFactory;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
+import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.domain.interactor.game.GameRepository;
 import com.tribe.tribelivesdk.game.Game;
-import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -70,6 +70,7 @@ import rx.Observable;
   }
 
   @Override public Observable<Map<String, BattleMusicPlaylist>> getBattleMusicData() {
-    return null;
+    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
+    return gameDataStore.getBattleMusicData();
   }
 }

@@ -458,7 +458,7 @@
 	<string name="profile_invisible_mode_enable_alert_msg">Vous êtes sur le point de d\'empêcher les utilisateurs de Tribe de vous ajouter en tant qu\'ami. Si vous voulez ajouter quelqu\'un en ami, vous devrez le faire vous-même.</string>
 	<string name="profile_invisible_mode_enable_alert_disable">Désactiver</string>
 	<string name="profile_blocked_friends">Conversations masquées ou bloquées :no_entry:</string>
-	<string name="profile_manage_friendships">Notification est en ligne :bell:</string>
+	<string name="profile_manage_friendships">Notification est en train de jouer :bell:</string>
 	<string name="profile_rate_us">Laisser une review :hearts:</string>
 	<string name="profile_follow_us">Suivez-nous ! :metal:</string>
 	<string name="profile_contact_us">Contactez-nous :envelope:</string>
@@ -483,12 +483,12 @@
 	<string name="profile_facebook_account_already_in_use">Ce profil Facebook est déjà utilisé sur un autre compte.</string>
 	
 	<!-- Manage friendships -->
-	<string name="manage_friendships_title">Is online notification :bell:</string>
-	<string name="manage_friendships_mute_alert_title">Supprimer la notification \'est en ligne\'</string>
-	<string name="manage_friendships_mute_alert_description">Vous ne recevrez plus de notification \'est en ligne\' de la part de cet ami</string>
+	<string name="manage_friendships_title">Notification Est en train de jouer :bell:</string>
+	<string name="manage_friendships_mute_alert_title">Supprimer la notification \'est en train de jouer\'</string>
+	<string name="manage_friendships_mute_alert_description">Vous ne recevrez plus de notification \'est en train de jouer\' de la part de cet ami</string>
 	<string name="manage_friendships_mute_alert_mute">Supprimer la notification</string>
 	<string name="manage_friendships_mute_alert_cancel">Oops! Conserver la notification</string>
-	<string name="manage_friendships_mute_all_title">Supprimer la notification \'est en ligne\' pour tous</string>
+	<string name="manage_friendships_mute_all_title">Supprimer la notification \'est en train de jouer\' pour tous</string>
 	
 	<!-- Carousel -->
 	<string name="carousel_friend_title">Donner accès à %1$s ?</string>
@@ -974,4 +974,8 @@
 	<string name="gamemode_title">Mode de jeu</string>
 	<string name="gamemode_alone_title">ENTRAINEMENT</string>
 	<string name="gamemode_multi_title">MULTIJOUEUR</string>
+	
+	<!-- Hang Up Popup -->
+	<string name="hangup_popup_action_stop_game">Arrêter de jouer</string>
+	<string name="hangup_popup_action_leave_call">Quitter le live</string>
 </resources>

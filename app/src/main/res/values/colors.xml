@@ -20,6 +20,7 @@
   <color name="black.dark.placeholder">#171717</color>
   <color name="black.light.placeholder">#1C1C1C</color>
   <color name="black.dark.blue">#34373B</color>
+  <color name="black.almost">#1D2024</color>
 
   <!-- WHITES -->
   <color name="white">#FFFFFF</color>

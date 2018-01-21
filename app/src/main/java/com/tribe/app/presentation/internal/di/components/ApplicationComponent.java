@@ -123,6 +123,7 @@ import com.tribe.app.presentation.view.component.live.LiveViewFake;
 import com.tribe.app.presentation.view.component.live.TileInviteView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoriesView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoryView;
+import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicPlayView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswerView;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswersView;
@@ -304,6 +305,8 @@ public interface ApplicationComponent {
   void inject(GameBattleMusicCategoryView gameBattleMusicCategoryView);
 
   void inject(GameBattleMusicCategoriesView gameBattleMusicCategoriesView);
+
+  void inject(GameBattleMusicPlayView gameBattleMusicPlayView);
 
   // JOBS
   void inject(BaseJob baseJob);

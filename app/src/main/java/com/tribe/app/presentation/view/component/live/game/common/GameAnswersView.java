@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component.live.game.common;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -12,7 +13,6 @@ import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
@@ -94,13 +94,14 @@ public class GameAnswersView extends LinearLayout {
    * PUBLIC
    */
 
-  public void initQuestion(TriviaQuestion triviaQuestion) {
+  public void initQuestion(String answer, List<String> alternativeAnswers,
+      @GameAnswerView.AnswerType int answerType) {
     if (questionSubscriptions != null) questionSubscriptions.clear();
 
     int random = new Random().nextInt(listAnswerViews.size());
     rightAnswerView = listAnswerViews.get(random);
-    rightAnswerView.initAnswer(triviaQuestion.getAnswer(),
-        ContextCompat.getColor(getContext(), colors[random]));
+    rightAnswerView.initAnswer(answer, answerType == GameAnswerView.TYPE_BATTLE_MUSIC ? Color.WHITE
+        : ContextCompat.getColor(getContext(), colors[random]), answerType);
 
     questionSubscriptions.add(
         rightAnswerView.onClick().subscribe(value -> onAnsweredRight.onNext(rightAnswerView)));
@@ -108,9 +109,10 @@ public class GameAnswersView extends LinearLayout {
     for (int i = 0; i < listAnswerViews.size(); i++) {
       if (i != random) {
         GameAnswerView answerView = listAnswerViews.get(i);
-        answerView.initAnswer((i > random ? triviaQuestion.getAlternativeAnswers().get(i - 1)
-                : triviaQuestion.getAlternativeAnswers().get(i)),
-            ContextCompat.getColor(getContext(), colors[i]));
+        answerView.initAnswer(
+            (i > random ? alternativeAnswers.get(i - 1) : alternativeAnswers.get(i)),
+            answerType == GameAnswerView.TYPE_BATTLE_MUSIC ? Color.WHITE
+                : ContextCompat.getColor(getContext(), colors[i]), answerType);
 
         questionSubscriptions.add(
             answerView.onClick().subscribe(value -> onAnsweredWrong.onNext(answerView)));
