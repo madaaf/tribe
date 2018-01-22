@@ -48,7 +48,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   private static final int DELAY = 250;
   private static final float OVERSHOOT = 1.25f;
 
-  private static final String ACTION_NEW_GAME = "newGame";
+  protected static final String ACTION_NEW_GAME = "newGame";
   private static final String ACTION_USER_GAME_OVER = "userGameOver";
   private static final String ACTION_USER_WAITING = "userWaiting";
   private static final String ACTION_USER_READY = "userReady";
@@ -143,6 +143,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
               JSONObject message = jsonObject.getJSONObject(game.getId());
               if (message.has(ACTION_KEY)) {
                 String actionKey = message.getString(ACTION_KEY);
+                Timber.e("SOEF " + actionKey + " " + message.toString());
                 if (actionKey.equals(ACTION_USER_GAME_OVER)) {
                   String fromUserId = message.getString(USER_KEY);
                   setStatus(RankingStatus.LOST, fromUserId);

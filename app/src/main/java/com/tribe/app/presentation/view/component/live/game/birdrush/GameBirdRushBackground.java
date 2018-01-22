@@ -25,19 +25,18 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
+import static com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView.SPEED_BACK_SCROLL;
+
 /**
  * Created by tiago on 10/31/2017.
  */
 
 public class GameBirdRushBackground extends FrameLayout {
 
-  private static final Long SPEED_BACK_SCROLL = 5000L;
-
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.background_one) ImageView backgroundOne;
   @BindView(R.id.background_two) ImageView backgroundTwo;
-
 
   /**
    * VARIABLES

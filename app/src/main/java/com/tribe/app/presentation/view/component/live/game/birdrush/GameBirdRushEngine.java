@@ -58,13 +58,13 @@ public class GameBirdRushEngine extends GameEngine {
   private Double nextSpawnDelay() {
     switch (level) {
       case MEDIUM:
-        return 1500D;
+        return 1.5D;
       case HARD:
-        return 1400D;
+        return 1.4D;
       case EXTREME:
-        return 1300D;
+        return 1.3D;
       case ALIEN:
-        return 1200D;
+        return 1.2D;
     }
 
     return null;
