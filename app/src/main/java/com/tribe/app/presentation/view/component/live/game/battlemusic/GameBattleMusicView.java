@@ -445,7 +445,8 @@ public class GameBattleMusicView extends GameViewWithRanking {
     wrongAnswerSubscription = viewAnswers.onAnsweredWrong().subscribe(clickedAnswer -> {
       viewAnswers.enableClicks(false);
       viewPlay.stop();
-      txtTitle.setText(R.string.game_song_pop_status_wrong_answer);
+      txtTitle.setText(EmojiParser.demojizedText(
+          getContext().getString(R.string.game_song_pop_status_wrong_answer)));
       sendAnswer(tribeSession, ANSWER_GUESS, getAnswerPayload(clickedAnswer.getAnswer()));
       viewAnswers.computeAnswers(clickedAnswer, false);
     });

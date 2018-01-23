@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.component.live.game.trivia;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -115,7 +114,6 @@ public class GameTriviaView extends GameViewWithRanking {
   private boolean categoryAll = false, weHaveAWinner = false;
   private String rightAnswer;
   private int nbAnswers = 0, nbPlayingPeers = 0;
-  private ValueAnimator rotationRaysAnimator;
 
   // SUBSCRIPTIONS
   protected Subscription rightAnswerSubscription, wrongAnswerSubscription;
@@ -454,7 +452,7 @@ public class GameTriviaView extends GameViewWithRanking {
     RotateAnimation rotate =
         new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
             0.5f);
-    rotate.setDuration(3000);
+    rotate.setDuration(10000);
     rotate.setRepeatCount(Animation.INFINITE);
     rotate.setFillAfter(true);
     imgBackground.startAnimation(rotate);
