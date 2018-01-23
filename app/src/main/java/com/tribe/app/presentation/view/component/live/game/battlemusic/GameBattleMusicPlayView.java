@@ -158,6 +158,12 @@ public class GameBattleMusicPlayView extends FrameLayout {
    * PUBLIC
    */
 
+  public void dispose() {
+    audioPlayer.dispose();
+    progressBarPlay.stop();
+    subscriptions.clear();
+  }
+
   public void initTrack(BattleMusicTrack track) {
     this.track = track;
     subscriptions.clear();

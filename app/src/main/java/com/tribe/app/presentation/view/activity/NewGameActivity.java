@@ -177,11 +177,7 @@ public class NewGameActivity extends ViewStackActivity {
       txtAction.setVisibility(GONE);
       btnForward.setVisibility(View.VISIBLE);
     } else if (to instanceof GamesMembersView) {
-      if (selectedGame == null) {
-        setupTitle(getString(R.string.home_action_new_chat), forward);
-      } else {
-        setupTitle(selectedGame.getTitle(), forward);
-      }
+      setupTitle(getString(R.string.newchat_title), forward);
 
       btnForward.setVisibility(View.GONE);
       txtAction.setVisibility(View.VISIBLE);

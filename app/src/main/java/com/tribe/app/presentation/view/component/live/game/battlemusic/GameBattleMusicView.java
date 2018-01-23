@@ -24,6 +24,7 @@ import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswerView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswersView;
@@ -140,12 +141,17 @@ public class GameBattleMusicView extends GameViewWithRanking {
         mapPlaylists.clear();
         mapPlaylists.putAll(map);
 
-        String text = getResources().getString(R.string.game_song_pop_status_pick_playlist);
-        showInstructions(Arrays.asList(new String[] { text }), false, true, finished -> {
-          if (finished) {
-            showPlaylists();
-          }
-        });
+        if (StringUtils.isEmpty(playlistTitle)) {
+          String text = getResources().getString(R.string.game_song_pop_status_pick_playlist);
+          showInstructions(Arrays.asList(new String[] { text }), false, true, finished -> {
+            if (finished) {
+              showPlaylists();
+            }
+          });
+        } else {
+          tracks = playlist.getRandomTracks(NB_QUESTIONS);
+          endTrack(false, null);
+        }
       }
     };
 
@@ -195,7 +201,7 @@ public class GameBattleMusicView extends GameViewWithRanking {
   }
 
   @Override protected void takeOverGame() {
-    
+    gamePresenter.getBattleMusicData();
   }
 
   private void showPlaylists() {
@@ -613,12 +619,14 @@ public class GameBattleMusicView extends GameViewWithRanking {
   }
 
   @Override public void stop() {
-    super.stop();
     viewPlay.stop();
     soundManager.cancelMediaPlayer();
+    super.stop();
   }
 
   @Override public void dispose() {
+    viewPlay.dispose();
+    subscriptionsTrack.clear();
     super.dispose();
   }
 

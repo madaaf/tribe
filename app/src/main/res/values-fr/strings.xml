@@ -843,7 +843,7 @@
 	<string name="home_menu_shortcut_update_avatar">:framed_picture: Modifier l\'avatar</string>
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Marquer comme lu</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Marquer comme non-lu</string>
-	<string name="home_menu_invite_decline">:phone: Rejeter l\'appel</string>
+	<string name="home_menu_invite_decline">:phone: Rejeter le défi</string>
 	<string name="home_menu_user_leaderboard">:trophy: Scores</string>
 	<string name="home_block_shortcut_title">Bloquer %1$s ?</string>
 	<string name="home_block_shortcut_message">Masquer les nouveaux messages, appels et autres notifications venant de cette personne. Vous pourrez débloquer cette personne depuis votre profil.</string>

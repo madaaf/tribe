@@ -3,6 +3,7 @@ package com.tribe.app.domain.entity.trivia;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +19,7 @@ public class TriviaQuestion {
   private static final String ANSWER_KEY = "answer";
   private static final String ALTERNATIVE_ANSWERS_KEY = "alternativeAnswers";
 
-  private String id;
+  private String id = UUID.randomUUID().toString();
   private String question;
   private String answer;
   private List<String> alternativeAnswers;

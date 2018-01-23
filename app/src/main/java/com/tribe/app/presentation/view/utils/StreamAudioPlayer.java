@@ -102,6 +102,10 @@ public class StreamAudioPlayer {
    * PUBLIC
    */
 
+  public void dispose() {
+    player.stop();
+  }
+
   public void prepare(String url) {
     mediaSource =
         new ExtractorMediaSource(Uri.parse(url), dataSourceFactory, extractorsFactory, null, null);

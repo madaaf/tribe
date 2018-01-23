@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.TextViewCompat;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -155,7 +156,7 @@ public class GameAnswerView extends LinearLayout {
     this.answer = answer;
     this.color = color;
     setAlpha(1);
-    txtAnswer.setText(answer);
+    txtAnswer.setText(Html.fromHtml(answer));
     background.setColor(color);
 
     if (type == TYPE_BATTLE_MUSIC) {
