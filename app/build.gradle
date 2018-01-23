@@ -138,9 +138,9 @@ android {
     }
 
     release {
-      debuggable true
-      minifyEnabled false
-      shrinkResources false
+      debuggable false
+      minifyEnabled true
+      shrinkResources true
       signingConfig signingConfigs.release
       resValue "string", "app_name", "Tribe"
       resValue "string", "branch_io", "\"${branch_io_prod}\""
@@ -251,7 +251,6 @@ dependencies {
   compile presentationDependencies.AVLoadingIndicatorView
   compile group: 'com.zendesk', name: 'sdk-providers', version: '1.11.0.1'
   compile presentationDependencies.exoPlayer
-
 
   //androidTestCompile presentationTestDependencies.mockito
   //androidTestCompile presentationTestDependencies.dexmaker
