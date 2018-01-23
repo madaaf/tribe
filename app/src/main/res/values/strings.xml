@@ -122,21 +122,21 @@
 	<string name="live_notification_action_hang_live">Join!</string>
 	<string name="live_notification_action_decline">Decline</string>
 	<string name="live_notification_action_add_as_friend">Add as friend</string>
-	<string name="live_notification_action_hang_live_friend">Join %1$s \'s video call</string>
-	<string name="live_notification_action_hang_live_group">Join %1$s \'s video call</string>
+	<string name="live_notification_action_hang_live_friend">Join %1$s \'s challenge</string>
+	<string name="live_notification_action_hang_live_group">Join %1$s \'s challenge</string>
 	<string name="live_notification_invite_after_decline">Drag %1$s a guest</string>
-	<string name="live_notification_call_after_decline">Video call %1$s</string>
+	<string name="live_notification_call_after_decline">Challenge %1$s</string>
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	<string name="live_notification_action_see_thread">See the conversation</string>
 	<string name="live_notification_action_reply">Reply</string>
 	<string name="live_notification_online">is online</string>
 	<string name="live_notification_title">Pick an option</string>
 	<string name="live_notification_message">Here is what you can do\nwith %1$s now.</string>
-	<string name="live_notification_call">:telephone_receiver: Call %1$s</string>
+	<string name="live_notification_call">:telephone_receiver: Challenge %1$s</string>
 	<string name="live_notification_leave">:telephone_receiver: Join %1$s call</string>
 	<string name="live_notification_add_as_guest">:busts_in_silhouette: Add %1$s in this call</string>
 	<string name="live_notification_text">:speech_balloon: Text %1$s</string>
-	<string name="live_notification_decline">:no_mobile_phones: Decline %1$s call</string>
+	<string name="live_notification_decline">:no_mobile_phones: Decline %1$s challenge</string>
 	<string name="live_notification_ringing_people">Ringing %1$d people</string>
 	<string name="live_notification_waiting_people">Waiting for %1$d people to join</string>
 	
@@ -148,8 +148,8 @@
 	<string name="decline_menu_custom">Type custom reply...</string>
 	
 	<!-- Invited Popup -->
-	<string name="invited_popup_title">%1$s invites you to join a call.</string>
-	<string name="invited_popup_message">%1$s is already in a call with %2$s.</string>
+	<string name="invited_popup_title">%1$s invites you to join a challenge.</string>
+	<string name="invited_popup_message">%1$s is already in a challenge with %2$s.</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s added</string>
@@ -160,8 +160,8 @@
 	<string name="live_notification_buzzed">Buzzing!</string>
 	<string name="live_notification_friend_buzzed">%1$s\'s buzzing!</string>
 	<string name="live_buzz_deactivated">Wait a few secs before buzzing again!</string>
-	<string name="live_notification_guest_declined">%1$s declined your call :no_mobile_phones:</string>
-	<string name="live_notification_guest_declined_in_group">%1$s declined your call in %2$s :no_mobile_phones:</string>
+	<string name="live_notification_guest_declined">%1$s declined your challenge :no_mobile_phones:</string>
+	<string name="live_notification_guest_declined_in_group">%1$s declined your challenge in %2$s :no_mobile_phones:</string>
 	<string name="live_notification_blocked">This user blocked you :broken_heart:</string>
 	<string name="live_reconnecting">Reconnecting in %1$ds...</string>
 	<string name="live_notification_initiator_has_been_notified">%1$s has been notified that you joined! :bell:</string>
@@ -184,7 +184,7 @@
 	<string name="grid_menu_friendship_unblock">Add %1$s</string>
 	<string name="grid_menu_friendship_mute">:no_bell: \'is online\' notification</string>
 	<string name="grid_menu_friendship_unmute">:bell: \'is online\' notification</string>
-	<string name="grid_menu_invite_decline">Decline the call</string>
+	<string name="grid_menu_invite_decline">Decline challenge</string>
 	<string name="grid_menu_call_placeholder">Video call</string>
 	<string name="grid_tutorial_invite">Invite your best friends to\nmake group video calls!</string>
 	<string name="grid_tutorial_new_call">Start your first\ngroup video call!</string>
@@ -823,6 +823,7 @@
 	<string name="home_section_suggested_friends">Suggested friends</string>
 	<string name="home_section_invites_to_send">Invites to send</string>
 	<string name="home_section_results">Results</string>
+	<string name="home_action_is_playing">Playing %1$s %2$s</string>
 	<string name="home_action_join_live">Tap right to join</string>
 	<string name="home_action_read_chat">Slide right to read</string>
 	<string name="home_action_tap_to_chat">Tap to chat</string>
@@ -843,7 +844,7 @@
 	<string name="home_menu_shortcut_update_avatar">:framed_picture: Edit avatar</string>
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Mark as read</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Mark as unread</string>
-	<string name="home_menu_invite_decline">:phone: Decline call</string>
+	<string name="home_menu_invite_decline">:phone: Decline challenge</string>
 	<string name="home_menu_user_leaderboard">:trophy: Scores</string>
 	<string name="home_block_shortcut_title">Block %1$s?</string>
 	<string name="home_block_shortcut_message">Mute new messages, calls and other associated notifications from this person. You\'ll be able to unblock this person from your profile.</string>

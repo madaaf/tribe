@@ -27,6 +27,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,12 +60,14 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @Inject ScreenUtils screenUtils;
 
+  public static Long SPEED_BACK_SCROLL;
   private BirdController controller;
   private Double delay = null;
-  private boolean gameOver = false;
   private Map<TribeGuest, ImageView> birdsList = new HashMap<>();
-  private boolean startedAsSingle = false, didRestartWhenReady = false;
-  public static Long SPEED_BACK_SCROLL;
+  private boolean startedAsSingle = false, didRestartWhenReady = false, gameOver = false;
+
+  int i = 0;
+  private List<BirdRushObstacle> obstaclesList = new ArrayList<>();
 
   private Integer[] birdsImage = new Integer[] {
       R.drawable.game_bird1, R.drawable.game_bird2, R.drawable.game_bird3, R.drawable.game_bird4,
@@ -73,6 +76,7 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions;
+  private Subscription timer;
   private Map<BirdRushObstacle, ImageView> obstacleVisibleScreen = new HashMap<>();
 
   public GameBirdRushView(@NonNull Context context) {
@@ -100,7 +104,7 @@ public class GameBirdRushView extends GameViewWithEngine {
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        SPEED_BACK_SCROLL = Long.valueOf(screenUtils.getWidthPx() / 120);
+        SPEED_BACK_SCROLL = Long.valueOf(screenUtils.getWidthPx() / 120) * 1000;
       }
     });
   }
@@ -112,8 +116,6 @@ public class GameBirdRushView extends GameViewWithEngine {
   @Override protected int getSoundtrack() {
     return SoundManager.ALIENS_ATTACK_SOUNDTRACK;
   }
-
-  List<BirdRushObstacle> obstaclesList = new ArrayList<>();
 
   @Override protected void initWebRTCRoomSubscriptions() {
     super.initWebRTCRoomSubscriptions();
@@ -128,15 +130,11 @@ public class GameBirdRushView extends GameViewWithEngine {
                 String actionKey = message.getString(ACTION_KEY);
                 if (actionKey.equals(ACTION_NEW_GAME)) {
                   obstaclesList.clear();
-                  setEngineFromUser(obstaclesList);
                 }
                 if (actionKey.equals(BIRD_ACTION_ADD_OBSTACLE)) {
                   JSONArray jsonObstacles = message.getJSONArray(BIRD_KEY_OBSTACLE);
                   List<BirdRushObstacle> obstacles = transform(jsonObstacles);
                   obstaclesList.addAll(obstacles);
-                  if (obstaclesList != null && !obstacles.isEmpty()) {
-                    setEngineFromUser(obstaclesList);
-                  }
                   Timber.e("add obstacle : " + obstacles.toString());
                 } else if (actionKey.equals(BIRD_ACTION_PLAYER_TAP)) {
                   PlayerTap playerTap =
@@ -154,86 +152,77 @@ public class GameBirdRushView extends GameViewWithEngine {
         }));
   }
 
-  Subscription timer;
-  int i = 0;
-
-  private void setEngineFromUser(List<BirdRushObstacle> obstaclesList) {
-    GameBirdRushEngine engine = new GameBirdRushEngine(context, GameBirdRushEngine.Level.MEDIUM);
-    //subscriptions.add();
+  private void setTimer() {
     if (timer == null) {
-      timer = Observable.interval(3000, 100, TimeUnit.MILLISECONDS)
+      Timber.e("SOEF NEW TIMEER RESET");
+      subscriptions.add(timer = Observable.interval(3000, 100, TimeUnit.MILLISECONDS)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> {
-            if (!obstaclesList.isEmpty()) {
-              //if (gameOver) return;
-              aLong = aLong * 100;
-              // init first obstacle
-              if (aLong == 0L) {
-                obs = obstaclesList.get(0);
-                delay = ((obs.getNextSpawn() * 1000) + aLong);
-                Timber.e("SOEF ANIMATE OBSC "
-                    + aLong
-                    + " "
-                    + i
-                    + " "
-                    + obs.toString()
-                    + obstaclesList.size());
-                v = animateObstacle(obs);
-                i++;
-              }
-
-              // init next obstacle
-              if (delay != null && (delay == aLong.doubleValue())) {
-                i++;
-                obs = obstaclesList.get(i);
-                delay = ((obs.getNextSpawn() * 1000) + aLong);
-                Timber.e("SOEF ANIMATE OBSC "
-                    + aLong
-                    + " "
-                    + i
-                    + " "
-                    + obs.toString()
-                    + " "
-                    + obstaclesList.size());
-                v = animateObstacle(obs);
-              }
-
-              handleCollisionWithObstacle();
-            }
-          });
-      subscriptions.add(timer);
+            animateObstacleList(aLong);
+            handleCollisionWithObstacle();
+          }));
     }
   }
 
-  private void setTimer() {
-    GameBirdRushEngine engine = new GameBirdRushEngine(context, GameBirdRushEngine.Level.MEDIUM);
-    subscriptions.add(Observable.interval(3000, 100, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          /*
-          if (gameOver) return;
-          aLong = aLong * 100;
-          // init first obstacle
-          if (aLong == 0L) {
-            obs = engine.generateObstacle();
-            delay = (obs.getNextSpawn() + aLong);
-            v = animateObstacle(obs);
-          }
+  private void resetTimer() {
+    Timber.e("SOEF RESET TIMER");
+    displayFirstObstacle = false;
+    if (timer != null) timer.unsubscribe();
+    timer = null;
+  }
 
-          // init next obstacle
-          if (delay != null && (delay == aLong.doubleValue())) {
-            obs = engine.generateObstacle();
-            delay = (obs.getNextSpawn()) + aLong;
-            v = animateObstacle(obs);
-          }
-          */
-          handleCollisionWithObstacle();
-        }));
+  boolean displayFirstObstacle = false;
+
+  private void animateObstacleList(Long aLong) {
+    Timber.e(" ON TOME : " + aLong + " " + obstaclesList.size());
+    if (obstaclesList != null && !obstaclesList.isEmpty()) {
+      //if (gameOver) return;
+      aLong = aLong * 100;
+      // init first obstacle
+      if (!displayFirstObstacle) {
+        displayFirstObstacle = true;
+        obs = obstaclesList.get(0);
+        delay = ((obs.getNextSpawn() * 1000) + aLong);
+        Timber.e("SOEF ANIMATE FIRST  OBSC "
+            + aLong
+            + " "
+            + i
+            + " "
+            + obs.toString()
+            + obstaclesList.size());
+        v = animateObstacle(obs);
+        i++;
+      }
+
+      // init next obstacle
+      if (delay != null && (delay == aLong.doubleValue())) {
+        i++;
+        obs = obstaclesList.get(i);
+        delay = ((obs.getNextSpawn() * 1000) + aLong);
+        Timber.e("SOEF ANIMATE OBSC "
+            + aLong
+            + " "
+            + i
+            + " "
+            + obs.toString()
+            + " "
+            + obstaclesList.size());
+        v = animateObstacle(obs);
+      }
+
+      handleCollisionWithObstacle();
+    }
+  }
+
+  protected void playGame() {
+    Timber.e("SOEF playGame");
+    super.playGame();
+    viewBackground.start();
   }
 
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) { // SOEF
+    Timber.d("SOEF SET UP LOCALLY " + userId + " " + players.size() + " " + timestamp);
     super.setupGameLocally(userId, players, timestamp);
-    Timber.d("SET UP LOCALLY " + userId + " " + players.size() + " " + timestamp);
     subscriptionsSession.add(onPending.subscribe(aBoolean -> {
       for (int i = 0; i < viewBirds.getChildCount(); i++) {
        /* if (viewBirds.getChildAt(i) instanceof GameAliensAttackAlienView) {
@@ -247,9 +236,11 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   @Override protected void gameOver(String winnerId, boolean isLocal) {
-    Timber.d("Game Bird Rush Over : " + winnerId);
+    Timber.e("SOEF Game Bird Rush Over : " + winnerId);
     super.gameOver(winnerId, isLocal);
     viewBirds.removeAllViews();
+    viewBackground.stop();
+    resetTimer();
   }
 
   private void overcomeObstacle() {
@@ -258,20 +249,17 @@ public class GameBirdRushView extends GameViewWithEngine {
     }
   }
 
-  private void animateBird() {
-
-  }
-
   @Override protected void startMasterEngine() {
     super.startMasterEngine();
-    Timber.d("start master engine bird rush ");
-/* // SOEF
+    Timber.e(" SOEF start master engine bird rush ");
+
     subscriptionsSession.add(
-        ((GameAliensAttackEngine) gameEngine).onAlien().subscribe(alienView -> {
-          webRTCRoom.sendToPeers(getAlienPayload(alienView.asJSON()), true);
-          animateAlien(alienView);
+        ((GameBirdRushEngine) gameEngine).onObstacle().subscribe(generateObstacleList -> {
+          Timber.e("SOEF send to peer obtsacle " + generateObstacleList.size());
+          webRTCRoom.sendToPeers(getObstaclePayload(generateObstacleList), true);
+          obstaclesList.addAll(generateObstacleList);
+          // animateObstacle(obstacle);
         }));
-*/
 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -333,6 +321,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   private void gameOver(ImageView obstacle) {
+    Timber.e("SOEF LOCAL game over");
     gameOver = true;
     setOnTouchListener(null);
     fallBird();
@@ -381,7 +370,7 @@ public class GameBirdRushView extends GameViewWithEngine {
     obstacle.setX(screenUtils.getWidthPx());
     obstacle.setY(model.getStart() * screenUtils.getHeightPx() - height / 2);
 
-    addView(obstacle);
+    viewBackground.addView(obstacle);
     obstacle.animate()
         .translationX(-screenUtils.getWidthPx() - 2 * width)
         .setDuration(SPEED_BACK_SCROLL)
@@ -485,11 +474,10 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    Timber.d(" on start bird Rush");
+    Timber.e(" SOEF on start bird Rush");
     wordingPrefix = "game_bird_rush_";
     gameOver = false;
     super.start(game, mapObservable, liveViewsObservable, userId);
-    viewBackground.start();
 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -510,17 +498,36 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @Override public void stop() {
     super.stop();
+    Timber.e(" SOEF on stop");
     viewBackground.stop();
   }
 
   @Override public void dispose() {
     super.dispose();
+    Timber.e(" SOEF on dispose");
     viewBackground.dispose();
     viewBirds.removeAllViews();
     subscriptions.unsubscribe();
   }
 
   @Override public void setNextGame() {
+    Timber.e(" SOEF setNextGame");
+  }
+
+  /**
+   * JSON PAYLOAD
+   */
+
+  private JSONObject getObstaclePayload(List<BirdRushObstacle> list) {
+    JSONObject jsonObject = new JSONObject();
+    JSONArray array = new JSONArray();
+
+    for (BirdRushObstacle o : list) {
+      array.put(o.asJSON());
+    }
+    JsonUtils.jsonPut(jsonObject, ACTION_KEY, BIRD_ACTION_ADD_OBSTACLE);
+    JsonUtils.jsonPut(jsonObject, BIRD_KEY_OBSTACLE, array);
+    return jsonObject;
   }
 
   private ArrayList<BirdRushObstacle> transform(JSONArray jArray) throws JSONException {

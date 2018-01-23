@@ -125,18 +125,18 @@
 	<string name="live_notification_action_hang_live_friend">Rejoindre %1$s</string>
 	<string name="live_notification_action_hang_live_group">Rejoindre %1$s</string>
 	<string name="live_notification_invite_after_decline">Inviter %1$s</string>
-	<string name="live_notification_call_after_decline">Appeler %1$s</string>
+	<string name="live_notification_call_after_decline">Défier %1$s</string>
 	<string name="live_notification_buzz_after_decline">Buzz %1$s</string>
 	<string name="live_notification_action_see_thread">Voir la conversation</string>
 	<string name="live_notification_action_reply">Répondre</string>
 	<string name="live_notification_online">est en ligne</string>
 	<string name="live_notification_title">Choisissez une option</string>
 	<string name="live_notification_message">Voici ce que vous pouvez faire\navec %1$s maintenant.</string>
-	<string name="live_notification_call">:telephone_receiver: Appeler %1$s</string>
+	<string name="live_notification_call">:telephone_receiver: Défier %1$s</string>
 	<string name="live_notification_leave">:telephone_receiver: Rejoindre %1$s</string>
 	<string name="live_notification_add_as_guest">:busts_in_silhouette: Inviter %1$s ici</string>
 	<string name="live_notification_text">:speech_balloon: Texter %1$s</string>
-	<string name="live_notification_decline">:no_mobile_phones: Refuser l\'appel de %1$s</string>
+	<string name="live_notification_decline">:no_mobile_phones: Refuser le défi de %1$s</string>
 	<string name="live_notification_ringing_people">Appel de %1$d personne(s)</string>
 	<string name="live_notification_waiting_people">Attente de %1$d personne(s)</string>
 	
@@ -148,8 +148,8 @@
 	<string name="decline_menu_custom">Réponse personnalisée...</string>
 	
 	<!-- Invited Popup -->
-	<string name="invited_popup_title">%1$s vous invite à rejoindre un live</string>
-	<string name="invited_popup_message">%1$s est déjà en live avec %2$s.</string>
+	<string name="invited_popup_title">%1$s vous invite à rejoindre un défi</string>
+	<string name="invited_popup_message">%1$s est déjà en défi avec %2$s.</string>
 	
 	<!-- Live Small Notifications -->
 	<string name="live_notification_peer_added">%1$s invité</string>
@@ -160,8 +160,8 @@
 	<string name="live_notification_buzzed">Buzz !</string>
 	<string name="live_notification_friend_buzzed">%1$s a buzzé !</string>
 	<string name="live_buzz_deactivated">Attendez un instant avant de re-buzzer !</string>
-	<string name="live_notification_guest_declined">%1$s a refusé votre appel :no_mobile_phones:</string>
-	<string name="live_notification_guest_declined_in_group">%1$s a refusé votre appel dans %2$s :no_mobile_phones:</string>
+	<string name="live_notification_guest_declined">%1$s a refusé votre défi :no_mobile_phones:</string>
+	<string name="live_notification_guest_declined_in_group">%1$s a refusé votre défi dans %2$s :no_mobile_phones:</string>
 	<string name="live_notification_blocked">Cet utilisateur vous a bloqué :broken_heart:</string>
 	<string name="live_reconnecting">Reconnexion dans %1$ds...</string>
 	<string name="live_notification_initiator_has_been_notified">%1$s a été prévenu de votre arrivée ! :bell:</string>
@@ -184,7 +184,7 @@
 	<string name="grid_menu_friendship_unblock"></string>
 	<string name="grid_menu_friendship_mute">:no_bell: notification \'est en ligne\'</string>
 	<string name="grid_menu_friendship_unmute">:bell: notification \'est en ligne\'</string>
-	<string name="grid_menu_invite_decline">Rejeter l\'appel</string>
+	<string name="grid_menu_invite_decline">Rejeter le défi</string>
 	<string name="grid_menu_call_placeholder">Appel vidéo</string>
 	<string name="grid_tutorial_invite">Invitez vos meilleurs amis à\nfaire des appels vidéo en groupe !</string>
 	<string name="grid_tutorial_new_call">Lancez votre premier\nappel vidéo en groupe !</string>
@@ -823,6 +823,7 @@
 	<string name="home_section_suggested_friends">Amis déjà sur Tribe</string>
 	<string name="home_section_invites_to_send">Amis à inviter</string>
 	<string name="home_section_results">Résultats</string>
+	<string name="home_action_is_playing">Joue à %1$s %2$s</string>
 	<string name="home_action_join_live">Tappez à droite pour rejoindre</string>
 	<string name="home_action_read_chat">Glissez à droite pour ouvrir</string>
 	<string name="home_action_tap_to_chat">Tapez pour discuter</string>
@@ -843,7 +844,7 @@
 	<string name="home_menu_shortcut_update_avatar">:framed_picture: Modifier l\'avatar</string>
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Marquer comme lu</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Marquer comme non-lu</string>
-	<string name="home_menu_invite_decline">:phone: Rejeter l\'appel</string>
+	<string name="home_menu_invite_decline">:phone: Rejeter le défi</string>
 	<string name="home_menu_user_leaderboard">:trophy: Scores</string>
 	<string name="home_block_shortcut_title">Bloquer %1$s ?</string>
 	<string name="home_block_shortcut_message">Masquer les nouveaux messages, appels et autres notifications venant de cette personne. Vous pourrez débloquer cette personne depuis votre profil.</string>

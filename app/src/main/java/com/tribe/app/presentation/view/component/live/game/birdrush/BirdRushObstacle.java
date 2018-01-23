@@ -1,10 +1,21 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
+import com.tribe.tribelivesdk.util.JsonUtils;
+import org.json.JSONObject;
+
 /**
  * Created by madaaflak on 16/01/2018.
  */
 
 public class BirdRushObstacle {
+
+  private final String ID_KEY = "id";
+  private final String NEXT_SPAWN_KEY = "nextSpawn";
+  private final String START_RATIO_KEY = "start";
+  private final String HEIGHT_RATIO_KEY = "height";
+  private final String SPEED_KEY = "speed";
+  private final String TRANSLATION_KEY = "translation";
+  private final String ROTATION_KEY = "rotation";
 
   private String id;
   private Double nextSpawn;
@@ -121,5 +132,17 @@ public class BirdRushObstacle {
         + ", rotation="
         + rotation
         + '}';
+  }
+
+  public JSONObject asJSON() {
+    JSONObject obstacle = new JSONObject();
+    JsonUtils.jsonPut(obstacle, ID_KEY, id);
+    JsonUtils.jsonPut(obstacle, NEXT_SPAWN_KEY, nextSpawn);
+    JsonUtils.jsonPut(obstacle, ROTATION_KEY, rotation);
+    JsonUtils.jsonPut(obstacle, HEIGHT_RATIO_KEY, height);
+    JsonUtils.jsonPut(obstacle, START_RATIO_KEY, start);
+    JsonUtils.jsonPut(obstacle, SPEED_KEY, speed);
+    JsonUtils.jsonPut(obstacle, TRANSLATION_KEY, translation);
+    return obstacle;
   }
 }

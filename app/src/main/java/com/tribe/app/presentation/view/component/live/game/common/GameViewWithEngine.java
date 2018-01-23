@@ -143,7 +143,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
               JSONObject message = jsonObject.getJSONObject(game.getId());
               if (message.has(ACTION_KEY)) {
                 String actionKey = message.getString(ACTION_KEY);
-                Timber.e("SOEF " + actionKey + " " + message.toString());
+                Timber.w("SOEF " + actionKey + " " + message.toString());
                 if (actionKey.equals(ACTION_USER_GAME_OVER)) {
                   String fromUserId = message.getString(USER_KEY);
                   setStatus(RankingStatus.LOST, fromUserId);
@@ -220,7 +220,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void imReady() {
-    Timber.d("imReady");
+    Timber.e("SOEF imReady");
     webRTCRoom.sendToPeers(getImReadyPayload(currentUser.getId()), true);
     if (gameEngine != null) gameEngine.setUserReady(currentUser.getId());
   }
@@ -234,7 +234,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void iLost() {
-    Timber.d("iLost");
+    Timber.e("SOEF iLost");
     if (game == null || gameEngine == null) return;
 
     if (gameEngine.mapPlayerStatus.size() > 1 && roundPoints > 0) {

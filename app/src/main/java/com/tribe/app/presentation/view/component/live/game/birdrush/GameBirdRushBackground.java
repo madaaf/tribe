@@ -24,6 +24,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 import static com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView.SPEED_BACK_SCROLL;
 
@@ -109,6 +110,7 @@ public class GameBirdRushBackground extends FrameLayout {
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        Timber.e("SOEF SET BACK SCROLLING ");
         animator = ValueAnimator.ofFloat(0.0f, 1.0f);
         animator.setRepeatCount(ValueAnimator.INFINITE);
         animator.setInterpolator(new LinearInterpolator());
@@ -140,12 +142,22 @@ public class GameBirdRushBackground extends FrameLayout {
   }
 
   public void stop() {
+    Timber.e("SOEF BACKGRUND  stop ");
+    animator.cancel();
+    /*
+    for (Map.Entry<BirdRushObstacle, ImageView> entry : obstacleVisibleScreen.entrySet()) {
+      ImageView obsclView = entry.getValue();
+      obsclView.animate().cancel();
+    }*/
 
+    backgroundOne.clearAnimation();
+    backgroundTwo.clearAnimation();
   }
 
   public void dispose() {
     subscriptions.unsubscribe();
     subscriptionsAnimation.unsubscribe();
+    Timber.e("SOEF BACKGRUND  dispose ");
   }
 
   /**

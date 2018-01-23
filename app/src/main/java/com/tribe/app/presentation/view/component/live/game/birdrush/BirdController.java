@@ -9,7 +9,6 @@ import java.io.Serializable;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 15/01/2018.
@@ -51,18 +50,14 @@ public class BirdController extends View implements TouchHandler {
     switch (event.getAction()) {
 
       case MotionEvent.ACTION_DOWN:
-        Timber.e("SOEF TOUCH 1 " + p.toString());
         onTap.onNext(null);
         break;
 
       case MotionEvent.ACTION_MOVE:
-        Timber.e("SOEF TOUCH 2 " + p.toString());
         break;
       case MotionEvent.ACTION_UP:
-        Timber.e("SOEF TOUCH 3 " + p.toString());
         break;
       default:
-        Timber.e("SOEF TOUCH 3 " + p.toString() + " " + event.getAction());
     }
     return false;
   }
@@ -84,5 +79,4 @@ public class BirdController extends View implements TouchHandler {
   public Observable<Void> onTap() {
     return onTap;
   }
-
 }
