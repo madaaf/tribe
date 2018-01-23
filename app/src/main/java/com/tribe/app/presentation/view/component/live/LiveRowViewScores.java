@@ -5,13 +5,14 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import rx.subscriptions.CompositeSubscription;
 
@@ -20,7 +21,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class LiveRowViewScores extends LinearLayout {
 
-  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
+  @BindView(R.id.viewAvatar) ImageView imgAvatar;
 
   @BindView(R.id.txtScore) TextViewFont txtScore;
 
@@ -62,7 +63,7 @@ public class LiveRowViewScores extends LinearLayout {
   }
 
   private void initResources() {
-    avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_chat);
+    avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
   }
 
   ////////////
@@ -84,7 +85,11 @@ public class LiveRowViewScores extends LinearLayout {
   }
 
   public void show() {
-    viewAvatar.load(guest.getPicture());
+    new GlideUtils.Builder(getContext()).url(guest.getPicture())
+        .size(avatarSize)
+        .hasPlaceholder(true)
+        .target(imgAvatar)
+        .load();
   }
 
   public TribeGuest getGuest() {

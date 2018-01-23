@@ -25,6 +25,7 @@ public class CircularProgressBar extends View {
   private int maxProgress = 100;
   private boolean roundedCorners = true;
   private int progressColor = Color.BLACK;
+  private ValueAnimator animator = null;
 
   private final Paint paint;
 
@@ -89,12 +90,12 @@ public class CircularProgressBar extends View {
    *
    * @param progress progress between 0 and 100.
    */
-  public void setProgress(int progress, int delay, AnimatorListenerAdapter listenerAdapter,
+  public void setProgress(int progress, int duration, int delay,
+      AnimatorListenerAdapter listenerAdapter,
       ValueAnimator.AnimatorUpdateListener animatorUpdateListener) {
-    ValueAnimator animator =
-        ValueAnimator.ofFloat(sweepAngle, calcSweepAngleFromProgress(progress));
+    animator = ValueAnimator.ofFloat(sweepAngle, calcSweepAngleFromProgress(progress));
     animator.setInterpolator(new DecelerateInterpolator());
-    animator.setDuration(animationDuration);
+    animator.setDuration(duration);
     animator.setStartDelay(delay);
     animator.addUpdateListener(valueAnimator -> {
       if (animatorUpdateListener != null) animatorUpdateListener.onAnimationUpdate(valueAnimator);
@@ -117,6 +118,12 @@ public class CircularProgressBar extends View {
   public void setProgressWidth(int width) {
     strokeWidth = width;
     invalidate();
+  }
+
+  public void stop() {
+    if (animator == null) return;
+    animator.cancel();
+    animator = null;
   }
 
   /**

@@ -2,7 +2,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="156dp"
+    android:layout_height="50dp"
     android:orientation="vertical"
     >
 
@@ -17,7 +17,6 @@
       android:visibility="gone"
       style="@style/Title.2.Black40"
       />
-
 
   <LinearLayout
       android:layout_width="match_parent"
@@ -35,6 +34,4 @@
         android:visibility="gone"
         />
   </LinearLayout>
-
-
 </LinearLayout>

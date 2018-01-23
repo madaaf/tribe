@@ -26,6 +26,7 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackView;
+import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
@@ -248,6 +249,15 @@ public class GameManagerView extends FrameLayout {
           .doOnNext(aVoid -> onStopGame.onNext(currentGame))
           .subscribe(onPlayOtherGame));
       gameView = gameTriviaView;
+    } else if (game.getId().equals(Game.GAME_BATTLE_MUSIC)) {
+      GameBattleMusicView gameBattleMusicView = new GameBattleMusicView(getContext());
+      subscriptionsGame.add(gameBattleMusicView.onAddScore().subscribe(onAddScore));
+      subscriptionsGame.add(gameBattleMusicView.onStop().subscribe(onStopGame));
+      subscriptionsGame.add(gameBattleMusicView.onRestart().subscribe(onRestartGame));
+      subscriptionsGame.add(gameBattleMusicView.onPlayOtherGame()
+          .doOnNext(aVoid -> onStopGame.onNext(currentGame))
+          .subscribe(onPlayOtherGame));
+      gameView = gameBattleMusicView;
     } else if (game.isWeb()) {
       GameWebView gameWebView = new GameWebView(getContext());
       subscriptionsGame.add(gameWebView.onAddScore().subscribe(onAddScore));

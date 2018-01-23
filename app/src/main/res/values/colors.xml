@@ -20,6 +20,7 @@
   <color name="black.dark.placeholder">#171717</color>
   <color name="black.light.placeholder">#1C1C1C</color>
   <color name="black.dark.blue">#34373B</color>
+  <color name="black.almost">#1D2024</color>
 
   <!-- WHITES -->
   <color name="white">#FFFFFF</color>
@@ -99,6 +100,7 @@
   <color name="green.status">#2ECC4C</color>
   <color name="green.group">#3FDA8D</color>
   <color name="green.invite">#1CDD61</color>
+  <color name="green.battlemusic">#38F370</color>
 
   <!-- REDS -->
   <color name="red">#F9474C</color>

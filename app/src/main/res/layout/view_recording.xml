@@ -102,29 +102,12 @@
         android:visibility="visible"
         />
 
-    <ImageView
-        android:id="@+id/pauseBtn"
+    <com.tribe.app.presentation.view.component.PlayPauseBtnView
+        android:id="@+id/viewPlayPauseBtn"
         android:layout_width="43dp"
         android:layout_height="43dp"
         android:layout_gravity="center"
-        android:alpha="0"
-        android:scaleType="center"
-        android:src="@drawable/picto_pause_img"
-
-        />
-
-    <ImageView
-        android:id="@+id/playBtn"
-        android:layout_width="43dp"
-        android:layout_height="43dp"
-        android:layout_gravity="center"
-        android:alpha="1"
-        android:scaleType="center"
-        android:src="@drawable/picto_play_img"
-
         />
 
   </FrameLayout>
-
-
 </RelativeLayout>

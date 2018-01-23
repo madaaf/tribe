@@ -1,8 +1,6 @@
-package com.tribe.app.presentation.view.component.live.game.trivia;
+package com.tribe.app.presentation.view.component.live.game.battlemusic;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -15,15 +13,12 @@ import android.support.transition.TransitionManager;
 import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
 import android.util.Pair;
-import android.view.View;
 import android.view.animation.OvershootInterpolator;
-import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.trivia.TriviaCategoryEnum;
-import com.tribe.app.domain.entity.trivia.TriviaQuestion;
+import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
+import com.tribe.app.domain.entity.battlemusic.BattleMusicTrack;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
@@ -34,8 +29,6 @@ import com.tribe.app.presentation.view.component.live.game.common.GameAnswerView
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswersView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
 import com.tribe.app.presentation.view.utils.DialogFactory;
-import com.tribe.app.presentation.view.utils.SoundManager;
-import com.tribe.app.presentation.view.widget.CircularProgressBar;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -56,71 +49,63 @@ import org.json.JSONObject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
- * Created by tiago on 12/21/2017.
+ * Created by tiago on 01/18/2018
  */
 
-public class GameTriviaView extends GameViewWithRanking {
-
-  private static final String ACTION_POP_ALIEN = "popAlien";
-  private static final String ALIEN_KEY = "alien";
+public class GameBattleMusicView extends GameViewWithRanking {
 
   private static final String ANSWER_KEY = "answer";
-  private static final String QUESTION_KEY = "question";
-  private static final String NB_QUESTION_KEY = "nbQuestion";
+  private static final String TRACK_KEY = "track";
   private static final String NAME_KEY = "name";
   private static final String WINNER_KEY = "winner";
   private static final String TITLE_KEY = "title";
-  private static final String ALL_KEY = "all";
   private static final String SHOW_WINNER_KEY = "showWinner";
   private static final String WINNERS_NAMES_KEY = "winnersNamesKey";
-  private static final String ACTION_PICK_CATEGORY = "pickCategory";
-  private static final String ACTION_SHOW_QUESTION = "showQuestion";
-  private static final String ANSWER_GUESS = "guess";
-  private static final String ACTION_END_QUESTION = "endQuestion";
+
+  private static final String ACTION_PICK_PLAYLIST = "pickPlaylist";
+  private static final String ACTION_PRELOAD_TRACK = "preloadTrack";
+  private static final String ACTION_PLAY_TRACK = "playTrack";
+  private static final String ACTION_END_TRACK = "endTrack";
   private static final String ACTION_HIDE_GAME = "hideGame";
+  private static final String ACTION_PAUSE = "pause";
+  private static final String ACTION_RESUME = "resume";
+
+  private static final String ANSWER_TRACK_PRELOADED = "trackPreloaded";
+  private static final String ANSWER_GUESS = "guess";
 
   private static final int NB_QUESTIONS = 12;
 
   @Inject GamePresenter gamePresenter;
 
   @BindView(R.id.layoutConstraint) ConstraintLayout layoutConstraint;
-  @BindView(R.id.viewCategoryMovies) GameTriviaCategoryView viewCategorieMovies;
-  @BindView(R.id.viewCategoryMusic) GameTriviaCategoryView viewCategorieMusic;
-  @BindView(R.id.viewCategoryTV) GameTriviaCategoryView viewCategorieTV;
-  @BindView(R.id.viewCategoryCelebs) GameTriviaCategoryView viewCategorieCelebs;
-  @BindView(R.id.viewCategorySports) GameTriviaCategoryView viewCategorieSports;
-  @BindView(R.id.viewCategoryGeeks) GameTriviaCategoryView viewCategorieGeeks;
-  @BindView(R.id.viewCategoryGeneral) GameTriviaCategoryView viewCategorieGeneral;
-  @BindView(R.id.viewCategoryWorld) GameTriviaCategoryView viewCategorieWorld;
-  @BindView(R.id.viewCategoryGames) GameTriviaCategoryView viewCategorieGames;
-  @BindView(R.id.txtTriviaTitle) TextViewFont txtTitle;
-  @BindView(R.id.txtQuestion) TextViewFont txtQuestion;
-  @BindView(R.id.txtQuestionCount) TextViewFont txtQuestionCount;
+  @BindView(R.id.viewCategories) GameBattleMusicCategoriesView viewCategories;
+  @BindView(R.id.txtTitle) TextViewFont txtTitle;
   @BindView(R.id.groupInit) Group groupInit;
-  @BindView(R.id.progressBar) CircularProgressBar progressBar;
   @BindView(R.id.viewAnswers) GameAnswersView viewAnswers;
-  @BindView(R.id.imgBackground) ImageView imgBackground;
+  @BindView(R.id.viewPlay) GameBattleMusicPlayView viewPlay;
 
   // VARIABLES
-  private TriviaCategoryEnum category;
+  private BattleMusicPlaylist playlist;
   private GameMVPViewAdapter gameMVPViewAdapter;
-  private List<TriviaQuestion> questions;
-  private String categoryTitle;
-  private boolean categoryAll = false, weHaveAWinner = false;
+  private Map<String, BattleMusicPlaylist> mapPlaylists;
+  private List<BattleMusicTrack> tracks;
+  private String playlistTitle;
+  private boolean weHaveAWinner = false, isBuffered = false;
   private String rightAnswer;
-  private int nbAnswers = 0, nbPlayingPeers = 0;
-  private ValueAnimator rotationRaysAnimator;
+  private int nbAnswers = 0, nbPlayingPeers = 0, nbPreloads = 0;
 
   // SUBSCRIPTIONS
   protected Subscription rightAnswerSubscription, wrongAnswerSubscription;
+  protected CompositeSubscription subscriptionsTrack = new CompositeSubscription();
 
-  public GameTriviaView(@NonNull Context context) {
+  public GameBattleMusicView(@NonNull Context context) {
     super(context);
   }
 
-  public GameTriviaView(@NonNull Context context, @Nullable AttributeSet attrs) {
+  public GameBattleMusicView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
   }
 
@@ -145,24 +130,48 @@ public class GameTriviaView extends GameViewWithRanking {
   @Override protected void initView(Context context) {
     super.initView(context);
 
-    inflater.inflate(R.layout.view_game_trivia, this, true);
+    inflater.inflate(R.layout.view_game_battlemusic_title_only, this, true);
     unbinder = ButterKnife.bind(this);
 
-    setClickable(true);
-
-    progressBar.setProgressColor(Color.WHITE);
-    progressBar.setProgressWidth(screenUtils.dpToPx(5));
-    progressBar.setProgress((100 / NB_QUESTIONS));
+    mapPlaylists = new HashMap<>();
 
     gameMVPViewAdapter = new GameMVPViewAdapter() {
-      @Override public void onTriviaData(Map<String, List<TriviaQuestion>> map) {
-        for (String key : map.keySet()) {
-          TriviaCategoryEnum.setQuestionsForCategory(key, map.get(key));
-        }
+      @Override public void onBattleMusicData(Map<String, BattleMusicPlaylist> map) {
+        mapPlaylists.clear();
+        mapPlaylists.putAll(map);
 
-        showCategories();
+        String text = getResources().getString(R.string.game_song_pop_status_pick_playlist);
+        showInstructions(Arrays.asList(new String[] { text }), false, true, finished -> {
+          if (finished) {
+            showPlaylists();
+          }
+        });
       }
     };
+
+    subscriptions.add(viewCategories.onPlaylistSelected().subscribe(playlist -> {
+      tracks = playlist.getRandomTracks(NB_QUESTIONS);
+      sendAction(ACTION_PICK_PLAYLIST, getPlaylistPayload(playlist));
+      nextTrack();
+    }));
+
+    subscriptions.add(viewPlay.onDonePlaying().subscribe(aBoolean -> {
+      if (!weHaveAWinner) {
+        weHaveAWinner = true;
+        endTrack(false, null);
+      }
+    }));
+
+    subscriptions.add(viewPlay.onStarted().subscribe(aVoid -> {
+      viewAnswers.enableClicks(true);
+      viewPlay.play();
+    }));
+
+    subscriptions.add(
+        viewPlay.onPause().subscribe(aVoid -> sendAction(ACTION_PAUSE, new JSONObject())));
+
+    subscriptions.add(
+        viewPlay.onResume().subscribe(aVoid -> sendAction(ACTION_RESUME, new JSONObject())));
   }
 
   @Override protected void initWebRTCRoomSubscriptions() {
@@ -186,14 +195,14 @@ public class GameTriviaView extends GameViewWithRanking {
   }
 
   @Override protected void takeOverGame() {
-
+    
   }
 
-  private void showCategories() {
-    soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK, SoundManager.SOUND_MID);
+  private void showPlaylists() {
+    viewCategories.computeCategories(new ArrayList<>(mapPlaylists.values()));
 
     ConstraintSet constraintSet = new ConstraintSet();
-    constraintSet.clone(getContext(), R.layout.view_game_trivia);
+    constraintSet.clone(getContext(), R.layout.view_game_battlemusic);
     constraintSet.setAlpha(R.id.groupInit, 1);
     animateLayoutWithConstraintSet(constraintSet, true, null);
   }
@@ -212,61 +221,7 @@ public class GameTriviaView extends GameViewWithRanking {
     constraintSet.applyTo(layoutConstraint);
   }
 
-  /**
-   * ON CLICKS
-   */
-
-  @OnClick({
-      R.id.viewCategoryCelebs, R.id.viewCategoryGames, R.id.viewCategoryGeeks,
-      R.id.viewCategoryGeneral, R.id.viewCategoryMovies, R.id.viewCategoryMusic,
-      R.id.viewCategorySports, R.id.viewCategoryTV, R.id.viewCategoryWorld
-  }) void clickCategory(View view) {
-    TriviaCategoryEnum categoryEnum = null;
-
-    switch (view.getId()) {
-      case R.id.viewCategoryCelebs:
-        categoryEnum = TriviaCategoryEnum.CELEBS;
-        break;
-
-      case R.id.viewCategoryGames:
-        categoryEnum = TriviaCategoryEnum.GAMES;
-        break;
-
-      case R.id.viewCategoryGeeks:
-        categoryEnum = TriviaCategoryEnum.GEEKS;
-        break;
-
-      case R.id.viewCategoryGeneral:
-        categoryEnum = TriviaCategoryEnum.GENERAL;
-        break;
-
-      case R.id.viewCategoryMovies:
-        categoryEnum = TriviaCategoryEnum.MOVIES;
-        break;
-
-      case R.id.viewCategoryMusic:
-        categoryEnum = TriviaCategoryEnum.MUSIC;
-        break;
-
-      case R.id.viewCategorySports:
-        categoryEnum = TriviaCategoryEnum.SPORTS;
-        break;
-
-      case R.id.viewCategoryTV:
-        categoryEnum = TriviaCategoryEnum.TV;
-        break;
-
-      case R.id.viewCategoryWorld:
-        categoryEnum = TriviaCategoryEnum.WORLD;
-        break;
-    }
-
-    sendAction(ACTION_PICK_CATEGORY, getCategorySelectionPayload(categoryEnum));
-    questions = TriviaCategoryEnum.getRandomQuestions(NB_QUESTIONS, categoryEnum);
-    nextQuestion();
-  }
-
-  private void nextQuestion() {
+  private void nextTrack() {
     Collection<Integer> rankings = mapRanking.values();
     List<String> leadersDisplayName = new ArrayList<>();
     int maxRanking = rankings != null && rankings.size() > 0 ? Collections.max(rankings) : 0;
@@ -276,9 +231,9 @@ public class GameTriviaView extends GameViewWithRanking {
       }
     }
 
-    if (questions != null && questions.size() > 0) {
-      TriviaQuestion question = questions.remove(0);
-      rightAnswer = question.getAnswer();
+    if (tracks != null && tracks.size() > 0) {
+      BattleMusicTrack track = tracks.remove(0);
+      rightAnswer = track.getName();
       nbAnswers = 0;
 
       int nbPlayersThatCanPlay = 0;
@@ -287,7 +242,8 @@ public class GameTriviaView extends GameViewWithRanking {
       }
 
       nbPlayingPeers = nbPlayersThatCanPlay;
-      sendAction(ACTION_SHOW_QUESTION, getShowQuestionPayload(question));
+      nbPreloads = 0;
+      sendAction(ACTION_PRELOAD_TRACK, getPreloadTrack(track));
     } else if (leadersDisplayName != null && leadersDisplayName.size() > 0) {
       sendAction(ACTION_HIDE_GAME, getHideGamePayload(leadersDisplayName));
     } else {
@@ -303,17 +259,16 @@ public class GameTriviaView extends GameViewWithRanking {
 
         if (message.has(ACTION_KEY)) {
           String actionKey = message.getString(ACTION_KEY);
-          if (actionKey.equals(ACTION_PICK_CATEGORY)) {
-            categoryTitle = message.getString(TITLE_KEY);
-            categoryAll = message.has(ALL_KEY) ? message.getBoolean(ALL_KEY) : false;
-          } else if (actionKey.equals(ACTION_SHOW_QUESTION)) {
-            soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK, SoundManager.SOUND_MID);
+          if (actionKey.equals(ACTION_PICK_PLAYLIST)) {
+            playlistTitle = message.getString(TITLE_KEY);
+          } else if (actionKey.equals(ACTION_PRELOAD_TRACK)) {
             currentMasterId = tribeSession == null ? currentUser.getId() : tribeSession.getUserId();
             game.setCurrentMaster(peerMap.get(currentMasterId));
-            preloadQuestion(message, tribeSession);
-            weHaveAWinner = false;
-          } else if (actionKey.equals(ACTION_END_QUESTION)) {
-            soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK_ANSWER, SoundManager.SOUND_MID);
+            preloadTrack(message, tribeSession);
+          } else if (actionKey.equals(ACTION_PLAY_TRACK)) {
+            viewPlay.start();
+          } else if (actionKey.equals(ACTION_END_TRACK)) {
+            viewPlay.hide();
 
             if (message.has(WINNER_KEY)) {
               TribeGuest guest = peerMap.get(message.getString(WINNER_KEY));
@@ -323,22 +278,20 @@ public class GameTriviaView extends GameViewWithRanking {
 
               String text = getResources().getString(R.string.game_song_pop_status_winner,
                   guest.getDisplayName());
-              showInstructions(Arrays.asList(new String[] { text }), true, true, false,
-                  finished -> {
-                    if (finished) {
-                      txtTitle.setText(text);
-                      viewAnswers.animateAnswerResult();
-                    }
-                  });
+              showInstructions(Arrays.asList(new String[] { text }), true, true, finished -> {
+                if (finished) {
+                  txtTitle.setText(text);
+                  showTracks(true, () -> viewAnswers.animateAnswerResult());
+                }
+              });
             } else {
               String text = getResources().getString(R.string.game_song_pop_status_no_winner);
-              showInstructions(Arrays.asList(new String[] { text }), true, true, false,
-                  finished -> {
-                    if (finished) {
-                      txtTitle.setText(text);
-                      viewAnswers.animateAnswerResult();
-                    }
-                  });
+              showInstructions(Arrays.asList(new String[] { text }), true, true, finished -> {
+                if (finished) {
+                  txtTitle.setText(text);
+                  showTracks(true, () -> viewAnswers.animateAnswerResult());
+                }
+              });
             }
           } else if (actionKey.equals(ACTION_HIDE_GAME)) {
             if (message.has(SHOW_WINNER_KEY)) {
@@ -356,6 +309,10 @@ public class GameTriviaView extends GameViewWithRanking {
             subscriptionsRoom.add(Observable.timer(10, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> stop()));
+          } else if (actionKey.equals(ACTION_PAUSE)) {
+            viewPlay.stop();
+          } else if (actionKey.equals(ACTION_RESUME)) {
+            viewPlay.play();
           }
         } else if (message.has(ANSWER_KEY)) {
           String answer = message.getString(ANSWER_KEY);
@@ -364,11 +321,17 @@ public class GameTriviaView extends GameViewWithRanking {
             if (message.getString(NAME_KEY).equals(rightAnswer)) {
               if (!weHaveAWinner) {
                 weHaveAWinner = true;
-                endQuestion(true, tribeSession);
+                endTrack(true, tribeSession);
               }
             } else if (nbAnswers == nbPlayingPeers) {
               weHaveAWinner = true;
-              endQuestion(false, tribeSession);
+              endTrack(false, tribeSession);
+            }
+          } else if (answer.equals(ANSWER_TRACK_PRELOADED)) {
+            nbPreloads++;
+            if (nbPreloads == nbPlayingPeers) {
+              weHaveAWinner = false;
+              sendAction(ACTION_PLAY_TRACK, new JSONObject());
             }
           }
         }
@@ -381,14 +344,14 @@ public class GameTriviaView extends GameViewWithRanking {
   }
 
   private void showInstructions(List<String> steps, boolean disappearAnimated,
-      boolean automaticallyReappear, boolean showRays, InstructionsListener completionListener) {
+      boolean automaticallyReappear, InstructionsListener completionListener) {
     TextViewCompat.setTextAppearance(txtTitle, R.style.Title24_2_White);
     txtTitle.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
 
     updateSteps(steps, false, () -> {
       if (completionListener != null) completionListener.finished(false);
       if (automaticallyReappear) {
-        showQuestions(true, showRays, () -> completionListener.finished(true));
+        completionListener.finished(true);
       }
     });
 
@@ -410,108 +373,100 @@ public class GameTriviaView extends GameViewWithRanking {
     }
   }
 
-  private void showQuestions(boolean animated, boolean showRays, LabelListener completionListener) {
+  private void showTracks(boolean animated, LabelListener completionListener) {
     TextViewCompat.setTextAppearance(txtTitle, R.style.Headline_White_2);
     txtTitle.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
 
     ConstraintSet constraintSet = new ConstraintSet();
-    constraintSet.clone(getContext(), R.layout.view_game_trivia_question);
-    if (!showRays) {
-      constraintSet.connect(R.id.imgBackground, ConstraintSet.TOP, layoutConstraint.getId(),
-          ConstraintSet.BOTTOM);
-    }
+    constraintSet.clone(getContext(), R.layout.view_game_battlemusic_track);
 
     animateLayoutWithConstraintSet(constraintSet, animated, () -> {
-      //if (rotationRaysAnimator != null) {
-      //  rotationRaysAnimator.cancel();
-      //  rotationRaysAnimator = null;
-      //}
-      //
-      //imgBackground.setScaleType(ImageView.ScaleType.MATRIX);
-      //rotationRaysAnimator = ValueAnimator.ofFloat(0, 360);
-      //rotationRaysAnimator.setDuration(300);
-      //rotationRaysAnimator.setInterpolator(new DecelerateInterpolator());
-      //rotationRaysAnimator.setRepeatCount(ValueAnimator.INFINITE);
-      //rotationRaysAnimator.setRepeatMode(ValueAnimator.RESTART);
-      //rotationRaysAnimator.addUpdateListener(animation -> {
-      //  float rotation = (float) animation.getAnimatedValue();
-      //  imgBackground.setPivotX(imgBackground.getDrawable().getBounds().width() / 2);
-      //  imgBackground.setPivotY(imgBackground.getDrawable().getBounds().height() / 2);
-      //  imgBackground.setRotation(rotation);
-      //});
-      //rotationRaysAnimator.start();
       if (completionListener != null) completionListener.call();
     });
   }
 
   private void showInstructions(boolean animated, LabelListener completionListener) {
     ConstraintSet constraintSet = new ConstraintSet();
-    constraintSet.clone(getContext(), R.layout.view_game_trivia_title_only);
+    constraintSet.clone(getContext(), R.layout.view_game_battlemusic_title_only);
     animateLayoutWithConstraintSet(constraintSet, animated, null);
     if (completionListener != null) completionListener.call();
   }
 
-  private void preloadQuestion(JSONObject message, TribeSession tribeSession) {
-    if (message.has(QUESTION_KEY)) {
+  private void preloadTrack(JSONObject message, TribeSession tribeSession) {
+    subscriptionsTrack.clear();
+    viewAnswers.hide();
+
+    if (message.has(TRACK_KEY)) {
       try {
-        TriviaQuestion currentQuestion = new TriviaQuestion(message.getJSONObject(QUESTION_KEY));
-        int questionCount = message.has(NB_QUESTION_KEY) ? message.getInt(NB_QUESTION_KEY) : 1;
+        BattleMusicTrack track = new BattleMusicTrack(message.getJSONObject(TRACK_KEY));
 
-        soundManager.playSound(SoundManager.TRIVIA_ANSWER_FIRST_WIN, SoundManager.SOUND_MAX);
-        List<String> steps = Arrays.asList(
-            new String[] { getResources().getString(R.string.game_trivia_status_guess) });
-        showInstructions(steps, true, true, true, finished -> {
-          if (!finished) setupAnswers(currentQuestion, tribeSession);
+        isBuffered = false;
+        List<String> steps = new ArrayList<>();
+        steps.add(getResources().getString(R.string.game_song_pop_status_guess));
+
+        showInstructions(steps, true, true, finished -> {
+          if (!finished) setupAnswers(track, tribeSession);
+          viewPlay.initTrack(track);
+          viewAnswers.enableClicks(false);
+
+          subscriptionsTrack.add(viewPlay.onBuffered().subscribe(aBoolean -> {
+            if (aBoolean && !isBuffered) {
+              isBuffered = true;
+              sendAnswer(tribeSession, ANSWER_TRACK_PRELOADED, new JSONObject());
+            }
+          }));
         });
-
-        txtQuestion.setText(currentQuestion.getQuestion());
-        txtQuestionCount.setText("" + questionCount);
-
-        progressBar.setProgress((100 / NB_QUESTIONS) * questionCount);
       } catch (JSONException ex) {
         ex.printStackTrace();
       }
     }
   }
 
-  private void setupAnswers(TriviaQuestion triviaQuestion, TribeSession tribeSession) {
-    viewAnswers.initQuestion(triviaQuestion.getAnswer(), triviaQuestion.getAlternativeAnswers(),
-        GameAnswerView.TYPE_TRIVIA);
+  private void setupAnswers(BattleMusicTrack track, TribeSession tribeSession) {
+    viewAnswers.initQuestion(track.getName(), track.getAlternativeNames(),
+        GameAnswerView.TYPE_BATTLE_MUSIC);
 
     if (rightAnswerSubscription != null) rightAnswerSubscription.unsubscribe();
     if (wrongAnswerSubscription != null) wrongAnswerSubscription.unsubscribe();
 
     rightAnswerSubscription = viewAnswers.onAnsweredRight().subscribe(clickedAnswer -> {
-      soundManager.playSound(SoundManager.TRIVIA_WON, SoundManager.SOUND_MAX);
+      viewAnswers.enableClicks(false);
+      viewPlay.stop();
       sendAnswer(tribeSession, ANSWER_GUESS, getAnswerPayload(clickedAnswer.getAnswer()));
       viewAnswers.computeAnswers(clickedAnswer, true);
     });
 
     wrongAnswerSubscription = viewAnswers.onAnsweredWrong().subscribe(clickedAnswer -> {
-      soundManager.playSound(SoundManager.TRIVIA_LOST, SoundManager.SOUND_MAX);
-      txtTitle.setText(R.string.game_trivia_status_wrong_answer);
+      viewAnswers.enableClicks(false);
+      viewPlay.stop();
+      txtTitle.setText(R.string.game_song_pop_status_wrong_answer);
       sendAnswer(tribeSession, ANSWER_GUESS, getAnswerPayload(clickedAnswer.getAnswer()));
       viewAnswers.computeAnswers(clickedAnswer, false);
     });
+
+    showTracks(true, () -> {
+      viewPlay.showDone();
+      viewAnswers.showDone();
+    });
   }
 
-  private void endQuestion(boolean isWinner, TribeSession tribeSession) {
+  private void endTrack(boolean isWinner, TribeSession tribeSession) {
+    viewPlay.stop();
+
     if (isWinner) {
       String winnerId = tribeSession != null ? tribeSession.getUserId() : currentUser.getId();
-      sendAction(ACTION_END_QUESTION, getWinnerPayload(winnerId));
+      sendAction(ACTION_END_TRACK, getWinnerPayload(winnerId));
       addPoints(1, winnerId, true);
     } else {
-      sendAction(ACTION_END_QUESTION, new JSONObject());
+      sendAction(ACTION_END_TRACK, new JSONObject());
     }
 
     subscriptions.add(Observable.timer(6, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> nextQuestion()));
+        .subscribe(aLong -> nextTrack()));
   }
 
   private void showResults(JSONArray winnerNames) {
-    soundManager.playSound(SoundManager.TRIVIA_ANSWER_FIRST_WIN, SoundManager.SOUND_MID);
-
     boolean isWinner = winnerNames != null && winnerNames.length() > 0;
     String instruction = "";
 
@@ -539,44 +494,40 @@ public class GameTriviaView extends GameViewWithRanking {
       instruction = getResources().getString(R.string.game_song_pop_status_no_winner_step);
     }
 
-    showInstructions(Arrays.asList(new String[] { instruction }), true, false, false,
-        new InstructionsListener() {
-          @Override public void finished(boolean finished) {
-            if (!finished) {
-              subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aLong -> subscriptions.add(
-                      DialogFactory.dialogMultipleChoices(getContext(), EmojiParser.demojizedText(
-                          getContext().getString(R.string.game_song_pop_new_popup_title)),
-                          EmojiParser.demojizedText(
-                              getContext().getString(R.string.game_song_pop_new_popup_description)),
-                          EmojiParser.demojizedText(
-                              getContext().getString(R.string.game_song_pop_new_popup_again)),
-                          EmojiParser.demojizedText(
-                              getContext().getString(R.string.game_song_pop_new_popup_other)),
-                          EmojiParser.demojizedText(
-                              getContext().getString(R.string.game_song_pop_new_popup_stop)))
-                          .subscribe(integer -> {
-                            switch (integer) {
-                              case 0:
-                                onRestart.onNext(game);
-                                game.getContextMap()
-                                    .put(SCORES_KEY, new HashMap<String, Integer>());
-                                resetLiveScores();
-                                updateRanking(null);
-                                showCategories();
-                                break;
-                              case 1:
-                                onPlayOtherGame.onNext(null);
-                                break;
-                              case 2:
-                                onStop.onNext(game);
-                                break;
-                            }
-                          }))));
-            }
-          }
-        });
+    showInstructions(Arrays.asList(new String[] { instruction }), true, false, finished -> {
+      if (!finished) {
+        subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> subscriptions.add(DialogFactory.dialogMultipleChoices(getContext(),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.game_song_pop_new_popup_title)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.game_song_pop_new_popup_description)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.game_song_pop_new_popup_again)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.game_song_pop_new_popup_other)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.game_song_pop_new_popup_stop)))
+                .subscribe(integer -> {
+                  switch (integer) {
+                    case 0:
+                      onRestart.onNext(game);
+                      game.getContextMap().put(SCORES_KEY, new HashMap<String, Integer>());
+                      resetLiveScores();
+                      updateRanking(null);
+                      showPlaylists();
+                      break;
+                    case 1:
+                      onPlayOtherGame.onNext(null);
+                      break;
+                    case 2:
+                      onStop.onNext(game);
+                      break;
+                  }
+                }))));
+      }
+    });
   }
 
   protected interface InstructionsListener {
@@ -606,16 +557,15 @@ public class GameTriviaView extends GameViewWithRanking {
     }
   }
 
-  private JSONObject getCategorySelectionPayload(TriviaCategoryEnum category) {
+  private JSONObject getPlaylistPayload(BattleMusicPlaylist playlist) {
     JSONObject obj = new JSONObject();
-    JsonUtils.jsonPut(obj, TITLE_KEY, category.getCategory());
+    JsonUtils.jsonPut(obj, TITLE_KEY, playlist.getTitle());
     return obj;
   }
 
-  private JSONObject getShowQuestionPayload(TriviaQuestion question) {
+  private JSONObject getPreloadTrack(BattleMusicTrack track) {
     JSONObject obj = new JSONObject();
-    JsonUtils.jsonPut(obj, QUESTION_KEY, question.asJSON());
-    JsonUtils.jsonPut(obj, NB_QUESTION_KEY, NB_QUESTIONS - questions.size());
+    JsonUtils.jsonPut(obj, TRACK_KEY, track.asJSON());
     return obj;
   }
 
@@ -659,11 +609,12 @@ public class GameTriviaView extends GameViewWithRanking {
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     super.start(game, mapObservable, liveViewsObservable, userId);
 
-    gamePresenter.getTriviaData();
+    gamePresenter.getBattleMusicData();
   }
 
   @Override public void stop() {
     super.stop();
+    viewPlay.stop();
     soundManager.cancelMediaPlayer();
   }
 

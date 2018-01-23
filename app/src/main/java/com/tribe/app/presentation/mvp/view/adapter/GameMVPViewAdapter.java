@@ -2,6 +2,7 @@ package com.tribe.app.presentation.mvp.view.adapter;
 
 import android.content.Context;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
 import java.util.List;
@@ -31,6 +32,10 @@ public class GameMVPViewAdapter implements GameMVPView {
   }
 
   @Override public void onTriviaData(Map<String, List<TriviaQuestion>> map) {
+
+  }
+
+  @Override public void onBattleMusicData(Map<String, BattleMusicPlaylist> map) {
 
   }
 }

@@ -1,18 +1,19 @@
-package com.tribe.app.presentation.view.component.live.game.trivia;
+package com.tribe.app.presentation.view.component.live.game.common;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.widget.LinearLayout;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
@@ -28,30 +29,31 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 12/21/2017.
  */
 
-public class GameTriviaAnswersView extends LinearLayout {
+public class GameAnswersView extends LinearLayout {
 
   @Inject ScreenUtils screenUtils;
 
   @BindViews({
       R.id.viewAnswerFirst, R.id.viewAnswerSecond, R.id.viewAnswerThird, R.id.viewAnswerFourth
-  }) List<GameTriviaAnswerView> listAnswerViews;
+  }) List<GameAnswerView> listAnswerViews;
 
   // VARIABLES
   private Unbinder unbinder;
   private Integer[] colors;
-  private GameTriviaAnswerView rightAnswerView, clickedAnswerView;
+  private GameAnswerView rightAnswerView, clickedAnswerView;
+  private boolean enabled = false;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private CompositeSubscription questionSubscriptions = new CompositeSubscription();
-  private PublishSubject<GameTriviaAnswerView> onAnsweredRight = PublishSubject.create();
-  private PublishSubject<GameTriviaAnswerView> onAnsweredWrong = PublishSubject.create();
+  private PublishSubject<GameAnswerView> onAnsweredRight = PublishSubject.create();
+  private PublishSubject<GameAnswerView> onAnsweredWrong = PublishSubject.create();
 
-  public GameTriviaAnswersView(@NonNull Context context) {
+  public GameAnswersView(@NonNull Context context) {
     super(context);
   }
 
-  public GameTriviaAnswersView(@NonNull Context context, @Nullable AttributeSet attrs) {
+  public GameAnswersView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     init();
   }
@@ -79,7 +81,7 @@ public class GameTriviaAnswersView extends LinearLayout {
   }
 
   private void initUI() {
-    LayoutInflater.from(getContext()).inflate(R.layout.view_game_trivia_answers_view, this);
+    LayoutInflater.from(getContext()).inflate(R.layout.view_game_answers_view, this);
     unbinder = ButterKnife.bind(this);
 
     setOrientation(VERTICAL);
@@ -90,27 +92,35 @@ public class GameTriviaAnswersView extends LinearLayout {
 
   }
 
+  @Override public boolean onInterceptTouchEvent(MotionEvent ev) {
+    return !enabled || super.onInterceptTouchEvent(ev);
+  }
+
   /**
    * PUBLIC
    */
 
-  public void initQuestion(TriviaQuestion triviaQuestion) {
+  public void initQuestion(String answer, List<String> alternativeAnswers,
+      @GameAnswerView.AnswerType int answerType) {
     if (questionSubscriptions != null) questionSubscriptions.clear();
 
     int random = new Random().nextInt(listAnswerViews.size());
     rightAnswerView = listAnswerViews.get(random);
-    rightAnswerView.initAnswer(triviaQuestion.getAnswer(),
-        ContextCompat.getColor(getContext(), colors[random]));
+    rightAnswerView.initAnswer(answer, answerType == GameAnswerView.TYPE_BATTLE_MUSIC ? Color.WHITE
+        : ContextCompat.getColor(getContext(), colors[random]), answerType);
 
     questionSubscriptions.add(
         rightAnswerView.onClick().subscribe(value -> onAnsweredRight.onNext(rightAnswerView)));
 
     for (int i = 0; i < listAnswerViews.size(); i++) {
       if (i != random) {
-        GameTriviaAnswerView answerView = listAnswerViews.get(i);
-        answerView.initAnswer((i > random ? triviaQuestion.getAlternativeAnswers().get(i - 1)
-                : triviaQuestion.getAlternativeAnswers().get(i)),
-            ContextCompat.getColor(getContext(), colors[i]));
+        GameAnswerView answerView = listAnswerViews.get(i);
+        String alternativeAnswer =
+            (i > random ? alternativeAnswers.get(i - 1) : alternativeAnswers.get(i));
+        if (alternativeAnswer.equals(answer)) return;
+        answerView.initAnswer(alternativeAnswer,
+            answerType == GameAnswerView.TYPE_BATTLE_MUSIC ? Color.WHITE
+                : ContextCompat.getColor(getContext(), colors[i]), answerType);
 
         questionSubscriptions.add(
             answerView.onClick().subscribe(value -> onAnsweredWrong.onNext(answerView)));
@@ -118,7 +128,7 @@ public class GameTriviaAnswersView extends LinearLayout {
     }
   }
 
-  public void computeAnswers(GameTriviaAnswerView clickedAnswer, boolean isRight) {
+  public void computeAnswers(GameAnswerView clickedAnswer, boolean isRight) {
     this.clickedAnswerView = clickedAnswer;
     if (isRight) {
       clickedAnswerView.showRightAnswer();
@@ -127,7 +137,7 @@ public class GameTriviaAnswersView extends LinearLayout {
     }
 
     for (int i = 0; i < listAnswerViews.size(); i++) {
-      GameTriviaAnswerView answerView = listAnswerViews.get(i);
+      GameAnswerView answerView = listAnswerViews.get(i);
       if (answerView != clickedAnswerView) answerView.showBogusAnswer();
     }
   }
@@ -141,15 +151,27 @@ public class GameTriviaAnswersView extends LinearLayout {
         .subscribe(aLong -> rightAnswerView.animateRightAnswer()));
   }
 
+  public void showDone() {
+    for (GameAnswerView v : listAnswerViews) v.showDone();
+  }
+
+  public void hide() {
+    for (GameAnswerView v : listAnswerViews) v.hide();
+  }
+
+  public void enableClicks(boolean enable) {
+    this.enabled = enable;
+  }
+
   /**
    * OBSERVABLES
    */
 
-  public Observable<GameTriviaAnswerView> onAnsweredRight() {
+  public Observable<GameAnswerView> onAnsweredRight() {
     return onAnsweredRight;
   }
 
-  public Observable<GameTriviaAnswerView> onAnsweredWrong() {
+  public Observable<GameAnswerView> onAnsweredWrong() {
     return onAnsweredWrong;
   }
 }

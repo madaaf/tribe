@@ -33,7 +33,7 @@ public class Game {
   public static final String GAME_POST_IT = "post-it";
   public static final String GAME_DRAW = "draw";
   public static final String GAME_CHALLENGE = "challenges";
-  public static final String GAME_BATTLE_MUSIC = "battlemusic";
+  public static final String GAME_BATTLE_MUSIC = "song-pop2";
   public static final String GAME_SCREAM = "scream";
   public static final String GAME_INVADERS = "aliens-attack";
   public static final String GAME_DROP_IT = "dropit";
@@ -90,7 +90,7 @@ public class Game {
     this.hasView = !id.equals(GAME_POST_IT);
     this.isOverLive =
         id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
-    this.isNotOverLiveWithScores = id.equals(GAME_TRIVIA);
+    this.isNotOverLiveWithScores = id.equals(GAME_TRIVIA) || id.equals(GAME_BATTLE_MUSIC);
     this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
     this.needsLandscape = id.equals(GAME_SLICE_FRUIT);
     this.peerList = new ArrayList<>();

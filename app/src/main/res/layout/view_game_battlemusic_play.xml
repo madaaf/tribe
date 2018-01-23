@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+  <View
+      android:id="@+id/viewBgProgress"
+      android:layout_width="140dp"
+      android:layout_height="140dp"
+      android:layout_gravity="center"
+      />
+
+  <com.tribe.app.presentation.view.widget.CircularProgressBar
+      android:id="@+id/progressBarPlay"
+      android:layout_width="140dp"
+      android:layout_height="140dp"
+      android:layout_gravity="center"
+      />
+
+  <View
+      android:id="@+id/viewBgBlack"
+      android:layout_width="122.5dp"
+      android:layout_height="122.5dp"
+      android:layout_gravity="center"
+      />
+
+  <View
+      android:id="@+id/viewBgGreen"
+      android:layout_width="70dp"
+      android:layout_height="70dp"
+      android:layout_gravity="center"
+      />
+
+  <com.tribe.app.presentation.view.component.PlayPauseBtnView
+      android:id="@+id/viewPlayPauseBtn"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_gravity="center"
+      />
+
+  <com.github.rahatarmanahmed.cpv.CircularProgressView
+      android:id="@+id/progressBar"
+      android:layout_width="30dp"
+      android:layout_height="30dp"
+      android:layout_gravity="center"
+      android:visibility="gone"
+      app:cpv_color="@android:color/white"
+      app:cpv_indeterminate="true"
+      app:cpv_thickness="3dp"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtCount"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      style="@style/Title24.2.White"
+      android:visibility="gone"
+      />
+
+</merge>

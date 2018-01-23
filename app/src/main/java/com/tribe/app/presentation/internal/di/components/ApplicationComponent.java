@@ -121,9 +121,12 @@ import com.tribe.app.presentation.view.component.live.LiveRowView;
 import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.LiveViewFake;
 import com.tribe.app.presentation.view.component.live.TileInviteView;
-import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaAnswerView;
+import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoriesView;
+import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoryView;
+import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicPlayView;
+import com.tribe.app.presentation.view.component.live.game.common.GameAnswerView;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView;
-import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaAnswersView;
+import com.tribe.app.presentation.view.component.live.game.common.GameAnswersView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
 import com.tribe.app.presentation.view.utils.ImageUtils;
@@ -295,9 +298,15 @@ public interface ApplicationComponent {
 
   void inject(GameTriviaCategoryView gameCategoryView);
 
-  void inject(GameTriviaAnswerView gameAnswerQuestionView);
+  void inject(GameAnswerView gameAnswerQuestionView);
 
-  void inject(GameTriviaAnswersView gameTriviaQuestionsView);
+  void inject(GameAnswersView gameTriviaQuestionsView);
+
+  void inject(GameBattleMusicCategoryView gameBattleMusicCategoryView);
+
+  void inject(GameBattleMusicCategoriesView gameBattleMusicCategoriesView);
+
+  void inject(GameBattleMusicPlayView gameBattleMusicPlayView);
 
   // JOBS
   void inject(BaseJob baseJob);

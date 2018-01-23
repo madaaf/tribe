@@ -2,6 +2,7 @@ package com.tribe.app.data.cache;
 
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import java.util.List;
 import java.util.Map;
@@ -27,4 +28,8 @@ import javax.inject.Singleton;
   void setTriviaData(Map<String, List<TriviaQuestion>> mapTrivia);
 
   Map<String, List<TriviaQuestion>> getTriviaData();
+
+  void setBattleMusicData(Map<String, BattleMusicPlaylist> mapBattleMusic);
+
+  Map<String, BattleMusicPlaylist> getBattleMusicData();
 }

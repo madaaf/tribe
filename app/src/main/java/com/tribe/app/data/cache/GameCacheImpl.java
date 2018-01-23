@@ -4,6 +4,7 @@ import android.content.Context;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -21,10 +22,12 @@ public class GameCacheImpl implements GameCache {
 
   private Context context;
   private Map<String, List<TriviaQuestion>> mapTrivia;
+  private Map<String, BattleMusicPlaylist> mapBattleMusic;
 
   @Inject public GameCacheImpl(Context context) {
     this.context = context;
     mapTrivia = new HashMap<>();
+    mapBattleMusic = new HashMap<>();
   }
 
   @Override public void putGames(List<GameRealm> gameRealmList) {
@@ -178,5 +181,14 @@ public class GameCacheImpl implements GameCache {
 
   @Override public Map<String, List<TriviaQuestion>> getTriviaData() {
     return mapTrivia;
+  }
+
+  @Override public void setBattleMusicData(Map<String, BattleMusicPlaylist> mapBattleMusic) {
+    this.mapBattleMusic.clear();
+    this.mapBattleMusic.putAll(mapBattleMusic);
+  }
+
+  @Override public Map<String, BattleMusicPlaylist> getBattleMusicData() {
+    return mapBattleMusic;
   }
 }
