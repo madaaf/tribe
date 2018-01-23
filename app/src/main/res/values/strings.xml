@@ -823,6 +823,7 @@
 	<string name="home_section_suggested_friends">Suggested friends</string>
 	<string name="home_section_invites_to_send">Invites to send</string>
 	<string name="home_section_results">Results</string>
+	<string name="home_action_is_playing">Playing %1$s %2$s</string>
 	<string name="home_action_join_live">Tap right to join</string>
 	<string name="home_action_read_chat">Slide right to read</string>
 	<string name="home_action_tap_to_chat">Tap to chat</string>

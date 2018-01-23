@@ -322,10 +322,11 @@ public class AndroidApplication extends Application {
                   .addField("height", String.class)
                   .addField("duration", float.class);
 
-              schema.create("MessageRealm")
+              schema.get("MessageRealm")
                   .addRealmObjectField("original_tmp", schema.get("MediaRealm"))
                   .transform(obj -> {
                     DynamicRealmObject children = obj.getObject("original");
+                    if (children == null) return;
                     DynamicRealmObject migratedChildren = obj.getObject("original_tmp");
                     migratedChildren.set("url", children.getString("url"));
                     migratedChildren.set("filesize", children.getInt("filesize"));
@@ -338,6 +339,7 @@ public class AndroidApplication extends Application {
                   .addRealmListField("alts_tmp", schema.get("MediaRealm"))
                   .transform(obj -> {
                     RealmList<DynamicRealmObject> children = obj.getList("alts");
+                    if (children == null || children.size() == 0) return;
                     RealmList<DynamicRealmObject> migratedChildren = obj.getList("alts_tmp");
                     for (DynamicRealmObject child : children) {
                       DynamicRealmObject newChild = realm.createObject("MediaRealm");
