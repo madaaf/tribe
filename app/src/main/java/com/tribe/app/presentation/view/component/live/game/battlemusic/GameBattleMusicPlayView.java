@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component.live.game.battlemusic;
 
 import android.animation.LayoutTransition;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
@@ -21,6 +22,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.component.PlayPauseBtnView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StreamAudioPlayer;
+import com.tribe.app.presentation.view.widget.CircularProgressBar;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -43,6 +45,7 @@ public class GameBattleMusicPlayView extends FrameLayout {
   @BindView(R.id.viewPlayPauseBtn) PlayPauseBtnView viewPlayPauseBtn;
   @BindView(R.id.progressBar) CircularProgressView progressBar;
   @BindView(R.id.txtCount) TextViewFont txtCount;
+  @BindView(R.id.progressBarPlay) CircularProgressBar progressBarPlay;
 
   // VARIABLES
   private Unbinder unbinder;
@@ -50,10 +53,14 @@ public class GameBattleMusicPlayView extends FrameLayout {
   private StreamAudioPlayer audioPlayer;
   private BattleMusicTrack track;
   private boolean buffered = false;
+  private ValueAnimator animatorProgress;
+  private int currentProgress = 0;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Void> onPlay = PublishSubject.create();
+  private PublishSubject<Void> onResume = PublishSubject.create();
+  private PublishSubject<Void> onStarted = PublishSubject.create();
+  private PublishSubject<Void> onPause = PublishSubject.create();
 
   public GameBattleMusicPlayView(@NonNull Context context) {
     super(context);
@@ -68,6 +75,7 @@ public class GameBattleMusicPlayView extends FrameLayout {
     initResources();
     initDependencyInjector();
     initUI();
+    initSubscriptions();
   }
 
   @Override protected void onAttachedToWindow() {
@@ -104,7 +112,12 @@ public class GameBattleMusicPlayView extends FrameLayout {
 
     audioPlayer = new StreamAudioPlayer(getContext());
 
-    setLayoutTransition(new LayoutTransition());
+    viewPlayPauseBtn.setEnabled(false);
+
+    progressBarPlay.setProgressColor(
+        ContextCompat.getColor(getContext(), R.color.green_battlemusic));
+    progressBarPlay.setProgressWidth(screenUtils.dpToPx(10));
+    progressBarPlay.setProgress(0);
   }
 
   private void initSubscriptions() {
@@ -119,12 +132,26 @@ public class GameBattleMusicPlayView extends FrameLayout {
     viewPlayPauseBtn.switchPauseToPlayBtn(!pause);
 
     if (pause) {
+      startProgress();
       audioPlayer.play();
+      pause = !pause;
+      onResume.onNext(null);
     } else {
+      stopProgress();
       audioPlayer.stop();
+      pause = !pause;
+      onPause.onNext(null);
     }
+  }
 
-    pause = !pause;
+  private void startProgress() {
+    progressBarPlay.setProgress(
+        (int) ((float) 100 / (float) audioPlayer.getDuration() * audioPlayer.getPosition()));
+    progressBarPlay.setProgress(100, (int) (audioPlayer.getDuration() - audioPlayer.getPosition()), 0, null, null);
+  }
+
+  private void stopProgress() {
+    progressBarPlay.stop();
   }
 
   /**
@@ -138,6 +165,15 @@ public class GameBattleMusicPlayView extends FrameLayout {
     audioPlayer.prepare(track.getUrl());
     viewPlayPauseBtn.setVisibility(View.GONE);
     progressBar.setVisibility(VISIBLE);
+    viewPlayPauseBtn.setEnabled(false);
+    progressBarPlay.setProgress(0);
+
+    subscriptions.add(audioPlayer.onDonePlaying().subscribe(aBoolean -> {
+      pause = true;
+      viewPlayPauseBtn.switchPauseToPlayBtn(true);
+      audioPlayer.stop();
+      audioPlayer.reset();
+    }));
   }
 
   public void play() {
@@ -146,6 +182,7 @@ public class GameBattleMusicPlayView extends FrameLayout {
     viewPlayPauseBtn.switchPauseToPlayBtn(!pause);
     audioPlayer.play();
     pause = !pause;
+    startProgress();
   }
 
   public void stop() {
@@ -154,6 +191,43 @@ public class GameBattleMusicPlayView extends FrameLayout {
     viewPlayPauseBtn.switchPauseToPlayBtn(!pause);
     audioPlayer.stop();
     pause = !pause;
+    stopProgress();
+  }
+
+  public void showDone() {
+    setLayoutTransition(new LayoutTransition());
+  }
+
+  public void hide() {
+    setLayoutTransition(null);
+  }
+
+  public void start() {
+    viewPlayPauseBtn.switchPauseToPlayBtn(!pause);
+    progressBar.setVisibility(GONE);
+    txtCount.setVisibility(VISIBLE);
+
+    subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> txtCount.setText("3")));
+
+    subscriptions.add(Observable.timer(2, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> txtCount.setText("2")));
+
+    subscriptions.add(Observable.timer(3, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> txtCount.setText("1")));
+
+    subscriptions.add(Observable.timer(4, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          txtCount.setText("");
+          viewPlayPauseBtn.setVisibility(View.VISIBLE);
+          txtCount.setVisibility(View.GONE);
+          onStarted.onNext(null);
+          viewPlayPauseBtn.setEnabled(true);
+        }));
   }
 
   /**
@@ -161,34 +235,22 @@ public class GameBattleMusicPlayView extends FrameLayout {
    */
 
   public Observable<Boolean> onBuffered() {
-    return audioPlayer.onBuffered().doOnNext(aBoolean -> {
-      if (buffered) return;
-
-      progressBar.setVisibility(GONE);
-      buffered = true;
-
-      subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> txtCount.setText("3")));
-
-      subscriptions.add(Observable.timer(2, TimeUnit.SECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> txtCount.setText("2")));
-
-      subscriptions.add(Observable.timer(3, TimeUnit.SECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> txtCount.setText("1")));
-
-      subscriptions.add(Observable.timer(4, TimeUnit.SECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> {
-            txtCount.setText("");
-            onPlay.onNext(null);
-          }));
-    });
+    return audioPlayer.onBuffered().doOnNext(aBoolean -> buffered = true);
   }
 
-  public Observable<Void> onPlay() {
-    return onPlay;
+  public Observable<Boolean> onDonePlaying() {
+    return audioPlayer.onDonePlaying();
+  }
+
+  public Observable<Void> onStarted() {
+    return onStarted;
+  }
+
+  public Observable<Void> onPause() {
+    return onPause;
+  }
+
+  public Observable<Void> onResume() {
+    return onResume;
   }
 }

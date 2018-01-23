@@ -19,14 +19,14 @@ public class BattleMusicTrack {
   private static final String ARTIST_KEY = "artist";
   private static final String URL_KEY = "url";
   private static final String IMAGE_KEY = "image";
-  private static final String ALTERNATIVE_ANSWERS_KEY = "alternativeAnswers";
+  private static final String ALTERNATIVE_NAMES_KEY = "alternativeNames";
 
   private String id;
   private String name;
   private String artist;
   private String url;
   private String image;
-  private List<String> alternativeAnswers;
+  private List<String> alternativeNames;
 
   public BattleMusicTrack() {
 
@@ -38,12 +38,12 @@ public class BattleMusicTrack {
       this.name = json.getString(NAME_KEY);
       this.artist = json.getString(ARTIST_KEY);
       this.url = json.getString(URL_KEY);
-      this.alternativeAnswers = new ArrayList<>();
+      this.alternativeNames = new ArrayList<>();
       this.image = json.has(IMAGE_KEY) ? json.getString(IMAGE_KEY) : null;
 
-      JSONArray array = json.getJSONArray(ALTERNATIVE_ANSWERS_KEY);
+      JSONArray array = json.getJSONArray(ALTERNATIVE_NAMES_KEY);
       for (int i = 0; i < array.length(); i++) {
-        this.alternativeAnswers.add(array.getString(i));
+        this.alternativeNames.add(array.getString(i));
       }
     } catch (JSONException e) {
       e.printStackTrace();
@@ -90,12 +90,12 @@ public class BattleMusicTrack {
     this.image = image;
   }
 
-  public void setAlternativeAnswers(List<String> alternativeAnswers) {
-    this.alternativeAnswers = alternativeAnswers;
+  public void setAlternativeNames(List<String> alternativeNames) {
+    this.alternativeNames = alternativeNames;
   }
 
-  public List<String> getAlternativeAnswers() {
-    return alternativeAnswers;
+  public List<String> getAlternativeNames() {
+    return alternativeNames;
   }
 
   public JSONObject asJSON() {
@@ -105,10 +105,10 @@ public class BattleMusicTrack {
     JsonUtils.jsonPut(track, ARTIST_KEY, this.artist);
     JsonUtils.jsonPut(track, URL_KEY, this.url);
     if (!StringUtils.isEmpty(image)) JsonUtils.jsonPut(track, IMAGE_KEY, this.image);
-    JSONArray alternativeAnswersArray = new JSONArray();
-    for (String alternativeAnswer : this.alternativeAnswers)
-      alternativeAnswersArray.put(alternativeAnswer);
-    JsonUtils.jsonPut(track, ALTERNATIVE_ANSWERS_KEY, alternativeAnswersArray);
+    JSONArray alternativeNamesArray = new JSONArray();
+    for (String alternativeName : this.alternativeNames)
+      alternativeNamesArray.put(alternativeName);
+    JsonUtils.jsonPut(track, ALTERNATIVE_NAMES_KEY, alternativeNamesArray);
     return track;
   }
 }

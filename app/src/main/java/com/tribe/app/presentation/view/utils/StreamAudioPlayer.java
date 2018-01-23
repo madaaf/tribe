@@ -73,8 +73,7 @@ public class StreamAudioPlayer {
       @Override public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if (playbackState == Player.STATE_READY) {
           onBuffered.onNext(true);
-        }
-        if (playbackState == Player.STATE_ENDED) {
+        } else if (playbackState == Player.STATE_ENDED) {
           onDonePlaying.onNext(null);
         }
       }
@@ -115,6 +114,18 @@ public class StreamAudioPlayer {
 
   public void stop() {
     player.setPlayWhenReady(false);
+  }
+
+  public void reset() {
+    player.seekTo(0);
+  }
+
+  public long getPosition() {
+    return player.getCurrentPosition();
+  }
+
+  public long getDuration() {
+    return player.getDuration();
   }
 
   /**

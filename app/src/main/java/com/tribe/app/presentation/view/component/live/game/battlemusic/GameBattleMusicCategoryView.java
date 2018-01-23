@@ -41,8 +41,6 @@ public class GameBattleMusicCategoryView extends LinearLayout {
   // VARIABLES
   private Unbinder unbinder;
   private BattleMusicPlaylist playlist;
-  private int paddingHorizontalWithIcon, paddingVerticalWithIcon, paddingHorizontal,
-      paddingVertical;
   private GradientDrawable background;
 
   // OBSERVABLES
@@ -69,10 +67,6 @@ public class GameBattleMusicCategoryView extends LinearLayout {
   }
 
   private void initResources() {
-    paddingHorizontal = screenUtils.dpToPx(23);
-    paddingVertical = screenUtils.dpToPx(16);
-    paddingHorizontalWithIcon = screenUtils.dpToPx(10);
-    paddingVerticalWithIcon = screenUtils.dpToPx(10);
   }
 
   private void initDependencyInjector() {
@@ -118,7 +112,9 @@ public class GameBattleMusicCategoryView extends LinearLayout {
 
   public void setPlaylist(BattleMusicPlaylist playlist) {
     this.playlist = playlist;
-    this.txtName.setText(playlist.getTitle());
+    txtName.setText(playlist.getTitle());
+    imgIcon.setVisibility(View.GONE);
+    UIUtils.changeLeftMarginOfView(txtName, screenUtils.dpToPx(25));
   }
 
   public BattleMusicPlaylist getPlaylist() {

@@ -6,9 +6,9 @@
       android:id="@+id/layoutIcon"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_margin="12.5dp"
-      android:layout_marginEnd="12.5dp"
       android:layout_gravity="center_vertical"
+      android:layout_marginEnd="12.5dp"
+      android:layout_marginStart="12.5dp"
       android:visibility="gone"
       >
 
@@ -16,18 +16,18 @@
         android:id="@+id/imgNotGuessed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:scaleType="centerInside"
         android:src="@drawable/game_trivia_picto_not_guessed"
+        android:visibility="gone"
         />
 
     <ImageView
         android:id="@+id/imgGuessed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:scaleType="centerInside"
         android:src="@drawable/game_trivia_picto_guessed"
+        android:visibility="gone"
         />
   </FrameLayout>
 
@@ -35,10 +35,10 @@
       android:id="@+id/txtAnswer"
       android:layout_width="wrap_content"
       android:layout_height="match_parent"
+      android:layout_marginEnd="@dimen/horizontal_margin_large"
+      android:layout_marginStart="@dimen/horizontal_margin_large"
       android:gravity="center_vertical"
       android:maxLines="1"
-      android:layout_marginStart="@dimen/horizontal_margin_large"
-      android:layout_marginEnd="@dimen/horizontal_margin_large"
       style="@style/Headline.White.2"
       />
 

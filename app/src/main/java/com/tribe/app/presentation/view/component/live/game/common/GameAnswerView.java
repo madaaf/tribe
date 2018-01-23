@@ -112,10 +112,6 @@ public class GameAnswerView extends LinearLayout {
     setGravity(Gravity.CENTER);
     setOrientation(HORIZONTAL);
 
-    LayoutTransition transition = new LayoutTransition();
-    transition.setDuration(300);
-    setLayoutTransition(transition);
-
     setMinimumHeight(screenUtils.dpToPx(51));
 
     setOnClickListener(v -> {
@@ -205,7 +201,12 @@ public class GameAnswerView extends LinearLayout {
     UIUtils.changeLeftMarginOfView(txtAnswer, screenUtils.dpToPx(25));
     setAlpha(0.2f);
     background.setColor(color);
-    txtAnswer.setTextColor(Color.WHITE);
+
+    if (type == TYPE_TRIVIA) {
+      txtAnswer.setTextColor(Color.WHITE);
+    } else {
+      txtAnswer.setTextColor(Color.BLACK);
+    }
   }
 
   public void animateRightAnswer() {
@@ -216,6 +217,16 @@ public class GameAnswerView extends LinearLayout {
     imgNotGuessed.setVisibility(View.GONE);
     layoutIcon.setVisibility(View.VISIBLE);
     UIUtils.changeLeftMarginOfView(txtAnswer, 0);
+  }
+
+  public void showDone() {
+    LayoutTransition transition = new LayoutTransition();
+    transition.setDuration(300);
+    setLayoutTransition(transition);
+  }
+
+  public void hide() {
+    setLayoutTransition(null);
   }
 
   public String getAnswer() {

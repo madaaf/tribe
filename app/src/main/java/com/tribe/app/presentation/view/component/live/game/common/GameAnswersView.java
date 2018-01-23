@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.widget.LinearLayout;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
@@ -40,6 +41,7 @@ public class GameAnswersView extends LinearLayout {
   private Unbinder unbinder;
   private Integer[] colors;
   private GameAnswerView rightAnswerView, clickedAnswerView;
+  private boolean enabled = false;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -90,6 +92,10 @@ public class GameAnswersView extends LinearLayout {
 
   }
 
+  @Override public boolean onInterceptTouchEvent(MotionEvent ev) {
+    return !enabled || super.onInterceptTouchEvent(ev);
+  }
+
   /**
    * PUBLIC
    */
@@ -109,8 +115,10 @@ public class GameAnswersView extends LinearLayout {
     for (int i = 0; i < listAnswerViews.size(); i++) {
       if (i != random) {
         GameAnswerView answerView = listAnswerViews.get(i);
-        answerView.initAnswer(
-            (i > random ? alternativeAnswers.get(i - 1) : alternativeAnswers.get(i)),
+        String alternativeAnswer =
+            (i > random ? alternativeAnswers.get(i - 1) : alternativeAnswers.get(i));
+        if (alternativeAnswer.equals(answer)) return;
+        answerView.initAnswer(alternativeAnswer,
             answerType == GameAnswerView.TYPE_BATTLE_MUSIC ? Color.WHITE
                 : ContextCompat.getColor(getContext(), colors[i]), answerType);
 
@@ -141,6 +149,18 @@ public class GameAnswersView extends LinearLayout {
     subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> rightAnswerView.animateRightAnswer()));
+  }
+
+  public void showDone() {
+    for (GameAnswerView v : listAnswerViews) v.showDone();
+  }
+
+  public void hide() {
+    for (GameAnswerView v : listAnswerViews) v.hide();
+  }
+
+  public void enableClicks(boolean enable) {
+    this.enabled = enable;
   }
 
   /**

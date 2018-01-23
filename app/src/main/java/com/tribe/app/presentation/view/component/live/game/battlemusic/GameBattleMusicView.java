@@ -12,6 +12,7 @@ import android.support.transition.TransitionListenerAdapter;
 import android.support.transition.TransitionManager;
 import android.support.v4.widget.TextViewCompat;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.animation.OvershootInterpolator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,11 +22,13 @@ import com.tribe.app.domain.entity.battlemusic.BattleMusicTrack;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswerView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswersView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -46,6 +49,7 @@ import org.json.JSONObject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by tiago on 01/18/2018
@@ -58,7 +62,6 @@ public class GameBattleMusicView extends GameViewWithRanking {
   private static final String NAME_KEY = "name";
   private static final String WINNER_KEY = "winner";
   private static final String TITLE_KEY = "title";
-  private static final String ALL_KEY = "all";
   private static final String SHOW_WINNER_KEY = "showWinner";
   private static final String WINNERS_NAMES_KEY = "winnersNamesKey";
 
@@ -96,6 +99,7 @@ public class GameBattleMusicView extends GameViewWithRanking {
 
   // SUBSCRIPTIONS
   protected Subscription rightAnswerSubscription, wrongAnswerSubscription;
+  protected CompositeSubscription subscriptionsTrack = new CompositeSubscription();
 
   public GameBattleMusicView(@NonNull Context context) {
     super(context);
@@ -151,14 +155,23 @@ public class GameBattleMusicView extends GameViewWithRanking {
       nextTrack();
     }));
 
-    subscriptions.add(viewPlay.onBuffered().subscribe(aBoolean -> {
-      if (aBoolean) {
-        isBuffered = true;
-        sendAnswer(null, ANSWER_TRACK_PRELOADED, new JSONObject());
+    subscriptions.add(viewPlay.onDonePlaying().subscribe(aBoolean -> {
+      if (!weHaveAWinner) {
+        weHaveAWinner = true;
+        endTrack(false, null);
       }
     }));
 
-    subscriptions.add(viewPlay.onPlay().subscribe(aBoolean -> viewPlay.play()));
+    subscriptions.add(viewPlay.onStarted().subscribe(aVoid -> {
+      viewAnswers.enableClicks(true);
+      viewPlay.play();
+    }));
+
+    subscriptions.add(
+        viewPlay.onPause().subscribe(aVoid -> sendAction(ACTION_PAUSE, new JSONObject())));
+
+    subscriptions.add(
+        viewPlay.onResume().subscribe(aVoid -> sendAction(ACTION_RESUME, new JSONObject())));
   }
 
   @Override protected void initWebRTCRoomSubscriptions() {
@@ -182,7 +195,7 @@ public class GameBattleMusicView extends GameViewWithRanking {
   }
 
   @Override protected void takeOverGame() {
-
+    
   }
 
   private void showPlaylists() {
@@ -229,6 +242,7 @@ public class GameBattleMusicView extends GameViewWithRanking {
       }
 
       nbPlayingPeers = nbPlayersThatCanPlay;
+      nbPreloads = 0;
       sendAction(ACTION_PRELOAD_TRACK, getPreloadTrack(track));
     } else if (leadersDisplayName != null && leadersDisplayName.size() > 0) {
       sendAction(ACTION_HIDE_GAME, getHideGamePayload(leadersDisplayName));
@@ -252,38 +266,34 @@ public class GameBattleMusicView extends GameViewWithRanking {
             game.setCurrentMaster(peerMap.get(currentMasterId));
             preloadTrack(message, tribeSession);
           } else if (actionKey.equals(ACTION_PLAY_TRACK)) {
+            viewPlay.start();
+          } else if (actionKey.equals(ACTION_END_TRACK)) {
+            viewPlay.hide();
 
-          }
-          //else if (actionKey.equals(ACTION_END_QUESTION)) {
-          //  soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK_ANSWER, SoundManager.SOUND_MID);
-          //
-          //  if (message.has(WINNER_KEY)) {
-          //    TribeGuest guest = peerMap.get(message.getString(WINNER_KEY));
-          //    if (guest.getId().equals(currentUser.getId())) {
-          //      onAddScore.onNext(Pair.create(game.getId(), getScore(guest.getId())));
-          //    }
-          //
-          //    String text = getResources().getString(R.string.game_song_pop_status_winner,
-          //        guest.getDisplayName());
-          //    showInstructions(Arrays.asList(new String[] { text }), true, true, false,
-          //        finished -> {
-          //          if (finished) {
-          //            txtTitle.setText(text);
-          //            viewAnswers.animateAnswerResult();
-          //          }
-          //        });
-          //  } else {
-          //    String text = getResources().getString(R.string.game_song_pop_status_no_winner);
-          //    showInstructions(Arrays.asList(new String[] { text }), true, true, false,
-          //        finished -> {
-          //          if (finished) {
-          //            txtTitle.setText(text);
-          //            viewAnswers.animateAnswerResult();
-          //          }
-          //        });
-          //  }
-          //}
-          else if (actionKey.equals(ACTION_HIDE_GAME)) {
+            if (message.has(WINNER_KEY)) {
+              TribeGuest guest = peerMap.get(message.getString(WINNER_KEY));
+              if (guest.getId().equals(currentUser.getId())) {
+                onAddScore.onNext(Pair.create(game.getId(), getScore(guest.getId())));
+              }
+
+              String text = getResources().getString(R.string.game_song_pop_status_winner,
+                  guest.getDisplayName());
+              showInstructions(Arrays.asList(new String[] { text }), true, true, finished -> {
+                if (finished) {
+                  txtTitle.setText(text);
+                  showTracks(true, () -> viewAnswers.animateAnswerResult());
+                }
+              });
+            } else {
+              String text = getResources().getString(R.string.game_song_pop_status_no_winner);
+              showInstructions(Arrays.asList(new String[] { text }), true, true, finished -> {
+                if (finished) {
+                  txtTitle.setText(text);
+                  showTracks(true, () -> viewAnswers.animateAnswerResult());
+                }
+              });
+            }
+          } else if (actionKey.equals(ACTION_HIDE_GAME)) {
             if (message.has(SHOW_WINNER_KEY)) {
               if (message.has(WINNERS_NAMES_KEY)) {
                 JSONArray array = message.getJSONArray(WINNERS_NAMES_KEY);
@@ -299,6 +309,10 @@ public class GameBattleMusicView extends GameViewWithRanking {
             subscriptionsRoom.add(Observable.timer(10, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(aLong -> stop()));
+          } else if (actionKey.equals(ACTION_PAUSE)) {
+            viewPlay.stop();
+          } else if (actionKey.equals(ACTION_RESUME)) {
+            viewPlay.play();
           }
         } else if (message.has(ANSWER_KEY)) {
           String answer = message.getString(ANSWER_KEY);
@@ -307,15 +321,15 @@ public class GameBattleMusicView extends GameViewWithRanking {
             if (message.getString(NAME_KEY).equals(rightAnswer)) {
               if (!weHaveAWinner) {
                 weHaveAWinner = true;
-                endQuestion(true, tribeSession);
+                endTrack(true, tribeSession);
               }
             } else if (nbAnswers == nbPlayingPeers) {
               weHaveAWinner = true;
-              endQuestion(false, tribeSession);
+              endTrack(false, tribeSession);
             }
           } else if (answer.equals(ANSWER_TRACK_PRELOADED)) {
             nbPreloads++;
-            if (nbAnswers == nbPlayingPeers) {
+            if (nbPreloads == nbPlayingPeers) {
               weHaveAWinner = false;
               sendAction(ACTION_PLAY_TRACK, new JSONObject());
             }
@@ -379,6 +393,9 @@ public class GameBattleMusicView extends GameViewWithRanking {
   }
 
   private void preloadTrack(JSONObject message, TribeSession tribeSession) {
+    subscriptionsTrack.clear();
+    viewAnswers.hide();
+
     if (message.has(TRACK_KEY)) {
       try {
         BattleMusicTrack track = new BattleMusicTrack(message.getJSONObject(TRACK_KEY));
@@ -387,14 +404,17 @@ public class GameBattleMusicView extends GameViewWithRanking {
         List<String> steps = new ArrayList<>();
         steps.add(getResources().getString(R.string.game_song_pop_status_guess));
 
-        if (txtTitle.getText()
-            .equals(getResources().getString(R.string.game_song_pop_status_pick_playlist))) {
-          steps.add(getResources().getString(R.string.game_song_pop_status_score_rule));
-        }
-
         showInstructions(steps, true, true, finished -> {
           if (!finished) setupAnswers(track, tribeSession);
           viewPlay.initTrack(track);
+          viewAnswers.enableClicks(false);
+
+          subscriptionsTrack.add(viewPlay.onBuffered().subscribe(aBoolean -> {
+            if (aBoolean && !isBuffered) {
+              isBuffered = true;
+              sendAnswer(tribeSession, ANSWER_TRACK_PRELOADED, new JSONObject());
+            }
+          }));
         });
       } catch (JSONException ex) {
         ex.printStackTrace();
@@ -403,108 +423,111 @@ public class GameBattleMusicView extends GameViewWithRanking {
   }
 
   private void setupAnswers(BattleMusicTrack track, TribeSession tribeSession) {
-    viewAnswers.initQuestion(track.getName(), track.getAlternativeAnswers(),
+    viewAnswers.initQuestion(track.getName(), track.getAlternativeNames(),
         GameAnswerView.TYPE_BATTLE_MUSIC);
 
     if (rightAnswerSubscription != null) rightAnswerSubscription.unsubscribe();
     if (wrongAnswerSubscription != null) wrongAnswerSubscription.unsubscribe();
 
     rightAnswerSubscription = viewAnswers.onAnsweredRight().subscribe(clickedAnswer -> {
+      viewAnswers.enableClicks(false);
+      viewPlay.stop();
       sendAnswer(tribeSession, ANSWER_GUESS, getAnswerPayload(clickedAnswer.getAnswer()));
       viewAnswers.computeAnswers(clickedAnswer, true);
     });
 
     wrongAnswerSubscription = viewAnswers.onAnsweredWrong().subscribe(clickedAnswer -> {
+      viewAnswers.enableClicks(false);
+      viewPlay.stop();
       txtTitle.setText(R.string.game_song_pop_status_wrong_answer);
       sendAnswer(tribeSession, ANSWER_GUESS, getAnswerPayload(clickedAnswer.getAnswer()));
       viewAnswers.computeAnswers(clickedAnswer, false);
     });
 
-    showTracks(true, null);
+    showTracks(true, () -> {
+      viewPlay.showDone();
+      viewAnswers.showDone();
+    });
   }
 
-  private void endQuestion(boolean isWinner, TribeSession tribeSession) {
-    //if (isWinner) {
-    //  String winnerId = tribeSession != null ? tribeSession.getUserId() : currentUser.getId();
-    //  sendAction(ACTION_END_QUESTION, getWinnerPayload(winnerId));
-    //  addPoints(1, winnerId, true);
-    //} else {
-    //  sendAction(ACTION_END_QUESTION, new JSONObject());
-    //}
-    //
-    //subscriptions.add(Observable.timer(6, TimeUnit.SECONDS)
-    //    .observeOn(AndroidSchedulers.mainThread())
-    //    .subscribe(aLong -> nextQuestion()));
+  private void endTrack(boolean isWinner, TribeSession tribeSession) {
+    viewPlay.stop();
+
+    if (isWinner) {
+      String winnerId = tribeSession != null ? tribeSession.getUserId() : currentUser.getId();
+      sendAction(ACTION_END_TRACK, getWinnerPayload(winnerId));
+      addPoints(1, winnerId, true);
+    } else {
+      sendAction(ACTION_END_TRACK, new JSONObject());
+    }
+
+    subscriptions.add(Observable.timer(6, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> nextTrack()));
   }
 
   private void showResults(JSONArray winnerNames) {
-    //soundManager.playSound(SoundManager.TRIVIA_ANSWER_FIRST_WIN, SoundManager.SOUND_MID);
-    //
-    //boolean isWinner = winnerNames != null && winnerNames.length() > 0;
-    //String instruction = "";
-    //
-    //if (isWinner) {
-    //  try {
-    //    if (winnerNames.length() == 1) {
-    //      instruction = getResources().getString(R.string.game_song_pop_status_winner_step,
-    //          winnerNames.getString(0));
-    //    } else {
-    //      String winners = "";
-    //
-    //      for (int i = 0; i < winnerNames.length(); i++) {
-    //        winners += winnerNames.get(i);
-    //
-    //        if (i < winnerNames.length() - 1) winners += ", ";
-    //      }
-    //
-    //      instruction =
-    //          getResources().getString(R.string.game_song_pop_status_winners_step, winners);
-    //    }
-    //  } catch (JSONException ex) {
-    //    ex.printStackTrace();
-    //  }
-    //} else {
-    //  instruction = getResources().getString(R.string.game_song_pop_status_no_winner_step);
-    //}
-    //
-    //showInstructions(Arrays.asList(new String[] { instruction }), true, false, false,
-    //    new InstructionsListener() {
-    //      @Override public void finished(boolean finished) {
-    //        if (!finished) {
-    //          subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
-    //              .observeOn(AndroidSchedulers.mainThread())
-    //              .subscribe(aLong -> subscriptions.add(
-    //                  DialogFactory.dialogMultipleChoices(getContext(), EmojiParser.demojizedText(
-    //                      getContext().getString(R.string.game_song_pop_new_popup_title)),
-    //                      EmojiParser.demojizedText(
-    //                          getContext().getString(R.string.game_song_pop_new_popup_description)),
-    //                      EmojiParser.demojizedText(
-    //                          getContext().getString(R.string.game_song_pop_new_popup_again)),
-    //                      EmojiParser.demojizedText(
-    //                          getContext().getString(R.string.game_song_pop_new_popup_other)),
-    //                      EmojiParser.demojizedText(
-    //                          getContext().getString(R.string.game_song_pop_new_popup_stop)))
-    //                      .subscribe(integer -> {
-    //                        switch (integer) {
-    //                          case 0:
-    //                            onRestart.onNext(game);
-    //                            game.getContextMap()
-    //                                .put(SCORES_KEY, new HashMap<String, Integer>());
-    //                            resetLiveScores();
-    //                            updateRanking(null);
-    //                            showCategories();
-    //                            break;
-    //                          case 1:
-    //                            onPlayOtherGame.onNext(null);
-    //                            break;
-    //                          case 2:
-    //                            onStop.onNext(game);
-    //                            break;
-    //                        }
-    //                      }))));
-    //        }
-    //      }
-    //    });
+    boolean isWinner = winnerNames != null && winnerNames.length() > 0;
+    String instruction = "";
+
+    if (isWinner) {
+      try {
+        if (winnerNames.length() == 1) {
+          instruction = getResources().getString(R.string.game_song_pop_status_winner_step,
+              winnerNames.getString(0));
+        } else {
+          String winners = "";
+
+          for (int i = 0; i < winnerNames.length(); i++) {
+            winners += winnerNames.get(i);
+
+            if (i < winnerNames.length() - 1) winners += ", ";
+          }
+
+          instruction =
+              getResources().getString(R.string.game_song_pop_status_winners_step, winners);
+        }
+      } catch (JSONException ex) {
+        ex.printStackTrace();
+      }
+    } else {
+      instruction = getResources().getString(R.string.game_song_pop_status_no_winner_step);
+    }
+
+    showInstructions(Arrays.asList(new String[] { instruction }), true, false, finished -> {
+      if (!finished) {
+        subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> subscriptions.add(DialogFactory.dialogMultipleChoices(getContext(),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.game_song_pop_new_popup_title)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.game_song_pop_new_popup_description)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.game_song_pop_new_popup_again)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.game_song_pop_new_popup_other)),
+                EmojiParser.demojizedText(
+                    getContext().getString(R.string.game_song_pop_new_popup_stop)))
+                .subscribe(integer -> {
+                  switch (integer) {
+                    case 0:
+                      onRestart.onNext(game);
+                      game.getContextMap().put(SCORES_KEY, new HashMap<String, Integer>());
+                      resetLiveScores();
+                      updateRanking(null);
+                      showPlaylists();
+                      break;
+                    case 1:
+                      onPlayOtherGame.onNext(null);
+                      break;
+                    case 2:
+                      onStop.onNext(game);
+                      break;
+                  }
+                }))));
+      }
+    });
   }
 
   protected interface InstructionsListener {
@@ -591,6 +614,7 @@ public class GameBattleMusicView extends GameViewWithRanking {
 
   @Override public void stop() {
     super.stop();
+    viewPlay.stop();
     soundManager.cancelMediaPlayer();
   }
 

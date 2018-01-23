@@ -71,7 +71,6 @@ public class PlayPauseBtnView extends FrameLayout {
 
   public void switchPauseToPlayBtn(boolean fromPauseToPlay) {
     if (!fromPauseToPlay) {
-
       playBtn.animate()
           .scaleX(0f)
           .scaleY(0f)

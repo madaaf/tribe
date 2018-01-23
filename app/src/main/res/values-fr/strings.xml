@@ -670,7 +670,7 @@
 	<string name="game_menu_reset_scores">Reset scores</string>
 	<string name="game_tutorial">Appuie sur le bouton du jeu pour arreter.</string>
 	<string name="game_song_pop">Battle music</string>
-	<string name="game_song_pop_rule">Devinez 5 autres morceaux !</string>
+	<string name="game_song_pop_rule">Devinez 12 autres morceaux !</string>
 	<string name="game_song_pop_menu_re_roll">Renouveler les morceaux</string>
 	<string name="game_song_pop_status_pick_playlist">Choisis une playlist !</string>
 	<string name="game_song_pop_status_score_rule">Le premier à 5 points gagne!</string>
@@ -823,7 +823,7 @@
 	<string name="home_section_suggested_friends">Amis déjà sur Tribe</string>
 	<string name="home_section_invites_to_send">Amis à inviter</string>
 	<string name="home_section_results">Résultats</string>
-	<string name="home_action_join_live">Glissez à gauche pour rejoindre</string>
+	<string name="home_action_join_live">Tappez à droite pour rejoindre</string>
 	<string name="home_action_read_chat">Glissez à droite pour ouvrir</string>
 	<string name="home_action_tap_to_chat">Tapez pour discuter</string>
 	<string name="home_action_chat_preview">%1$s : %2$s</string>

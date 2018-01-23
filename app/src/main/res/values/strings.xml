@@ -670,7 +670,7 @@
 	<string name="game_menu_reset_scores">Reset scores</string>
 	<string name="game_tutorial">Tap on the game button to stop the game.</string>
 	<string name="game_song_pop">Battle music</string>
-	<string name="game_song_pop_rule">Guess 5 new songs!</string>
+	<string name="game_song_pop_rule">Guess 12 new songs!</string>
 	<string name="game_song_pop_menu_re_roll">Renew the songs</string>
 	<string name="game_song_pop_status_pick_playlist">Pick a playlist!</string>
 	<string name="game_song_pop_status_score_rule">First to 5 points wins!</string>
@@ -823,7 +823,7 @@
 	<string name="home_section_suggested_friends">Suggested friends</string>
 	<string name="home_section_invites_to_send">Invites to send</string>
 	<string name="home_section_results">Results</string>
-	<string name="home_action_join_live">Slide left to join</string>
+	<string name="home_action_join_live">Tap right to join</string>
 	<string name="home_action_read_chat">Slide right to read</string>
 	<string name="home_action_tap_to_chat">Tap to chat</string>
 	<string name="home_action_chat_preview">%1$s: %2$s</string>
