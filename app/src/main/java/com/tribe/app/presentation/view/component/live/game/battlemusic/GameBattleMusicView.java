@@ -51,6 +51,7 @@ import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 01/18/2018
@@ -65,7 +66,9 @@ public class GameBattleMusicView extends GameViewWithRanking {
   private static final String TITLE_KEY = "title";
   private static final String SHOW_WINNER_KEY = "showWinner";
   private static final String WINNERS_NAMES_KEY = "winnersNamesKey";
+  private static final String PLAY_KEY = "play";
 
+  private static final String ACTION_DISPLAY_PLAYLISTS = "displayPlaylists";
   private static final String ACTION_PICK_PLAYLIST = "pickPlaylist";
   private static final String ACTION_PRELOAD_TRACK = "preloadTrack";
   private static final String ACTION_PLAY_TRACK = "playTrack";
@@ -95,7 +98,7 @@ public class GameBattleMusicView extends GameViewWithRanking {
   private List<BattleMusicTrack> tracks;
   private String playlistTitle;
   private boolean weHaveAWinner = false, isBuffered = false;
-  private String rightAnswer;
+  private BattleMusicTrack currentTrack;
   private int nbAnswers = 0, nbPlayingPeers = 0, nbPreloads = 0;
 
   // SUBSCRIPTIONS
@@ -159,13 +162,6 @@ public class GameBattleMusicView extends GameViewWithRanking {
       tracks = playlist.getRandomTracks(NB_QUESTIONS);
       sendAction(ACTION_PICK_PLAYLIST, getPlaylistPayload(playlist));
       nextTrack();
-    }));
-
-    subscriptions.add(viewPlay.onDonePlaying().subscribe(aBoolean -> {
-      if (!weHaveAWinner) {
-        weHaveAWinner = true;
-        endTrack(false, null);
-      }
     }));
 
     subscriptions.add(viewPlay.onStarted().subscribe(aVoid -> {
@@ -239,7 +235,7 @@ public class GameBattleMusicView extends GameViewWithRanking {
 
     if (tracks != null && tracks.size() > 0) {
       BattleMusicTrack track = tracks.remove(0);
-      rightAnswer = track.getName();
+      currentTrack = track;
       nbAnswers = 0;
 
       int nbPlayersThatCanPlay = 0;
@@ -265,16 +261,19 @@ public class GameBattleMusicView extends GameViewWithRanking {
 
         if (message.has(ACTION_KEY)) {
           String actionKey = message.getString(ACTION_KEY);
-          if (actionKey.equals(ACTION_PICK_PLAYLIST)) {
+          if (actionKey.equals(ACTION_DISPLAY_PLAYLISTS)) {
+            gamePresenter.getBattleMusicData();
+          } else if (actionKey.equals(ACTION_PICK_PLAYLIST)) {
             playlistTitle = message.getString(TITLE_KEY);
           } else if (actionKey.equals(ACTION_PRELOAD_TRACK)) {
             currentMasterId = tribeSession == null ? currentUser.getId() : tribeSession.getUserId();
             game.setCurrentMaster(peerMap.get(currentMasterId));
-            preloadTrack(message, tribeSession);
+            preloadTrack(message, tribeSession, message.has(PLAY_KEY));
           } else if (actionKey.equals(ACTION_PLAY_TRACK)) {
             viewPlay.start();
           } else if (actionKey.equals(ACTION_END_TRACK)) {
             viewPlay.hide();
+            currentTrack = null;
 
             if (message.has(WINNER_KEY)) {
               TribeGuest guest = peerMap.get(message.getString(WINNER_KEY));
@@ -324,7 +323,7 @@ public class GameBattleMusicView extends GameViewWithRanking {
           String answer = message.getString(ANSWER_KEY);
           if (answer.equals(ANSWER_GUESS)) {
             nbAnswers++;
-            if (message.getString(NAME_KEY).equals(rightAnswer)) {
+            if (message.getString(NAME_KEY).equals(currentTrack.getName())) {
               if (!weHaveAWinner) {
                 weHaveAWinner = true;
                 endTrack(true, tribeSession);
@@ -398,7 +397,8 @@ public class GameBattleMusicView extends GameViewWithRanking {
     if (completionListener != null) completionListener.call();
   }
 
-  private void preloadTrack(JSONObject message, TribeSession tribeSession) {
+  private void preloadTrack(JSONObject message, TribeSession tribeSession, boolean play) {
+    Timber.d("preloadTrack");
     subscriptionsTrack.clear();
     viewAnswers.hide();
 
@@ -411,16 +411,31 @@ public class GameBattleMusicView extends GameViewWithRanking {
         steps.add(getResources().getString(R.string.game_song_pop_status_guess));
 
         showInstructions(steps, true, true, finished -> {
-          if (!finished) setupAnswers(track, tribeSession);
-          viewPlay.initTrack(track);
-          viewAnswers.enableClicks(false);
+          if (!finished) {
+            setupAnswers(track, tribeSession);
+            viewPlay.initTrack(track);
+            viewAnswers.enableClicks(false);
 
-          subscriptionsTrack.add(viewPlay.onBuffered().subscribe(aBoolean -> {
-            if (aBoolean && !isBuffered) {
-              isBuffered = true;
-              sendAnswer(tribeSession, ANSWER_TRACK_PRELOADED, new JSONObject());
+            if (!play) {
+              subscriptionsTrack.add(viewPlay.onBuffered().subscribe(aBoolean -> {
+                if (aBoolean && !isBuffered) {
+                  isBuffered = true;
+                  sendAnswer(tribeSession, ANSWER_TRACK_PRELOADED, new JSONObject());
+                }
+              }));
+
+              if (currentMasterId.equals(currentUser.getId())) {
+                subscriptionsTrack.add(viewPlay.onDonePlaying().subscribe(aBoolean -> {
+                  if (!weHaveAWinner) {
+                    weHaveAWinner = true;
+                    endTrack(false, null);
+                  }
+                }));
+              }
+            } else {
+              viewPlay.play();
             }
-          }));
+          }
         });
       } catch (JSONException ex) {
         ex.printStackTrace();
@@ -616,7 +631,38 @@ public class GameBattleMusicView extends GameViewWithRanking {
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     super.start(game, mapObservable, liveViewsObservable, userId);
 
-    gamePresenter.getBattleMusicData();
+    currentMasterId = userId;
+
+    if (currentMasterId.equals(currentUser.getId())) {
+      sendAction(ACTION_DISPLAY_PLAYLISTS, new JSONObject());
+    }
+
+    subscriptions.add(onNewPlayers.delay(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(tribeGuests -> {
+          if (currentMasterId.equals(currentUser.getId())) {
+            if (tracks != null) {
+              if (currentTrack != null) {
+                for (TribeGuest tribeGuest : tribeGuests) {
+                  JSONObject gameObj = new JSONObject();
+                  JSONObject preloadTrackJSON = getPreloadTrack(currentTrack);
+                  JsonUtils.jsonPut(preloadTrackJSON, PLAY_KEY, true);
+                  JsonUtils.jsonPut(preloadTrackJSON, ACTION_KEY, ACTION_PRELOAD_TRACK);
+                  JsonUtils.jsonPut(gameObj, this.game.getId(), preloadTrackJSON);
+                  webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+                }
+              }
+            } else {
+              for (TribeGuest tribeGuest : tribeGuests) {
+                JSONObject gameObj = new JSONObject();
+                JSONObject obj = new JSONObject();
+                JsonUtils.jsonPut(obj, ACTION_KEY, ACTION_DISPLAY_PLAYLISTS);
+                JsonUtils.jsonPut(gameObj, this.game.getId(), obj);
+                webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+              }
+            }
+          }
+        }));
   }
 
   @Override public void stop() {

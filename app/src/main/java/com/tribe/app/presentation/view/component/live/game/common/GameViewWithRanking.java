@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -45,6 +46,7 @@ public abstract class GameViewWithRanking extends GameView {
 
   // OBSERVABLES
   protected CompositeSubscription subscriptionsSession = new CompositeSubscription();
+  protected PublishSubject<List<TribeGuest>> onNewPlayers = PublishSubject.create();
 
   public enum RankingStatus {
     LOST(":skull:"), PENDING(":timer:");
@@ -293,6 +295,7 @@ public abstract class GameViewWithRanking extends GameView {
           for (TribeGuest tribeGuest : playerList) {
             if (!rankedPlayers.contains(tribeGuest)) newPlayerList.add(tribeGuest);
           }
+          onNewPlayers.onNext(newPlayerList);
 
           List<TribeGuest> leftPlayerList = new ArrayList<>();
           for (TribeGuest tribeGuest : rankedPlayers) {

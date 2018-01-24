@@ -212,6 +212,7 @@ public class GamePresenter implements Presenter {
 
       @Override public void onNext(Map<String, List<TriviaQuestion>> map) {
         if (map != null && gameMVPView != null) gameMVPView.onTriviaData(map);
+        unsubscribe();
       }
     });
   }
@@ -224,6 +225,7 @@ public class GamePresenter implements Presenter {
 
       @Override public void onNext(Map<String, BattleMusicPlaylist> map) {
         if (map != null && gameMVPView != null) gameMVPView.onBattleMusicData(map);
+        unsubscribe();
       }
     });
   }

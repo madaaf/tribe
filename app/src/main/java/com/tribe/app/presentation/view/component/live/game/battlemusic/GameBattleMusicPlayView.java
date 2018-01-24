@@ -147,7 +147,8 @@ public class GameBattleMusicPlayView extends FrameLayout {
   private void startProgress() {
     progressBarPlay.setProgress(
         (int) ((float) 100 / (float) audioPlayer.getDuration() * audioPlayer.getPosition()));
-    progressBarPlay.setProgress(100, (int) (audioPlayer.getDuration() - audioPlayer.getPosition()), 0, null, null);
+    progressBarPlay.setProgress(100, (int) (audioPlayer.getDuration() - audioPlayer.getPosition()),
+        0, null, null);
   }
 
   private void stopProgress() {
@@ -172,6 +173,8 @@ public class GameBattleMusicPlayView extends FrameLayout {
     viewPlayPauseBtn.setVisibility(View.GONE);
     progressBar.setVisibility(VISIBLE);
     viewPlayPauseBtn.setEnabled(false);
+    stop();
+    progressBarPlay.stop();
     progressBarPlay.setProgress(0);
 
     subscriptions.add(audioPlayer.onDonePlaying().subscribe(aBoolean -> {

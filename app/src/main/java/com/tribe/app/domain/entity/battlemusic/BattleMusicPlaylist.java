@@ -48,6 +48,7 @@ public class BattleMusicPlaylist {
         i++;
       }
 
+      alternativeAnswers.add(track.getName());
       track.setAlternativeNames(alternativeAnswers);
     }
 

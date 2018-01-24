@@ -17,7 +17,6 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -96,6 +95,13 @@ public class GameAnswersView extends LinearLayout {
     return !enabled || super.onInterceptTouchEvent(ev);
   }
 
+  private void animateAllBogus() {
+    for (int i = 0; i < listAnswerViews.size(); i++) {
+      GameAnswerView answerView = listAnswerViews.get(i);
+      if (answerView != clickedAnswerView) answerView.showBogusAnswer();
+    }
+  }
+
   /**
    * PUBLIC
    */
@@ -104,26 +110,22 @@ public class GameAnswersView extends LinearLayout {
       @GameAnswerView.AnswerType int answerType) {
     if (questionSubscriptions != null) questionSubscriptions.clear();
 
-    int random = new Random().nextInt(listAnswerViews.size());
-    rightAnswerView = listAnswerViews.get(random);
-    rightAnswerView.initAnswer(answer, answerType == GameAnswerView.TYPE_BATTLE_MUSIC ? Color.WHITE
-        : ContextCompat.getColor(getContext(), colors[random]), answerType);
-
-    questionSubscriptions.add(
-        rightAnswerView.onClick().subscribe(value -> onAnsweredRight.onNext(rightAnswerView)));
+    clickedAnswerView = null;
 
     for (int i = 0; i < listAnswerViews.size(); i++) {
-      if (i != random) {
-        GameAnswerView answerView = listAnswerViews.get(i);
-        String alternativeAnswer =
-            (i > random ? alternativeAnswers.get(i - 1) : alternativeAnswers.get(i));
-        if (alternativeAnswer.equals(answer)) return;
-        answerView.initAnswer(alternativeAnswer,
-            answerType == GameAnswerView.TYPE_BATTLE_MUSIC ? Color.WHITE
-                : ContextCompat.getColor(getContext(), colors[i]), answerType);
+      GameAnswerView answerView = listAnswerViews.get(i);
+      String alternativeAnswer = alternativeAnswers.get(i);
+      answerView.initAnswer(alternativeAnswer,
+          answerType == GameAnswerView.TYPE_BATTLE_MUSIC ? Color.WHITE
+              : ContextCompat.getColor(getContext(), colors[i]), answerType);
 
+      if (!alternativeAnswer.equals(answer)) {
         questionSubscriptions.add(
             answerView.onClick().subscribe(value -> onAnsweredWrong.onNext(answerView)));
+      } else {
+        rightAnswerView = answerView;
+        questionSubscriptions.add(
+            rightAnswerView.onClick().subscribe(value -> onAnsweredRight.onNext(rightAnswerView)));
       }
     }
   }
@@ -136,15 +138,16 @@ public class GameAnswersView extends LinearLayout {
       clickedAnswerView.showWrongAnswer();
     }
 
-    for (int i = 0; i < listAnswerViews.size(); i++) {
-      GameAnswerView answerView = listAnswerViews.get(i);
-      if (answerView != clickedAnswerView) answerView.showBogusAnswer();
-    }
+    animateAllBogus();
   }
 
   public void animateAnswerResult() {
     if (clickedAnswerView == rightAnswerView) return;
-    if (clickedAnswerView != null) clickedAnswerView.animateBogusAnswer();
+    if (clickedAnswerView != null) {
+      clickedAnswerView.animateBogusAnswer();
+    } else {
+      animateAllBogus();
+    }
 
     subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())

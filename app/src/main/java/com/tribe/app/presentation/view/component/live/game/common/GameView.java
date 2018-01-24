@@ -207,6 +207,8 @@ public abstract class GameView extends FrameLayout {
     if (game.needsLandscape() && !landscapeMode) {
       showLandscapeToast();
     }
+
+    initWebRTCRoomSubscriptions();
   }
 
   public void stop() {
@@ -217,8 +219,6 @@ public abstract class GameView extends FrameLayout {
 
   public void setWebRTCRoom(WebRTCRoom webRTCRoom) {
     this.webRTCRoom = webRTCRoom;
-
-    initWebRTCRoomSubscriptions();
   }
 
   public void dispose() {

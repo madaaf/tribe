@@ -66,9 +66,6 @@ import rx.android.schedulers.AndroidSchedulers;
 
 public class GameTriviaView extends GameViewWithRanking {
 
-  private static final String ACTION_POP_ALIEN = "popAlien";
-  private static final String ALIEN_KEY = "alien";
-
   private static final String ANSWER_KEY = "answer";
   private static final String QUESTION_KEY = "question";
   private static final String NB_QUESTION_KEY = "nbQuestion";
@@ -78,6 +75,7 @@ public class GameTriviaView extends GameViewWithRanking {
   private static final String ALL_KEY = "all";
   private static final String SHOW_WINNER_KEY = "showWinner";
   private static final String WINNERS_NAMES_KEY = "winnersNamesKey";
+  private static final String ACTION_DISPLAY_CATEGORIES = "displayCategories";
   private static final String ACTION_PICK_CATEGORY = "pickCategory";
   private static final String ACTION_SHOW_QUESTION = "showQuestion";
   private static final String ANSWER_GUESS = "guess";
@@ -112,7 +110,7 @@ public class GameTriviaView extends GameViewWithRanking {
   private List<TriviaQuestion> questions;
   private String categoryTitle;
   private boolean categoryAll = false, weHaveAWinner = false;
-  private String rightAnswer;
+  private TriviaQuestion currentQuestion;
   private int nbAnswers = 0, nbPlayingPeers = 0;
 
   // SUBSCRIPTIONS
@@ -280,7 +278,7 @@ public class GameTriviaView extends GameViewWithRanking {
 
     if (questions != null && questions.size() > 0) {
       TriviaQuestion question = questions.remove(0);
-      rightAnswer = question.getAnswer();
+      currentQuestion = question;
       nbAnswers = 0;
 
       int nbPlayersThatCanPlay = 0;
@@ -305,7 +303,9 @@ public class GameTriviaView extends GameViewWithRanking {
 
         if (message.has(ACTION_KEY)) {
           String actionKey = message.getString(ACTION_KEY);
-          if (actionKey.equals(ACTION_PICK_CATEGORY)) {
+          if (actionKey.equals(ACTION_DISPLAY_CATEGORIES)) {
+            gamePresenter.getTriviaData();
+          } else if (actionKey.equals(ACTION_PICK_CATEGORY)) {
             categoryTitle = message.getString(TITLE_KEY);
             categoryAll = message.has(ALL_KEY) ? message.getBoolean(ALL_KEY) : false;
           } else if (actionKey.equals(ACTION_SHOW_QUESTION)) {
@@ -316,6 +316,8 @@ public class GameTriviaView extends GameViewWithRanking {
             weHaveAWinner = false;
           } else if (actionKey.equals(ACTION_END_QUESTION)) {
             soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK_ANSWER, SoundManager.SOUND_MID);
+
+            currentQuestion = null;
 
             if (message.has(WINNER_KEY)) {
               TribeGuest guest = peerMap.get(message.getString(WINNER_KEY));
@@ -365,7 +367,7 @@ public class GameTriviaView extends GameViewWithRanking {
           String answer = message.getString(ANSWER_KEY);
           if (answer.equals(ANSWER_GUESS)) {
             nbAnswers++;
-            if (message.getString(NAME_KEY).equals(rightAnswer)) {
+            if (message.getString(NAME_KEY).equals(currentQuestion.getAnswer())) {
               if (!weHaveAWinner) {
                 weHaveAWinner = true;
                 endQuestion(true, tribeSession);
@@ -675,7 +677,37 @@ public class GameTriviaView extends GameViewWithRanking {
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     super.start(game, mapObservable, liveViewsObservable, userId);
 
-    gamePresenter.getTriviaData();
+    currentMasterId = userId;
+
+    if (userId.equals(currentUser.getId())) {
+      sendAction(ACTION_DISPLAY_CATEGORIES, new JSONObject());
+    }
+
+    subscriptions.add(onNewPlayers.delay(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(tribeGuests -> {
+          if (currentMasterId.equals(currentUser.getId())) {
+            if (questions != null) {
+              if (currentQuestion != null) {
+                for (TribeGuest tribeGuest : tribeGuests) {
+                  JSONObject gameObj = new JSONObject();
+                  JSONObject questionJSON = getShowQuestionPayload(currentQuestion);
+                  JsonUtils.jsonPut(questionJSON, ACTION_KEY, ACTION_SHOW_QUESTION);
+                  JsonUtils.jsonPut(gameObj, this.game.getId(), questionJSON);
+                  webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+                }
+              }
+            } else {
+              for (TribeGuest tribeGuest : tribeGuests) {
+                JSONObject gameObj = new JSONObject();
+                JSONObject obj = new JSONObject();
+                JsonUtils.jsonPut(obj, ACTION_KEY, ACTION_DISPLAY_CATEGORIES);
+                JsonUtils.jsonPut(gameObj, this.game.getId(), obj);
+                webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+              }
+            }
+          }
+        }));
   }
 
   @Override public void stop() {
