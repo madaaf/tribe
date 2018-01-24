@@ -151,9 +151,7 @@ public class ChatView extends IChat {
       "\uD83D\uDC9C", // purple
       "\uD83D\uDC99", // blue
       "\uD83D\uDC9A", //green
-      "\uD83E\uDDE1",// orange
       "\uD83D\uDC9B", // yellow
-      "\uD83D\uDDA4" // black
   };
 
   @BindView(R.id.editText) EditTextFont editText;
