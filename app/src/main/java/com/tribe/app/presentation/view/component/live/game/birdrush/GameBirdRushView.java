@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -53,7 +54,6 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @BindView(R.id.viewBackground) GameBirdRushBackground viewBackground;
   @BindView(R.id.viewBirds) FrameLayout viewBirds;
-  @BindView(R.id.bird) ImageView bird;
 
   @Inject ScreenUtils screenUtils;
 
@@ -65,6 +65,7 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   int i = 0;
   private List<BirdRushObstacle> obstaclesList = new ArrayList<>();
+  private ImageView bird;
 
   private Integer[] birdsImage = new Integer[] {
       R.drawable.game_bird1, R.drawable.game_bird2, R.drawable.game_bird3, R.drawable.game_bird4,
@@ -215,6 +216,22 @@ public class GameBirdRushView extends GameViewWithEngine {
     Timber.e("SOEF playGame");
     super.playGame();
     viewBackground.start();
+    startBirdAnimation();
+  }
+
+  private void startBirdAnimation() {
+    bird = new ImageView(context);
+    bird.setScaleType(ImageView.ScaleType.FIT_XY);
+    bird.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.game_bird1));
+
+    viewBackground.addView(bird);
+    bird.setX(-bird.getWidth());
+    bird.setY(screenUtils.getHeightPx() / 2 - bird.getHeight() / 2);
+
+    bird.animate()
+        .translationX(screenUtils.getWidthPx() / 2 - screenUtils.getWidthPx() / 2)
+        .setInterpolator(new AccelerateDecelerateInterpolator())
+        .setDuration(3000);
   }
 
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) { // SOEF
