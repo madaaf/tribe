@@ -32,8 +32,9 @@ public class TriviaQuestionsDeserializer implements JsonDeserializer<List<Trivia
             JsonObject jo = jsonElement.getAsJsonObject();
             TriviaQuestion triviaQuestion = new TriviaQuestion();
             triviaQuestion.setAnswer(jo.get("correct_answer").getAsString());
-            triviaQuestion.setAlternativeAnswers(
-                gson.fromJson(jo.get("incorrect_answers"), listType));
+            List<String> alternativeAnswers = gson.fromJson(jo.get("incorrect_answers"), listType);
+            alternativeAnswers.add(triviaQuestion.getAnswer());
+            triviaQuestion.setAlternativeAnswers(alternativeAnswers);
             triviaQuestion.setQuestion(jo.get("question").getAsString());
             triviaQuestionsList.add(triviaQuestion);
           }
@@ -43,13 +44,17 @@ public class TriviaQuestionsDeserializer implements JsonDeserializer<List<Trivia
       JsonArray jsonArray = je.getAsJsonArray();
 
       for (JsonElement triviaQuestionElement : jsonArray) {
-        if (triviaQuestionElement != null && !triviaQuestionElement.isJsonNull() && triviaQuestionElement.isJsonObject()) {
+        if (triviaQuestionElement != null &&
+            !triviaQuestionElement.isJsonNull() &&
+            triviaQuestionElement.isJsonObject()) {
           JsonObject obj = triviaQuestionElement.getAsJsonObject();
           TriviaQuestion triviaQuestion = new TriviaQuestion();
           triviaQuestion.setId(obj.get("id").getAsString());
           triviaQuestion.setAnswer(obj.get("answer").getAsString());
           triviaQuestion.setQuestion(obj.get("question").getAsString());
-          triviaQuestion.setAlternativeAnswers(gson.fromJson(obj.get("alternativeAnswers"), listType));
+          List<String> alternativeAnswers = gson.fromJson(obj.get("alternativeAnswers"), listType);
+          alternativeAnswers.add(triviaQuestion.getAnswer());
+          triviaQuestion.setAlternativeAnswers(alternativeAnswers);
           triviaQuestionsList.add(triviaQuestion);
         }
       }

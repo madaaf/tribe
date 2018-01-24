@@ -454,7 +454,7 @@ public class GameTriviaView extends GameViewWithRanking {
     RotateAnimation rotate =
         new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
             0.5f);
-    rotate.setDuration(10000);
+    rotate.setDuration(30000);
     rotate.setRepeatCount(Animation.INFINITE);
     rotate.setFillAfter(true);
     imgBackground.startAnimation(rotate);
