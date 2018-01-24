@@ -173,11 +173,11 @@ public class LeaderboardDetailsView extends FrameLayout {
     ConstraintSet set = new ConstraintSet();
     set.clone(this);
 
-    set.connect(viewUnderline.getId(), ConstraintSet.BOTTOM, tabFriends.getId(),
+    set.connect(viewUnderline.getIdOb(), ConstraintSet.BOTTOM, tabFriends.getIdOb(),
         ConstraintSet.BOTTOM);
-    set.connect(viewUnderline.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
+    set.connect(viewUnderline.getIdOb(), ConstraintSet.END, guidelineHalfWidth.getIdOb(),
         ConstraintSet.START);
-    set.connect(viewUnderline.getId(), ConstraintSet.START, this.getId(), ConstraintSet.START);
+    set.connect(viewUnderline.getIdOb(), ConstraintSet.START, this.getIdOb(), ConstraintSet.START);
 
     updateConstraints(set);
   }*/
@@ -193,11 +193,11 @@ public class LeaderboardDetailsView extends FrameLayout {
   //  ConstraintSet set = new ConstraintSet();
   //  set.clone(this);
   //
-  //  set.connect(viewUnderline.getId(), ConstraintSet.BOTTOM, tabOverall.getId(),
+  //  set.connect(viewUnderline.getIdOb(), ConstraintSet.BOTTOM, tabOverall.getIdOb(),
   //      ConstraintSet.BOTTOM);
-  //  set.connect(viewUnderline.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
+  //  set.connect(viewUnderline.getIdOb(), ConstraintSet.START, guidelineHalfWidth.getIdOb(),
   //      ConstraintSet.END);
-  //  set.connect(viewUnderline.getId(), ConstraintSet.END, this.getId(), ConstraintSet.END);
+  //  set.connect(viewUnderline.getIdOb(), ConstraintSet.END, this.getIdOb(), ConstraintSet.END);
   //
   //  updateConstraints(set);
   //}

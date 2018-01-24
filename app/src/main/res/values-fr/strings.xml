@@ -979,4 +979,12 @@
 	<!-- Hang Up Popup -->
 	<string name="hangup_popup_action_stop_game">Arrêter de jouer</string>
 	<string name="hangup_popup_action_leave_call">Quitter le live</string>
+	
+	<!-- New Challenger Popup -->
+	<string name="new_challenger_popup_title">NOUVEAU CHALLENGER !</string>
+	<string name="new_challenger_popup_subtitle">%1$s\nveut discuter !</string>
+	<string name="new_challenger_popup_friends">Amis en commun avec %1$s</string>
+	<string name="new_challenger_popup_other">et un autre</string>
+	<string name="new_challenger_popup_others">et %1$d autres</string>
+	<string name="new_challenger_popup_action_add">AJOUTER AUX CHATS</string>
 </resources>

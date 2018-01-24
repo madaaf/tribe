@@ -8,11 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
@@ -190,7 +187,7 @@ public class GameBirdRushView extends GameViewWithEngine {
             + " "
             + obs.toString()
             + obstaclesList.size());
-        v = animateObstacle(obs);
+        animateObstacle(obs);
         i++;
       }
 
@@ -207,7 +204,7 @@ public class GameBirdRushView extends GameViewWithEngine {
             + obs.toString()
             + " "
             + obstaclesList.size());
-        v = animateObstacle(obs);
+        animateObstacle(obs);
       }
 
       handleCollisionWithObstacle();
@@ -239,7 +236,8 @@ public class GameBirdRushView extends GameViewWithEngine {
     Timber.e("SOEF Game Bird Rush Over : " + winnerId);
     super.gameOver(winnerId, isLocal);
     viewBirds.removeAllViews();
-    viewBackground.stop();
+    viewBackground.stop(obstacleVisibleScreen);
+
     resetTimer();
   }
 
@@ -290,8 +288,6 @@ public class GameBirdRushView extends GameViewWithEngine {
         }));
   }
 
-  // SOEF
-  ImageView v;
   BirdRushObstacle obs = null;
 
   @Override protected void onFinishInflate() {
@@ -329,16 +325,6 @@ public class GameBirdRushView extends GameViewWithEngine {
     obstacle.clearAnimation();
     obstacle.setImageDrawable(
         ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle_red));
-  /*
-    animator.cancel();
-    for (Map.Entry<BirdRushObstacle, ImageView> entry : obstacleVisibleScreen.entrySet()) {
-      ImageView obsclView = entry.getValue();
-      obsclView.animate().cancel();
-    }
-
-    backgroundOne.clearAnimation();
-    backgroundTwo.clearAnimation();
-    */
 
     resetScores(true);
     iLost();
@@ -351,64 +337,16 @@ public class GameBirdRushView extends GameViewWithEngine {
     return false;
   }
 
-  private ImageView animateObstacle(BirdRushObstacle model) {
-    ImageView obstacle = new ImageView(context);
-    obstacleVisibleScreen.put(model, obstacle);
-    obstacle.setScaleType(ImageView.ScaleType.FIT_XY);
-    FrameLayout.LayoutParams params =
-        new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-            FrameLayout.LayoutParams.WRAP_CONTENT);
-    params.gravity = Gravity.END;
-    obstacle.setImageDrawable(
-        ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle));
-    obstacle.setLayoutParams(params);
-    int height = Math.round(model.getHeight() * screenUtils.getHeightPx());
-    int width = 75;
-    obstacle.getLayoutParams().height = height;
-    obstacle.getLayoutParams().width = width;
+  private void animateObstacle(BirdRushObstacle model) {
+    float height = (model.getStart() * screenUtils.getHeightPx() - model.getView().getHeight() / 2);
+    ImageView obstacle = model.getView();
+    obstacleVisibleScreen.put(model, model.getView());
 
     obstacle.setX(screenUtils.getWidthPx());
-    obstacle.setY(model.getStart() * screenUtils.getHeightPx() - height / 2);
-
+    obstacle.setY(height);
     viewBackground.addView(obstacle);
-    obstacle.animate()
-        .translationX(-screenUtils.getWidthPx() - 2 * width)
-        .setDuration(SPEED_BACK_SCROLL)
-        .start();
 
-    // TRANSLATION
-    if (model.getTranslation() != null) {
-      ValueAnimator trans =
-          ValueAnimator.ofFloat(obstacle.getY(), obstacle.getY() - model.getTranslation().getY(),
-              obstacle.getY() + model.getTranslation().getY());
-      trans.setDuration(1000);
-      trans.addUpdateListener(animation -> {
-        Float value = (float) animation.getAnimatedValue();
-        obstacle.setY(value);
-      });
-      trans.setRepeatCount(Animation.INFINITE);
-      trans.setRepeatMode(ValueAnimator.REVERSE);
-      trans.start();
-    }
-
-    // ROTATION
-    if (model.getRotation() != null) {
-      ValueAnimator rotation = ValueAnimator.ofFloat(0f, -model.getRotation().getAngle(), 0f,
-          model.getRotation().getAngle());
-      rotation.setDuration(5000);
-      rotation.addUpdateListener(animation -> {
-        Float value = (float) animation.getAnimatedValue();
-        obstacle.setPivotX(width / 2);
-        obstacle.setPivotY(height / 2);
-        obstacle.setRotation(value);
-      });
-      rotation.setInterpolator(new LinearInterpolator());
-      rotation.setRepeatCount(Animation.INFINITE);
-      rotation.setRepeatMode(ValueAnimator.REVERSE);
-      rotation.start();
-    }
-
-    return obstacle;
+    model.animateObstacle();
   }
 
   private void initSubscriptions() {
@@ -460,18 +398,6 @@ public class GameBirdRushView extends GameViewWithEngine {
     va.start();
   }
 
-  protected void initDependencyInjector() {
-    DaggerUserComponent.builder()
-        .activityModule(getActivityModule())
-        .applicationComponent(getApplicationComponent())
-        .build()
-        .inject(this);
-  }
-
-  private void addBird() {
-
-  }
-
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     Timber.e(" SOEF on start bird Rush");
@@ -499,7 +425,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   @Override public void stop() {
     super.stop();
     Timber.e(" SOEF on stop");
-    viewBackground.stop();
+    viewBackground.stop(obstacleVisibleScreen);
   }
 
   @Override public void dispose() {
@@ -546,4 +472,11 @@ public class GameBirdRushView extends GameViewWithEngine {
    * OBSERVABLES
    */
 
+  protected void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
 }

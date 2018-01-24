@@ -979,4 +979,12 @@
 	<!-- Hang Up Popup -->
 	<string name="hangup_popup_action_stop_game">Stop playing</string>
 	<string name="hangup_popup_action_leave_call">Leave room</string>
+	
+	<!-- New Challenger Popup -->
+	<string name="new_challenger_popup_title">NEW CHALLENGER!</string>
+	<string name="new_challenger_popup_subtitle">%1$s\nwants to chat!</string>
+	<string name="new_challenger_popup_friends">Mutual friends with %1$s</string>
+	<string name="new_challenger_popup_other">and an other</string>
+	<string name="new_challenger_popup_others">and %1$d others</string>
+	<string name="new_challenger_popup_action_add">ADD TO CHATS</string>
 </resources>

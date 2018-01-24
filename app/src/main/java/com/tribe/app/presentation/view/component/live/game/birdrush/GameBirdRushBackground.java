@@ -22,6 +22,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import java.util.Map;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -141,15 +142,17 @@ public class GameBirdRushBackground extends FrameLayout {
     initAnimations();
   }
 
-  public void stop() {
-    Timber.e("SOEF BACKGRUND  stop ");
-    animator.cancel();
-    /*
+  private void stopObstacleAnim(Map<BirdRushObstacle, ImageView> obstacleVisibleScreen) {
     for (Map.Entry<BirdRushObstacle, ImageView> entry : obstacleVisibleScreen.entrySet()) {
       ImageView obsclView = entry.getValue();
       obsclView.animate().cancel();
-    }*/
+    }
+  }
 
+  public void stop(Map<BirdRushObstacle, ImageView> obstacleVisibleScreen) {
+    Timber.e("SOEF BACKGRUND  stop ");
+    animator.cancel();
+    stopObstacleAnim(obstacleVisibleScreen);
     backgroundOne.clearAnimation();
     backgroundTwo.clearAnimation();
   }

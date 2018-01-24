@@ -481,7 +481,7 @@ public class LiveActivity extends BaseActivity
 
   private void initRoomSubscription() {
     startService(WSService.getCallingIntentSubscribeRoom(this, room.getId()));
-    //  livePresenter.subscribeToRoomUpdates(room.getId());
+    //  livePresenter.subscribeToRoomUpdates(room.getIdOb());
   }
 
   private void removeRoomSubscription() {

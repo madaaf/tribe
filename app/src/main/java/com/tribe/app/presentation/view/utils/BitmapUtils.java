@@ -46,7 +46,7 @@ public class BitmapUtils {
 
     float left = (bitmap.getWidth() - watermark.getWidth()) >> 1;
     float margin = context.getResources().getDimensionPixelSize(R.dimen.horizontal_margin_small);
-    //  float top = (bitmap.getHeight() - watermark.getHeight());
+    //  float top = (bitmap.getHeightOb() - watermark.getHeightOb());
     float top = (bitmap.getHeight() - watermark.getHeight() - margin);
     Canvas canvas = new Canvas(bmOverlay);
     canvas.drawBitmap(bitmap, 0, 0, paint);

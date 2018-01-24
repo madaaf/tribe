@@ -84,7 +84,7 @@ public class Media {
         + ", width='"
         + width
         + '\''
-        + ", height='"
+        + ", getHeightOb='"
         + height
         + '\''
         + '}';
