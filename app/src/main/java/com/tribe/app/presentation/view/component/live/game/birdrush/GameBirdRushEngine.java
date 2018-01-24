@@ -43,7 +43,7 @@ public class GameBirdRushEngine extends GameEngine {
     popIntervalSubscription = Observable.interval((2000), TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          Timber.e("SOEF pop obstacle");
+          //Timber.e("SOEF pop obstacle");
           generateObstacle(6);
           onObstacle.onNext(obstacleList);
           // popAlien(count + 1);
@@ -51,7 +51,7 @@ public class GameBirdRushEngine extends GameEngine {
   }
 
   public void generateObstacle(int nbr) {
-    Timber.e("SOEF generate obstacle");
+    //Timber.e("SOEF generate obstacle");
     if (!obstacleList.isEmpty()) {
       obstacleList.clear();
     }
@@ -68,6 +68,7 @@ public class GameBirdRushEngine extends GameEngine {
 
   @Override public void stop() {
     super.stop();
+    if (popIntervalSubscription != null) popIntervalSubscription.unsubscribe();
   }
 
   /**

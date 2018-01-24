@@ -171,7 +171,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   boolean displayFirstObstacle = false;
 
   private void animateObstacleList(Long aLong) {
-    Timber.e(" ON TOME : " + aLong + " " + obstaclesList.size());
+    // Timber.e(" ON TOME : " + aLong + " " + obstaclesList.size());
     if (obstaclesList != null && !obstaclesList.isEmpty()) {
       //if (gameOver) return;
       aLong = aLong * 100;
@@ -220,6 +220,8 @@ public class GameBirdRushView extends GameViewWithEngine {
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) { // SOEF
     Timber.d("SOEF SET UP LOCALLY " + userId + " " + players.size() + " " + timestamp);
     super.setupGameLocally(userId, players, timestamp);
+    viewBackground.removeObstacles();
+
     subscriptionsSession.add(onPending.subscribe(aBoolean -> {
       for (int i = 0; i < viewBirds.getChildCount(); i++) {
        /* if (viewBirds.getChildAt(i) instanceof GameAliensAttackAlienView) {
@@ -236,7 +238,7 @@ public class GameBirdRushView extends GameViewWithEngine {
     Timber.e("SOEF Game Bird Rush Over : " + winnerId);
     super.gameOver(winnerId, isLocal);
     viewBirds.removeAllViews();
-    viewBackground.stop(obstacleVisibleScreen);
+    viewBackground.stop(obstaclesList);
 
     resetTimer();
   }
@@ -425,7 +427,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   @Override public void stop() {
     super.stop();
     Timber.e(" SOEF on stop");
-    viewBackground.stop(obstacleVisibleScreen);
+    viewBackground.stop(obstaclesList);
   }
 
   @Override public void dispose() {

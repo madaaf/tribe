@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.LinearInterpolator;
 import android.widget.FrameLayout;
@@ -22,6 +23,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
@@ -142,17 +144,15 @@ public class GameBirdRushBackground extends FrameLayout {
     initAnimations();
   }
 
-  private void stopObstacleAnim(Map<BirdRushObstacle, ImageView> obstacleVisibleScreen) {
-    for (Map.Entry<BirdRushObstacle, ImageView> entry : obstacleVisibleScreen.entrySet()) {
-      ImageView obsclView = entry.getValue();
-      obsclView.animate().cancel();
-    }
-  }
 
-  public void stop(Map<BirdRushObstacle, ImageView> obstacleVisibleScreen) {
+
+  public void stop(List<BirdRushObstacle> obstaclesList) {
     Timber.e("SOEF BACKGRUND  stop ");
     animator.cancel();
-    stopObstacleAnim(obstacleVisibleScreen);
+    for (int i = 0; i < obstaclesList.size(); i++) {
+      View v = obstaclesList.get(i).getView();
+      removeView(v);
+    }
     backgroundOne.clearAnimation();
     backgroundTwo.clearAnimation();
   }
@@ -161,6 +161,21 @@ public class GameBirdRushBackground extends FrameLayout {
     subscriptions.unsubscribe();
     subscriptionsAnimation.unsubscribe();
     Timber.e("SOEF BACKGRUND  dispose ");
+  }
+
+  public void removeObstacles() {
+    for (int i = 0; i < getChildCount(); i++) {
+      View v = getChildAt(i);
+      Timber.e("REMOVE VIEW " + v.getId());
+      if (v.getTag() != null && v.getTag()
+          .toString()
+          .startsWith(BirdRushObstacle.BIRD_OBSTACLE_TAG)) {
+        removeView(v);
+      }
+     /* if (v.getId() != R.id.background_one && v.getId() != R.id.background_two) {
+
+      }*/
+    }
   }
 
   /**

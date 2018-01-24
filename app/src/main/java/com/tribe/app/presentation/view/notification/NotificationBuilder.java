@@ -66,7 +66,9 @@ import javax.inject.Singleton;
   public void sendBundledNotification(RemoteMessage remoteMessage) {
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
-    if (notificationPayload != null && notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
+    if (notificationPayload != null
+        && notificationPayload.getUserId() != null
+        && notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
       Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
       intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD, notificationPayload);
       application.sendBroadcast(intentUnique);

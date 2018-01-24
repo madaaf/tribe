@@ -29,6 +29,8 @@ import static com.tribe.app.presentation.view.component.live.game.birdrush.GameB
 
 public class BirdRushObstacle extends FrameLayout {
 
+  public static final String BIRD_OBSTACLE_TAG = "BIRD_OBSTACLE_TAG_";
+
   private final String ID_KEY = "id";
   private final String NEXT_SPAWN_KEY = "nextSpawn";
   private final String START_RATIO_KEY = "start";
@@ -76,9 +78,12 @@ public class BirdRushObstacle extends FrameLayout {
     initView();
   }
 
+  int index = 0;
+
   public void initView() {
     view = new ImageView(context);
-
+    view.setTag(BIRD_OBSTACLE_TAG + index);
+    index++;
     view.setScaleType(ImageView.ScaleType.FIT_XY);
     view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle));
     viewHeight = Math.round(height * screenUtils.getHeightPx());

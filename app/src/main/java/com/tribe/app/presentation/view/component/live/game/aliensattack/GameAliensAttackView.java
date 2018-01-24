@@ -99,6 +99,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
     super.setupGameLocally(userId, players, timestamp);
+    viewBackground.removeAllViews();
     subscriptionsSession.add(onPending.subscribe(aBoolean -> {
       for (int i = 0; i < viewAliens.getChildCount(); i++) {
         if (viewAliens.getChildAt(i) instanceof GameAliensAttackAlienView) {
