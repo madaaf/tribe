@@ -118,4 +118,18 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   public boolean canPlayGames(String gameId) {
     return true;
   }
+
+  @Override public String toString() {
+    return "TribeGuest{"
+        + "id='"
+        + id
+        + '\''
+        + ", displayName='"
+        + displayName
+        + '\''
+        + ", userName='"
+        + userName
+        + '\''
+        + '}';
+  }
 }

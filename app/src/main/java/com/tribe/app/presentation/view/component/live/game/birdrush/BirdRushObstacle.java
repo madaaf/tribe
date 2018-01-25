@@ -89,7 +89,7 @@ public class BirdRushObstacle extends FrameLayout {
     viewHeight = Math.round(height * screenUtils.getHeightPx());
 
     LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    params.height = 1000;
+    params.height = viewHeight;
     params.width = 75;
     view.setLayoutParams(params);
   }
@@ -350,7 +350,7 @@ public class BirdRushObstacle extends FrameLayout {
         + '}';
   }
 
-  public JSONObject asJSON() {
+  public JSONObject obstacleAsJSON() {
     JSONObject obstacle = new JSONObject();
     JsonUtils.jsonPut(obstacle, ID_KEY, id);
     JsonUtils.jsonPut(obstacle, NEXT_SPAWN_KEY, nextSpawn);

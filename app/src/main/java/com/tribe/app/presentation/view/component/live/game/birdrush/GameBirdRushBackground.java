@@ -24,7 +24,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
-import java.util.Map;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -68,12 +67,17 @@ public class GameBirdRushBackground extends FrameLayout {
 
   private void init() {
     initDependencyInjector();
-    initResources();
+    initResource();
     initView();
   }
 
-  private void initResources() {
-
+  private void initResource() {
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override public void onGlobalLayout() {
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        SPEED_BACK_SCROLL = (long) (screenUtils.getWidthPx() * 20);
+      }
+    });
   }
 
   private void initView() {
@@ -144,11 +148,9 @@ public class GameBirdRushBackground extends FrameLayout {
     initAnimations();
   }
 
-
-
   public void stop(List<BirdRushObstacle> obstaclesList) {
     Timber.e("SOEF BACKGRUND  stop ");
-    animator.cancel();
+    if (animator != null) animator.cancel();
     for (int i = 0; i < obstaclesList.size(); i++) {
       View v = obstaclesList.get(i).getView();
       removeView(v);

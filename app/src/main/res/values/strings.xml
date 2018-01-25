@@ -599,7 +599,7 @@
 	
 	<!-- Camera Mic Popup -->
 	<string name="camera_microphone_popup_title">Enable camera and\nmicrophone to start!</string>
-	<string name="camera_microphone_popup_description">Make sure your friends\ncan see and hear you\nduring your video calls</string>
+	<string name="camera_microphone_popup_description">Make sure your friends\ncan see and hear you\nwhile playing</string>
 	<string name="camera_microphone_popup_enable_camera">Enable camera</string>
 	<string name="camera_microphone_popup_camera_enabled">Camera enabled</string>
 	<string name="camera_microphone_popup_enable_microphone">Enable microphone</string>
@@ -729,6 +729,14 @@
 	<string name="game_bird_rush_someone_lost">%1$s LOST!</string>
 	<string name="game_bird_rush_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
 	<string name="game_bird_rush_waiting_instructions">IT WILL RESTART WHEN\nSOMEONE JOINS</string>
+	<string name="game_face_ddr_title">FACE\nDDR</string>
+	<string name="game_face_ddr_lets_go">DANCE WITH YOUR FACE!</string>
+	<string name="game_face_ddr_you_won">YOU WON!</string>
+	<string name="game_face_ddr_someone_won">%1$s WON!</string>
+	<string name="game_face_ddr_you_lost">YOU LOST</string>
+	<string name="game_face_ddr_someone_lost">%1$s LOST!</string>
+	<string name="game_face_ddr_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
+	<string name="game_face_ddr_waiting_instructions">IT WILL RESTART WHEN\nSOMEONE JOINS</string>
 	<string name="game_webv1_lets_go">LET\'S GO!</string>
 	<string name="game_webv1_you_won">YOU WON!</string>
 	<string name="game_webv1_someone_won">%1$s WON!</string>

@@ -25,6 +25,7 @@ public class GameBirdRushEngine extends GameEngine {
   private Subscription popIntervalSubscription;
   private PublishSubject<Level> onLevelChange = PublishSubject.create();
   private PublishSubject<List<BirdRushObstacle>> onObstacle = PublishSubject.create();
+  private PublishSubject<List<BirdRushObstacle>> onPlayerTap = PublishSubject.create();
 
   private List<BirdRushObstacle> obstacleList = new ArrayList<>();
 
@@ -46,7 +47,6 @@ public class GameBirdRushEngine extends GameEngine {
           //Timber.e("SOEF pop obstacle");
           generateObstacle(6);
           onObstacle.onNext(obstacleList);
-          // popAlien(count + 1);
         });
   }
 

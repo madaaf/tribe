@@ -1373,10 +1373,11 @@ public class HomeActivity extends BaseActivity
   class NotificationReceiverSupport extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
-
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
-      if (notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
+      if (notificationPayload != null
+          && notificationPayload.getUserId() != null
+          && notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
         supportShortcut.setRead(false);
         supportShortcut.setSingle(true);
         onSupportUpdate.onNext(supportShortcut);
