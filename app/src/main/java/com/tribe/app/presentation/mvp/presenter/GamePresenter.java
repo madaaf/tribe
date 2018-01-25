@@ -7,6 +7,7 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.game.GetBattleMusicData;
 import com.tribe.app.domain.interactor.game.GetCloudFriendsScores;
 import com.tribe.app.domain.interactor.game.GetCloudGameLeaderboard;
+import com.tribe.app.domain.interactor.game.GetCloudGames;
 import com.tribe.app.domain.interactor.game.GetCloudUserLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskFriendsScores;
 import com.tribe.app.domain.interactor.game.GetDiskGameLeaderboard;
@@ -14,6 +15,8 @@ import com.tribe.app.domain.interactor.game.GetDiskUserLeaderboard;
 import com.tribe.app.domain.interactor.game.GetTriviaData;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -26,7 +29,11 @@ public class GamePresenter implements Presenter {
   // VIEW ATTACHED
   private GameMVPView gameMVPView;
 
+  // VARIABLES
+  private GameManager gameManager;
+
   // USECASES
+  private GetCloudGames getGames;
   private GetCloudGameLeaderboard cloudGameLeaderboard;
   private GetDiskGameLeaderboard diskGameLeaderboard;
   private GetCloudUserLeaderboard cloudUserLeaderboard;
@@ -48,7 +55,7 @@ public class GamePresenter implements Presenter {
       GetDiskGameLeaderboard diskGameLeaderboard, GetCloudUserLeaderboard cloudUserLeaderboard,
       GetDiskUserLeaderboard diskUserLeaderboard, GetDiskFriendsScores diskFriendsScores,
       GetCloudFriendsScores cloudFriendsScores, GetTriviaData getTriviaData,
-      GetBattleMusicData getBattleMusicData) {
+      GetBattleMusicData getBattleMusicData, GetCloudGames getGames) {
     this.cloudGameLeaderboard = cloudGameLeaderboard;
     this.diskGameLeaderboard = diskGameLeaderboard;
     this.cloudUserLeaderboard = cloudUserLeaderboard;
@@ -57,6 +64,7 @@ public class GamePresenter implements Presenter {
     this.cloudFriendsScores = cloudFriendsScores;
     this.getTriviaData = getTriviaData;
     this.getBattleMusicData = getBattleMusicData;
+    this.getGames = getGames;
   }
 
   @Override public void onViewDetached() {
@@ -68,26 +76,18 @@ public class GamePresenter implements Presenter {
     diskFriendsScores.unsubscribe();
     getTriviaData.unsubscribe();
     getBattleMusicData.unsubscribe();
+    getGames.unsubscribe();
     gameMVPView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {
     gameMVPView = (GameMVPView) v;
+    gameManager = GameManager.getInstance(gameMVPView.context());
   }
 
   public void loadGameLeaderboard(String gameId, boolean friendsOnly, boolean shouldLoadFromDisk,
       int limit, int offset, boolean downwards) {
     if (offset < 0) return;
-    //if (shouldLoadFromDisk) {
-    //  if (diskGameLeaderboardSubscriber != null) {
-    //    diskGameLeaderboardSubscriber.unsubscribe();
-    //  }
-    //
-    //  diskGameLeaderboardSubscriber =
-    //      new GameLeaderboardSubscriber(false, friendsOnly, offset, downwards);
-    //  diskGameLeaderboard.setup(gameId, friendsOnly, limit, offset);
-    //  diskGameLeaderboard.execute(diskGameLeaderboardSubscriber);
-    //}
 
     if (cloudGameLeaderboardSubscriber != null) {
       cloudGameLeaderboardSubscriber.unsubscribe();
@@ -226,6 +226,18 @@ public class GamePresenter implements Presenter {
       @Override public void onNext(Map<String, BattleMusicPlaylist> map) {
         if (map != null && gameMVPView != null) gameMVPView.onBattleMusicData(map);
         unsubscribe();
+      }
+    });
+  }
+
+  public void getGames() {
+    getGames.execute(new DefaultSubscriber<List<Game>>() {
+      @Override public void onError(Throwable e) {
+        Timber.e(e);
+      }
+
+      @Override public void onNext(List<Game> gameList) {
+        gameManager.addGames(gameList);
       }
     });
   }

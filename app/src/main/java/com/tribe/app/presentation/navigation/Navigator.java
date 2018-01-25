@@ -30,11 +30,11 @@ import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
+import com.tribe.app.presentation.view.activity.GameStoreActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
-import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
@@ -113,13 +113,11 @@ public class Navigator {
    *
    * @param activity An activity needed to open the destiny activity.
    */
-  public void navigateToHomeFromStart(Activity activity, Uri uriDeepLink) {
+  public void navigateToHome(Activity activity) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
-      if (uriDeepLink != null) {
-        intent.setData(uriDeepLink);
-      }
       activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
     }
   }
 
@@ -307,11 +305,10 @@ public class Navigator {
     }
   }
 
-  public void navigateToNewGame(Activity activity, String source) {
+  public void navigateToNewGame(Activity activity) {
     if (activity != null) {
-      Intent intent = NewGameActivity.getCallingIntent(activity, source);
-      activity.startActivityForResult(intent, FROM_NEW_GAME);
-      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.activity_out_scale_down);
+      Intent intent = GameStoreActivity.getCallingIntent(activity);
+      activity.startActivity(intent);
     }
   }
 

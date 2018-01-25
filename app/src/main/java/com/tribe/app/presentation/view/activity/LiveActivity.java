@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringDef;
 import android.support.v4.app.NotificationManagerCompat;
@@ -392,7 +391,7 @@ public class LiveActivity extends BaseActivity
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == Navigator.FROM_NEW_GAME && data != null) {
-      String gameId = data.getStringExtra(NewGameActivity.GAME_ID);
+      String gameId = data.getStringExtra(GameStoreActivity.GAME_ID);
       viewLive.startGame(gameId);
     }
   }
@@ -961,10 +960,10 @@ public class LiveActivity extends BaseActivity
         subscribe(aVoid -> reRollTheDiceFromCallRoulette(true)));
 
     subscriptions.add(viewLive.openGameStore()
-        .subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
+        .subscribe(aVoid -> navigator.navigateToNewGame(this)));
 
     subscriptions.add(viewLive.onSwipeUp()
-        .subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
+        .subscribe(aVoid -> navigator.navigateToNewGame(this)));
 
     subscriptions.add(
         viewLive.onAddScore().subscribe(pair -> livePresenter.addScore(pair.first, pair.second)));

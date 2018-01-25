@@ -659,11 +659,12 @@
       title
       baseline
       icon
-      banner
       primary_color
       secondary_color
       plays_count
-
+      logo
+      background
+      animation_icons
       emoji
       friendLeader {
         user {

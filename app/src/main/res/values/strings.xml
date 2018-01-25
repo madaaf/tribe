@@ -599,7 +599,7 @@
 	
 	<!-- Camera Mic Popup -->
 	<string name="camera_microphone_popup_title">Enable camera and\nmicrophone to start!</string>
-	<string name="camera_microphone_popup_description">Make sure your friends\ncan see and hear you\nduring your video calls</string>
+	<string name="camera_microphone_popup_description">Make sure your friends\ncan see and hear you\nwhile playing</string>
 	<string name="camera_microphone_popup_enable_camera">Enable camera</string>
 	<string name="camera_microphone_popup_camera_enabled">Camera enabled</string>
 	<string name="camera_microphone_popup_enable_microphone">Enable microphone</string>

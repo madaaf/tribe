@@ -599,7 +599,7 @@
 	
 	<!-- Camera Mic Popup -->
 	<string name="camera_microphone_popup_title">Activez la caméra et\nle micro pour démarrer !</string>
-	<string name="camera_microphone_popup_description">Assurez vous que vos amis\npeuvent vous voir et vous entendre\npendant vos appels vidéo</string>
+	<string name="camera_microphone_popup_description">Assurez vous que vos amis\npeuvent vous voir et vous entendre\npendant vos défis</string>
 	<string name="camera_microphone_popup_enable_camera">Activer la caméra</string>
 	<string name="camera_microphone_popup_camera_enabled">Caméra activée</string>
 	<string name="camera_microphone_popup_enable_microphone">Activer le micro</string>

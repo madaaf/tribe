@@ -1,10 +1,10 @@
 package com.tribe.app.presentation.view.adapter.delegate.gamesfilters;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
@@ -24,6 +23,8 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderScriptBlur;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -44,6 +45,10 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
   protected Context context;
   protected LayoutInflater layoutInflater;
   private int radius;
+  private GradientDrawable gradientDrawable;
+  private ValueAnimator animator1;
+  private ValueAnimator animator2;
+  private ValueAnimator animator3;
 
   protected PublishSubject<View> click = PublishSubject.create();
 
@@ -54,7 +59,7 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
 
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
-    radius = screenUtils.dpToPx(6);
+    radius = screenUtils.dpToPx(10);
   }
 
   @Override public boolean isForViewType(@NonNull List<Game> items, int position) {
@@ -67,12 +72,20 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
         new GameViewHolder(layoutInflater.inflate(R.layout.item_game, parent, false));
 
     float[] radiusMatrix = new float[] { 0, 0, 0, 0, radius, radius, radius, radius };
-    GradientDrawable sd = new GradientDrawable();
-    sd.setColor(ContextCompat.getColor(context, R.color.white_opacity_15));
-    sd.setCornerRadii(radiusMatrix);
-    ViewCompat.setBackground(vh.viewBackgroundBottom, sd);
+    gradientDrawable = new GradientDrawable();
+    gradientDrawable.setCornerRadii(radiusMatrix);
+
+    float radius = 20;
+
+    vh.viewBlur.setupWith((ViewGroup) vh.itemView)
+        .blurAlgorithm(new RenderScriptBlur(context))
+        .blurRadius(radius);
 
     vh.cardView.setOnClickListener(v -> click.onNext(vh.itemView));
+
+    //animator1 = ValueAnimator.ofInt()
+    //
+    //vh.imgAnimation1.
 
     return vh;
   }
@@ -81,6 +94,8 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
       @NonNull RecyclerView.ViewHolder holder) {
     GameViewHolder vh = (GameViewHolder) holder;
     Game game = items.get(position);
+
+    gradientDrawable.setColor(Color.parseColor("#" + game.getSecondary_color()));
 
     GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {
         Color.parseColor("#" + game.getPrimary_color()),
@@ -91,7 +106,6 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     ViewCompat.setBackground(vh.viewBackground, gd);
 
     vh.txtBaseline.setText(game.getBaseline());
-    vh.txtTitle.setText(game.getTitle());
 
     new GlideUtils.GameImageBuilder(context, screenUtils).url(game.getIcon())
         .hasBorder(true)
@@ -100,11 +114,22 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
         .target(vh.imgIcon)
         .load();
 
-    Glide.with(context)
-        .load(game.getBanner())
-        .thumbnail(0.25f)
-        .diskCacheStrategy(DiskCacheStrategy.RESULT)
-        .into(vh.imgBanner);
+    Glide.with(context).load(game.getLogo()).into(vh.imgLogo);
+
+    for (int i = 0; i < game.getAnimation_icons().size(); i++) {
+      String url = game.getAnimation_icons().get(i);
+      ImageView imageView = null;
+
+      if (i == 0) {
+        imageView = vh.imgAnimation1;
+      } else if (i == 1) {
+        imageView = vh.imgAnimation2;
+      } else if (i == 2) {
+        imageView = vh.imgAnimation3;
+      }
+
+      Glide.with(context).load(url).into(imageView);
+    }
 
     if (game.isFeatured()) {
       vh.txtInfo.setText(R.string.new_game_featured);
@@ -126,14 +151,16 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
   static class GameViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.viewBackground) View viewBackground;
-    @BindView(R.id.viewBackgroundBottom) View viewBackgroundBottom;
     @BindView(R.id.imgIcon) ImageView imgIcon;
-    @BindView(R.id.imgBanner) ImageView imgBanner;
-    @BindView(R.id.txtTitle) TextViewFont txtTitle;
+    @BindView(R.id.imgLogo) ImageView imgLogo;
     @BindView(R.id.txtBaseline) TextViewFont txtBaseline;
     @BindView(R.id.txtInfo) TextViewFont txtInfo;
     @BindView(R.id.txtPlayCount) TextViewFont txtPlayCount;
     @BindView(R.id.cardView) CardView cardView;
+    @BindView(R.id.imgAnimation1) ImageView imgAnimation1;
+    @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
+    @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
+    @BindView(R.id.viewBlur) BlurView viewBlur;
 
     public GameViewHolder(View itemView) {
       super(itemView);

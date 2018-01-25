@@ -12,12 +12,12 @@ import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
+import com.tribe.app.presentation.view.activity.GameStoreActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
-import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.activity.ViewStackActivity;
@@ -227,7 +227,7 @@ import dagger.Component;
 
   void inject(GameEngine gameEngine);
 
-  void inject(NewGameActivity newGameActivity);
+  void inject(GameStoreActivity newGameActivity);
 
   void inject(GamesStoreView gamesStoreView);
 

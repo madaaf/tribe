@@ -45,7 +45,7 @@ public class LauncherActivity extends BaseActivity {
     } else if (TribeGCMReceiver.ACTION_CALLROULETTE.equals(action)) {
       navigator.navigateToNewCall(this, LiveActivity.SOURCE_CALL_ROULETTE, null);
     } else {
-      navigator.navigateToHomeFromStart(this, deepLink);
+      navigator.navigateToNewGame(this);
     }
 
     finish();

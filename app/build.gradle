@@ -47,7 +47,7 @@ android {
   }
 
   defaultConfig {
-    renderscriptTargetApi globalConfiguration.getAt("androidMinSdkVersion")
+    renderscriptTargetApi globalConfiguration.getAt("androidCompileSdkVersion")
     renderscriptSupportModeEnabled true
 
     minSdkVersion globalConfiguration.getAt("androidMinSdkVersion")
@@ -251,6 +251,7 @@ dependencies {
   compile presentationDependencies.AVLoadingIndicatorView
   compile group: 'com.zendesk', name: 'sdk-providers', version: '1.11.0.1'
   compile presentationDependencies.exoPlayer
+  compile presentationDependencies.blurView
 
   //androidTestCompile presentationTestDependencies.mockito
   //androidTestCompile presentationTestDependencies.dexmaker
