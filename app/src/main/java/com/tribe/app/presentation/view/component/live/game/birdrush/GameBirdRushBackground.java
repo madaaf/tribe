@@ -72,6 +72,10 @@ public class GameBirdRushBackground extends View {
     initResource();
     initView();
 
+    initRect();
+  }
+
+  private void initRect() {
     dstSplash = new Rect(x, y, x + screenUtils.getWidthPx(), y + screenUtils.getHeightPx());
     dstSplash2 = new Rect(x - screenUtils.getWidthPx(), y, x, y + screenUtils.getHeightPx());
   }
@@ -96,22 +100,10 @@ public class GameBirdRushBackground extends View {
   }
 
   private void initView() {
-   /* LayoutInflater inflater =
-        (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    inflater.inflate(R.layout.view_game_bird_rush_background, this, true);*/
-    //    unbinder = ButterKnife.bind(this);
-
     positionBird();
     if (splash == null) {
-      //splash = getBitmapAlpha8(getContext(), R.drawable.game_birdsrush_sky);
       splash = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdsrush_sky);
     }
-  }
-
-  public static Bitmap getBitmapAlpha8(Context context, int id) {
-    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-    bitmapOptions.inPreferredConfig = Bitmap.Config.ALPHA_8;
-    return BitmapFactory.decodeResource(context.getResources(), id, bitmapOptions);
   }
 
   protected void initDependencyInjector() {
@@ -213,8 +205,8 @@ public class GameBirdRushBackground extends View {
   }
 
   public void draw() {
-    x = x + 1;
-    //if (x > screenUtils.getWidthPx()) x = 0;
+    x = x + 2;
+    if (x > screenUtils.getWidthPx()) x = 0;
 
     invalidate();
   }
