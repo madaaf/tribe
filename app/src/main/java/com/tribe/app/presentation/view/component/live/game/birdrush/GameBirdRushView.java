@@ -173,11 +173,11 @@ public class GameBirdRushView extends GameViewWithEngine {
   private void setTimer() {
     if (timer == null) {
       Timber.e("SOEF NEW TIMEER RESET");
-      subscriptions.add(timer = Observable.interval(3000, 100, TimeUnit.MILLISECONDS)
+      subscriptions.add(timer = Observable.interval(3000, 16, TimeUnit.MILLISECONDS)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> {
-            animateObstacleList(aLong);
-            handleCollisionWithObstacle();
+           // animateObstacleList(aLong);
+           // handleCollisionWithObstacle();
             viewBackground.draw();
           }));
     }
@@ -414,7 +414,7 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     obstacle.setX(screenUtils.getWidthPx());
     obstacle.setY(height);
-   // viewBackground.addView(obstacle);
+    // viewBackground.addView(obstacle);
 
     model.animateObstacle();
   }

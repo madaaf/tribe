@@ -71,17 +71,19 @@ public class GameBirdRushBackground extends View {
     initDependencyInjector();
     initResource();
     initView();
+
+    dstSplash = new Rect(x, y, x + screenUtils.getWidthPx(), y + screenUtils.getHeightPx());
+    dstSplash2 = new Rect(x - screenUtils.getWidthPx(), y, x, y + screenUtils.getHeightPx());
   }
 
   @Override protected void onDraw(Canvas canvas) {
     Timber.e("ON DRAW " + x);
 
-    dstSplash = new Rect(x, y, x + screenUtils.getWidthPx(), y + screenUtils.getHeightPx());
-    dstSplash2 = new Rect(x - screenUtils.getWidthPx(), y, x, y + screenUtils.getHeightPx());
+    dstSplash.set(x, y, x + screenUtils.getWidthPx(), y + screenUtils.getHeightPx());
+    dstSplash2.set(x - screenUtils.getWidthPx(), y, x, y + screenUtils.getHeightPx());
 
     canvas.drawBitmap(splash, null, dstSplash, null);
     canvas.drawBitmap(splash, null, dstSplash2, null);
-    //canvas.drawBitmap(splash, 0, 0, null);
   }
 
   private void initResource() {
@@ -211,7 +213,9 @@ public class GameBirdRushBackground extends View {
   }
 
   public void draw() {
-    x = x + 4;
+    x = x + 1;
+    //if (x > screenUtils.getWidthPx()) x = 0;
+
     invalidate();
   }
 
