@@ -599,7 +599,7 @@
 	
 	<!-- Camera Mic Popup -->
 	<string name="camera_microphone_popup_title">Activez la caméra et\nle micro pour démarrer !</string>
-	<string name="camera_microphone_popup_description">Assurez vous que vos amis\npeuvent vous voir et vous entendre\npendant vos appels vidéo</string>
+	<string name="camera_microphone_popup_description">Assurez vous que vos amis\npeuvent vous voir et vous entendre\npendant vos défis</string>
 	<string name="camera_microphone_popup_enable_camera">Activer la caméra</string>
 	<string name="camera_microphone_popup_camera_enabled">Caméra activée</string>
 	<string name="camera_microphone_popup_enable_microphone">Activer le micro</string>
@@ -729,6 +729,14 @@
 	<string name="game_bird_rush_someone_lost">%1$s A PERDU !</string>
 	<string name="game_bird_rush_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_bird_rush_waiting_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE</string>
+	<string name="game_face_ddr_title">FACE\nDDR</string>
+	<string name="game_face_ddr_lets_go">DANCE WITH YOUR FACE!</string>
+	<string name="game_face_ddr_you_won">TU AS GAGNÉ !</string>
+	<string name="game_face_ddr_someone_won">%1$s A GAGNÉ !</string>
+	<string name="game_face_ddr_you_lost">TU AS PERDU</string>
+	<string name="game_face_ddr_someone_lost">%1$s A PERDU !</string>
+	<string name="game_face_ddr_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
+	<string name="game_face_ddr_waiting_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE</string>
 	<string name="game_webv1_lets_go">C\'EST PARTI !</string>
 	<string name="game_webv1_you_won">TU AS GAGNÉ !</string>
 	<string name="game_webv1_someone_won">%1$s A GAGNÉ !</string>
