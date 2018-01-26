@@ -178,7 +178,7 @@ public class GameBirdRushView extends GameViewWithEngine {
           .subscribe(aLong -> {
            // animateObstacleList(aLong);
            // handleCollisionWithObstacle();
-            viewBackground.draw();
+            viewBackground.setBackScrolling();
           }));
     }
   }

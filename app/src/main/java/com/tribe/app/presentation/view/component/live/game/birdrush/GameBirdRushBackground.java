@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,7 +11,6 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -34,26 +32,18 @@ public class GameBirdRushBackground extends View {
 
   @Inject ScreenUtils screenUtils;
 
-  // @BindView(R.id.background_one) ImageView backgroundOne;
-  // @BindView(R.id.background_two) ImageView backgroundTwo;
-
   private static Bitmap splash = null;
+  private static int screenWidth;
   private Rect dstSplash;
   private Rect dstSplash2;
 
-  /**
-   * VARIABLES
-   */
+  private int x = 0;
+  private int y = 0;
+  private boolean pause = false;
 
-  private Unbinder unbinder;
-  private ValueAnimator animator;
-
-  int x = 0;
-  int y = 0;
   /**
    * OBSERVABLES
    */
-
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private CompositeSubscription subscriptionsAnimation = new CompositeSubscription();
 
@@ -62,7 +52,7 @@ public class GameBirdRushBackground extends View {
     init();
   }
 
-  public GameBirdRushBackground(@NonNull Context context, @Nullable AttributeSet attrs) {
+  public GameBirdRushBackground(Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     init();
   }
@@ -71,32 +61,29 @@ public class GameBirdRushBackground extends View {
     initDependencyInjector();
     initResource();
     initView();
-
-    initRect();
   }
 
-  private void initRect() {
-    dstSplash = new Rect(x, y, x + screenUtils.getWidthPx(), y + screenUtils.getHeightPx());
-    dstSplash2 = new Rect(x - screenUtils.getWidthPx(), y, x, y + screenUtils.getHeightPx());
+  private void initResource() {
+    screenWidth = screenUtils.getWidthPx();
+    dstSplash = new Rect(x, y, x + screenWidth, y + screenUtils.getHeightPx());
+    dstSplash2 = new Rect(x + screenWidth, y, x + (2 * screenWidth), y + screenUtils.getHeightPx());
+
+    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+      @Override public void onGlobalLayout() {
+        getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        SPEED_BACK_SCROLL = (long) (screenWidth * 20);
+      }
+    });
   }
 
   @Override protected void onDraw(Canvas canvas) {
     Timber.e("ON DRAW " + x);
 
-    dstSplash.set(x, y, x + screenUtils.getWidthPx(), y + screenUtils.getHeightPx());
-    dstSplash2.set(x - screenUtils.getWidthPx(), y, x, y + screenUtils.getHeightPx());
+    dstSplash.set(x, y, x + screenWidth, y + screenUtils.getHeightPx());
+    dstSplash2.set(x + screenWidth, y, x + (2 * screenWidth), y + screenUtils.getHeightPx());
 
     canvas.drawBitmap(splash, null, dstSplash, null);
     canvas.drawBitmap(splash, null, dstSplash2, null);
-  }
-
-  private void initResource() {
-    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-      @Override public void onGlobalLayout() {
-        getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        SPEED_BACK_SCROLL = (long) (screenUtils.getWidthPx() * 20);
-      }
-    });
   }
 
   private void initView() {
@@ -104,26 +91,6 @@ public class GameBirdRushBackground extends View {
     if (splash == null) {
       splash = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdsrush_sky);
     }
-  }
-
-  protected void initDependencyInjector() {
-    DaggerUserComponent.builder()
-        .activityModule(getActivityModule())
-        .applicationComponent(getApplicationComponent())
-        .build()
-        .inject(this);
-  }
-
-  protected ApplicationComponent getApplicationComponent() {
-    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
-  }
-
-  protected ActivityModule getActivityModule() {
-    return new ActivityModule(((Activity) getContext()));
-  }
-
-  private void positionBird() {
-
   }
 
   private void initAnimations() {
@@ -134,52 +101,23 @@ public class GameBirdRushBackground extends View {
     super.onSizeChanged(w, h, oldw, oldh);
   }
 
-  private void setBackScrolling() {
-    /*
-    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-      @Override public void onGlobalLayout() {
-        getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        Timber.e("SOEF SET BACK SCROLLING ");
-        animator = ValueAnimator.ofFloat(0.0f, 1.0f);
-        animator.setRepeatCount(ValueAnimator.INFINITE);
-        animator.setInterpolator(new LinearInterpolator());
-        animator.setDuration(SPEED_BACK_SCROLL);
-        animator.addUpdateListener(animation -> {
-          final float progress = (float) animation.getAnimatedValue();
-          final float width = backgroundOne.getWidth();
-          final float translationX = -width * progress;
-          backgroundOne.setTranslationX(translationX);
-          backgroundTwo.setTranslationX(translationX + width);
-        });
-
-        animator.addListener(new AnimatorListenerAdapter() {
-          @Override public void onAnimationRepeat(Animator animation) {
-            super.onAnimationRepeat(animation);
-          }
-        });
-        animator.start();
-      }
-    });
-    */
-  }
-
   /**
    * PUBLIC
    */
 
   public void start() {
     initAnimations();
+    pause = false;
   }
 
   public void stop(List<BirdRushObstacle> obstaclesList) {
+    pause = true;
     Timber.e("SOEF BACKGRUND  stop ");
-    if (animator != null) animator.cancel();
+    // if (animator != null) animator.cancel();
     for (int i = 0; i < obstaclesList.size(); i++) {
       View v = obstaclesList.get(i).getView();
       //removeView(v);
     }
-    // backgroundOne.clearAnimation();
-    // backgroundTwo.clearAnimation();
   }
 
   public void dispose() {
@@ -204,15 +142,35 @@ public class GameBirdRushBackground extends View {
 
   }
 
-  public void draw() {
-    x = x + 2;
-    if (x > screenUtils.getWidthPx()) x = 0;
-
-    invalidate();
+  public void setBackScrolling() {
+    if (!pause) {
+      x = x - 2;
+      if (x < -screenWidth) x = 0;
+      invalidate();
+    }
   }
 
   /**
    * OBSERVABLES
    */
 
+  protected void initDependencyInjector() {
+    DaggerUserComponent.builder()
+        .activityModule(getActivityModule())
+        .applicationComponent(getApplicationComponent())
+        .build()
+        .inject(this);
+  }
+
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
+
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
+  }
+
+  private void positionBird() {
+
+  }
 }
