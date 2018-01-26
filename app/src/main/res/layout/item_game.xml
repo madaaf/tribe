@@ -81,8 +81,8 @@
 
       <ImageView
           android:id="@+id/imgAnimation1"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+          android:layout_width="30dp"
+          android:layout_height="30dp"
           android:layout_marginEnd="5dp"
           android:layout_marginTop="5dp"
           android:scaleType="centerInside"
@@ -92,9 +92,9 @@
 
       <ImageView
           android:id="@+id/imgAnimation2"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="5dp"
+          android:layout_width="30dp"
+          android:layout_height="30dp"
+          android:layout_marginTop="10dp"
           android:scaleType="centerInside"
           app:layout_constraintEnd_toStartOf="@id/imgAnimation1"
           app:layout_constraintTop_toTopOf="parent"
@@ -102,10 +102,10 @@
 
       <ImageView
           android:id="@+id/imgAnimation3"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+          android:layout_width="55dp"
+          android:layout_height="55dp"
           android:layout_marginEnd="5dp"
-          android:layout_marginTop="10dp"
+          android:layout_marginTop="2dp"
           android:scaleType="centerInside"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintTop_toBottomOf="@id/imgAnimation1"

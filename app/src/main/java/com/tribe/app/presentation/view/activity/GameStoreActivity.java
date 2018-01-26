@@ -118,9 +118,7 @@ public class GameStoreActivity extends BaseActivity {
     gameAdapter.setItems(items);
     subscriptions.add(gameAdapter.onClick()
         .map(view -> gameAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view)))
-        .subscribe(game -> {
-          // WHAT TO DO BRUH
-        }));
+        .subscribe(game -> navigator.navigateToGameDetails(this, game.getId())));
   }
 
   private void addFooterItem() {
@@ -147,6 +145,10 @@ public class GameStoreActivity extends BaseActivity {
 
   @OnClick(R.id.btnFriends) void onClickFriends() {
     navigator.navigateToHome(this);
+  }
+
+  @OnClick(R.id.btnLeaderboards) void onClickLeaderboards() {
+    navigator.navigateToLeaderboards(this);
   }
 
   /**

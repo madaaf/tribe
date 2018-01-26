@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
 import butterknife.OnClick;
+import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
@@ -101,15 +102,14 @@ public class LeaderboardActivity extends ViewStackActivity {
     }
 
     btnBack.setVisibility(View.VISIBLE);
-    btnBack.setImageResource(R.drawable.picto_settings);
+    btnBack.setImageResource(R.drawable.picto_arrow_back);
+    btnForward.setVisibility(View.GONE);
 
     if (StringUtils.isEmpty(userId)) {
       txtTitle.setText(R.string.leaderboards_you);
     } else {
       txtTitle.setText(displayName);
     }
-
-    btnForward.setOnClickListener(v -> finish());
 
     if (savedInstanceState == null && StringUtils.isEmpty(userId)) {
       setupMainView(getCurrentUser(), false);
@@ -119,16 +119,12 @@ public class LeaderboardActivity extends ViewStackActivity {
   }
 
   @OnClick(R.id.btnBack) void clickBack() {
-    if (viewStack.getTopView() instanceof LeaderboardMainView) {
-      navigator.navigateToProfile(this);
-    } else {
-      onBackPressed();
-    }
+    onBackPressed();
   }
 
   @Override public void finish() {
     super.finish();
-    overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_left);
+    overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
   }
 
   private void setupMainView(User user, boolean collapsed) {
@@ -150,8 +146,10 @@ public class LeaderboardActivity extends ViewStackActivity {
   protected void computeTitle(boolean forward, View to) {
     if (to instanceof LeaderboardMainView) {
       setupTitle(getString(R.string.leaderboards_you), forward);
-      btnForward.setVisibility(View.VISIBLE);
-      btnBack.setImageResource(R.drawable.picto_settings);
+      btnForward.setVisibility(View.GONE);
+      btnBack.setImageResource(R.drawable.picto_arrow_back);
+
+      Glide.clear(btnBack);
     } else if (to instanceof LeaderboardDetailsView) {
       btnForward.setVisibility(View.GONE);
       setupTitle(selectedGame.getTitle(), forward);

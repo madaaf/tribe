@@ -729,6 +729,14 @@
 	<string name="game_bird_rush_someone_lost">%1$s A PERDU !</string>
 	<string name="game_bird_rush_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
 	<string name="game_bird_rush_waiting_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE</string>
+	<string name="game_face_ddr_title">FACE\nDDR</string>
+	<string name="game_face_ddr_lets_go">DANCE WITH YOUR FACE!</string>
+	<string name="game_face_ddr_you_won">TU AS GAGNÉ !</string>
+	<string name="game_face_ddr_someone_won">%1$s A GAGNÉ !</string>
+	<string name="game_face_ddr_you_lost">TU AS PERDU</string>
+	<string name="game_face_ddr_someone_lost">%1$s A PERDU !</string>
+	<string name="game_face_ddr_pending_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE</string>
+	<string name="game_face_ddr_waiting_instructions">LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE</string>
 	<string name="game_webv1_lets_go">C\'EST PARTI !</string>
 	<string name="game_webv1_you_won">TU AS GAGNÉ !</string>
 	<string name="game_webv1_someone_won">%1$s A GAGNÉ !</string>

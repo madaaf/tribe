@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,7 +26,10 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderScriptBlur;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -36,6 +40,7 @@ import rx.subjects.PublishSubject;
 public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
 
   protected static final int DURATION = 100;
+  protected static final int DURATION_MOVING = 2500;
   protected static final float OVERSHOOT_LIGHT = 0.45f;
 
   @Inject ScreenUtils screenUtils;
@@ -46,9 +51,7 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
   protected LayoutInflater layoutInflater;
   private int radius;
   private GradientDrawable gradientDrawable;
-  private ValueAnimator animator1;
-  private ValueAnimator animator2;
-  private ValueAnimator animator3;
+  private Map<String, ValueAnimator> mapAnimator;
 
   protected PublishSubject<View> click = PublishSubject.create();
 
@@ -60,6 +63,7 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
     radius = screenUtils.dpToPx(10);
+    mapAnimator = new HashMap<>();
   }
 
   @Override public boolean isForViewType(@NonNull List<Game> items, int position) {
@@ -71,11 +75,7 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     final GameViewHolder vh =
         new GameViewHolder(layoutInflater.inflate(R.layout.item_game, parent, false));
 
-    float[] radiusMatrix = new float[] { 0, 0, 0, 0, radius, radius, radius, radius };
-    gradientDrawable = new GradientDrawable();
-    gradientDrawable.setCornerRadii(radiusMatrix);
-
-    float radius = 20;
+    float radius = 5;
 
     vh.viewBlur.setupWith((ViewGroup) vh.itemView)
         .blurAlgorithm(new RenderScriptBlur(context))
@@ -83,19 +83,38 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
 
     vh.cardView.setOnClickListener(v -> click.onNext(vh.itemView));
 
-    //animator1 = ValueAnimator.ofInt()
-    //
-    //vh.imgAnimation1.
+    animateImgX(vh.imgAnimation1);
+    animateImgX(vh.imgAnimation2);
+    animateImgX(vh.imgAnimation3);
 
     return vh;
+  }
+
+  private void animateImgX(ImageView imgAnimation) {
+    int rdm = new Random().nextInt(5) - 2;
+
+    ValueAnimator animator = mapAnimator.get(imgAnimation.getId());
+    if (animator != null) {
+      animator.cancel();
+    }
+
+    animator = ValueAnimator.ofInt(0, screenUtils.dpToPx(rdm));
+    animator.setDuration(DURATION_MOVING);
+    animator.setInterpolator(new DecelerateInterpolator());
+    animator.setRepeatCount(ValueAnimator.INFINITE);
+    animator.setRepeatMode(ValueAnimator.REVERSE);
+    animator.addUpdateListener(animation -> {
+      int translation = (int) animation.getAnimatedValue();
+      imgAnimation.setTranslationX(translation);
+      imgAnimation.setTranslationY(translation);
+    });
+    animator.start();
   }
 
   @Override public void onBindViewHolder(@NonNull List<Game> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
     GameViewHolder vh = (GameViewHolder) holder;
     Game game = items.get(position);
-
-    gradientDrawable.setColor(Color.parseColor("#" + game.getSecondary_color()));
 
     GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {
         Color.parseColor("#" + game.getPrimary_color()),

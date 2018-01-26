@@ -729,6 +729,14 @@
 	<string name="game_bird_rush_someone_lost">%1$s LOST!</string>
 	<string name="game_bird_rush_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
 	<string name="game_bird_rush_waiting_instructions">IT WILL RESTART WHEN\nSOMEONE JOINS</string>
+	<string name="game_face_ddr_title">FACE\nDDR</string>
+	<string name="game_face_ddr_lets_go">DANCE WITH YOUR FACE!</string>
+	<string name="game_face_ddr_you_won">YOU WON!</string>
+	<string name="game_face_ddr_someone_won">%1$s WON!</string>
+	<string name="game_face_ddr_you_lost">YOU LOST</string>
+	<string name="game_face_ddr_someone_lost">%1$s LOST!</string>
+	<string name="game_face_ddr_pending_instructions">IT WILL RESTART WHEN\nSOMEONE WINS</string>
+	<string name="game_face_ddr_waiting_instructions">IT WILL RESTART WHEN\nSOMEONE JOINS</string>
 	<string name="game_webv1_lets_go">LET\'S GO!</string>
 	<string name="game_webv1_you_won">YOU WON!</string>
 	<string name="game_webv1_someone_won">%1$s WON!</string>

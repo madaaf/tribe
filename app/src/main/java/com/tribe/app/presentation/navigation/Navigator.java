@@ -30,6 +30,7 @@ import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
+import com.tribe.app.presentation.view.activity.GameDetailsActivity;
 import com.tribe.app.presentation.view.activity.GameStoreActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -158,7 +159,7 @@ public class Navigator {
     if (activity != null) {
       Intent intent = LeaderboardActivity.getCallingIntent(activity);
       activity.startActivityForResult(intent, FROM_LEADERBOARD);
-      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }
 
@@ -177,6 +178,14 @@ public class Navigator {
       Intent intent = VideoActivity.getCallingIntent(activity);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+    }
+  }
+
+  public void navigateToGameDetails(Activity activity, String gameId) {
+    if (activity != null) {
+      Intent intent = GameDetailsActivity.getCallingIntent(activity, gameId);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
   }
 

@@ -12,6 +12,7 @@ import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
+import com.tribe.app.presentation.view.activity.GameDetailsActivity;
 import com.tribe.app.presentation.view.activity.GameStoreActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LeaderboardActivity;
@@ -238,4 +239,6 @@ import dagger.Component;
   void inject(LeaderboardMainView leaderboardMainView);
 
   void inject(LeaderboardDetailsView leaderboardDetailsView);
+
+  void inject(GameDetailsActivity gameDetailsActivity);
 }

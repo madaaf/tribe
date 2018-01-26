@@ -98,7 +98,6 @@
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme"/>
 
-
     <activity
         android:name=".presentation.view.activity.HomeActivity"
         android:configChanges="orientation|keyboardHidden|screenSize"
@@ -115,9 +114,16 @@
 
     <activity
         android:name=".presentation.view.activity.GameStoreActivity"
+        android:configChanges="orientation|keyboardHidden|screenSize"
         android:label="@string/app_name"
+        android:launchMode="singleTask"
         android:screenOrientation="portrait"
-        android:theme="@style/AppTheme"/>
+        android:theme="@style/AppTheme.White"/>
+
+    <activity
+        android:name=".presentation.view.activity.GameDetailsActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/AppTheme.Black"/>
 
     <activity
         android:name=".presentation.view.widget.chat.PictureActivity"

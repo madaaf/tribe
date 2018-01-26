@@ -61,7 +61,6 @@ public class Game {
   protected String title;
   protected String baseline;
   protected String icon;
-  protected String banner;
   protected String primary_color;
   protected String secondary_color;
   protected int plays_count;
@@ -199,14 +198,6 @@ public class Game {
 
   public void setIcon(String icon) {
     this.icon = icon;
-  }
-
-  public String getBanner() {
-    return banner;
-  }
-
-  public void setBanner(String banner) {
-    this.banner = banner;
   }
 
   public String getPrimary_color() {
