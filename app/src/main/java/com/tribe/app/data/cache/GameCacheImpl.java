@@ -40,6 +40,7 @@ public class GameCacheImpl implements GameCache {
         for (GameRealm gameRealm : gameRealmList) {
           if (gameRealm.getFriendLeader() != null) {
             gameRealm.setFriendLeaderScoreUser(gameRealm.getFriendLeader().getUser());
+            gameRealm.getFriendLeaderScoreUser().setValue(gameRealm.getFriendLeader().getValue());
           }
         }
 

@@ -149,7 +149,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(14)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(15)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -416,6 +416,11 @@ public class AndroidApplication extends Application {
                   .addRealmListField("animation_icons", schema.get("AnimationIconRealm"));
             }
 
+            oldVersion++;
+          }
+
+          if (oldVersion == 14) {
+            schema.get("ScoreUserRealm").addField("value", int.class);
             oldVersion++;
           }
         })

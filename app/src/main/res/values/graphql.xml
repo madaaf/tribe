@@ -167,6 +167,39 @@
         }
     </string>
 
+  <string name="userfragment.infos.with.games" translatable="false">
+        fragment UserInfos on User {
+            id
+            phone
+            fbid
+            invisible_mode
+            username
+            display_name
+            picture
+            created_at
+            push_notif
+            mute_online_notif
+            is_online
+            last_seen_at
+            time_in_call
+            random_banned_permanently
+  	        random_banned_until
+            scores {
+              ranking
+              game {
+                id
+              }
+              value
+              user {
+                id
+                display_name
+                picture
+                username
+              }
+            }
+        }
+    </string>
+
   <string name="userfragment.infos.light" translatable="false">
     fragment UserInfos on User {
       id
@@ -671,6 +704,7 @@
           id
           display_name
         }
+        value
       }
 
       __typename

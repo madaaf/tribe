@@ -11,10 +11,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
+import com.tribe.app.presentation.mvp.presenter.UserPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.view.adapter.GameAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.GamesLayoutManager;
@@ -25,6 +28,8 @@ import com.tribe.tribelivesdk.game.GameManager;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 public class GameStoreActivity extends BaseActivity {
@@ -44,6 +49,8 @@ public class GameStoreActivity extends BaseActivity {
 
   @Inject GamePresenter gamePresenter;
 
+  @Inject UserPresenter userPresenter;
+
   @BindView(R.id.recyclerViewGames) RecyclerView recyclerViewGames;
 
   // VARIABLES
@@ -52,11 +59,14 @@ public class GameStoreActivity extends BaseActivity {
   private List<Game> items;
   private GameManager gameManager;
   private GameMVPViewAdapter gameMVPViewAdapter;
+  private UserMVPViewAdapter userMVPViewAdapter;
 
   // RESOURCES
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
+  private PublishSubject<User> onUser = PublishSubject.create();
+  private PublishSubject<List<Game>> onGames = PublishSubject.create();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     getWindow().getDecorView().setBackgroundColor(Color.WHITE);
@@ -77,11 +87,13 @@ public class GameStoreActivity extends BaseActivity {
   @Override protected void onStart() {
     super.onStart();
     gamePresenter.onViewAttached(gameMVPViewAdapter);
+    userPresenter.onViewAttached(userMVPViewAdapter);
   }
 
   @Override protected void onStop() {
     super.onStop();
     gamePresenter.onViewDetached();
+    userPresenter.onViewDetached();
   }
 
   @Override protected void onDestroy() {
@@ -94,13 +106,34 @@ public class GameStoreActivity extends BaseActivity {
       @Override public Context context() {
         return GameStoreActivity.this;
       }
+
+      @Override public void onGameList(List<Game> gameList) {
+        gameManager.addGames(gameList);
+        onGames.onNext(gameList);
+      }
     };
 
+    userMVPViewAdapter = new UserMVPViewAdapter() {
+      @Override public void onUserInfos(User user) {
+        onUser.onNext(user);
+      }
+    };
+
+    userPresenter.getUserInfos();
     gamePresenter.getGames();
   }
 
   private void initSubscriptions() {
     subscriptions = new CompositeSubscription();
+
+    subscriptions.add(Observable.combineLatest(onUser, onGames, (t1, t2) -> {
+      items.clear();
+      items.addAll(gameManager.getGames());
+      addFooterItem();
+
+      gameAdapter.setItems(items);
+      return null;
+    }).subscribe());
   }
 
   private void initUI() {
@@ -112,10 +145,6 @@ public class GameStoreActivity extends BaseActivity {
         new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.grey_divider),
             screenUtils.dpToPx(0.5f)));
 
-    items.addAll(gameManager.getGames());
-    addFooterItem();
-
-    gameAdapter.setItems(items);
     subscriptions.add(gameAdapter.onClick()
         .map(view -> gameAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view)))
         .subscribe(game -> navigator.navigateToGameDetails(this, game.getId())));

@@ -8,10 +8,12 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.transition.ChangeBounds;
 import android.support.transition.Transition;
+import android.support.transition.TransitionListenerAdapter;
 import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewCompat;
 import android.view.View;
@@ -26,6 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Score;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
@@ -71,9 +74,12 @@ public class GameDetailsActivity extends BaseActivity {
   @BindView(R.id.imgAnimation1) ImageView imgAnimation1;
   @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
   @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
-  @BindView(R.id.imgAvatarMyScore) ImageView imgAvatarMyScore;
+  @BindView(R.id.avatarMyScore) ImageView avatarMyScore;
   @BindView(R.id.txtMyScoreScore) TextViewFont txtMyScoreScore;
   @BindView(R.id.txtMyScoreDesc) TextViewFont txtMyScoreDesc;
+  @BindView(R.id.avatarBestScore) ImageView avatarBestScore;
+  @BindView(R.id.txtBestScoreScore) TextViewFont txtBestScoreScore;
+  @BindView(R.id.txtBestScoreDesc) TextViewFont txtBestScoreDesc;
 
   // VARIABLES
   private UserComponent userComponent;
@@ -210,8 +216,30 @@ public class GameDetailsActivity extends BaseActivity {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> showButtons()));
 
-    int score = getCurrentUser().getScoreForGame(game.getId()).getValue();
-    
+    Score score = getCurrentUser().getScoreForGame(game.getId());
+    if (score != null) {
+      txtMyScoreScore.setText(score.getValue() + getString(R.string.leaderboards_points));
+      txtMyScoreDesc.setText(R.string.leaderboards_your_score);
+    } else {
+      txtMyScoreScore.setText("0 " + getString(R.string.leaderboards_points));
+      txtMyScoreDesc.setText(R.string.leaderboards_no_score);
+    }
+
+    new GlideUtils.Builder(this).url(getCurrentUser().getProfilePicture())
+        .hasPlaceholder(true)
+        .target(avatarMyScore)
+        .load();
+
+    if (game.getFriendLeader() != null) {
+      int leaderScore = game.getFriendLeader().getScoreValue();
+      txtBestScoreScore.setText(leaderScore + getString(R.string.leaderboards_points));
+      txtBestScoreDesc.setText(R.string.leaderboards_score);
+
+      new GlideUtils.Builder(this).url(game.getFriendLeader().getPicture())
+          .hasPlaceholder(true)
+          .target(avatarBestScore)
+          .load();
+    }
   }
 
   private void initDependencyInjector() {
@@ -268,13 +296,36 @@ public class GameDetailsActivity extends BaseActivity {
     set.clear(R.id.btnMulti, ConstraintSet.TOP);
     set.setAlpha(R.id.btnSingle, 1);
     set.setAlpha(R.id.btnMulti, 1);
-    animateLayoutWithConstraintSet(set);
+    animateLayoutWithConstraintSet(set, new TransitionListenerAdapter() {
+      @Override public void onTransitionEnd(@NonNull Transition transition) {
+        showScores();
+      }
+    });
   }
 
-  private void animateLayoutWithConstraintSet(ConstraintSet constraintSet) {
+  private void showScores() {
+    ConstraintSet set = new ConstraintSet();
+    set.clone(layoutConstraint);
+    set.connect(R.id.cardAvatarMyScore, ConstraintSet.BOTTOM, R.id.btnSingle, ConstraintSet.TOP);
+    set.clear(R.id.cardAvatarMyScore, ConstraintSet.TOP);
+
+    if (game.getFriendLeader() != null) {
+      set.clear(R.id.imgConnect, ConstraintSet.TOP);
+      set.connect(R.id.imgConnect, ConstraintSet.BOTTOM, R.id.cardAvatarMyScore, ConstraintSet.TOP);
+      set.clear(R.id.cardAvatarBestScore, ConstraintSet.TOP);
+      set.connect(R.id.cardAvatarBestScore, ConstraintSet.BOTTOM, R.id.imgConnect,
+          ConstraintSet.TOP);
+    }
+
+    animateLayoutWithConstraintSet(set, null);
+  }
+
+  private void animateLayoutWithConstraintSet(ConstraintSet constraintSet,
+      Transition.TransitionListener transitionListener) {
     Transition transition = new ChangeBounds();
     transition.setDuration(DURATION);
     transition.setInterpolator(new OvershootInterpolator(0.75f));
+    if (transitionListener != null) transition.addListener(transitionListener);
     TransitionManager.beginDelayedTransition(layoutConstraint, transition);
     constraintSet.applyTo(layoutConstraint);
   }

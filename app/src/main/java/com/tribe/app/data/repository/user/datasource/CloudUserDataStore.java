@@ -173,7 +173,7 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     return this.tribeApi.getUserInfos(context.getString(R.string.user_infos, countShortcutsToUpdate,
-        context.getString(R.string.userfragment_infos),
+        context.getString(R.string.userfragment_infos_with_games),
         context.getString(R.string.shortcutFragment_infos),
         context.getString(R.string.roomFragment_infos))).doOnNext(saveToCacheUser);
   }
@@ -487,13 +487,11 @@ public class CloudUserDataStore implements UserDataStore {
 
       if (resultLookupUserIds.length() == 0) {
         return Observable.just(new ArrayList<UserRealm>());
-
       } else {
         return this.tribeApi.getUserListInfos(context.getString(R.string.lookup_userid,
-                resultLookupUserIds.substring(0, resultLookupUserIds.length() - 1),
-                context.getString(R.string.userfragment_infos)));
+            resultLookupUserIds.substring(0, resultLookupUserIds.length() - 1),
+            context.getString(R.string.userfragment_infos)));
       }
- 
     }, (lookupHolder, lookupUsers) -> {
       if (lookupHolder != null && lookupUsers != null) {
         List<LookupObject> listLookup = lookupHolder.getLookupObjectList();

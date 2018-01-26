@@ -164,12 +164,12 @@
     <FrameLayout
         android:id="@+id/btnMulti"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="70dp"
         android:layout_marginBottom="50dp"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:layout_marginStart="@dimen/horizontal_margin_small"
         android:alpha="0"
-        android:background="@drawable/shape_oval_white"
+        android:background="@drawable/bg_game_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent"
@@ -199,12 +199,11 @@
     <FrameLayout
         android:id="@+id/btnSingle"
         android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="@dimen/horizontal_margin_small"
+        android:layout_height="70dp"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
         android:layout_marginStart="@dimen/horizontal_margin_small"
         android:alpha="0"
-        android:background="@drawable/shape_oval_white"
+        android:background="@drawable/bg_game_btn"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -231,70 +230,26 @@
           />
     </FrameLayout>
 
-    <!--<android.support.v7.widget.CardView
-      android:id="@+id/cardAvatarBestScore"
-      android:layout_width="35dp"
-      android:layout_height="35dp"
-      android:clipChildren="false"
-      app:cardBackgroundColor="@android:color/transparent"
-      app:cardCornerRadius="17.5dp"
-      app:cardElevation="5dp"
-      app:cardPreventCornerOverlap="false"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      >
-
-    <ImageView
-        android:id="@+id/imgAvatarBestScore"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/horizontal_margin_small"
-        android:scaleType="centerCrop"
-        />
-
-  </android.support.v7.widget.CardView>
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtBestScoreScore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imgLogo"
-        style="@style/Title.1.Black40"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtBestScoreDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imgLogo"
-        style="@style/Title.1.Black40"
-        />-->
-
     <android.support.v7.widget.CardView
         android:id="@+id/cardAvatarMyScore"
         android:layout_width="35dp"
         android:layout_height="35dp"
+        android:layout_marginBottom="15dp"
         android:layout_marginStart="@dimen/horizontal_margin_small"
         android:clipChildren="false"
         app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="17.5dp"
         app:cardElevation="5dp"
         app:cardPreventCornerOverlap="false"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent"
         >
 
       <ImageView
-          android:id="@+id/imgAvatarMyScore"
+          android:id="@+id/avatarMyScore"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:layout_marginStart="@dimen/horizontal_margin_small"
+          android:layout_gravity="center"
           android:scaleType="centerCrop"
           />
 
@@ -308,7 +263,7 @@
         app:layout_constraintStart_toEndOf="@id/cardAvatarMyScore"
         app:layout_constraintTop_toTopOf="@id/cardAvatarMyScore"
         app:layout_constraintVertical_chainStyle="packed"
-        style="@style/Title.1.Black40"
+        style="@style/BiggerTitle.2.White"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -319,7 +274,66 @@
         app:layout_constraintBottom_toBottomOf="@id/cardAvatarMyScore"
         app:layout_constraintStart_toEndOf="@id/cardAvatarMyScore"
         app:layout_constraintTop_toBottomOf="@id/txtMyScoreScore"
-        style="@style/Title.1.Black40"
+        style="@style/Caption.Two.White"
+        />
+
+    <ImageView
+        android:id="@+id/imgConnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_connect"
+        app:layout_constraintEnd_toEndOf="@id/cardAvatarMyScore"
+        app:layout_constraintStart_toStartOf="@id/cardAvatarMyScore"
+        app:layout_constraintTop_toBottomOf="@id/cardAvatarMyScore"
+        />
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardAvatarBestScore"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginBottom="7.5dp"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:clipChildren="false"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="17.5dp"
+        app:cardElevation="5dp"
+        app:cardPreventCornerOverlap="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imgConnect"
+        >
+
+      <ImageView
+          android:id="@+id/avatarBestScore"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_gravity="center"
+          android:scaleType="centerCrop"
+          />
+
+    </android.support.v7.widget.CardView>
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtBestScoreScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        app:layout_constraintStart_toEndOf="@id/cardAvatarBestScore"
+        app:layout_constraintTop_toTopOf="@id/cardAvatarBestScore"
+        app:layout_constraintVertical_chainStyle="packed"
+        style="@style/BiggerTitle.2.White"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtBestScoreDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        app:layout_constraintBottom_toBottomOf="@id/cardAvatarBestScore"
+        app:layout_constraintStart_toEndOf="@id/cardAvatarBestScore"
+        app:layout_constraintTop_toBottomOf="@id/txtBestScoreScore"
+        style="@style/Caption.Two.White"
         />
 
   </android.support.constraint.ConstraintLayout>

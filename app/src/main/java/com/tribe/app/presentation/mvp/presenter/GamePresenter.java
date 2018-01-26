@@ -237,7 +237,7 @@ public class GamePresenter implements Presenter {
       }
 
       @Override public void onNext(List<Game> gameList) {
-        gameManager.addGames(gameList);
+        if (gameMVPView != null) gameMVPView.onGameList(gameList);
       }
     });
   }

@@ -72,6 +72,7 @@ import javax.inject.Singleton;
         TribeGuest guest = new TribeGuest(gameRealm.getFriendLeaderScoreUser().getId(),
             gameRealm.getFriendLeaderScoreUser().getDisplay_name(),
             gameRealm.getFriendLeaderScoreUser().getPicture(), false, false, null);
+        guest.setScoreValue(gameRealm.getFriendLeaderScoreUser().getValue());
         game.setFriendLeader(guest);
       }
       game.setEmoji(gameRealm.getEmoji());
