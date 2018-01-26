@@ -36,6 +36,7 @@ public class BirdRush extends FrameLayout {
   private int index;
   private boolean lost = false;
   private TribeGuest tribeGuest;
+  private String id;
 
   @Inject ScreenUtils screenUtils;
   @Inject User currentUser;
@@ -99,5 +100,13 @@ public class BirdRush extends FrameLayout {
         .applicationComponent(getApplicationComponent())
         .build()
         .inject(this);
+  }
+
+  public String getGuestId() {
+    return tribeGuest.getId();
+  }
+
+  public String getName() {
+    return tribeGuest.getDisplayName();
   }
 }

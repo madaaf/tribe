@@ -1,21 +1,17 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.LinearInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
@@ -34,12 +30,16 @@ import static com.tribe.app.presentation.view.component.live.game.birdrush.GameB
  * Created by tiago on 10/31/2017.
  */
 
-public class GameBirdRushBackground extends FrameLayout {
+public class GameBirdRushBackground extends View {
 
   @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.background_one) ImageView backgroundOne;
-  @BindView(R.id.background_two) ImageView backgroundTwo;
+  // @BindView(R.id.background_one) ImageView backgroundOne;
+  // @BindView(R.id.background_two) ImageView backgroundTwo;
+
+  private static Bitmap splash = null;
+  private Rect dstSplash;
+  private Rect dstSplash2;
 
   /**
    * VARIABLES
@@ -48,6 +48,8 @@ public class GameBirdRushBackground extends FrameLayout {
   private Unbinder unbinder;
   private ValueAnimator animator;
 
+  int x = 0;
+  int y = 0;
   /**
    * OBSERVABLES
    */
@@ -71,6 +73,17 @@ public class GameBirdRushBackground extends FrameLayout {
     initView();
   }
 
+  @Override protected void onDraw(Canvas canvas) {
+    Timber.e("ON DRAW " + x);
+
+    dstSplash = new Rect(x, y, x + screenUtils.getWidthPx(), y + screenUtils.getHeightPx());
+    dstSplash2 = new Rect(x - screenUtils.getWidthPx(), y, x, y + screenUtils.getHeightPx());
+
+    canvas.drawBitmap(splash, null, dstSplash, null);
+    canvas.drawBitmap(splash, null, dstSplash2, null);
+    //canvas.drawBitmap(splash, 0, 0, null);
+  }
+
   private void initResource() {
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
@@ -81,12 +94,22 @@ public class GameBirdRushBackground extends FrameLayout {
   }
 
   private void initView() {
-    LayoutInflater inflater =
+   /* LayoutInflater inflater =
         (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    inflater.inflate(R.layout.view_game_bird_rush_background, this, true);
-    unbinder = ButterKnife.bind(this);
+    inflater.inflate(R.layout.view_game_bird_rush_background, this, true);*/
+    //    unbinder = ButterKnife.bind(this);
 
     positionBird();
+    if (splash == null) {
+      //splash = getBitmapAlpha8(getContext(), R.drawable.game_birdsrush_sky);
+      splash = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdsrush_sky);
+    }
+  }
+
+  public static Bitmap getBitmapAlpha8(Context context, int id) {
+    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+    bitmapOptions.inPreferredConfig = Bitmap.Config.ALPHA_8;
+    return BitmapFactory.decodeResource(context.getResources(), id, bitmapOptions);
   }
 
   protected void initDependencyInjector() {
@@ -110,10 +133,15 @@ public class GameBirdRushBackground extends FrameLayout {
   }
 
   private void initAnimations() {
-    setBackScrolling();
+    // setBackScrolling();
+  }
+
+  @Override protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    super.onSizeChanged(w, h, oldw, oldh);
   }
 
   private void setBackScrolling() {
+    /*
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
         getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -138,6 +166,7 @@ public class GameBirdRushBackground extends FrameLayout {
         animator.start();
       }
     });
+    */
   }
 
   /**
@@ -153,10 +182,10 @@ public class GameBirdRushBackground extends FrameLayout {
     if (animator != null) animator.cancel();
     for (int i = 0; i < obstaclesList.size(); i++) {
       View v = obstaclesList.get(i).getView();
-      removeView(v);
+      //removeView(v);
     }
-    backgroundOne.clearAnimation();
-    backgroundTwo.clearAnimation();
+    // backgroundOne.clearAnimation();
+    // backgroundTwo.clearAnimation();
   }
 
   public void dispose() {
@@ -166,6 +195,7 @@ public class GameBirdRushBackground extends FrameLayout {
   }
 
   public void removeObstacles() {
+    /*
     for (int i = 0; i < getChildCount(); i++) {
       View v = getChildAt(i);
       Timber.e("REMOVE VIEW " + v.getId());
@@ -177,7 +207,12 @@ public class GameBirdRushBackground extends FrameLayout {
      /* if (v.getId() != R.id.background_one && v.getId() != R.id.background_two) {
 
       }*/
-    }
+
+  }
+
+  public void draw() {
+    x = x + 4;
+    invalidate();
   }
 
   /**

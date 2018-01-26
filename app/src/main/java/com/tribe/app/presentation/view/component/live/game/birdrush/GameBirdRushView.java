@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
@@ -117,12 +118,12 @@ public class GameBirdRushView extends GameViewWithEngine {
             bird.setX(-birdWidth);
             bird.setY(screenUtils.getHeightPx() / 2 - birdHeight / 2 - screenUtils.dpToPx(10)
                 + delayBirdTranslation);
-
-            if (guest == null || guest.getId().equals(currentUser.getId())) {
-              myBird = bird;
-            }
           }
         });
+
+    if (guest.getId().equals(currentUser.getId())) {
+      myBird = bird;
+    }
   }
 
   @Override protected GameEngine generateEngine() {
@@ -177,6 +178,7 @@ public class GameBirdRushView extends GameViewWithEngine {
           .subscribe(aLong -> {
             animateObstacleList(aLong);
             handleCollisionWithObstacle();
+            viewBackground.draw();
           }));
     }
   }
@@ -250,24 +252,30 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   private void startBirdAnimation() {// MADOUCH
+    Timber.e("startBirdAnimation");
     if (viewBirds.getChildCount() == 0) {
       //  addBird(0, null);
     }
     final int[] birdIndex = { 0 };
-    popIntervalSubscription = Observable.timer(100, 1000, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          Timber.e("POPO BIRD " + aLong);
-          BirdRush birdView = (BirdRush) viewBirds.getChildAt(birdIndex[0]);
-          if (birdView != null) {
-            entryBird(birdView);
-            birdIndex[0]++;
-          } else {
-            popIntervalSubscription.unsubscribe();
-            subscriptions.remove(popIntervalSubscription);
-          }
-        });
-    subscriptions.add(popIntervalSubscription);
+    if (popIntervalSubscription == null) {
+      popIntervalSubscription = Observable.timer(100, 1000, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            BirdRush birdView = (BirdRush) viewBirds.getChildAt(birdIndex[0]);
+            Timber.e("startBirdAnimation POP  " + aLong);
+            if (birdView != null) {
+              Timber.e("startBirdAnimation entry bird " + aLong + " " + birdView.getName());
+              entryBird(birdView);
+              birdIndex[0]++;
+            } else {
+              Timber.e("startBirdAnimation unsuscribe " + aLong);
+              popIntervalSubscription.unsubscribe();
+              subscriptions.remove(popIntervalSubscription);
+              popIntervalSubscription = null;
+            }
+          });
+      subscriptions.add(popIntervalSubscription);
+    }
   }
 
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) { // SOEF
@@ -289,9 +297,21 @@ public class GameBirdRushView extends GameViewWithEngine {
   @Override protected void gameOver(String winnerId, boolean isLocal) {
     Timber.e("SOEF Game Bird Rush Over : " + winnerId);
     super.gameOver(winnerId, isLocal);
-    viewBirds.removeAllViews();
+    initBirds();
     viewBackground.stop(obstaclesList);
     resetTimer();
+  }
+
+  public void initBirds() {
+    Timber.e("SOEF initBirds : ");
+    for (int i = 0; i < viewBirds.getChildCount(); i++) {
+      if (viewBirds.getChildAt(i) instanceof BirdRush) {
+        BirdRush birdView = (BirdRush) viewBirds.getChildAt(i);
+        birdView.setX(-birdWidth);
+        birdView.setY(screenUtils.getHeightPx() / 2 - birdHeight / 2 - screenUtils.dpToPx(10)
+            + delayBirdTranslation);
+      }
+    }
   }
 
   private void overcomeObstacle() {
@@ -342,6 +362,9 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   private void handleCollisionWithObstacle() {
+    if (myBird == null) {
+      return;
+    }
     if (obstacleVisibleScreen != null && !obstacleVisibleScreen.isEmpty()) {
       for (Map.Entry<BirdRushObstacle, ImageView> entry : obstacleVisibleScreen.entrySet()) {
         BirdRushObstacle b = entry.getKey();
@@ -391,7 +414,7 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     obstacle.setX(screenUtils.getWidthPx());
     obstacle.setY(height);
-    viewBackground.addView(obstacle);
+   // viewBackground.addView(obstacle);
 
     model.animateObstacle();
   }
@@ -431,7 +454,6 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   public void fallBird() {
-    /*
     if (va != null) {
       va.cancel();
     }
@@ -443,10 +465,10 @@ public class GameBirdRushView extends GameViewWithEngine {
       myBird.setY(value);
       if (myBird.getY() > screenUtils.getHeightPx() || myBird.getY() < 0) {
         Timber.w("GAME OVER");
+        iLost();
       }
     });
     va.start();
-    */
   }
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
@@ -465,11 +487,24 @@ public class GameBirdRushView extends GameViewWithEngine {
       for (String key : peerMap.keySet()) {
         TribeGuest guest = peerMap.get(key);
         Timber.e(" SOEF ADD GUEST" + peerMap.get(key) + " " + peerMap.size());
-        addBird(index, guest);
-        // birdsList.put(peerMap.get(key), i);
-        index++;
+        if (!haveBird(peerMap.get(key))) {
+          addBird(index, guest);
+          index++;
+        }
       }
     }));
+  }
+
+  private boolean haveBird(TribeGuest tribeGuest) {
+    for (int i = 0; i < viewBirds.getChildCount(); i++) {
+      if (viewBirds.getChildAt(i) instanceof BirdRush) {
+        BirdRush birdView = (BirdRush) viewBirds.getChildAt(i);
+        if (birdView.getGuestId().equals(tribeGuest.getId())) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   @Override public void stop() {
