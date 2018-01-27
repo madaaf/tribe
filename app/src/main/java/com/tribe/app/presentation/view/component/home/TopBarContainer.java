@@ -362,7 +362,7 @@ public class TopBarContainer extends FrameLayout {
             if (!isRefreshing) {
               onRefresh.onNext(true);
               isRefreshing = true;
-              viewTopBarLogo.startRefresh(getTotalDragDistance() - topBarView.getHeight());
+              viewTopBarLogo.startRefresh(getTotalDragDistance() + topBarView.getHeight());
             }
           } else {
             springTop.setVelocity(velocityTracker.getYVelocity()).setEndValue(0);

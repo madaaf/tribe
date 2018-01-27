@@ -8,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -110,7 +111,13 @@ public class TopBarLogoView extends FrameLayout {
     params.height = screenUtils.getHeightPx();
     viewWave.setLayoutParams(params);
 
-    imgLogo.setTranslationY(-screenUtils.getHeightPx() >> 1);
+    imgLogo.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            imgLogo.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            imgLogo.setTranslationY(-imgLogo.getMeasuredHeight());
+          }
+        });
   }
 
   private void initResources() {
@@ -158,7 +165,7 @@ public class TopBarLogoView extends FrameLayout {
 
   public void startRefresh(float totalDragDistance) {
     imgLogo.animate()
-        .translationY(totalDragDistance / 2 + (float) imgLogo.getHeight() / 2)
+        .translationY(totalDragDistance / 2 - imgLogo.getMeasuredHeight() / 2)
         .setDuration(DURATION)
         .setListener(new AnimatorListenerAdapter() {
           @Override public void onAnimationEnd(Animator animation) {
