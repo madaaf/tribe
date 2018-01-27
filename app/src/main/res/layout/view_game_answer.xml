@@ -37,7 +37,8 @@
       android:layout_height="match_parent"
       android:layout_marginEnd="@dimen/horizontal_margin_large"
       android:layout_marginStart="@dimen/horizontal_margin_large"
-      android:gravity="center_vertical"
+      android:ellipsize="end"
+      android:gravity="center"
       android:maxLines="1"
       style="@style/Headline.White.2"
       />

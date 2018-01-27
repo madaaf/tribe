@@ -644,21 +644,29 @@ public class GameBattleMusicView extends GameViewWithRanking {
             if (tracks != null) {
               if (currentTrack != null) {
                 for (TribeGuest tribeGuest : tribeGuests) {
-                  JSONObject gameObj = new JSONObject();
-                  JSONObject preloadTrackJSON = getPreloadTrack(currentTrack);
-                  JsonUtils.jsonPut(preloadTrackJSON, PLAY_KEY, true);
-                  JsonUtils.jsonPut(preloadTrackJSON, ACTION_KEY, ACTION_PRELOAD_TRACK);
-                  JsonUtils.jsonPut(gameObj, this.game.getId(), preloadTrackJSON);
-                  webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+                  if (tribeGuest.canPlayGames(game.getId()) &&
+                      !tribeGuest.getId().equals(currentUser.getId())) {
+                    nbPlayingPeers++;
+                    JSONObject gameObj = new JSONObject();
+                    JSONObject preloadTrackJSON = getPreloadTrack(currentTrack);
+                    JsonUtils.jsonPut(preloadTrackJSON, PLAY_KEY, true);
+                    JsonUtils.jsonPut(preloadTrackJSON, ACTION_KEY, ACTION_PRELOAD_TRACK);
+                    JsonUtils.jsonPut(gameObj, this.game.getId(), preloadTrackJSON);
+                    webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+                  }
                 }
               }
             } else {
               for (TribeGuest tribeGuest : tribeGuests) {
-                JSONObject gameObj = new JSONObject();
-                JSONObject obj = new JSONObject();
-                JsonUtils.jsonPut(obj, ACTION_KEY, ACTION_DISPLAY_PLAYLISTS);
-                JsonUtils.jsonPut(gameObj, this.game.getId(), obj);
-                webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+                if (tribeGuest.canPlayGames(game.getId()) &&
+                    !tribeGuest.getId().equals(currentUser.getId())) {
+                  nbPlayingPeers++;
+                  JSONObject gameObj = new JSONObject();
+                  JSONObject obj = new JSONObject();
+                  JsonUtils.jsonPut(obj, ACTION_KEY, ACTION_DISPLAY_PLAYLISTS);
+                  JsonUtils.jsonPut(gameObj, this.game.getId(), obj);
+                  webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+                }
               }
             }
           }

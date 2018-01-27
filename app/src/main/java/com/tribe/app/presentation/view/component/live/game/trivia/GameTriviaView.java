@@ -690,20 +690,27 @@ public class GameTriviaView extends GameViewWithRanking {
             if (questions != null) {
               if (currentQuestion != null) {
                 for (TribeGuest tribeGuest : tribeGuests) {
-                  JSONObject gameObj = new JSONObject();
-                  JSONObject questionJSON = getShowQuestionPayload(currentQuestion);
-                  JsonUtils.jsonPut(questionJSON, ACTION_KEY, ACTION_SHOW_QUESTION);
-                  JsonUtils.jsonPut(gameObj, this.game.getId(), questionJSON);
-                  webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+                  if (tribeGuest.canPlayGames(game.getId()) &&
+                      !tribeGuest.getId().equals(currentUser.getId())) {
+                    JSONObject gameObj = new JSONObject();
+                    JSONObject questionJSON = getShowQuestionPayload(currentQuestion);
+                    JsonUtils.jsonPut(questionJSON, ACTION_KEY, ACTION_SHOW_QUESTION);
+                    JsonUtils.jsonPut(gameObj, this.game.getId(), questionJSON);
+                    webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+                  }
                 }
               }
             } else {
               for (TribeGuest tribeGuest : tribeGuests) {
-                JSONObject gameObj = new JSONObject();
-                JSONObject obj = new JSONObject();
-                JsonUtils.jsonPut(obj, ACTION_KEY, ACTION_DISPLAY_CATEGORIES);
-                JsonUtils.jsonPut(gameObj, this.game.getId(), obj);
-                webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+                if (tribeGuest.canPlayGames(game.getId()) &&
+                    !tribeGuest.getId().equals(currentUser.getId())) {
+                  nbPlayingPeers++;
+                  JSONObject gameObj = new JSONObject();
+                  JSONObject obj = new JSONObject();
+                  JsonUtils.jsonPut(obj, ACTION_KEY, ACTION_DISPLAY_CATEGORIES);
+                  JsonUtils.jsonPut(gameObj, this.game.getId(), obj);
+                  webRTCRoom.sendToUser(tribeGuest.getId(), gameObj, true);
+                }
               }
             }
           }
