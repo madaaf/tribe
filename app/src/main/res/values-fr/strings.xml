@@ -665,6 +665,7 @@
 	<string name="game_event_stopped">%1$s a arreté le jeu "%2$s". :video_game:</string>
 	<string name="game_menu_title">Options de jeu</string>
 	<string name="game_menu_restart">Relancer ce jeu</string>
+	<string name="game_menu_leaderboard">Voir le classement</string>
 	<string name="game_menu_stop">Arrêter de jouer</string>
 	<string name="game_menu_play_another_game">Jouer à un autre jeu</string>
 	<string name="game_menu_reset_scores">Reset scores</string>

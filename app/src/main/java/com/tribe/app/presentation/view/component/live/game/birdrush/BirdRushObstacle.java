@@ -1,35 +1,19 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
-import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import com.tribe.app.R;
-import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.Random;
 import java.util.UUID;
-import javax.inject.Inject;
 import org.json.JSONObject;
-
-import static com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView.SPEED_BACK_SCROLL;
 
 /**
  * Created by madaaflak on 16/01/2018.
  */
 
-public class BirdRushObstacle extends FrameLayout {
+public class BirdRushObstacle {
 
   public static final String BIRD_OBSTACLE_TAG = "BIRD_OBSTACLE_TAG_";
+  public static final int wiewWidth = 75;
 
   private final String ID_KEY = "id";
   private final String NEXT_SPAWN_KEY = "nextSpawn";
@@ -47,21 +31,12 @@ public class BirdRushObstacle extends FrameLayout {
   private Float speed; //
   private Translation translation; // en px
   private Rotation rotation;
-
-  private ImageView view;
   private int viewHeight = 0;
-  private int wiewWidth = 75;
 
-  @Inject ScreenUtils screenUtils;
+  private int x;
+  private int y;
 
-  public BirdRushObstacle(@NonNull Context context) {
-    super(context);
-    this.context = context;
-    init();
-  }
-
-  public BirdRushObstacle(@NonNull Context context, GameBirdRushEngine.Level level) {
-    super(context);
+  public BirdRushObstacle(GameBirdRushEngine.Level level, int widthScreen, int heightScreen) {
     this.context = context;
     this.id = id();
     this.nextSpawn = nextSpawnDelay(level);
@@ -69,75 +44,38 @@ public class BirdRushObstacle extends FrameLayout {
     this.height = heightRatio(level);
     this.speed = obstacleSpeed(level);
     this.translation = translation(level);
-    this.rotation = rotation(level);
+
+    this.x = widthScreen + wiewWidth;
+    this.y = Math.round(startYPos() * heightScreen - height / 2);
+    this.viewHeight = Math.round(height * heightScreen);
+    // float height = (model.getStart() * screenUtils.getHeightPx() - model.getView().getHeight() / 2);
     init();
   }
 
+
   private void init() {
-    initDependencyInjector();
-    initView();
+
   }
 
-  int index = 0;
 
-  public void initView() {
-    view = new ImageView(context);
-    view.setTag(BIRD_OBSTACLE_TAG + index);
-    index++;
-    view.setScaleType(ImageView.ScaleType.FIT_XY);
-    view.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle));
-    viewHeight = Math.round(height * screenUtils.getHeightPx());
-
-    LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-    params.height = viewHeight;
-    params.width = 75;
-    view.setLayoutParams(params);
+  public void setViewHeight(int viewHeight) {
+    this.viewHeight = viewHeight;
   }
 
-  public void animateObstacle() {
-    view.animate()
-        .translationX(-screenUtils.getWidthPx() - 2 * wiewWidth)
-        .setDuration(SPEED_BACK_SCROLL)
-        .start();
-
-    // TRANSLATION
-    if (translation != null) {
-      ValueAnimator trans = ValueAnimator.ofFloat(view.getY(), view.getY() - translation.getY(),
-          view.getY() + translation.getY());
-      trans.setDuration(1000);
-      trans.addUpdateListener(animation -> {
-        Float value = (float) animation.getAnimatedValue();
-        view.setY(value);
-      });
-      trans.setRepeatCount(Animation.INFINITE);
-      trans.setRepeatMode(ValueAnimator.REVERSE);
-      trans.start();
-    }
-
-    // ROTATION
-    if (rotation != null) {
-      ValueAnimator rotationAnim =
-          ValueAnimator.ofFloat(0f, -rotation.getAngle(), 0f, rotation.getAngle());
-      rotationAnim.setDuration(5000);
-      rotationAnim.addUpdateListener(animation -> {
-        Float value = (float) animation.getAnimatedValue();
-        view.setPivotX(wiewWidth / 2);
-        view.setPivotY(viewHeight / 2);
-        view.setRotation(value);
-      });
-      rotationAnim.setInterpolator(new LinearInterpolator());
-      rotationAnim.setRepeatCount(Animation.INFINITE);
-      rotationAnim.setRepeatMode(ValueAnimator.REVERSE);
-      rotationAnim.start();
-    }
+  public int getX() {
+    return x;
   }
 
-  public void stopAnimation() {
-    view.animate().cancel();
+  public void setX(int x) {
+    this.x = x;
   }
 
-  public ImageView getView() {
-    return view;
+  public int getY() {
+    return y;
+  }
+
+  public void setY(int y) {
+    this.y = y;
   }
 
   /**
@@ -360,21 +298,5 @@ public class BirdRushObstacle extends FrameLayout {
     JsonUtils.jsonPut(obstacle, SPEED_KEY, speed);
     JsonUtils.jsonPut(obstacle, TRANSLATION_KEY, translation);
     return obstacle;
-  }
-
-  protected ApplicationComponent getApplicationComponent() {
-    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
-  }
-
-  protected ActivityModule getActivityModule() {
-    return new ActivityModule(((Activity) getContext()));
-  }
-
-  protected void initDependencyInjector() {
-    DaggerUserComponent.builder()
-        .activityModule(getActivityModule())
-        .applicationComponent(getApplicationComponent())
-        .build()
-        .inject(this);
   }
 }

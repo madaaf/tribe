@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -39,18 +40,25 @@ import static com.tribe.app.presentation.view.component.live.game.birdrush.GameB
 public class GameBirdRushBackground extends View {
 
   @Inject ScreenUtils screenUtils;
+  @Inject User currentUser;
 
   private static Bitmap splash = null;
+  private static Bitmap obstacle = null;
+
   private static int screenWidth;
   private Rect dstSplash;
   private Rect dstSplash2;
+  private Rect dstObsc;
 
   private int x = 0;
   private int y = 0;
   private boolean pause = false, displayFirstObstacle = false;
 
+  private BirdRushObstacle obstaclePoped = null;
   private Map<BirdRushObstacle, ImageView> obstacleVisibleScreen = new HashMap<>();
+  private Map<BirdRushObstacle, Rect> obstaclePopedList = new HashMap<>();
   private List<BirdRushObstacle> obstaclesList = new ArrayList<>();
+  private List<Bitmap> obstaclesBitmap = new ArrayList<>();
 
   /**
    * OBSERVABLES
@@ -95,12 +103,46 @@ public class GameBirdRushBackground extends View {
 
     canvas.drawBitmap(splash, null, dstSplash, null);
     canvas.drawBitmap(splash, null, dstSplash2, null);
+
+    // anim old one
+    for (Map.Entry<BirdRushObstacle, Rect> entry : obstaclePopedList.entrySet()) {
+      BirdRushObstacle b = entry.getKey();
+      Rect rect = entry.getValue();
+      Timber.e(
+          "DISPLAY obstaclePoped Move : " + b.getX() + " " + b.getY() + " " + b.getViewHeight());
+      rect.set(b.getX(), b.getY(), b.getX() + BirdRushObstacle.wiewWidth, Math.round(b.getY() + b.getViewHeight()));
+      canvas.drawBitmap(obstacle, null, rect, null);
+    }
+
+    // add new Obstacle
+    if (obstaclePoped != null) {
+      Timber.e("DISPLAY obstaclePoped " + obstaclePoped.getX() + " " + obstaclePoped.getY());
+      dstObsc = new Rect(obstaclePoped.getX(), obstaclePoped.getY(), obstaclePoped.getX() + BirdRushObstacle.wiewWidth,
+          Math.round(obstaclePoped.getY() + obstaclePoped.getViewHeight()));
+      obstaclePopedList.put(obstaclePoped, dstObsc);
+      obstaclePoped = null;
+      canvas.drawBitmap(obstacle, null, dstObsc, null);
+    }
+  }
+
+  private void animateObstacle(BirdRushObstacle model) {
+   /* float height = (model.getStart() * screenUtils.getHeightPx() - model.getView().getHeight() / 2);
+    ImageView obstacle = model.getView();
+    obstacleVisibleScreen.put(model, model.getView());
+
+    obstacle.setX(screenUtils.getWidthPx());
+    obstacle.setY(height);
+
+    obstaclesBitmap.add(bmap);*/
+
+    //model.animateObstacle();
   }
 
   private void initView() {
     positionBird();
     if (splash == null) {
       splash = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdsrush_sky);
+      obstacle = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdrush_obstacle);
     }
   }
 
@@ -112,8 +154,8 @@ public class GameBirdRushBackground extends View {
     obstaclesList.add(obstacle);
   }
 
-  public void addObstacles(List<BirdRushObstacle> obstaclesList) {
-    obstaclesList.addAll(obstaclesList);
+  public void addObstacles(List<BirdRushObstacle> list) {
+    obstaclesList.addAll(list);
   }
 
   public void clearObstacles() {
@@ -152,7 +194,19 @@ public class GameBirdRushBackground extends View {
         }
       }
     }
-  }*/
+  }
+
+
+
+  private boolean isBetween(float x1, float x2, float pos) {
+    if (pos > x1 && pos < x2) {
+      return true;
+    }
+    return false;
+  }
+
+
+  */
 
   public void stop() { // List<BirdRushobstaclesListObstacle>
     pause = true;
@@ -189,41 +243,46 @@ public class GameBirdRushBackground extends View {
 
   }
 
-  public void setBackScrolling() {
+  public void startPlaying() {
     if (!pause) {
-      x = x - 2;
-      if (x < -screenWidth) x = 0;
+      setBackScroll();
+      moveObstacleList();
       invalidate();
     }
   }
 
-  private void animateObstacle(BirdRushObstacle model) {
-    float height = (model.getStart() * screenUtils.getHeightPx() - model.getView().getHeight() / 2);
-    ImageView obstacle = model.getView();
-    obstacleVisibleScreen.put(model, model.getView());
+  private void setBackScroll() {
+    x = x - 2;
+    if (x < -screenWidth) x = 0;
+  }
 
-    obstacle.setX(screenUtils.getWidthPx());
-    obstacle.setY(height);
-
-    model.animateObstacle();
+  private void moveObstacleList() {
+    for (Map.Entry<BirdRushObstacle, Rect> entry : obstaclePopedList.entrySet()) {
+      BirdRushObstacle o = entry.getKey();
+      o.setX(o.getX() - 2);
+      o.setY(o.getY());
+    }
   }
 
   private void setTimer() {
-    if (timer == null) {
-      Timber.e("SOEF NEW TIMEER RESET");
-      subscriptions.add(timer = Observable.interval(3000, 16, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> {
-            // handleCollisionWithObstacle();
-            popObstacles(aLong);
-            setBackScrolling();
-          }));
-    }
+    Timber.e("SOEF NEW TIMEER RESET");
+
+    subscriptions.add(Observable.interval(3000, 16, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          startPlaying();
+        }));
+
+    subscriptions.add(Observable.interval(3000, 100, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          // handleCollisionWithObstacle();
+          popObstacles(aLong);
+        }));
   }
 
   Double delay = null;
   int i = 0;
-  private BirdRushObstacle obs = null;
 
   private void popObstacles(Long aLong) {
     // Timber.e(" ON TOME : " + aLong + " " + obstaclesList.size());
@@ -233,20 +292,22 @@ public class GameBirdRushBackground extends View {
       // init first obstacle
       if (!displayFirstObstacle) {
         displayFirstObstacle = true;
-        obs = obstaclesList.get(0);
-        delay = ((obs.getNextSpawn() * 1000) + aLong);
-        Timber.e("SOEF " + aLong + " " + i + " " + obs.toString() + obstaclesList.size());
-        animateObstacle(obs);
+        obstaclePoped = obstaclesList.get(0);
+        delay = ((obstaclePoped.getNextSpawn() * 1000) + aLong);
+        Timber.e("SOEF " + aLong + " " + i + " " + obstaclePoped.toString() + obstaclesList.size());
+        animateObstacle(obstaclePoped);
         i++;
       }
 
       // init next obstacle
       if (delay != null && (delay == aLong.doubleValue())) {
-        i++;
-        obs = obstaclesList.get(i);
-        delay = ((obs.getNextSpawn() * 1000) + aLong);
-        Timber.e("SOEF  " + aLong + " " + i + " " + obs.toString() + " " + obstaclesList.size());
-        animateObstacle(obs);
+        if (i < obstaclesList.size()) {
+          i++;
+          obstaclePoped = obstaclesList.get(i);
+          delay = ((obstaclePoped.getNextSpawn() * 1000) + aLong);
+          Timber.e("SOEF " + " " + i + " " + obstaclePoped.toString() + " " + obstaclesList.size());
+          animateObstacle(obstaclePoped);
+        }
       }
 
       // handleCollisionWithObstacle();

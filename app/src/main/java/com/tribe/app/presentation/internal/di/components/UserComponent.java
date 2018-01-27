@@ -228,7 +228,6 @@ import dagger.Component;
 
   void inject(GameAliensAttackBackground gameAliensAttackBackground);
 
-  void inject(BirdRushObstacle birdRushObstacle);
 
   void inject(GameBirdRushBackground gameBirdRushBackground);
 

@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.live.game.birdrush;
 
 import android.content.Context;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +22,8 @@ public class GameBirdRushEngine extends GameEngine {
 
   // VARIABLES
 
+  private ScreenUtils screenUtils;
+
   // OBSERVABLES
   private Subscription popIntervalSubscription;
   private PublishSubject<Level> onLevelChange = PublishSubject.create();
@@ -34,9 +37,10 @@ public class GameBirdRushEngine extends GameEngine {
 
   }
 
-  public GameBirdRushEngine(Context context, Level level) {
+  public GameBirdRushEngine(Context context, Level level, ScreenUtils screenUtils) {
     super(context);
     this.level = level;
+    this.screenUtils = screenUtils;
   }
 
   public void popObstcale(int count) {
@@ -55,7 +59,8 @@ public class GameBirdRushEngine extends GameEngine {
       obstacleList.clear();
     }
     for (int i = 0; i < nbr; i++) {
-      obstacleList.add(new BirdRushObstacle(context, level));
+      obstacleList.add(
+          new BirdRushObstacle(level, screenUtils.getWidthPx(), screenUtils.getHeightPx()));
     }
   }
 

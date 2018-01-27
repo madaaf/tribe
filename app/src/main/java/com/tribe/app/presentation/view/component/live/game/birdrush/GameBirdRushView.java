@@ -120,7 +120,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   @Override protected GameEngine generateEngine() {
-    return new GameBirdRushEngine(context, GameBirdRushEngine.Level.MEDIUM);
+    return new GameBirdRushEngine(context, GameBirdRushEngine.Level.MEDIUM, screenUtils);
   }
 
   @Override protected int getSoundtrack() {
@@ -305,18 +305,11 @@ public class GameBirdRushView extends GameViewWithEngine {
     iLost();
   }
 
-  private boolean isBetween(float x1, float x2, float pos) {
-    if (pos > x1 && pos < x2) {
-      return true;
-    }
-    return false;
-  }
-
   private void initSubscriptions() {
     subscriptions = new CompositeSubscription();
     subscriptions.add(controller.onTap().subscribe(aVoid -> { // MADA
       webRTCRoom.sendToPeers(getTapPayload(myBird.getX(), myBird.getY()), true);
-      Timber.e("SOEF GET TAP PLAYLOAD " + getTapPayload(myBird.getX(), myBird.getY()));
+      Timber.w("SOEF GET TAP PLAYLOAD " + getTapPayload(myBird.getX(), myBird.getY()));
       jump();
     }));
   }
