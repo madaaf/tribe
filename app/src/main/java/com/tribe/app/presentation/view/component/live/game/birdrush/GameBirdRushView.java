@@ -62,22 +62,16 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   // VARIABLE
   private BirdController controller;
-  private Double delay = null;
-  private boolean startedAsSingle = false, didRestartWhenReady = false, gameOver = false,
-      displayFirstObstacle = false;
-  private int i = 0, birdHeight = 0, birdWidth = 0, delayBirdTranslation = 0;
+  private boolean startedAsSingle = false, didRestartWhenReady = false, gameOver = false;
+  private int birdHeight = 0, birdWidth = 0, delayBirdTranslation = 0;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions;
   private Subscription popIntervalSubscription = null;
-  private Subscription timer;
 
   // RESSOURCE
-  private List<BirdRushObstacle> obstaclesList = new ArrayList<>();
-  private Map<BirdRushObstacle, ImageView> obstacleVisibleScreen = new HashMap<>();
   private Map<TribeGuest, BirdRush> birdsList = new HashMap<>();
   private BirdRush myBird;
-  private BirdRushObstacle obs = null;
 
   public GameBirdRushView(@NonNull Context context) {
     super(context);
@@ -95,7 +89,6 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     setOnTouchListener(controller);
     initSubscriptions();
-    setTimer();
   }
 
   private void addBird(int index, TribeGuest guest) {
@@ -147,12 +140,12 @@ public class GameBirdRushView extends GameViewWithEngine {
               if (message.has(ACTION_KEY)) {
                 String actionKey = message.getString(ACTION_KEY);
                 if (actionKey.equals(ACTION_NEW_GAME)) {
-                  obstaclesList.clear();
+                  viewBackground.clearObstacles();
                 }
                 if (actionKey.equals(BIRD_ACTION_ADD_OBSTACLE)) {
                   JSONArray jsonObstacles = message.getJSONArray(BIRD_KEY_OBSTACLE);
                   List<BirdRushObstacle> obstacles = transform(jsonObstacles);
-                  obstaclesList.addAll(obstacles);
+                  viewBackground.addObstacles(obstacles);
                   Timber.e("add obstacle : " + obstacles.toString());
                 } else if (actionKey.equals(BIRD_ACTION_PLAYER_TAP)) {
                   PlayerTap playerTap =
@@ -168,67 +161,6 @@ public class GameBirdRushView extends GameViewWithEngine {
             }
           }
         }));
-  }
-
-  private void setTimer() {
-    if (timer == null) {
-      Timber.e("SOEF NEW TIMEER RESET");
-      subscriptions.add(timer = Observable.interval(3000, 16, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> {
-           // animateObstacleList(aLong);
-           // handleCollisionWithObstacle();
-            viewBackground.setBackScrolling();
-          }));
-    }
-  }
-
-  private void resetTimer() {
-    Timber.e("SOEF RESET TIMER");
-    displayFirstObstacle = false;
-    if (timer != null) timer.unsubscribe();
-    timer = null;
-  }
-
-  private void animateObstacleList(Long aLong) {
-    // Timber.e(" ON TOME : " + aLong + " " + obstaclesList.size());
-    if (obstaclesList != null && !obstaclesList.isEmpty()) {
-      //if (gameOver) return;
-      aLong = aLong * 100;
-      // init first obstacle
-      if (!displayFirstObstacle) {
-        displayFirstObstacle = true;
-        obs = obstaclesList.get(0);
-        delay = ((obs.getNextSpawn() * 1000) + aLong);
-        Timber.e("SOEF ANIMATE FIRST  OBSC "
-            + aLong
-            + " "
-            + i
-            + " "
-            + obs.toString()
-            + obstaclesList.size());
-        animateObstacle(obs);
-        i++;
-      }
-
-      // init next obstacle
-      if (delay != null && (delay == aLong.doubleValue())) {
-        i++;
-        obs = obstaclesList.get(i);
-        delay = ((obs.getNextSpawn() * 1000) + aLong);
-        Timber.e("SOEF ANIMATE OBSC "
-            + aLong
-            + " "
-            + i
-            + " "
-            + obs.toString()
-            + " "
-            + obstaclesList.size());
-        animateObstacle(obs);
-      }
-
-      handleCollisionWithObstacle();
-    }
   }
 
   protected void playGame() {
@@ -298,8 +230,7 @@ public class GameBirdRushView extends GameViewWithEngine {
     Timber.e("SOEF Game Bird Rush Over : " + winnerId);
     super.gameOver(winnerId, isLocal);
     initBirds();
-    viewBackground.stop(obstaclesList);
-    resetTimer();
+    viewBackground.stop();
   }
 
   public void initBirds() {
@@ -328,8 +259,7 @@ public class GameBirdRushView extends GameViewWithEngine {
         ((GameBirdRushEngine) gameEngine).onObstacle().subscribe(generateObstacleList -> {
           Timber.e("SOEF send to peer obtsacle " + generateObstacleList.size());
           webRTCRoom.sendToPeers(getObstaclePayload(generateObstacleList), true);
-          obstaclesList.addAll(generateObstacleList);
-          // animateObstacle(obstacle);
+          viewBackground.addObstacles(generateObstacleList);
         }));
 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
@@ -361,31 +291,6 @@ public class GameBirdRushView extends GameViewWithEngine {
         }));
   }
 
-  private void handleCollisionWithObstacle() {
-    if (myBird == null) {
-      return;
-    }
-    if (obstacleVisibleScreen != null && !obstacleVisibleScreen.isEmpty()) {
-      for (Map.Entry<BirdRushObstacle, ImageView> entry : obstacleVisibleScreen.entrySet()) {
-        BirdRushObstacle b = entry.getKey();
-        ImageView obsclView = entry.getValue();
-
-        if (obsclView != null
-            && b != null
-            && obsclView.getX() > 0
-            && obsclView.getX() > screenUtils.getWidthPx() / 2) {
-
-          if (obsclView.getX() - obsclView.getWidth() < (screenUtils.getWidthPx() / 2)) {
-            if (isBetween(obsclView.getY(), obsclView.getY() + obsclView.getHeight(),
-                myBird.getY())) {
-              gameOver(obsclView);
-            }
-          }
-        }
-      }
-    }
-  }
-
   private void gameOver(ImageView obstacle) {
     Timber.e("SOEF LOCAL game over");
     gameOver = true;
@@ -405,18 +310,6 @@ public class GameBirdRushView extends GameViewWithEngine {
       return true;
     }
     return false;
-  }
-
-  private void animateObstacle(BirdRushObstacle model) {
-    float height = (model.getStart() * screenUtils.getHeightPx() - model.getView().getHeight() / 2);
-    ImageView obstacle = model.getView();
-    obstacleVisibleScreen.put(model, model.getView());
-
-    obstacle.setX(screenUtils.getWidthPx());
-    obstacle.setY(height);
-    // viewBackground.addView(obstacle);
-
-    model.animateObstacle();
   }
 
   private void initSubscriptions() {
@@ -510,7 +403,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   @Override public void stop() {
     super.stop();
     Timber.e(" SOEF on stop");
-    viewBackground.stop(obstaclesList);
+    viewBackground.stop();
   }
 
   @Override public void dispose() {

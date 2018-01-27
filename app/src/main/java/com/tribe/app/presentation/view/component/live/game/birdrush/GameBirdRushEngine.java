@@ -44,7 +44,6 @@ public class GameBirdRushEngine extends GameEngine {
     popIntervalSubscription = Observable.interval((2000), TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          //Timber.e("SOEF pop obstacle");
           generateObstacle(6);
           onObstacle.onNext(obstacleList);
         });
