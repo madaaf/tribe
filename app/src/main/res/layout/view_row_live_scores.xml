@@ -29,7 +29,7 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:layout_marginStart="@dimen/horizontal_margin_smaller"
-      android:gravity="center"
+      android:gravity="left"
       android:maxLines="1"
       android:text="\uD83D\uDCA9"
       android:visibility="visible"
