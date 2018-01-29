@@ -1,7 +1,6 @@
 package com.tribe.app.data.realm;
 
 import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by madaaflak on 07/09/2017.
@@ -9,7 +8,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class MediaRealm extends RealmObject {
 
-  @PrimaryKey private String url;
+  private String url;
   private Integer filesize;
   private String width;
   private String height;

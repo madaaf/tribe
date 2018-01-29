@@ -58,6 +58,7 @@ import io.realm.exceptions.RealmMigrationNeededException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import net.danlew.android.joda.JodaTimeAndroid;
 import timber.log.Timber;
 
@@ -316,7 +317,7 @@ public class AndroidApplication extends Application {
           if (oldVersion == 12) {
             if (schema.get("MediaRealm") == null) {
               schema.create("MediaRealm")
-                  .addField("url", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
+                  .addField("url", String.class)
                   .addField("filesize", Integer.class)
                   .addField("width", String.class)
                   .addField("height", String.class)
@@ -327,12 +328,14 @@ public class AndroidApplication extends Application {
                   .transform(obj -> {
                     DynamicRealmObject children = obj.getObject("original");
                     if (children == null) return;
-                    DynamicRealmObject migratedChildren = obj.getObject("original_tmp");
+                    DynamicRealmObject migratedChildren =
+                        realm.createObject("MediaRealm");
                     migratedChildren.set("url", children.getString("url"));
                     migratedChildren.set("filesize", children.getInt("filesize"));
                     migratedChildren.set("width", children.getString("width"));
                     migratedChildren.set("height", children.getString("height"));
                     migratedChildren.set("duration", children.getFloat("duration"));
+                    obj.set("original_tmp", migratedChildren);
                   })
                   .removeField("original")
                   .renameField("original_tmp", "original")
