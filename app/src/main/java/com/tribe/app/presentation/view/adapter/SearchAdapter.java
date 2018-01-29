@@ -114,7 +114,7 @@ public class SearchAdapter extends RecyclerView.Adapter {
     return items;
   }
 
-  public void setItems(List<Object> items) {
+  public synchronized void setItems(List<Object> items) {
     if (items != null) items.removeAll(Collections.singleton(null));
 
     this.items.clear();
