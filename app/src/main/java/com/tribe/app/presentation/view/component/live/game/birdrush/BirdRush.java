@@ -1,48 +1,25 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
-import android.app.Activity;
-import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.view.LayoutInflater;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
-import javax.inject.Inject;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 16/01/2018.
  */
 
-public class BirdRush extends FrameLayout {
+public class BirdRush {
 
-  private Context context;
+  private ScreenUtils screenUtils;
 
   // VARIABLES
-  private LayoutInflater inflater;
-  private Unbinder unbinder;
+  private String currentUserId;
   private int index;
   private boolean lost = false;
   private TribeGuest tribeGuest;
   private String id;
-
-  @Inject ScreenUtils screenUtils;
-  @Inject User currentUser;
-
-  @BindView(R.id.bird) ImageView bird;
-  @BindView(R.id.birdName) TextViewFont birdName;
+  private int x;
+  private int y;
 
   private String[] birdsColors = new String[] {
       "FBCF26", "FA7FD9", "BE9EFF", "42F4B2", "F85C02", "3DE9DA", "8B572A", "FFFFFF"
@@ -59,18 +36,39 @@ public class BirdRush extends FrameLayout {
       R.drawable.game_bird7, R.drawable.game_bird8,
   };
 
-  public BirdRush(@NonNull Context context, int index, TribeGuest guest) {
-    super(context);
-    this.context = context;
+  public BirdRush(int index, TribeGuest guest, ScreenUtils screenUtils, String currentUserId) {
     this.index = index;
     this.tribeGuest = guest;
-    initView();
+    this.y = screenUtils.getHeightPx() / 2;
+    this.currentUserId = currentUserId;
+    //initView();
+  }
+
+  public int getX() {
+    return x;
+  }
+
+  public void setX(int x) {
+    this.x = x;
+  }
+
+  public int getY() {
+    return y;
+  }
+
+  public boolean isMine() {
+    return tribeGuest.getId().equals(currentUserId);
+  }
+
+  public void setY(int y) {
+    this.y = y;
   }
 
   public boolean isLost() {
     return lost;
   }
 
+  /*
   private void initView() {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     inflater.inflate(R.layout.view_game_bird_item, this, true);
@@ -84,23 +82,7 @@ public class BirdRush extends FrameLayout {
     String name = (tribeGuest != null) ? tribeGuest.getDisplayName() : currentUser.getDisplayName();
     Timber.e("NEW BIRD " + tribeGuest.toString());
     birdName.setText(name);
-  }
-
-  protected ApplicationComponent getApplicationComponent() {
-    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
-  }
-
-  protected ActivityModule getActivityModule() {
-    return new ActivityModule(((Activity) getContext()));
-  }
-
-  protected void initDependencyInjector() {
-    DaggerUserComponent.builder()
-        .activityModule(getActivityModule())
-        .applicationComponent(getApplicationComponent())
-        .build()
-        .inject(this);
-  }
+  }*/
 
   public String getGuestId() {
     return tribeGuest.getId();

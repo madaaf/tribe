@@ -100,8 +100,6 @@ import dagger.Component;
 
   void inject(RecyclerMessageView chatView);
 
-  void inject(BirdRush birdRush);
-
   void inject(LifeNotification lifeNotification);
 
   void inject(MissedCallDetailActivity missedCallDetailActivity);
