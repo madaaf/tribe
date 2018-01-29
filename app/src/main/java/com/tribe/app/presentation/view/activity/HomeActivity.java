@@ -12,7 +12,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -42,7 +41,6 @@ import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
-import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
@@ -75,7 +73,6 @@ import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
-import com.tribe.app.presentation.utils.preferences.Walkthrough;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
@@ -83,15 +80,12 @@ import com.tribe.app.presentation.view.adapter.decorator.HomeListDividerDecorati
 import com.tribe.app.presentation.view.adapter.decorator.HomeSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
-import com.tribe.app.presentation.view.adapter.helper.HomeListTouchHelperCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
-import com.tribe.app.presentation.view.component.home.HomeWalkthroughView;
 import com.tribe.app.presentation.view.component.home.NewGameView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.home.TopBarContainer;
-import com.tribe.app.presentation.view.component.live.LiveViewFake;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
@@ -173,8 +167,6 @@ public class HomeActivity extends BaseActivity
 
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
 
-  @Inject @Walkthrough Preference<Boolean> walkthrough;
-
   @Inject RxImagePicker rxImagePicker;
 
   @Inject RxFacebook rxFacebook;
@@ -201,12 +193,6 @@ public class HomeActivity extends BaseActivity
 
   @BindView(R.id.txtSyncedContacts) TextViewFont txtSyncedContacts;
 
-  @BindView(R.id.viewFadeInSwipe) View viewFadeInSwipe;
-
-  @BindView(R.id.viewLiveFake) LiveViewFake viewLiveFake;
-
-  @BindView(R.id.viewWalkthrough) HomeWalkthroughView viewWalkthrough;
-
   // OBSERVABLES
   private UserComponent userComponent;
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -220,17 +206,15 @@ public class HomeActivity extends BaseActivity
 
   // VARIABLES
   private HomeLayoutManager layoutManager;
-  private ItemTouchHelper itemTouchHelper;
   private List<HomeAdapterInterface> latestRecipientList;
   private TribeBroadcastReceiver notificationReceiver;
   private NotificationReceiverSupport notificationReceiverSupport;
   private boolean shouldOverridePendingTransactions = false, receiverRegistered = false, hasSynced =
-      false, canEndRefresh = false, finish = false, searchViewDisplayed = false, isSwipingChat =
-      false, shouldNavigateToChat = false;
+      false, canEndRefresh = false, finish = false, searchViewDisplayed = false,
+      shouldNavigateToChat = false;
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
   private FirebaseRemoteConfig firebaseRemoteConfig;
-  private String gesture;
   private Shortcut supportShortcut = createShortcutSupport();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -357,15 +341,6 @@ public class HomeActivity extends BaseActivity
     }
 
     homeGridPresenter.reload(hasSynced);
-
-    initRecyclerViewCallback();
-
-    if (!walkthrough.get()) {
-      walkthrough.set(true);
-      subscriptions.add(Observable.timer(1500, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> viewWalkthrough.show()));
-    }
   }
 
   @Override protected void onPause() {
@@ -461,7 +436,6 @@ public class HomeActivity extends BaseActivity
   private void initUi() {
     setContentView(R.layout.activity_home);
     ButterKnife.bind(this);
-    viewLiveFake.setTranslationX(screenUtils.getWidthPx());
   }
 
   private void initDimensions() {
@@ -498,8 +472,7 @@ public class HomeActivity extends BaseActivity
                 recyclerViewFriends.getChildLayoutPosition(view))), homeGridAdapter.onMainClick()
             .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
                 recyclerViewFriends.getChildLayoutPosition(view))), searchView.onClickChat(),
-        searchView.onMainClick())
-        .subscribe(item -> navigateToChat(item, TagManagerUtils.GESTURE_TAP)));
+        searchView.onMainClick()).subscribe(item -> navigateToChat(item)));
 
     subscriptions.add(Observable.merge(homeGridAdapter.onLiveClick()
         .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
@@ -509,8 +482,8 @@ public class HomeActivity extends BaseActivity
         .subscribe(item -> onClickItem(item)));
 
     subscriptions.add(homeGridAdapter.onAddUser().map(view -> {
-      HomeAdapterInterface user = (User) homeGridAdapter.getItemAtPosition(
-          recyclerViewFriends.getChildLayoutPosition(view));
+      HomeAdapterInterface user =
+          homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view));
       int position = recyclerViewFriends.getChildAdapterPosition(view);
       return new Pair(position, user);
     }).doOnError(throwable -> throwable.printStackTrace()).subscribe(pair -> {
@@ -796,7 +769,7 @@ public class HomeActivity extends BaseActivity
 
   private void initTopBar() {
     subscriptions.add(
-        topBarContainer.onClickProfile().subscribe(aVoid -> navigateToLeaderboards()));
+        topBarContainer.onClickProfile().subscribe(aVoid -> navigator.navigateToProfile(this)));
 
     subscriptions.add(topBarContainer.onBack().subscribe(aVoid -> finish()));
 
@@ -1059,10 +1032,6 @@ public class HomeActivity extends BaseActivity
         Toast.LENGTH_SHORT).show();
   }
 
-  private void navigateToLeaderboards() {
-    navigator.navigateToLeaderboards(HomeActivity.this);
-  }
-
   private void navigateToLeaderboardsShortcut(Shortcut shortcut) {
     User friend = shortcut.getSingleFriend();
     navigator.navigateToLeaderboardsForShortcut(HomeActivity.this, friend.getId(),
@@ -1077,11 +1046,11 @@ public class HomeActivity extends BaseActivity
     HomeActivity.this.navigator.navigateToNewGame(this);
   }
 
-  private void navigateToChat(Recipient recipient, String gesture) {
+  private void navigateToChat(Recipient recipient) {
     if (recipient.isSupport()) {
       supportShortcut.setRead(true);
     }
-    this.gesture = gesture;
+
     if (!recipient.isRead()) {
       String shortcutId = "";
 
@@ -1096,10 +1065,10 @@ public class HomeActivity extends BaseActivity
     }
 
     if (recipient instanceof Shortcut) {
-      navigator.navigateToChat(this, recipient, null, gesture, recipient.getSectionTag(), false);
+      navigator.navigateToChat(this, recipient, null, recipient.getSectionTag(), false);
     } else {
       if (((Invite) recipient).getShortcut() != null) {
-        navigator.navigateToChat(this, recipient, null, gesture, recipient.getSectionTag(), false);
+        navigator.navigateToChat(this, recipient, null, recipient.getSectionTag(), false);
       } else {
         List<String> list = ((Invite) recipient).getRoomUserIds();
         String[] array = new String[list.size()];
@@ -1122,7 +1091,7 @@ public class HomeActivity extends BaseActivity
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
     if (shouldNavigateToChat) {
-      navigator.navigateToChat(this, shortcut, null, gesture, shortcut.getSectionTag(), false);
+      navigator.navigateToChat(this, shortcut, null, shortcut.getSectionTag(), false);
       shouldNavigateToChat = false;
     }
   }
@@ -1197,7 +1166,7 @@ public class HomeActivity extends BaseActivity
                 navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
                     TagManagerUtils.SECTION_SHORTCUT, gameId);
               } else {
-                navigateToChat(shortcut, TagManagerUtils.GESTURE_TAP);
+                navigateToChat(shortcut);
               }
             }
           }));
@@ -1253,71 +1222,6 @@ public class HomeActivity extends BaseActivity
         getResources().getDimensionPixelSize(R.dimen.list_home_header_height), true,
         getSectionCallback(homeGridAdapter.getItems()), screenUtils);
     recyclerViewFriends.addItemDecoration(sectionItemDecoration);
-  }
-
-  private void initRecyclerViewCallback() {
-    viewFadeInSwipe.setVisibility(View.GONE);
-    viewFadeInSwipe.setAlpha(0);
-    viewLiveFake.setTranslationX(screenUtils.getWidthPx());
-
-    HomeListTouchHelperCallback callback = new HomeListTouchHelperCallback(0, 0, homeGridAdapter);
-
-    if (itemTouchHelper == null) {
-      itemTouchHelper = new ItemTouchHelper(callback);
-    }
-
-    itemTouchHelper.attachToRecyclerView(null);
-    itemTouchHelper.attachToRecyclerView(recyclerViewFriends);
-
-    subscriptions.add(callback.onDxChange().subscribe(pairPosDx -> {
-      if (pairPosDx.first == homeGridAdapter.getSupportPosition()) {
-        return;
-      }
-
-      if (pairPosDx.second == 0) {
-        viewFadeInSwipe.setVisibility(View.GONE);
-        viewFadeInSwipe.setAlpha(0);
-      } else if (homeGridAdapter.getItemAtPosition(pairPosDx.first) instanceof Recipient) {
-        Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(pairPosDx.first);
-
-        if (pairPosDx.second < 0) {
-          isSwipingChat = false;
-          Live live = LiveActivity.getLive(recipient,
-              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-                  : LiveActivity.SOURCE_GRID);
-          if (recipient instanceof Shortcut) {
-            Shortcut shortcut = (Shortcut) recipient;
-            live.setShortcut(shortcut);
-          }
-
-          viewLiveFake.setLive(live, recipient);
-          viewLiveFake.setTranslationX(screenUtils.getWidthPx() + pairPosDx.second);
-          viewFadeInSwipe.setVisibility(View.VISIBLE);
-          viewFadeInSwipe.setTranslationX(pairPosDx.second);
-          viewFadeInSwipe.setAlpha(Math.abs(pairPosDx.second) / (float) screenUtils.getWidthPx());
-        } else {
-          isSwipingChat = true;
-        }
-      }
-    }));
-
-    subscriptions.add(callback.onSwipedItem().subscribe(position -> {
-      if (homeGridAdapter.getItemAtPosition(position) instanceof Recipient) {
-        Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(position);
-
-        if (!isSwipingChat && !recipient.isSupport()) {
-          navigator.navigateToLiveFromSwipe(this, recipient,
-              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-                  : LiveActivity.SOURCE_GRID, recipient.getSectionTag());
-        } else {
-          navigateToChat(recipient, TagManagerUtils.GESTURE_SWIPE);
-        }
-
-        subscriptions.add(Observable.timer(3, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(aLong -> viewLiveFake.setTranslationX(screenUtils.getWidthPx())));
-      }
-    }));
   }
 
   private SectionCallback getSectionCallback(final List<HomeAdapterInterface> recipientList) {

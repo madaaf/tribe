@@ -170,8 +170,12 @@ public class TopBarView extends FrameLayout {
         btnSearch.setLayoutParams(params);
 
         params = (MarginLayoutParams) imgBack.getLayoutParams();
-        params.rightMargin = getMarginRightBtnNew();
+        params.rightMargin = getMarginRightBtnClose();
         imgBack.setLayoutParams(params);
+
+        params = (MarginLayoutParams) viewAvatar.getLayoutParams();
+        params.leftMargin = getMarginLeftAvatar();
+        viewAvatar.setLayoutParams(params);
       }
     });
 
@@ -314,15 +318,7 @@ public class TopBarView extends FrameLayout {
     hideView(txtEmojiGame, true);
 
     AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
-    AnimationUtils.animateRightMargin(btnSearch, imgClose.getWidth() + 2 * marginSmall, DURATION);
-
-    int[] locationSearch = new int[2];
-    imgSearch.getLocationOnScreen(locationSearch);
-    imgSearch.animate()
-        .setDuration(DURATION)
-        .translationX(-locationSearch[0] + screenUtils.dpToPx(60))
-        .setInterpolator(new DecelerateInterpolator())
-        .start();
+    AnimationUtils.animateRightMargin(btnSearch, imgClose.getWidth(), DURATION);
 
     txtSearch.setVisibility(View.INVISIBLE);
   }
@@ -351,26 +347,24 @@ public class TopBarView extends FrameLayout {
     AnimationUtils.animateLeftMargin(btnSearch, getMarginLeftSearch(), DURATION, null);
     AnimationUtils.animateRightMargin(btnSearch, getMarginRightSearch(), DURATION);
 
-    imgSearch.animate()
-        .setDuration(DURATION)
-        .translationX(0)
-        .setInterpolator(new DecelerateInterpolator())
-        .start();
-
     subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> txtSearch.setVisibility(View.VISIBLE)));
   }
 
   private int getMarginRightSearch() {
-    return imgBack.getWidth() + ((int) 2f * marginSmall);
+    return imgBack.getMeasuredWidth();
   }
 
   private int getMarginLeftSearch() {
-    return viewAvatar.getWidth() + 2 * marginSmall;
+    return viewAvatar.getWidth() + marginSmall + getMarginLeftAvatar();
   }
 
-  private int getMarginRightBtnNew() {
+  private int getMarginLeftAvatar() {
+    return marginSmall;
+  }
+
+  private int getMarginRightBtnClose() {
     return 0;
   }
 

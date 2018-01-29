@@ -233,8 +233,7 @@ public class ChatView extends IChat {
     return type;
   }
 
-  public void setGestureAndSection(String gesture, String section) {
-    this.gesture = gesture;
+  public void setSection(String section) {
     this.section = section;
   }
 
@@ -1085,7 +1084,7 @@ public class ChatView extends IChat {
       name.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow, 0);
 
       layout.setOnClickListener(view -> {
-        navigator.navigateToChat((Activity) context, fromShortcut, null, gesture,
+        navigator.navigateToChat((Activity) context, fromShortcut, null,
             recipient.getSectionTag(), true);
         this.fromShortcut = null;
       });
@@ -1095,7 +1094,7 @@ public class ChatView extends IChat {
   @Override public boolean dispatchKeyEvent(KeyEvent event) {
     if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
       if (fromShortcut != null) {
-        navigator.navigateToChat((Activity) context, fromShortcut, null, gesture,
+        navigator.navigateToChat((Activity) context, fromShortcut, null,
             recipient.getSectionTag(), true);
         return true;
       }
@@ -1158,8 +1157,7 @@ public class ChatView extends IChat {
 
   @Override public void onQuickShortcutUpdated(Shortcut shortcutQuickChat) {
     tagManager.trackEvent(TagManagerUtils.Shortcut);
-    navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut,
-        TagManagerUtils.GESTURE_TAP, TagManagerUtils.SECTION_SHORTCUT, false);
+    navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut, TagManagerUtils.SECTION_SHORTCUT, false);
   }
 
   public void onStartRecording() {

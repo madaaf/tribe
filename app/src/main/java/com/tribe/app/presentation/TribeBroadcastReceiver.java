@@ -82,8 +82,8 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
       if (notificationShortcut != null) {
         if (context instanceof ChatActivity) {
           List<User> memberInChat = null;
-          if (((ChatActivity) context).getShortcut() != null
-              && ((ChatActivity) context).getShortcut().getMembers() != null) {
+          if (((ChatActivity) context).getShortcut() != null &&
+              ((ChatActivity) context).getShortcut().getMembers() != null) {
             memberInChat = ((ChatActivity) context).getShortcut().getMembers();
           }
           boolean isSameChat =
@@ -94,8 +94,8 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
           }
         } else if (context instanceof LiveActivity) {
           List<User> memberInlive = null;
-          if (((LiveActivity) context).getShortcut() != null
-              && ((LiveActivity) context).getShortcut().getMembers() != null) {
+          if (((LiveActivity) context).getShortcut() != null &&
+              ((LiveActivity) context).getShortcut().getMembers() != null) {
             memberInlive = ((LiveActivity) context).getShortcut().getMembers();
           }
           boolean isSameChat =
@@ -117,13 +117,13 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
                 .getId()
                 .equals(finalNotificationShortcut.getId())) {
               navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null,
-                  null, false);
+                  false);
             }
           } else if (context instanceof LiveActivity) {
             // TODO
           } else {
             navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null,
-                null, false);
+                false);
           }
         }
       });
@@ -165,8 +165,9 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
       onDisplayNotification.onNext(null);
     }
 
-    if (liveNotificationView != null && (weakReferenceActivity.get() != null
-        && !(weakReferenceActivity.get() instanceof LiveActivity))) {
+    if (liveNotificationView != null &&
+        (weakReferenceActivity.get() != null &&
+            !(weakReferenceActivity.get() instanceof LiveActivity))) {
       Alerter.create(weakReferenceActivity.get(), liveNotificationView).show();
     } else if (liveNotificationView != null) {
       onShowNotificationLive.onNext(Pair.create(notificationPayload, liveNotificationView));

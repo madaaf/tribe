@@ -215,13 +215,13 @@ import javax.inject.Singleton;
                 .getId()
                 .equals(finalNotificationShortcut.getId())) {
               navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null,
-                  null, false);
+                  false);
             }
           } else if (context instanceof LiveActivity) {
             // TODO
           } else {
             navigator.navigateToChat((Activity) context, finalNotificationShortcut, null, null,
-                null, false);
+                false);
           }
         }
       });
@@ -321,8 +321,7 @@ import javax.inject.Singleton;
 
     Shortcut notificationShortcut = ShortcutUtil.getRecipientFromId(payload.getUsers_ids(), user);
 
-    Intent intent =
-        ChatActivity.getCallingIntent(application, notificationShortcut, null, null, null);
+    Intent intent = ChatActivity.getCallingIntent(application, notificationShortcut, null, null);
 
     PendingIntent pendingIntent =
         PendingIntent.getActivity(application, (int) System.currentTimeMillis(), intent,

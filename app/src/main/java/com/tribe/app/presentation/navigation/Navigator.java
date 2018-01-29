@@ -250,10 +250,10 @@ public class Navigator {
   }
 
   public void navigateToChat(Activity activity, Recipient recipient, Shortcut fromShortcut,
-      String gesture, String section, boolean noHistory) {
+      String section, boolean noHistory) {
     if (activity != null) {
       Intent intent =
-          ChatActivity.getCallingIntent(activity, recipient, fromShortcut, gesture, section);
+          ChatActivity.getCallingIntent(activity, recipient, fromShortcut, section);
 
       if (noHistory) {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

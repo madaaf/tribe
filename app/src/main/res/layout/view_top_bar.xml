@@ -8,8 +8,8 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:padding="10dp"
       >
+
     <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
         android:id="@+id/viewNewAvatar"
         android:layout_width="36dp"
@@ -68,14 +68,14 @@
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:layout_marginEnd="15dp"
-          android:layout_marginStart="20dp"
+          android:layout_marginStart="30dp"
           android:background="@null"
           android:gravity="center_vertical"
           android:imeOptions="actionDone"
           android:inputType="text|textVisiblePassword"
           android:singleLine="true"
           android:textColorHint="@color/black.opacity.40"
-          style="@style/Body.Two.Black"
+          style="@style/BiggerTitle.2.Black"
           />
 
       <com.tribe.app.presentation.view.widget.TextViewFont
