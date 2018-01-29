@@ -234,7 +234,6 @@ public class HomeActivity extends BaseActivity
   private Shortcut supportShortcut = createShortcutSupport();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
-    getWindow().setBackgroundDrawableResource(android.R.color.black);
     super.onCreate(savedInstanceState);
 
     initDependencyInjector();
@@ -394,6 +393,11 @@ public class HomeActivity extends BaseActivity
     stopService();
 
     super.onDestroy();
+  }
+
+  @Override public void finish() {
+    super.finish();
+    overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_left);
   }
 
   private void displaySyncBanner(String txt) {
@@ -794,8 +798,7 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(
         topBarContainer.onClickProfile().subscribe(aVoid -> navigateToLeaderboards()));
 
-    subscriptions.add(topBarContainer.onClickCallRoulette()
-        .subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, null)));
+    subscriptions.add(topBarContainer.onBack().subscribe(aVoid -> finish()));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch()
         .doOnNext(open -> {
@@ -1019,7 +1022,6 @@ public class HomeActivity extends BaseActivity
               .filter(aBoolean -> aBoolean)
               .subscribe());
       isBannedUser = true;
-      topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
     } else if (user.getRandom_banned_until() != null &&
         !dateUtils.isBefore(user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
 
@@ -1030,7 +1032,6 @@ public class HomeActivity extends BaseActivity
               .filter(aBoolean -> aBoolean)
               .subscribe());
       isBannedUser = true;
-      topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
     }
   }
 

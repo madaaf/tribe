@@ -168,11 +168,7 @@ public class TopBarContainer extends FrameLayout {
   private void initDimen() {
 
   }
-
-  public View getDiceViewBtn() {
-    return topBarView.getDiceViewBtn();
-  }
-
+  
   private void initSubscriptions() {
     topBarView.initNewContactsObs(onNewContactsInfos);
   }
@@ -427,8 +423,8 @@ public class TopBarContainer extends FrameLayout {
     return topBarView.onClickProfile();
   }
 
-  public Observable<Void> onClickCallRoulette() {
-    return topBarView.onClickCallRoulette();
+  public Observable<Void> onBack() {
+    return topBarView.onBack();
   }
 
   public Observable<Boolean> onOpenCloseSearch() {
