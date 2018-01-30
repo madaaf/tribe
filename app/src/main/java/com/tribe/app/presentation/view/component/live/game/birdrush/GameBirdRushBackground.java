@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,6 +28,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -52,9 +54,9 @@ public class GameBirdRushBackground extends View {
   private Rect dstSplash2;
   private Rect dstObsc;
   private Rect dstBird;
+  private Paint paintObsc;
 
-  private int xScroll = 0;
-  private int yScroll = 0;
+  private int xScroll = 0, yScroll = 0;
   private boolean pause = false, displayFirstObstacle = false;
 
   private BirdRushObstacle obstaclePoped = null;
@@ -67,6 +69,7 @@ public class GameBirdRushBackground extends View {
    */
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private CompositeSubscription subscriptionsAnimation = new CompositeSubscription();
+  private PublishSubject<Void> onGameOver = PublishSubject.create();
   private Subscription timer;
 
   public GameBirdRushBackground(@NonNull Context context) {
@@ -87,6 +90,7 @@ public class GameBirdRushBackground extends View {
   }
 
   private void initResource() {
+    paintObsc = new Paint();
     screenWidth = screenUtils.getWidthPx();
     screenHeight = screenUtils.getHeightPx();
 
@@ -113,6 +117,7 @@ public class GameBirdRushBackground extends View {
     displayBackground(canvas);
     displayObstacles(canvas);
     displayBirds(canvas);
+    handleCollision(canvas);
   }
 
   private void displayBackground(Canvas canvas) {
@@ -134,7 +139,7 @@ public class GameBirdRushBackground extends View {
       //Timber.e("SOEF obs Poped Move : " + b.getX() + " " + b.getY() + " " + b.getViewHeight());
       rect.set(b.getX(), b.getY(), b.getX() + BirdRushObstacle.wiewWidth,
           Math.round(b.getY() + b.getViewHeight()));
-      canvas.drawBitmap(obstacleBtm, null, rect, null);
+      canvas.drawBitmap(obstacleBtm, null, rect, paintObsc);
     }
 
     /**
@@ -147,7 +152,9 @@ public class GameBirdRushBackground extends View {
           Math.round(obstaclePoped.getY() + obstaclePoped.getViewHeight()));
       obstaclePopedList.put(obstaclePoped, dstObsc);
       obstaclePoped = null;
-      canvas.drawBitmap(obstacleBtm, null, dstObsc, null);
+      Paint p = new Paint();
+      p.setAlpha(1);
+      canvas.drawBitmap(obstacleBtm, null, dstObsc, p);
     }
   }
 
@@ -157,14 +164,35 @@ public class GameBirdRushBackground extends View {
      */
     for (BirdRush birdRush : birdList) {
       int xPos = (screenWidth / 2) - (birdBtm.getWidth() / 2) - screenUtils.dpToPx(10);
-      int yPos = birdRush.getY() - (birdBtm.getHeight() / 2 ) - screenUtils.dpToPx(10);
+      int yPos = birdRush.getY() - (birdBtm.getHeight() / 2) - screenUtils.dpToPx(10);
       dstBird.set(xPos, yPos, xPos + birdBtm.getWidth(), yPos + birdBtm.getHeight());
       canvas.drawBitmap(birdBtm, null, dstBird, null);
     }
   }
 
+  private void handleCollision(Canvas canvas) {
+    BirdRush myBird = getMyBird();
+    for (BirdRushObstacle o : obstaclesList) {
+      if (o != null && myBird != null && o.getX() > 0 && o.getX() > screenUtils.getWidthPx() / 2) {
+
+        if (o.getX() - o.getWiewWidth() < (screenUtils.getWidthPx() / 2)) {
+          if (isBetween(o.getY(), o.getY() + o.getViewHeight(), myBird.getY())) {
+            Timber.e("GAME OBER ");
+            obstacleBtm =
+                BitmapFactory.decodeResource(getResources(), R.drawable.game_birdrush_obstacle_red);
+            displayObstacles(canvas);
+            gameOver();
+          }
+        }
+      }
+    }
+  }
+
+  private void gameOver() {
+    onGameOver.onNext(null);
+  }
+
   private void initView() {
-    positionBird();
     if (splashBtm == null) {
       splashBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdsrush_sky);
       obstacleBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdrush_obstacle);
@@ -186,6 +214,14 @@ public class GameBirdRushBackground extends View {
 
   public void clearObstacles() {
     obstaclesList.clear();
+    obstaclePopedList.clear();
+  }
+
+  public BirdRush getMyBird() {
+    for (BirdRush b : birdList) {
+      if (b.isMine()) return b;
+    }
+    return null;
   }
 
   public void addBird(BirdRush birdRush) {
@@ -200,34 +236,6 @@ public class GameBirdRushBackground extends View {
     pause = false;
   }
 
-  /*
-  private void handleCollisionWithObstacle() {
-    if (myBird == null) {
-      return;
-    }
-    if (obstacleVisibleScreen != null && !obstacleVisibleScreen.isEmpty()) {
-      for (Map.Entry<BirdRushObstacle, ImageView> entry : obstacleVisibleScreen.entrySet()) {
-        BirdRushObstacle b = entry.getKey();
-        ImageView obsclView = entry.getValue();
-
-        if (obsclView != null
-            && b != null
-            && obsclView.getX() > 0
-            && obsclView.getX() > screenUtils.getWidthPx() / 2) {
-
-          if (obsclView.getX() - obsclView.getWidth() < (screenUtils.getWidthPx() / 2)) {
-            if (isBetween(obsclView.getY(), obsclView.getY() + obsclView.getHeight(),
-                myBird.getY())) {
-              gameOver(obsclView);
-            }
-          }
-        }
-      }
-    }
-  }
-
-
-
   private boolean isBetween(float x1, float x2, float pos) {
     if (pos > x1 && pos < x2) {
       return true;
@@ -235,20 +243,20 @@ public class GameBirdRushBackground extends View {
     return false;
   }
 
-
-  */
-
   public void stop() { // List<BirdRushobstaclesListObstacle>
     pause = true;
     Timber.e("SOEF BACKGROUND  stop ");
     resetTimer();
-    // if (animator != null) animator.cancel();
-    /*
-    for (int i = 0; i < obstaclesList.size(); i++) {
-      View v = obstaclesList.get(i).getView();
-      //removeView(v);
-    }
-    */
+
+    subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          clearObstacles();
+          invalidate();
+          paintObsc.setAlpha(100);
+          obstacleBtm =
+              BitmapFactory.decodeResource(getResources(), R.drawable.game_birdrush_obstacle);
+        }));
   }
 
   public void dispose() {
@@ -257,28 +265,11 @@ public class GameBirdRushBackground extends View {
     subscriptionsAnimation.unsubscribe();
   }
 
-  public void removeObstacles() {
-    /*
-    for (int i = 0; i < getChildCount(); i++) {
-      View v = getChildAt(i);
-      Timber.e("REMOVE VIEW " + v.getId());
-      if (v.getTag() != null && v.getTag()
-          .toString()
-          .startsWith(BirdRushObstacle.BIRD_OBSTACLE_TAG)) {
-        removeView(v);
-      }
-     /* if (v.getId() != R.id.background_one && v.getId() != R.id.background_two) {
-
-      }*/
-
-  }
-
   public void startPlaying() {
     if (!pause) {
       moveBackBackground();
       moveObstacleList();
       moveBirds();
-
       invalidate();
     }
   }
@@ -296,10 +287,21 @@ public class GameBirdRushBackground extends View {
     }
   }
 
+  int yBirdDelayPos = 2;
+
   private void moveBirds() {
-    for (BirdRush birdRush : birdList) {
-      birdRush.setY(birdRush.getY() + 2);
-    }
+    BirdRush myBird = getMyBird();
+    myBird.setY(myBird.getY() + yBirdDelayPos);
+  }
+
+  public void jumpBird(BirdRush b) {
+    yBirdDelayPos = -10;
+    subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          Timber.e("JUMP " + aLong);
+          yBirdDelayPos = 2;
+        }));
   }
 
   private void setTimer() {
@@ -347,8 +349,6 @@ public class GameBirdRushBackground extends View {
               "SOEF T : " + " " + i + " " + obstaclePoped.getIdOb() + " " + obstaclesList.size());
         }
       }
-
-      // handleCollisionWithObstacle();
     }
   }
 
@@ -379,7 +379,11 @@ public class GameBirdRushBackground extends View {
     return new ActivityModule(((Activity) getContext()));
   }
 
-  private void positionBird() {
+  /**
+   * OBSERVABLES
+   */
 
+  public Observable<Void> onGameOver() {
+    return onGameOver;
   }
 }

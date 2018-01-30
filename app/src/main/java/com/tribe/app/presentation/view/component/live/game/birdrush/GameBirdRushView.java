@@ -1,10 +1,8 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -33,7 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
@@ -59,11 +56,9 @@ public class GameBirdRushView extends GameViewWithEngine {
   // VARIABLE
   private BirdController controller;
   private boolean startedAsSingle = false, didRestartWhenReady = false, gameOver = false;
-  private int birdHeight = 0, birdWidth = 0, delayBirdTranslation = 0;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions;
-  private Subscription popIntervalSubscription = null;
 
   // RESSOURCE
   private Map<TribeGuest, BirdRush> birdsList = new HashMap<>();
@@ -208,72 +203,30 @@ public class GameBirdRushView extends GameViewWithEngine {
         }));
   }
 
-  private void gameOver(ImageView obstacle) {
+  private void gameOver() {
     Timber.e("SOEF LOCAL game over");
     gameOver = true;
     setOnTouchListener(null);
-    // fallBird();
-    // obstacle.getAnimation().cancel();
-    obstacle.clearAnimation();
-    obstacle.setImageDrawable(
-        ContextCompat.getDrawable(context, R.drawable.game_birdrush_obstacle_red));
-
     resetScores(true);
     iLost();
   }
 
   private void initSubscriptions() {
     subscriptions = new CompositeSubscription();
+
+    subscriptions.add(viewBackground.onGameOver().subscribe(aVoid -> {
+      gameOver();
+    }));
+
     subscriptions.add(controller.onTap().subscribe(aVoid -> { // MADA
-      webRTCRoom.sendToPeers(getTapPayload(myBird.getX(), myBird.getY()), true);
-      Timber.w("SOEF GET TAP PLAYLOAD " + getTapPayload(myBird.getX(), myBird.getY()));
-      // jump();
+      webRTCRoom.sendToPeers(
+          getTapPayload(viewBackground.getMyBird().getX(), viewBackground.getMyBird().getY()),
+          true);
+      Timber.w("SOEF GET TAP PLAYLOAD" + getTapPayload(viewBackground.getMyBird().getX(),
+          viewBackground.getMyBird().getY()));
+      viewBackground.jumpBird(viewBackground.getMyBird());
     }));
   }
-
-  ValueAnimator va;
-
-  /*
-  public void jump() {
-    if (va != null) {
-      va.cancel();
-    }
-    va = ValueAnimator.ofFloat(myBird.getY(), myBird.getY() - 100);
-    va.setDuration(100);
-    va.addUpdateListener(animation -> {
-      Float value = (float) animation.getAnimatedValue();
-      myBird.setY(value);
-      float x = myBird.getX() + myBird.getWidth();
-      float y = myBird.getY() + myBird.getHeight();
-
-      //Timber.e("ok " + x + " " + y);
-    });
-    va.addListener(new AnimatorListenerAdapter() {
-      @Override public void onAnimationEnd(Animator animation) {
-        super.onAnimationEnd(animation);
-        fallBird();
-      }
-    });
-    va.start();
-  }
-
-  public void fallBird() {
-    if (va != null) {
-      va.cancel();
-    }
-    va = ValueAnimator.ofFloat(myBird.getY(), myBird.getY() + screenUtils.getHeightPx());
-    va.setDuration(1000);
-    va.setInterpolator(new AccelerateInterpolator());
-    va.addUpdateListener(animation -> {
-      Float value = (float) animation.getAnimatedValue();
-      myBird.setY(value);
-      if (myBird.getY() > screenUtils.getHeightPx() || myBird.getY() < 0) {
-        Timber.w("GAME OVER");
-        iLost();
-      }
-    });
-    va.start();
-  }*/
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
@@ -291,8 +244,7 @@ public class GameBirdRushView extends GameViewWithEngine {
       for (String key : peerMap.keySet()) {
         TribeGuest guest = peerMap.get(key);
         Timber.e(" SOEF ADD GUEST" + peerMap.get(key) + " " + peerMap.size());
-        BirdRush bird =
-            new BirdRush(index, guest, screenUtils, currentUser.getId());
+        BirdRush bird = new BirdRush(index, guest, screenUtils, currentUser.getId());
         viewBackground.addBird(bird);
       /*
         if (!haveBird(peerMap.get(key))) {
