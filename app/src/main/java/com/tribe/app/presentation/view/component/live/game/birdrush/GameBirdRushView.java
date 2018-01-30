@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.gson.Gson;
@@ -48,7 +47,6 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @BindView(R.id.viewBackground) GameBirdRushBackground viewBackground;
   @BindView(R.id.viewBirds) FrameLayout viewBirds;
-  @BindView(R.id.bird) ImageView bird;
 
   @Inject ScreenUtils screenUtils;
   @Inject User currentUser;
@@ -62,7 +60,6 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   // RESSOURCE
   private Map<TribeGuest, BirdRush> birdsList = new HashMap<>();
-  private BirdRush myBird;
 
   public GameBirdRushView(@NonNull Context context) {
     super(context);
@@ -245,12 +242,10 @@ public class GameBirdRushView extends GameViewWithEngine {
         TribeGuest guest = peerMap.get(key);
         Timber.e(" SOEF ADD GUEST" + peerMap.get(key) + " " + peerMap.size());
         BirdRush bird = new BirdRush(index, guest, screenUtils, currentUser.getId());
-        viewBackground.addBird(bird);
-      /*
-        if (!haveBird(peerMap.get(key))) {
-          //
+        if (!viewBackground.haveBird(peerMap.get(key))) {
+          viewBackground.addBird(bird);
           index++;
-        }*/
+        }
       }
     }));
   }

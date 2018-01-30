@@ -19,6 +19,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,8 +57,8 @@ public class GameBirdRushBackground extends View {
   private Rect dstBird;
   private Paint paintObsc;
 
-  private int xScroll = 0, yScroll = 0;
-  private boolean pause = false, displayFirstObstacle = false;
+  private int xScroll = 0, yScroll = 0, xFinalBirdPos, yFinalBirdPos, yInitTranslation;
+  private boolean pause = false, displayFirstObstacle = false, entranceBirdFinish = false;
 
   private BirdRushObstacle obstaclePoped = null;
   private Map<BirdRushObstacle, Rect> obstaclePopedList = new HashMap<>();
@@ -86,7 +87,6 @@ public class GameBirdRushBackground extends View {
     initDependencyInjector();
     initView();
     initResource();
-    setTimer();
   }
 
   private void initResource() {
@@ -94,16 +94,17 @@ public class GameBirdRushBackground extends View {
     screenWidth = screenUtils.getWidthPx();
     screenHeight = screenUtils.getHeightPx();
 
+    yInitTranslation = screenUtils.dpToPx(200);
+
     dstSplash =
         new Rect(xScroll, yScroll, xScroll + screenWidth, yScroll + screenUtils.getHeightPx());
     dstSplash2 = new Rect(xScroll + screenWidth, yScroll, xScroll + (2 * screenWidth),
         yScroll + screenUtils.getHeightPx());
 
-    int initialBirdYPos = screenHeight / 2 - birdBtm.getHeight() / 2 - screenUtils.dpToPx(10);
-    Timber.e("SOEF INIT  Y " + birdBtm.getHeight() + " " + birdBtm.getWidth());
+    xFinalBirdPos =
+        (screenWidth / 2) - (birdBtm.getWidth() / 2) - screenUtils.dpToPx(10); // Middle position
 
-    dstBird = new Rect(0, initialBirdYPos, screenUtils.dpToPx(50),
-        initialBirdYPos + screenUtils.dpToPx(50));
+    yFinalBirdPos = (screenHeight / 2) - (birdBtm.getHeight() / 2) - screenUtils.dpToPx(10);
 
     getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
       @Override public void onGlobalLayout() {
@@ -160,12 +161,16 @@ public class GameBirdRushBackground extends View {
 
   private void displayBirds(Canvas canvas) {
     /**
-     *  add MY BIRD
+     *  Move MY BIRD
      */
     for (BirdRush birdRush : birdList) {
-      int xPos = (screenWidth / 2) - (birdBtm.getWidth() / 2) - screenUtils.dpToPx(10);
+      //  int xPos = (screenWidth / 2) - (birdBtm.getWidth() / 2) - screenUtils.dpToPx(10); // Middle position
+      //  int yPos = birdRush.getY() - (birdBtm.getHeight() / 2) - screenUtils.dpToPx(10);
+
       int yPos = birdRush.getY() - (birdBtm.getHeight() / 2) - screenUtils.dpToPx(10);
-      dstBird.set(xPos, yPos, xPos + birdBtm.getWidth(), yPos + birdBtm.getHeight());
+
+      dstBird.set(birdRush.getX(), yPos, birdRush.getX() + birdBtm.getWidth(),
+          yPos + birdBtm.getHeight());
       canvas.drawBitmap(birdBtm, null, dstBird, null);
     }
   }
@@ -225,6 +230,13 @@ public class GameBirdRushBackground extends View {
   }
 
   public void addBird(BirdRush birdRush) {
+    int yPos =
+        screenHeight / 2 - (birdBtm.getHeight() / 2) - screenUtils.dpToPx(10) + yInitTranslation;
+    int xPos = -birdBtm.getWidth();
+    birdRush.setX(xPos);
+    birdRush.setY(yPos);
+
+    dstBird = new Rect(xPos, yPos, xPos + birdBtm.getWidth(), yPos + birdBtm.getHeight());
     birdList.add(birdRush);
   }
 
@@ -234,6 +246,7 @@ public class GameBirdRushBackground extends View {
 
   public void start() {
     pause = false;
+    setTimer();
   }
 
   private boolean isBetween(float x1, float x2, float pos) {
@@ -267,9 +280,11 @@ public class GameBirdRushBackground extends View {
 
   public void startPlaying() {
     if (!pause) {
-      moveBackBackground();
-      moveObstacleList();
       moveBirds();
+      if (entranceBirdFinish) {
+        moveBackBackground();
+        moveObstacleList();
+      }
       invalidate();
     }
   }
@@ -287,11 +302,27 @@ public class GameBirdRushBackground extends View {
     }
   }
 
-  int yBirdDelayPos = 2;
+  int yBirdDelayPos = 5;
 
   private void moveBirds() {
     BirdRush myBird = getMyBird();
-    myBird.setY(myBird.getY() + yBirdDelayPos);
+
+    if (myBird.getX() < xFinalBirdPos) {              // entrance of the bird
+      myBird.setX(myBird.getX() + 5);
+    } else {
+      myBird.setX(xFinalBirdPos);                     // middle of the screen
+    }
+
+    Timber.e(" SOEF Y : " + myBird.getY() + " " + yFinalBirdPos);
+    if (myBird.getY() > yFinalBirdPos) {              // entrance of the bird
+      myBird.setY(myBird.getY() - 5);
+    } else {
+      myBird.setY(myBird.getY() + yBirdDelayPos);     // middle of the screen
+    }
+
+    if (myBird.getX() >= xFinalBirdPos && myBird.getY() >= yFinalBirdPos) {
+      entranceBirdFinish = true;
+    }
   }
 
   public void jumpBird(BirdRush b) {
@@ -316,7 +347,6 @@ public class GameBirdRushBackground extends View {
     subscriptions.add(Observable.interval(3000, 100, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          // handleCollisionWithObstacle();
           popObstacles(aLong);
         }));
   }
@@ -385,5 +415,14 @@ public class GameBirdRushBackground extends View {
 
   public Observable<Void> onGameOver() {
     return onGameOver;
+  }
+
+  public boolean haveBird(TribeGuest guest) {
+    for (BirdRush birdRush : birdList) {
+      if (birdRush.getGuestId().equals(guest.getId())) {
+        return true;
+      }
+    }
+    return false;
   }
 }
