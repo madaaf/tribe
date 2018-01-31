@@ -27,6 +27,15 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_gravity="center"
+      android:visibility="gone"
+      />
+
+  <ImageView
+      android:id="@+id/imgInviteAvatar"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_gravity="center"
+      android:visibility="gone"
       />
 
 </merge>

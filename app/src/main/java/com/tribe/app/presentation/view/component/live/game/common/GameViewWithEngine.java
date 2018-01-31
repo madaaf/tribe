@@ -411,7 +411,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
       gameEngine.start();
 
       if (gameEngine.mapPlayerStatus.size() <= 1) {
-        if (txtRestart != null) {
+        if (txtRestart != null && invitedMap.size() > 0) {
           txtRestart.setText(
               StringUtils.stringWithPrefix(getContext(), wordingPrefix, "waiting_instructions"));
           changeMessageStatus(txtRestart, true, true, DURATION, 0, null, null);
@@ -611,9 +611,10 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
    */
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     Timber.d("start : " + userId);
-    super.start(game, mapObservable, liveViewsObservable, userId);
+    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
 
     txtRestart = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsRestart =

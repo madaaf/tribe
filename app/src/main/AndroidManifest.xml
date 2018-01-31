@@ -121,6 +121,13 @@
         android:theme="@style/AppTheme.White"/>
 
     <activity
+        android:name=".presentation.view.activity.NewGameActivity"
+        android:configChanges="orientation|keyboardHidden|screenSize"
+        android:label="@string/app_name"
+        android:screenOrientation="portrait"
+        android:theme="@style/AppTheme.White"/>
+
+    <activity
         android:name=".presentation.view.activity.GameDetailsActivity"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme.Black"/>

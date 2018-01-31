@@ -94,7 +94,7 @@ import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFilter
 import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.LiveInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.LiveInviteSubHeaderAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShareAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteFullAdapterDelegate;
@@ -125,8 +125,8 @@ import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattl
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoryView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicPlayView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswerView;
-import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswersView;
+import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
 import com.tribe.app.presentation.view.utils.ImageUtils;
@@ -246,8 +246,6 @@ public interface ApplicationComponent {
 
   void inject(LiveViewFake liveViewFake);
 
-  void inject(RoomLinkAdapterDelegate roomAdapterDelegate);
-
   void inject(TextShortcutNameView textShortcutNameView);
 
   void inject(TopBarLogoView topBarLogoView);
@@ -307,6 +305,8 @@ public interface ApplicationComponent {
   void inject(GameBattleMusicCategoriesView gameBattleMusicCategoriesView);
 
   void inject(GameBattleMusicPlayView gameBattleMusicPlayView);
+
+  void inject(ShareAdapterDelegate shareAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);

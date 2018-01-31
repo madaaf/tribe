@@ -10,13 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
-import com.tribe.app.presentation.view.component.PlayPauseBtnView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.chat.model.Media;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
@@ -33,7 +34,7 @@ import static android.view.View.VISIBLE;
  */
 
 public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
-
+  private static int ANIM_DURATION = 300;
   private static int DURATION = 200;
 
   private int currentPlayingPosition;
@@ -79,10 +80,10 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
 
     vh.timerVoiceNote.setText(time);
 
-    vh.viewPlayPauseBtn.setOnClickListener(view -> {
+    vh.pauseBtn.setOnClickListener(view -> {
       onClickBtn(position);
     });
-    vh.viewPlayPauseBtn.setOnClickListener(view -> onClickBtn(position));
+    vh.playBtn.setOnClickListener(view -> onClickBtn(position));
 
     setPendingBehavior(m, vh.container);
   }
@@ -160,7 +161,7 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
     holder.cardViewIndicator.setVisibility(View.INVISIBLE);
     holder.equalizer.setVisibility(VISIBLE);
     holder.loadingRecordView.setVisibility(View.INVISIBLE);
-    holder.viewPlayPauseBtn.switchPauseToPlayBtn(true);
+    switchPauseToPlayBtn(playingHolder, true);
   }
 
   void stopPlayer() {
@@ -171,9 +172,94 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
 
   private void updatePlayingView() {
     if (mediaPlayer.isPlaying()) {
-      playingHolder.viewPlayPauseBtn.switchPauseToPlayBtn(false);
+      switchPauseToPlayBtn(playingHolder, false);
     } else {
-      playingHolder.viewPlayPauseBtn.switchPauseToPlayBtn(true);
+      switchPauseToPlayBtn(playingHolder, true);
+    }
+  }
+
+  private void resetPauseBtn(MessageAudioViewHolder vh, boolean hide) {
+    float i = 1f;
+    if (hide) {
+      i = 0f;
+    }
+    vh.pauseBtn.setScaleX(i);
+    vh.pauseBtn.setScaleY(i);
+    vh.pauseBtn.setAlpha(i);
+  }
+
+  private void resetPlayBtn(MessageAudioViewHolder vh, boolean hide) {
+    float i = 1f;
+    if (hide) {
+      i = 0f;
+    }
+    vh.playBtn.setScaleX(i);
+    vh.playBtn.setScaleY(i);
+    vh.playBtn.setAlpha(i);
+  }
+
+  private void switchPauseToPlayBtn(MessageAudioViewHolder playingHolder, boolean fromPauseToPlay) {
+    if (!fromPauseToPlay) {
+
+      playingHolder.playBtn.animate()
+          .scaleX(0f)
+          .scaleY(0f)
+          .rotation(45)
+          .setDuration(ANIM_DURATION)
+          .alpha(0f)
+          .withStartAction(() -> {
+
+            playingHolder.playBtn.setRotation(0);
+            resetPlayBtn(playingHolder, false);
+
+            playingHolder.pauseBtn.setRotation(90);
+            resetPauseBtn(playingHolder, true);
+
+            playingHolder.pauseBtn.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .rotation(0)
+                .setDuration(ANIM_DURATION)
+                .setInterpolator(new AccelerateInterpolator())
+                .alpha(1f)
+                .withEndAction(() -> {
+
+                })
+                .start();
+          })
+          .start();
+    } else {
+      playingHolder.pauseBtn.animate()
+          .scaleX(0f)
+          .scaleY(0f)
+          .rotation(0)
+          .setDuration(ANIM_DURATION)
+          .alpha(0f)
+          .withStartAction(() -> {
+
+            playingHolder.pauseBtn.setRotation(90);
+            playingHolder.pauseBtn.setScaleX(1);
+            playingHolder.pauseBtn.setScaleY(1);
+            playingHolder.pauseBtn.setAlpha(1f);
+
+            playingHolder.playBtn.setRotation(45);
+            playingHolder.playBtn.setScaleX(0);
+            playingHolder.playBtn.setScaleY(0);
+            playingHolder.playBtn.setAlpha(0f);
+
+            playingHolder.playBtn.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .rotation(0)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .setDuration(ANIM_DURATION)
+                .alpha(1f)
+                .withEndAction(() -> {
+
+                })
+                .start();
+          })
+          .start();
     }
   }
 
@@ -235,9 +321,10 @@ public class MessageAudioAdapterDelegate extends BaseMessageAdapterDelegate {
 
     @BindView(R.id.container) public RelativeLayout container;
     @BindView(R.id.timerVoiceNote) public TextViewFont timerVoiceNote;
+    @BindView(R.id.playBtn) public ImageView playBtn;
+    @BindView(R.id.pauseBtn) ImageView pauseBtn;
     @BindView(R.id.cardViewIndicator) public CardView cardViewIndicator;
     @BindView(R.id.viewPlayerProgress) public View viewPlayerProgress;
-    @BindView(R.id.viewPlayPauseBtn) public PlayPauseBtnView viewPlayPauseBtn;
     @BindView(R.id.recordingView) public FrameLayout recordingView;
     @BindView(R.id.loadingRecordView) public AVLoadingIndicatorView loadingRecordView;
     @BindView(R.id.equalizer) ImageView equalizer;

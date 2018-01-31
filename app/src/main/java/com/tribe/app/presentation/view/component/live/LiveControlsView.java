@@ -767,7 +767,7 @@ public class LiveControlsView extends FrameLayout {
   public Observable<Boolean> onOpenInvite() {
     return viewStatusName.onOpenView().doOnNext(aBoolean -> {
       invitesMenuOn = true;
-      showMenuTop(viewToHideTopInvites);
+      if (gameManager.getCurrentGame() == null) showMenuTop(viewToHideTopInvites);
 
       int width = viewStatusName.getNewWidth();
 
@@ -782,7 +782,7 @@ public class LiveControlsView extends FrameLayout {
   public Observable<Boolean> onCloseInvite() {
     return viewStatusName.onCloseView().doOnNext(aBoolean -> {
       invitesMenuOn = false;
-      closeMenuTop(viewToHideTopInvites);
+      if (gameManager.getCurrentGame() == null) closeMenuTop(viewToHideTopInvites);
 
       viewStatusName.animate()
           .translationX(0)

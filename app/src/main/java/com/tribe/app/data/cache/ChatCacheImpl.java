@@ -133,7 +133,8 @@ public class ChatCacheImpl implements ChatCache {
             mediaRealmDB.setDuration(message.getOriginal().getDuration());
 
             if (mediaRealmDB == null) {
-              mediaRealmDB = realm1.createObject(MediaRealm.class, message.getOriginal().getUrl());
+              mediaRealmDB = realm1.createObject(MediaRealm.class);
+              mediaRealmDB.setUrl(message.getOriginal().getUrl());
               mediaRealmDB.setFilesize(message.getOriginal().getFilesize());
               mediaRealmDB.setHeight(message.getOriginal().getHeight());
               mediaRealmDB.setWidth(message.getOriginal().getWidth());
@@ -151,11 +152,13 @@ public class ChatCacheImpl implements ChatCache {
                   realm1.where(MediaRealm.class).equalTo("url", mediaRealm.getUrl()).findFirst();
 
               if (mediaRealmDB == null) {
-                mediaRealmDB = realm1.createObject(MediaRealm.class, mediaRealm.getUrl());
+                mediaRealmDB = realm1.createObject(MediaRealm.class);
+                mediaRealmDB.setUrl(mediaRealm.getUrl());
                 mediaRealmDB.setFilesize(mediaRealm.getFilesize());
                 mediaRealmDB.setHeight(mediaRealm.getHeight());
                 mediaRealmDB.setWidth(mediaRealm.getWidth());
               }
+
               alts.add(mediaRealmDB);
             }
             m.setAlts(alts);

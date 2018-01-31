@@ -10,8 +10,9 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.bumptech.glide.Glide;
 import com.tribe.app.R;
-import com.tribe.app.presentation.view.utils.GlideUtils;
+import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import rx.subscriptions.CompositeSubscription;
@@ -32,7 +33,7 @@ public class LiveRowViewScores extends LinearLayout {
   private TribeGuest guest;
 
   // RESOURCES
-  private int avatarSize;
+  private int avatarSize, roundedCorners;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -64,6 +65,8 @@ public class LiveRowViewScores extends LinearLayout {
 
   private void initResources() {
     avatarSize = getContext().getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
+    roundedCorners =
+        getContext().getResources().getDimensionPixelSize(R.dimen.avatar_live_rounded_corners);
   }
 
   ////////////
@@ -85,11 +88,14 @@ public class LiveRowViewScores extends LinearLayout {
   }
 
   public void show() {
-    new GlideUtils.Builder(getContext()).url(guest.getPicture())
-        .size(avatarSize)
-        .hasPlaceholder(true)
-        .target(imgAvatar)
-        .load();
+    Glide.with(getContext())
+        .load(guest.getPicture())
+        .thumbnail(0.25f)
+        .placeholder(R.drawable.picto_avatar_placeholder)
+        .error(R.drawable.picto_avatar_placeholder)
+        .centerCrop()
+        .bitmapTransform(new RoundedCornersTransformation(getContext(), roundedCorners, 0))
+        .into(imgAvatar);
   }
 
   public TribeGuest getGuest() {

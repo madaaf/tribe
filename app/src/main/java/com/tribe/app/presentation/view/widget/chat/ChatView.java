@@ -138,7 +138,7 @@ public class ChatView extends IChat {
 
   protected String fileName = null;
   public Float audioDuration = 0f;
-  private boolean hideVideoCallBtn = false;
+  private boolean hideVideoCallBtn = false, hideGameBtn = false;
   private Map<String, Object> tagMap;
   private String section, gesture;
   protected int heartCount = 0, textCount = 0, audioCount = 0, imageCount = 0;
@@ -160,6 +160,7 @@ public class ChatView extends IChat {
   @BindView(R.id.uploadBtn) ImageView uploadImageBtn;
   @BindView(R.id.sendBtn) ImageView sendBtn;
   @BindView(R.id.videoCallBtn) ImageView videoCallBtn;
+  @BindView(R.id.btnGame) ImageView btnGame;
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
   @BindView(R.id.viewNewAvatar) NewAvatarView avatarView;
   @BindView(R.id.refExpended) FrameLayout refExpended;
@@ -370,9 +371,8 @@ public class ChatView extends IChat {
         pictoVoiceNote.setTranslationX(
             voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
 
-        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (
-            pictoVoiceNote.getHeight()
-                / 2) + screenUtils.dpToPx(12));
+        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) -
+            (pictoVoiceNote.getHeight() / 2) + screenUtils.dpToPx(12));
 
         voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
@@ -402,6 +402,7 @@ public class ChatView extends IChat {
           if (editTextContent != null && !editTextContent.isEmpty()) {
             editText.setText(editTextContent);
             hideVideoCallBtn(false);
+            hideGameBtn(false);
             editText.setSelection(editText.getText().length());
           }
         }
@@ -438,8 +439,8 @@ public class ChatView extends IChat {
   private void setTypeChatUXSupport() {
     if (isSupport()) {
       voiceNoteBtn.setTranslationX(
-          editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(5)
-              + videoCallBtn.getWidth());
+          editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(5) +
+              videoCallBtn.getWidth());
       pictoVoiceNote.setTranslationX(
           voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
 
@@ -447,6 +448,8 @@ public class ChatView extends IChat {
       videoCallBtn.getLayoutParams().height = 0;
       videoCallBtn.getLayoutParams().width = 0;
       videoCallBtn.setImageDrawable(null);
+      btnGame.getLayoutParams().height = 0;
+      btnGame.getLayoutParams().width = 0;
       layoutPulse.setVisibility(GONE);
 
       RelativeLayout.LayoutParams op = (RelativeLayout.LayoutParams) editText.getLayoutParams();
@@ -460,6 +463,8 @@ public class ChatView extends IChat {
       videoCallBtn.getLayoutParams().width = 0;
       videoCallBtn.setImageDrawable(null);
       pictoVoiceNote.setImageDrawable(null);
+      btnGame.getLayoutParams().height = 0;
+      btnGame.getLayoutParams().width = 0;
       topbar.setVisibility(GONE);
       layoutPulse.setVisibility(GONE);
       container.setBackground(null);
@@ -505,11 +510,11 @@ public class ChatView extends IChat {
         uploadTask = riversRef.putStream(inputStream);
       } else if (type.equals(MESSAGE_AUDIO)) {
         uri = Uri.fromFile(new File(audioFile));
-        StorageReference riversRef = storageRef.child("app/uploads/"
-            + user.getId()
-            + "/"
-            + dateUtils.getUTCDateAsString()
-            + uri.getLastPathSegment());
+        StorageReference riversRef = storageRef.child("app/uploads/" +
+            user.getId() +
+            "/" +
+            dateUtils.getUTCDateAsString() +
+            uri.getLastPathSegment());
         uploadTask = riversRef.putFile(uri);
       }
 
@@ -703,6 +708,13 @@ public class ChatView extends IChat {
     videoCallBtn.setImageDrawable(null);
   }
 
+  private void hideGameBtn(boolean withAnim) {
+    btnGame.setClickable(false);
+    hideGameBtn = true;
+    btnGame.getLayoutParams().height = 0;
+    btnGame.getLayoutParams().width = 0;
+  }
+
   private boolean isSupport() {
     return (shortcut != null && shortcut.isSupport());
   }
@@ -711,6 +723,7 @@ public class ChatView extends IChat {
     if (type == FROM_LIVE || isSupport()) {
       return;
     }
+
     btnSendLikeContainer.animate()
         .translationX(videoCallBtn.getWidth())
         .setDuration(ANIM_DURATION)
@@ -724,6 +737,9 @@ public class ChatView extends IChat {
                 LayoutParams.WRAP_CONTENT);
             editText.startAnimation(a);
           }).start();
+
+          btnGame.setClickable(false);
+          btnGame.animate().alpha(0f).setDuration(ANIM_DURATION_FAST).start();
         });
   }
 
@@ -735,6 +751,13 @@ public class ChatView extends IChat {
     setPulseAnimation(typePulseAnim);
   }
 
+  private void showGameBtn(boolean withAnim) {
+    btnGame.setClickable(true);
+    hideGameBtn = false;
+    btnGame.getLayoutParams().width = LayoutParams.WRAP_CONTENT;
+    btnGame.getLayoutParams().height = LayoutParams.WRAP_CONTENT;
+  }
+
   private void shrankEditText() {
     if (type == FROM_LIVE || isSupport()) {
       return;
@@ -743,9 +766,13 @@ public class ChatView extends IChat {
         .translationX(0)
         .setDuration(ANIM_DURATION)
         .withEndAction(
-            () -> videoCallBtn.animate().alpha(1f).setDuration(ANIM_DURATION_FAST).start())
+            () -> {
+              videoCallBtn.animate().alpha(1f).setDuration(ANIM_DURATION_FAST).start();
+              btnGame.animate().alpha(1f).setDuration(ANIM_DURATION_FAST).start();
+            })
         .start();
     showVideoCallBtn(false);
+    showGameBtn(false);
 
     editText.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -1084,8 +1111,8 @@ public class ChatView extends IChat {
       name.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow, 0);
 
       layout.setOnClickListener(view -> {
-        navigator.navigateToChat((Activity) context, fromShortcut, null,
-            recipient.getSectionTag(), true);
+        navigator.navigateToChat((Activity) context, fromShortcut, null, recipient.getSectionTag(),
+            true);
         this.fromShortcut = null;
       });
     }
@@ -1094,8 +1121,8 @@ public class ChatView extends IChat {
   @Override public boolean dispatchKeyEvent(KeyEvent event) {
     if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
       if (fromShortcut != null) {
-        navigator.navigateToChat((Activity) context, fromShortcut, null,
-            recipient.getSectionTag(), true);
+        navigator.navigateToChat((Activity) context, fromShortcut, null, recipient.getSectionTag(),
+            true);
         return true;
       }
     }
@@ -1157,7 +1184,8 @@ public class ChatView extends IChat {
 
   @Override public void onQuickShortcutUpdated(Shortcut shortcutQuickChat) {
     tagManager.trackEvent(TagManagerUtils.Shortcut);
-    navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut, TagManagerUtils.SECTION_SHORTCUT, false);
+    navigator.navigateToChat((Activity) context, shortcutQuickChat, shortcut,
+        TagManagerUtils.SECTION_SHORTCUT, false);
   }
 
   public void onStartRecording() {

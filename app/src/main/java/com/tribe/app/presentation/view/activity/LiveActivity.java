@@ -67,6 +67,7 @@ import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.ShortcutUtil;
+import com.tribe.app.presentation.view.adapter.model.ShareTypeModel;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
@@ -392,7 +393,7 @@ public class LiveActivity extends BaseActivity
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == Navigator.FROM_NEW_GAME && data != null) {
-      String gameId = data.getStringExtra(GameStoreActivity.GAME_ID);
+      String gameId = data.getStringExtra(NewGameActivity.GAME_ID);
       viewLive.startGame(gameId);
     }
   }
@@ -767,7 +768,16 @@ public class LiveActivity extends BaseActivity
         })
         .subscribe());
 
-    subscriptions.add(viewLive.onShareLink().subscribe(aVoid -> share(false)));
+    subscriptions.add(viewLive.onShareLink().subscribe(aString -> {
+      if (room == null) return;
+
+      if (aString.equals(ShareTypeModel.SHARE_TYPE_MESSENGER)) {
+        navigator.sendInviteToMessenger(this, firebaseRemoteConfig, TagManagerUtils.CALL,
+            room.getLink());
+      } else {
+        share(true);
+      }
+    }));
 
     subscriptions.add(viewLive.unlockRollTheDice().
         subscribeOn(Schedulers.newThread()).
@@ -961,11 +971,11 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.onChangeCallRouletteRoom().
         subscribe(aVoid -> reRollTheDiceFromCallRoulette(true)));
 
-    subscriptions.add(viewLive.openGameStore()
-        .subscribe(aVoid -> navigator.navigateToNewGame(this)));
+    subscriptions.add(
+        viewLive.openGameStore().subscribe(aVoid -> navigator.navigateToGameStoreNewGame(this)));
 
-    subscriptions.add(viewLive.onSwipeUp()
-        .subscribe(aVoid -> navigator.navigateToNewGame(this)));
+    subscriptions.add(
+        viewLive.onSwipeUp().subscribe(aVoid -> navigator.navigateToGameStoreNewGame(this)));
 
     subscriptions.add(
         viewLive.onAddScore().subscribe(pair -> livePresenter.addScore(pair.first, pair.second)));

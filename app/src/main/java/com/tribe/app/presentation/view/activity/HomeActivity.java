@@ -1043,7 +1043,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void navigateToNewGame() {
-    HomeActivity.this.navigator.navigateToNewGame(this);
+    HomeActivity.this.navigator.navigateToGameStoreNewGame(this);
   }
 
   private void navigateToChat(Recipient recipient) {
@@ -1153,23 +1153,23 @@ public class HomeActivity extends BaseActivity
       homeGridPresenter.updateShortcutLeaveOnlineUntil(
           data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
     } else if (requestCode == Navigator.FROM_NEW_GAME && data != null) {
-      String gameId = data.getStringExtra(GameStoreActivity.GAME_ID);
-      boolean callRoulette = data.getBooleanExtra(GameStoreActivity.CALL_ROULETTE, false);
-      Shortcut shortcut = (Shortcut) data.getSerializableExtra(GameStoreActivity.SHORTCUT);
-      subscriptions.add(Observable.timer(250, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> {
-            if (callRoulette) {
-              navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, gameId);
-            } else if (shortcut != null) {
-              if (!StringUtils.isEmpty(gameId)) {
-                navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
-                    TagManagerUtils.SECTION_SHORTCUT, gameId);
-              } else {
-                navigateToChat(shortcut);
-              }
-            }
-          }));
+      //String gameId = data.getStringExtra(GameStoreActivity.GAME_ID);
+      //boolean callRoulette = data.getBooleanExtra(GameStoreActivity.CALL_ROULETTE, false);
+      //Shortcut shortcut = (Shortcut) data.getSerializableExtra(GameStoreActivity.SHORTCUT);
+      //subscriptions.add(Observable.timer(250, TimeUnit.MILLISECONDS)
+      //    .observeOn(AndroidSchedulers.mainThread())
+      //    .subscribe(aLong -> {
+      //      if (callRoulette) {
+      //        navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, gameId);
+      //      } else if (shortcut != null) {
+      //        if (!StringUtils.isEmpty(gameId)) {
+      //          navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
+      //              TagManagerUtils.SECTION_SHORTCUT, gameId);
+      //        } else {
+      //          navigateToChat(shortcut);
+      //        }
+      //      }
+      //    }));
     } else if (requestCode == Navigator.FROM_LIVE &&
         data != null &&
         data.hasExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {

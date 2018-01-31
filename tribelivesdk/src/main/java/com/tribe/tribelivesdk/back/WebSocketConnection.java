@@ -60,8 +60,8 @@ public class WebSocketConnection {
     return new WebSocketConnection(factory);
   }
 
-  private static final int CONNECT_TIMEOUT = 1000;
-  private static final int CLOSE_TIMEOUT = 1000;
+  private static final int CONNECT_TIMEOUT = 10000;
+  private static final int CLOSE_TIMEOUT = 10000;
 
   @StringDef({ STATE_NEW, STATE_CONNECTING, STATE_CONNECTED, STATE_DISCONNECTED, STATE_ERROR })
   public @interface WebSocketState {
@@ -328,12 +328,13 @@ public class WebSocketConnection {
       retrying = true;
       int time = generateInterval(attempts);
       Timber.d("Trying to reconnect in : " + time);
- 
-      subscriptions.add(Observable.timer(time, TimeUnit.MILLISECONDS).onBackpressureDrop().subscribe(aLong -> {
-        Timber.d("Reconnecting");
-        attempts++;
-        connect(url);
-      }));
+
+      subscriptions.add(
+          Observable.timer(time, TimeUnit.MILLISECONDS).onBackpressureDrop().subscribe(aLong -> {
+            Timber.d("Reconnecting");
+            attempts++;
+            connect(url);
+          }));
     }
   }
 

@@ -15,7 +15,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
-import com.tribe.app.presentation.view.adapter.model.Header;
+import com.tribe.app.presentation.view.adapter.model.HeaderModel;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 
@@ -37,9 +37,9 @@ public class LiveInviteSubHeaderAdapterDelegate
 
   @Override public boolean isForViewType(@NonNull List<LiveInviteAdapterSectionInterface> items,
       int position) {
-    if (items.get(position) instanceof Header) {
-      return items.get(position).getId().equals(Header.HEADER_ONLINE) ||
-          items.get(position).getId().equals(Header.HEADER_RECENT);
+    if (items.get(position) instanceof HeaderModel) {
+      return items.get(position).getId().equals(HeaderModel.HEADER_ONLINE) ||
+          items.get(position).getId().equals(HeaderModel.HEADER_RECENT);
     }
 
     return false;
@@ -54,10 +54,10 @@ public class LiveInviteSubHeaderAdapterDelegate
   @Override
   public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
-    Header header = (Header) items.get(position);
+    HeaderModel header = (HeaderModel) items.get(position);
     LiveInviteHeaderViewHolder vh = (LiveInviteHeaderViewHolder) holder;
 
-    if (header.getId().equals(Header.HEADER_RECENT)) {
+    if (header.getId().equals(HeaderModel.HEADER_RECENT)) {
       TextViewCompat.setTextAppearance(vh.txtLabel, R.style.Body_Two_BlackRecent);
     } else {
       TextViewCompat.setTextAppearance(vh.txtLabel, R.style.Body_Two_BlueNew);

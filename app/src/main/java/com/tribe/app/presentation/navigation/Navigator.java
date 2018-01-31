@@ -36,6 +36,7 @@ import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
+import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
@@ -184,7 +185,6 @@ public class Navigator {
   public void navigateToGameDetails(Activity activity, String gameId) {
     if (activity != null) {
       Intent intent = GameDetailsActivity.getCallingIntent(activity, gameId);
-      activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
   }
@@ -252,8 +252,7 @@ public class Navigator {
   public void navigateToChat(Activity activity, Recipient recipient, Shortcut fromShortcut,
       String section, boolean noHistory) {
     if (activity != null) {
-      Intent intent =
-          ChatActivity.getCallingIntent(activity, recipient, fromShortcut, section);
+      Intent intent = ChatActivity.getCallingIntent(activity, recipient, fromShortcut, section);
 
       if (noHistory) {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -271,18 +270,6 @@ public class Navigator {
     Intent intent = PictureActivity.getCallingIntent(activity, messageId, arrIds);
     activity.startActivity(intent);
     // activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-  }
-
-  public void navigateToLiveFromSwipe(Activity activity, Recipient recipient,
-      @LiveActivity.Source String source, String section) {
-    if (activity != null) {
-      Intent intent =
-          LiveActivity.getCallingIntent(activity, recipient, source, TagManagerUtils.GESTURE_SWIPE,
-              section, null);
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      activity.startActivityForResult(intent, FROM_LIVE);
-      activity.overridePendingTransition(0, 0);
-    }
   }
 
   public void navigateToIntent(Activity activity, Intent intent) {
@@ -314,10 +301,18 @@ public class Navigator {
     }
   }
 
-  public void navigateToNewGame(Activity activity) {
+  public void navigateToGameStoreLogin(Activity activity) {
     if (activity != null) {
       Intent intent = GameStoreActivity.getCallingIntent(activity);
       activity.startActivity(intent);
+    }
+  }
+
+  public void navigateToGameStoreNewGame(Activity activity) {
+    if (activity != null) {
+      Intent intent = NewGameActivity.getCallingIntent(activity);
+      activity.startActivityForResult(intent, FROM_NEW_GAME);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
   }
 
