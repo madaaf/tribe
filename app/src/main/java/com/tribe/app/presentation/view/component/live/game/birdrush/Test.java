@@ -19,15 +19,8 @@ public class Test extends Sprite {
     move();
 
     if (globalBitmap == null) {
-      globalBitmap = BitmapFactory.decodeResource(resources, R.drawable.game_birdrush_obstacle);
+      globalBitmap = BitmapFactory.decodeResource(resources, R.drawable.game_aliens_attack_alien_2);
     }
-  }
-
-  /**
-   * Calls super.move
-   * and manages the frames. (flattering cape)
-   */
-  @Override public void move() {
-    super.move();
+    this.bitmap = globalBitmap;
   }
 }

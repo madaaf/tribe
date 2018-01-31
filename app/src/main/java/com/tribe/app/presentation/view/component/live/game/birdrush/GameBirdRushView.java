@@ -70,6 +70,9 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     setOnTouchListener(controller);
     initSubscriptions();
+
+    //GameView  view = new GameView(context);
+    //addView(view);
   }
 
   @Override protected GameEngine generateEngine() {

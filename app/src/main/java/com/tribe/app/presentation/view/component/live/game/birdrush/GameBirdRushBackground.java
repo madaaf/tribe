@@ -181,6 +181,7 @@ public class GameBirdRushBackground extends View {
     for (BirdRush birdRush : birdList) {
       dstBird.set(birdRush.getX(), birdRush.getY(), birdRush.getX() + birdBtm.getWidth(),
           birdRush.getY() + birdBtm.getHeight());
+
       canvas.drawBitmap(birdRush.getBitmap(), null, dstBird, null);
 
       // draw text to the Canvas center
@@ -271,41 +272,52 @@ public class GameBirdRushBackground extends View {
     }
   }
 
-  final static int GRAVITY_SPEED = 7;
-  int yBirdDelayPos = GRAVITY_SPEED;
+  protected float speedY = 0;
 
   private void moveBirds() {
     BirdRush myBird = getMyBird();
     myBird.setX(xCenterBirdPos);                     // middle of the screen
-   /* int vitesse = ((yBirdDelayPos * (yInitTranslation)) / (xCenterBirdPos - birdBtm.getWidth()));
-    myBird.setY(myBird.getY() + vitesse);
-    */
-    myBird.setSpeedY(getTabSpeed());
-    myBird.setY(getPosTabIncrease());
+
+    if (speedY < 0) {
+      // The character is moving up
+      speedY = speedY * 2 / 3 + getSpeedTimeDecrease() / 2;
+    } else {
+      // the character is moving down
+      this.speedY += getSpeedTimeDecrease();
+    }
+
+    if (this.speedY > getMaxSpeed()) {
+      // speed limit
+      this.speedY = getMaxSpeed();
+    }
+
+    myBird.setY(Math.round(myBird.getY() + speedY));
   }
 
-  /**
-   * The character gets this speed when taped.
-   */
+  public void jumpBird(BirdRush be) {
+    BirdRush b = getMyBird();
+    this.speedY = getTabSpeed();
+    b.setY(b.getY() + getPosTabIncrease());
+  }
+
+  protected float getSpeedTimeDecrease() {
+    float speed = screenUtils.getHeightPx() / 320;
+    return speed / 2;
+  }
+
+  protected float getMaxSpeed() {
+    float speed = screenUtils.getHeightPx() / 51.2f;
+    return speed / 2;
+  }
+
   protected float getTabSpeed() {
-    return -birdBtm.getHeight() / 16f;
+    float speed = -screenUtils.getHeightPx() / 16f;
+    return speed;
   }
 
-  /**
-   * The character jumps up the pixel height of this value.
-   */
   protected int getPosTabIncrease() {
-    return -birdBtm.getHeight() / 100;
-  }
-
-  public void jumpBird(BirdRush b) {
-    yBirdDelayPos = -GRAVITY_SPEED;
-    subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          Timber.e("JUMP " + aLong);
-          yBirdDelayPos = GRAVITY_SPEED;
-        }));
+    int speed = -screenUtils.getHeightPx() / 100;
+    return speed;
   }
 
   private void setTimer() {

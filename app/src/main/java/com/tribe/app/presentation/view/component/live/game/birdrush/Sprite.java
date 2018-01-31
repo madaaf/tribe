@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live.game.birdrush;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 31/01/2018.
@@ -29,6 +30,10 @@ public class Sprite {
   protected Rect dst;
 
   public Sprite() {
+    speedX = 10;
+    speedY = 10;
+    width = 200;
+    height = 200;
     src = new Rect();
     dst = new Rect();
   }
@@ -41,6 +46,7 @@ public class Sprite {
    */
   public void draw(Canvas canvas) {
     //src.set(col * width, row * height, (col + 1) * width, (row + 1) * height);
+    Timber.e("DRAW BITMAP " + x + " " + y);
     dst.set(x, y, x + width, y + height);
     canvas.drawBitmap(bitmap, src, dst, null);
   }
