@@ -5,12 +5,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -31,8 +32,6 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-import static com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView.SPEED_BACK_SCROLL;
-
 /**
  * Created by tiago on 10/31/2017.
  */
@@ -46,6 +45,7 @@ public class GameBirdRushBackground extends View {
   private static Bitmap splashBtm = null;
   private static Bitmap obstacleBtm = null;
   private static Bitmap birdBtm = null;
+  private static Bitmap nameLabelBtm = null;
 
   private static int screenWidth;
   private static int screenHeight;
@@ -53,14 +53,16 @@ public class GameBirdRushBackground extends View {
   private Rect dstSplash2;
   private Rect dstObsc;
   private Rect dstBird;
+  private Rect dstnameLabelBird;
 
-  private int xScroll = 0, yScroll = 0, xFinalBirdPos, yFinalBirdPos, yInitTranslation;
+  private int xScroll = 0, yScroll = 0, xCenterBirdPos, yCenterBirdPos, yInitTranslation;
   private boolean pause = false, displayFirstObstacle = false, entranceBirdFinish = false;
 
   private BirdRushObstacle obstaclePoped = null;
   private Map<BirdRushObstacle, Rect> obstaclePopedList = new HashMap<>();
   private List<BirdRushObstacle> obstaclesList = new ArrayList<>();
   private List<BirdRush> birdList = new ArrayList<>();
+  private List<String> crossObstacle = new ArrayList<>();
 
   /**
    * OBSERVABLES
@@ -68,6 +70,7 @@ public class GameBirdRushBackground extends View {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private CompositeSubscription subscriptionsAnimation = new CompositeSubscription();
   private PublishSubject<Void> onGameOver = PublishSubject.create();
+  private PublishSubject<Void> onAddPoint = PublishSubject.create();
 
   public GameBirdRushBackground(@NonNull Context context) {
     super(context);
@@ -90,6 +93,7 @@ public class GameBirdRushBackground extends View {
       splashBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdsrush_sky);
       obstacleBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdrush_obstacle);
       birdBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_bird1);
+      nameLabelBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_bird_bck);
     }
   }
 
@@ -104,17 +108,9 @@ public class GameBirdRushBackground extends View {
     dstSplash2 = new Rect(xScroll + screenWidth, yScroll, xScroll + (2 * screenWidth),
         yScroll + screenUtils.getHeightPx());
 
-    xFinalBirdPos =
-        (screenWidth / 2) - (birdBtm.getWidth() / 2) - screenUtils.dpToPx(10); // Middle position
+    xCenterBirdPos = (screenWidth / 2) - (birdBtm.getWidth() / 2) - screenUtils.dpToPx(10);
 
-    yFinalBirdPos = (screenHeight / 2) - (birdBtm.getHeight() / 2) - screenUtils.dpToPx(10);
-
-    getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-      @Override public void onGlobalLayout() {
-        getViewTreeObserver().removeOnGlobalLayoutListener(this);
-        SPEED_BACK_SCROLL = (long) (screenWidth * 20);
-      }
-    });
+    yCenterBirdPos = (screenHeight / 2) - (birdBtm.getHeight() / 2) - screenUtils.dpToPx(10);
   }
 
   @Override protected void onDraw(Canvas canvas) {
@@ -154,6 +150,13 @@ public class GameBirdRushBackground extends View {
       rect.set(b.getX(), b.getY(), b.getX() + BirdRushObstacle.wiewWidth,
           Math.round(b.getY() + b.getViewHeight()));
       canvas.drawBitmap(obstacleBtm, null, rect, null);
+
+      if (b.getX() < screenUtils.getWidthPx() / 2) {
+        if (!crossObstacle.contains(b.getIdOb())) {
+          onAddPoint.onNext(null);
+          crossObstacle.add(b.getIdOb());
+        }
+      }
     }
 
     /**
@@ -171,18 +174,40 @@ public class GameBirdRushBackground extends View {
   }
 
   private void displayBirds(Canvas canvas) {
+
     /**
      *  Move MY BIRD
      */
     for (BirdRush birdRush : birdList) {
       dstBird.set(birdRush.getX(), birdRush.getY(), birdRush.getX() + birdBtm.getWidth(),
           birdRush.getY() + birdBtm.getHeight());
-      canvas.drawBitmap(birdBtm, null, dstBird, null);
+      canvas.drawBitmap(birdRush.getBitmap(), null, dstBird, null);
+
+      // draw text to the Canvas center
+      Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+      paint.setColor(Color.WHITE);
+      paint.setTextSize(25);
+      paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+      Rect bounds = new Rect();
+      String text = birdRush.getName();
+      paint.getTextBounds(text, 0, text.length(), bounds);
+
+      int txtWidth = bounds.width();
+
+      int nameYPos = birdRush.getY() + birdBtm.getHeight() + screenUtils.dpToPx(0);
+      int nameXPos = birdRush.getX() + (birdBtm.getWidth() / 2) - (txtWidth / 2);
+
+      int margin = screenUtils.dpToPx(15);
+
+      dstnameLabelBird.set(nameXPos - margin, nameYPos, nameXPos + txtWidth + margin,
+          nameYPos + screenUtils.dpToPx(30));
+      canvas.drawBitmap(nameLabelBtm, null, dstnameLabelBird, null);
+
+      canvas.drawText(text, nameXPos, nameYPos + screenUtils.dpToPx(18), paint);
     }
   }
 
   private void handleCollision(Canvas canvas) {
-    boolean finish = false;
     BirdRush myBird = getMyBird();
 
     for (int i = 0; i < obstaclesList.size(); i++) {
@@ -221,24 +246,28 @@ public class GameBirdRushBackground extends View {
 
   private void startBirds() {
     int v = 15;
-    BirdRush myBird = getMyBird();
+    //BirdRush b = getMyBird();
 
-    if (myBird.getX() < xFinalBirdPos) {              // entrance of the bird
-      myBird.setX(myBird.getX() + v);
-    } else {
-      myBird.setX(xFinalBirdPos);                     // middle of the screen
-    }
+    for (int i = 0; i < birdList.size(); i++) {
+      BirdRush b = birdList.get(i);
 
-    int vitesse = (int) (((v * (yInitTranslation)) / (xFinalBirdPos)) * 0.9);
+      if (b.getX() < xCenterBirdPos) {              // entrance of the bird
+        b.setX(b.getX() + v);
+      } else {
+        b.setX(xCenterBirdPos);                     // middle of the screen
+      }
+      int coefIndex = (birdList.size() - i) / birdList.size();
+      int vitesse = (v * (yInitTranslation)) / (xCenterBirdPos) + coefIndex;
 
-    if (myBird.getY() > yFinalBirdPos) {              // entrance of the bird
-      myBird.setY(myBird.getY() - vitesse);
-    } else {
-      myBird.setY(yFinalBirdPos);
-    }
+      if (b.getY() > yCenterBirdPos) {              // entrance of the bird
+        b.setY(b.getY() - vitesse);
+      } else {
+        b.setY(yCenterBirdPos);
+      }
 
-    if (myBird.getX() >= xFinalBirdPos && myBird.getY() >= yFinalBirdPos) {
-      entranceBirdFinish = true;
+      if (b.getX() >= xCenterBirdPos && b.getY() >= yCenterBirdPos) {
+        entranceBirdFinish = true;
+      }
     }
   }
 
@@ -247,9 +276,26 @@ public class GameBirdRushBackground extends View {
 
   private void moveBirds() {
     BirdRush myBird = getMyBird();
-    myBird.setX(xFinalBirdPos);                     // middle of the screen
-    int vitesse = ((yBirdDelayPos * (yInitTranslation)) / (xFinalBirdPos - birdBtm.getWidth()));
-    myBird.setY(myBird.getY() + vitesse);            // gravity
+    myBird.setX(xCenterBirdPos);                     // middle of the screen
+   /* int vitesse = ((yBirdDelayPos * (yInitTranslation)) / (xCenterBirdPos - birdBtm.getWidth()));
+    myBird.setY(myBird.getY() + vitesse);
+    */
+    myBird.setSpeedY(getTabSpeed());
+    myBird.setY(getPosTabIncrease());
+  }
+
+  /**
+   * The character gets this speed when taped.
+   */
+  protected float getTabSpeed() {
+    return -birdBtm.getHeight() / 16f;
+  }
+
+  /**
+   * The character jumps up the pixel height of this value.
+   */
+  protected int getPosTabIncrease() {
+    return -birdBtm.getHeight() / 100;
   }
 
   public void jumpBird(BirdRush b) {
@@ -371,12 +417,18 @@ public class GameBirdRushBackground extends View {
     birdRush.setY(yPos);
   }
 
-  public void addBird(BirdRush birdRush) {
+  public void addBird(BirdRush birdRush, int index) {
+    Timber.d("SOEF BIRD ADD BIRD  " + index + " " + birdList.size());
+    birdRush.setBitmap(getResources());
     initBirdPosition(birdRush);
+
     dstBird = new Rect(birdRush.getX(), birdRush.getY(), birdRush.getX() + birdBtm.getWidth(),
         birdRush.getY() + birdBtm.getHeight());
+
+    dstnameLabelBird = new Rect(birdRush.getX(), birdRush.getY() + birdBtm.getHeight(),
+        birdRush.getX() + birdBtm.getWidth(), birdRush.getY() + birdBtm.getHeight());
+
     birdList.add(birdRush);
-    Timber.d("SOEF BIRD LIST SIZE " + birdList.size());
   }
 
   public void start() {
@@ -420,6 +472,7 @@ public class GameBirdRushBackground extends View {
     entranceBirdFinish = false;
     displayFirstObstacle = false;
     subscriptions.clear();
+    crossObstacle.clear();
 
     for (BirdRush b : birdList) {
       initBirdPosition(b);
@@ -432,5 +485,9 @@ public class GameBirdRushBackground extends View {
 
   public Observable<Void> onGameOver() {
     return onGameOver;
+  }
+
+  public Observable<Void> onAddPoint() {
+    return onAddPoint;
   }
 }

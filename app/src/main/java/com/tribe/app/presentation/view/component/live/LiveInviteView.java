@@ -451,7 +451,7 @@ public class LiveInviteView extends FrameLayout
   }
 
   public TileInviteView findViewByCoords(float rawX, float rawY) {
-    // Find the child view that was touched (perform a hit test)
+    // Find the child view that was touched (perform a hit Test)
     int[] recyclerViewCoords = new int[2];
     recyclerViewInvite.getLocationOnScreen(recyclerViewCoords);
 

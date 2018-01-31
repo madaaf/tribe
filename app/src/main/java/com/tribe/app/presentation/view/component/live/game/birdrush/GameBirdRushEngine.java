@@ -67,7 +67,7 @@ public class GameBirdRushEngine extends GameEngine {
   @Override public void start() {
     Timber.w("SOEF Start game engine");
     super.start();
-    //  popObstcale();
+    popObstcale();
   }
 
   @Override public void stop() {

@@ -6,27 +6,27 @@ package com.tribe.app.presentation.view.component.live.game.birdrush;
 
 public class PlayerTap {
 
-  private Double x;
-  private Double y;
+  private double x;
+  private double y;
 
-  public PlayerTap(Double x, Double y) {
+  public PlayerTap(double x, double y) {
     this.x = x;
     this.y = y;
   }
 
-  public Double getX() {
+  public double getX() {
     return x;
   }
 
-  public void setX(Double x) {
+  public void setX(double x) {
     this.x = x;
   }
 
-  public Double getY() {
+  public double getY() {
     return y;
   }
 
-  public void setY(Double y) {
+  public void setY(double y) {
     this.y = y;
   }
 

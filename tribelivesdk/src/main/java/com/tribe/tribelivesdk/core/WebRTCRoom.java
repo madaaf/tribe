@@ -123,32 +123,34 @@ public class WebRTCRoom {
   private void initJsonToModel() {
     jsonToModel = new JsonToModel();
 
-    persistentSubscriptions.add(jsonToModel.onJoinRoom().onBackpressureDrop().doOnNext(joinedRoom -> {
-      onJoined.onNext(joinedRoom);
+    persistentSubscriptions.add(
+        jsonToModel.onJoinRoom().onBackpressureDrop().doOnNext(joinedRoom -> {
+          onJoined.onNext(joinedRoom);
 
-      initCPUInfo();
+          initCPUInfo();
 
-      if (!options.isShadowCall()) {
-        if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
-          for (TribeSession session : joinedRoom.getSessionList()) {
-            webRTCClient.addPeerConnection(session, true);
+          if (!options.isShadowCall()) {
+            if (options.getRoutingMode().equals(TribeLiveOptions.P2P)) {
+              for (TribeSession session : joinedRoom.getSessionList()) {
+                webRTCClient.addPeerConnection(session, true);
+              }
+            } else {
+              for (TribeSession session : joinedRoom.getSessionList()) {
+                webRTCClient.addPeerConnection(session, false);
+              }
+
+              webRTCClient.addPeerConnection(
+                  new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID), true);
+            }
           }
-        } else {
-          for (TribeSession session : joinedRoom.getSessionList()) {
-            webRTCClient.addPeerConnection(session, false);
+
+          hasJoined = true;
+        }).delay(1000, TimeUnit.MILLISECONDS).doOnNext(tribeJoinRoom -> {
+          if (options != null && !options.isShadowCall()) {
+            sendToPeers(webRTCClient.getJSONForNewPeer(webRTCClient.getMediaConfiguration()),
+                false);
           }
-
-          webRTCClient.addPeerConnection(
-              new TribeSession(TribeSession.PUBLISHER_ID, TribeSession.PUBLISHER_ID), true);
-        }
-      }
-
-      hasJoined = true;
-    }).delay(1000, TimeUnit.MILLISECONDS).doOnNext(tribeJoinRoom -> {
-      if (options != null && !options.isShadowCall()) {
-        sendToPeers(webRTCClient.getJSONForNewPeer(webRTCClient.getMediaConfiguration()), false);
-      }
-    }).subscribe());
+        }).subscribe());
 
     persistentSubscriptions.add(
         jsonToModel.onRollTheDiceReceived().onBackpressureDrop().doOnNext(s -> {
@@ -247,6 +249,7 @@ public class WebRTCRoom {
 
     webSocketConnection.setHeaders(options.getHeaders());
     webSocketConnection.connect(options.getWsUrl());
+    webSocketConnection.setShouldReconnect(false);
 
     tempSubscriptions.add(webSocketConnection.onStateChanged().map(state -> {
       Timber.d("On room state changed : " + state);
@@ -393,9 +396,9 @@ public class WebRTCRoom {
   public void sendToUser(String userId, JSONObject obj, boolean isAppMessage) {
 
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
-      if (tpc != null &&
-          !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID) &&
-          tpc.getSession().getUserId().equals(userId)) {
+      if (tpc != null
+          && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
+          && tpc.getSession().getUserId().equals(userId)) {
 
         webSocketConnection.send(
             getSendMessagePayload(tpc.getSession().getPeerId(), obj, isAppMessage).toString());
@@ -406,8 +409,9 @@ public class WebRTCRoom {
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
     if (webSocketConnection == null) return;
 
-    if (remotePeer != null &&
-        !remotePeer.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+    if (remotePeer != null && !remotePeer.getSession()
+        .getPeerId()
+        .equals(TribeSession.PUBLISHER_ID)) {
       webSocketConnection.send(
           getSendMessagePayload(remotePeer.getSession().getPeerId(), obj, isAppMessage).toString());
     }

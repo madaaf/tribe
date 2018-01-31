@@ -1,5 +1,8 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -18,8 +21,9 @@ public class BirdRush {
   private boolean lost = false;
   private TribeGuest tribeGuest;
   private String id;
-  private int x;
-  private int y;
+  private Bitmap bitmap;
+  private int x, y;
+  private float speedX, speedY;
 
   private String[] birdsColors = new String[] {
       "FBCF26", "FA7FD9", "BE9EFF", "42F4B2", "F85C02", "3DE9DA", "8B572A", "FFFFFF"
@@ -41,7 +45,6 @@ public class BirdRush {
     this.tribeGuest = guest;
     this.y = screenUtils.getHeightPx() / 2;
     this.currentUserId = currentUserId;
-    //initView();
   }
 
   public int getX() {
@@ -68,21 +71,21 @@ public class BirdRush {
     return lost;
   }
 
-  /*
-  private void initView() {
-    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    inflater.inflate(R.layout.view_game_bird_item, this, true);
-    unbinder = ButterKnife.bind(this);
-    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
-        .inject(this);
+  public float getSpeedX() {
+    return speedX;
+  }
 
-    bird.setImageResource(birdsImage[index]);
-    birdName.setBackground(ContextCompat.getDrawable(context, birdsBackImage[index]));
+  public void setSpeedX(float speedX) {
+    this.speedX = speedX;
+  }
 
-    String name = (tribeGuest != null) ? tribeGuest.getDisplayName() : currentUser.getDisplayName();
-    Timber.e("NEW BIRD " + tribeGuest.toString());
-    birdName.setText(name);
-  }*/
+  public float getSpeedY() {
+    return speedY;
+  }
+
+  public void setSpeedY(float speedY) {
+    this.speedY = speedY;
+  }
 
   public String getGuestId() {
     return tribeGuest.getId();
@@ -90,5 +93,13 @@ public class BirdRush {
 
   public String getName() {
     return tribeGuest.getDisplayName();
+  }
+
+  public void setBitmap(Resources resources) {
+    this.bitmap = BitmapFactory.decodeResource(resources, birdsImage[index]);
+  }
+
+  public Bitmap getBitmap() {
+    return bitmap;
   }
 }

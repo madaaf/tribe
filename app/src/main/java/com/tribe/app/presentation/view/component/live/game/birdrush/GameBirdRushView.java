@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -37,7 +38,6 @@ import timber.log.Timber;
  */
 
 public class GameBirdRushView extends GameViewWithEngine {
-  public static Long SPEED_BACK_SCROLL;
 
   private static final String BIRD_ACTION_ADD_OBSTACLE = "addObstacles";
   private static final String BIRD_ACTION_PLAYER_TAP = "playerTap";
@@ -45,6 +45,7 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @BindView(R.id.viewBackground) GameBirdRushBackground viewBackground;
   @BindView(R.id.ok) TextView ok;
+  ;
 
   @Inject ScreenUtils screenUtils;
   @Inject User currentUser;
@@ -102,7 +103,7 @@ public class GameBirdRushView extends GameViewWithEngine {
                   Timber.e("add obstacle : " + obstacles.toString());
                 } else if (actionKey.equals(BIRD_ACTION_PLAYER_TAP)) {
                   PlayerTap playerTap =
-                      new PlayerTap((Double) message.get("x"), (Double) message.get("y"));
+                      new PlayerTap((double) message.get("x"), (double) message.get("y"));
 
                   Timber.e("player tap : " + playerTap.toString());
                 } else {
@@ -199,6 +200,10 @@ public class GameBirdRushView extends GameViewWithEngine {
       gameOver();
     }));
 
+    subscriptions.add(viewBackground.onAddPoint().subscribe(aVoid -> {
+      overcomeObstacle();
+    }));
+
     subscriptions.add(controller.onTap().subscribe(aVoid -> {
       webRTCRoom.sendToPeers(
           getTapPayload(viewBackground.getMyBird().getX(), viewBackground.getMyBird().getY()),
@@ -220,13 +225,16 @@ public class GameBirdRushView extends GameViewWithEngine {
         .subscribe(aLong -> imReady()));
 
     subscriptions.add(mapObservable.subscribe(peerMap -> {
-      int index = 1;
+      int index = 0;
       for (String key : peerMap.keySet()) {
         TribeGuest guest = peerMap.get(key);
         Timber.e(" SOEF ADD GUEST" + peerMap.get(key) + " " + peerMap.size());
         BirdRush bird = new BirdRush(index, guest, screenUtils, currentUser.getId());
         if (!viewBackground.haveBird(peerMap.get(key))) {
-          viewBackground.addBird(bird);
+          viewBackground.addBird(bird, index);
+          Test player = new Test(getResources());
+          Canvas canvas = new Canvas();
+          //player.draw(canvas);
           index++;
         }
       }
