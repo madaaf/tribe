@@ -22,6 +22,7 @@ public class BirdRush {
   private TribeGuest tribeGuest;
   private String id;
   private Bitmap bitmap;
+  private Bitmap bitmapBck;
   private int x, y;
   private float speedX, speedY;
 
@@ -37,7 +38,7 @@ public class BirdRush {
   private Integer[] birdsBackImage = new Integer[] {
       R.drawable.game_bird_bck, R.drawable.game_bird_bck_2, R.drawable.game_bird_bck_3,
       R.drawable.game_bird_bck_4, R.drawable.game_bird_bck_5, R.drawable.game_bird_bck_6,
-      R.drawable.game_bird7, R.drawable.game_bird8,
+      R.drawable.game_bird_bck_7, R.drawable.game_bird_bck_8,
   };
 
   public BirdRush(int index, TribeGuest guest, ScreenUtils screenUtils, String currentUserId) {
@@ -97,9 +98,14 @@ public class BirdRush {
 
   public void setBitmap(Resources resources) {
     this.bitmap = BitmapFactory.decodeResource(resources, birdsImage[index]);
+    this.bitmapBck = BitmapFactory.decodeResource(resources, birdsBackImage[index]);
   }
 
   public Bitmap getBitmap() {
     return bitmap;
+  }
+
+  public Bitmap getBackgroundBitmap() {
+    return bitmapBck;
   }
 }

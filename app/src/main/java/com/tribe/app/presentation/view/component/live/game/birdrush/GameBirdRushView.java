@@ -105,8 +105,10 @@ public class GameBirdRushView extends GameViewWithEngine {
                   viewBackground.addObstacles(obstacles);
                   Timber.e("add obstacle : " + obstacles.toString());
                 } else if (actionKey.equals(BIRD_ACTION_PLAYER_TAP)) {
-                  PlayerTap playerTap =
-                      new PlayerTap((double) message.get("x"), (double) message.get("y"));
+
+                  double x = (double) message.get("x");
+                  double y = (double) message.get("y");
+                  PlayerTap playerTap = new PlayerTap(x, y);
 
                   Timber.e("player tap : " + playerTap.toString());
                 } else {
