@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
-import android.content.Context;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.Random;
 import java.util.UUID;
@@ -23,7 +22,6 @@ public class BirdRushObstacle {
   private final String TRANSLATION_KEY = "translation";
   private final String ROTATION_KEY = "rotation";
 
-  private Context context;
   private String id;
   private Double nextSpawn;
   private Float start; // position Y ratio
@@ -37,7 +35,6 @@ public class BirdRushObstacle {
   private int y;
 
   public BirdRushObstacle(GameBirdRushEngine.Level level, int widthScreen, int heightScreen) {
-    this.context = context;
     this.id = id();
     this.nextSpawn = nextSpawnDelay(level);
     this.start = startYPos();
@@ -52,11 +49,15 @@ public class BirdRushObstacle {
     init();
   }
 
+  public void initParam(int widthScreen, int heightScreen) {
+    this.x = widthScreen + wiewWidth;
+    this.y = Math.round(startYPos() * heightScreen - height / 2);
+    this.viewHeight = Math.round(height * heightScreen);
+  }
 
   private void init() {
 
   }
-
 
   public void setViewHeight(int viewHeight) {
     this.viewHeight = viewHeight;

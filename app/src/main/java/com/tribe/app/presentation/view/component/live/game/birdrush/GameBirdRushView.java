@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
+import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.google.gson.Gson;
@@ -20,7 +20,6 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +30,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -46,20 +44,14 @@ public class GameBirdRushView extends GameViewWithEngine {
   private static final String BIRD_KEY_OBSTACLE = "obstacles";
 
   @BindView(R.id.viewBackground) GameBirdRushBackground viewBackground;
-  @BindView(R.id.viewBirds) FrameLayout viewBirds;
+  @BindView(R.id.ok) TextView ok;
 
   @Inject ScreenUtils screenUtils;
   @Inject User currentUser;
 
   // VARIABLE
   private BirdController controller;
-  private boolean startedAsSingle = false, didRestartWhenReady = false, gameOver = false;
-
-  // OBSERVABLES
-  protected CompositeSubscription subscriptions;
-
-  // RESSOURCE
-  private Map<TribeGuest, BirdRush> birdsList = new HashMap<>();
+  private boolean startedAsSingle = false, didRestartWhenReady = false;
 
   public GameBirdRushView(@NonNull Context context) {
     super(context);
@@ -101,6 +93,7 @@ public class GameBirdRushView extends GameViewWithEngine {
                 String actionKey = message.getString(ACTION_KEY);
                 if (actionKey.equals(ACTION_NEW_GAME)) {
                   viewBackground.clearObstacles();
+                  Timber.w("SOEF ACTION NEW GAME");
                 }
                 if (actionKey.equals(BIRD_ACTION_ADD_OBSTACLE)) {
                   JSONArray jsonObstacles = message.getJSONArray(BIRD_KEY_OBSTACLE);
@@ -123,35 +116,19 @@ public class GameBirdRushView extends GameViewWithEngine {
         }));
   }
 
-  protected void playGame() {
-    Timber.e("SOEF playGame");
-    super.playGame();
-    viewBackground.start();
-    //  startBirdAnimation();
-  }
-
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) { // SOEF
     Timber.d("SOEF SET UP LOCALLY " + userId + " " + players.size() + " " + timestamp);
     super.setupGameLocally(userId, players, timestamp);
-    //  viewBackground.removeObstacles();
-
     subscriptionsSession.add(onPending.subscribe(aBoolean -> {
-      for (int i = 0; i < viewBirds.getChildCount(); i++) {
-        /*
-        if (viewBirds.getChildAt(i) instanceof BirdRush) {
-          BirdRush birdView = (BirdRush) viewBirds.getChildAt(i);
-          float alpha = aBoolean && !birdView.isLost() ? 0.5f : 1f;
-          birdView.setAlpha(alpha);
-        }*/
-      }
+      // TODO
+      Timber.e("SOEF ON PENDING");
     }));
   }
 
   @Override protected void gameOver(String winnerId, boolean isLocal) {
-    Timber.e("SOEF Game Bird Rush Over : " + winnerId);
+    Timber.d("SOEF Game Bird Rush Over : " + winnerId);
     super.gameOver(winnerId, isLocal);
-    //initBirds();
-    viewBackground.stop();
+    ok.setVisibility(INVISIBLE);
   }
 
   private void overcomeObstacle() {
@@ -160,9 +137,17 @@ public class GameBirdRushView extends GameViewWithEngine {
     }
   }
 
+  protected void playGame() {
+    Timber.d("SOEF playGame");
+    super.playGame();
+    setOnTouchListener(controller);
+    ok.setVisibility(VISIBLE);
+    viewBackground.start();
+  }
+
   @Override protected void startMasterEngine() {
     super.startMasterEngine();
-    Timber.e(" SOEF start master engine myBird rush ");
+    Timber.d(" SOEF start master engine myBird rush ");
 
     subscriptionsSession.add(
         ((GameBirdRushEngine) gameEngine).onObstacle().subscribe(generateObstacleList -> {
@@ -202,24 +187,23 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   private void gameOver() {
     Timber.e("SOEF LOCAL game over");
-    gameOver = true;
     setOnTouchListener(null);
     resetScores(true);
     iLost();
+    viewBackground.resetParams();
   }
 
   private void initSubscriptions() {
-    subscriptions = new CompositeSubscription();
 
     subscriptions.add(viewBackground.onGameOver().subscribe(aVoid -> {
       gameOver();
     }));
 
-    subscriptions.add(controller.onTap().subscribe(aVoid -> { // MADA
+    subscriptions.add(controller.onTap().subscribe(aVoid -> {
       webRTCRoom.sendToPeers(
           getTapPayload(viewBackground.getMyBird().getX(), viewBackground.getMyBird().getY()),
           true);
-      Timber.w("SOEF GET TAP PLAYLOAD" + getTapPayload(viewBackground.getMyBird().getX(),
+      Timber.w("SOEF TAP " + getTapPayload(viewBackground.getMyBird().getX(),
           viewBackground.getMyBird().getY()));
       viewBackground.jumpBird(viewBackground.getMyBird());
     }));
@@ -227,9 +211,8 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    Timber.e(" SOEF on start myBird Rush");
+    Timber.d(" SOEF on start myBird Rush");
     wordingPrefix = "game_bird_rush_";
-    gameOver = false;
     super.start(game, mapObservable, liveViewsObservable, userId);
 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
@@ -250,31 +233,16 @@ public class GameBirdRushView extends GameViewWithEngine {
     }));
   }
 
-  /*
-  private boolean haveBird(TribeGuest tribeGuest) {
-    for (int i = 0; i < viewBirds.getChildCount(); i++) {
-      if (viewBirds.getChildAt(i) instanceof BirdRush) {
-        BirdRush birdView = (BirdRush) viewBirds.getChildAt(i);
-        if (birdView.getGuestId().equals(tribeGuest.getId())) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }*/
-
   @Override public void stop() {
     super.stop();
-    Timber.e(" SOEF on stop");
+    Timber.d(" SOEF on stop");
     viewBackground.stop();
   }
 
   @Override public void dispose() {
     super.dispose();
-    Timber.e(" SOEF on dispose");
+    Timber.d(" SOEF on dispose");
     viewBackground.dispose();
-    viewBirds.removeAllViews();
-    subscriptions.unsubscribe();
   }
 
   @Override public void setNextGame() {
@@ -310,6 +278,7 @@ public class GameBirdRushView extends GameViewWithEngine {
       for (int i = 0; i < jArray.length(); i++) {
         BirdRushObstacle obj =
             new Gson().fromJson(String.valueOf(jArray.get(i)), BirdRushObstacle.class);
+        obj.initParam(screenUtils.getWidthPx(), screenUtils.getHeightPx());
         listdata.add(obj);
       }
     }

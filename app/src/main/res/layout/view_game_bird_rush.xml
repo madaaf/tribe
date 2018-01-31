@@ -30,5 +30,15 @@
       android:layout_gravity="center"
       android:background="@color/red"
       />
+
+
+  <TextView
+      android:id="@+id/ok"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="PLAY GAME"
+      android:layout_gravity="center"
+      android:visibility="invisible"
+      />
 </merge>
 

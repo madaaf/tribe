@@ -117,6 +117,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void newGame(Set<String> playerIds) {
     Timber.d("newGame");
+    Timber.w("SOEF SEND newGame");
     long timestamp = startGameTimestamp();
     webRTCRoom.sendToPeers(getNewGamePayload(currentUser.getId(), timestamp,
         playerIds.toArray(new String[playerIds.size()])), true);
@@ -381,11 +382,15 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
         return;
       }
 
-      long now = System.currentTimeMillis();
+      long now = System.nanoTime() * 1000;
+      Timber.e("MADA TIMESTAMP " + now + " " + timestamp);
       if (timestamp > System.currentTimeMillis()) {
         subscriptions.add(Observable.timer(timestamp - now, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(aLong -> playGame()));
+            .subscribe(aLong -> {
+              Timber.e("MADA TIMESTAMP " + now + " " + timestamp + " " + (timestamp - now));
+              playGame();
+            }));
       } else {
         playGame();
       }

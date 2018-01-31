@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import java.io.Serializable;
-import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
@@ -17,7 +16,6 @@ import rx.subjects.PublishSubject;
 public class BirdController extends View implements TouchHandler {
 
   private PublishSubject<Void> onTap = PublishSubject.create();
-  private PublishSubject<Void> ok = PublishSubject.create();
 
   public BirdController(Context context) {
     super(context);
@@ -25,22 +23,6 @@ public class BirdController extends View implements TouchHandler {
 
   public BirdController(Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
-  }
-
-  @Override public boolean isTouchDown(int pointer) {
-    return false;
-  }
-
-  @Override public int getTouchX(int pointer) {
-    return 0;
-  }
-
-  @Override public int getTouchY(int pointer) {
-    return 0;
-  }
-
-  @Override public List<Integer> getTouchEvents() {
-    return null;
   }
 
   @Override public boolean onTouch(View v, MotionEvent event) {

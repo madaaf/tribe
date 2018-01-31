@@ -43,7 +43,7 @@ public class GameBirdRushEngine extends GameEngine {
     this.screenUtils = screenUtils;
   }
 
-  public void popObstcale(int count) {
+  public void popObstcale() {
     if (popIntervalSubscription != null) popIntervalSubscription.unsubscribe();
     popIntervalSubscription = Observable.interval((2000), TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -65,9 +65,9 @@ public class GameBirdRushEngine extends GameEngine {
   }
 
   @Override public void start() {
-    Timber.d("Start game engine");
+    Timber.w("SOEF Start game engine");
     super.start();
-   // popObstcale(0);
+    //  popObstcale();
   }
 
   @Override public void stop() {
