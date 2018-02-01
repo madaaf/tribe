@@ -122,7 +122,7 @@ public class LiveActivity extends BaseActivity
       SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
       SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
       SOURCE_NEW_CALL, SOURCE_JOIN_LIVE, SOURCE_ADD_PEERS, SOURCE_CALL_ROULETTE,
-      SOURCE_IN_APP_NOTIFICATION
+      SOURCE_IN_APP_NOTIFICATION, SOURCE_HOME
   }) public @interface Source {
   }
 
@@ -144,6 +144,8 @@ public class LiveActivity extends BaseActivity
   public static final String SOURCE_CALL_ROULETTE = "CallRoulette";
   public static final String SOURCE_JOIN_LIVE = "JoinLive";
   public static final String SOURCE_ADD_PEERS = "AddPeers";
+  public static final String SOURCE_HOME = TagManagerUtils.HOME;
+  public static final String SOURCE_CHAT = TagManagerUtils.CHAT;
 
   public static final String ROOM_ID = "ROOM_ID";
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
@@ -593,7 +595,7 @@ public class LiveActivity extends BaseActivity
       } else {
         setChatView(shortcut);
       }
-    } else {
+    } else if (live.getRoom() != null) {
       String[] arrids =
           live.getRoom().getUserIds().toArray(new String[live.getRoom().getUserIds().size()]);
       if (arrids != null && arrids.length > 0) {

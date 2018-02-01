@@ -361,6 +361,10 @@ public class GameDetailsActivity extends BaseActivity {
     // TODO open leaderboards
   }
 
+  @OnClick(R.id.btnSingle) void openLive () {
+    navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
+  }
+
   @OnClick(R.id.btnMulti) void openGameMembers() {
     navigator.navigateToGameMembers(this, game.getId());
   }

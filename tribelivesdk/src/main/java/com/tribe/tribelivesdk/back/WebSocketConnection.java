@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.back;
 
 import android.support.annotation.StringDef;
+import com.neovisionaries.ws.client.ThreadType;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
@@ -296,6 +297,24 @@ public class WebSocketConnection {
         @Override public void onSendingHandshake(WebSocket websocket, String requestLine,
             List<String[]> headers) throws Exception {
           Timber.d("WebSocket onSendingHandshake : " + requestLine);
+        }
+
+        @Override
+        public void onThreadCreated(WebSocket websocket, ThreadType threadType, Thread thread)
+            throws Exception {
+
+        }
+
+        @Override
+        public void onThreadStarted(WebSocket websocket, ThreadType threadType, Thread thread)
+            throws Exception {
+
+        }
+
+        @Override
+        public void onThreadStopping(WebSocket websocket, ThreadType threadType, Thread thread)
+            throws Exception {
+
         }
       });
     } catch (IOException e) {

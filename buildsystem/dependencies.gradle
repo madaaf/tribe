@@ -64,7 +64,7 @@ ext {
   timberVersion = '4.4.0'
   blurViewVersion = '1.3.4'
   rxAppStateVersion = '2.0.0'
-  webSocketVersion = '1.31'
+  webSocketVersion = '2.3'
   easyRSVersion = '0.5.3'
   guavaVersion = '19.0'
   flexboxVersion = '0.2.5'

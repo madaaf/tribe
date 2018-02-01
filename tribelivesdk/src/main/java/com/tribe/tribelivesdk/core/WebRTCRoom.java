@@ -286,6 +286,12 @@ public class WebRTCRoom {
 
           jsonToModel.convert(message);
         }));
+
+    tempSubscriptions.add(webSocketConnection.onConnectError()
+        .onBackpressureBuffer()
+        .doOnError(Throwable::printStackTrace)
+        .onErrorResumeNext(throwable -> Observable.just(""))
+        .subscribe(message -> onShouldLeaveRoom.onNext(null)));
   }
 
   public void joinRoom() {

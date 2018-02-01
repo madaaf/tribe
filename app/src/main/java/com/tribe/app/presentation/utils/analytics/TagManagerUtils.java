@@ -47,6 +47,7 @@ public class TagManagerUtils {
   public static final String KPI_Onboarding_WalkthroughCompleted =
       "KPI_Onboarding_WalkthroughCompleted";
   public static final String Technical_Error = "Technical_Error";
+  public static final String Games = "Games";
 
   /**
    * ERRORS
@@ -116,6 +117,8 @@ public class TagManagerUtils {
   public static final String SIGNUP = "signup";
   public static final String CONTENT_TYPE = "contentType";
   public static final String SEARCH_STRING = "searchString";
+  public static final String TYPE_SOLO = "solo";
+  public static final String TYPE_MULTI = "multi";
 
   public static final String tagGameCountSuffix = "_game_count";
   public static final String tagGameDurationSuffix = "_game_duration";

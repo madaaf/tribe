@@ -131,7 +131,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       Shortcut shortcut = (Shortcut) data.getSerializableExtra(GameMembersActivity.SHORTCUT);
 
       if (callRoulette) {
-        navigator.navigateToNewCall(this, LiveActivity.SOURCE_CALL_ROULETTE, gameId);
+        navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, gameId);
       } else if (shortcut != null) {
         navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
             TagManagerUtils.SECTION_SHORTCUT, gameId);
