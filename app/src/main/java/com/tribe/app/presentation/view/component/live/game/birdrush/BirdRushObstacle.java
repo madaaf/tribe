@@ -46,11 +46,10 @@ public class BirdRushObstacle {
     this.height = heightRatio(level);
     this.speed = obstacleSpeed(level);
     this.translation = translation(level);
+    this.viewHeight = Math.round(height * heightScreen);
 
     this.x = widthScreen + wiewWidth; // intial position: end of the screen
-    // this.y = Math.round(startYPos() * heightScreen - height / 2);
-    this.y = Math.round(startYPos() * heightScreen);
-    this.viewHeight = Math.round(height * heightScreen);
+    this.y = heightScreen - Math.round((startYPos() * heightScreen) + (viewHeight / 2));
     // float height = (model.getStart() * screenUtils.getHeightPx() - model.getView().getHeight() / 2);
     init();
   }
@@ -93,8 +92,7 @@ public class BirdRushObstacle {
   }
 
   private Float startYPos() {
-    //  return randFloat(0.15f, 0.95f);
-    return 0.15f; //SOEF TEST
+    return randFloat(0.15f, 0.95f);
   }
 
   private Double nextSpawnDelay(GameBirdRushEngine.Level level) {

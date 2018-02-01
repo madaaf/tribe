@@ -281,6 +281,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   private JSONObject getObstaclePayload(List<BirdRushObstacle> list) {
+    JSONObject obj = new JSONObject();
     JSONObject jsonObject = new JSONObject();
     JSONArray array = new JSONArray();
 
@@ -289,7 +290,8 @@ public class GameBirdRushView extends GameViewWithEngine {
     }
     JsonUtils.jsonPut(jsonObject, ACTION_KEY, BIRD_ACTION_ADD_OBSTACLE);
     JsonUtils.jsonPut(jsonObject, BIRD_KEY_OBSTACLE, array);
-    return jsonObject;
+    JsonUtils.jsonPut(obj, this.game.getId(), jsonObject);
+    return obj;
   }
 
   private ArrayList<BirdRushObstacle> transform(JSONArray jArray) throws JSONException {

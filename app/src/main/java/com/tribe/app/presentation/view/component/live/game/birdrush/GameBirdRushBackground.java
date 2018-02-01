@@ -39,7 +39,7 @@ import timber.log.Timber;
  */
 
 public class GameBirdRushBackground extends View {
-  private static final int speedPx = 10;
+  private static final int speedPx = 7;
 
   @Inject ScreenUtils screenUtils;
   @Inject User currentUser;
