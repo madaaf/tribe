@@ -170,7 +170,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
                 .setListener(new AnimatorListenerAdapter() {
                   @Override public void onAnimationCancel(Animator animation) {
                     super.onAnimationCancel(animation);
-                    //Timber.d("Animation cancel : " + alienView.getIdOb());
+                    //Timber.d("Animation cancel : " + alienView.getBirdId());
                   }
 
                   @Override public void onAnimationEnd(Animator animation) {

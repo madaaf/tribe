@@ -173,11 +173,11 @@ public class LeaderboardDetailsView extends FrameLayout {
     ConstraintSet set = new ConstraintSet();
     set.clone(this);
 
-    set.connect(viewUnderline.getIdOb(), ConstraintSet.BOTTOM, tabFriends.getIdOb(),
+    set.connect(viewUnderline.getBirdId(), ConstraintSet.BOTTOM, tabFriends.getBirdId(),
         ConstraintSet.BOTTOM);
-    set.connect(viewUnderline.getIdOb(), ConstraintSet.END, guidelineHalfWidth.getIdOb(),
+    set.connect(viewUnderline.getBirdId(), ConstraintSet.END, guidelineHalfWidth.getBirdId(),
         ConstraintSet.START);
-    set.connect(viewUnderline.getIdOb(), ConstraintSet.START, this.getIdOb(), ConstraintSet.START);
+    set.connect(viewUnderline.getBirdId(), ConstraintSet.START, this.getBirdId(), ConstraintSet.START);
 
     updateConstraints(set);
   }*/
@@ -193,11 +193,11 @@ public class LeaderboardDetailsView extends FrameLayout {
   //  ConstraintSet set = new ConstraintSet();
   //  set.clone(this);
   //
-  //  set.connect(viewUnderline.getIdOb(), ConstraintSet.BOTTOM, tabOverall.getIdOb(),
+  //  set.connect(viewUnderline.getBirdId(), ConstraintSet.BOTTOM, tabOverall.getBirdId(),
   //      ConstraintSet.BOTTOM);
-  //  set.connect(viewUnderline.getIdOb(), ConstraintSet.START, guidelineHalfWidth.getIdOb(),
+  //  set.connect(viewUnderline.getBirdId(), ConstraintSet.START, guidelineHalfWidth.getBirdId(),
   //      ConstraintSet.END);
-  //  set.connect(viewUnderline.getIdOb(), ConstraintSet.END, this.getIdOb(), ConstraintSet.END);
+  //  set.connect(viewUnderline.getBirdId(), ConstraintSet.END, this.getBirdId(), ConstraintSet.END);
   //
   //  updateConstraints(set);
   //}

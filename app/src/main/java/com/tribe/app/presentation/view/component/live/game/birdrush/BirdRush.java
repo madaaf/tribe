@@ -26,10 +26,6 @@ public class BirdRush {
   private int x, y;
   private float speedX, speedY;
 
-  private String[] birdsColors = new String[] {
-      "FBCF26", "FA7FD9", "BE9EFF", "42F4B2", "F85C02", "3DE9DA", "8B572A", "FFFFFF"
-  };
-
   private Integer[] birdsImage = new Integer[] {
       R.drawable.game_bird1, R.drawable.game_bird2, R.drawable.game_bird3, R.drawable.game_bird4,
       R.drawable.game_bird5, R.drawable.game_bird6, R.drawable.game_bird7, R.drawable.game_bird8

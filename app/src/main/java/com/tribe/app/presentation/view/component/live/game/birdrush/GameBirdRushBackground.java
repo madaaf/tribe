@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -148,13 +149,13 @@ public class GameBirdRushBackground extends View {
       Rect rect = entry.getValue();
 
       rect.set(b.getX(), b.getY(), b.getX() + BirdRushObstacle.wiewWidth,
-          Math.round(b.getY() + b.getViewHeight()));
+          Math.round(b.getY() + b.getBirdHeight()));
       canvas.drawBitmap(obstacleBtm, null, rect, null);
 
       if (b.getX() < screenUtils.getWidthPx() / 2) {
-        if (!crossObstacle.contains(b.getIdOb())) {
+        if (!crossObstacle.contains(b.getBirdId())) {
           onAddPoint.onNext(null);
-          crossObstacle.add(b.getIdOb());
+          crossObstacle.add(b.getBirdId());
         }
       }
     }
@@ -166,9 +167,13 @@ public class GameBirdRushBackground extends View {
       Timber.e("SOEF T DISPLAY obstPoped " + obstaclePoped.getX() + " " + obstaclePoped.getY());
       dstObsc = new Rect(obstaclePoped.getX(), obstaclePoped.getY(),
           obstaclePoped.getX() + BirdRushObstacle.wiewWidth,
-          Math.round(obstaclePoped.getY() + obstaclePoped.getViewHeight()));
+          Math.round(obstaclePoped.getY() + obstaclePoped.getBirdHeight()));
       obstaclePopedList.put(obstaclePoped, dstObsc);
       obstaclePoped = null;
+
+      Matrix rotator = new Matrix();
+      // rotate around (0,0)
+      rotator.postRotate(90);
       canvas.drawBitmap(obstacleBtm, null, dstObsc, null);
     }
   }
@@ -213,8 +218,8 @@ public class GameBirdRushBackground extends View {
       BirdRushObstacle o = obstaclesList.get(i);
       if (o != null && myBird != null && o.getX() > 0 && o.getX() > screenUtils.getWidthPx() / 2) {
 
-        if (o.getX() - o.getWiewWidth() < (screenUtils.getWidthPx() / 2)) {
-          if (isBetween(o.getY(), o.getY() + o.getViewHeight(), myBird.getY())) {
+        if (o.getX() - o.getBirdWidth() < (screenUtils.getWidthPx() / 2)) {
+          if (isBetween(o.getY(), o.getY() + o.getBirdHeight(), myBird.getY())) {
             obstacleBtm =
                 BitmapFactory.decodeResource(getResources(), R.drawable.game_birdrush_obstacle_red);
             displayObstacles(canvas);
@@ -226,8 +231,8 @@ public class GameBirdRushBackground extends View {
   }
 
   private void gameOver() {
-    stop();
-    onGameOver.onNext(null);
+   /* stop();
+    onGameOver.onNext(null);*/
   }
 
   private void moveBackBackground() {
@@ -273,39 +278,37 @@ public class GameBirdRushBackground extends View {
             && finalI == birdList.size() - 1) {
           entranceBirdFinish = true;
         }
-      }, 1000 * i);
+      }, 300 * i);
     }
   }
-
-  protected float speedY = 0;
 
   private void moveBirds() {
-    BirdRush myBird = getMyBird();
-    myBird.setX(xCenterBirdPos);
+    for (int i = 0; i < birdList.size(); i++) {
+      BirdRush bird = birdList.get(i);
+      bird.setX(xCenterBirdPos);
 
-    if (speedY < 0) {
-      // The character is moving up
-      speedY = speedY * 2 / 3 + getSpeedTimeDecrease() / 5;
-      Timber.e(" SOEF Y MOVING UP " + speedY);
-    } else {
-      // the character is moving down
-      this.speedY += getSpeedTimeDecrease();
-      Timber.d(" SOEF Y MOVING DOWN " + speedY);
+      if (bird.getSpeedY() < 0) {
+        bird.setSpeedY(
+            bird.getSpeedY() * 2 / 3 + getSpeedTimeDecrease() / 5);  // The character is moving up
+        Timber.e(" SOEF Y MOVING UP " + bird.getSpeedY());
+      } else {
+        bird.setSpeedY(bird.getSpeedY() + getSpeedTimeDecrease());  // the character is moving down
+        Timber.d(" SOEF Y MOVING DOWN " + bird.getSpeedY());
+      }
+
+      if (bird.getSpeedY() > getMaxSpeed()) {
+        bird.setSpeedY(getMaxSpeed());  // speed limit
+        Timber.w(" SOEF Y LIMIT " + bird.getSpeedY());
+      }
+
+      bird.setY(Math.round(bird.getY() + bird.getSpeedY()));
     }
-
-    if (this.speedY > getMaxSpeed()) {
-      // speed limit
-      this.speedY = getMaxSpeed();
-      Timber.w(" SOEF Y LIMIT " + speedY);
-    }
-
-    myBird.setY(Math.round(myBird.getY() + speedY));
   }
 
-  public void jumpBird(BirdRush be) {
-    Timber.i(" SOEF Y JUMP " + speedY);
-    BirdRush b = getMyBird();
-    this.speedY = getTabSpeed();
+  public void jumpBird(String guestId) {
+    BirdRush b = getBird(guestId);
+    Timber.i(" SOEF Y JUMP " + b.getSpeedY());
+    b.setSpeedY(getTabSpeed());
     b.setY(b.getY() + getPosTabIncrease());
   }
 
@@ -426,6 +429,13 @@ public class GameBirdRushBackground extends View {
   public BirdRush getMyBird() {
     for (BirdRush b : birdList) {
       if (b.isMine()) return b;
+    }
+    return null;
+  }
+
+  public BirdRush getBird(String guestId) {
+    for (BirdRush b : birdList) {
+      if (b.getGuestId().equals(guestId)) return b;
     }
     return null;
   }

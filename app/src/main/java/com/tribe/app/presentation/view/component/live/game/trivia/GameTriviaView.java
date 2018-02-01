@@ -434,7 +434,7 @@ public class GameTriviaView extends GameViewWithRanking {
       //rotationRaysAnimator.addUpdateListener(animation -> {
       //  float rotation = (float) animation.getAnimatedValue();
       //  imgBackground.setPivotX(imgBackground.getDrawable().getBounds().width() / 2);
-      //  imgBackground.setPivotY(imgBackground.getDrawable().getBounds().getHeightOb() / 2);
+      //  imgBackground.setPivotY(imgBackground.getDrawable().getBounds().getRelativeHeight() / 2);
       //  imgBackground.setRotation(rotation);
       //});
       //rotationRaysAnimator.start();

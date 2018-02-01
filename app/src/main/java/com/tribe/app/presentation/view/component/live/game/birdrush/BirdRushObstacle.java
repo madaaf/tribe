@@ -17,10 +17,15 @@ public class BirdRushObstacle {
   private final String ID_KEY = "id";
   private final String NEXT_SPAWN_KEY = "nextSpawn";
   private final String START_RATIO_KEY = "start";
-  private final String HEIGHT_RATIO_KEY = "getHeightOb";
+  private final String HEIGHT_RATIO_KEY = "height";
   private final String SPEED_KEY = "speed";
   private final String TRANSLATION_KEY = "translation";
+  private final String TRANSLATION_X = "x";
+  private final String TRANSLATION_Y = "y";
+  private final String TRANSLATION_DURATION = "duration";
   private final String ROTATION_KEY = "rotation";
+  private final String ROTATION_DURATION = "duration";
+  private final String ROTATION_ANGLE = "angle";
 
   private String id;
   private Double nextSpawn;
@@ -42,8 +47,9 @@ public class BirdRushObstacle {
     this.speed = obstacleSpeed(level);
     this.translation = translation(level);
 
-    this.x = widthScreen + wiewWidth;
-    this.y = Math.round(startYPos() * heightScreen - height / 2);
+    this.x = widthScreen + wiewWidth; // intial position: end of the screen
+    // this.y = Math.round(startYPos() * heightScreen - height / 2);
+    this.y = Math.round(startYPos() * heightScreen);
     this.viewHeight = Math.round(height * heightScreen);
     // float height = (model.getStart() * screenUtils.getHeightPx() - model.getView().getHeight() / 2);
     init();
@@ -56,7 +62,6 @@ public class BirdRushObstacle {
   }
 
   private void init() {
-
   }
 
   public void setViewHeight(int viewHeight) {
@@ -88,7 +93,8 @@ public class BirdRushObstacle {
   }
 
   private Float startYPos() {
-    return randFloat(0.15f, 0.95f);
+    //  return randFloat(0.15f, 0.95f);
+    return 0.15f; //SOEF TEST
   }
 
   private Double nextSpawnDelay(GameBirdRushEngine.Level level) {
@@ -179,7 +185,7 @@ public class BirdRushObstacle {
    * PUBLIC
    */
 
-  public String getIdOb() {
+  public String getBirdId() {
     return id;
   }
 
@@ -191,15 +197,15 @@ public class BirdRushObstacle {
     return start;
   }
 
-  public int getViewHeight() {
+  public int getBirdHeight() {
     return viewHeight;
   }
 
-  public int getWiewWidth() {
+  public int getBirdWidth() {
     return wiewWidth;
   }
 
-  public Float getHeightOb() {
+  public Float getRelativeHeight() {
     return height;
   }
 
@@ -207,11 +213,11 @@ public class BirdRushObstacle {
     return speed;
   }
 
-  public Translation getTranslationObs() {
+  public Translation getBirdTranslation() {
     return translation;
   }
 
-  public Rotation getRotationObs() {
+  public Rotation getBirdRotation() {
     return rotation;
   }
 
@@ -278,7 +284,7 @@ public class BirdRushObstacle {
         + nextSpawn
         + ", start="
         + start
-        + ", getHeightOb="
+        + ", getRelativeHeight="
         + height
         + ", speed="
         + speed
@@ -293,11 +299,24 @@ public class BirdRushObstacle {
     JSONObject obstacle = new JSONObject();
     JsonUtils.jsonPut(obstacle, ID_KEY, id);
     JsonUtils.jsonPut(obstacle, NEXT_SPAWN_KEY, nextSpawn);
-    JsonUtils.jsonPut(obstacle, ROTATION_KEY, rotation);
     JsonUtils.jsonPut(obstacle, HEIGHT_RATIO_KEY, height);
     JsonUtils.jsonPut(obstacle, START_RATIO_KEY, start);
     JsonUtils.jsonPut(obstacle, SPEED_KEY, speed);
-    JsonUtils.jsonPut(obstacle, TRANSLATION_KEY, translation);
+
+    if (translation != null) {
+      JSONObject trans = new JSONObject();
+      JsonUtils.jsonPut(trans, TRANSLATION_X, translation.getX());
+      JsonUtils.jsonPut(trans, TRANSLATION_Y, translation.getY());
+      JsonUtils.jsonPut(trans, TRANSLATION_DURATION, translation.getDuration());
+      JsonUtils.jsonPut(obstacle, TRANSLATION_KEY, trans);
+    }
+    if (rotation != null) {
+      JSONObject rot = new JSONObject();
+      JsonUtils.jsonPut(rot, ROTATION_ANGLE, rotation.getAngle());
+      JsonUtils.jsonPut(rot, ROTATION_DURATION, rotation.getDuration());
+      JsonUtils.jsonPut(obstacle, ROTATION_KEY, rot);
+    }
+
     return obstacle;
   }
 }

@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -70,9 +69,6 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     setOnTouchListener(controller);
     initSubscriptions();
-
-    //GameView  view = new GameView(context);
-    //addView(view);
   }
 
   @Override protected GameEngine generateEngine() {
@@ -105,12 +101,26 @@ public class GameBirdRushView extends GameViewWithEngine {
                   viewBackground.addObstacles(obstacles);
                   Timber.e("add obstacle : " + obstacles.toString());
                 } else if (actionKey.equals(BIRD_ACTION_PLAYER_TAP)) {
+                  double x;
+                  double y;
+                  if (message.get("x") instanceof Integer) {
+                    int x1 = (int) message.get("x");
+                    x = (double) x1;
+                  } else {
+                    x = (double) message.get("x");
+                  }
 
-                  double x = (double) message.get("x");
-                  double y = (double) message.get("y");
+                  if (message.get("y") instanceof Integer) {
+                    int y1 = (int) message.get("y");
+                    y = (double) y1;
+                  } else {
+                    y = (double) message.get("y");
+                  }
+                  String guestId = message.getString(FROM_KEY);
                   PlayerTap playerTap = new PlayerTap(x, y);
-
-                  Timber.e("player tap : " + playerTap.toString());
+                  // viewBackground.jumpBird();
+                  viewBackground.jumpBird(guestId);
+                  Timber.e("player tap");
                 } else {
                   Timber.e("SOEF ANOTHER ACTION  " + actionKey);
                 }
@@ -157,7 +167,7 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     subscriptionsSession.add(
         ((GameBirdRushEngine) gameEngine).onObstacle().subscribe(generateObstacleList -> {
-          Timber.e("SOEF send to peer obtsacle " + generateObstacleList.size());
+          Timber.e("SOEF send to peer obtsacle " + getObstaclePayload(generateObstacleList));
           webRTCRoom.sendToPeers(getObstaclePayload(generateObstacleList), true);
           viewBackground.addObstacles(generateObstacleList);
         }));
@@ -215,7 +225,7 @@ public class GameBirdRushView extends GameViewWithEngine {
           true);
       Timber.w("SOEF TAP " + getTapPayload(viewBackground.getMyBird().getX(),
           viewBackground.getMyBird().getY()));
-      viewBackground.jumpBird(viewBackground.getMyBird());
+      viewBackground.jumpBird(currentUser.getId());
     }));
   }
 
@@ -237,9 +247,6 @@ public class GameBirdRushView extends GameViewWithEngine {
         BirdRush bird = new BirdRush(index, guest, screenUtils, currentUser.getId());
         if (!viewBackground.haveBird(peerMap.get(key))) {
           viewBackground.addBird(bird, index);
-          Test player = new Test(getResources());
-          Canvas canvas = new Canvas();
-          //player.draw(canvas);
           index++;
         }
       }
