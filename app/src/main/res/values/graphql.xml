@@ -514,13 +514,17 @@
   </string>
 
   <string name="createRoom" translatable="false">
-    createRoom %1$s {
+    createRoom (room : {%1$s}) {
       ...RoomInfos
     }
   </string>
 
   <string name="createRoom.name" translatable="false">
     name : \"%1$s\"
+  </string>
+
+  <string name="createRoom.gameId" translatable="false">
+    game_id : \"%1$s\"
   </string>
 
   <string name="updateRoom" translatable="false">

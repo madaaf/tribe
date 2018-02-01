@@ -762,15 +762,10 @@ public class ChatView extends IChat {
     if (type == FROM_LIVE || isSupport()) {
       return;
     }
-    btnSendLikeContainer.animate()
-        .translationX(0)
-        .setDuration(ANIM_DURATION)
-        .withEndAction(
-            () -> {
-              videoCallBtn.animate().alpha(1f).setDuration(ANIM_DURATION_FAST).start();
-              btnGame.animate().alpha(1f).setDuration(ANIM_DURATION_FAST).start();
-            })
-        .start();
+    btnSendLikeContainer.animate().translationX(0).setDuration(ANIM_DURATION).withEndAction(() -> {
+      videoCallBtn.animate().alpha(1f).setDuration(ANIM_DURATION_FAST).start();
+      btnGame.animate().alpha(1f).setDuration(ANIM_DURATION_FAST).start();
+    }).start();
     showVideoCallBtn(false);
     showGameBtn(false);
 
@@ -1040,6 +1035,10 @@ public class ChatView extends IChat {
   @OnClick(R.id.videoCallBtn) void onClickVideoCall() {
     navigator.navigateToLive((Activity) context, recipient, LiveActivity.SOURCE_GRID,
         TagManagerUtils.SECTION_SHORTCUT, null);
+  }
+
+  @OnClick(R.id.btnGame) void onClickGame() {
+    navigator.navigateToGameStoreForNewLive((Activity) context, shortcut);
   }
 
   private void sendEventEditGroupName() {

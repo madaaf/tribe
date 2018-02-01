@@ -28,13 +28,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-import com.jenzz.appstate.AppStateListener;
-import com.jenzz.appstate.AppStateMonitor;
-import com.jenzz.appstate.RxAppStateMonitor;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
-import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
@@ -67,12 +63,10 @@ import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
-import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
-import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
@@ -128,7 +122,7 @@ import static com.tribe.app.presentation.view.ShortcutUtil.createShortcutSupport
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, ShortcutMVPView, HomeGridMVPView,
-    GoogleApiClient.OnConnectionFailedListener, AppStateListener {
+    GoogleApiClient.OnConnectionFailedListener {
 
   private static final long TWENTY_FOUR_HOURS = 86400000;
   public static final int SETTINGS_RESULT = 101;
@@ -160,10 +154,6 @@ public class HomeActivity extends BaseActivity
   @Inject @LastVersionCode Preference<Integer> lastVersion;
 
   @Inject @LastSync Preference<Long> lastSync;
-
-  @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
-
-  @Inject @CallTagsMap Preference<String> callTagsMap;
 
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
 
@@ -212,7 +202,6 @@ public class HomeActivity extends BaseActivity
   private boolean shouldOverridePendingTransactions = false, receiverRegistered = false, hasSynced =
       false, canEndRefresh = false, finish = false, searchViewDisplayed = false,
       shouldNavigateToChat = false;
-  private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private Shortcut supportShortcut = createShortcutSupport();
@@ -225,12 +214,10 @@ public class HomeActivity extends BaseActivity
     initUi();
     initDimensions();
     initRegistrationToken();
-    initAppState();
     initRecyclerView();
     initTopBar();
     initSearch();
     initPullToRefresh();
-    initPreviousCallTags();
     initNewCall();
     initRemoteConfig();
     manageLogin(getIntent());
@@ -287,10 +274,6 @@ public class HomeActivity extends BaseActivity
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       lookupContacts();
     }
-
-    if (System.currentTimeMillis() - lastSyncGameData.get() > TWENTY_FOUR_HOURS) {
-      homeGridPresenter.synchronizeGamesData(DeviceUtils.getLanguage(this), lastSyncGameData);
-    }
   }
 
   @Override protected void onRestart() {
@@ -313,9 +296,6 @@ public class HomeActivity extends BaseActivity
   @Override protected void onResume() {
     super.onResume();
     if (finish) return;
-
-    startService(WSService.
-        getCallingIntent(this, null, null));
 
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
@@ -349,6 +329,7 @@ public class HomeActivity extends BaseActivity
       unregisterReceiver(notificationReceiverSupport);
       receiverRegistered = false;
     }
+
     super.onPause();
   }
 
@@ -358,14 +339,8 @@ public class HomeActivity extends BaseActivity
     if (homeGridPresenter != null) homeGridPresenter.onViewDetached();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-    if (appStateMonitor != null) {
-      appStateMonitor.removeListener(this);
-      appStateMonitor.stop();
-    }
 
     if (soundManager != null) soundManager.cancelMediaPlayer();
-
-    stopService();
 
     super.onDestroy();
   }
@@ -380,11 +355,6 @@ public class HomeActivity extends BaseActivity
     txtSyncedContacts.setVisibility(VISIBLE);
     Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_up_down_up);
     txtSyncedContacts.startAnimation(anim);
-  }
-
-  private void stopService() {
-    Intent i = new Intent(this, WSService.class);
-    stopService(i);
   }
 
   private void init() {
@@ -830,24 +800,6 @@ public class HomeActivity extends BaseActivity
     subscriptions.add(searchView.onSyncContacts().subscribe(aVoid -> syncContacts()));
   }
 
-  private void initAppState() {
-    appStateMonitor = RxAppStateMonitor.create(getApplication());
-    appStateMonitor.addListener(this);
-    appStateMonitor.start();
-  }
-
-  private void initPreviousCallTags() {
-    String callTags = callTagsMap.get();
-    if (!StringUtils.isEmpty(callTags)) {
-      TagManagerUtils.manageTags(tagManager, PreferencesUtils.getMapFromJson(callTagsMap));
-      callTagsMap.set("");
-    }
-  }
-
-  private void declineInvitation(String sessionId) {
-    homeGridPresenter.declineInvite(sessionId);
-  }
-
   private void invite(ContactAB contact) {
     Bundle bundle = new Bundle();
     bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.SEARCH);
@@ -1132,14 +1084,6 @@ public class HomeActivity extends BaseActivity
 
   private void lookupContacts() {
     syncContacts();
-  }
-
-  @Override public void onAppDidEnterForeground() {
-  }
-
-  @Override public void onAppDidEnterBackground() {
-    Timber.d("App in background stopping the service");
-    stopService();
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {

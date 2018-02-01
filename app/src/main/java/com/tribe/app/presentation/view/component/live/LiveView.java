@@ -111,8 +111,6 @@ public class LiveView extends FrameLayout {
 
   @Inject @MinutesOfCalls Preference<Float> minutesOfCalls;
 
-  @Inject @CallTagsMap Preference<String> callTagsMap;
-
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
   @BindView(R.id.layoutScoresOverLive) LinearLayout layoutScoresOverLive;

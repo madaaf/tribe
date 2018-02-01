@@ -470,7 +470,7 @@ public class CloudUserDataStore implements UserDataStore {
     }, (contactList, lookupHolder) -> lookupHolder).flatMap(lookupHolder -> {
       StringBuilder resultLookupUserIds = new StringBuilder();
 
-      if (lookupHolder != null) {
+      if (lookupHolder != null && lookupHolder.getLookupObjectList() != null) {
         Set<String> userIdSet = new HashSet<>();
         for (LookupObject lookupObject : lookupHolder.getLookupObjectList()) {
           if (lookupObject != null &&

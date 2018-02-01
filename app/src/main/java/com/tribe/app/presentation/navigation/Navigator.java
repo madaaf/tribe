@@ -31,6 +31,7 @@ import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GameDetailsActivity;
+import com.tribe.app.presentation.view.activity.GameMembersActivity;
 import com.tribe.app.presentation.view.activity.GameStoreActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -58,6 +59,8 @@ public class Navigator {
   public static int FROM_CHAT = 1003;
   public static int FROM_NEW_GAME = 1004;
   public static int FROM_LEADERBOARD = 1005;
+  public static int FROM_GAMESTORE = 1006;
+  public static int FROM_GAME_DETAILS = 1007;
   public static String SNAPCHAT = "com.snapchat.android";
   public static String INSTAGRAM = "com.instagram.android";
   public static String TWITTER = "com.twitter.android";
@@ -185,7 +188,16 @@ public class Navigator {
   public void navigateToGameDetails(Activity activity, String gameId) {
     if (activity != null) {
       Intent intent = GameDetailsActivity.getCallingIntent(activity, gameId);
+      activity.startActivityForResult(intent, FROM_GAMESTORE);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
+  }
+
+  public void navigateToGameMembers(Activity activity, String gameId) {
+    if (activity != null) {
+      Intent intent = GameMembersActivity.getCallingIntent(activity, gameId);
+      activity.startActivityForResult(intent, FROM_GAME_DETAILS);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }
 
@@ -312,6 +324,14 @@ public class Navigator {
     if (activity != null) {
       Intent intent = NewGameActivity.getCallingIntent(activity);
       activity.startActivityForResult(intent, FROM_NEW_GAME);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
+  }
+
+  public void navigateToGameStoreForNewLive(Activity activity, Shortcut shortcut) {
+    if (activity != null) {
+      Intent intent = NewGameActivity.getCallingIntent(activity, shortcut);
+      activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
   }

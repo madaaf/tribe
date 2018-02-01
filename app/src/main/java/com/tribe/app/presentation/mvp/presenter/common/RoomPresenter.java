@@ -104,7 +104,7 @@ public class RoomPresenter implements Presenter {
   }
 
   public void createRoom(Live live) {
-    createRoom.setup(null);
+    createRoom.setup(null, live.getGameId());
     createRoom.execute(new CreateRoomSubscriber());
   }
 

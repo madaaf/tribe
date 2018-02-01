@@ -1068,18 +1068,7 @@ public class LiveActivity extends BaseActivity
   }
 
   private void leave() {
-    if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
-      subscriptions.add(DialogFactory.dialog(this,
-          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
-          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
-          getString(R.string.tips_leavingroom_action1),
-          getString(R.string.tips_leavingroom_action2))
-          .filter(x -> x == true)
-          .subscribe(a -> finish()));
-      stateManager.addTutorialKey(StateManager.LEAVING_ROOM_POPUP);
-    } else {
-      finish();
-    }
+    finish();
   }
 
   private void putExtraErrorNotif() {

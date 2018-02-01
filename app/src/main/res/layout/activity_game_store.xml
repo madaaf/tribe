@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
@@ -8,7 +9,50 @@
   <FrameLayout
       android:layout_width="match_parent"
       android:layout_height="52dp"
+      android:animateLayoutChanges="true"
       >
+
+    <ImageView
+        android:id="@+id/btnNewMessage"
+        android:layout_width="@dimen/nav_icon_size"
+        android:layout_height="@dimen/nav_icon_size"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginStart="@dimen/horizontal_margin_smaller"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_new_chat_top_bar"
+        android:visibility="gone"
+        />
+
+    <FrameLayout
+        android:id="@+id/layoutCall"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        >
+      <com.tribe.app.presentation.view.widget.PulseLayout
+          android:id="@+id/layoutPulse"
+          android:layout_width="100dp"
+          android:layout_height="100dp"
+          android:layout_gravity="center_vertical|start"
+          android:layout_marginStart="-25dp"
+          app:pulseColor="@color/red"
+          app:pulseCount="3"
+          app:pulseDuration="3000"
+          />
+
+      <ImageView
+          android:id="@+id/imgLive"
+          android:layout_width="@dimen/nav_icon_size"
+          android:layout_height="@dimen/nav_icon_size"
+          android:layout_gravity="center_vertical"
+          android:clickable="true"
+          android:foreground="@drawable/selectable_button_oval_light"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_live_active"
+          />
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/btnFriends"
@@ -20,6 +64,7 @@
         android:foreground="@drawable/selectable_button_oval"
         android:scaleType="centerInside"
         android:src="@drawable/picto_friends"
+        android:visibility="visible"
         />
 
     <ImageView

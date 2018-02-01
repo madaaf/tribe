@@ -24,7 +24,7 @@ public class DiskLiveDataStore
     return null;
   }
 
-  @Override public Observable<Room> createRoom(String name, String[] userIds) {
+  @Override public Observable<Room> createRoom(String name, String gameId) {
     return null;
   }
 

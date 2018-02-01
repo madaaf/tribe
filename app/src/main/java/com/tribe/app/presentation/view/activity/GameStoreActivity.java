@@ -4,21 +4,50 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import butterknife.BindView;
 import butterknife.OnClick;
+import com.f2prateek.rx.preferences.Preference;
+import com.jenzz.appstate.AppStateListener;
+import com.jenzz.appstate.AppStateMonitor;
+import com.jenzz.appstate.RxAppStateMonitor;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.data.network.WSService;
+import com.tribe.app.domain.entity.Invite;
+import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.UserPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
+import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.PermissionUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.LastSync;
+import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
+import com.tribe.app.presentation.view.ShortcutUtil;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.widget.PulseLayout;
+import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameFooter;
 import java.util.List;
+import java.util.concurrent.Executors;
 import javax.inject.Inject;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
-public class GameStoreActivity extends GameActivity {
+public class GameStoreActivity extends GameActivity implements AppStateListener {
+
+  private static final long TWENTY_FOUR_HOURS = 86400000;
 
   public static Intent getCallingIntent(Activity activity) {
     Intent intent = new Intent(activity, GameStoreActivity.class);
@@ -26,10 +55,20 @@ public class GameStoreActivity extends GameActivity {
   }
 
   @Inject UserPresenter userPresenter;
+  @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
+  @Inject @LastSync Preference<Long> lastSync;
+
+  @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
+  @BindView(R.id.layoutCall) FrameLayout layoutCall;
+  @BindView(R.id.btnFriends) ImageView btnFriends;
+  @BindView(R.id.btnNewMessage) ImageView btnNewMessage;
 
   // VARIABLES
   private UserComponent userComponent;
   private UserMVPViewAdapter userMVPViewAdapter;
+  private Scheduler singleThreadExecutor;
+  private AppStateMonitor appStateMonitor;
+  private RxPermissions rxPermissions;
 
   // RESOURCES
 
@@ -37,25 +76,78 @@ public class GameStoreActivity extends GameActivity {
   private PublishSubject<User> onUser = PublishSubject.create();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
+    singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
+
     super.onCreate(savedInstanceState);
 
-    initPresenter();
+    rxPermissions = new RxPermissions(this);
+    initAppStateMonitor();
   }
 
   @Override protected void onStart() {
     super.onStart();
     gamePresenter.onViewAttached(gameMVPViewAdapter);
     userPresenter.onViewAttached(userMVPViewAdapter);
+    userPresenter.getUserInfos();
+
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
+        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
+      userPresenter.syncContacts(lastSync);
+    }
+
+    if (System.currentTimeMillis() - lastSyncGameData.get() > TWENTY_FOUR_HOURS) {
+      gamePresenter.synchronizeGameData(DeviceUtils.getLanguage(this), lastSyncGameData);
+    }
+  }
+
+  @Override protected void onResume() {
+    super.onResume();
+    startService(WSService.
+        getCallingIntent(this, null, null));
   }
 
   @Override protected void onStop() {
     super.onStop();
     userPresenter.onViewDetached();
     gamePresenter.onViewDetached();
+    layoutPulse.stop();
   }
 
   @Override protected void onDestroy() {
+    if (appStateMonitor != null) {
+      appStateMonitor.removeListener(this);
+      appStateMonitor.stop();
+    }
+
+    stopService();
     super.onDestroy();
+  }
+
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == Navigator.FROM_GAMESTORE && data != null) {
+      String gameId = data.getStringExtra(GameStoreActivity.GAME_ID);
+      boolean callRoulette = data.getBooleanExtra(GameMembersActivity.CALL_ROULETTE, false);
+      Shortcut shortcut = (Shortcut) data.getSerializableExtra(GameMembersActivity.SHORTCUT);
+
+      if (callRoulette) {
+        navigator.navigateToNewCall(this, LiveActivity.SOURCE_CALL_ROULETTE, gameId);
+      } else if (shortcut != null) {
+        navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
+            TagManagerUtils.SECTION_SHORTCUT, gameId);
+      }
+    }
+  }
+
+  private void stopService() {
+    Intent i = new Intent(this, WSService.class);
+    stopService(i);
+  }
+
+  private void initAppStateMonitor() {
+    appStateMonitor = RxAppStateMonitor.create(getApplication());
+    appStateMonitor.addListener(this);
+    appStateMonitor.start();
   }
 
   @Override protected void initPresenter() {
@@ -77,16 +169,62 @@ public class GameStoreActivity extends GameActivity {
         onUser.onNext(user);
       }
     };
-
-    userPresenter.getUserInfos();
   }
 
   @Override protected void initSubscriptions() {
     super.initSubscriptions();
+
+    subscriptions.add(onUser.subscribeOn(singleThreadExecutor).map(user -> {
+      boolean hasLive = false, hasNewMessage = false;
+      for (Recipient recipient : user.getRecipientList()) {
+        if (recipient instanceof Invite) {
+          hasLive = true;
+        } else if (recipient instanceof Shortcut && !hasNewMessage) {
+          hasNewMessage = !recipient.isRead();
+        }
+      }
+
+      if (hasLive) {
+        return layoutCall;
+      } else if (hasNewMessage) {
+        return btnNewMessage;
+      } else {
+        return btnFriends;
+      }
+    }).observeOn(AndroidSchedulers.mainThread()).subscribe(view -> {
+      if (view == layoutCall) {
+        layoutCall.setVisibility(View.VISIBLE);
+        layoutPulse.start();
+        btnFriends.setVisibility(View.GONE);
+        btnNewMessage.setVisibility(View.GONE);
+      } else if (view == btnFriends) {
+        layoutCall.setVisibility(View.GONE);
+        layoutPulse.stop();
+        btnFriends.setVisibility(View.VISIBLE);
+        btnNewMessage.setVisibility(View.GONE);
+      } else if (view == btnNewMessage) {
+        layoutCall.setVisibility(View.GONE);
+        layoutPulse.stop();
+        btnFriends.setVisibility(View.GONE);
+        btnNewMessage.setVisibility(View.VISIBLE);
+      }
+    }));
   }
 
   @Override protected void onGameSelected(Game game) {
-    navigator.navigateToGameDetails(this, game.getId());
+    if (game instanceof GameFooter) {
+      if (game.getId().equals(Game.GAME_SUPPORT)) {
+        Shortcut s = ShortcutUtil.createShortcutSupport();
+        s.setTypeSupport(Conversation.TYPE_SUGGEST_GAME);
+        navigator.navigateToChat(this, s, null, null, false);
+        Bundle bundle = new Bundle();
+        bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.NEW_GAME);
+        bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.SUGGESTED);
+        tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
+      }
+    } else {
+      navigator.navigateToGameDetails(this, game.getId());
+    }
   }
 
   @Override protected int getContentView() {
@@ -106,11 +244,19 @@ public class GameStoreActivity extends GameActivity {
         .inject(this);
   }
 
+  @Override public void onAppDidEnterForeground() {
+  }
+
+  @Override public void onAppDidEnterBackground() {
+    Timber.d("App in background stopping the service");
+    stopService();
+  }
+
   /**
    * ONCLICK
    */
 
-  @OnClick(R.id.btnFriends) void onClickFriends() {
+  @OnClick({ R.id.btnFriends, R.id.imgLive, R.id.btnNewMessage }) void onClickHome() {
     navigator.navigateToHome(this);
   }
 

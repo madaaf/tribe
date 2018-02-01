@@ -396,15 +396,6 @@ public class HomePresenter implements Presenter {
     });
   }
 
-  public void synchronizeGamesData(String lang, Preference<Long> lastSyncGameData) {
-    getGamesData.setup(lang);
-    getGamesData.execute(new DefaultSubscriber() {
-      @Override public void onNext(Object o) {
-        lastSyncGameData.set(System.currentTimeMillis());
-      }
-    });
-  }
-
   public void createShortcut(String... userIds) {
     shortcutPresenter.createShortcut(userIds);
   }

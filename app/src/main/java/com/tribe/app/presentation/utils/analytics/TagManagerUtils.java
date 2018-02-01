@@ -42,7 +42,7 @@ public class TagManagerUtils {
   public static final String EditGroupName = "EditGroupName";
   public static final String Shortcut = "Shortcut";
   public static final String Chats = "Chats";
-  public static final String Game = "Game";
+  public static final String NewGame = "NewGame";
   public static final String Searched = "Searched";
   public static final String KPI_Onboarding_WalkthroughCompleted =
       "KPI_Onboarding_WalkthroughCompleted";
@@ -66,6 +66,9 @@ public class TagManagerUtils {
   public static final String SWIPE = "swipe";
   public static final String SCREEN = "screen";
   public static final String HOME = "home";
+  public static final String NEW_GAME = "new_game";
+  public static final String LAUNCHED = "launched";
+  public static final String SUGGESTED = "suggested";
   public static final String LIVE = "live";
   public static final String CALL = "call";
   public static final String SEARCH = "search";
@@ -74,6 +77,7 @@ public class TagManagerUtils {
   public static final String ONBOARDING = "onboarding";
   public static final String PROFILE = "profile";
   public static final String ACTION = "action";
+  public static final String NAME = "name";
   public static final String GAME = "game";
   public static final String UNKNOWN = "unknown";
   public static final String CANCELLED = "cancelled";

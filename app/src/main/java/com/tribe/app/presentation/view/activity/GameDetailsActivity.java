@@ -33,6 +33,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -138,17 +139,12 @@ public class GameDetailsActivity extends BaseActivity {
     super.onDestroy();
   }
 
-  private int getStatusBarHeight() {
-    int result = 0;
-    int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-    if (resourceId > 0) {
-      result = getResources().getDimensionPixelSize(resourceId);
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == Navigator.FROM_GAME_DETAILS && resultCode == RESULT_OK && data != null) {
+      setResult(RESULT_OK, data);
+      finish();
     }
-    return result;
-  }
-
-  private int getNavigationBarHeight() {
-    return screenUtils.dpToPx(50);
   }
 
   private void initPresenter() {
@@ -363,6 +359,10 @@ public class GameDetailsActivity extends BaseActivity {
 
   @OnClick(R.id.btnLeaderboards) void openLeaderboards() {
     // TODO open leaderboards
+  }
+
+  @OnClick(R.id.btnMulti) void openGameMembers() {
+    navigator.navigateToGameMembers(this, game.getId());
   }
 
   /**

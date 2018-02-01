@@ -72,9 +72,8 @@ public class PictoLiveView extends FrameLayout {
   }
 
   public void setStatus(@Status int status) {
-    if (this.status == status) return;
-
     this.status = status;
+
     if (status == INACTIVE) {
       imgLive.setImageResource(R.drawable.picto_live_inactive);
       layoutPulse.stop();

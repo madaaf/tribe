@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
@@ -12,6 +13,7 @@ import com.tribe.app.domain.interactor.game.GetCloudUserLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskFriendsScores;
 import com.tribe.app.domain.interactor.game.GetDiskGameLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskUserLeaderboard;
+import com.tribe.app.domain.interactor.game.GetGamesData;
 import com.tribe.app.domain.interactor.game.GetTriviaData;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -42,6 +44,7 @@ public class GamePresenter implements Presenter {
   private GetDiskFriendsScores diskFriendsScores;
   private GetTriviaData getTriviaData;
   private GetBattleMusicData getBattleMusicData;
+  private GetGamesData getGamesData;
 
   // SUBSCRIBERS
   private GameLeaderboardSubscriber cloudGameLeaderboardSubscriber;
@@ -55,7 +58,7 @@ public class GamePresenter implements Presenter {
       GetDiskGameLeaderboard diskGameLeaderboard, GetCloudUserLeaderboard cloudUserLeaderboard,
       GetDiskUserLeaderboard diskUserLeaderboard, GetDiskFriendsScores diskFriendsScores,
       GetCloudFriendsScores cloudFriendsScores, GetTriviaData getTriviaData,
-      GetBattleMusicData getBattleMusicData, GetCloudGames getGames) {
+      GetBattleMusicData getBattleMusicData, GetCloudGames getGames, GetGamesData getGamesData) {
     this.cloudGameLeaderboard = cloudGameLeaderboard;
     this.diskGameLeaderboard = diskGameLeaderboard;
     this.cloudUserLeaderboard = cloudUserLeaderboard;
@@ -65,6 +68,7 @@ public class GamePresenter implements Presenter {
     this.getTriviaData = getTriviaData;
     this.getBattleMusicData = getBattleMusicData;
     this.getGames = getGames;
+    this.getGamesData = getGamesData;
   }
 
   @Override public void onViewDetached() {
@@ -77,6 +81,7 @@ public class GamePresenter implements Presenter {
     getTriviaData.unsubscribe();
     getBattleMusicData.unsubscribe();
     getGames.unsubscribe();
+    getGamesData.unsubscribe();
     gameMVPView = null;
   }
 
@@ -238,6 +243,15 @@ public class GamePresenter implements Presenter {
 
       @Override public void onNext(List<Game> gameList) {
         if (gameMVPView != null) gameMVPView.onGameList(gameList);
+      }
+    });
+  }
+
+  public void synchronizeGameData(String lang, Preference<Long> lastSyncGameData) {
+    getGamesData.setup(lang);
+    getGamesData.execute(new DefaultSubscriber() {
+      @Override public void onNext(Object o) {
+        lastSyncGameData.set(System.currentTimeMillis());
       }
     });
   }
