@@ -84,6 +84,10 @@ public class Invite extends Recipient {
     return true;
   }
 
+  @Override public UserPlaying isPlaying() {
+    return null;
+  }
+
   @Override public boolean isOnline() {
     return false;
   }

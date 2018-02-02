@@ -65,7 +65,6 @@ import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.LastSync;
-import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
@@ -84,7 +83,6 @@ import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
-import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -227,7 +225,6 @@ public class HomeActivity extends BaseActivity
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
-    homeGridPresenter.getGames();
     if (!hasSynced) {
       hasSynced = true;
     }
@@ -422,7 +419,6 @@ public class HomeActivity extends BaseActivity
           if (canEndRefresh) {
             topBarContainer.endRefresh();
             latestRecipientList.clear();
-            homeGridPresenter.getGames();
             homeGridPresenter.reload(false);
             canEndRefresh = false;
           }

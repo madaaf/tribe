@@ -1,6 +1,7 @@
 package com.tribe.app.data.cache;
 
 import android.content.Context;
+import com.tribe.app.data.realm.UserPlayingRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
@@ -21,6 +22,7 @@ public class LiveCacheImpl implements LiveCache {
   private ObservableRxHashMap<String, Boolean> liveMap;
   private ObservableRxHashMap<String, Invite> inviteMap;
   private ObservableRxHashMap<String, Room> roomMap;
+  private ObservableRxHashMap<String, UserPlayingRealm> playingMap;
   private PublishSubject<String> roomCallRouletteMap = PublishSubject.create();
   private PublishSubject<User> onFbIdUpdated = PublishSubject.create();
   private PublishSubject<Room> onRoomUpdated = PublishSubject.create();
@@ -31,6 +33,7 @@ public class LiveCacheImpl implements LiveCache {
     liveMap = new ObservableRxHashMap<>();
     inviteMap = new ObservableRxHashMap<>();
     roomMap = new ObservableRxHashMap<>();
+    playingMap = new ObservableRxHashMap<>();
   }
 
   @Override public Observable<Map<String, Boolean>> onlineMap() {
@@ -39,6 +42,14 @@ public class LiveCacheImpl implements LiveCache {
 
   @Override public Map<String, Boolean> getOnlineMap() {
     return onlineMap.getMap();
+  }
+
+  @Override public Observable<Map<String, UserPlayingRealm>> playingMap() {
+    return playingMap.getMapObservable().startWith(playingMap.getMap());
+  }
+
+  @Override public Map<String, UserPlayingRealm> getPlayingMap() {
+    return playingMap.getMap();
   }
 
   @Override public Observable<Map<String, Boolean>> liveMap() {
@@ -55,6 +66,15 @@ public class LiveCacheImpl implements LiveCache {
 
   @Override public void removeOnline(String id) {
     onlineMap.remove(id, true);
+  }
+
+  @Override public void putPlaying(String id, UserPlayingRealm userPlayingRealm) {
+    playingMap.remove(id, false);
+    playingMap.put(id, userPlayingRealm);
+  }
+
+  @Override public void removePlaying(String id) {
+    playingMap.remove(id, true);
   }
 
   @Override public void putLive(String id) {
@@ -147,6 +167,4 @@ public class LiveCacheImpl implements LiveCache {
   @Override public Observable<Room> getRoomUpdated() {
     return onRoomUpdated;
   }
-
-
 }

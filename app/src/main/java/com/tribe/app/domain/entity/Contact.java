@@ -44,6 +44,10 @@ public class Contact implements Comparable<Contact>, HomeAdapterInterface {
     return false;
   }
 
+  @Override public UserPlaying isPlaying() {
+    return null;
+  }
+
   @Override public String getDisplayName() {
     return name;
   }

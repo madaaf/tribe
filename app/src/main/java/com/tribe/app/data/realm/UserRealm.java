@@ -61,6 +61,7 @@ public class UserRealm extends RealmObject {
   @Ignore private JsonObject jsonPayloadUpdate;
 
   @Ignore private boolean is_online = false;
+  @Ignore private UserPlayingRealm is_playing;
   @Ignore private boolean is_live = false;
 
   public UserRealm() {
@@ -221,6 +222,14 @@ public class UserRealm extends RealmObject {
 
   public void setIsOnline(boolean isOnline) {
     this.is_online = isOnline;
+  }
+
+  public void setIsPlaying(UserPlayingRealm is_playing) {
+    this.is_playing = is_playing;
+  }
+
+  public UserPlayingRealm isPlaying() {
+    return is_playing;
   }
 
   public boolean isLive() {

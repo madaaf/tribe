@@ -618,6 +618,15 @@ public class CloudUserDataStore implements UserDataStore {
           } else {
             liveCache.removeOnline(shortcutRealm.getId());
           }
+
+          if (shortcutRealm.isSingle()) {
+            UserRealm member = shortcutRealm.getSingleFriend();
+            if (member.isPlaying() != null) {
+              liveCache.putPlaying(member.getId(), member.isPlaying());
+            } else {
+              liveCache.removePlaying(member.getId());
+            }
+          }
         }
       }
 

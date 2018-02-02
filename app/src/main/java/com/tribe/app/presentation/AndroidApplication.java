@@ -58,7 +58,6 @@ import io.realm.exceptions.RealmMigrationNeededException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import net.danlew.android.joda.JodaTimeAndroid;
 import timber.log.Timber;
 
@@ -150,7 +149,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(15)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(16)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -328,8 +327,7 @@ public class AndroidApplication extends Application {
                   .transform(obj -> {
                     DynamicRealmObject children = obj.getObject("original");
                     if (children == null) return;
-                    DynamicRealmObject migratedChildren =
-                        realm.createObject("MediaRealm");
+                    DynamicRealmObject migratedChildren = realm.createObject("MediaRealm");
                     migratedChildren.set("url", children.getString("url"));
                     migratedChildren.set("filesize", children.getInt("filesize"));
                     migratedChildren.set("width", children.getString("width"));
@@ -424,6 +422,16 @@ public class AndroidApplication extends Application {
 
           if (oldVersion == 14) {
             schema.get("ScoreUserRealm").addField("value", int.class);
+            oldVersion++;
+          }
+
+          if (oldVersion == 15) {
+            if (schema.get("UserPlayingRealm") == null) {
+              schema.create("UserPlayingRealm")
+                  .addField("room_id", String.class)
+                  .addField("game_id", String.class);
+            }
+
             oldVersion++;
           }
         })

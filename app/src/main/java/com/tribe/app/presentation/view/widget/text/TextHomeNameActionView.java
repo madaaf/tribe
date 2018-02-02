@@ -107,8 +107,9 @@ public class TextHomeNameActionView extends LinearLayout {
   }
 
   public void setRecipient(Recipient recipient) {
-    if (this.recipient != null && this.recipient.equals(recipient)) return;
     this.recipient = recipient;
+
+    setTextType(textType);
 
     if (recipient instanceof Shortcut) {
       Shortcut shortcut = (Shortcut) recipient;
@@ -122,12 +123,27 @@ public class TextHomeNameActionView extends LinearLayout {
         TextViewUtils.constraintTextInto(txtName, userList);
       }
 
-      if (!shortcut.isRead()) {
-        txtAction.setText(R.string.home_action_read_chat);
-      } else if (!StringUtils.isEmpty(shortcut.getLastMessage())) {
-        txtAction.setText(shortcut.getLastMessage());
-      } else {
-        txtAction.setText(R.string.home_action_tap_to_chat);
+      boolean override = false;
+      if (shortcut.isSingle()) {
+        User member = shortcut.getSingleFriend();
+        if (member.isPlaying() != null && !StringUtils.isEmpty(member.isPlaying().getGame_id())) {
+          txtAction.setText(
+              getContext().getString(R.string.home_action_is_playing, member.isPlaying().getTitle(),
+                  member.isPlaying().getEmoji()));
+          override = true;
+          TextViewCompat.setTextAppearance(txtAction, R.style.BiggerBody_One_BlueNew);
+          txtAction.setCustomFont(getContext(), FontUtils.PROXIMA_REGULAR);
+        }
+      }
+
+      if (!override) {
+        if (!shortcut.isRead()) {
+          txtAction.setText(R.string.home_action_read_chat);
+        } else if (!StringUtils.isEmpty(shortcut.getLastMessage())) {
+          txtAction.setText(shortcut.getLastMessage());
+        } else {
+          txtAction.setText(R.string.home_action_tap_to_chat);
+        }
       }
     } else if (recipient instanceof Invite) {
       Invite invite = (Invite) recipient;

@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import com.tribe.app.data.realm.UserPlayingRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
@@ -13,6 +14,8 @@ import rx.Observable;
 public interface LiveDataStore {
 
   Observable<Map<String, Boolean>> onlineMap();
+
+  Observable<Map<String, UserPlayingRealm>> playingMap();
 
   Observable<Map<String, Boolean>> liveMap();
 

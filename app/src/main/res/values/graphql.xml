@@ -160,6 +160,10 @@
             push_notif
             mute_online_notif
             is_online
+            is_playing {
+              game_id
+              room_id
+            }
             last_seen_at
             time_in_call
             random_banned_permanently
@@ -180,6 +184,10 @@
             push_notif
             mute_online_notif
             is_online
+            is_playing {
+              game_id
+              room_id
+            }
             last_seen_at
             time_in_call
             random_banned_permanently
@@ -210,6 +218,10 @@
       display_name
       picture
       is_online
+      is_playing {
+        game_id
+        room_id
+      }
       scores {
         ranking
         game {

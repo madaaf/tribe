@@ -1,14 +1,17 @@
 package com.tribe.app.data.network.deserializer;
 
+import android.util.Pair;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.data.realm.UserPlayingRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.MessageRealmDataMapper;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
@@ -39,10 +42,6 @@ import timber.log.Timber;
   private PublishSubject<List<UserRealm>> onUserListUpdated = PublishSubject.create();
   private PublishSubject<String> onAddedOnline = PublishSubject.create();
   private PublishSubject<User> onFbIdUpdated = PublishSubject.create();
-  private PublishSubject<List<String>> onAddedListOnline = PublishSubject.create();
-  private PublishSubject<List<String>> onRemovedListOnline = PublishSubject.create();
-  private PublishSubject<List<String>> onAddedListLive = PublishSubject.create();
-  private PublishSubject<List<String>> onRemovedListLive = PublishSubject.create();
   private PublishSubject<String> onRemovedOnline = PublishSubject.create();
   private PublishSubject<String> onAddedLive = PublishSubject.create();
   private PublishSubject<String> onRemovedLive = PublishSubject.create();
@@ -59,6 +58,8 @@ import timber.log.Timber;
   private PublishSubject<String> onTalking = PublishSubject.create();
   private PublishSubject<String> onReading = PublishSubject.create();
   private PublishSubject<String> onRandomBannedUntil = PublishSubject.create();
+  private PublishSubject<Pair<String, UserPlayingRealm>> onAddedPlaying = PublishSubject.create();
+  private PublishSubject<String> onRemovedPlaying = PublishSubject.create();
 
   @Inject MessageRealmDataMapper messageRealmDataMapper;
 
@@ -90,27 +91,40 @@ import timber.log.Timber;
             JsonObject jo = element.getAsJsonObject();
 
             if (entry.getKey().contains(WSService.USER_SUFFIX)) {
-              boolean shouldUpdateOnlineStatus = false;
+              boolean shouldUpdateOnlineStatus = false, shouldUpdatePlayingStatus = false;
 
               UserRealm userRealm = gson.fromJson(entry.getValue().toString(), UserRealm.class);
               userRealm.setJsonPayloadUpdate(jo);
 
-              if (jo.has("random_banned_until")) {
+              if (jo.has("random_banned_until") &&
+                  !(jo.get("random_banned_until") instanceof JsonNull)) {
                 String date = jo.get("random_banned_until").getAsString();
                 onRandomBannedUntil.onNext(date);
               }
+
               if (jo.has("is_online")) shouldUpdateOnlineStatus = true;
+              if (jo.has("is_playing")) shouldUpdatePlayingStatus = true;
               if (jo.has("fbid")) {
                 String fbId = jo.get("fbid").getAsString();
                 User user = new User(jo.get("id").getAsString());
                 user.setFbid(fbId);
                 onFbIdUpdated.onNext(user);
               }
+
               if (shouldUpdateOnlineStatus) {
                 if (userRealm.isOnline()) {
                   onAddedOnline.onNext(userRealm.getId());
                 } else {
                   onRemovedOnline.onNext(userRealm.getId());
+                }
+              }
+
+              if (shouldUpdatePlayingStatus) {
+                if (userRealm.isPlaying() != null) {
+                  onAddedPlaying.onNext(Pair.create(userRealm.getId(),
+                      gson.fromJson(jo.get("is_playing"), UserPlayingRealm.class)));
+                } else {
+                  onRemovedPlaying.onNext(userRealm.getId());
                 }
               }
 
@@ -317,22 +331,6 @@ import timber.log.Timber;
     return onInviteRemoved;
   }
 
-  public Observable<List<String>> onAddedListLive() {
-    return onAddedListLive;
-  }
-
-  public Observable<List<String>> onRemovedListLive() {
-    return onRemovedListLive;
-  }
-
-  public Observable<List<String>> onAddedListOnline() {
-    return onAddedListOnline;
-  }
-
-  public Observable<List<String>> onRemovedListOnline() {
-    return onRemovedListOnline;
-  }
-
   public Observable<Room> onRoomUpdated() {
     return onRoomUpdated;
   }
@@ -359,5 +357,13 @@ import timber.log.Timber;
 
   public Observable<String> onReading() {
     return onReading;
+  }
+
+  public Observable<String> onRemovedPlaying() {
+    return onRemovedPlaying;
+  }
+
+  public Observable<Pair<String, UserPlayingRealm>> onAddedPlaying() {
+    return onAddedPlaying;
   }
 }
