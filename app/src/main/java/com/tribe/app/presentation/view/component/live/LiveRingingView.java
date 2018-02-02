@@ -286,12 +286,14 @@ public class LiveRingingView extends RelativeLayout {
   }
 
   public void stopRinging() {
+    subscriptions.clear();
+
+    if (views == null) return;
+
     for (int i = 0; i < views.size(); i++) {
       View view = views.get(i);
       view.clearAnimation();
     }
-
-    subscriptions.clear();
   }
 
   public void hide() {
