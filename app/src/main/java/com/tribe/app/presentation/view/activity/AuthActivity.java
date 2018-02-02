@@ -282,8 +282,9 @@ public class AuthActivity extends BaseActivity
         navigator.navigateToIntent(this, newIntent);
         deepLink = null;
       }
-    } else if (user == null || StringUtils.isEmpty(user.getProfilePicture()) || StringUtils.isEmpty(
-        user.getUsername())) {
+    } else if (user == null ||
+        StringUtils.isEmpty(user.getProfilePicture()) ||
+        StringUtils.isEmpty(user.getUsername())) {
       Timber.d("goToConnected from new user");
 
       navigator.navigateToAuthProfile(this, null, loginEntity);
@@ -292,8 +293,7 @@ public class AuthActivity extends BaseActivity
       tagManager.setUserId(user.getId());
       tagLogin();
       Timber.d("goToConnected from " + user.getDisplayName());
-      navigator.navigateToHomeFromLogin(this, countryCode, null,
-          loginEntity.getFbAccessToken() != null);
+      navigator.navigateToGameStoreLogin(this);
     }
   }
 

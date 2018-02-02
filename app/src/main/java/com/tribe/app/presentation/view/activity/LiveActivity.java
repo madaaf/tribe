@@ -67,6 +67,7 @@ import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.view.ShortcutUtil;
+import com.tribe.app.presentation.view.adapter.model.ShareTypeModel;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseNotifViewHolder;
 import com.tribe.app.presentation.view.component.live.LiveContainer;
@@ -121,7 +122,7 @@ public class LiveActivity extends BaseActivity
       SOURCE_GRID, SOURCE_DEEPLINK, SOURCE_SEARCH, SOURCE_CALLKIT, SOURCE_SHORTCUT_ITEM,
       SOURCE_DRAGGED_AS_GUEST, SOURCE_ONLINE_NOTIFICATION, SOURCE_LIVE_NOTIFICATION, SOURCE_FRIENDS,
       SOURCE_NEW_CALL, SOURCE_JOIN_LIVE, SOURCE_ADD_PEERS, SOURCE_CALL_ROULETTE,
-      SOURCE_IN_APP_NOTIFICATION
+      SOURCE_IN_APP_NOTIFICATION, SOURCE_HOME
   }) public @interface Source {
   }
 
@@ -143,6 +144,8 @@ public class LiveActivity extends BaseActivity
   public static final String SOURCE_CALL_ROULETTE = "CallRoulette";
   public static final String SOURCE_JOIN_LIVE = "JoinLive";
   public static final String SOURCE_ADD_PEERS = "AddPeers";
+  public static final String SOURCE_HOME = TagManagerUtils.HOME;
+  public static final String SOURCE_CHAT = TagManagerUtils.CHAT;
 
   public static final String ROOM_ID = "ROOM_ID";
   public static final String TIMEOUT_RATING_NOTIFICATON = "TIMEOUT_RATING_NOTIFICATON";
@@ -592,7 +595,7 @@ public class LiveActivity extends BaseActivity
       } else {
         setChatView(shortcut);
       }
-    } else {
+    } else if (live.getRoom() != null) {
       String[] arrids =
           live.getRoom().getUserIds().toArray(new String[live.getRoom().getUserIds().size()]);
       if (arrids != null && arrids.length > 0) {
@@ -767,7 +770,16 @@ public class LiveActivity extends BaseActivity
         })
         .subscribe());
 
-    subscriptions.add(viewLive.onShareLink().subscribe(aVoid -> share(false)));
+    subscriptions.add(viewLive.onShareLink().subscribe(aString -> {
+      if (room == null) return;
+
+      if (aString.equals(ShareTypeModel.SHARE_TYPE_MESSENGER)) {
+        navigator.sendInviteToMessenger(this, firebaseRemoteConfig, TagManagerUtils.CALL,
+            room.getLink());
+      } else {
+        share(true);
+      }
+    }));
 
     subscriptions.add(viewLive.unlockRollTheDice().
         subscribeOn(Schedulers.newThread()).
@@ -961,11 +973,11 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(viewLive.onChangeCallRouletteRoom().
         subscribe(aVoid -> reRollTheDiceFromCallRoulette(true)));
 
-    subscriptions.add(viewLive.openGameStore()
-        .subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
+    subscriptions.add(
+        viewLive.openGameStore().subscribe(aVoid -> navigator.navigateToGameStoreNewGame(this)));
 
-    subscriptions.add(viewLive.onSwipeUp()
-        .subscribe(aVoid -> navigator.navigateToNewGame(this, TagManagerUtils.LIVE)));
+    subscriptions.add(
+        viewLive.onSwipeUp().subscribe(aVoid -> navigator.navigateToGameStoreNewGame(this)));
 
     subscriptions.add(
         viewLive.onAddScore().subscribe(pair -> livePresenter.addScore(pair.first, pair.second)));
@@ -1058,18 +1070,7 @@ public class LiveActivity extends BaseActivity
   }
 
   private void leave() {
-    if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
-      subscriptions.add(DialogFactory.dialog(this,
-          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_title)),
-          EmojiParser.demojizedText(getString(R.string.tips_leavingroom_message)),
-          getString(R.string.tips_leavingroom_action1),
-          getString(R.string.tips_leavingroom_action2))
-          .filter(x -> x == true)
-          .subscribe(a -> finish()));
-      stateManager.addTutorialKey(StateManager.LEAVING_ROOM_POPUP);
-    } else {
-      finish();
-    }
+    finish();
   }
 
   private void putExtraErrorNotif() {
@@ -1170,7 +1171,7 @@ public class LiveActivity extends BaseActivity
     notificationPayload.setUserDisplayName(user.getDisplayName());
     notificationPayload.setUserPicture(user.getProfilePicture());
     notificationPayload.setBody(getString(R.string.leaderboard_new_high_score));
-    notificationPayload.setClickAction(NotificationPayload.CLICK_ACTION_GAME_LEADER);
+    notificationPayload.setClickAction(NotificationPayload.CLICK_ACTION_GAME_SCORE);
     notificationReceiver.computeNotificationPayload(this, notificationPayload);
   }
 

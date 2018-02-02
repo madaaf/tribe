@@ -61,7 +61,6 @@ public class Game {
   protected String title;
   protected String baseline;
   protected String icon;
-  protected String banner;
   protected String primary_color;
   protected String secondary_color;
   protected int plays_count;
@@ -76,6 +75,9 @@ public class Game {
   protected TribeGuest currentMaster;
   protected TribeGuest friendLeader;
   protected String emoji;
+  protected String logo;
+  protected String background;
+  protected List<String> animation_icons;
 
   // OBSERVABLE / SUBSCRIPTIONS
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -198,14 +200,6 @@ public class Game {
     this.icon = icon;
   }
 
-  public String getBanner() {
-    return banner;
-  }
-
-  public void setBanner(String banner) {
-    this.banner = banner;
-  }
-
   public String getPrimary_color() {
     return primary_color;
   }
@@ -272,6 +266,30 @@ public class Game {
 
   public String getEmoji() {
     return emoji;
+  }
+
+  public String getLogo() {
+    return logo;
+  }
+
+  public void setLogo(String logo) {
+    this.logo = logo;
+  }
+
+  public String getBackground() {
+    return background;
+  }
+
+  public void setBackground(String background) {
+    this.background = background;
+  }
+
+  public List<String> getAnimation_icons() {
+    return animation_icons;
+  }
+
+  public void setAnimation_icons(List<String> animation_icons) {
+    this.animation_icons = animation_icons;
   }
 
   protected TribeGuest getNextGuest() {

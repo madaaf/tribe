@@ -93,6 +93,15 @@ public abstract class BaseActivity extends AppCompatActivity {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
   }
 
+  protected int getStatusBarHeight() {
+    int result = 0;
+    int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+    if (resourceId > 0) {
+      result = getResources().getDimensionPixelSize(resourceId);
+    }
+    return result;
+  }
+
   protected void onResumeLockPhone() {
     Window wind = this.getWindow();
     wind.addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);

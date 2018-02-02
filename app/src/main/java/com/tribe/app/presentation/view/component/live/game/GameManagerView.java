@@ -20,8 +20,6 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
-import com.tribe.app.presentation.mvp.presenter.GamePresenter;
-import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
@@ -56,8 +54,6 @@ public class GameManagerView extends FrameLayout {
 
   @Inject User currentUser;
 
-  @Inject GamePresenter gamePresenter;
-
   /**
    * VARIABLES
    */
@@ -67,10 +63,10 @@ public class GameManagerView extends FrameLayout {
   private GameView currentGameView;
   private WebRTCRoom webRTCRoom;
   private Map<String, TribeGuest> peerMap;
+  private Map<String, TribeGuest> invitedMap;
   private Game currentGame;
   private Map<String, List<String>> mapGameData;
   private Observable<Map<String, LiveStreamView>> onLiveViewsChange;
-  private GameMVPViewAdapter gameMVPViewAdapter;
 
   /**
    * OBSERVABLES
@@ -79,6 +75,7 @@ public class GameManagerView extends FrameLayout {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private CompositeSubscription subscriptionsGame = new CompositeSubscription();
   private BehaviorSubject<Map<String, TribeGuest>> onPeerMapChange = BehaviorSubject.create();
+  private BehaviorSubject<Map<String, TribeGuest>> onInvitedMapChange = BehaviorSubject.create();
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
   private PublishSubject<Game> onStopGame = PublishSubject.create();
   private PublishSubject<Void> onPlayOtherGame = PublishSubject.create();
@@ -94,21 +91,12 @@ public class GameManagerView extends FrameLayout {
     initView();
   }
 
-  @Override protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
-    gamePresenter.onViewAttached(gameMVPViewAdapter);
-  }
-
-  @Override protected void onDetachedFromWindow() {
-    super.onDetachedFromWindow();
-    gamePresenter.onViewDetached();
-  }
-
   private void initView() {
     initDependencyInjector();
     unbinder = ButterKnife.bind(this);
     gameManager = GameManager.getInstance(getContext());
     peerMap = new HashMap<>();
+    invitedMap = new HashMap<>();
 
     if (!StringUtils.isEmpty(gameData.get())) {
       mapGameData = new Gson().fromJson(gameData.get(), new TypeToken<HashMap<String, Object>>() {
@@ -202,9 +190,29 @@ public class GameManagerView extends FrameLayout {
       } else if (rxHashMapAction.changeType.equals(ObservableRxHashMap.REMOVE)) {
         peerMap.remove(rxHashMapAction.item.getId());
         if (currentGameView != null) currentGameView.userLeft(rxHashMapAction.item.getId());
+      } else if (rxHashMapAction.changeType.equals(ObservableRxHashMap.CLEAR)) {
+        peerMap.clear();
       }
 
       onPeerMapChange.onNext(peerMap);
+    }));
+  }
+
+  public void initInvitedGuestObservable(
+      Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> obs) {
+    invitedMap.put(currentUser.getId(), currentUser.asTribeGuest());
+    onInvitedMapChange.onNext(invitedMap);
+
+    subscriptions.add(obs.subscribe(rxHashMapAction -> {
+      if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD)) {
+        invitedMap.put(rxHashMapAction.item.getId(), rxHashMapAction.item);
+      } else if (rxHashMapAction.changeType.equals(ObservableRxHashMap.REMOVE)) {
+        invitedMap.remove(rxHashMapAction.item.getId());
+      } else if (rxHashMapAction.changeType.equals(ObservableRxHashMap.CLEAR)) {
+        invitedMap.clear();
+      }
+
+      onInvitedMapChange.onNext(invitedMap);
     }));
   }
 
@@ -265,7 +273,7 @@ public class GameManagerView extends FrameLayout {
     }
 
     gameView.setWebRTCRoom(webRTCRoom);
-    gameView.start(game, onPeerMapChange, onLiveViewsChange, userId);
+    gameView.start(game, onPeerMapChange, onInvitedMapChange, onLiveViewsChange, userId);
     game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));
 
@@ -291,6 +299,8 @@ public class GameManagerView extends FrameLayout {
 
   public void dispose() {
     subscriptions.clear();
+    invitedMap.clear();
+    peerMap.clear();
     disposeGame();
   }
 

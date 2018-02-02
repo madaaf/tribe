@@ -437,6 +437,14 @@ import timber.log.Timber;
         .onBackpressureDrop()
         .subscribe(s -> liveCache.removeOnline(s)));
 
+    persistentSubscriptions.add(jsonToModel.onAddedPlaying()
+        .onBackpressureDrop()
+        .subscribe(pair -> liveCache.putPlaying(pair.first, pair.second)));
+
+    persistentSubscriptions.add(jsonToModel.onRemovedPlaying()
+        .onBackpressureDrop()
+        .subscribe(s -> liveCache.removePlaying(s)));
+
     persistentSubscriptions.add(
         jsonToModel.onRandomRoomAssigned().onBackpressureDrop().subscribe(assignedRoomId -> {
           Timber.d("onRandomRoomAssigned assignedRoomId " + assignedRoomId);
@@ -509,7 +517,7 @@ import timber.log.Timber;
           if (!shortcutRealm.isOnline()) {
             liveCache.removeOnline(shortcutRealm.getId());
           } else if (shortcutRealm.isOnline()) liveCache.putOnline(shortcutRealm.getId());
-           userCache.updateShortcut(shortcutRealm);
+          userCache.updateShortcut(shortcutRealm);
         }));
 
     persistentSubscriptions.add(jsonToModel.onShortcutRemoved()

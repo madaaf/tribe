@@ -7,7 +7,7 @@ import java.io.Serializable;
  * Created by tiago on 10/10/2017.
  */
 
-public class Header implements Serializable, LiveInviteAdapterSectionInterface {
+public class HeaderModel implements Serializable, LiveInviteAdapterSectionInterface {
 
   public static final String HEADER_NAME = "HEADER_NAME";
   public static final String HEADER_CHAT_MEMBERS = "HEADER_CHAT_MEMBERS";
@@ -20,7 +20,7 @@ public class Header implements Serializable, LiveInviteAdapterSectionInterface {
   private int resourceDrawableId;
   private int gravity;
 
-  public Header(String id, String resourceTxtId, int resourceDrawableId, int gravity) {
+  public HeaderModel(String id, String resourceTxtId, int resourceDrawableId, int gravity) {
     this.id = id;
     this.resourceTxtId = resourceTxtId;
     this.resourceDrawableId = resourceDrawableId;

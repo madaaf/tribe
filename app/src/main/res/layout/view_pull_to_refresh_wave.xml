@@ -19,5 +19,6 @@
       android:layout_gravity="top|center_horizontal"
       android:scaleType="centerInside"
       android:src="@drawable/picto_logo"
+      android:elevation="5dp"
       />
 </merge>

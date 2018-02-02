@@ -207,11 +207,7 @@ public class LiveContainer extends FrameLayout {
 
     subscriptions.add(viewLive.onOpenInvite().subscribe(aVoid -> {
       if (!isOpenedPartially) {
-        if (viewLive.nbInRoom() > 1) {
-          openFullInviteView();
-        } else {
-          openPartialInviteView();
-        }
+        openPartialInviteView();
       } else if (isOpenedPartially) {
         closePartialInviteView();
       }
@@ -266,7 +262,7 @@ public class LiveContainer extends FrameLayout {
         ViewUtils.isIn(viewLiveHangUp.getHangUpButton(), (int) ev.getRawX(), (int) ev.getRawY());
     if (!isEnabled() ||
         gameMenuOpen ||
-        !touchEnabled ||
+        (!touchEnabled && !isOpenedFully && !isOpenedPartially) ||
         chatOpened ||
         (isInHangUpButton && isEndCallOpened)) { //!hasJoined ||
       return false;

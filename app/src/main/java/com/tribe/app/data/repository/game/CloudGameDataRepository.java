@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
+import timber.log.Timber;
 
 @Singleton public class CloudGameDataRepository implements GameRepository {
 
@@ -36,7 +37,7 @@ import rx.Observable;
 
   @Override public Observable<List<Game>> getGames() {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
-    return gameDataStore.getGames().map(gameRealm -> gameRealmDataMapper.transform(gameRealm));
+    return gameDataStore.getGames().map(gameRealm -> gameRealmDataMapper.transform(gameRealm)).doOnError(throwable -> Timber.e(throwable));
   }
 
   @Override

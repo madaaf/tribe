@@ -21,7 +21,7 @@ public abstract class BaseSectionItemDecoration extends RecyclerView.ItemDecorat
   @IntDef({
       LIVE_CHAT_MEMBERS, LIVE_ADD_FRIENDS_IN_CALL, HOME_ONGOING, HOME_ONLINE, HOME_RECENT,
       SEARCH_RESULTS, SEARCH_SUGGESTED_CONTACTS, SEARCH_INVITES_TO_SEND, SEARCH_EMPTY,
-      SEARCH_RECENT, NONE
+      SEARCH_RECENT, LIVE_SHARE_MESSENGER, LIVE_SHARE_SMS, NONE
   }) public @interface HeaderType {
   }
 
@@ -35,7 +35,9 @@ public abstract class BaseSectionItemDecoration extends RecyclerView.ItemDecorat
   public static final int SEARCH_INVITES_TO_SEND = 8;
   public static final int SEARCH_EMPTY = 9;
   public static final int SEARCH_RECENT = 10;
-  public static final int NONE = 11;
+  public static final int LIVE_SHARE_MESSENGER = 11;
+  public static final int LIVE_SHARE_SMS = 12;
+  public static final int NONE = 13;
 
   protected final int headerOffset;
   protected final boolean sticky;

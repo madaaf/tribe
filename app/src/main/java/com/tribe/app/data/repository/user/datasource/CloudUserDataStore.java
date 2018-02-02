@@ -173,7 +173,7 @@ public class CloudUserDataStore implements UserDataStore {
     }
 
     return this.tribeApi.getUserInfos(context.getString(R.string.user_infos, countShortcutsToUpdate,
-        context.getString(R.string.userfragment_infos),
+        context.getString(R.string.userfragment_infos_with_games),
         context.getString(R.string.shortcutFragment_infos),
         context.getString(R.string.roomFragment_infos))).doOnNext(saveToCacheUser);
   }
@@ -470,7 +470,7 @@ public class CloudUserDataStore implements UserDataStore {
     }, (contactList, lookupHolder) -> lookupHolder).flatMap(lookupHolder -> {
       StringBuilder resultLookupUserIds = new StringBuilder();
 
-      if (lookupHolder != null) {
+      if (lookupHolder != null && lookupHolder.getLookupObjectList() != null) {
         Set<String> userIdSet = new HashSet<>();
         for (LookupObject lookupObject : lookupHolder.getLookupObjectList()) {
           if (lookupObject != null &&
@@ -487,13 +487,11 @@ public class CloudUserDataStore implements UserDataStore {
 
       if (resultLookupUserIds.length() == 0) {
         return Observable.just(new ArrayList<UserRealm>());
-
       } else {
         return this.tribeApi.getUserListInfos(context.getString(R.string.lookup_userid,
-                resultLookupUserIds.substring(0, resultLookupUserIds.length() - 1),
-                context.getString(R.string.userfragment_infos)));
+            resultLookupUserIds.substring(0, resultLookupUserIds.length() - 1),
+            context.getString(R.string.userfragment_infos)));
       }
- 
     }, (lookupHolder, lookupUsers) -> {
       if (lookupHolder != null && lookupUsers != null) {
         List<LookupObject> listLookup = lookupHolder.getLookupObjectList();
@@ -619,6 +617,15 @@ public class CloudUserDataStore implements UserDataStore {
             liveCache.putOnline(shortcutRealm.getId());
           } else {
             liveCache.removeOnline(shortcutRealm.getId());
+          }
+
+          if (shortcutRealm.isSingle()) {
+            UserRealm member = shortcutRealm.getSingleFriend();
+            if (member.isPlaying() != null && member.isPlaying().getGame_id() != null) {
+              liveCache.putPlaying(member.getId(), member.isPlaying());
+            } else {
+              liveCache.removePlaying(member.getId());
+            }
           }
         }
       }

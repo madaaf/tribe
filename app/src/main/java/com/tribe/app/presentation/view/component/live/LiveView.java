@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -20,6 +21,7 @@ import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
@@ -30,13 +32,13 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
-import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.app.presentation.view.utils.Degrees;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.DoubleUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -111,11 +113,11 @@ public class LiveView extends FrameLayout {
 
   @Inject @MinutesOfCalls Preference<Float> minutesOfCalls;
 
-  @Inject @CallTagsMap Preference<String> callTagsMap;
-
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
   @BindView(R.id.layoutScoresOverLive) LinearLayout layoutScoresOverLive;
+
+  @BindView(R.id.viewLiveAddFriend) LiveRowViewAddFriend viewLiveAddFriend;
 
   @BindView(R.id.viewControlsLive) LiveControlsView viewControlsLive;
 
@@ -136,6 +138,7 @@ public class LiveView extends FrameLayout {
   private WebRTCRoom webRTCRoom;
   private ObservableRxHashMap<String, LiveRowView> liveRowViewMap;
   private ObservableRxHashMap<String, TribeGuest> tribeGuestMap;
+  private ObservableRxHashMap<String, TribeGuest> tribeInvitedMap;
   private boolean hiddenControls = false;
   private Map<String, Object> tagMap;
   private int wizzCount = 0, screenshotCount = 0, invitedCount = 0, totalSizeLive = 0,
@@ -148,7 +151,7 @@ public class LiveView extends FrameLayout {
   private View view;
   private List<User> detailedUserInfoInLive = new ArrayList<>();
   private boolean isFirstToJoin = true;
-  private double duration;
+  private double duration, durationGame;
   private GameManager gameManager;
   private String fbId;
   private GameManagerView viewGameManager;
@@ -283,6 +286,7 @@ public class LiveView extends FrameLayout {
 
     liveRowViewMap.clear();
     tribeGuestMap.clear();
+    tribeInvitedMap.clear();
 
     if (webRTCRoom != null && !isJump) {
       Timber.d("webRTCRoom leave");
@@ -332,7 +336,7 @@ public class LiveView extends FrameLayout {
     LinearLayout.LayoutParams params =
         new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
-    layoutScoresOverLive.addView(rowViewScore, params);
+    layoutScoresOverLive.addView(rowViewScore, layoutScoresOverLive.getChildCount() - 1, params);
     mapScoreViews.put(rowViewScore.getGuest().getId(), rowViewScore);
     persistentSubscriptions.add(viewLocalLive.onScoreChange()
         .subscribe(
@@ -368,6 +372,7 @@ public class LiveView extends FrameLayout {
   private void init() {
     liveRowViewMap = new ObservableRxHashMap<>();
     tribeGuestMap = new ObservableRxHashMap<>();
+    tribeInvitedMap = new ObservableRxHashMap<>();
     tagMap = new HashMap<>();
     mapScoreViews = new HashMap<>();
 
@@ -454,6 +459,7 @@ public class LiveView extends FrameLayout {
         .subscribe(game -> onRestartGame(gameManager.getCurrentGame())));
 
     viewGameManager.initPeerGuestObservable(tribeGuestMap.getObservable());
+    viewGameManager.initInvitedGuestObservable(tribeInvitedMap.getObservable());
     viewGameManager.initLiveViewsObservable(viewRoom.onLiveViewsChange());
 
     gameManager.initUIControlsStartGame(viewControlsLive.onStartGame());
@@ -501,6 +507,9 @@ public class LiveView extends FrameLayout {
       displayStopGameNotification(game.getTitle(), displayName);
       stopGame();
     }));
+
+    persistentSubscriptions.add(
+        viewLiveAddFriend.onClick().subscribe(aVoid -> onOpenInvite.onNext(true)));
   }
 
   private void openChat(boolean open) {
@@ -574,14 +583,6 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(webRTCRoom.onJoined()
         .observeOn(AndroidSchedulers.mainThread())
         .doOnNext(tribeJoinRoom -> hasJoined = true)
-        .doOnNext(tribeJoinRoom -> {
-          // TODO SEE WITH #backend solution to launch game in call roulette
-          if (!StringUtils.isEmpty(live.getGameId()) &&
-              !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
-              StringUtils.isEmpty(room.getGameId())) {
-            viewControlsLive.startGame(gameManager.getGameById(live.getGameId()));
-          }
-        })
         .subscribe(onJoined));
 
     tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().onBackpressureDrop().subscribe(onLeave));
@@ -691,6 +692,12 @@ public class LiveView extends FrameLayout {
     live.getRoom().update(room, false);
 
     webRTCRoom.connect(options);
+
+    if (!StringUtils.isEmpty(live.getGameId()) &&
+        !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
+        StringUtils.isEmpty(room.getGameId())) {
+      viewControlsLive.startGame(gameManager.getGameById(live.getGameId()));
+    }
   }
 
   public void initDrawerEventChangeObservable(Observable<Integer> obs) {
@@ -736,6 +743,8 @@ public class LiveView extends FrameLayout {
     viewRoom.setTranslationX(value);
     viewRinging.applyTranslationX(value);
     viewDarkOverlay.setTranslationX(value);
+    viewGameManager.setTranslationX(value);
+    layoutScoresOverLive.setTranslationX(value);
 
     if (right) {
       viewShadowRight.setTranslationX(value);
@@ -767,6 +776,14 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(live.onRoomUpdated().subscribe(room -> {
       if (live.getRoom() != null && live.getRoom().acceptsRandom()) {
         viewControlsLive.btnChat.setVisibility(INVISIBLE);
+      }
+
+      if (room != null) {
+        tribeInvitedMap.clear();
+        for (User user : room.getInvitedUsers()) {
+          TribeGuest guest = user.asTribeGuest();
+          tribeInvitedMap.put(guest.getId(), guest);
+        }
       }
     }));
 
@@ -805,7 +822,7 @@ public class LiveView extends FrameLayout {
 
                 public void onFinish() {
                   if (viewRinging != null) {
-                    viewRinging.onFInish();
+                    viewRinging.onFinish();
                     viewRinging.startRinging();
                   }
                   onShouldJoinRoom.onNext(null);
@@ -817,7 +834,7 @@ public class LiveView extends FrameLayout {
             }
           });
     } else {
-      viewRinging.startRinging();
+      viewRinging.setVisibility(View.GONE);
       onShouldJoinRoom.onNext(null);
     }
   }
@@ -846,8 +863,8 @@ public class LiveView extends FrameLayout {
   }
 
   public int nbInRoom() {
-    if (live.getRoom() == null) return 0;
-    return live.getRoom().nbUsersTotal();
+    if (live.getRoom() == null) return 1;
+    return Math.max(1, live.getRoom().nbUsersTotal());
   }
 
   public boolean shouldLeave() {
@@ -909,8 +926,9 @@ public class LiveView extends FrameLayout {
         LinearLayout.LayoutParams params =
             new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, screenUtils.dpToPx(5), 0, 0);
-        layoutScoresOverLive.addView(liveRowViewScores, params);
+        params.setMargins(0, screenUtils.dpToPx(7.5f), 0, 0);
+        layoutScoresOverLive.addView(liveRowViewScores, layoutScoresOverLive.getChildCount() - 1,
+            params);
         mapScoreViews.put(liveRowView.getGuest().getId(), liveRowViewScores);
       }
 
@@ -1106,7 +1124,7 @@ public class LiveView extends FrameLayout {
     game.setUserAction(isUserAction);
     gameManager.setCurrentGame(game);
     viewLocalLive.startGame(game);
-    viewRinging.hide();
+    viewRinging.setVisibility(View.GONE);
 
     int indexOfViewRoom = indexOfChild(viewRoom);
 
@@ -1181,15 +1199,6 @@ public class LiveView extends FrameLayout {
   }
 
   private void startGameStats(String gameId) {
-    String tagCount = gameId + TagManagerUtils.tagGameCountSuffix;
-
-    int count = 0;
-    if (tagMap.containsKey(tagCount)) tagMap.get(tagCount);
-    count += 1;
-
-    tagMap.put(tagCount, count);
-    tagManager.increment(tagCount, 1);
-
     startGameTimerSubscription(gameId);
   }
 
@@ -1199,22 +1208,13 @@ public class LiveView extends FrameLayout {
 
   private void startGameTimerSubscription(String gameId) {
     if (callGameAverageSubscription == null) {
-      String tagAverage = gameId + TagManagerUtils.tagGameAverageMembersSuffix;
-
       callGameAverageSubscription =
           Observable.interval(10, TimeUnit.SECONDS, Schedulers.computation())
               .onBackpressureDrop()
-              .doOnUnsubscribe(() -> {
-                if (!tagMap.containsKey(tagAverage)) {
-                  tagMap.put(tagAverage, averageCountGameLive);
-                } else {
-                  tagMap.put(tagAverage,
-                      (averageCountGameLive + (double) tagMap.get(tagAverage)) / 2);
-                }
-              })
               .subscribe(intervalCount -> {
                 intervalGame++;
-                totalSizeGameLive += nbLiveInRoom();
+                int nbLive = nbLiveInRoom();
+                totalSizeGameLive += nbLive == 0 ? 1 : nbLive;
                 averageCountGameLive = (double) totalSizeGameLive / intervalGame;
                 averageCountGameLive = DoubleUtils.round(averageCountGameLive, 2);
               });
@@ -1229,22 +1229,8 @@ public class LiveView extends FrameLayout {
       callGameDurationSubscription = Observable.interval(1, TimeUnit.SECONDS)
           .onBackpressureBuffer()
           .observeOn(AndroidSchedulers.mainThread())
-          .doOnUnsubscribe(() -> {
-            double durationGame = getDuration(startedAt);
-            double totalGameDuration = 0.0D;
-
-            if (tagMap.containsKey(TagManagerUtils.GAME_DURATION)) {
-              totalGameDuration = (double) tagMap.get(TagManagerUtils.GAME_DURATION);
-            }
-
-            totalGameDuration += durationGame;
-
-            tagMap.put(TagManagerUtils.GAME_DURATION, totalGameDuration);
-            tagManager.increment(TagManagerUtils.GAME_DURATION, totalGameDuration);
-          })
           .subscribe(tick -> {
-            double durationGame = getDuration(startedAt);
-            tagMap.put(tagDuration, durationGame);
+            durationGame = getDuration(startedAt);
             tagManager.increment(tagDuration, durationGame);
           });
 
@@ -1272,23 +1258,24 @@ public class LiveView extends FrameLayout {
     }
 
     if (gameManager.getCurrentGame() != null) {
-      String gameId = gameManager.getCurrentGame().getId();
-      String tagCount = gameId + TagManagerUtils.tagGameCountSuffix;
-
-      int totalGameCount = 0;
-      if (tagMap.containsKey(TagManagerUtils.GAME_COUNT)) {
-        totalGameCount = (int) tagMap.get(TagManagerUtils.GAME_COUNT);
+      Game game = gameManager.getCurrentGame();
+      Bundle bundle = new Bundle();
+      bundle.putString(TagManagerUtils.NAME, game.getTitle());
+      bundle.putDouble(TagManagerUtils.DURATION, durationGame);
+      bundle.putDouble(TagManagerUtils.AVERAGE_MEMBERS_COUNT, averageCountGameLive);
+      bundle.putString(TagManagerUtils.SOURCE, getSource());
+      if (live.getRoom() != null) {
+        bundle.putString(TagManagerUtils.TYPE,
+            live.getRoom().nbUsersInvited() == 0 && live.getRoom().nbUsersLive() == 1
+                ? TagManagerUtils.TYPE_SOLO : TagManagerUtils.TYPE_MULTI);
       }
-
-      int gameCount = 0;
-
-      if (tagMap.containsKey(tagCount)) gameCount = (int) tagMap.get(tagCount);
-
-      totalGameCount += gameCount;
-
-      tagMap.put(TagManagerUtils.GAME_COUNT, totalGameCount);
-      tagManager.increment(tagCount, totalGameCount);
+      tagManager.trackEvent(TagManagerUtils.Games, bundle);
     }
+
+    intervalGame = 0;
+    totalSizeGameLive = 0;
+    durationGame = 0;
+    averageCountGameLive = 0;
   }
 
   //////////////////////
@@ -1332,7 +1319,15 @@ public class LiveView extends FrameLayout {
   }
 
   public Observable<Void> onLeave() {
-    return Observable.merge(onLeave, viewControlsLive.onLeave());
+    return Observable.merge(onLeave, viewControlsLive.onLeave()
+        .flatMap(aVoid -> DialogFactory.showBottomSheetForLeaving(getContext(),
+            gameManager.getCurrentGame(), nbInRoom()), (aVoid, labelType) -> labelType)
+        .filter(labelType -> {
+          if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) stopGame();
+          return labelType.getTypeDef().equals(LabelType.STOP_GAME_SOLO) ||
+              labelType.getTypeDef().equals(LabelType.LEAVE_ROOM);
+        })
+        .map(labelType -> null));
   }
 
   public Observable<Void> onScreenshot() {
@@ -1415,7 +1410,7 @@ public class LiveView extends FrameLayout {
     return onOpenChat;
   }
 
-  public Observable<Void> onShareLink() {
+  public Observable<String> onShareLink() {
     return viewLiveInvite.onShareLink();
   }
 

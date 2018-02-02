@@ -33,7 +33,6 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.EditTextFont;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
@@ -85,7 +84,7 @@ public class TopBarView extends FrameLayout {
 
   @BindView(R.id.imgSyncContacts) ImageView imgSyncContacts;
 
-  @BindView(R.id.diceLayout) DiceView diceView;
+  @BindView(R.id.imgBack) ImageView imgBack;
 
   // VARIABLES
   private float startX, startY = 0;
@@ -107,7 +106,7 @@ public class TopBarView extends FrameLayout {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<String> onSearch = PublishSubject.create();
   private PublishSubject<Void> clickProfile = PublishSubject.create();
-  private PublishSubject<Void> clickCallRoulette = PublishSubject.create();
+  private PublishSubject<Void> clickBack = PublishSubject.create();
   private PublishSubject<Boolean> onOpenCloseSearch = PublishSubject.create();
   private PublishSubject<Void> onSyncContacts = PublishSubject.create();
 
@@ -170,9 +169,13 @@ public class TopBarView extends FrameLayout {
         params.leftMargin = getMarginLeftSearch();
         btnSearch.setLayoutParams(params);
 
-        params = (MarginLayoutParams) diceView.getLayoutParams();
-        params.rightMargin = getMarginRightBtnNew();
-        diceView.setLayoutParams(params);
+        params = (MarginLayoutParams) imgBack.getLayoutParams();
+        params.rightMargin = getMarginRightBtnClose();
+        imgBack.setLayoutParams(params);
+
+        params = (MarginLayoutParams) viewAvatar.getLayoutParams();
+        params.leftMargin = getMarginLeftAvatar();
+        viewAvatar.setLayoutParams(params);
       }
     });
 
@@ -211,9 +214,9 @@ public class TopBarView extends FrameLayout {
           if (isAClickInView(viewAvatar, (int) startX, (int) startY)) {
             viewAvatar.onTouchEvent(event);
             //viewAvatar.performClick();
-          } else if (isAClickInView(diceView, (int) startX, (int) startY)) {
-            diceView.onTouchEvent(event);
-            diceView.performClick();
+          } else if (isAClickInView(imgBack, (int) startX, (int) startY)) {
+            imgBack.onTouchEvent(event);
+            imgBack.performClick();
           } else if (isAClickInView(btnSyncContacts, (int) startX, (int) startY)) {
             if (btnSyncContacts.isClickable()) {
               btnSyncContacts.onTouchEvent(event);
@@ -240,8 +243,8 @@ public class TopBarView extends FrameLayout {
       default:
         if (isAClickInView(viewAvatar, (int) event.getRawX(), (int) event.getRawY())) {
           viewAvatar.onTouchEvent(event);
-        } else if (isAClickInView(diceView, (int) event.getRawX(), (int) event.getRawY())) {
-          diceView.onTouchEvent(event);
+        } else if (isAClickInView(imgBack, (int) event.getRawX(), (int) event.getRawY())) {
+          imgBack.onTouchEvent(event);
         } else if (isAClickInView(btnSyncContacts, (int) event.getRawX(), (int) event.getRawY())) {
           btnSyncContacts.onTouchEvent(event);
         } else if (isAClickInView(btnSearch, (int) event.getRawX(), (int) event.getRawY())) {
@@ -260,12 +263,8 @@ public class TopBarView extends FrameLayout {
     clickProfile.onNext(null);
   }
 
-  @OnClick(R.id.diceLayout) void clickCallRoulette() {
-    clickCallRoulette.onNext(null);
-  }
-
-  public View getDiceViewBtn() {
-    return diceView;
+  @OnClick(R.id.imgBack) void clickBack() {
+    clickBack.onNext(null);
   }
 
   @OnClick(R.id.btnSyncContacts) void btnSyncContactsClick() {
@@ -314,20 +313,12 @@ public class TopBarView extends FrameLayout {
       }
     });
 
-    hideView(diceView, false);
+    hideView(imgBack, false);
     hideView(viewAvatar, true);
     hideView(txtEmojiGame, true);
 
     AnimationUtils.animateLeftMargin(btnSearch, marginSmall, DURATION, null);
-    AnimationUtils.animateRightMargin(btnSearch, imgClose.getWidth() + 2 * marginSmall, DURATION);
-
-    int[] locationSearch = new int[2];
-    imgSearch.getLocationOnScreen(locationSearch);
-    imgSearch.animate()
-        .setDuration(DURATION)
-        .translationX(-locationSearch[0] + screenUtils.dpToPx(60))
-        .setInterpolator(new DecelerateInterpolator())
-        .start();
+    AnimationUtils.animateRightMargin(btnSearch, imgClose.getWidth(), DURATION);
 
     txtSearch.setVisibility(View.INVISIBLE);
   }
@@ -344,7 +335,7 @@ public class TopBarView extends FrameLayout {
     editTextSearch.setEnabled(false);
     btnSearch.setClickable(true);
 
-    showView(diceView, null);
+    showView(imgBack, null);
     hideView(imgClose, false);
     showView(viewAvatar, null);
     showView(txtEmojiGame, null);
@@ -356,27 +347,25 @@ public class TopBarView extends FrameLayout {
     AnimationUtils.animateLeftMargin(btnSearch, getMarginLeftSearch(), DURATION, null);
     AnimationUtils.animateRightMargin(btnSearch, getMarginRightSearch(), DURATION);
 
-    imgSearch.animate()
-        .setDuration(DURATION)
-        .translationX(0)
-        .setInterpolator(new DecelerateInterpolator())
-        .start();
-
     subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> txtSearch.setVisibility(View.VISIBLE)));
   }
 
   private int getMarginRightSearch() {
-    return diceView.getWidth() + ((int) 2f * marginSmall);
+    return imgBack.getMeasuredWidth();
   }
 
   private int getMarginLeftSearch() {
-    return viewAvatar.getWidth() + 2 * marginSmall;
+    return viewAvatar.getWidth() + marginSmall + getMarginLeftAvatar();
   }
 
-  private int getMarginRightBtnNew() {
+  private int getMarginLeftAvatar() {
     return marginSmall;
+  }
+
+  private int getMarginRightBtnClose() {
+    return 0;
   }
 
   private void hideView(View view, boolean left) {
@@ -476,8 +465,8 @@ public class TopBarView extends FrameLayout {
     return clickProfile;
   }
 
-  public Observable<Void> onClickCallRoulette() {
-    return clickCallRoulette;
+  public Observable<Void> onBack() {
+    return clickBack;
   }
 
   public Observable<Boolean> onOpenCloseSearch() {

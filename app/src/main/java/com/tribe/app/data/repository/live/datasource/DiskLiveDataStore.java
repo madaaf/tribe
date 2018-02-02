@@ -3,10 +3,12 @@ package com.tribe.app.data.repository.live.datasource;
 import android.util.Pair;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
+import com.tribe.app.data.realm.UserPlayingRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.domain.entity.UserPlaying;
 import java.util.List;
 import java.util.Map;
 import rx.Observable;
@@ -24,7 +26,7 @@ public class DiskLiveDataStore
     return null;
   }
 
-  @Override public Observable<Room> createRoom(String name, String[] userIds) {
+  @Override public Observable<Room> createRoom(String name, String gameId) {
     return null;
   }
 
@@ -62,6 +64,10 @@ public class DiskLiveDataStore
 
   @Override public Observable<Map<String, Boolean>> onlineMap() {
     return liveCache.onlineMap();
+  }
+
+  @Override public Observable<Map<String, UserPlayingRealm>> playingMap() {
+    return liveCache.playingMap();
   }
 
   @Override public Observable<Map<String, Boolean>> liveMap() {

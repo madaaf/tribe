@@ -5,8 +5,10 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextThemeWrapper;
@@ -400,5 +402,49 @@ public final class DialogFactory {
         LabelType.CHANGE_PICTURE));
 
     return moreTypeList;
+  }
+
+  public static Observable<LabelType> showBottomSheetForLeaving(Context context, Game game,
+      int nbInRoom) {
+    return createBottomSheet(context, generateLabelsForLeaving(context, game, nbInRoom));
+  }
+
+  private static List<LabelType> generateLabelsForLeaving(Context context, Game game,
+      int nbInRoom) {
+    List<LabelType> gameLabels = new ArrayList<>();
+
+    if (nbInRoom == 1 && game != null) {
+      LabelType labelType = new LabelType(context.getString(R.string.hangup_popup_action_stop_game),
+          LabelType.STOP_GAME_SOLO);
+      labelType.setColor(ContextCompat.getColor(context, R.color.red));
+      labelType.setTypeface(Typeface.BOLD);
+      gameLabels.add(labelType);
+    } else if (nbInRoom == 1 && game == null) {
+      gameLabels.add(getLeaveCallLabel(context));
+    } else if (nbInRoom > 1 && game != null) {
+      LabelType labelType = new LabelType(context.getString(R.string.hangup_popup_action_stop_game),
+          LabelType.GAME_STOP);
+      labelType.setColor(ContextCompat.getColor(context, R.color.blue_voice_bck));
+      gameLabels.add(labelType);
+
+      gameLabels.add(getLeaveCallLabel(context));
+    } else if (nbInRoom > 1 && game == null) {
+      gameLabels.add(getLeaveCallLabel(context));
+    }
+
+    LabelType labelType = new LabelType(context.getString(R.string.action_cancel), LabelType.CANCEL);
+    labelType.setColor(ContextCompat.getColor(context, R.color.blue_voice_bck));
+    labelType.setTypeface(Typeface.BOLD);
+    gameLabels.add(labelType);
+
+    return gameLabels;
+  }
+
+  private static LabelType getLeaveCallLabel(Context context) {
+    LabelType labelType = new LabelType(context.getString(R.string.hangup_popup_action_leave_call),
+        LabelType.LEAVE_ROOM);
+    labelType.setColor(ContextCompat.getColor(context, R.color.red));
+    labelType.setTypeface(Typeface.BOLD);
+    return labelType;
   }
 }

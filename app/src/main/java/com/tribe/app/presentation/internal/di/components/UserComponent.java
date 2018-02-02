@@ -12,6 +12,9 @@ import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
+import com.tribe.app.presentation.view.activity.GameDetailsActivity;
+import com.tribe.app.presentation.view.activity.GameMembersActivity;
+import com.tribe.app.presentation.view.activity.GameStoreActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
@@ -24,7 +27,6 @@ import com.tribe.app.presentation.view.activity.ViewStackActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionTokenView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
-import com.tribe.app.presentation.view.component.games.GamesMembersView;
 import com.tribe.app.presentation.view.component.games.GamesStoreView;
 import com.tribe.app.presentation.view.component.games.LeaderboardDetailsView;
 import com.tribe.app.presentation.view.component.games.LeaderboardMainView;
@@ -227,15 +229,19 @@ import dagger.Component;
 
   void inject(GameEngine gameEngine);
 
-  void inject(NewGameActivity newGameActivity);
+  void inject(GameStoreActivity newGameActivity);
 
   void inject(GamesStoreView gamesStoreView);
-
-  void inject(GamesMembersView gamesMembersView);
 
   void inject(LeaderboardActivity leaderboardActivity);
 
   void inject(LeaderboardMainView leaderboardMainView);
 
   void inject(LeaderboardDetailsView leaderboardDetailsView);
+
+  void inject(GameDetailsActivity gameDetailsActivity);
+
+  void inject(NewGameActivity newGameActivity);
+
+  void inject(GameMembersActivity gameMembersActivity);
 }

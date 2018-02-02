@@ -13,7 +13,7 @@ import rx.Observable;
 public class CreateRoom extends UseCase {
 
   private String name;
-  private String[] userIds;
+  private String gameId;
   private LiveRepository liveRepository;
 
   @Inject public CreateRoom(CloudLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
@@ -22,12 +22,12 @@ public class CreateRoom extends UseCase {
     this.liveRepository = liveRepository;
   }
 
-  public void setup(String name) {
+  public void setup(String name, String gameId) {
     this.name = name;
-    this.userIds = new String[0];
+    this.gameId = gameId;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.liveRepository.createRoom(name, userIds);
+    return this.liveRepository.createRoom(name, gameId);
   }
 }

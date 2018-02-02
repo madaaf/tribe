@@ -18,7 +18,7 @@ public interface LiveRepository {
 
   Observable<Room> getRoom(Live live);
 
-  Observable<Room> createRoom(String name, String... userIds);
+  Observable<Room> createRoom(String name, String gameId);
 
   Observable<Room> updateRoom(String roomId, List<Pair<String, String>> pairList);
 

@@ -1,21 +1,21 @@
 package com.tribe.app.presentation.view.adapter.delegate.gamesfilters;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
@@ -24,7 +24,12 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
+import eightbitlab.com.blurview.BlurView;
+import eightbitlab.com.blurview.RenderScriptBlur;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -35,6 +40,7 @@ import rx.subjects.PublishSubject;
 public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
 
   protected static final int DURATION = 100;
+  protected static final int DURATION_MOVING = 2500;
   protected static final float OVERSHOOT_LIGHT = 0.45f;
 
   @Inject ScreenUtils screenUtils;
@@ -44,6 +50,8 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
   protected Context context;
   protected LayoutInflater layoutInflater;
   private int radius;
+  private GradientDrawable gradientDrawable;
+  private Map<String, ValueAnimator> mapAnimator;
 
   protected PublishSubject<View> click = PublishSubject.create();
 
@@ -54,7 +62,8 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
 
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
 
-    radius = screenUtils.dpToPx(6);
+    radius = screenUtils.dpToPx(10);
+    mapAnimator = new HashMap<>();
   }
 
   @Override public boolean isForViewType(@NonNull List<Game> items, int position) {
@@ -66,15 +75,40 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     final GameViewHolder vh =
         new GameViewHolder(layoutInflater.inflate(R.layout.item_game, parent, false));
 
-    float[] radiusMatrix = new float[] { 0, 0, 0, 0, radius, radius, radius, radius };
-    GradientDrawable sd = new GradientDrawable();
-    sd.setColor(ContextCompat.getColor(context, R.color.white_opacity_15));
-    sd.setCornerRadii(radiusMatrix);
-    ViewCompat.setBackground(vh.viewBackgroundBottom, sd);
+    float radius = 5;
+
+    vh.viewBlur.setupWith((ViewGroup) vh.itemView)
+        .blurAlgorithm(new RenderScriptBlur(context))
+        .blurRadius(radius);
 
     vh.cardView.setOnClickListener(v -> click.onNext(vh.itemView));
 
+    animateImgX(vh.imgAnimation1);
+    animateImgX(vh.imgAnimation2);
+    animateImgX(vh.imgAnimation3);
+
     return vh;
+  }
+
+  private void animateImgX(ImageView imgAnimation) {
+    int rdm = new Random().nextInt(5) - 2;
+
+    ValueAnimator animator = mapAnimator.get(imgAnimation.getId());
+    if (animator != null) {
+      animator.cancel();
+    }
+
+    animator = ValueAnimator.ofInt(0, screenUtils.dpToPx(rdm));
+    animator.setDuration(DURATION_MOVING);
+    animator.setInterpolator(new DecelerateInterpolator());
+    animator.setRepeatCount(ValueAnimator.INFINITE);
+    animator.setRepeatMode(ValueAnimator.REVERSE);
+    animator.addUpdateListener(animation -> {
+      int translation = (int) animation.getAnimatedValue();
+      imgAnimation.setTranslationX(translation);
+      imgAnimation.setTranslationY(translation);
+    });
+    animator.start();
   }
 
   @Override public void onBindViewHolder(@NonNull List<Game> items, int position,
@@ -91,7 +125,6 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     ViewCompat.setBackground(vh.viewBackground, gd);
 
     vh.txtBaseline.setText(game.getBaseline());
-    vh.txtTitle.setText(game.getTitle());
 
     new GlideUtils.GameImageBuilder(context, screenUtils).url(game.getIcon())
         .hasBorder(true)
@@ -100,11 +133,22 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
         .target(vh.imgIcon)
         .load();
 
-    Glide.with(context)
-        .load(game.getBanner())
-        .thumbnail(0.25f)
-        .diskCacheStrategy(DiskCacheStrategy.RESULT)
-        .into(vh.imgBanner);
+    Glide.with(context).load(game.getLogo()).into(vh.imgLogo);
+
+    for (int i = 0; i < game.getAnimation_icons().size(); i++) {
+      String url = game.getAnimation_icons().get(i);
+      ImageView imageView = null;
+
+      if (i == 0) {
+        imageView = vh.imgAnimation1;
+      } else if (i == 1) {
+        imageView = vh.imgAnimation2;
+      } else if (i == 2) {
+        imageView = vh.imgAnimation3;
+      }
+
+      Glide.with(context).load(url).into(imageView);
+    }
 
     if (game.isFeatured()) {
       vh.txtInfo.setText(R.string.new_game_featured);
@@ -126,14 +170,16 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
   static class GameViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.viewBackground) View viewBackground;
-    @BindView(R.id.viewBackgroundBottom) View viewBackgroundBottom;
     @BindView(R.id.imgIcon) ImageView imgIcon;
-    @BindView(R.id.imgBanner) ImageView imgBanner;
-    @BindView(R.id.txtTitle) TextViewFont txtTitle;
+    @BindView(R.id.imgLogo) ImageView imgLogo;
     @BindView(R.id.txtBaseline) TextViewFont txtBaseline;
     @BindView(R.id.txtInfo) TextViewFont txtInfo;
     @BindView(R.id.txtPlayCount) TextViewFont txtPlayCount;
     @BindView(R.id.cardView) CardView cardView;
+    @BindView(R.id.imgAnimation1) ImageView imgAnimation1;
+    @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
+    @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
+    @BindView(R.id.viewBlur) BlurView viewBlur;
 
     public GameViewHolder(View itemView) {
       super(itemView);

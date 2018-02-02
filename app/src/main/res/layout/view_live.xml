@@ -49,11 +49,17 @@
       android:id="@+id/layoutScoresOverLive"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_margin="@dimen/horizontal_margin"
       android:orientation="vertical"
       android:visibility="gone"
-      android:layout_margin="@dimen/horizontal_margin">
+      >
 
-
+    <com.tribe.app.presentation.view.component.live.LiveRowViewAddFriend
+        android:id="@+id/viewLiveAddFriend"
+        android:layout_width="@dimen/avatar_size_smaller"
+        android:layout_height="@dimen/avatar_size_smaller"
+        android:layout_marginTop="7.5dp"
+        />
   </LinearLayout>
 
   <com.tribe.app.presentation.view.component.live.LiveRingingView

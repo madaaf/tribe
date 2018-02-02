@@ -23,7 +23,7 @@
     <RelativeLayout
         android:id="@+id/notification"
         android:layout_width="match_parent"
-        android:layout_height="67dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="top"
         android:layout_marginBottom="@dimen/horizontal_margin"
         android:layout_marginEnd="@dimen/horizontal_margin_small"
@@ -31,8 +31,11 @@
         android:layout_marginTop="@dimen/vertical_margin"
         android:background="@drawable/shape_rect_rounded_5_white"
         android:elevation="10dp"
+        android:minHeight="67dp"
+        android:paddingBottom="10dp"
         android:paddingLeft="@dimen/horizontal_margin_small"
         android:paddingRight="@dimen/horizontal_margin_small"
+        android:paddingTop="10dp"
         >
 
       <com.tribe.app.presentation.view.widget.avatar.NewAvatarView

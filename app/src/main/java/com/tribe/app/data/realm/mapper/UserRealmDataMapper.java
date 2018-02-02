@@ -2,8 +2,11 @@ package com.tribe.app.data.realm.mapper;
 
 import android.content.Context;
 import com.tribe.app.data.realm.MediaRealm;
+import com.tribe.app.data.realm.UserPlayingRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.domain.entity.UserPlaying;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.chat.model.Media;
 import com.tribe.tribelivesdk.game.Game;
@@ -62,6 +65,19 @@ import javax.inject.Singleton;
       user.setTimeInCall(userRealm.getTimeInCall());
       user.setPushNotif(userRealm.isPushNotif());
       user.setIsOnline(userRealm.isOnline());
+
+      if (userRealm.isPlaying() != null) {
+        UserPlayingRealm userPlayingRealm = userRealm.isPlaying();
+        UserPlaying userPlaying =
+            new UserPlaying(userPlayingRealm.getRoom_id(), userPlayingRealm.getGame_id());
+        if (!StringUtils.isEmpty(userPlayingRealm.getGame_id())) {
+          Game game = gameManager.getGameById(userPlayingRealm.getGame_id());
+          userPlaying.setEmoji(game.getEmoji());
+          userPlaying.setTitle(game.getTitle());
+        }
+        user.setPlaying(userPlaying);
+      }
+
       user.setIsLive(userRealm.isLive());
       user.setLastSeenAt(userRealm.getLastSeenAt());
       user.setRandom_banned_until(userRealm.getRandom_banned_until());
@@ -87,9 +103,8 @@ import javax.inject.Singleton;
 
       if (gameManager.getGames() != null) {
         for (Game game : gameManager.getGames()) {
-          if (game.getFriendLeader() != null && game.getFriendLeader()
-              .getId()
-              .equals(user.getId())) {
+          if (game.getFriendLeader() != null &&
+              game.getFriendLeader().getId().equals(user.getId())) {
             emojis.add(game.getEmoji());
           }
         }
@@ -211,6 +226,10 @@ import javax.inject.Singleton;
       userRealm.setPushNotif(user.isPushNotif());
       userRealm.setMute_online_notif(user.isMute_online_notif());
       userRealm.setIsOnline(user.isOnline());
+      UserPlayingRealm userPlayingRealm = new UserPlayingRealm();
+      userPlayingRealm.setGame_id(user.isPlaying().getGame_id());
+      userPlayingRealm.setRoom_id(user.isPlaying().getRoom_id());
+      userRealm.setIsPlaying(userPlayingRealm);
       userRealm.setIsLive(user.isLive());
       userRealm.setTimeInCall(user.getTimeInCall());
       userRealm.setLastSeenAt(user.getLastSeenAt());

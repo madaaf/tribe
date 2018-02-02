@@ -674,8 +674,9 @@ public class GameTriviaView extends GameViewWithRanking {
   }
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    super.start(game, mapObservable, liveViewsObservable, userId);
+    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
 
     currentMasterId = userId;
 

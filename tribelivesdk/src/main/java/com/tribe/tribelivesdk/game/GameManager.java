@@ -10,6 +10,7 @@ import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -94,6 +95,13 @@ import rx.subscriptions.CompositeSubscription;
         }
       }
     }
+
+    Collections.sort(gameList, (o1, o2) -> {
+      int res = ((Boolean) o2.isFeatured()).compareTo(o1.isFeatured());
+      if (res != 0) return res;
+
+      return ((Integer) o2.getPlays_count()).compareTo(o1.getPlays_count());
+    });
   }
 
   public void initSubscriptions() {

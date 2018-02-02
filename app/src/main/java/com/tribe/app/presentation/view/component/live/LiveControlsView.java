@@ -470,7 +470,7 @@ public class LiveControlsView extends FrameLayout {
     AnimationUtils.fadeOut(btnFilterOn, DURATION_GAMES_FILTERS);
   }
 
-  private ImageView addGameToView(View viewFrom) {
+  private ImageView addGameToView(View viewFrom, Game newGame) {
     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(sizeGameFilter, sizeGameFilter);
     params.bottomMargin = screenUtils.dpToPx(5);
     params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
@@ -491,8 +491,7 @@ public class LiveControlsView extends FrameLayout {
 
             showActiveGame(viewFrom != null);
 
-            new GlideUtils.GameImageBuilder(getContext(), screenUtils).url(
-                gameManager.getCurrentGame().getIcon())
+            new GlideUtils.GameImageBuilder(getContext(), screenUtils).url(newGame.getIcon())
                 .hasBorder(true)
                 .hasPlaceholder(true)
                 .rounded(true)
@@ -508,7 +507,8 @@ public class LiveControlsView extends FrameLayout {
         .map(aVoid -> gameManager.getCurrentGame())
         .filter(game -> {
           if ((game.getCurrentMaster() != null &&
-              game.getCurrentMaster().getId().equals(user.getId())) || game.getId().equals(Game.GAME_POST_IT)) {
+              game.getCurrentMaster().getId().equals(user.getId())) ||
+              game.getId().equals(Game.GAME_POST_IT)) {
             return true;
           } else {
             Toast.makeText(getContext(), getContext().getString(R.string.game_update_forbidden,
@@ -710,7 +710,7 @@ public class LiveControlsView extends FrameLayout {
 
   public void setupCurrentGameView(Game game, View viewFrom) {
     if (currentGameView == null) {
-      currentGameView = addGameToView(viewFrom);
+      currentGameView = addGameToView(viewFrom, game);
     }
   }
 
@@ -767,7 +767,7 @@ public class LiveControlsView extends FrameLayout {
   public Observable<Boolean> onOpenInvite() {
     return viewStatusName.onOpenView().doOnNext(aBoolean -> {
       invitesMenuOn = true;
-      showMenuTop(viewToHideTopInvites);
+      if (gameManager.getCurrentGame() == null) showMenuTop(viewToHideTopInvites);
 
       int width = viewStatusName.getNewWidth();
 
@@ -782,7 +782,7 @@ public class LiveControlsView extends FrameLayout {
   public Observable<Boolean> onCloseInvite() {
     return viewStatusName.onCloseView().doOnNext(aBoolean -> {
       invitesMenuOn = false;
-      closeMenuTop(viewToHideTopInvites);
+      if (gameManager.getCurrentGame() == null) closeMenuTop(viewToHideTopInvites);
 
       viewStatusName.animate()
           .translationX(0)

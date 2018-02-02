@@ -236,7 +236,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     Timber.d("iLost");
     if (game == null || gameEngine == null) return;
 
-    if (gameEngine.mapPlayerStatus.size() > 1 && roundPoints > 0) {
+    if (roundPoints > 0) {
       onAddScore.onNext(Pair.create(game.getId(), roundPoints));
     }
 
@@ -279,7 +279,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
       if (player.getId().equals(currentUser.getId())) {
         showMessage(getResources().getString(
-            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "you_won")), 250, null,
+            StringUtils.stringWithPrefix(getContext(), wordingPrefix,
+                gameEngine.mapPlayerStatus.size() > 1 ? "you_won" : "you_lost")), 250, null,
             () -> becomeGameMaster());
       } else {
         showMessage(getResources().getString(
@@ -411,7 +412,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
       gameEngine.start();
 
       if (gameEngine.mapPlayerStatus.size() <= 1) {
-        if (txtRestart != null) {
+        if (txtRestart != null && invitedMap.size() > 0) {
           txtRestart.setText(
               StringUtils.stringWithPrefix(getContext(), wordingPrefix, "waiting_instructions"));
           changeMessageStatus(txtRestart, true, true, DURATION, 0, null, null);
@@ -611,9 +612,10 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
    */
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     Timber.d("start : " + userId);
-    super.start(game, mapObservable, liveViewsObservable, userId);
+    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
 
     txtRestart = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsRestart =

@@ -5,6 +5,7 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import java.util.List;
 
 /**
  * Created by tiago on 04/05/2016.
@@ -24,7 +25,6 @@ public class GameRealm extends RealmObject {
   private String title;
   private String baseline;
   private String icon;
-  private String banner;
   private String primary_color;
   private String secondary_color;
   private int plays_count;
@@ -35,6 +35,9 @@ public class GameRealm extends RealmObject {
   private RealmList<ScoreRealm> overall_score;
   private String emoji;
   private ScoreUserRealm friendLeaderScoreUser;
+  private String logo;
+  private String background;
+  private RealmList<AnimationIconRealm> animated_icons;
 
   @Ignore private ScoreRealm friendLeader;
   @Ignore RealmList<ScoreRealm> scores;
@@ -109,14 +112,6 @@ public class GameRealm extends RealmObject {
 
   public void setIcon(String icon) {
     this.icon = icon;
-  }
-
-  public String getBanner() {
-    return banner;
-  }
-
-  public void setBanner(String banner) {
-    this.banner = banner;
   }
 
   public String getPrimary_color() {
@@ -205,5 +200,29 @@ public class GameRealm extends RealmObject {
 
   public ScoreUserRealm getFriendLeaderScoreUser() {
     return friendLeaderScoreUser;
+  }
+
+  public String getLogo() {
+    return logo;
+  }
+
+  public void setLogo(String logo) {
+    this.logo = logo;
+  }
+
+  public String getBackground() {
+    return background;
+  }
+
+  public void setBackground(String background) {
+    this.background = background;
+  }
+
+  public List<AnimationIconRealm> getAnimation_icons() {
+    return animated_icons;
+  }
+
+  public void setAnimation_icons(RealmList<AnimationIconRealm> animation_icons) {
+    this.animated_icons = animation_icons;
   }
 }

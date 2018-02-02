@@ -1,5 +1,6 @@
 package com.tribe.app.data.cache;
 
+import com.tribe.app.data.realm.UserPlayingRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
@@ -16,6 +17,10 @@ import rx.Observable;
 
   Map<String, Boolean> getOnlineMap();
 
+  Observable<Map<String, UserPlayingRealm>> playingMap();
+
+  Map<String, UserPlayingRealm> getPlayingMap();
+
   Observable<Map<String, Boolean>> liveMap();
 
   Map<String, Boolean> getLiveMap();
@@ -23,6 +28,10 @@ import rx.Observable;
   void putOnline(String id);
 
   void removeOnline(String id);
+
+  void putPlaying(String id, UserPlayingRealm userPlayingRealm);
+
+  void removePlaying(String id);
 
   void putLive(String id);
 

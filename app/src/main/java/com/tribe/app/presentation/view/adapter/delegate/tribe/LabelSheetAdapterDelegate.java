@@ -23,6 +23,7 @@ import rx.subjects.PublishSubject;
 public class LabelSheetAdapterDelegate extends RxAdapterDelegate<List<LabelType>> {
 
   protected LayoutInflater layoutInflater;
+  protected Context context;
 
   // RX SUBSCRIPTIONS / SUBJECTS
   private final PublishSubject<View> clickLabelItem = PublishSubject.create();
@@ -30,6 +31,7 @@ public class LabelSheetAdapterDelegate extends RxAdapterDelegate<List<LabelType>
   public LabelSheetAdapterDelegate(Context context) {
     this.layoutInflater =
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    this.context = context;
   }
 
   @Override public boolean isForViewType(@NonNull List<LabelType> items, int position) {
@@ -55,6 +57,11 @@ public class LabelSheetAdapterDelegate extends RxAdapterDelegate<List<LabelType>
 
     vh.txtView.setText(labelType.getLabel());
     vh.txtView.setTag(R.id.tag_position, position);
+
+    if (labelType.getColor() != -1) vh.txtView.setTextColor(labelType.getColor());
+    if (labelType.getTypeface() != -1) {
+      vh.txtView.setTypeface(vh.txtView.getTypeface(), labelType.getTypeface());
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<LabelType> items,

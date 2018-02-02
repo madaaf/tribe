@@ -31,8 +31,8 @@
       android:layout_gravity="right|top"
       android:layout_marginEnd="10dp"
       android:layout_marginTop="5dp"
-      android:foreground="@drawable/selectable_button_oval"
       android:clickable="true"
+      android:foreground="@drawable/selectable_button_oval"
       android:scaleType="centerInside"
       android:src="@drawable/picto_leave_live"
       />
@@ -152,7 +152,7 @@
           android:background="@drawable/selectable_button_oval_light"
           android:clickable="true"
           android:scaleType="centerInside"
-          android:src="@drawable/picto_game_inactive"
+          android:src="@drawable/picto_btn_game"
           android:visibility="visible"
           />
     </LinearLayout>

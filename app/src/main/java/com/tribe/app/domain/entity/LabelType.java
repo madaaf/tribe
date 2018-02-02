@@ -11,9 +11,9 @@ import java.lang.annotation.RetentionPolicy;
 public class LabelType implements Serializable {
 
   @StringDef({
-      SET_AS_ADMIN, REMOVE_FROM_GROUP, REMOVE_FROM_ADMIN, BLOCK, BLOCK_GROUP, CANCEL, OPEN_CAMERA, OPEN_PHOTOS,
-      CLEAR_MESSAGES, HIDE, BLOCK_HIDE, TRIBE_SAVE, TRIBE_INCREASE_SPEED, TRIBE_DECREASE_SPEED,
-      UNHIDE
+      SET_AS_ADMIN, REMOVE_FROM_GROUP, REMOVE_FROM_ADMIN, BLOCK, BLOCK_GROUP, CANCEL, OPEN_CAMERA,
+      OPEN_PHOTOS, CLEAR_MESSAGES, HIDE, BLOCK_HIDE, TRIBE_SAVE, TRIBE_INCREASE_SPEED,
+      TRIBE_DECREASE_SPEED, UNHIDE
   }) @Retention(RetentionPolicy.SOURCE) public @interface GenericTypeDef {
   }
 
@@ -75,8 +75,13 @@ public class LabelType implements Serializable {
   public static final String GAME_RESET_SCORES = "gameResetScores";
   public static final String GAME_STOP = "gameStop";
 
+  public static final String LEAVE_ROOM = "leaveRoom";
+  public static final String STOP_GAME_SOLO = "stopGameSolo";
+
   private @GenericTypeDef String typeDef;
   private String label;
+  private int color = -1;
+  private int typeface = -1;
 
   public LabelType(String label, String typeDef) {
     this.label = label;
@@ -93,6 +98,22 @@ public class LabelType implements Serializable {
 
   public String getTypeDef() {
     return typeDef;
+  }
+
+  public void setColor(int color) {
+    this.color = color;
+  }
+
+  public void setTypeface(int typeface) {
+    this.typeface = typeface;
+  }
+
+  public int getTypeface() {
+    return typeface;
+  }
+
+  public int getColor() {
+    return color;
   }
 
   @Override public int hashCode() {

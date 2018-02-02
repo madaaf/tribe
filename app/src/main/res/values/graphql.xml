@@ -160,10 +160,51 @@
             push_notif
             mute_online_notif
             is_online
+            is_playing {
+              game_id
+              room_id
+            }
             last_seen_at
             time_in_call
             random_banned_permanently
   	        random_banned_until
+        }
+    </string>
+
+  <string name="userfragment.infos.with.games" translatable="false">
+        fragment UserInfos on User {
+            id
+            phone
+            fbid
+            invisible_mode
+            username
+            display_name
+            picture
+            created_at
+            push_notif
+            mute_online_notif
+            is_online
+            is_playing {
+              game_id
+              room_id
+            }
+            last_seen_at
+            time_in_call
+            random_banned_permanently
+  	        random_banned_until
+            scores {
+              ranking
+              game {
+                id
+              }
+              value
+              user {
+                id
+                display_name
+                picture
+                username
+              }
+            }
         }
     </string>
 
@@ -177,6 +218,10 @@
       display_name
       picture
       is_online
+      is_playing {
+        game_id
+        room_id
+      }
       scores {
         ranking
         game {
@@ -481,13 +526,17 @@
   </string>
 
   <string name="createRoom" translatable="false">
-    createRoom %1$s {
+    createRoom (room : {%1$s}) {
       ...RoomInfos
     }
   </string>
 
   <string name="createRoom.name" translatable="false">
     name : \"%1$s\"
+  </string>
+
+  <string name="createRoom.gameId" translatable="false">
+    game_id : \"%1$s\"
   </string>
 
   <string name="updateRoom" translatable="false">
@@ -659,17 +708,19 @@
       title
       baseline
       icon
-      banner
       primary_color
       secondary_color
       plays_count
-
+      logo
+      background
+      animation_icons
       emoji
       friendLeader {
         user {
           id
           display_name
         }
+        value
       }
 
       __typename

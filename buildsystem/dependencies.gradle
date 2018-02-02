@@ -62,9 +62,9 @@ ext {
   recyclerViewAnimatorsVersion = '2.2.4'
   branchIoVersion = '2.12.1'
   timberVersion = '4.4.0'
-  blurKitVersion = '1.0.0'
+  blurViewVersion = '1.3.4'
   rxAppStateVersion = '2.0.0'
-  webSocketVersion = '1.31'
+  webSocketVersion = '2.3'
   easyRSVersion = '0.5.3'
   guavaVersion = '19.0'
   flexboxVersion = '0.2.5'
@@ -140,7 +140,7 @@ ext {
                               recyclerViewAnimators   : "jp.wasabeef:recyclerview-animators:${recyclerViewAnimatorsVersion}",
                               branchIo                : "io.branch.sdk.android:library:${branchIoVersion}",
                               timber                  : "com.jakewharton.timber:timber:${timberVersion}",
-                              blurKit                 : "com.wonderkiln:blurkit:${blurKitVersion}",
+                              blurView                : "com.eightbitlab:blurview:${blurViewVersion}",
                               rxAppState              : "com.jenzz:RxAppState:${rxAppStateVersion}",
                               webSocket               : "com.neovisionaries:nv-websocket-client:${webSocketVersion}",
                               flexbox                 : "com.google.android:flexbox:${flexboxVersion}",

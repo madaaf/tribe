@@ -14,7 +14,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
-import com.tribe.app.presentation.view.adapter.model.Header;
+import com.tribe.app.presentation.view.adapter.model.HeaderModel;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import rx.Observable;
@@ -43,9 +43,9 @@ public class LiveInviteHeaderAdapterDelegate
 
   @Override public boolean isForViewType(@NonNull List<LiveInviteAdapterSectionInterface> items,
       int position) {
-    if (items.get(position) instanceof Header) {
-      return !items.get(position).getId().equals(Header.HEADER_ONLINE) &&
-          !items.get(position).getId().equals(Header.HEADER_RECENT);
+    if (items.get(position) instanceof HeaderModel) {
+      return !items.get(position).getId().equals(HeaderModel.HEADER_ONLINE) &&
+          !items.get(position).getId().equals(HeaderModel.HEADER_RECENT);
     }
 
     return false;
@@ -60,7 +60,7 @@ public class LiveInviteHeaderAdapterDelegate
   @Override
   public void onBindViewHolder(@NonNull List<LiveInviteAdapterSectionInterface> items, int position,
       @NonNull RecyclerView.ViewHolder holder) {
-    Header header = (Header) items.get(position);
+    HeaderModel header = (HeaderModel) items.get(position);
     LiveInviteHeaderViewHolder vh = (LiveInviteHeaderViewHolder) holder;
     vh.imgPicto.setImageResource(header.getResourceDrawableId());
     vh.txtLabel.setText(header.getResourceTxtId());
@@ -78,7 +78,7 @@ public class LiveInviteHeaderAdapterDelegate
       vh.txtLabel.setLayoutParams(params);
     }
 
-    if (header.getId().equals(Header.HEADER_NAME)) {
+    if (header.getId().equals(HeaderModel.HEADER_NAME)) {
       vh.imgPicto.setOnClickListener(v -> onClickEdit.onNext(vh.itemView));
     }
   }
