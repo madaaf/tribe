@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Handler;
@@ -26,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -140,6 +140,45 @@ public class GameBirdRushBackground extends View {
     canvas.drawBitmap(splashBtm, null, dstSplash2, null);
   }
 
+  public static float randFloat(float min, float max) {
+    Random r = new Random();
+    return min + r.nextFloat() * (max - min);
+  }
+
+  private float updateAngle(BirdRushObstacle b) {
+    float angle = b.getBirdRotation().getAngle();
+    float currentAngle = b.getBirdRotation().getCurrentRotation();
+
+    if (currentAngle < angle && currentAngle > -angle) {
+      b.getBirdRotation().setCurrentRotation(currentAngle + b.getBirdRotation().getRotationSens());
+    } else {
+      b.getBirdRotation().setRotationSens(b.getBirdRotation().getRotationSens() * -1);
+    }
+
+    return currentAngle;
+  }
+
+  private int yTranslation(BirdRushObstacle b) {
+    if (b.getBirdTranslation() == null) {
+      return 0;
+    }
+    float YMax = b.getBirdTranslation().getY();
+    float currentTran = b.getBirdTranslation().getCurrentTransflation();
+
+    if (currentTran > YMax || currentTran < -YMax) {
+      b.getBirdTranslation().setCoef(b.getBirdTranslation().getCoef() * -1);
+    }
+
+    b.getBirdTranslation().setCurrentTransflation(currentTran + b.getBirdTranslation().getCoef());
+    Timber.e("TRANSLATION "
+        + b.getBirdId()
+        + " "
+        + Math.round(currentTran)
+        + " "
+        + b.getBirdTranslation().getCoef());
+    return Math.round(currentTran);
+  }
+
   private void displayObstacles(Canvas canvas) {
     /**
      *  anim OBSTACLE
@@ -150,6 +189,10 @@ public class GameBirdRushBackground extends View {
 
       rect.set(b.getX(), b.getY(), b.getX() + BirdRushObstacle.wiewWidth,
           Math.round(b.getY() + b.getBirdHeight()));
+
+      canvas.save(Canvas.MATRIX_SAVE_FLAG);
+      Float angle = b.getBirdRotation().getAngle();
+      //canvas.rotate(randFloat(-angle, angle), canvas.getWidth() / 2, canvas.getHeight() / 2);
       canvas.drawBitmap(obstacleBtm, null, rect, null);
 
       if (b.getX() < screenUtils.getWidthPx() / 2) {
@@ -169,12 +212,9 @@ public class GameBirdRushBackground extends View {
           obstaclePoped.getX() + BirdRushObstacle.wiewWidth,
           Math.round(obstaclePoped.getY() + obstaclePoped.getBirdHeight()));
       obstaclePopedList.put(obstaclePoped, dstObsc);
-      obstaclePoped = null;
-
-      Matrix rotator = new Matrix();
-      // rotate around (0,0)
-      rotator.postRotate(90);
       canvas.drawBitmap(obstacleBtm, null, dstObsc, null);
+
+      obstaclePoped = null;
     }
   }
 
@@ -231,8 +271,10 @@ public class GameBirdRushBackground extends View {
   }
 
   private void gameOver() {
-   /* stop();
-    onGameOver.onNext(null);*/
+    /*
+    stop();
+    onGameOver.onNext(null);
+    */
   }
 
   private void moveBackBackground() {
@@ -244,7 +286,7 @@ public class GameBirdRushBackground extends View {
     for (Map.Entry<BirdRushObstacle, Rect> entry : obstaclePopedList.entrySet()) {
       BirdRushObstacle o = entry.getKey();
       o.setX(o.getX() - speedPx);
-      o.setY(o.getY());
+      o.setY(o.getY() + yTranslation(o));
     }
   }
 
@@ -343,6 +385,7 @@ public class GameBirdRushBackground extends View {
         }));
 
     subscriptions.add(Observable.interval(0, 100, TimeUnit.MILLISECONDS)
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(this::popObstacles));
   }
@@ -466,7 +509,7 @@ public class GameBirdRushBackground extends View {
     setTimer();
   }
 
-  public void stop() { // List<BirdRushobstaclesListObstacle>
+  public void stop() { // reset Timer ? the background scroll seems to be 2 faster
     pause = true;
     Timber.e("SOEF BACKGROUND  stop ");
 

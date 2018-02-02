@@ -167,7 +167,6 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     subscriptionsSession.add(
         ((GameBirdRushEngine) gameEngine).onObstacle().subscribe(generateObstacleList -> {
-          Timber.e("SOEF send to peer obtsacle " + getObstaclePayload(generateObstacleList));
           webRTCRoom.sendToPeers(getObstaclePayload(generateObstacleList), true);
           viewBackground.addObstacles(generateObstacleList);
         }));

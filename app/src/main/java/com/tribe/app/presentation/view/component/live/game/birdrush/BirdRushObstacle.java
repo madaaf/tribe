@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
+import android.animation.ValueAnimator;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.Random;
 import java.util.UUID;
@@ -35,6 +36,7 @@ public class BirdRushObstacle {
   private Translation translation; // en px
   private Rotation rotation;
   private int viewHeight = 0;
+  private ValueAnimator animator;
 
   private int x;
   private int y;
@@ -47,6 +49,7 @@ public class BirdRushObstacle {
     this.speed = obstacleSpeed(level);
     this.translation = translation(level);
     this.viewHeight = Math.round(height * heightScreen);
+    this.rotation = rotation(level);
 
     this.x = widthScreen + wiewWidth; // intial position: end of the screen
     this.y = heightScreen - Math.round((startYPos() * heightScreen) + (viewHeight / 2));
@@ -61,6 +64,14 @@ public class BirdRushObstacle {
   }
 
   private void init() {
+  }
+
+  public ValueAnimator getAnimator() {
+    return animator;
+  }
+
+  public void setAnimator(ValueAnimator animator) {
+    this.animator = animator;
   }
 
   public void setViewHeight(int viewHeight) {
@@ -92,7 +103,8 @@ public class BirdRushObstacle {
   }
 
   private Float startYPos() {
-    return randFloat(0.15f, 0.95f);
+    return 0.5f;
+    //  return randFloat(0.15f, 0.95f);
   }
 
   private Double nextSpawnDelay(GameBirdRushEngine.Level level) {
@@ -223,11 +235,23 @@ public class BirdRushObstacle {
     private Float x;
     private Float y;
     private Double duration;
+    private Float currentTransflation;
+    private int coef;
 
     public Translation(Float x, Float y, Double duration) {
       this.x = x;
       this.y = y;
       this.duration = duration;
+      this.currentTransflation = 0f;
+      this.coef = 1;
+    }
+
+    public int getCoef() {
+      return coef;
+    }
+
+    public void setCoef(int coef) {
+      this.coef = coef;
     }
 
     public Float getX() {
@@ -236,6 +260,14 @@ public class BirdRushObstacle {
 
     public Float getY() {
       return y;
+    }
+
+    public Float getCurrentTransflation() {
+      return currentTransflation;
+    }
+
+    public void setCurrentTransflation(Float currentTransflation) {
+      this.currentTransflation = currentTransflation;
     }
 
     public Double getDuration() {
@@ -250,14 +282,34 @@ public class BirdRushObstacle {
   public static class Rotation {
     private Double duration;
     private Float angle;
+    private Float currentRotation;
+    private int rotationSens;
 
     public Rotation(Float angle, Double duration) {
       this.duration = duration;
       this.angle = angle;
+      this.currentRotation = -angle;
+      this.rotationSens = 1;
     }
 
     public Float getAngle() {
       return angle;
+    }
+
+    public int getRotationSens() {
+      return rotationSens;
+    }
+
+    public void setRotationSens(int rotationSens) {
+      this.rotationSens = rotationSens;
+    }
+
+    public Float getCurrentRotation() {
+      return currentRotation;
+    }
+
+    public void setCurrentRotation(Float currentRotation) {
+      this.currentRotation = currentRotation;
     }
 
     public Double getDuration() {

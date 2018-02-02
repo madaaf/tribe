@@ -46,6 +46,7 @@ public class GameBirdRushEngine extends GameEngine {
   public void popObstcale() {
     if (popIntervalSubscription != null) popIntervalSubscription.unsubscribe();
     popIntervalSubscription = Observable.interval((2000), TimeUnit.MILLISECONDS)
+        .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           generateObstacle(6);

@@ -572,13 +572,6 @@ public class LiveView extends FrameLayout {
     tempSubscriptions.add(webRTCRoom.onJoined()
         .observeOn(AndroidSchedulers.mainThread())
         .doOnNext(tribeJoinRoom -> hasJoined = true)
-        .doOnNext(tribeJoinRoom -> {
-          // TODO SEE WITH #backend solution to launch game in call roulette
-          if (!StringUtils.isEmpty(live.getGameId()) && !live.getSource()
-              .equals(SOURCE_CALL_ROULETTE) && StringUtils.isEmpty(room.getGameId())) {
-            viewControlsLive.startGame(gameManager.getGameById(live.getGameId()));
-          }
-        })
         .subscribe(onJoined));
 
     tempSubscriptions.add(webRTCRoom.onShouldLeaveRoom().onBackpressureDrop().subscribe(onLeave));
@@ -688,6 +681,13 @@ public class LiveView extends FrameLayout {
     live.getRoom().update(room, false);
 
     webRTCRoom.connect(options);
+
+    // SOEF
+    if (!StringUtils.isEmpty(live.getGameId())
+        && !live.getSource().equals(SOURCE_CALL_ROULETTE)
+        && StringUtils.isEmpty(room.getGameId())) {
+      viewControlsLive.startGame(gameManager.getGameById(live.getGameId()));
+    }
   }
 
   public void initDrawerEventChangeObservable(Observable<Integer> obs) {
@@ -767,8 +767,8 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    if (live.getSource().equals(SOURCE_CALL_ROULETTE) ||
-        live.getRoom() != null && live.getRoom().acceptsRandom()) {
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || live.getRoom() != null && live.getRoom()
+        .acceptsRandom()) {
       viewControlsLive.btnChat.setVisibility(INVISIBLE);
       viewRinging.setVisibility(INVISIBLE);
     }
