@@ -29,6 +29,7 @@ public class BirdRushObstacle {
   private final String ROTATION_ANGLE = "angle";
 
   private String id;
+  private int index;
   private Double nextSpawn;
   private Float start; // position Y ratio
   private Float height;
@@ -64,6 +65,14 @@ public class BirdRushObstacle {
   }
 
   private void init() {
+  }
+
+  public int getIndex() {
+    return index;
+  }
+
+  public void setIndex(int index) {
+    this.index = index;
   }
 
   public ValueAnimator getAnimator() {
@@ -103,8 +112,7 @@ public class BirdRushObstacle {
   }
 
   private Float startYPos() {
-    return 0.5f;
-    //  return randFloat(0.15f, 0.95f);
+    return randFloat(0.15f, 0.95f);
   }
 
   private Double nextSpawnDelay(GameBirdRushEngine.Level level) {

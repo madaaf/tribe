@@ -149,12 +149,12 @@ public class GameBirdRushBackground extends View {
     float angle = b.getBirdRotation().getAngle();
     float currentAngle = b.getBirdRotation().getCurrentRotation();
 
-    if (currentAngle < angle && currentAngle > -angle) {
-      b.getBirdRotation().setCurrentRotation(currentAngle + b.getBirdRotation().getRotationSens());
-    } else {
+    if (!(currentAngle <= angle && currentAngle >= -angle)) {
       b.getBirdRotation().setRotationSens(b.getBirdRotation().getRotationSens() * -1);
     }
 
+    b.getBirdRotation().setCurrentRotation(currentAngle + b.getBirdRotation().getRotationSens());
+    Timber.e("UPDATE ANGLE " + currentAngle + " " + b.getBirdId());
     return currentAngle;
   }
 
@@ -165,10 +165,9 @@ public class GameBirdRushBackground extends View {
     float YMax = b.getBirdTranslation().getY();
     float currentTran = b.getBirdTranslation().getCurrentTransflation();
 
-    if (currentTran > YMax || currentTran < -YMax) {
+    if (!(currentTran < YMax && currentTran > -YMax)) {
       b.getBirdTranslation().setCoef(b.getBirdTranslation().getCoef() * -1);
     }
-
     b.getBirdTranslation().setCurrentTransflation(currentTran + b.getBirdTranslation().getCoef());
     Timber.e("TRANSLATION "
         + b.getBirdId()
@@ -187,13 +186,15 @@ public class GameBirdRushBackground extends View {
       BirdRushObstacle b = entry.getKey();
       Rect rect = entry.getValue();
 
-      rect.set(b.getX(), b.getY(), b.getX() + BirdRushObstacle.wiewWidth,
+      rect.set(b.getX(), b.getY() + 100, b.getX() + BirdRushObstacle.wiewWidth,
           Math.round(b.getY() + b.getBirdHeight()));
 
       canvas.save(Canvas.MATRIX_SAVE_FLAG);
-      Float angle = b.getBirdRotation().getAngle();
-      //canvas.rotate(randFloat(-angle, angle), canvas.getWidth() / 2, canvas.getHeight() / 2);
+      int pivotX = b.getX() + (BirdRushObstacle.wiewWidth / 2);
+      int pivotY = b.getY() + (b.getBirdHeight() / 2);
+      canvas.rotate(updateAngle(b), pivotX, pivotY);
       canvas.drawBitmap(obstacleBtm, null, rect, null);
+      canvas.restore();
 
       if (b.getX() < screenUtils.getWidthPx() / 2) {
         if (!crossObstacle.contains(b.getBirdId())) {
@@ -207,6 +208,8 @@ public class GameBirdRushBackground extends View {
      *  add OBSTACLE
      */
     if (obstaclePoped != null) {
+      obstaclePoped.setIndex(index);
+      index++;
       Timber.e("SOEF T DISPLAY obstPoped " + obstaclePoped.getX() + " " + obstaclePoped.getY());
       dstObsc = new Rect(obstaclePoped.getX(), obstaclePoped.getY(),
           obstaclePoped.getX() + BirdRushObstacle.wiewWidth,
@@ -217,6 +220,8 @@ public class GameBirdRushBackground extends View {
       obstaclePoped = null;
     }
   }
+
+  int index = 1;
 
   private void displayBirds(Canvas canvas) {
     /**
