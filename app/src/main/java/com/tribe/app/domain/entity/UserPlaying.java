@@ -1,10 +1,12 @@
 package com.tribe.app.domain.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by tiago on 01/02/2018.
  */
 
-public class UserPlaying {
+public class UserPlaying implements Serializable {
 
   private String room_id;
   private String game_id;

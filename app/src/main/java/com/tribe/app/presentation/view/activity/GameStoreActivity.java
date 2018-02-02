@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -20,12 +21,14 @@ import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.UserPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.LastSync;
@@ -69,6 +72,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   private Scheduler singleThreadExecutor;
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
+  private boolean receiverRegistered = false;
+  private TribeBroadcastReceiver notificationReceiver;
 
   // RESOURCES
 
@@ -104,6 +109,24 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     super.onResume();
     startService(WSService.
         getCallingIntent(this, null, null));
+
+    if (!receiverRegistered) {
+      if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
+
+      registerReceiver(notificationReceiver,
+          new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
+
+      receiverRegistered = true;
+    }
+  }
+
+  @Override protected void onPause() {
+    if (receiverRegistered) {
+      unregisterReceiver(notificationReceiver);
+      receiverRegistered = false;
+    }
+
+    super.onPause();
   }
 
   @Override protected void onStop() {
@@ -174,7 +197,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   @Override protected void initSubscriptions() {
     super.initSubscriptions();
 
-    subscriptions.add(onUser.subscribeOn(singleThreadExecutor).map(user -> {
+    subscriptions.add(onUser.onBackpressureBuffer().subscribeOn(singleThreadExecutor).map(user -> {
       boolean hasLive = false, hasNewMessage = false;
       for (Recipient recipient : user.getRecipientList()) {
         if (recipient instanceof Invite) {

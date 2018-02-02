@@ -621,7 +621,7 @@ public class CloudUserDataStore implements UserDataStore {
 
           if (shortcutRealm.isSingle()) {
             UserRealm member = shortcutRealm.getSingleFriend();
-            if (member.isPlaying() != null) {
+            if (member.isPlaying() != null && member.isPlaying().getGame_id() != null) {
               liveCache.putPlaying(member.getId(), member.isPlaying());
             } else {
               liveCache.removePlaying(member.getId());

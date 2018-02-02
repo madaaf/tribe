@@ -33,6 +33,8 @@ public class NotificationPayload implements Serializable {
   public static final String ACTION_LEFT = "left";
   public static final String CLICK_ACTION_GAME_LEADER = "game_friend_leader";
   public static final String BODY_NEW_MESSAGE = "New message";
+  public static final String CLICK_ACTION_GAME_SCORE = "game_score";
+  public static final String CLICK_ACTION_GAME_LIVE = "live-game";
 
   private String user_id;
   private String body;

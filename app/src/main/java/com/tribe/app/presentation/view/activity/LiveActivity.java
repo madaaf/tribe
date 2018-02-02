@@ -1171,7 +1171,7 @@ public class LiveActivity extends BaseActivity
     notificationPayload.setUserDisplayName(user.getDisplayName());
     notificationPayload.setUserPicture(user.getProfilePicture());
     notificationPayload.setBody(getString(R.string.leaderboard_new_high_score));
-    notificationPayload.setClickAction(NotificationPayload.CLICK_ACTION_GAME_LEADER);
+    notificationPayload.setClickAction(NotificationPayload.CLICK_ACTION_GAME_SCORE);
     notificationReceiver.computeNotificationPayload(this, notificationPayload);
   }
 

@@ -37,12 +37,12 @@ public class NotificationUtils {
       return builder.build();
     }
 
-    if ((notificationPayload.getClickAction() == null && StringUtils.isEmpty(
-        notificationPayload.getBody())) || notificationPayload.getClickAction()
-        .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+    if ((notificationPayload.getClickAction() == null &&
+        StringUtils.isEmpty(notificationPayload.getBody())) ||
+        notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       return null;
-    } else if (notificationPayload.getClickAction() == null && !StringUtils.isEmpty(
-        notificationPayload.getBody())) {
+    } else if (notificationPayload.getClickAction() == null &&
+        !StringUtils.isEmpty(notificationPayload.getBody())) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       return builder.build();
     }
@@ -54,10 +54,23 @@ public class NotificationUtils {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       builder.sound(SoundManager.FRIEND_ONLINE);
       liveNotificationView = builder.build();
-    } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_GAME_LEADER)) {
+    } else if (notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_GAME_LEADER)) {
       // A friend beat the best score
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       builder.sound(SoundManager.GAME_FRIEND_LEADER);
+      liveNotificationView = builder.build();
+    } else if (notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_GAME_SCORE)) {
+      // I beat my own score
+      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+      builder.sound(SoundManager.GAME_SCORE);
+      liveNotificationView = builder.build();
+    } else if (notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_GAME_LIVE)) {
+      // A friend is challenging to a game
+      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+      builder.sound(SoundManager.GAME_CHALLENGING);
       liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
       // A friend entered live - 1o1
@@ -166,6 +179,7 @@ public class NotificationUtils {
     return new PayloadMissedCallAction(notificationPayload.getUserId(),
         notificationPayload.getUserDisplayName(), notificationPayload.getUserPicture(),
         notificationPayload.getClickAction(), notificationPayload.getBody(),
-        notificationPayload.getTime(), notificationPayload.getTitle(), notificationPayload.getSessionId());
+        notificationPayload.getTime(), notificationPayload.getTitle(),
+        notificationPayload.getSessionId());
   }
 }

@@ -4,7 +4,6 @@ import android.util.Pair;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
@@ -96,15 +95,14 @@ import timber.log.Timber;
               UserRealm userRealm = gson.fromJson(entry.getValue().toString(), UserRealm.class);
               userRealm.setJsonPayloadUpdate(jo);
 
-              if (jo.has("random_banned_until") &&
-                  !(jo.get("random_banned_until") instanceof JsonNull)) {
+              if (jo.has("random_banned_until") && !jo.get("random_banned_until").isJsonNull()) {
                 String date = jo.get("random_banned_until").getAsString();
                 onRandomBannedUntil.onNext(date);
               }
 
               if (jo.has("is_online")) shouldUpdateOnlineStatus = true;
               if (jo.has("is_playing")) shouldUpdatePlayingStatus = true;
-              if (jo.has("fbid")) {
+              if (jo.has("fbid") && !jo.get("fbid").isJsonNull()) {
                 String fbId = jo.get("fbid").getAsString();
                 User user = new User(jo.get("id").getAsString());
                 user.setFbid(fbId);
