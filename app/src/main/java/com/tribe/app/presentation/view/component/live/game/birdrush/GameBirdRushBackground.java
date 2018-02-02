@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -25,10 +26,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -73,6 +74,8 @@ public class GameBirdRushBackground extends View {
   private CompositeSubscription subscriptionsAnimation = new CompositeSubscription();
   private PublishSubject<Void> onGameOver = PublishSubject.create();
   private PublishSubject<Void> onAddPoint = PublishSubject.create();
+  private Subscription scrollTimer = null;
+  private Subscription engineTimer = null;
 
   public GameBirdRushBackground(@NonNull Context context) {
     super(context);
@@ -140,11 +143,6 @@ public class GameBirdRushBackground extends View {
     canvas.drawBitmap(splashBtm, null, dstSplash2, null);
   }
 
-  public static float randFloat(float min, float max) {
-    Random r = new Random();
-    return min + r.nextFloat() * (max - min);
-  }
-
   private float updateAngle(BirdRushObstacle b) {
     float angle = b.getBirdRotation().getAngle();
     float currentAngle = b.getBirdRotation().getCurrentRotation();
@@ -178,7 +176,7 @@ public class GameBirdRushBackground extends View {
     return Math.round(currentTran);
   }
 
-  private void displayObstacles(Canvas canvas) {
+  @SuppressLint("WrongConstant") private void displayObstacles(Canvas canvas) {
     /**
      *  anim OBSTACLE
      */
@@ -295,7 +293,8 @@ public class GameBirdRushBackground extends View {
     for (Map.Entry<BirdRushObstacle, Rect> entry : obstaclePopedList.entrySet()) {
       BirdRushObstacle o = entry.getKey();
       o.setX(o.getX() - speedPx);
-      o.setY(o.getY() + yTranslation(o));
+      o.setY(o.getY());
+      // o.setY(o.getY() + yTranslation(o));
     }
   }
 
@@ -386,17 +385,21 @@ public class GameBirdRushBackground extends View {
   private void setTimer() {
     Timber.e("SOEF NEW TIMEER RESET");
 
-    subscriptions.add(Observable.interval(0, 16, TimeUnit.MILLISECONDS)
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          startPlaying();
-        }));
+    if (scrollTimer == null) {
+      subscriptions.add(scrollTimer = Observable.interval(0, 16, TimeUnit.MILLISECONDS)
+          .onBackpressureDrop()
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            startPlaying();
+          }));
+    }
 
-    subscriptions.add(Observable.interval(0, 100, TimeUnit.MILLISECONDS)
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(this::popObstacles));
+    if (engineTimer == null) {
+      subscriptions.add(engineTimer = Observable.interval(0, 100, TimeUnit.MILLISECONDS)
+          .onBackpressureDrop()
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(this::popObstacles));
+    }
   }
 
   private void startPlaying() {
@@ -533,8 +536,11 @@ public class GameBirdRushBackground extends View {
   public void dispose() {
     Timber.e("SOEF BACKGROUND  dispose ");
     resetParams();
+    subscriptions.clear();
     subscriptions.unsubscribe();
     subscriptionsAnimation.unsubscribe();
+    scrollTimer = null;
+    engineTimer = null;
   }
 
   public void addObstacles(List<BirdRushObstacle> list) {

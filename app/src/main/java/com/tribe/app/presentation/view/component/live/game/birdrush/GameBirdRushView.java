@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
@@ -42,8 +41,6 @@ public class GameBirdRushView extends GameViewWithEngine {
   private static final String BIRD_KEY_OBSTACLE = "obstacles";
 
   @BindView(R.id.viewBackground) GameBirdRushBackground viewBackground;
-  @BindView(R.id.ok) TextView ok;
-  ;
 
   @Inject ScreenUtils screenUtils;
   @Inject User currentUser;
@@ -95,6 +92,7 @@ public class GameBirdRushView extends GameViewWithEngine {
                   Timber.w("SOEF ACTION NEW GAME");
                 }
                 if (actionKey.equals(BIRD_ACTION_ADD_OBSTACLE)) {
+                  Strinh
                   JSONArray jsonObstacles = message.getJSONArray(BIRD_KEY_OBSTACLE);
                   List<BirdRushObstacle> obstacles = transform(jsonObstacles);
                   viewBackground.addObstacles(obstacles);
@@ -117,7 +115,6 @@ public class GameBirdRushView extends GameViewWithEngine {
                   }
                   String guestId = message.getString(FROM_KEY);
                   PlayerTap playerTap = new PlayerTap(x, y);
-                  // viewBackground.jumpBird();
                   viewBackground.jumpBird(guestId);
                   Timber.e("player tap");
                 } else {
@@ -143,7 +140,6 @@ public class GameBirdRushView extends GameViewWithEngine {
   @Override protected void gameOver(String winnerId, boolean isLocal) {
     Timber.d("SOEF Game Bird Rush Over : " + winnerId);
     super.gameOver(winnerId, isLocal);
-    ok.setVisibility(INVISIBLE);
   }
 
   private void overcomeObstacle() {
@@ -153,11 +149,15 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   protected void playGame() {
-    Timber.d("SOEF playGame");
-    super.playGame();
-    setOnTouchListener(controller);
-    ok.setVisibility(VISIBLE);
-    viewBackground.start();
+    subscriptions.add(Observable.timer((1500), TimeUnit.MILLISECONDS)
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          Timber.d("SOEF playGame");
+          super.playGame();
+          setOnTouchListener(controller);
+          viewBackground.start();
+        }));
   }
 
   @Override protected void startMasterEngine() {
