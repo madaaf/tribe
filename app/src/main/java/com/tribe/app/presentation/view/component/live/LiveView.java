@@ -21,6 +21,7 @@ import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
@@ -37,6 +38,7 @@ import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.app.presentation.view.utils.Degrees;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.DoubleUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -861,8 +863,8 @@ public class LiveView extends FrameLayout {
   }
 
   public int nbInRoom() {
-    if (live.getRoom() == null) return 0;
-    return live.getRoom().nbUsersTotal();
+    if (live.getRoom() == null) return 1;
+    return Math.max(1, live.getRoom().nbUsersTotal());
   }
 
   public boolean shouldLeave() {
@@ -1317,7 +1319,15 @@ public class LiveView extends FrameLayout {
   }
 
   public Observable<Void> onLeave() {
-    return Observable.merge(onLeave, viewControlsLive.onLeave());
+    return Observable.merge(onLeave, viewControlsLive.onLeave()
+        .flatMap(aVoid -> DialogFactory.showBottomSheetForLeaving(getContext(),
+            gameManager.getCurrentGame(), nbInRoom()), (aVoid, labelType) -> labelType)
+        .filter(labelType -> {
+          if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) stopGame();
+          return labelType.getTypeDef().equals(LabelType.STOP_GAME_SOLO) ||
+              labelType.getTypeDef().equals(LabelType.LEAVE_ROOM);
+        })
+        .map(labelType -> null));
   }
 
   public Observable<Void> onScreenshot() {
