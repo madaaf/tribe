@@ -236,7 +236,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     Timber.d("iLost");
     if (game == null || gameEngine == null) return;
 
-    if (gameEngine.mapPlayerStatus.size() > 1 && roundPoints > 0) {
+    if (roundPoints > 0) {
       onAddScore.onNext(Pair.create(game.getId(), roundPoints));
     }
 
@@ -279,7 +279,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
       if (player.getId().equals(currentUser.getId())) {
         showMessage(getResources().getString(
-            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "you_won")), 250, null,
+            StringUtils.stringWithPrefix(getContext(), wordingPrefix,
+                gameEngine.mapPlayerStatus.size() > 1 ? "you_won" : "you_lost")), 250, null,
             () -> becomeGameMaster());
       } else {
         showMessage(getResources().getString(

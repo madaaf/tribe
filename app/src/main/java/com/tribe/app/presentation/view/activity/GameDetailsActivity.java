@@ -81,6 +81,7 @@ public class GameDetailsActivity extends BaseActivity {
   @BindView(R.id.avatarBestScore) ImageView avatarBestScore;
   @BindView(R.id.txtBestScoreScore) TextViewFont txtBestScoreScore;
   @BindView(R.id.txtBestScoreDesc) TextViewFont txtBestScoreDesc;
+  @BindView(R.id.imgConnect) ImageView imgConnect;
 
   // VARIABLES
   private UserComponent userComponent;
@@ -214,7 +215,7 @@ public class GameDetailsActivity extends BaseActivity {
 
     Score score = getCurrentUser().getScoreForGame(game.getId());
     if (score != null) {
-      txtMyScoreScore.setText(score.getValue() + getString(R.string.leaderboards_points));
+      txtMyScoreScore.setText(score.getValue() + " " + getString(R.string.leaderboards_points));
       txtMyScoreDesc.setText(R.string.leaderboards_your_score);
     } else {
       txtMyScoreScore.setText("0 " + getString(R.string.leaderboards_points));
@@ -228,7 +229,7 @@ public class GameDetailsActivity extends BaseActivity {
 
     if (game.getFriendLeader() != null) {
       int leaderScore = game.getFriendLeader().getScoreValue();
-      txtBestScoreScore.setText(leaderScore + getString(R.string.leaderboards_points));
+      txtBestScoreScore.setText(leaderScore + " " + getString(R.string.leaderboards_points));
       txtBestScoreDesc.setText(R.string.leaderboards_score);
 
       new GlideUtils.Builder(this).url(game.getFriendLeader().getPicture())
@@ -311,6 +312,8 @@ public class GameDetailsActivity extends BaseActivity {
       set.clear(R.id.cardAvatarBestScore, ConstraintSet.TOP);
       set.connect(R.id.cardAvatarBestScore, ConstraintSet.BOTTOM, R.id.imgConnect,
           ConstraintSet.TOP);
+    } else {
+
     }
 
     animateLayoutWithConstraintSet(set, null);
@@ -361,7 +364,7 @@ public class GameDetailsActivity extends BaseActivity {
     // TODO open leaderboards
   }
 
-  @OnClick(R.id.btnSingle) void openLive () {
+  @OnClick(R.id.btnSingle) void openLive() {
     navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
   }
 

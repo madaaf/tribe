@@ -286,7 +286,7 @@
         android:src="@drawable/picto_connect"
         app:layout_constraintEnd_toEndOf="@id/cardAvatarMyScore"
         app:layout_constraintStart_toStartOf="@id/cardAvatarMyScore"
-        app:layout_constraintTop_toBottomOf="@id/cardAvatarMyScore"
+        app:layout_constraintTop_toBottomOf="parent"
         />
 
     <android.support.v7.widget.CardView
