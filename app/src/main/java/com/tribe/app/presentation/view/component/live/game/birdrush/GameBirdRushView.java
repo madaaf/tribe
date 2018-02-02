@@ -7,7 +7,6 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.google.gson.Gson;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -297,8 +296,9 @@ public class GameBirdRushView extends GameViewWithEngine {
     ArrayList<BirdRushObstacle> listdata = new ArrayList<>();
     if (jArray != null) {
       for (int i = 0; i < jArray.length(); i++) {
-        BirdRushObstacle obj =
-            new Gson().fromJson(String.valueOf(jArray.get(i)), BirdRushObstacle.class);
+        JSONObject json = (JSONObject) jArray.get(i);
+        json.getString("id");
+        BirdRushObstacle obj = BirdRushObstacle.ok(json);
         obj.initParam(screenUtils.getWidthPx(), screenUtils.getHeightPx());
         listdata.add(obj);
       }

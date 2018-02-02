@@ -1,9 +1,9 @@
 package com.tribe.app.presentation.view.component.live.game.birdrush;
 
-import android.animation.ValueAnimator;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.util.Random;
 import java.util.UUID;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -15,18 +15,18 @@ public class BirdRushObstacle {
   public static final String BIRD_OBSTACLE_TAG = "BIRD_OBSTACLE_TAG_";
   public static final int wiewWidth = 75;
 
-  private final String ID_KEY = "id";
-  private final String NEXT_SPAWN_KEY = "nextSpawn";
-  private final String START_RATIO_KEY = "start";
-  private final String HEIGHT_RATIO_KEY = "height";
-  private final String SPEED_KEY = "speed";
-  private final String TRANSLATION_KEY = "translation";
-  private final String TRANSLATION_X = "x";
-  private final String TRANSLATION_Y = "y";
-  private final String TRANSLATION_DURATION = "duration";
-  private final String ROTATION_KEY = "rotation";
-  private final String ROTATION_DURATION = "duration";
-  private final String ROTATION_ANGLE = "angle";
+  private final static String ID_KEY = "id";
+  private final static String NEXT_SPAWN_KEY = "nextSpawn";
+  private final static String START_RATIO_KEY = "start";
+  private final static String HEIGHT_RATIO_KEY = "height";
+  private final static String SPEED_KEY = "speed";
+  private final static String TRANSLATION_KEY = "translation";
+  private final static String TRANSLATION_X = "x";
+  private final static String TRANSLATION_Y = "y";
+  private final static String TRANSLATION_DURATION = "duration";
+  private final static String ROTATION_KEY = "rotation";
+  private final static String ROTATION_DURATION = "duration";
+  private final static String ROTATION_ANGLE = "angle";
 
   private String id;
   private int index;
@@ -37,10 +37,12 @@ public class BirdRushObstacle {
   private Translation translation; // en px
   private Rotation rotation;
   private int viewHeight = 0;
-  private ValueAnimator animator;
 
   private int x;
   private int y;
+
+  public BirdRushObstacle() {
+  }
 
   public BirdRushObstacle(GameBirdRushEngine.Level level, int widthScreen, int heightScreen) {
     this.id = id();
@@ -67,20 +69,40 @@ public class BirdRushObstacle {
   private void init() {
   }
 
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public void setNextSpawn(Double nextSpawn) {
+    this.nextSpawn = nextSpawn;
+  }
+
+  public void setStart(Float start) {
+    this.start = start;
+  }
+
+  public void setHeight(Float height) {
+    this.height = height;
+  }
+
+  public void setSpeed(Float speed) {
+    this.speed = speed;
+  }
+
+  public void setTranslation(Translation translation) {
+    this.translation = translation;
+  }
+
+  public void setRotation(Rotation rotation) {
+    this.rotation = rotation;
+  }
+
   public int getIndex() {
     return index;
   }
 
   public void setIndex(int index) {
     this.index = index;
-  }
-
-  public ValueAnimator getAnimator() {
-    return animator;
-  }
-
-  public void setAnimator(ValueAnimator animator) {
-    this.animator = animator;
   }
 
   public void setViewHeight(int viewHeight) {
@@ -351,6 +373,35 @@ public class BirdRushObstacle {
         + ", rotation="
         + rotation
         + '}';
+  }
+
+  public static BirdRushObstacle ok(JSONObject json) {
+    BirdRushObstacle obstacle = new BirdRushObstacle();
+    try {
+      obstacle.setId(json.getString(ID_KEY));
+      obstacle.setNextSpawn(json.getDouble(NEXT_SPAWN_KEY));
+      obstacle.setHeight(Float.parseFloat(json.getString(HEIGHT_RATIO_KEY)));
+      obstacle.setStart(Float.parseFloat(json.getString(START_RATIO_KEY)));
+      obstacle.setSpeed(Float.parseFloat(json.getString(SPEED_KEY)));
+      json.getJSONObject(TRANSLATION_KEY);
+      if (json.has(TRANSLATION_KEY)) {
+        Float x = Float.parseFloat(json.getJSONObject(TRANSLATION_KEY).getString(TRANSLATION_X));
+        Float y = Float.parseFloat(json.getJSONObject(TRANSLATION_KEY).getString(TRANSLATION_Y));
+        Double duration = json.getJSONObject(TRANSLATION_KEY).getDouble(TRANSLATION_DURATION);
+        Translation t = new Translation(x, y, duration);
+        obstacle.setTranslation(t);
+      }
+      if (json.has(ROTATION_KEY)) {
+        Float angle = Float.parseFloat(json.getJSONObject(ROTATION_KEY).getString(ROTATION_ANGLE));
+        Double duration = json.getJSONObject(ROTATION_KEY).getDouble(ROTATION_DURATION);
+        Rotation r = new Rotation(angle, duration);
+        obstacle.setRotation(r);
+      }
+    } catch (JSONException ex) {
+      ex.printStackTrace();
+    }
+
+    return obstacle;
   }
 
   public JSONObject obstacleAsJSON() {

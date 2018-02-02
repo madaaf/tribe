@@ -154,7 +154,7 @@ public class GameBirdRushBackground extends View {
     }
 
     b.getBirdRotation().setCurrentRotation(currentAngle + b.getBirdRotation().getRotationSens());
-    Timber.e("UPDATE ANGLE " + currentAngle + " " + b.getBirdId());
+
     return currentAngle;
   }
 
@@ -189,12 +189,16 @@ public class GameBirdRushBackground extends View {
       rect.set(b.getX(), b.getY() + 100, b.getX() + BirdRushObstacle.wiewWidth,
           Math.round(b.getY() + b.getBirdHeight()));
 
-      canvas.save(Canvas.MATRIX_SAVE_FLAG);
-      int pivotX = b.getX() + (BirdRushObstacle.wiewWidth / 2);
-      int pivotY = b.getY() + (b.getBirdHeight() / 2);
-      canvas.rotate(updateAngle(b), pivotX, pivotY);
-      canvas.drawBitmap(obstacleBtm, null, rect, null);
-      canvas.restore();
+      if (b.getBirdRotation() != null) {
+        int pivotX = b.getX() + (BirdRushObstacle.wiewWidth / 2);
+        int pivotY = b.getY() + (b.getBirdHeight() / 2);
+        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        canvas.rotate(updateAngle(b), pivotX, pivotY);
+        canvas.drawBitmap(obstacleBtm, null, rect, null);
+        canvas.restore();
+      } else {
+        canvas.drawBitmap(obstacleBtm, null, rect, null);
+      }
 
       if (b.getX() < screenUtils.getWidthPx() / 2) {
         if (!crossObstacle.contains(b.getBirdId())) {
