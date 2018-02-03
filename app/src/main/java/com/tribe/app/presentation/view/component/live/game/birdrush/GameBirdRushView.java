@@ -92,7 +92,33 @@ public class GameBirdRushView extends GameViewWithEngine {
                   Timber.w("SOEF ACTION NEW GAME");
                 }
                 if (actionKey.equals(BIRD_ACTION_ADD_OBSTACLE)) {
-                  Strinh
+
+                  List<BirdRushObstacle> obstascles = new ArrayList<>();
+                  BirdRushObstacle ok = new BirdRushObstacle();
+                  ok.setId("mada");
+                  ok.setHeight(0.28508981759781094f);
+                  ok.setSpeed(0.008f);
+                  ok.setNextSpawn(1.5);
+                  ok.setStart(0.4547898378846361f);
+                  ok.initParam(screenUtils.getWidthPx(), screenUtils.getHeightPx());
+                  obstascles.add(ok);
+                /*  BirdRushObstacle jsonAsObstacle = new BirdRushObstacle();
+                  jsonAsObstacle.setId("mada");
+                  jsonAsObstacle.setHeight(0.28508981759781094f);
+                  jsonAsObstacle.setSpeed(0.008f);
+                  jsonAsObstacle.setNextSpawn(1.5);
+                  jsonAsObstacle.setStart(0.4547898378846361f);
+                  obstacles.add(jsonAsObstacle);*/
+
+                  BirdRushObstacle ok2 = new BirdRushObstacle();
+                  ok2.setId("mada2");
+                  ok2.setHeight(0.28340098775149575f);
+                  ok2.setSpeed(0.008f);
+                  ok2.setNextSpawn(1.5);
+                  ok2.setStart(0.5370698379383871f);
+                  ok2.initParam(screenUtils.getWidthPx(), screenUtils.getHeightPx());
+                  obstascles.add(ok2);
+
                   JSONArray jsonObstacles = message.getJSONArray(BIRD_KEY_OBSTACLE);
                   List<BirdRushObstacle> obstacles = transform(jsonObstacles);
                   viewBackground.addObstacles(obstacles);
@@ -297,9 +323,8 @@ public class GameBirdRushView extends GameViewWithEngine {
     if (jArray != null) {
       for (int i = 0; i < jArray.length(); i++) {
         JSONObject json = (JSONObject) jArray.get(i);
-        json.getString("id");
-        BirdRushObstacle obj = BirdRushObstacle.ok(json);
-        obj.initParam(screenUtils.getWidthPx(), screenUtils.getHeightPx());
+        BirdRushObstacle obj = BirdRushObstacle.jsonAsObstacle(json, screenUtils.getWidthPx(),
+            screenUtils.getHeightPx());
         listdata.add(obj);
       }
     }

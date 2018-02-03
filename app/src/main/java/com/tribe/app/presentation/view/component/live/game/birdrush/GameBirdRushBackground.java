@@ -45,18 +45,10 @@ public class GameBirdRushBackground extends View {
   @Inject ScreenUtils screenUtils;
   @Inject User currentUser;
 
-  private static Bitmap splashBtm = null;
-  private static Bitmap obstacleBtm = null;
-  private static Bitmap birdBtm = null;
-  private static Bitmap nameLabelBtm = null;
+  private static Bitmap splashBtm = null, obstacleBtm = null, birdBtm = null, nameLabelBtm = null;
 
-  private static int screenWidth;
-  private static int screenHeight;
-  private Rect dstSplash;
-  private Rect dstSplash2;
-  private Rect dstObsc;
-  private Rect dstBird;
-  private Rect dstnameLabelBird;
+  private static int screenWidth, screenHeight;
+  private Rect dstSplash, dstSplash2, dstObsc, dstBird, dstnameLabelBird;
 
   private int xScroll = 0, yScroll = 0, xCenterBirdPos, yCenterBirdPos, yInitTranslation;
   private boolean pause = false, displayFirstObstacle = false, entranceBirdFinish = false;
@@ -74,8 +66,7 @@ public class GameBirdRushBackground extends View {
   private CompositeSubscription subscriptionsAnimation = new CompositeSubscription();
   private PublishSubject<Void> onGameOver = PublishSubject.create();
   private PublishSubject<Void> onAddPoint = PublishSubject.create();
-  private Subscription scrollTimer = null;
-  private Subscription engineTimer = null;
+  private Subscription scrollTimer = null, engineTimer = null;
 
   public GameBirdRushBackground(@NonNull Context context) {
     super(context);
@@ -167,13 +158,7 @@ public class GameBirdRushBackground extends View {
       b.getBirdTranslation().setCoef(b.getBirdTranslation().getCoef() * -1);
     }
     b.getBirdTranslation().setCurrentTransflation(currentTran + b.getBirdTranslation().getCoef());
-    Timber.e("TRANSLATION "
-        + b.getBirdId()
-        + " "
-        + Math.round(currentTran)
-        + " "
-        + b.getBirdTranslation().getCoef());
-    return Math.round(currentTran);
+    return b.getBirdTranslation().getCoef();
   }
 
   @SuppressLint("WrongConstant") private void displayObstacles(Canvas canvas) {
@@ -184,7 +169,7 @@ public class GameBirdRushBackground extends View {
       BirdRushObstacle b = entry.getKey();
       Rect rect = entry.getValue();
 
-      rect.set(b.getX(), b.getY() + 100, b.getX() + BirdRushObstacle.wiewWidth,
+      rect.set(b.getX(), b.getY(), b.getX() + BirdRushObstacle.wiewWidth,
           Math.round(b.getY() + b.getBirdHeight()));
 
       if (b.getBirdRotation() != null) {
@@ -293,8 +278,7 @@ public class GameBirdRushBackground extends View {
     for (Map.Entry<BirdRushObstacle, Rect> entry : obstaclePopedList.entrySet()) {
       BirdRushObstacle o = entry.getKey();
       o.setX(o.getX() - speedPx);
-      o.setY(o.getY());
-      // o.setY(o.getY() + yTranslation(o));
+      o.setY(o.getY() + yTranslation(o));
     }
   }
 

@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 public class BirdRushObstacle {
 
-  public static final String BIRD_OBSTACLE_TAG = "BIRD_OBSTACLE_TAG_";
   public static final int wiewWidth = 75;
 
   private final static String ID_KEY = "id";
@@ -38,8 +37,7 @@ public class BirdRushObstacle {
   private Rotation rotation;
   private int viewHeight = 0;
 
-  private int x;
-  private int y;
+  private int x, y;
 
   public BirdRushObstacle() {
   }
@@ -56,14 +54,14 @@ public class BirdRushObstacle {
 
     this.x = widthScreen + wiewWidth; // intial position: end of the screen
     this.y = heightScreen - Math.round((startYPos() * heightScreen) + (viewHeight / 2));
-    // float height = (model.getStart() * screenUtils.getHeightPx() - model.getView().getHeight() / 2);
+
     init();
   }
 
   public void initParam(int widthScreen, int heightScreen) {
-    this.x = widthScreen + wiewWidth;
-    this.y = Math.round(startYPos() * heightScreen - height / 2);
     this.viewHeight = Math.round(height * heightScreen);
+    this.x = widthScreen + wiewWidth;
+    this.y = heightScreen - Math.round((startYPos() * heightScreen) + (viewHeight / 2));
   }
 
   private void init() {
@@ -375,7 +373,8 @@ public class BirdRushObstacle {
         + '}';
   }
 
-  public static BirdRushObstacle ok(JSONObject json) {
+  public static BirdRushObstacle jsonAsObstacle(JSONObject json, int widthScreen,
+      int heightScreen) {
     BirdRushObstacle obstacle = new BirdRushObstacle();
     try {
       obstacle.setId(json.getString(ID_KEY));
@@ -384,6 +383,7 @@ public class BirdRushObstacle {
       obstacle.setStart(Float.parseFloat(json.getString(START_RATIO_KEY)));
       obstacle.setSpeed(Float.parseFloat(json.getString(SPEED_KEY)));
       json.getJSONObject(TRANSLATION_KEY);
+      obstacle.initParam(widthScreen, heightScreen);
       if (json.has(TRANSLATION_KEY)) {
         Float x = Float.parseFloat(json.getJSONObject(TRANSLATION_KEY).getString(TRANSLATION_X));
         Float y = Float.parseFloat(json.getJSONObject(TRANSLATION_KEY).getString(TRANSLATION_Y));

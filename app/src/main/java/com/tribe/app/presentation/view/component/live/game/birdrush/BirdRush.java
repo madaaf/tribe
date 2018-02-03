@@ -13,17 +13,12 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 
 public class BirdRush {
 
-  private ScreenUtils screenUtils;
-
   // VARIABLES
   private String currentUserId;
-  private int index;
   private boolean lost = false;
   private TribeGuest tribeGuest;
-  private String id;
-  private Bitmap bitmap;
-  private Bitmap bitmapBck;
-  private int x, y;
+  private Bitmap bitmap, bitmapBck;
+  private int x, y, index;
   private float speedX, speedY;
 
   private Integer[] birdsImage = new Integer[] {
