@@ -5,6 +5,8 @@ package com.tribe.app.presentation.view.component.live.game.birdrush;
  */
 
 public class PlayerTap {
+  public static final String X = "x";
+  public static final String Y = "x";
 
   private double x;
   private double y;

@@ -36,6 +36,9 @@ import rx.android.schedulers.AndroidSchedulers;
   public static final int TRIVIA_SOUNDTRACK_ANSWER = 11;
   public static final int TRIVIA_SOUNDTRACK = 12;
   public static final int TRIVIA_WON = 13;
+  public static final int BIRD_RUSH_SOUNDTRACK = 14;
+  public static final int BIRD_RUSH_TAP = 15;
+  public static final int BIRD_RUSH_OBSTACLE = 16;
 
   // VARIABLES
   private Context context;
@@ -83,6 +86,9 @@ import rx.android.schedulers.AndroidSchedulers;
     addSound(TRIVIA_SOUNDTRACK_ANSWER, R.raw.trivia_soundtrack_answer);
     addSound(TRIVIA_SOUNDTRACK, R.raw.trivia_soundtrack);
     addSound(TRIVIA_WON, R.raw.trivia_won);
+    addSound(BIRD_RUSH_SOUNDTRACK, R.raw.bird_rush_soundtrack);
+    addSound(BIRD_RUSH_TAP, R.raw.bird_rush_tap);
+    addSound(BIRD_RUSH_OBSTACLE, R.raw.bird_rush_obstacle_1);
   }
 
   public void addSound(int index, int soundID) {
@@ -96,11 +102,12 @@ import rx.android.schedulers.AndroidSchedulers;
   public void playSound(int index, float volumeRate) {
     if (index == NO_SOUND) {
       cancelMediaPlayer();
-    } else if (index == WAITING_FRIEND ||
-        index == CALL_RING ||
-        index == ALIENS_ATTACK_SOUNDTRACK ||
-        index == TRIVIA_SOUNDTRACK ||
-        index == TRIVIA_SOUNDTRACK_ANSWER) {
+    } else if (index == WAITING_FRIEND
+        || index == CALL_RING
+        || index == ALIENS_ATTACK_SOUNDTRACK
+        || index == BIRD_RUSH_SOUNDTRACK
+        || index == TRIVIA_SOUNDTRACK
+        || index == TRIVIA_SOUNDTRACK_ANSWER) {
       if (mediaPlayer != null) cancelMediaPlayer();
 
       mediaPlayer = MediaPlayer.create(context, soundsRawIds.get(index));

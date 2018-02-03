@@ -40,7 +40,7 @@ import timber.log.Timber;
  */
 
 public class GameBirdRushBackground extends View {
-  private static final int speedPx = 7;
+  private static final int speedPx = 5;
 
   @Inject ScreenUtils screenUtils;
   @Inject User currentUser;
@@ -263,10 +263,8 @@ public class GameBirdRushBackground extends View {
   }
 
   private void gameOver() {
-    /*
     stop();
     onGameOver.onNext(null);
-    */
   }
 
   private void moveBackBackground() {
@@ -310,7 +308,12 @@ public class GameBirdRushBackground extends View {
         if (b.getX() >= xCenterBirdPos
             && b.getY() >= yCenterBirdPos
             && finalI == birdList.size() - 1) {
-          entranceBirdFinish = true;
+
+          subscriptions.add(Observable.timer((1000), TimeUnit.MILLISECONDS)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(aLong -> {
+                entranceBirdFinish = true;
+              }));
         }
       }, 300 * i);
     }

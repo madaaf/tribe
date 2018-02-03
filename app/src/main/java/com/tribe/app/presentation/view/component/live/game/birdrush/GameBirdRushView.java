@@ -72,7 +72,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   @Override protected int getSoundtrack() {
-    return SoundManager.ALIENS_ATTACK_SOUNDTRACK;
+    return SoundManager.BIRD_RUSH_SOUNDTRACK;
   }
 
   @Override protected void initWebRTCRoomSubscriptions() {
@@ -121,23 +121,23 @@ public class GameBirdRushView extends GameViewWithEngine {
 
                   JSONArray jsonObstacles = message.getJSONArray(BIRD_KEY_OBSTACLE);
                   List<BirdRushObstacle> obstacles = transform(jsonObstacles);
-                  viewBackground.addObstacles(obstacles);
+                  viewBackground.addObstacles(obstascles);
                   Timber.e("add obstacle : " + obstacles.toString());
                 } else if (actionKey.equals(BIRD_ACTION_PLAYER_TAP)) {
                   double x;
                   double y;
-                  if (message.get("x") instanceof Integer) {
-                    int x1 = (int) message.get("x");
+                  if (message.get(PlayerTap.X) instanceof Integer) {
+                    int x1 = (int) message.get(PlayerTap.X);
                     x = (double) x1;
                   } else {
-                    x = (double) message.get("x");
+                    x = (double) message.get(PlayerTap.X);
                   }
 
-                  if (message.get("y") instanceof Integer) {
-                    int y1 = (int) message.get("y");
+                  if (message.get(PlayerTap.Y) instanceof Integer) {
+                    int y1 = (int) message.get(PlayerTap.Y);
                     y = (double) y1;
                   } else {
-                    y = (double) message.get("y");
+                    y = (double) message.get(PlayerTap.Y);
                   }
                   String guestId = message.getString(FROM_KEY);
                   PlayerTap playerTap = new PlayerTap(x, y);
@@ -170,6 +170,7 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   private void overcomeObstacle() {
     if (!pending) {
+      soundManager.playSound(SoundManager.BIRD_RUSH_OBSTACLE, SoundManager.SOUND_MAX);
       addPoints(1, currentUser.getId(), true);
     }
   }
@@ -244,6 +245,7 @@ public class GameBirdRushView extends GameViewWithEngine {
     }));
 
     subscriptions.add(controller.onTap().subscribe(aVoid -> {
+      soundManager.playSound(SoundManager.BIRD_RUSH_TAP, SoundManager.SOUND_MAX);
       webRTCRoom.sendToPeers(
           getTapPayload(viewBackground.getMyBird().getX(), viewBackground.getMyBird().getY()),
           true);

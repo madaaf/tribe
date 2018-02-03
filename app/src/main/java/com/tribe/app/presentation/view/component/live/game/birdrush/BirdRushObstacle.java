@@ -12,7 +12,7 @@ import org.json.JSONObject;
 
 public class BirdRushObstacle {
 
-  public static final int wiewWidth = 75;
+  public static final int wiewWidth = 65;
 
   private final static String ID_KEY = "id";
   private final static String NEXT_SPAWN_KEY = "nextSpawn";
