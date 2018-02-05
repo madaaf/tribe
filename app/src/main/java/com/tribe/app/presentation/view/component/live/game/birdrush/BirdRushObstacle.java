@@ -35,7 +35,7 @@ public class BirdRushObstacle {
   private Float speed; //
   private Translation translation; // en px
   private Rotation rotation;
-  private int viewHeight = 0;
+  private int viewHeight = 300;
   private boolean isHit = false;
 
   private int x, y;
@@ -54,16 +54,15 @@ public class BirdRushObstacle {
     this.rotation = rotation(level);
 
     this.x = widthScreen + wiewWidth; // intial position: end of the screen
-    this.y = heightScreen - Math.round((startYPos() * heightScreen) + (viewHeight / 2));
+    this.y = heightScreen - Math.round((start * heightScreen) + (viewHeight / 2));
 
     init();
   }
 
-
   public void initParam(int widthScreen, int heightScreen) {
     this.viewHeight = Math.round(height * heightScreen);
     this.x = widthScreen + wiewWidth;
-    this.y = heightScreen - Math.round((startYPos() * heightScreen) + (viewHeight / 2));
+    this.y = heightScreen - Math.round((start * heightScreen) + (viewHeight / 2));
   }
 
   private void init() {
@@ -79,6 +78,10 @@ public class BirdRushObstacle {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getId() {
+    return id;
   }
 
   public void setNextSpawn(Double nextSpawn) {
@@ -233,10 +236,6 @@ public class BirdRushObstacle {
    * PUBLIC
    */
 
-  public String getBirdId() {
-    return id;
-  }
-
   public Double getNextSpawn() {
     return nextSpawn;
   }
@@ -245,16 +244,12 @@ public class BirdRushObstacle {
     return start;
   }
 
-  public int getBirdHeight() {
+  public int getViewHeight() {
     return viewHeight;
   }
 
-  public int getBirdWidth() {
+  public int getViewWidth() {
     return wiewWidth;
-  }
-
-  public Float getRelativeHeight() {
-    return height;
   }
 
   public Float getSpeed() {
@@ -364,22 +359,18 @@ public class BirdRushObstacle {
    */
 
   @Override public String toString() {
-    return "BirdRushObstacle{"
+    return "Obstacle{"
         + "id='"
         + id
         + '\''
-        + ", nextSpawn="
-        + nextSpawn
+        + ", x="
+        + x
+        + ", y="
+        + y
         + ", start="
         + start
-        + ", getRelativeHeight="
-        + height
-        + ", speed="
-        + speed
-        + ", translation="
-        + translation
-        + ", rotation="
-        + rotation
+        + ", view Height"
+        + viewHeight
         + '}';
   }
 
@@ -392,7 +383,6 @@ public class BirdRushObstacle {
       obstacle.setHeight(Float.parseFloat(json.getString(HEIGHT_RATIO_KEY)));
       obstacle.setStart(Float.parseFloat(json.getString(START_RATIO_KEY)));
       obstacle.setSpeed(Float.parseFloat(json.getString(SPEED_KEY)));
-      json.getJSONObject(TRANSLATION_KEY);
       obstacle.initParam(widthScreen, heightScreen);
       if (json.has(TRANSLATION_KEY)) {
         Float x = Float.parseFloat(json.getJSONObject(TRANSLATION_KEY).getString(TRANSLATION_X));

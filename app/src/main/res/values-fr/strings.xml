@@ -967,7 +967,7 @@
 	<string name="leaderboards_title">Classements</string>
 	<string name="leaderboards_score">Meilleur score</string>
 	<string name="leaderboards_your_score">Votre meilleur score</string>
-	<string name="leaderboards_no_score">Pas de score</string>
+	<string name="leaderboards_no_score">-</string>
 	<string name="leaderboards_friends">Amis</string>
 	<string name="leaderboards_overall">Global</string>
 	<string name="leaderboards_point">pt</string>
@@ -996,4 +996,5 @@
 	<string name="new_challenger_popup_other">et un autre</string>
 	<string name="new_challenger_popup_others">et %1$d autres</string>
 	<string name="new_challenger_popup_action_add">AJOUTER AUX CHATS</string>
+	<string name="new_challenger_popup_friends_placeholder"></string>
 </resources>

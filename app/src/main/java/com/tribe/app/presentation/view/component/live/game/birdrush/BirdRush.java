@@ -20,6 +20,7 @@ public class BirdRush {
   private Bitmap bitmap, bitmapBck;
   private int x, y, index;
   private float speedX, speedY;
+  private int rotation = 0;
 
   private Integer[] birdsImage = new Integer[] {
       R.drawable.game_bird1, R.drawable.game_bird2, R.drawable.game_bird3, R.drawable.game_bird4,
@@ -37,6 +38,14 @@ public class BirdRush {
     this.tribeGuest = guest;
     this.y = screenUtils.getHeightPx() / 2;
     this.currentUserId = currentUserId;
+  }
+
+  public int getRotation() {
+    return rotation;
+  }
+
+  public void setRotation(int rotation) {
+    this.rotation = rotation;
   }
 
   public int getX() {

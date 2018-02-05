@@ -49,6 +49,7 @@ public class GameBirdRushEngine extends GameEngine {
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
+          Timber.e("SOEF POP ISTAVLE " + obstacleList.size());
           generateObstacle(6);
           onObstacle.onNext(obstacleList);
         });

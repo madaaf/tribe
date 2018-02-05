@@ -43,7 +43,7 @@ import timber.log.Timber;
  */
 
 public abstract class GameViewWithEngine extends GameViewWithRanking {
-
+  private static final int IOS_RATIO_PX_HEIGHT = 667;
   private static final int DURATION = 250;
   private static final int DELAY = 250;
   private static final float OVERSHOOT = 1.25f;

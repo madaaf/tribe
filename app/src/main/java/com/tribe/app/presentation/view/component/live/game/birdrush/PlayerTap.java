@@ -5,23 +5,12 @@ package com.tribe.app.presentation.view.component.live.game.birdrush;
  */
 
 public class PlayerTap {
-  public static final String X = "x";
-  public static final String Y = "x";
+  public static final String Y = "y";
 
-  private double x;
   private double y;
 
-  public PlayerTap(double x, double y) {
-    this.x = x;
+  public PlayerTap(double y) {
     this.y = y;
-  }
-
-  public double getX() {
-    return x;
-  }
-
-  public void setX(double x) {
-    this.x = x;
   }
 
   public double getY() {
@@ -33,6 +22,6 @@ public class PlayerTap {
   }
 
   @Override public String toString() {
-    return "PlayerTap{" + "x=" + x + ", y=" + y + '}';
+    return "PlayerTap{" + ", y=" + y + '}';
   }
 }

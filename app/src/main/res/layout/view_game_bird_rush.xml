@@ -8,29 +8,6 @@
       android:layout_gravity="center"
       />
 
-  <FrameLayout
-      android:id="@+id/viewBirds"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_gravity="center"
-      />
-
-
-  <View
-      android:layout_width="match_parent"
-      android:layout_height="1px"
-      android:layout_gravity="center"
-      android:background="@color/red"
-      />
-
-
-  <View
-      android:layout_width="1px"
-      android:layout_height="match_parent"
-      android:layout_gravity="center"
-      android:background="@color/red"
-      />
-
 
 </merge>
 
