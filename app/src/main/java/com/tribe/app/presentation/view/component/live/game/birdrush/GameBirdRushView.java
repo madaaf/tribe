@@ -121,7 +121,7 @@ public class GameBirdRushView extends GameViewWithEngine {
 
                   JSONArray jsonObstacles = message.getJSONArray(BIRD_KEY_OBSTACLE);
                   List<BirdRushObstacle> obstacles = transform(jsonObstacles);
-                  viewBackground.addObstacles(obstascles);
+                  viewBackground.addObstacles(obstacles);
                   Timber.e("add obstacle : " + obstacles.toString());
                 } else if (actionKey.equals(BIRD_ACTION_PLAYER_TAP)) {
                   double x;

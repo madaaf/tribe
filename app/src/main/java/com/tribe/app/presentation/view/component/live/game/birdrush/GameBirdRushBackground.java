@@ -45,10 +45,12 @@ public class GameBirdRushBackground extends View {
   @Inject ScreenUtils screenUtils;
   @Inject User currentUser;
 
-  private static Bitmap splashBtm = null, obstacleBtm = null, birdBtm = null, nameLabelBtm = null;
+  private static Bitmap splashBtm = null, obstacleBtm = null, obstacleRedBtm = null, birdBtm = null,
+      nameLabelBtm = null;
 
   private static int screenWidth, screenHeight;
   private Rect dstSplash, dstSplash2, dstObsc, dstBird, dstnameLabelBird;
+  private Paint myBirdPaint;
 
   private int xScroll = 0, yScroll = 0, xCenterBirdPos, yCenterBirdPos, yInitTranslation;
   private boolean pause = false, displayFirstObstacle = false, entranceBirdFinish = false;
@@ -85,12 +87,13 @@ public class GameBirdRushBackground extends View {
   }
 
   private void initView() {
-    if (splashBtm == null) {
-      splashBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdsrush_sky);
-      obstacleBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdrush_obstacle);
-      birdBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_bird1);
-      nameLabelBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_bird_bck);
-    }
+    splashBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdsrush_sky);
+    obstacleBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdrush_obstacle);
+    birdBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_bird1);
+    nameLabelBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_bird_bck);
+    obstacleRedBtm =
+        BitmapFactory.decodeResource(getResources(), R.drawable.game_birdrush_obstacle_red);
+    myBirdPaint = new Paint();
   }
 
   private void initResource() {
@@ -161,6 +164,14 @@ public class GameBirdRushBackground extends View {
     return b.getBirdTranslation().getCoef();
   }
 
+  private void drawObstacleBitmap(Canvas canvas, Rect rect, BirdRushObstacle b) {
+    if (b.isHit()) {
+      canvas.drawBitmap(obstacleRedBtm, null, rect, null);
+    } else {
+      canvas.drawBitmap(obstacleBtm, null, rect, null);
+    }
+  }
+
   @SuppressLint("WrongConstant") private void displayObstacles(Canvas canvas) {
     /**
      *  anim OBSTACLE
@@ -177,10 +188,10 @@ public class GameBirdRushBackground extends View {
         int pivotY = b.getY() + (b.getBirdHeight() / 2);
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
         canvas.rotate(updateAngle(b), pivotX, pivotY);
-        canvas.drawBitmap(obstacleBtm, null, rect, null);
+        drawObstacleBitmap(canvas, rect, b);
         canvas.restore();
       } else {
-        canvas.drawBitmap(obstacleBtm, null, rect, null);
+        drawObstacleBitmap(canvas, rect, b);
       }
 
       if (b.getX() < screenUtils.getWidthPx() / 2) {
@@ -237,8 +248,13 @@ public class GameBirdRushBackground extends View {
       dstnameLabelBird.set(nameXPos - margin, nameYPos, nameXPos + txtWidth + margin,
           nameYPos + screenUtils.dpToPx(30));
 
-      canvas.drawBitmap(birdRush.getBitmap(), null, dstBird, null);
-      canvas.drawBitmap(birdRush.getBackgroundBitmap(), null, dstnameLabelBird, null);
+      if (birdRush.isLost()) {
+        myBirdPaint.setAlpha(255 / 2);
+      } else {
+        myBirdPaint.setAlpha(255);
+      }
+      canvas.drawBitmap(birdRush.getBitmap(), null, dstBird, myBirdPaint);
+      canvas.drawBitmap(birdRush.getBackgroundBitmap(), null, dstnameLabelBird, myBirdPaint);
       canvas.drawText(text, nameXPos, nameYPos + screenUtils.dpToPx(18), paint);
     }
   }
@@ -252,8 +268,7 @@ public class GameBirdRushBackground extends View {
 
         if (o.getX() - o.getBirdWidth() < (screenUtils.getWidthPx() / 2)) {
           if (isBetween(o.getY(), o.getY() + o.getBirdHeight(), myBird.getY())) {
-            obstacleBtm =
-                BitmapFactory.decodeResource(getResources(), R.drawable.game_birdrush_obstacle_red);
+            o.setHit(true);
             displayObstacles(canvas);
             gameOver();
           }
@@ -327,24 +342,20 @@ public class GameBirdRushBackground extends View {
       if (bird.getSpeedY() < 0) {
         bird.setSpeedY(
             bird.getSpeedY() * 2 / 3 + getSpeedTimeDecrease() / 5);  // The character is moving up
-        Timber.e(" SOEF Y MOVING UP " + bird.getSpeedY());
       } else {
         bird.setSpeedY(bird.getSpeedY() + getSpeedTimeDecrease());  // the character is moving down
-        Timber.d(" SOEF Y MOVING DOWN " + bird.getSpeedY());
       }
 
       if (bird.getSpeedY() > getMaxSpeed()) {
         bird.setSpeedY(getMaxSpeed());  // speed limit
-        Timber.w(" SOEF Y LIMIT " + bird.getSpeedY());
       }
-
+      Timber.e("BIRD FALL " + Math.round(bird.getY() + bird.getSpeedY()));
       bird.setY(Math.round(bird.getY() + bird.getSpeedY()));
     }
   }
 
   public void jumpBird(String guestId) {
     BirdRush b = getBird(guestId);
-    Timber.i(" SOEF Y JUMP " + b.getSpeedY());
     b.setSpeedY(getTabSpeed());
     b.setY(b.getY() + getPosTabIncrease());
   }
@@ -390,15 +401,17 @@ public class GameBirdRushBackground extends View {
   }
 
   private void startPlaying() {
+    Timber.e("SOEF start playing: pause  =" + pause + " entranceBirdFinish=" + entranceBirdFinish);
     if (!pause) {
       if (!entranceBirdFinish) {
         startBirds();
       } else {
         moveBackBackground();
         moveObstacleList();
+        moveBirds();
       }
     }
-    if (entranceBirdFinish) moveBirds();
+    // if (entranceBirdFinish) moveBirds();
 
     invalidate();
   }
@@ -485,7 +498,7 @@ public class GameBirdRushBackground extends View {
   private void initBirdPosition(BirdRush birdRush) {
     int yPos =
         (screenHeight / 2) - (birdBtm.getHeight() / 2) - screenUtils.dpToPx(10) + yInitTranslation;
-    int xPos = -birdBtm.getWidth();
+    int xPos = -2 * birdBtm.getWidth();
     birdRush.setX(xPos);
     birdRush.setY(yPos);
   }
@@ -505,19 +518,24 @@ public class GameBirdRushBackground extends View {
 
   public void start() {
     pause = false;
+    /*
+    entranceBirdFinish = false;
+    scrollTimer = null;
+    engineTimer = null;*/
+    resetParams();
     setTimer();
   }
 
   public void stop() { // reset Timer ? the background scroll seems to be 2 faster
     pause = true;
     Timber.e("SOEF BACKGROUND  stop ");
+    clearObstacles();
+    invalidate();
+  }
 
-    subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          clearObstacles();
-          invalidate();
-        }));
+  private void killBird() {
+    BirdRush b = getMyBird();
+    b.setLost(true);
   }
 
   public void dispose() {
@@ -548,6 +566,8 @@ public class GameBirdRushBackground extends View {
     displayFirstObstacle = false;
     subscriptions.clear();
     crossObstacle.clear();
+    engineTimer = null;
+    scrollTimer = null;
 
     for (BirdRush b : birdList) {
       initBirdPosition(b);

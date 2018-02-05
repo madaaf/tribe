@@ -36,6 +36,7 @@ public class BirdRushObstacle {
   private Translation translation; // en px
   private Rotation rotation;
   private int viewHeight = 0;
+  private boolean isHit = false;
 
   private int x, y;
 
@@ -58,6 +59,7 @@ public class BirdRushObstacle {
     init();
   }
 
+
   public void initParam(int widthScreen, int heightScreen) {
     this.viewHeight = Math.round(height * heightScreen);
     this.x = widthScreen + wiewWidth;
@@ -65,6 +67,14 @@ public class BirdRushObstacle {
   }
 
   private void init() {
+  }
+
+  public boolean isHit() {
+    return isHit;
+  }
+
+  public void setHit(boolean hit) {
+    isHit = hit;
   }
 
   public void setId(String id) {

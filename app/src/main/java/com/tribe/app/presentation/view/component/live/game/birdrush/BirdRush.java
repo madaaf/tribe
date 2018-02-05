@@ -63,6 +63,10 @@ public class BirdRush {
     return lost;
   }
 
+  public void setLost(boolean lost) {
+    this.lost = lost;
+  }
+
   public float getSpeedX() {
     return speedX;
   }
