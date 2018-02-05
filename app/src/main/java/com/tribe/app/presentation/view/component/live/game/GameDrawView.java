@@ -184,14 +184,17 @@ public class GameDrawView extends GameView {
 
   @Override protected void initWebRTCRoomSubscriptions() {
     subscriptionsRoom.add(webRTCRoom.onPointsDrawReceived()
+        .onBackpressureBuffer()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(s -> onPointsDrawReceived(s)));
 
     subscriptionsRoom.add(webRTCRoom.onClearDrawReceived()
+        .onBackpressureLatest()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aVoid -> onClearDrawReceived()));
 
     subscriptionsRoom.add(webRTCRoom.onNewDrawReceived()
+        .onBackpressureLatest()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(datas -> {
           TribeGuest guestChallenged = null;

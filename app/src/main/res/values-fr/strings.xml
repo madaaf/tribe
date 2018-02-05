@@ -946,7 +946,7 @@
 	<string name="new_game_plays">%1$s parties jouées</string>
 	<string name="new_game_new">Nouveau</string>
 	<string name="new_game_featured">À la une</string>
-	<string name="new_game_dice_title">Joueurs aléatoire</string>
+	<string name="new_game_dice_title">Joueurs aléatoires</string>
 	<string name="new_game_dice_subtitle">Rencontrez de nouveaux joueurs !</string>
 	<string name="new_game_suggest">Suggérer un jeu</string>
 	<string name="new_game_cancelled">Votre sélection (%1$s) a été annulée car un jeu est déjà en cours.</string>
@@ -967,7 +967,7 @@
 	<string name="leaderboards_title">Classements</string>
 	<string name="leaderboards_score">Meilleur score</string>
 	<string name="leaderboards_your_score">Votre meilleur score</string>
-	<string name="leaderboards_no_score">Pas de score</string>
+	<string name="leaderboards_no_score">-</string>
 	<string name="leaderboards_friends">Amis</string>
 	<string name="leaderboards_overall">Global</string>
 	<string name="leaderboards_point">pt</string>
