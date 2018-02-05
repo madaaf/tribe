@@ -144,10 +144,10 @@ public class RecyclerMessageView extends IChat {
       Timber.i("old zendesk ticket :" + supportIdPref.get());
       getCommentZendesk();
     } else {
-      Timber.i("initZendesk supportUserIdPref: "
-          + supportUserIdPref.get()
-          + " ticket: "
-          + supportIdPref.get());
+      Timber.i("initZendesk supportUserIdPref: " +
+          supportUserIdPref.get() +
+          " ticket: " +
+          supportIdPref.get());
     }
   }
 
@@ -287,9 +287,9 @@ public class RecyclerMessageView extends IChat {
 
       for (User user : shortcut.getMembers()) {
         if (lastSeenListId.contains(user.getId())) {
-          lastSeenString +=
-              user.getDisplayName().substring(0, 1).toUpperCase() + user.getDisplayName()
-                  .substring(1) + ", ";
+          lastSeenString += user.getDisplayName().substring(0, 1).toUpperCase() +
+              user.getDisplayName().substring(1) +
+              ", ";
         }
       }
 
@@ -299,13 +299,13 @@ public class RecyclerMessageView extends IChat {
     }));
 
     subscriptions.add(messageAdapter.onLongClickItem().subscribe(m -> {
-      Timber.i("on long click message " + dateUtils.getDiffDate(m.getCreationDate(),
-          dateUtils.getUTCDateAsString()));
+      Timber.i("on long click message " +
+          dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString()));
       boolean enableUnsendMessage = false;
-      if (!m.getType().equals(MESSAGE_EVENT)
-          && m.getAuthor().getId().equals(user.getId())
-          && dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString())
-          < MAX_DURATION_MIN_DELETE_MESSAGE) {
+      if (!m.getType().equals(MESSAGE_EVENT) &&
+          m.getAuthor().getId().equals(user.getId()) &&
+          dateUtils.getDiffDate(m.getCreationDate(), dateUtils.getUTCDateAsString()) <
+              MAX_DURATION_MIN_DELETE_MESSAGE) {
         enableUnsendMessage = true;
       }
       subscriptions.add(
@@ -374,9 +374,10 @@ public class RecyclerMessageView extends IChat {
   }
 
   private boolean allowGetMessageSupport() {
-    return (!homeSupportIsAlreadyUsed() && shortcut.getTypeSupport().equals(Conversation.TYPE_HOME))
-        || (!suggestedGameIsAlreadyUsed() && shortcut.getTypeSupport()
-        .equals(Conversation.TYPE_SUGGEST_GAME));
+    return (!homeSupportIsAlreadyUsed() &&
+        shortcut.getTypeSupport().equals(Conversation.TYPE_HOME)) ||
+        (!suggestedGameIsAlreadyUsed() &&
+            shortcut.getTypeSupport().equals(Conversation.TYPE_SUGGEST_GAME));
   }
 
   @Override protected void onAttachedToWindow() {
@@ -502,7 +503,7 @@ public class RecyclerMessageView extends IChat {
 
   public void setShortcut(Shortcut shortcut) {
     this.shortcut = shortcut;
-    if (shortcut.isSupport()) initZendesk();
+    if (this.shortcut != null && this.shortcut.isSupport()) initZendesk();
   }
 
   /**
@@ -595,9 +596,9 @@ public class RecyclerMessageView extends IChat {
         if (messageAdapter.getItems().isEmpty()) {
           unreadMessage.add(m);
           addAnimation = false;
-        } else if ((!messageAdapter.getItems().contains(m)
-            && !messageAdapter.getItems().isEmpty()
-            && !supportAuthorIdIsMe(m))) {
+        } else if ((!messageAdapter.getItems().contains(m) &&
+            !messageAdapter.getItems().isEmpty() &&
+            !supportAuthorIdIsMe(m))) {
           unreadMessage.add(m);
           addAnimation = true;
         }

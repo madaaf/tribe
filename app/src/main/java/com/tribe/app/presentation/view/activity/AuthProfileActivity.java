@@ -326,10 +326,10 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
           getString(R.string.onboarding_user_alert_call_link_facebook), null)
           .filter(x -> x == true)
           .subscribe(
-              a -> navigator.navigateToGameStoreNewGame(this)));
+              a -> navigator.navigateToGameStoreLogin(this)));
     } else {
       tagSignUp();
-      navigator.navigateToGameStoreNewGame(this);
+      navigator.navigateToGameStoreLogin(this);
     }
   }
 

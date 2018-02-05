@@ -197,6 +197,7 @@ public class GameChallengesView extends GameView {
 
   @Override protected void initWebRTCRoomSubscriptions() {
     subscriptions.add(webRTCRoom.onNewChallengeReceived()
+        .onBackpressureLatest()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(datas -> {
           TribeGuest guestChallenged = null;

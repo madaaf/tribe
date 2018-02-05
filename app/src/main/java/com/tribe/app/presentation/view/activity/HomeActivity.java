@@ -612,91 +612,90 @@ public class HomeActivity extends BaseActivity
           }
         }));
 
-    subscriptions.add(
-        Observable.combineLatest(onRecipientUpdates.onBackpressureBuffer(), onNewContactsOnApp,
-            onNewContactsInvite, onNewContactsFBInvite, onSupportUpdate,
-            (recipientList, contactsOnApp, contactsInvite, contactsFBInvite, support) -> {
-              List<HomeAdapterInterface> finalList = new ArrayList<>();
+    subscriptions.add(Observable.combineLatest(onRecipientUpdates.onBackpressureLatest(),
+        onNewContactsOnApp.onBackpressureLatest(), onNewContactsInvite.onBackpressureLatest(),
+        onNewContactsFBInvite.onBackpressureLatest(), onSupportUpdate.onBackpressureLatest(),
+        (recipientList, contactsOnApp, contactsInvite, contactsFBInvite, support) -> {
+          List<HomeAdapterInterface> finalList = new ArrayList<>();
 
-              if (!support.isRead()) {
-                finalList.add(support);
-              } else {
-                recipientList.add(support);
-              }
-
-              Set<String> addedUsers = new HashSet<>();
-
-              int realFriendsCount = 0;
-
-              for (Recipient recipient : recipientList) {
-                if (recipient instanceof Invite || !recipient.isLive()) {
-                  finalList.add(recipient);
-                }
-
-                if (recipient instanceof Shortcut) {
-                  Shortcut shortcut = (Shortcut) recipient;
-                  if (shortcut.isSingle()) {
-                    realFriendsCount++;
-                    addedUsers.add(shortcut.getSingleFriend().getId());
-                  }
-                }
-              }
-
-              Bundle bundle = new Bundle();
-              bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, realFriendsCount);
-              tagManager.setProperty(bundle);
-
-              for (Contact contact : contactsOnApp) {
-                if (contact.getUserList() != null && contact.getUserList().size() > 0) {
-                  User user = contact.getUserList().get(0);
-                  if (!addedUsers.contains(user.getId())) finalList.add(user);
-                }
-              }
-
-              if (!FacebookUtils.isLoggedIn()) {
-                finalList.add(new Contact(Contact.FACEBOOK_ID));
-              }
-
-              if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
-                finalList.add(new Contact(Contact.ADDRESS_BOOK_ID));
-              }
-
-              finalList.addAll(contactsInvite);
-              finalList.addAll(contactsFBInvite);
-              List<HomeAdapterInterface> refactordList = new ArrayList<>();
-
-              for (HomeAdapterInterface u : finalList) {
-                if (!refactordList.contains(u)) {
-                  refactordList.add(u);
-                }
-              }
-
-              return refactordList;
-            }).subscribeOn(singleThreadExecutor).
-            map(recipientList -> {
-              DiffUtil.DiffResult diffResult = null;
-              List<HomeAdapterInterface> temp = new ArrayList<>();
-              temp.addAll(recipientList);
-              ListUtils.addEmptyItemsHome(temp);
-              if (latestRecipientList.size() != 0) {
-                diffResult =
-                    DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
-                homeGridAdapter.setItems(temp);
-              }
-
-              latestRecipientList.clear();
-              latestRecipientList.addAll(temp); // TODO #2
-              return diffResult;
-            }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
-          if (diffResult != null) {
-            diffResult.dispatchUpdatesTo(homeGridAdapter);
-            layoutManager.scrollToPositionWithOffset(0, 0);
+          if (!support.isRead()) {
+            finalList.add(support);
           } else {
-            homeGridAdapter.setItems(latestRecipientList);
-            homeGridAdapter.notifyDataSetChanged();
-            if (latestRecipientList.size() != 0) layoutManager.scrollToPositionWithOffset(0, 0);
+            recipientList.add(support);
           }
-        }));
+
+          Set<String> addedUsers = new HashSet<>();
+
+          int realFriendsCount = 0;
+
+          for (Recipient recipient : recipientList) {
+            if (recipient instanceof Invite || !recipient.isLive()) {
+              finalList.add(recipient);
+            }
+
+            if (recipient instanceof Shortcut) {
+              Shortcut shortcut = (Shortcut) recipient;
+              if (shortcut.isSingle()) {
+                realFriendsCount++;
+                addedUsers.add(shortcut.getSingleFriend().getId());
+              }
+            }
+          }
+
+          Bundle bundle = new Bundle();
+          bundle.putInt(TagManagerUtils.USER_FRIENDS_COUNT, realFriendsCount);
+          tagManager.setProperty(bundle);
+
+          for (Contact contact : contactsOnApp) {
+            if (contact.getUserList() != null && contact.getUserList().size() > 0) {
+              User user = contact.getUserList().get(0);
+              if (!addedUsers.contains(user.getId())) finalList.add(user);
+            }
+          }
+
+          if (!FacebookUtils.isLoggedIn()) {
+            finalList.add(new Contact(Contact.FACEBOOK_ID));
+          }
+
+          if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
+            finalList.add(new Contact(Contact.ADDRESS_BOOK_ID));
+          }
+
+          finalList.addAll(contactsInvite);
+          finalList.addAll(contactsFBInvite);
+          List<HomeAdapterInterface> refactordList = new ArrayList<>();
+
+          for (HomeAdapterInterface u : finalList) {
+            if (!refactordList.contains(u)) {
+              refactordList.add(u);
+            }
+          }
+
+          return refactordList;
+        }).subscribeOn(singleThreadExecutor).
+        map(recipientList -> {
+          DiffUtil.DiffResult diffResult = null;
+          List<HomeAdapterInterface> temp = new ArrayList<>();
+          temp.addAll(recipientList);
+          ListUtils.addEmptyItemsHome(temp);
+          if (latestRecipientList.size() != 0) {
+            diffResult = DiffUtil.calculateDiff(new GridDiffCallback(latestRecipientList, temp));
+            homeGridAdapter.setItems(temp);
+          }
+
+          latestRecipientList.clear();
+          latestRecipientList.addAll(temp); // TODO #2
+          return diffResult;
+        }).observeOn(AndroidSchedulers.mainThread()).subscribe(diffResult -> {
+      if (diffResult != null) {
+        diffResult.dispatchUpdatesTo(homeGridAdapter);
+        layoutManager.scrollToPositionWithOffset(0, 0);
+      } else {
+        homeGridAdapter.setItems(latestRecipientList);
+        homeGridAdapter.notifyDataSetChanged();
+        if (latestRecipientList.size() != 0) layoutManager.scrollToPositionWithOffset(0, 0);
+      }
+    }));
   }
 
   private void initNewCall() {
@@ -1175,6 +1174,9 @@ public class HomeActivity extends BaseActivity
       }
 
       @Override public int getSectionType(int position) {
+        if (position < 0 || position > recipientList.size() - 1) {
+          return BaseSectionItemDecoration.NONE;
+        }
         return recipientList.get(position).getHomeSectionType();
       }
     };
@@ -1224,7 +1226,10 @@ public class HomeActivity extends BaseActivity
 
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
-      if (notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
+      if (notificationPayload != null &&
+          !StringUtils.isEmpty(notificationPayload.getUserId()) &&
+          notificationPayload.getUserId().equals(Shortcut.SUPPORT) &&
+          supportShortcut != null) {
         supportShortcut.setRead(false);
         supportShortcut.setSingle(true);
         onSupportUpdate.onNext(supportShortcut);

@@ -291,6 +291,10 @@
         android:name="com.mixpanel.android.MPConfig.ResourcePackageName"
         android:value="${applicationId}"/>
 
+    <activity
+        android:name="com.mixpanel.android.takeoverinapp.TakeoverInAppActivity"
+        android:theme="@style/com_mixpanel_android_TakeoverInAppActivityTheme"/>
+
     <receiver
         android:name="com.mixpanel.android.mpmetrics.TribeGCMReceiver"
         android:permission="com.google.android.c2dm.permission.SEND">
