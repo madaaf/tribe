@@ -12,4 +12,8 @@ public class UserMVPViewAdapter implements UserMVPView {
   @Override public void onUserInfos(User user) {
 
   }
+
+  @Override public void onUserLeaderboard(String userId) {
+
+  }
 }

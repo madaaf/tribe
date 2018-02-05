@@ -1,10 +1,13 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -13,10 +16,12 @@ import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.view.adapter.LeaderboardUserAdapter;
-import com.tribe.app.presentation.view.adapter.manager.GamesLayoutManager;
+import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardUserLayoutManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
@@ -27,12 +32,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.inject.Inject;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 public class LeaderboardActivity extends BaseActivity {
 
+  public static final String USER = "USER";
+
+  public static Intent getCallingIntent(Activity activity, User user) {
+    Intent intent = new Intent(activity, LeaderboardActivity.class);
+    intent.putExtra(USER, user);
+    return intent;
+  }
+
   public static final String GAME_ID = "game_id";
+
+  @Inject User currentUser;
 
   @Inject ScreenUtils screenUtils;
 
@@ -59,6 +73,7 @@ public class LeaderboardActivity extends BaseActivity {
   private List<Score> items;
   private GameManager gameManager;
   private GameMVPViewAdapter gameMVPViewAdapter;
+  private UserMVPViewAdapter userMVPViewAdapter;
   private User user;
 
   // RESOURCES
@@ -80,6 +95,7 @@ public class LeaderboardActivity extends BaseActivity {
     initPresenter();
     initSubscriptions();
     initUI();
+    setUser(user, user.equals(currentUser));
   }
 
   @Override protected void onStart() {
@@ -137,6 +153,39 @@ public class LeaderboardActivity extends BaseActivity {
 
   private void initDependencyInjector() {
     this.getApplicationComponent().inject(this);
+  }
+
+  private void setUser(User user, boolean collapsed) {
+    this.user = user;
+
+    adapter.setCanClick(!collapsed);
+    adapter.setUser(user);
+
+    txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
+    viewNewAvatar.load(user.getProfilePicture());
+    txtName.setText(user.getDisplayName());
+    txtUsername.setText(user.getUsernameDisplay());
+
+    layoutManager = new LeaderboardUserLayoutManager(this);
+    recyclerView.setLayoutManager(layoutManager);
+    recyclerView.setItemAnimator(null);
+    recyclerView.setAdapter(adapter);
+    recyclerView.addItemDecoration(
+        new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.grey_divider),
+            screenUtils.dpToPx(0.5f)));
+
+    subscriptions.add(adapter.onClick()
+        .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
+        .subscribe(score -> {
+          // TODO
+        }));
+
+    if (collapsed) {
+      appBarLayout.setExpanded(false);
+      UIUtils.changeHeightOfView(collapsingToolbar, 0);
+    }
+
+    gamePresenter.loadUserLeaderboard(user.getId());
   }
 
   /**

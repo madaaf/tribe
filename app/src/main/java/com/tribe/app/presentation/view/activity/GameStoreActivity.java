@@ -284,7 +284,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   }
 
   @OnClick(R.id.btnLeaderboards) void onClickLeaderboards() {
-    navigator.navigateToLeaderboards(this);
+    navigator.navigateToLeaderboards(this, getCurrentUser());
   }
 
   /**

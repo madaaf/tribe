@@ -774,4 +774,15 @@
       %1$s
       %2$s
   </string>
+
+  <string name="userfragment.leaderboard" translatable="false">
+    fragment UserInfos on User {
+      scores (gameIds : %1$s) {
+        game {
+          id
+        }
+        value
+      }
+    }
+  </string>
 </resources>

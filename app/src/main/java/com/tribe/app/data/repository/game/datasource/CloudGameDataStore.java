@@ -20,6 +20,8 @@ import com.tribe.app.domain.entity.trivia.TriviaCategoryEnum;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.tribelivesdk.game.GameManager;
+import com.tribe.tribelivesdk.util.JsonUtils;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,7 +98,8 @@ public class CloudGameDataStore implements GameDataStore {
     String userIdsListFormated = "\"" + userId + "\"";
     return this.tribeApi.getUserListInfos(
         context.getString(R.string.lookup_userid, userIdsListFormated,
-            context.getString(R.string.userfragment_infos_light)))
+            context.getString(R.string.userfragment_leaderboard,
+                JsonUtils.arrayToJson(GameManager.playableGames))))
         .map(userRealms -> {
           List<ScoreRealm> realmList = new ArrayList<>();
           realmList.addAll(userRealms.get(0).getScores());
