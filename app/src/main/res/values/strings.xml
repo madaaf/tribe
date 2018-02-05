@@ -967,7 +967,7 @@
 	<string name="leaderboards_title">Leaderboards</string>
 	<string name="leaderboards_score">Best score</string>
 	<string name="leaderboards_your_score">Your best score</string>
-	<string name="leaderboards_no_score">No score</string>
+	<string name="leaderboards_no_score">-</string>
 	<string name="leaderboards_friends">Friends</string>
 	<string name="leaderboards_overall">Overall</string>
 	<string name="leaderboards_point">pt</string>
