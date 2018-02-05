@@ -328,6 +328,9 @@ public class GameBirdRushBackground extends View {
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(aLong -> {
                 entranceBirdFinish = true;
+               /* for (BirdRush bird : birdList) {
+                  jumpBird(bird.getGuestId());
+                }*/
               }));
         }
       }, 300 * i);
@@ -349,7 +352,7 @@ public class GameBirdRushBackground extends View {
       if (bird.getSpeedY() > getMaxSpeed()) {
         bird.setSpeedY(getMaxSpeed());  // speed limit
       }
-      Timber.e("BIRD FALL " + Math.round(bird.getY() + bird.getSpeedY()));
+      Timber.e("SOEF BIRD FALL " + Math.round(bird.getY() + bird.getSpeedY()));
       bird.setY(Math.round(bird.getY() + bird.getSpeedY()));
     }
   }
@@ -518,15 +521,11 @@ public class GameBirdRushBackground extends View {
 
   public void start() {
     pause = false;
-    /*
-    entranceBirdFinish = false;
-    scrollTimer = null;
-    engineTimer = null;*/
     resetParams();
     setTimer();
   }
 
-  public void stop() { // reset Timer ? the background scroll seems to be 2 faster
+  public void stop() {
     pause = true;
     Timber.e("SOEF BACKGROUND  stop ");
     clearObstacles();
@@ -544,8 +543,6 @@ public class GameBirdRushBackground extends View {
     subscriptions.clear();
     subscriptions.unsubscribe();
     subscriptionsAnimation.unsubscribe();
-    scrollTimer = null;
-    engineTimer = null;
   }
 
   public void addObstacles(List<BirdRushObstacle> list) {
