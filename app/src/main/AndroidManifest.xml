@@ -188,7 +188,7 @@
         android:theme="@style/AppTheme.White"/>
 
     <activity
-        android:name=".presentation.view.activity.LeaderboardActivity"
+        android:name=".presentation.view.activity.OldLeaderboardActivity"
         android:configChanges="orientation|keyboardHidden|screenSize"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme.White"/>

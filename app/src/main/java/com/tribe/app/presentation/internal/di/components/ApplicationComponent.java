@@ -77,6 +77,7 @@ import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.activity.LeaderboardActivity;
 import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseNotifAdapterDelegate;
@@ -307,6 +308,8 @@ public interface ApplicationComponent {
   void inject(GameBattleMusicPlayView gameBattleMusicPlayView);
 
   void inject(ShareAdapterDelegate shareAdapterDelegate);
+
+  void inject(LeaderboardActivity leaderboardActivity);
 
   // JOBS
   void inject(BaseJob baseJob);

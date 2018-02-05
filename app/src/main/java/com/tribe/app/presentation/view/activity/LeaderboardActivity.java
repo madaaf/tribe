@@ -1,167 +1,153 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.view.ViewCompat;
-import android.view.View;
-import butterknife.OnClick;
-import com.bumptech.glide.Glide;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.widget.RecyclerView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.tribe.app.R;
-import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
-import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
-import com.tribe.app.presentation.mvp.view.adapter.ShortcutMVPViewAdapter;
-import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.view.component.games.LeaderboardDetailsView;
-import com.tribe.app.presentation.view.component.games.LeaderboardMainView;
-import com.tribe.app.presentation.view.utils.GlideUtils;
+import com.tribe.app.presentation.mvp.presenter.GamePresenter;
+import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.view.adapter.LeaderboardUserAdapter;
+import com.tribe.app.presentation.view.adapter.manager.GamesLayoutManager;
+import com.tribe.app.presentation.view.adapter.manager.LeaderboardUserLayoutManager;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
-public class LeaderboardActivity extends ViewStackActivity {
+public class LeaderboardActivity extends BaseActivity {
 
-  private static final String USER_ID = "USER_ID";
-  private static final String DISPLAY_NAME = "DISPLAY_NAME";
-  private static final String PROFILE_PICTURE = "PROFILE_PICTURE";
+  public static final String GAME_ID = "game_id";
 
-  public static Intent getCallingIntent(Activity activity) {
-    Intent intent = new Intent(activity, LeaderboardActivity.class);
-    return intent;
-  }
+  @Inject ScreenUtils screenUtils;
 
-  public static Intent getCallingIntent(Activity activity, String userId, String displayName,
-      String profilePicture) {
-    Intent intent = new Intent(activity, LeaderboardActivity.class);
-    intent.putExtra(USER_ID, userId);
-    intent.putExtra(DISPLAY_NAME, displayName);
-    intent.putExtra(PROFILE_PICTURE, profilePicture);
-    return intent;
-  }
+  @Inject LeaderboardUserAdapter adapter;
 
-  @Inject ShortcutPresenter shortcutPresenter;
+  @Inject GamePresenter gamePresenter;
 
-  // VIEWS
-  private LeaderboardMainView viewLeaderboardMain;
-  private LeaderboardDetailsView viewLeaderboardDetails;
+  @BindView(R.id.recyclerViewLeaderboard) RecyclerView recyclerView;
+
+  @BindView(R.id.viewNewAvatar) NewAvatarView viewNewAvatar;
+
+  @BindView(R.id.txtEmojiGame) EmojiGameView txtEmojiGame;
+
+  @BindView(R.id.txtName) TextViewFont txtName;
+
+  @BindView(R.id.txtUsername) TextViewFont txtUsername;
+
+  @BindView(R.id.appBar) AppBarLayout appBarLayout;
+
+  @BindView(R.id.collapsingToolbar) CollapsingToolbarLayout collapsingToolbar;
 
   // VARIABLES
-  private Game selectedGame;
-  private String displayName, profilePicture, userId;
-  private ShortcutMVPViewAdapter shortcutMVPViewAdapter;
+  private LeaderboardUserLayoutManager layoutManager;
+  private List<Score> items;
+  private GameManager gameManager;
+  private GameMVPViewAdapter gameMVPViewAdapter;
+  private User user;
+
+  // RESOURCES
 
   // OBSERVABLES
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
+    getWindow().getDecorView().setBackgroundColor(Color.WHITE);
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_leaderboard);
 
-    shortcutMVPViewAdapter = new ShortcutMVPViewAdapter() {
-      @Override public void onShortcut(Shortcut shortcut) {
-        setupMainView(shortcut.getSingleFriend(), true);
-        newAvatarView.setType(
-            shortcut.getSingleFriend().isOnline() ? NewAvatarView.ONLINE : NewAvatarView.NORMAL);
-        shortcutPresenter.unsubscribeShortcut();
-      }
-    };
+    ButterKnife.bind(this);
+
+    gameManager = GameManager.getInstance(this);
+    items = new ArrayList<>();
+
+    initDependencyInjector();
+    initPresenter();
+    initSubscriptions();
+    initUI();
   }
 
   @Override protected void onStart() {
     super.onStart();
-    shortcutPresenter.onViewAttached(shortcutMVPViewAdapter);
   }
 
   @Override protected void onStop() {
     super.onStop();
-    shortcutPresenter.onViewDetached();
+    gamePresenter.onViewDetached();
   }
 
   @Override protected void onDestroy() {
-    if (viewLeaderboardDetails != null) viewLeaderboardDetails.onDestroy();
-    if (viewLeaderboardMain != null) viewLeaderboardMain.onDestroy();
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     super.onDestroy();
   }
 
-  @Override protected void initDependencyInjector() {
-    DaggerUserComponent.builder()
-        .applicationComponent(getApplicationComponent())
-        .activityModule(getActivityModule())
-        .build()
-        .inject(this);
+  protected void initPresenter() {
+    gameMVPViewAdapter = new GameMVPViewAdapter() {
+      @Override public void onUserLeaderboard(List<Score> newScoreList, boolean cloud) {
+        Set<String> gameIdPresent = new HashSet<>();
+        List<Score> endScoreList = new ArrayList<>();
+
+        for (Score score : newScoreList) {
+          endScoreList.add(score);
+          gameIdPresent.add(score.getGame().getId());
+        }
+
+        for (Game game : gameManager.getGames()) {
+          if (!gameIdPresent.contains(game.getId()) && game.hasScores()) {
+            Score score = new Score();
+            score.setGame(game);
+            score.setUser(user);
+            endScoreList.add(score);
+          }
+        }
+
+        items.clear();
+        items.addAll(endScoreList);
+        adapter.setItems(items);
+      }
+
+      @Override public Context context() {
+        return LeaderboardActivity.this;
+      }
+    };
   }
 
-  @Override protected void endInit(Bundle savedInstanceState) {
-    if (getIntent().hasExtra(USER_ID)) {
-      userId = getIntent().getStringExtra(USER_ID);
-      displayName = getIntent().getStringExtra(DISPLAY_NAME);
-      profilePicture = getIntent().getStringExtra(PROFILE_PICTURE);
-
-      newAvatarView.setVisibility(View.VISIBLE);
-      newAvatarView.load(profilePicture);
-    }
-
-    btnBack.setVisibility(View.VISIBLE);
-    btnBack.setImageResource(R.drawable.picto_arrow_back);
-    btnForward.setVisibility(View.GONE);
-
-    if (StringUtils.isEmpty(userId)) {
-      txtTitle.setText(R.string.leaderboards_you);
-    } else {
-      txtTitle.setText(displayName);
-    }
-
-    if (savedInstanceState == null && StringUtils.isEmpty(userId)) {
-      setupMainView(getCurrentUser(), false);
-    } else {
-      shortcutPresenter.shortcutForUserIds(userId);
-    }
+  protected void initSubscriptions() {
+    subscriptions = new CompositeSubscription();
   }
 
-  @OnClick(R.id.btnBack) void clickBack() {
-    onBackPressed();
+  private void initUI() {
+
   }
 
-  @Override public void finish() {
-    super.finish();
-    overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
+  private void initDependencyInjector() {
+    this.getApplicationComponent().inject(this);
   }
 
-  private void setupMainView(User user, boolean collapsed) {
-    viewLeaderboardMain = (LeaderboardMainView) viewStack.push(R.layout.view_leaderboard);
-    viewLeaderboardMain.setUser(user, collapsed);
+  /**
+   * ONCLICK
+   */
 
-    subscriptions.add(viewLeaderboardMain.onClick().subscribe(game -> {
-      selectedGame = game;
-      setupLeaderboardDetails();
-    }));
-  }
+  /**
+   * PUBLIC
+   */
 
-  private void setupLeaderboardDetails() {
-    viewLeaderboardDetails =
-        (LeaderboardDetailsView) viewStack.push(R.layout.view_leaderboard_details);
-    viewLeaderboardDetails.setGame(selectedGame);
-  }
-
-  protected void computeTitle(boolean forward, View to) {
-    if (to instanceof LeaderboardMainView) {
-      setupTitle(getString(R.string.leaderboards_you), forward);
-      btnForward.setVisibility(View.GONE);
-      btnBack.setImageResource(R.drawable.picto_arrow_back);
-
-      Glide.clear(btnBack);
-    } else if (to instanceof LeaderboardDetailsView) {
-      btnForward.setVisibility(View.GONE);
-      setupTitle(selectedGame.getTitle(), forward);
-
-      new GlideUtils.GameImageBuilder(this, screenUtils).url(selectedGame.getIcon())
-          .hasBorder(false)
-          .hasPlaceholder(true)
-          .rounded(true)
-          .target(btnBack)
-          .load();
-
-      ViewCompat.setElevation(btnBack, screenUtils.dpToPx(5));
-    }
-  }
+  /**
+   * OBSERVABLES
+   */
 }

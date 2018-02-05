@@ -115,10 +115,9 @@ public class SearchAdapter extends RecyclerView.Adapter {
   }
 
   public synchronized void setItems(List<Object> items) {
-    if (items != null) items.removeAll(Collections.singleton(null));
-
     this.items.clear();
     this.items.addAll(items);
+    this.items.removeAll(Collections.singleton(null));
 
     this.notifyDataSetChanged();
   }

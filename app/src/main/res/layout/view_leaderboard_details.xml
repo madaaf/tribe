@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@null"
     android:fillViewport="true"
-    tools:context=".presentation.view.activity.LeaderboardActivity"
+    tools:context=".presentation.view.activity.OldLeaderboardActivity"
     >
 
   <!--<android.support.constraint.Guideline

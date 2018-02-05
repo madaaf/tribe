@@ -35,7 +35,7 @@ import com.tribe.app.presentation.view.activity.GameMembersActivity;
 import com.tribe.app.presentation.view.activity.GameStoreActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
-import com.tribe.app.presentation.view.activity.LeaderboardActivity;
+import com.tribe.app.presentation.view.activity.OldLeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
@@ -161,7 +161,7 @@ public class Navigator {
 
   public void navigateToLeaderboards(Activity activity) {
     if (activity != null) {
-      Intent intent = LeaderboardActivity.getCallingIntent(activity);
+      Intent intent = OldLeaderboardActivity.getCallingIntent(activity);
       activity.startActivityForResult(intent, FROM_LEADERBOARD);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
@@ -171,7 +171,7 @@ public class Navigator {
       String displayName, String profilePicture) {
     if (activity != null) {
       Intent intent =
-          LeaderboardActivity.getCallingIntent(activity, userId, displayName, profilePicture);
+          OldLeaderboardActivity.getCallingIntent(activity, userId, displayName, profilePicture);
       activity.startActivityForResult(intent, FROM_LEADERBOARD);
       activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
     }
