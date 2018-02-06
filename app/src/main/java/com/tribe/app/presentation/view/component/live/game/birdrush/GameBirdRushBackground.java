@@ -53,6 +53,8 @@ public class GameBirdRushBackground extends View {
 
   private int xScroll = 0, yScroll = 0, xCenterBirdPos, yCenterBirdPos, yInitTranslation;
   private boolean pause = false, displayFirstObstacle = false, entranceBirdFinish = false;
+  private Double delay = null;
+  private int i = 0;
 
   private BirdRushObstacle obstaclePoped = null;
   private Map<BirdRushObstacle, Rect> obstaclePopedList = new HashMap<>();
@@ -183,7 +185,14 @@ public class GameBirdRushBackground extends View {
     for (Map.Entry<BirdRushObstacle, Rect> entry : obstaclePopedList.entrySet()) {
       BirdRushObstacle b = entry.getKey();
       Rect rect = entry.getValue();
-
+      Timber.e("ANIM OSTAVLE "
+          + b.getId()
+          + " "
+          + b.getX()
+          + " "
+          + b.getY()
+          + " "
+          + obstaclePopedList.size());
       rect.set(b.getX(), b.getY(), b.getX() + BirdRushObstacle.wiewWidth,
           Math.round(b.getY() + b.getViewHeight()));
 
@@ -212,12 +221,7 @@ public class GameBirdRushBackground extends View {
     if (obstaclePoped != null) {
       obstaclePoped.setIndex(index);
       index++;
-      Timber.e("SOEF T DISPLAY obstPoped "
-          + obstaclePoped.getId()
-          + " "
-          + obstaclePoped.getX()
-          + " "
-          + obstaclePoped.getY());
+      Timber.e("SOEF T DISPLAY obstPoped " + obstaclesList.size() + " " + obstaclePopedList.size());
       Rect dstObsc = new Rect(obstaclePoped.getX(), obstaclePoped.getY(),
           obstaclePoped.getX() + BirdRushObstacle.wiewWidth,
           Math.round(obstaclePoped.getY() + obstaclePoped.getViewHeight()));
@@ -468,9 +472,6 @@ public class GameBirdRushBackground extends View {
     invalidate();
   }
 
-  Double delay = null;
-  int i = 0;
-
   private void popObstacles(Long aLong) {
     // Timber.e(" ON TOME : " + aLong + " " + obstaclesList.size());
     if (obstaclesList != null && !obstaclesList.isEmpty()) {
@@ -480,7 +481,14 @@ public class GameBirdRushBackground extends View {
         displayFirstObstacle = true;
         obstaclePoped = obstaclesList.get(0);
         delay = ((obstaclePoped.getNextSpawn() * 1000) + aLong);
-        Timber.e("SOEF TI: " + i + " " + aLong + " " + obstaclesList.size());
+        Timber.i("SOEF TI FIRST: "
+            + i
+            + " "
+            + aLong
+            + " "
+            + obstaclesList.size()
+            + " "
+            + obstaclePopedList.size());
         i++;
       }
 
@@ -490,15 +498,15 @@ public class GameBirdRushBackground extends View {
           obstaclePoped = obstaclesList.get(i);
           delay = ((obstaclePoped.getNextSpawn() * 1000) + aLong);
           i++;
-          Timber.e("SOEF T : "
-              + i
-              + " "
-              + obstaclePoped.getId()
-              + " "
-              + obstaclePoped.getX()
-              + " "
-              + obstaclePoped.getY());
+          Timber.w("SOEF TI : " + i + " " + obstaclesList.size() + " " + obstaclePopedList.size());
         }
+      } else {
+        Timber.e("SOEF  PROBLEME NOT POP: "
+            + i
+            + " "
+            + obstaclesList.size()
+            + " "
+            + obstaclePopedList.size());
       }
     }
   }
@@ -618,6 +626,8 @@ public class GameBirdRushBackground extends View {
     engineTimer = null;
     scrollTimer = null;
     crossObstacle.clear();
+    i = 0;
+    delay = null;
 
     if (ok) {
       for (Map.Entry<BirdRush, Rect> entry : birdList.entrySet()) {
