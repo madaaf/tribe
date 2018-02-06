@@ -268,7 +268,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     Timber.d("gameOver (winnerId : " + winnerId + " )");
 
     if (subscriptionsSession != null) subscriptionsSession.clear();
-
+    soundManager.playSound(SoundManager.GAME_PLAYER_LOST, SoundManager.SOUND_MAX);
     refactorPending(false);
     onMessage.onNext(null);
     changeMessageStatus(txtRestart, false, true, DURATION, 0, null, null);

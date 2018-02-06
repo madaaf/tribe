@@ -39,6 +39,7 @@ import rx.android.schedulers.AndroidSchedulers;
   public static final int BIRD_RUSH_SOUNDTRACK = 14;
   public static final int BIRD_RUSH_TAP = 15;
   public static final int BIRD_RUSH_OBSTACLE = 16;
+  public static final int GAME_PLAYER_LOST = 17;
 
   // VARIABLES
   private Context context;
@@ -89,6 +90,7 @@ import rx.android.schedulers.AndroidSchedulers;
     addSound(BIRD_RUSH_SOUNDTRACK, R.raw.bird_rush_soundtrack);
     addSound(BIRD_RUSH_TAP, R.raw.bird_rush_tap);
     addSound(BIRD_RUSH_OBSTACLE, R.raw.bird_rush_obstacle_1);
+    addSound(GAME_PLAYER_LOST, R.raw.game_player_lost);
   }
 
   public void addSound(int index, int soundID) {

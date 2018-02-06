@@ -55,6 +55,7 @@ public class GameBirdRushBackground extends View {
   private boolean pause = false, displayFirstObstacle = false, entranceBirdFinish = false;
   private Double delay = null;
   private int i = 0;
+  private int index = 1;
 
   private BirdRushObstacle obstaclePoped = null;
   private Map<BirdRushObstacle, Rect> obstaclePopedList = new HashMap<>();
@@ -232,8 +233,6 @@ public class GameBirdRushBackground extends View {
     }
   }
 
-  int index = 1;
-
   @SuppressLint("WrongConstant") private void displayBirds(Canvas canvas) {
     /**
      *  Move MY BIRD
@@ -283,6 +282,7 @@ public class GameBirdRushBackground extends View {
           birdRush.setLost(false);
           killBirdTimer.unsubscribe();
           killBirdTimer = null;
+          clearObstacles();
         }
       } else {
         canvas.drawBitmap(birdRush.getBitmap(), null, rect, myBirdPaint);
@@ -628,6 +628,7 @@ public class GameBirdRushBackground extends View {
     crossObstacle.clear();
     i = 0;
     delay = null;
+    index = 1;
 
     if (ok) {
       for (Map.Entry<BirdRush, Rect> entry : birdList.entrySet()) {
