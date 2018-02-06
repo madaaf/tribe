@@ -125,10 +125,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) { // SOEF
     Timber.d("SOEF SET UP LOCALLY " + userId + " " + players.size() + " " + timestamp);
     super.setupGameLocally(userId, players, timestamp);
-    subscriptionsSession.add(onPending.subscribe(aBoolean -> {
-      // TODO
-      Timber.e("SOEF ON PENDING");
-    }));
+    viewBackground.stop();
   }
 
   @Override protected void gameOver(String winnerId, boolean isLocal) {
@@ -140,6 +137,15 @@ public class GameBirdRushView extends GameViewWithEngine {
     if (!pending) {
       soundManager.playSound(SoundManager.BIRD_RUSH_OBSTACLE, SoundManager.SOUND_MAX);
       addPoints(1, currentUser.getId(), true);
+      if (roundPoints > 20) {
+        ((GameBirdRushEngine) gameEngine).setLevel(GameBirdRushEngine.Level.ALIEN);
+      } else if (roundPoints > 10) {
+        ((GameBirdRushEngine) gameEngine).setLevel(GameBirdRushEngine.Level.EXTREME);
+      } else if (roundPoints > 5) {
+        ((GameBirdRushEngine) gameEngine).setLevel(GameBirdRushEngine.Level.HARD);
+      } else {
+        ((GameBirdRushEngine) gameEngine).setLevel(GameBirdRushEngine.Level.MEDIUM);
+      }
     }
   }
 
@@ -162,7 +168,7 @@ public class GameBirdRushView extends GameViewWithEngine {
     subscriptionsSession.add(
         ((GameBirdRushEngine) gameEngine).onObstacle().subscribe(generateObstacleList -> {
           webRTCRoom.sendToPeers(getObstaclePayload(generateObstacleList), true);
-          Timber.e("SOEF POP ISTAVLE received " + generateObstacleList.size());
+          Timber.e("SOEF POP ISTAVLE received " + getObstaclePayload(generateObstacleList));
           viewBackground.addObstacles(generateObstacleList);
         }));
 
@@ -198,9 +204,7 @@ public class GameBirdRushView extends GameViewWithEngine {
   private void gameOver() {
     Timber.e("SOEF LOCAL game over");
     setOnTouchListener(null);
-    resetScores(true);
     iLost();
-    viewBackground.resetParams(false);
   }
 
   private void initSubscriptions() {
@@ -218,8 +222,7 @@ public class GameBirdRushView extends GameViewWithEngine {
       webRTCRoom.sendToPeers(
           getTapPayload(viewBackground.getMyBird().getX(), viewBackground.getMyBird().getY()),
           true);
-      Timber.w("SOEF TAP " + getTapPayload(viewBackground.getMyBird().getX(),
-          viewBackground.getMyBird().getY()));
+      //Timber.w("SOEF TAP " + getTapPayload(viewBackground.getMyBird().getX(), viewBackground.getMyBird().getY()));
       viewBackground.jumpBird(currentUser.getId(), null);
     }));
   }
@@ -250,8 +253,7 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @Override public void stop() {
     super.stop();
-    Timber.d(" SOEF on stop");
-    viewBackground.stop(); // TODO SOEF
+    Timber.d(" SOEF on stop game bird rush view");
   }
 
   @Override public void dispose() {

@@ -62,7 +62,7 @@ public class GameBirdRushEngine extends GameEngine {
     }
     for (int i = 0; i < nbr; i++) {
       obstacleList.add(
-          new BirdRushObstacle(level, screenUtils.getWidthPx(), screenUtils.getHeightPx()));
+          new BirdRushObstacle(level, screenUtils.getWidthPx(), screenUtils.getHeightPx(), i));
     }
   }
 
@@ -70,6 +70,10 @@ public class GameBirdRushEngine extends GameEngine {
     Timber.w("SOEF Start game engine");
     super.start();
     popObstcale();
+  }
+
+  public void setLevel(Level level) {
+    this.level = level;
   }
 
   @Override public void stop() {

@@ -120,11 +120,13 @@ public class GameBirdRushBackground extends View {
     handleBirdWallCollision();
   }
 
+  boolean gameOver = false;
+
   private void handleBirdWallCollision() {
     BirdRush myBird = getMyBird();
     boolean crossWall =
         (myBird.getY() < 0) || (myBird.getY() + birdBtm.getHeight()) > screenUtils.getHeightPx();
-    if (entranceBirdFinish && crossWall) {
+    if (entranceBirdFinish && crossWall && !gameOver) {
       gameOver();
     }
   }
@@ -145,7 +147,7 @@ public class GameBirdRushBackground extends View {
   }
 
   private float updateAngle(BirdRushObstacle b) {
-    float angle = b.getBirdRotation().getAngle();
+    float angle = (float) (b.getBirdRotation().getAngle() * (180 / Math.PI));
     float currentAngle = b.getBirdRotation().getCurrentRotation();
 
     if (!(currentAngle <= angle && currentAngle >= -angle)) {
@@ -311,9 +313,9 @@ public class GameBirdRushBackground extends View {
   }
 
   private void gameOver() {
-    stop();
     onGameOver.onNext(null);
     killBird();
+    gameOver = true;
   }
 
   private void moveBackBackground() {
@@ -341,7 +343,6 @@ public class GameBirdRushBackground extends View {
       int finalI1 = i;
       handler1.postDelayed(() -> {
         BirdRush b = entry.getKey();
-        Rect rect = entry.getValue();
 
         if (b.getX() < xCenterBirdPos) {              // entrance of the bird
           b.setX(b.getX() + v);
@@ -372,6 +373,10 @@ public class GameBirdRushBackground extends View {
     }
   }
 
+  private void animBirdEntrance(BirdRush b) {
+
+  }
+
   private void killBird() {
     BirdRush b = getMyBird();
     b.setLost(true);
@@ -380,7 +385,6 @@ public class GameBirdRushBackground extends View {
           .onBackpressureDrop()
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> {
-            Timber.e("SOEF kill bird " + " " + aLong);
             b.setY(b.getY() + 20);
             b.setX(b.getX() - 2);
             invalidate();
@@ -481,14 +485,7 @@ public class GameBirdRushBackground extends View {
         displayFirstObstacle = true;
         obstaclePoped = obstaclesList.get(0);
         delay = ((obstaclePoped.getNextSpawn() * 1000) + aLong);
-        Timber.i("SOEF TI FIRST: "
-            + i
-            + " "
-            + aLong
-            + " "
-            + obstaclesList.size()
-            + " "
-            + obstaclePopedList.size());
+        //Timber.i("SOEF TI FIRST: " + i + " " + aLong + " " + obstaclesList.size() + " " + obstaclePopedList.size());
         i++;
       }
 
@@ -498,15 +495,8 @@ public class GameBirdRushBackground extends View {
           obstaclePoped = obstaclesList.get(i);
           delay = ((obstaclePoped.getNextSpawn() * 1000) + aLong);
           i++;
-          Timber.w("SOEF TI : " + i + " " + obstaclesList.size() + " " + obstaclePopedList.size());
+          //Timber.w("SOEF TI : " + i + " " + obstaclesList.size() + " " + obstaclePopedList.size());
         }
-      } else {
-        Timber.e("SOEF  PROBLEME NOT POP: "
-            + i
-            + " "
-            + obstaclesList.size()
-            + " "
-            + obstaclePopedList.size());
       }
     }
   }
@@ -589,6 +579,7 @@ public class GameBirdRushBackground extends View {
 
   public void start() {
     pause = false;
+    gameOver = false;
     resetParams(true);
     setTimer();
   }
@@ -596,8 +587,6 @@ public class GameBirdRushBackground extends View {
   public void stop() {
     pause = true;
     Timber.e("SOEF BACKGROUND  stop ");
-    //  clearObstacles();
-    // invalidate();
   }
 
   public void dispose() {

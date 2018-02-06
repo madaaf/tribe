@@ -43,16 +43,22 @@ public class BirdRushObstacle {
   public BirdRushObstacle() {
   }
 
-  public BirdRushObstacle(GameBirdRushEngine.Level level, int widthScreen, int heightScreen) {
+  public BirdRushObstacle(GameBirdRushEngine.Level level, int widthScreen, int heightScreen,
+      int i) {
     this.id = id();
     this.nextSpawn = nextSpawnDelay(level);
     this.start = startYPos();
     this.height = heightRatio(level);
     this.speed = obstacleSpeed(level);
-    this.translation = translation(level);
-    this.viewHeight = Math.round(height * heightScreen);
-    this.rotation = rotation(level);
+    if (i % 2 == 0) {
+      this.translation = null;
+      this.rotation = rotation(level);
+    } else {
+      this.translation = translation(level);
+      this.rotation = null;
+    }
 
+    this.viewHeight = Math.round(height * heightScreen);
     this.x = widthScreen + wiewWidth; // intial position: end of the screen
     this.y = heightScreen - Math.round((start * heightScreen) + (viewHeight / 2));
 
@@ -148,6 +154,15 @@ public class BirdRushObstacle {
     return randFloat(0.15f, 0.95f);
   }
 
+  private boolean putRotation() {
+    int i = randInt(0, 1);
+    if (i == 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   private Double nextSpawnDelay(GameBirdRushEngine.Level level) {
     switch (level) {
       case MEDIUM:
@@ -178,17 +193,19 @@ public class BirdRushObstacle {
     return null;
   }
 
+  float a = (float) (5f * (Math.PI / 180));
+
   private BirdRushObstacle.Rotation rotation(GameBirdRushEngine.Level level) {
 
     switch (level) {
       case MEDIUM:
-        return new BirdRushObstacle.Rotation(5f, randDouble(0.5d, 0.6d));
+        return new BirdRushObstacle.Rotation(a, randDouble(0.5d, 0.6d));
       case HARD:
-        return new BirdRushObstacle.Rotation(5f, randDouble(0.4d, 0.5d));
+        return new BirdRushObstacle.Rotation(a, randDouble(0.4d, 0.5d));
       case EXTREME:
-        return new BirdRushObstacle.Rotation(5f, randDouble(0.4d, 0.4d));
+        return new BirdRushObstacle.Rotation(a, randDouble(0.4d, 0.4d));
       case ALIEN:
-        return new BirdRushObstacle.Rotation(5f, randDouble(0.2d, 0.3d));
+        return new BirdRushObstacle.Rotation(a, randDouble(0.2d, 0.3d));
     }
 
     return null;
@@ -220,6 +237,11 @@ public class BirdRushObstacle {
         return 0.005f;
     }
     return 0.005f;
+  }
+
+  public static Integer randInt(int min, int max) {
+    Random r = new Random();
+    return min + r.nextInt() * (max - min);
   }
 
   public static Double randDouble(double min, double max) {
