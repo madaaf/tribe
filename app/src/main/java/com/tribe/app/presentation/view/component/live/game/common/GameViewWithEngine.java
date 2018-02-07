@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live.game.common;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.TextViewCompat;
@@ -486,6 +487,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
     paramsTitleBG.gravity = Gravity.CENTER;
+    txtTitleBG.setGravity(Gravity.CENTER);
 
     TextViewCompat.setTextAppearance(txtTitleBG, R.style.GameTitle_1_White40);
     txtTitleBG.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
@@ -501,7 +503,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
     paramsTitleFront.gravity = Gravity.CENTER;
-
+    txtTitleFront.setGravity(Gravity.CENTER);
     TextViewCompat.setTextAppearance(txtTitleFront, R.style.GameTitle_1_White);
     txtTitleFront.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
     txtTitleFront.setText(title);

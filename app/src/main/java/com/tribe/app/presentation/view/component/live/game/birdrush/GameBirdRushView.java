@@ -110,7 +110,7 @@ public class GameBirdRushView extends GameViewWithEngine {
                   String guestId = message.getString(FROM_KEY);
                   PlayerTap playerTap = new PlayerTap(y);
                   Timber.e("player tap " + playerTap.toString());
-                  viewBackground.jumpBird(guestId, playerTap);
+                  viewBackground.jumpBird(guestId, playerTap, true);
                 } else {
                   Timber.e("SOEF ANOTHER ACTION  " + actionKey);
                 }
@@ -217,13 +217,13 @@ public class GameBirdRushView extends GameViewWithEngine {
       overcomeObstacle();
     }));
 
-    subscriptions.add(controller.onTap().subscribe(aVoid -> {
+    subscriptions.add(controller.onTap().subscribe(onActionDown -> {
       soundManager.playSound(SoundManager.BIRD_RUSH_TAP, SoundManager.SOUND_MAX);
       webRTCRoom.sendToPeers(
           getTapPayload(viewBackground.getMyBird().getX(), viewBackground.getMyBird().getY()),
           true);
       //Timber.w("SOEF TAP " + getTapPayload(viewBackground.getMyBird().getX(), viewBackground.getMyBird().getY()));
-      viewBackground.jumpBird(currentUser.getId(), null);
+      viewBackground.jumpBird(currentUser.getId(), null, onActionDown);
     }));
   }
 

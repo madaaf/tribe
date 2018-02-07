@@ -392,55 +392,45 @@ public class GameBirdRushBackground extends View {
     }
   }
 
+  int gravity = 1;
+  int jump = 18;
+
   private void moveBirds() {
     for (Map.Entry<BirdRush, Rect> entry : birdList.entrySet()) {
       BirdRush bird = entry.getKey();
       bird.setX(xCenterBirdPos);
 
-      if (bird.getSpeedY() < 0) {
-        bird.setSpeedY(
-            bird.getSpeedY() * 2 / 3 + getSpeedTimeDecrease() / 5);  // The character is moving up
-      } else {
-        bird.setSpeedY(bird.getSpeedY() + getSpeedTimeDecrease());  // the character is moving down
-      }
+      bird.setSpeedY(bird.getSpeedY() + gravity);
+      bird.setY((int) (bird.getY() + bird.getSpeedY()));
 
-      if (bird.getSpeedY() > getMaxSpeed()) {
-        bird.setSpeedY(getMaxSpeed());  // speed limit
+      if (bird.getY() > screenUtils.getHeightPx()) {
+        bird.setY(screenUtils.getHeightPx());
+        bird.setSpeedY(0);
       }
-      //  Timber.e("SOEF BIRD FALL " + Math.round(bird.getY() + bird.getSpeedY()));
-      bird.setY(Math.round(bird.getY() + bird.getSpeedY()));
     }
   }
 
-  public void jumpBird(String guestId, PlayerTap playerTap) {
+  private void startJump(BirdRush b) {
+    b.setSpeedY(-jump);
+  }
+
+  private void endJump(BirdRush b) {
+    if (b.getSpeedY() < -jump / 2) b.setSpeedY(-jump / 2);
+  }
+
+  public void jumpBird(String guestId, PlayerTap playerTap, boolean onActionDown) {
     BirdRush b = getBird(guestId);
-    b.setSpeedY(getTabSpeed());
-    if (playerTap == null) {
-      b.setY(b.getY() + getPosTabIncrease());
+
+    if (onActionDown) {
+      startJump(b);
     } else {
-      int y = (int) (GameBirdRushView.HEIGHT_IOS_SCREEN - playerTap.getY());
-      b.setY(y + getPosTabIncrease());
+      endJump(b);
     }
-  }
 
-  protected float getSpeedTimeDecrease() {
-    float speed = screenUtils.getHeightPx() / 640;
-    return speed;
-  }
-
-  protected float getMaxSpeed() {
-    float speed = screenUtils.getHeightPx() / 81.2f;
-    return speed;
-  }
-
-  protected float getTabSpeed() {
-    float speed = -screenUtils.getHeightPx() / 16f;
-    return speed;
-  }
-
-  protected int getPosTabIncrease() {
-    int speed = -screenUtils.getHeightPx() / 100;
-    return speed;
+    if (playerTap != null) {
+      // int y = (int) (GameBirdRushView.HEIGHT_IOS_SCREEN - playerTap.getY());
+      // b.setY(y + getPosTabIncrease());
+    }
   }
 
   private void setTimer() {

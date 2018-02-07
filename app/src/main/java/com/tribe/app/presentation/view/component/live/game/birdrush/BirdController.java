@@ -14,7 +14,7 @@ import rx.subjects.PublishSubject;
 
 public class BirdController extends View implements TouchHandler {
 
-  private PublishSubject<Void> onTap = PublishSubject.create();
+  private PublishSubject<Boolean> onTap = PublishSubject.create();
 
   public BirdController(Context context) {
     super(context);
@@ -28,19 +28,20 @@ public class BirdController extends View implements TouchHandler {
 
     switch (event.getAction()) {
       case MotionEvent.ACTION_DOWN:
-        onTap.onNext(null);
+        onTap.onNext(true);
         break;
 
       case MotionEvent.ACTION_MOVE:
         break;
       case MotionEvent.ACTION_UP:
+        onTap.onNext(false);
         break;
       default:
     }
     return false;
   }
 
-  public Observable<Void> onTap() {
+  public Observable<Boolean> onTap() {
     return onTap;
   }
 }
