@@ -353,7 +353,7 @@ public class Game {
   }
 
   public void resetRoundCount() {
-
+    roundCount = 0;
   }
 
   /**
