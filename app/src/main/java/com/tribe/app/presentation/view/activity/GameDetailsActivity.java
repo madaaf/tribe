@@ -219,11 +219,12 @@ public class GameDetailsActivity extends BaseActivity {
         .subscribe(aLong -> showButtons()));
 
     Score score = getCurrentUser().getScoreForGame(game.getId());
-    if (score != null) {
-      txtMyScoreScore.setText("" + score.getValue());
-    } else {
-      txtMyScoreScore.setText("0");
+    if (score == null) {
+      score = new Score();
+      score.setValue(0);
     }
+
+    txtMyScoreScore.setText("" + score.getValue());
 
     txtMyScoreName.setText(getCurrentUser().getDisplayName());
     txtMyScoreScore.setText("" + score.getValue());
@@ -359,7 +360,7 @@ public class GameDetailsActivity extends BaseActivity {
   }
 
   @OnClick(R.id.btnLeaderboards) void openLeaderboards() {
-    // TODO open leaderboards
+    navigator.navigateToGameLeaderboard(this, game.getId());
   }
 
   @OnClick(R.id.btnSingle) void openLive() {

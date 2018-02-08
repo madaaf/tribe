@@ -31,7 +31,6 @@ import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
-import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
@@ -104,14 +103,6 @@ import javax.inject.Singleton;
         }
       } else {
         if (notification != null) {
-          if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE) &&
-              fullScreenNotifications.get() &&
-              !StringUtils.isEmpty(notificationPayload.getSound()) &&
-              !fullScreenNotificationState.get().contains(notificationPayload.getThread())) {
-            notification.sound = null;
-            sendFullScreenNotification(remoteMessage);
-          }
-
           notify(notificationPayload, notification);
         }
 
@@ -368,15 +359,5 @@ import javax.inject.Singleton;
     return !StringUtils.isEmpty(payload.getSessionId()) ? payload.getSessionId().hashCode()
         : (!StringUtils.isEmpty(payload.getThread()) ? payload.getThread().hashCode()
             : (int) System.currentTimeMillis());
-  }
-
-  private void sendFullScreenNotification(RemoteMessage remoteMessage) {
-    Intent incomingCallIntent = new Intent(application, LiveImmersiveNotificationActivity.class);
-    incomingCallIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-    NotificationPayload notificationPayload = getPayload(remoteMessage);
-    immersiveCallState.set(true);
-    incomingCallIntent.putExtra(LiveImmersiveNotificationActivity.PLAYLOAD_VALUE,
-        notificationPayload);
-    application.startActivity(incomingCallIntent);
   }
 }

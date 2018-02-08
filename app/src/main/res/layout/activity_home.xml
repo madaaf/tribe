@@ -49,17 +49,6 @@
         android:scrollbars="none"
         />
 
-    <com.tribe.app.presentation.view.component.home.NewGameView
-        android:id="@+id/btnNewGame"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/bottom_bar_height"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_margin="@dimen/horizontal_margin_large"
-        android:background="@drawable/shape_oval_white"
-        android:clickable="true"
-        android:elevation="10dp"
-        />
-
   </com.tribe.app.presentation.view.component.home.TopBarContainer>
 
   <com.tribe.app.presentation.view.widget.PopupContainerView

@@ -19,6 +19,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
@@ -52,8 +53,8 @@ import rx.subscriptions.CompositeSubscription;
 
 public class GameLeaderboardActivity extends BaseActivity {
 
-  private static final int DURATION = 300;
-  private static final float OVERSHOOT = 0.45f;
+  private static final int DURATION = 500;
+  private static final float OVERSHOOT = 1.25f;
 
   public static final String GAME_ID = "game_id";
 
@@ -180,8 +181,15 @@ public class GameLeaderboardActivity extends BaseActivity {
   protected void initPresenter() {
     gameMVPViewAdapter = new GameMVPViewAdapter() {
       @Override public void onGameLeaderboard(List<Score> scoreList, boolean cloud) {
+        if (scoreList == null) return;
+
         Collections.sort(scoreList, (o1, o2) -> ((Integer) o2.getValue()).compareTo(o1.getValue()));
         items.clear();
+
+        for (Score score : scoreList) {
+          // We add the current user if user == null, it means it's the current user's score
+          if (score.getUser() == null) score.setUser(getCurrentUser());
+        }
 
         Score first = scoreList.remove(0);
         setupPodium(1, first, avatarFirst, cardAvatarFirst, avatarEmptyFirst, txtNameFirst,
@@ -215,16 +223,20 @@ public class GameLeaderboardActivity extends BaseActivity {
 
         adapter.setItems(items);
 
-        subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(aLong -> {
-              showAvatars();
-              showRankings();
-            }));
+        showAvatars();
+        showRecyclerView();
 
-        //subscriptions.add(Observable.timer(DURATION * 2, TimeUnit.MILLISECONDS)
-        //    .observeOn(AndroidSchedulers.mainThread())
-        //    .subscribe(aLong -> ));
+        subscriptions.add(Observable.timer((int) (DURATION * 0.3f), TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> showRankings()));
+
+        subscriptions.add(Observable.timer((int) (DURATION * 0.6f), TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> showNames()));
+
+        subscriptions.add(Observable.timer((int) (DURATION * 0.9f), TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> showScores()));
       }
 
       @Override public Context context() {
@@ -249,6 +261,13 @@ public class GameLeaderboardActivity extends BaseActivity {
 
     ViewCompat.setBackground(imgBackgroundGradient, gd);
 
+    recyclerView.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            recyclerView.setTranslationY(recyclerView.getMeasuredHeight());
+          }
+        });
     layoutManager = new LeaderboardDetailsLayoutManager(this);
     recyclerView.setLayoutManager(layoutManager);
     adapter = new LeaderboardDetailsAdapter(this, recyclerView);
@@ -293,7 +312,6 @@ public class GameLeaderboardActivity extends BaseActivity {
       txtScore.setBackgroundResource(R.drawable.bg_pts);
       txtRanking.setTextColor(Color.parseColor("#" + game.getPrimary_color()));
 
-      if (score.getUser() == null) score.setUser(getCurrentUser());
       User user = score.getUser();
       avatar.load(user.getProfilePicture());
       txtName.setText(user.getDisplayName());
@@ -304,9 +322,8 @@ public class GameLeaderboardActivity extends BaseActivity {
 
   private void showAvatars() {
     ConstraintSet set = new ConstraintSet();
-    set.clone(layoutConstraint);
-    set.clone(getApplicationContext(), R.layout.activity_game_leaderboards_avatars);
-    animateLayoutWithConstraintSet(set, 0, null);
+    set.clone(getApplicationContext(), R.layout.activity_game_leaderboards_final);
+    animateLayoutWithConstraintSet(set, null);
 
     scaleUp(cardAvatarFirst);
     scaleUp(cardAvatarSecond);
@@ -317,14 +334,29 @@ public class GameLeaderboardActivity extends BaseActivity {
   }
 
   private void showRankings() {
-    ConstraintSet set = new ConstraintSet();
-    set.clone(layoutConstraint);
-    set.clone(getApplicationContext(), R.layout.activity_game_leaderboards_rankings);
-    animateLayoutWithConstraintSet(set, DURATION >> 1, null);
-
     scaleUp(txtRankingFirst);
     scaleUp(txtRankingSecond);
     scaleUp(txtRankingThird);
+  }
+
+  private void showNames() {
+    scaleUp(txtNameFirst);
+    scaleUp(txtNameSecond);
+    scaleUp(txtNameThird);
+  }
+
+  private void showScores() {
+    scaleUp(txtScoreFirst);
+    scaleUp(txtScoreSecond);
+    scaleUp(txtScoreThird);
+  }
+
+  private void showRecyclerView() {
+    recyclerView.animate()
+        .translationY(0)
+        .setDuration(DURATION)
+        .setInterpolator(new OvershootInterpolator(0.5f))
+        .start();
   }
 
   private void scaleUp(View view) {
@@ -339,12 +371,11 @@ public class GameLeaderboardActivity extends BaseActivity {
         .start();
   }
 
-  private void animateLayoutWithConstraintSet(ConstraintSet constraintSet, int delay,
+  private void animateLayoutWithConstraintSet(ConstraintSet constraintSet,
       Transition.TransitionListener transitionListener) {
     Transition transition = new ChangeBounds();
     transition.setDuration(DURATION);
     transition.setInterpolator(new OvershootInterpolator(OVERSHOOT));
-    transition.setStartDelay(delay);
     if (transitionListener != null) transition.addListener(transitionListener);
     TransitionManager.beginDelayedTransition(layoutConstraint, transition);
     constraintSet.applyTo(layoutConstraint);

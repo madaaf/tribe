@@ -118,6 +118,7 @@ public class GamePresenter implements Presenter {
     @Override public void onNext(List<Score> score) {
       if (gameMVPView != null) {
         gameMVPView.onGameLeaderboard(score, cloud);
+        unsubscribe();
       }
     }
   }

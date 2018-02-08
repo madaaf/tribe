@@ -173,8 +173,6 @@ public class HomeActivity extends BaseActivity
 
   @BindView(R.id.errorNotificationView) ErrorNotificationView errorNotificationView;
 
-  @BindView(R.id.btnNewGame) NewGameView btnNewGame;
-
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.nativeDialogsView) PopupContainerView popupContainerView;
@@ -216,7 +214,6 @@ public class HomeActivity extends BaseActivity
     initTopBar();
     initSearch();
     initPullToRefresh();
-    initNewCall();
     initRemoteConfig();
     manageLogin(getIntent());
     manageIntent(getIntent());
@@ -698,13 +695,6 @@ public class HomeActivity extends BaseActivity
     }));
   }
 
-  private void initNewCall() {
-    subscriptions.add(btnNewGame.onNewGame().subscribe(aVoid -> navigateToNewGame()));
-
-    subscriptions.add(
-        btnNewGame.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
-  }
-
   private void initRemoteConfig() {
     firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
     FirebaseRemoteConfigSettings configSettings =
@@ -981,7 +971,7 @@ public class HomeActivity extends BaseActivity
 
   private void navigateToLeaderboardsShortcut(Shortcut shortcut) {
     User friend = shortcut.getSingleFriend();
-    navigator.navigateToLeaderboardsForShortcut(HomeActivity.this, friend);
+    navigator.navigateToLeaderboards(HomeActivity.this, friend);
   }
 
   private void navigateToNewCall(@LiveActivity.Source String source, String gameId) {

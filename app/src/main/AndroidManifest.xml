@@ -202,14 +202,6 @@
         android:theme="@style/AppTheme.White"/>
 
     <activity
-        android:name=".presentation.view.activity.LiveImmersiveNotificationActivity"
-        android:keepScreenOn="true"
-        android:launchMode="singleTask"
-        android:noHistory="true"
-        android:screenOrientation="portrait"
-        android:theme="@style/AppTheme.FullScreen"/>
-
-    <activity
         android:name=".presentation.view.activity.LiveActivity"
         android:configChanges="orientation|screenSize"
         android:keepScreenOn="true"
