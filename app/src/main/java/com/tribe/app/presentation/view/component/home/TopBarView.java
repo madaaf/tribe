@@ -353,7 +353,7 @@ public class TopBarView extends FrameLayout {
   }
 
   private int getMarginRightSearch() {
-    return imgBack.getMeasuredWidth();
+    return imgBack.getMeasuredWidth() + getMarginRightBtnClose();
   }
 
   private int getMarginLeftSearch() {
@@ -365,7 +365,7 @@ public class TopBarView extends FrameLayout {
   }
 
   private int getMarginRightBtnClose() {
-    return 0;
+    return marginSmall >> 1;
   }
 
   private void hideView(View view, boolean left) {

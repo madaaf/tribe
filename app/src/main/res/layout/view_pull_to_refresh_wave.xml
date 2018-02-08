@@ -10,6 +10,7 @@
       android:rotation="20"
       android:translationX="-50dp"
       android:translationY="-100dp"
+      android:alpha="0.1"
       />
 
   <ImageView

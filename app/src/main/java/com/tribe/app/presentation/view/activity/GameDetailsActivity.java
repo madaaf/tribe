@@ -16,6 +16,7 @@ import android.support.transition.Transition;
 import android.support.transition.TransitionListenerAdapter;
 import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -78,10 +79,12 @@ public class GameDetailsActivity extends BaseActivity {
   @BindView(R.id.imgAnimation1) ImageView imgAnimation1;
   @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
   @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
+  @BindView(R.id.cardAvatarMyScore) CardView cardAvatarMyScore;
   @BindView(R.id.avatarMyScore) NewAvatarView avatarMyScore;
   @BindView(R.id.txtMyScoreRanking) TextViewRanking txtMyScoreRanking;
   @BindView(R.id.txtMyScoreScore) TextViewFont txtMyScoreScore;
   @BindView(R.id.txtMyScoreName) TextViewFont txtMyScoreName;
+  @BindView(R.id.cardAvatarBestScore) CardView cardAvatarBestScore;
   @BindView(R.id.avatarBestScore) NewAvatarView avatarBestScore;
   @BindView(R.id.txtBestScoreRanking) TextViewRanking txtBestScoreRanking;
   @BindView(R.id.txtBestScoreScore) TextViewFont txtBestScoreScore;
@@ -302,20 +305,18 @@ public class GameDetailsActivity extends BaseActivity {
   }
 
   private void showScores() {
-    ConstraintSet set = new ConstraintSet();
-    set.clone(layoutConstraint);
-    set.connect(R.id.cardAvatarMyScore, ConstraintSet.BOTTOM, R.id.btnSingle, ConstraintSet.TOP);
-    set.clear(R.id.cardAvatarMyScore, ConstraintSet.TOP);
+    animateViewEntry(cardAvatarMyScore);
+    animateViewEntry(txtMyScoreName);
+    animateViewEntry(txtMyScoreRanking);
+    animateViewEntry(txtMyScoreScore);
 
     if (game.getFriendLeader() != null) {
-      set.clear(R.id.imgConnect, ConstraintSet.TOP);
-      set.connect(R.id.imgConnect, ConstraintSet.BOTTOM, R.id.cardAvatarMyScore, ConstraintSet.TOP);
-      set.clear(R.id.cardAvatarBestScore, ConstraintSet.TOP);
-      set.connect(R.id.cardAvatarBestScore, ConstraintSet.BOTTOM, R.id.imgConnect,
-          ConstraintSet.TOP);
+      animateViewEntry(imgConnect);
+      animateViewEntry(cardAvatarBestScore);
+      animateViewEntry(txtBestScoreName);
+      animateViewEntry(txtBestScoreRanking);
+      animateViewEntry(txtBestScoreScore);
     }
-
-    animateLayoutWithConstraintSet(set, null);
   }
 
   private void animateLayoutWithConstraintSet(ConstraintSet constraintSet,
@@ -326,6 +327,24 @@ public class GameDetailsActivity extends BaseActivity {
     if (transitionListener != null) transition.addListener(transitionListener);
     TransitionManager.beginDelayedTransition(layoutConstraint, transition);
     constraintSet.applyTo(layoutConstraint);
+  }
+
+  private void showView(View v) {
+    v.animate()
+        .alpha(1)
+        .setDuration(DURATION)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+  }
+
+  private void animateViewEntry(View v) {
+    v.setTranslationY(screenUtils.dpToPx(50));
+    v.animate()
+        .translationY(0)
+        .setDuration(DURATION)
+        .setInterpolator(new OvershootInterpolator(0.45f))
+        .start();
+    showView(v);
   }
 
   private void animateImg(ImageView imgAnimation, boolean isX) {

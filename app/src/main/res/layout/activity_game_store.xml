@@ -94,8 +94,9 @@
       android:layout_height="match_parent"
       android:layout_marginTop="52dp"
       android:background="@null"
+      android:fadingEdge="vertical"
       android:fadingEdgeLength="0dp"
-      android:overScrollMode="never"
+      android:overScrollMode="always"
       android:requiresFadingEdge="none"
       android:scrollbars="none"
       />
