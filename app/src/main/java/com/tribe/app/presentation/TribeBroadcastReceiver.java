@@ -139,7 +139,7 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
     LiveNotificationView liveNotificationView =
         NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
-    if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
+    if (notificationPayload.isLive()) {
       liveNotificationView.getContainer().setOnClickListener(view -> {
         Shortcut shortcut = ShortcutUtil.getRecipientFromId(notificationPayload.getUserId(), user);
         Room room = new Room(notificationPayload.getSessionId());
