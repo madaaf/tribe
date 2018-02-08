@@ -299,6 +299,7 @@ public class LiveView extends FrameLayout {
       viewLocalLive.dispose();
       gameManager.disposeLive();
       if (viewGameManager != null) viewGameManager.dispose();
+      stopGame();
       tempSubscriptions.unsubscribe();
     } else {
       tempSubscriptions.clear();
@@ -1052,7 +1053,7 @@ public class LiveView extends FrameLayout {
   }
 
   int nbLiveInRoom() {
-    if (live.getRoom() == null) return 1;
+    if (live.getRoom() == null || live.getRoom().nbUsersLive() == 0) return 1;
     return live.getRoom().nbUsersLive();
   }
 
@@ -1266,8 +1267,8 @@ public class LiveView extends FrameLayout {
       bundle.putString(TagManagerUtils.SOURCE, getSource());
       if (live.getRoom() != null) {
         bundle.putString(TagManagerUtils.TYPE,
-            live.getRoom().nbUsersInvited() == 0 && live.getRoom().nbUsersLive() == 1
-                ? TagManagerUtils.TYPE_SOLO : TagManagerUtils.TYPE_MULTI);
+            live.getRoom().nbUsersInvited() == 0 && nbLiveInRoom() <= 1 ? TagManagerUtils.TYPE_SOLO
+                : TagManagerUtils.TYPE_MULTI);
       }
       tagManager.trackEvent(TagManagerUtils.Games, bundle);
     }

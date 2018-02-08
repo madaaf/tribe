@@ -35,6 +35,7 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -383,6 +384,11 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
   }
 
   @OnClick(R.id.btnSingle) void openLive() {
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.HOME);
+    bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.LAUNCHED);
+    bundle.putString(TagManagerUtils.NAME, game.getTitle());
+    tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
     navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
   }
 
