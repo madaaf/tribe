@@ -594,8 +594,10 @@ public class LiveView extends FrameLayout {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(remotePeer -> {
           if (isFirstToJoin) {
-            viewRinging.stopRinging();
-            viewRinging.setVisibility(View.GONE);
+            if (viewRinging != null) {
+              viewRinging.stopRinging();
+              viewRinging.setVisibility(View.GONE);
+            }
             isFirstToJoin = !isFirstToJoin;
           }
 
@@ -693,6 +695,7 @@ public class LiveView extends FrameLayout {
 
     webRTCRoom.connect(options);
 
+
     if (!StringUtils.isEmpty(live.getGameId()) &&
         !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
         StringUtils.isEmpty(room.getGameId())) {
@@ -787,8 +790,8 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    if (live.getSource().equals(SOURCE_CALL_ROULETTE) ||
-        live.getRoom() != null && live.getRoom().acceptsRandom()) {
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || live.getRoom() != null && live.getRoom()
+        .acceptsRandom()) {
       viewControlsLive.btnChat.setVisibility(INVISIBLE);
       viewRinging.setVisibility(INVISIBLE);
     }

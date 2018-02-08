@@ -110,7 +110,7 @@ public class LeaderboardPage extends LinearLayout {
     //  if (downwards) {
     //    if (items.get(items.size() - 1) instanceof Score) {
     //      Score score = (Score) items.get(items.size() - 1);
-    //      gamePresenter.load(selectedGame.getId(), friends, false, LIMIT,
+    //      gamePresenter.load(selectedGame.getIdOb(), friends, false, LIMIT,
     //          score.getRanking() + 1, downwards);
     //    }
     //  } else {
@@ -119,7 +119,7 @@ public class LeaderboardPage extends LinearLayout {
     //      if (score.getRanking() == 0 || score.getRanking() == 1) return;
     //      int offset = score.getRanking() - LIMIT;
     //      int limit = offset < 0 ? LIMIT + offset : LIMIT;
-    //      gamePresenter.loadGameLeaderboard(selectedGame.getId(), friends, false, limit,
+    //      gamePresenter.loadGameLeaderboard(selectedGame.getIdOb(), friends, false, limit,
     //          offset < 0 ? 0 : offset, downwards);
     //    }
     //  }

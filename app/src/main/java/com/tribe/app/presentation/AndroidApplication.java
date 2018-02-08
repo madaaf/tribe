@@ -195,7 +195,7 @@ public class AndroidApplication extends Application {
                   .addField("url", String.class, FieldAttribute.PRIMARY_KEY)
                   .addField("filesize", Integer.class)
                   .addField("width", String.class)
-                  .addField("height", String.class)
+                  .addField("getRelativeHeight", String.class)
                   .addField("duration", float.class);
 
               schema.create("MessageRealm")
@@ -366,7 +366,7 @@ public class AndroidApplication extends Application {
                   .addField("url", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
                   .addField("filesize", Integer.class)
                   .addField("width", String.class)
-                  .addField("height", String.class)
+                  .addField("getRelativeHeight", String.class)
                   .addField("duration", float.class);
 
               schema.get("MessageRealm")
@@ -378,7 +378,7 @@ public class AndroidApplication extends Application {
                     migratedChildren.set("url", children.getString("url"));
                     migratedChildren.set("filesize", children.getInt("filesize"));
                     migratedChildren.set("width", children.getString("width"));
-                    migratedChildren.set("height", children.getString("height"));
+                    migratedChildren.set("getRelativeHeight", children.getString("getRelativeHeight"));
                     migratedChildren.set("duration", children.getFloat("duration"));
                   })
                   .removeField("original")
@@ -393,7 +393,7 @@ public class AndroidApplication extends Application {
                       newChild.set("url", child.getString("url"));
                       newChild.set("filesize", child.getInt("filesize"));
                       newChild.set("width", child.getString("width"));
-                      newChild.set("height", child.getString("height"));
+                      newChild.set("getRelativeHeight", child.getString("getRelativeHeight"));
                       newChild.set("duration", child.getFloat("duration"));
                       migratedChildren.add(newChild);
                     }

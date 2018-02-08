@@ -36,8 +36,15 @@ import rx.android.schedulers.AndroidSchedulers;
   public static final int TRIVIA_SOUNDTRACK_ANSWER = 11;
   public static final int TRIVIA_SOUNDTRACK = 12;
   public static final int TRIVIA_WON = 13;
+<<<<<<< HEAD
   public static final int GAME_FRIEND_LEADER = 14;
   public static final int GAME_CHALLENGING = 15;
+=======
+  public static final int BIRD_RUSH_SOUNDTRACK = 14;
+  public static final int BIRD_RUSH_TAP = 15;
+  public static final int BIRD_RUSH_OBSTACLE = 16;
+  public static final int GAME_PLAYER_LOST = 17;
+>>>>>>> bird_rush_scrolling
 
   // VARIABLES
   private Context context;
@@ -85,8 +92,15 @@ import rx.android.schedulers.AndroidSchedulers;
     addSound(TRIVIA_SOUNDTRACK_ANSWER, R.raw.trivia_soundtrack_answer);
     addSound(TRIVIA_SOUNDTRACK, R.raw.trivia_soundtrack);
     addSound(TRIVIA_WON, R.raw.trivia_won);
+<<<<<<< HEAD
     addSound(GAME_FRIEND_LEADER, R.raw.game_friend_leader);
     addSound(GAME_CHALLENGING, R.raw.game_challenge);
+=======
+    addSound(BIRD_RUSH_SOUNDTRACK, R.raw.bird_rush_soundtrack);
+    addSound(BIRD_RUSH_TAP, R.raw.bird_rush_tap);
+    addSound(BIRD_RUSH_OBSTACLE, R.raw.bird_rush_obstacle_1);
+    addSound(GAME_PLAYER_LOST, R.raw.game_player_lost);
+>>>>>>> bird_rush_scrolling
   }
 
   public void addSound(int index, int soundID) {
@@ -100,11 +114,12 @@ import rx.android.schedulers.AndroidSchedulers;
   public void playSound(int index, float volumeRate) {
     if (index == NO_SOUND) {
       cancelMediaPlayer();
-    } else if (index == WAITING_FRIEND ||
-        index == CALL_RING ||
-        index == ALIENS_ATTACK_SOUNDTRACK ||
-        index == TRIVIA_SOUNDTRACK ||
-        index == TRIVIA_SOUNDTRACK_ANSWER) {
+    } else if (index == WAITING_FRIEND
+        || index == CALL_RING
+        || index == ALIENS_ATTACK_SOUNDTRACK
+        || index == BIRD_RUSH_SOUNDTRACK
+        || index == TRIVIA_SOUNDTRACK
+        || index == TRIVIA_SOUNDTRACK_ANSWER) {
       if (mediaPlayer != null) cancelMediaPlayer();
 
       mediaPlayer = MediaPlayer.create(context, soundsRawIds.get(index));

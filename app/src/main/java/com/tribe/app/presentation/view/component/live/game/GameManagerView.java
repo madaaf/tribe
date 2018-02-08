@@ -25,6 +25,7 @@ import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicView;
+import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
@@ -248,6 +249,7 @@ public class GameManagerView extends FrameLayout {
       GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
       subscriptionsGame.add(gameAlienAttacksView.onAddScore().subscribe(onAddScore));
       gameView = gameAlienAttacksView;
+   
     } else if (game.getId().equals(Game.GAME_TRIVIA)) {
       GameTriviaView gameTriviaView = new GameTriviaView(getContext());
       subscriptionsGame.add(gameTriviaView.onAddScore().subscribe(onAddScore));
@@ -266,6 +268,11 @@ public class GameManagerView extends FrameLayout {
           .doOnNext(aVoid -> onStopGame.onNext(currentGame))
           .subscribe(onPlayOtherGame));
       gameView = gameBattleMusicView;
+   
+    } else if (game.getId().equals(Game.GAME_BIRD_RUSH)) {
+      GameBirdRushView gameBirdRushView = new GameBirdRushView(getContext());
+      subscriptionsGame.add(gameBirdRushView.onAddScore().subscribe(onAddScore));
+      gameView = gameBirdRushView;
     } else if (game.isWeb()) {
       GameWebView gameWebView = new GameWebView(getContext());
       subscriptionsGame.add(gameWebView.onAddScore().subscribe(onAddScore));
