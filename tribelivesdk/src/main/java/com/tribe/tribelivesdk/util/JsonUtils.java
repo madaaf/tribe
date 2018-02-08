@@ -29,7 +29,4 @@ public class JsonUtils {
     if (array.length == 0) json += "\"";
     return json;
   }
-
-
-
 }

@@ -128,6 +128,7 @@ public class TribeGuest extends GroupJoiner implements Serializable {
     return scoreValue;
   }
 
+
   public void setRankingValue(int rankingValue) {
     this.rankingValue = rankingValue;
   }
@@ -135,4 +136,17 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   public int getRankingValue() {
     return rankingValue;
   }
+  @Override public String toString() {
+    return "TribeGuest{"
+        + "id='"
+        + id
+        + '\''
+        + ", displayName='"
+        + displayName
+        + '\''
+        + ", userName='"
+        + userName
+        + '\''
+        + '}';
+      }
 }

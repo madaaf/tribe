@@ -99,6 +99,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
     super.setupGameLocally(userId, players, timestamp);
+
     subscriptionsSession.add(onPending.subscribe(aBoolean -> {
       for (int i = 0; i < viewAliens.getChildCount(); i++) {
         if (viewAliens.getChildAt(i) instanceof GameAliensAttackAlienView) {
@@ -159,17 +160,17 @@ public class GameAliensAttackView extends GameViewWithEngine {
             animatorRotation.start();
 
             alienView.animate()
-                .translationY(getMeasuredHeight() -
-                    params.topMargin -
-                    alienView.getHeight() -
-                    viewBackground.getRoadBottomMargin())
+                .translationY(getMeasuredHeight()
+                    - params.topMargin
+                    - alienView.getHeight()
+                    - viewBackground.getRoadBottomMargin())
                 .setDuration((long) (alienView.getSpeed() * 1000))
                 .setStartDelay(0)
                 .setInterpolator(new LinearInterpolator())
                 .setListener(new AnimatorListenerAdapter() {
                   @Override public void onAnimationCancel(Animator animation) {
                     super.onAnimationCancel(animation);
-                    //Timber.d("Animation cancel : " + alienView.getId());
+                    //Timber.d("Animation cancel : " + alienView.getBirdId());
                   }
 
                   @Override public void onAnimationEnd(Animator animation) {
@@ -249,7 +250,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
   private JSONObject getAlienPayload(JSONObject alienJson) {
     JSONObject obj = new JSONObject();
     JSONObject game = new JSONObject();
-    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_POP_ALIEN);
+    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_POP_ALIEN); // SOEF
     JsonUtils.jsonPut(game, ALIEN_KEY, alienJson);
     JsonUtils.jsonPut(obj, this.game.getId(), game);
     return obj;

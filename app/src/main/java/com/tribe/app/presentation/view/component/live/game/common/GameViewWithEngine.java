@@ -19,6 +19,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
+import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushEngine;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -43,12 +44,12 @@ import timber.log.Timber;
  */
 
 public abstract class GameViewWithEngine extends GameViewWithRanking {
-
+  private static final int IOS_RATIO_PX_HEIGHT = 667;
   private static final int DURATION = 250;
   private static final int DELAY = 250;
   private static final float OVERSHOOT = 1.25f;
 
-  private static final String ACTION_NEW_GAME = "newGame";
+  protected static final String ACTION_NEW_GAME = "newGame";
   private static final String ACTION_USER_GAME_OVER = "userGameOver";
   private static final String ACTION_USER_WAITING = "userWaiting";
   private static final String ACTION_USER_READY = "userReady";
@@ -117,6 +118,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void newGame(Set<String> playerIds) {
     Timber.d("newGame");
+    Timber.w("SOEF SEND newGame");
     long timestamp = startGameTimestamp();
     webRTCRoom.sendToPeers(getNewGamePayload(currentUser.getId(), timestamp,
         playerIds.toArray(new String[playerIds.size()])), true);
@@ -143,6 +145,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
               JSONObject message = jsonObject.getJSONObject(game.getId());
               if (message.has(ACTION_KEY)) {
                 String actionKey = message.getString(ACTION_KEY);
+                Timber.w("SOEF " + actionKey + " " + message.toString());
                 if (actionKey.equals(ACTION_USER_GAME_OVER)) {
                   String fromUserId = message.getString(USER_KEY);
                   setStatus(RankingStatus.LOST, fromUserId);
@@ -176,6 +179,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void startMasterEngine() {
     Timber.d("startMasterEngine");
+
     subscriptions.add(gameEngine.onPlayerLost.subscribe(userId -> {
       webRTCRoom.sendToPeers(getLostPayload(userId), true);
       playerLost(userId);
@@ -219,7 +223,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void imReady() {
-    Timber.d("imReady");
+    Timber.e("SOEF imReady");
     webRTCRoom.sendToPeers(getImReadyPayload(currentUser.getId()), true);
     if (gameEngine != null) gameEngine.setUserReady(currentUser.getId());
   }
@@ -233,7 +237,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void iLost() {
-    Timber.d("iLost");
+    Timber.e("SOEF iLost");
     if (game == null || gameEngine == null) return;
 
     if (roundPoints > 0) {
@@ -266,7 +270,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     Timber.d("gameOver (winnerId : " + winnerId + " )");
 
     if (subscriptionsSession != null) subscriptionsSession.clear();
-
+    soundManager.playSound(SoundManager.GAME_PLAYER_LOST, SoundManager.SOUND_MAX);
     refactorPending(false);
     onMessage.onNext(null);
     changeMessageStatus(txtRestart, false, true, DURATION, 0, null, null);
@@ -381,11 +385,15 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
         return;
       }
 
-      long now = System.currentTimeMillis();
+      long now = System.nanoTime() * 1000;
+      Timber.e("MADA TIMESTAMP " + now + " " + timestamp);
       if (timestamp > System.currentTimeMillis()) {
         subscriptions.add(Observable.timer(timestamp - now, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(aLong -> playGame()));
+            .subscribe(aLong -> {
+              Timber.e("MADA TIMESTAMP " + now + " " + timestamp + " " + (timestamp - now));
+              playGame();
+            }));
       } else {
         playGame();
       }
@@ -481,6 +489,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
     paramsTitleBG.gravity = Gravity.CENTER;
+    txtTitleBG.setGravity(Gravity.CENTER);
 
     TextViewCompat.setTextAppearance(txtTitleBG, R.style.GameTitle_1_White40);
     txtTitleBG.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
@@ -496,7 +505,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
     paramsTitleFront.gravity = Gravity.CENTER;
-
+    txtTitleFront.setGravity(Gravity.CENTER);
     TextViewCompat.setTextAppearance(txtTitleFront, R.style.GameTitle_1_White);
     txtTitleFront.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
     txtTitleFront.setText(title);
