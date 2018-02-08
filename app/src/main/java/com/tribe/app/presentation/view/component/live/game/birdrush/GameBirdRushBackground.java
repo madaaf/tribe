@@ -24,6 +24,7 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -60,7 +61,7 @@ public class GameBirdRushBackground extends View {
   private BirdRushObstacle obstaclePoped = null;
   private Map<BirdRushObstacle, Rect> obstaclePopedList = new HashMap<>();
   private List<BirdRushObstacle> obstaclesList = new ArrayList<>();
-  private Map<BirdRush, Rect> birdList = new HashMap<>();
+  private LinkedHashMap<BirdRush, Rect> birdList = new LinkedHashMap<>();
   private List<String> crossObstacle = new ArrayList<>();
 
   /**
@@ -284,7 +285,6 @@ public class GameBirdRushBackground extends View {
           birdRush.setLost(false);
           killBirdTimer.unsubscribe();
           killBirdTimer = null;
-          clearObstacles();
         }
       } else {
         canvas.drawBitmap(birdRush.getBitmap(), null, rect, myBirdPaint);
@@ -331,7 +331,43 @@ public class GameBirdRushBackground extends View {
     }
   }
 
+  private ArrayList<BirdRush> ok() {
+    BirdRush myBird = getMyBird();
+
+    Map<String, String> test = new LinkedHashMap<String, String>();
+    test.put("ok1", "ok");
+    test.put("ok2", "ok");
+    test.put("ok3", "ok");
+    for (Map.Entry<String, String> entry : test.entrySet()) {
+      Timber.e("SOEG " + entry.getKey());
+    }
+
+    String ok = test.get("ok2");
+    test.remove("ok2");
+    test.put("ok2", ok);
+
+    for (Map.Entry<String, String> entry : test.entrySet()) {
+      Timber.e("SOEG V :  " + entry.getKey());
+    }
+
+    ArrayList<String> keys = new ArrayList<String>(test.keySet());
+    for (int i = keys.size() - 1; i >= 0; i--) {
+      System.out.println("SOEG Y " + keys.get(i));
+    }
+
+    return null;
+  }
+
+  private void sortBirdList() {
+    BirdRush myBird = getMyBird();
+    Rect myRect = getMyRect();
+
+    birdList.remove(myBird);
+    birdList.put(myBird, myRect);
+  }
+
   private void startBirds() {
+    sortBirdList();
     int v = 15;
     int i = 0;
 
@@ -421,15 +457,20 @@ public class GameBirdRushBackground extends View {
   public void jumpBird(String guestId, PlayerTap playerTap, boolean onActionDown) {
     BirdRush b = getBird(guestId);
 
+    if (playerTap != null) {
+      if (playerTap.getyRatio() != null) {
+        int y = (int) (screenUtils.getHeightPx() * (1 - playerTap.getyRatio()));
+        b.setY(y);
+      } else {
+        int y = (int) (GameBirdRushView.HEIGHT_IOS_SCREEN - playerTap.getY());
+        b.setY(y);
+      }
+    }
+
     if (onActionDown) {
       startJump(b);
     } else {
       endJump(b);
-    }
-
-    if (playerTap != null) {
-      // int y = (int) (GameBirdRushView.HEIGHT_IOS_SCREEN - playerTap.getY());
-      // b.setY(y + getPosTabIncrease());
     }
   }
 
@@ -538,6 +579,14 @@ public class GameBirdRushBackground extends View {
     return null;
   }
 
+  public Rect getMyRect() {
+    for (Map.Entry<BirdRush, Rect> entry : birdList.entrySet()) {
+      BirdRush b = entry.getKey();
+      if (b.isMine()) return entry.getValue();
+    }
+    return null;
+  }
+
   public BirdRush getBird(String guestId) {
     for (Map.Entry<BirdRush, Rect> entry : birdList.entrySet()) {
       BirdRush b = entry.getKey();
@@ -577,6 +626,7 @@ public class GameBirdRushBackground extends View {
   public void stop() {
     pause = true;
     Timber.e("SOEF BACKGROUND  stop ");
+    clearObstacles();
   }
 
   public void dispose() {
@@ -608,13 +658,13 @@ public class GameBirdRushBackground extends View {
     i = 0;
     delay = null;
     index = 1;
+    clearObstacles();
 
     if (ok) {
       for (Map.Entry<BirdRush, Rect> entry : birdList.entrySet()) {
         BirdRush b = entry.getKey();
         initBirdPosition(b);
       }
-      clearObstacles();
       subscriptions.clear();
     }
   }

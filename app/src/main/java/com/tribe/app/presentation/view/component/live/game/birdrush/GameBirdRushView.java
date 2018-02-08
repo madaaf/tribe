@@ -100,15 +100,24 @@ public class GameBirdRushView extends GameViewWithEngine {
                   viewBackground.addObstacles(obstacles);
                   Timber.e("add obstacle : " + obstacles.toString());
                 } else if (actionKey.equals(BIRD_ACTION_PLAYER_TAP)) {
-                  double y;
+                  Double y = null;
+                  Double yRatio = null;
                   if (message.get(PlayerTap.Y) instanceof Integer) {
                     int y1 = (int) message.get(PlayerTap.Y);
                     y = (double) y1;
                   } else {
                     y = (double) message.get(PlayerTap.Y);
                   }
+
+                  if (message.get(PlayerTap.Y_RATIO) instanceof Integer) {
+                    int y1 = (int) message.get(PlayerTap.Y_RATIO);
+                    yRatio = (double) y1;
+                  } else {
+                    yRatio = (double) message.get(PlayerTap.Y_RATIO);
+                  }
+
                   String guestId = message.getString(FROM_KEY);
-                  PlayerTap playerTap = new PlayerTap(y);
+                  PlayerTap playerTap = new PlayerTap(y, yRatio);
                   Timber.e("player tap " + playerTap.toString());
                   viewBackground.jumpBird(guestId, playerTap, true);
                 } else {
@@ -219,9 +228,8 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     subscriptions.add(controller.onTap().subscribe(onActionDown -> {
       soundManager.playSound(SoundManager.BIRD_RUSH_TAP, SoundManager.SOUND_MAX);
-      webRTCRoom.sendToPeers(
-          getTapPayload(viewBackground.getMyBird().getX(), viewBackground.getMyBird().getY()),
-          true);
+      float ratio = viewBackground.getMyBird().getY() / screenUtils.getHeightPx();
+      webRTCRoom.sendToPeers(getTapPayload(viewBackground.getMyBird().getY(), ratio), true);
       //Timber.w("SOEF TAP " + getTapPayload(viewBackground.getMyBird().getX(), viewBackground.getMyBird().getY()));
       viewBackground.jumpBird(currentUser.getId(), null, onActionDown);
     }));
@@ -269,13 +277,14 @@ public class GameBirdRushView extends GameViewWithEngine {
   /**
    * JSON PAYLOAD
    */
-  private JSONObject getTapPayload(float x, float y) {
+  private JSONObject getTapPayload(float y, float yRatio) {
     JSONObject obj = new JSONObject();
     JSONObject tap = new JSONObject();
     JsonUtils.jsonPut(tap, ACTION_KEY, BIRD_ACTION_PLAYER_TAP);
     JsonUtils.jsonPut(tap, FROM_KEY, currentUser.getId());
     JsonUtils.jsonPut(tap, "x", WIDTH_IOS_SCREEN / 2); // IOS RETRO-COMPATIBILITY
-    JsonUtils.jsonPut(tap, "y", HEIGHT_IOS_SCREEN - y);
+    JsonUtils.jsonPut(tap, PlayerTap.Y, HEIGHT_IOS_SCREEN - y);
+    JsonUtils.jsonPut(tap, PlayerTap.Y_RATIO, 1 - yRatio);
     JsonUtils.jsonPut(obj, this.game.getId(), tap);
     return obj;
   }

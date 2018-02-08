@@ -583,8 +583,10 @@ public class LiveView extends FrameLayout {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(remotePeer -> {
           if (isFirstToJoin) {
-            viewRinging.stopRinging();
-            viewRinging.setVisibility(View.GONE);
+            if (viewRinging != null) {
+              viewRinging.stopRinging();
+              viewRinging.setVisibility(View.GONE);
+            }
             isFirstToJoin = !isFirstToJoin;
           }
 

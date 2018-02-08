@@ -6,14 +6,25 @@ package com.tribe.app.presentation.view.component.live.game.birdrush;
 
 public class PlayerTap {
   public static final String Y = "y";
+  public static final String Y_RATIO = "yRatio";
 
-  private double y;
+  private Double y;
+  private Double yRatio;
 
-  public PlayerTap(double y) {
+  public PlayerTap(Double y, Double yRatio) {
     this.y = y;
+    this.yRatio = yRatio;
   }
 
-  public double getY() {
+  public Double getyRatio() {
+    return yRatio;
+  }
+
+  public void setyRatio(Double yRatio) {
+    this.yRatio = yRatio;
+  }
+
+  public Double getY() {
     return y;
   }
 
