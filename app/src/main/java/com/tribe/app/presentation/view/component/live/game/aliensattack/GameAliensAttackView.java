@@ -207,7 +207,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
   @Override protected void startMasterEngine() {
     super.startMasterEngine();
-
+    ((GameAliensAttackEngine) gameEngine).popAlien(0);
     subscriptionsSession.add(
         ((GameAliensAttackEngine) gameEngine).onAlien().subscribe(alienView -> {
           webRTCRoom.sendToPeers(getAlienPayload(alienView.asJSON()), true);
