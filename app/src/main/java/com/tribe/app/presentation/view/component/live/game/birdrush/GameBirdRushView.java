@@ -236,10 +236,10 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    Timber.d(" SOEF on start myBird Rush");
     wordingPrefix = "game_bird_rush_";
-    super.start(game, mapObservable, liveViewsObservable, userId);
+    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())

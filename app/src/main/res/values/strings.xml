@@ -996,8 +996,5 @@
 	<string name="new_challenger_popup_other">and an other</string>
 	<string name="new_challenger_popup_others">and %1$d others</string>
 	<string name="new_challenger_popup_action_add">ADD TO CHATS</string>
-<<<<<<< HEAD
-=======
 	<string name="new_challenger_popup_friends_placeholder">Receive messages, see games currently playing and play together!</string>
->>>>>>> bird_rush_scrolling
 </resources>
