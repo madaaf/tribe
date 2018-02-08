@@ -55,7 +55,7 @@ public class GameBirdRushBackground extends View {
   private int xScroll = 0, yScroll = 0, xCenterBirdPos, yCenterBirdPos, yInitTranslation;
   private boolean pause = false, displayFirstObstacle = false, entranceBirdFinish = false;
   private Double delay = null;
-  private int i = 0;
+  private int idexPopedObstacle = 0;
   private int index = 1;
 
   private BirdRushObstacle obstaclePoped = null;
@@ -71,6 +71,7 @@ public class GameBirdRushBackground extends View {
   private CompositeSubscription subscriptionsAnimation = new CompositeSubscription();
   private PublishSubject<Void> onGameOver = PublishSubject.create();
   private PublishSubject<Void> onAddPoint = PublishSubject.create();
+  private PublishSubject<Void> onStartGame = PublishSubject.create();
   private Subscription scrollTimer = null, engineTimer = null, killBirdTimer = null;
 
   public GameBirdRushBackground(@NonNull Context context) {
@@ -225,7 +226,12 @@ public class GameBirdRushBackground extends View {
     if (obstaclePoped != null) {
       obstaclePoped.setIndex(index);
       index++;
-      Timber.e("SOEF T DISPLAY obstPoped " + obstaclesList.size() + " " + obstaclePopedList.size());
+      Timber.e("SOEF T DISPLAY obstPoped "
+          + obstaclePoped.getId()
+          + " "
+          + obstaclesList.size()
+          + " "
+          + obstaclePopedList.size());
       Rect dstObsc = new Rect(obstaclePoped.getX(), obstaclePoped.getY(),
           obstaclePoped.getX() + BirdRushObstacle.wiewWidth,
           Math.round(obstaclePoped.getY() + obstaclePoped.getViewHeight()));
@@ -304,7 +310,7 @@ public class GameBirdRushBackground extends View {
         if (o.getX() - o.getViewWidth() < (screenUtils.getWidthPx() / 2)) {
           if (isBetween(o.getY(), o.getY() + o.getViewHeight(), myBird.getY())) {
             o.setHit(true);
-            displayObstacles(canvas);
+            // displayObstacles(canvas); // TODO SOEF
             gameOver();
           }
         }
@@ -401,16 +407,13 @@ public class GameBirdRushBackground extends View {
           subscriptions.add(Observable.timer((1000), TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(aLong -> {
-                entranceBirdFinish = true;
+                entranceBirdFinish = true; //          setOnTouchListener(controller);
+                onStartGame.onNext(null);
               }));
         }
       }, 300 * i);
       i++;
     }
-  }
-
-  private void animBirdEntrance(BirdRush b) {
-
   }
 
   private void killBird() {
@@ -490,7 +493,9 @@ public class GameBirdRushBackground extends View {
       subscriptions.add(engineTimer = Observable.interval(0, 100, TimeUnit.MILLISECONDS)
           .onBackpressureDrop()
           .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(this::popObstacles));
+          .subscribe(aLong -> {
+            if (entranceBirdFinish) popObstacles(aLong);
+          }));
     }
   }
 
@@ -516,17 +521,17 @@ public class GameBirdRushBackground extends View {
         displayFirstObstacle = true;
         obstaclePoped = obstaclesList.get(0);
         delay = ((obstaclePoped.getNextSpawn() * 1000) + aLong);
-        //Timber.i("SOEF TI FIRST: " + i + " " + aLong + " " + obstaclesList.size() + " " + obstaclePopedList.size());
-        i++;
+        //Timber.idexPopedObstacle("SOEF TI FIRST: " + idexPopedObstacle + " " + aLong + " " + obstaclesList.size() + " " + obstaclePopedList.size());
+        idexPopedObstacle++;
       }
 
       // init next obstacleBtm
       if (delay != null && (delay == aLong.doubleValue())) {
-        if (i < obstaclesList.size()) {
-          obstaclePoped = obstaclesList.get(i);
+        if (idexPopedObstacle < obstaclesList.size()) {
+          obstaclePoped = obstaclesList.get(idexPopedObstacle);
+          idexPopedObstacle++;
           delay = ((obstaclePoped.getNextSpawn() * 1000) + aLong);
-          i++;
-          //Timber.w("SOEF TI : " + i + " " + obstaclesList.size() + " " + obstaclePopedList.size());
+          //Timber.w("SOEF TI : " + idexPopedObstacle + " " + obstaclesList.size() + " " + obstaclePopedList.size());
         }
       }
     }
@@ -623,7 +628,7 @@ public class GameBirdRushBackground extends View {
     setTimer();
   }
 
-  public void stop() {
+  public void stop() { // WHEN TITLE ARRIVE
     pause = true;
     Timber.e("SOEF BACKGROUND  stop ");
     clearObstacles();
@@ -645,6 +650,8 @@ public class GameBirdRushBackground extends View {
     Timber.e("SOEF clear obstacles");
     obstaclesList.clear();
     obstaclePopedList.clear();
+    obstaclePoped = null;
+    invalidate();
   }
 
   public void resetParams(boolean ok) {
@@ -655,7 +662,7 @@ public class GameBirdRushBackground extends View {
     engineTimer = null;
     scrollTimer = null;
     crossObstacle.clear();
-    i = 0;
+    idexPopedObstacle = 0;
     delay = null;
     index = 1;
     clearObstacles();
@@ -679,5 +686,9 @@ public class GameBirdRushBackground extends View {
 
   public Observable<Void> onAddPoint() {
     return onAddPoint;
+  }
+
+  public Observable<Void> onStartGame() {
+    return onStartGame;
   }
 }

@@ -91,14 +91,14 @@ public class GameBirdRushView extends GameViewWithEngine {
               if (message.has(ACTION_KEY)) {
                 String actionKey = message.getString(ACTION_KEY);
                 if (actionKey.equals(ACTION_NEW_GAME)) {
-                  viewBackground.clearObstacles();
                   Timber.w("SOEF ACTION NEW GAME");
+                  //viewBackground.clearObstacles();
                 }
                 if (actionKey.equals(BIRD_ACTION_ADD_OBSTACLE)) {
                   JSONArray jsonObstacles = message.getJSONArray(BIRD_KEY_OBSTACLE);
                   List<BirdRushObstacle> obstacles = transform(jsonObstacles);
                   viewBackground.addObstacles(obstacles);
-                  Timber.e("add obstacle : " + obstacles.toString());
+                  Timber.e("SOEF POP USER POP : " + obstacles.toString());
                 } else if (actionKey.equals(BIRD_ACTION_PLAYER_TAP)) {
                   Double y = null;
                   Double yRatio = null;
@@ -165,19 +165,20 @@ public class GameBirdRushView extends GameViewWithEngine {
         .subscribe(aLong -> {
           Timber.d("SOEF playGame");
           super.playGame();
-          setOnTouchListener(controller);
           viewBackground.start();
         }));
   }
 
   @Override protected void startMasterEngine() {
     super.startMasterEngine();
-    Timber.d(" SOEF start master engine myBird rush ");
+    ((GameBirdRushEngine) gameEngine).popObstcale();
+    Timber.d(" SOEF start master : i AM MASTER");
 
     subscriptionsSession.add(
         ((GameBirdRushEngine) gameEngine).onObstacle().subscribe(generateObstacleList -> {
           webRTCRoom.sendToPeers(getObstaclePayload(generateObstacleList), true);
-          Timber.e("SOEF POP ISTAVLE received " + getObstaclePayload(generateObstacleList));
+          Timber.e("SOEF POP OP MYSELF " + generateObstacleList.size() + " " + getObstaclePayload(
+              generateObstacleList));
           viewBackground.addObstacles(generateObstacleList);
         }));
 
@@ -224,6 +225,10 @@ public class GameBirdRushView extends GameViewWithEngine {
 
     subscriptions.add(viewBackground.onAddPoint().subscribe(aVoid -> {
       overcomeObstacle();
+    }));
+
+    subscriptions.add(viewBackground.onStartGame().subscribe(aVoid -> {
+      setOnTouchListener(controller);
     }));
 
     subscriptions.add(controller.onTap().subscribe(onActionDown -> {

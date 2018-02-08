@@ -23,6 +23,7 @@ public class GameBirdRushEngine extends GameEngine {
   // VARIABLES
 
   private ScreenUtils screenUtils;
+  private Double spanDelay;
 
   // OBSERVABLES
   private Subscription popIntervalSubscription;
@@ -44,15 +45,15 @@ public class GameBirdRushEngine extends GameEngine {
   }
 
   public void popObstcale() {
-    if (popIntervalSubscription != null) popIntervalSubscription.unsubscribe();
-    popIntervalSubscription = Observable.interval((2000), TimeUnit.MILLISECONDS)
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          Timber.e("SOEF POP ISTAVLE " + obstacleList.size());
-          generateObstacle(6);
-          onObstacle.onNext(obstacleList);
-        });
+    if (popIntervalSubscription == null) {
+      popIntervalSubscription = Observable.interval((5000), TimeUnit.MILLISECONDS)
+          .onBackpressureDrop()
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            generateObstacle(6);
+            onObstacle.onNext(obstacleList);
+          });
+    }
   }
 
   public void generateObstacle(int nbr) {
@@ -69,7 +70,6 @@ public class GameBirdRushEngine extends GameEngine {
   @Override public void start() {
     Timber.w("SOEF Start game engine");
     super.start();
-    popObstcale();
   }
 
   public void setLevel(Level level) {

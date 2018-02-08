@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.component.live.game.common;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.TextViewCompat;
@@ -20,6 +19,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
+import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushEngine;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -179,6 +179,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void startMasterEngine() {
     Timber.d("startMasterEngine");
+
     subscriptions.add(gameEngine.onPlayerLost.subscribe(userId -> {
       webRTCRoom.sendToPeers(getLostPayload(userId), true);
       playerLost(userId);
