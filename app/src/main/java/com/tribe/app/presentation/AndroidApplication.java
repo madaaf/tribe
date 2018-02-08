@@ -149,7 +149,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(16)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(17)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -432,6 +432,11 @@ public class AndroidApplication extends Application {
                   .addField("game_id", String.class);
             }
 
+            oldVersion++;
+          }
+
+          if (oldVersion == 16) {
+            schema.get("ScoreUserRealm").addField("ranking", int.class);
             oldVersion++;
           }
         })

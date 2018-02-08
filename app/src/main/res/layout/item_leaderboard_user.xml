@@ -5,15 +5,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutContent"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
-    android:background="@drawable/selectable_button"
+    android:layout_height="90dp"
+    android:background="@null"
     android:clickable="true"
+    android:foreground="@drawable/selectable_button_light"
     >
 
   <ImageView
       android:id="@+id/imgIcon"
-      android:layout_width="@dimen/avatar_size_small"
-      android:layout_height="@dimen/avatar_size_small"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
       android:layout_marginStart="@dimen/horizontal_margin_small"
       android:scaleType="fitXY"
       app:layout_constraintBottom_toBottomOf="parent"
@@ -27,64 +28,62 @@
       android:layout_height="wrap_content"
       android:layout_marginEnd="@dimen/horizontal_margin_small"
       android:scaleType="centerInside"
-      android:src="@drawable/picto_arrow_right"
+      android:src="@drawable/picto_arrow_right_white"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       />
 
   <com.tribe.app.presentation.view.widget.TextViewFont
-      android:id="@+id/txtPointsSuffix"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginEnd="@dimen/horizontal_margin_small"
-      android:text="@string/leaderboards_points"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toStartOf="@id/imgArrow"
-      app:layout_constraintTop_toTopOf="parent"
-      style="@style/BiggerTitle.1.Black40"
-      />
-
-  <com.tribe.app.presentation.view.widget.TextViewFont
       android:id="@+id/txtPoints"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="5dp"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:background="@drawable/bg_pts"
+      android:gravity="center"
+      android:paddingBottom="5dp"
+      android:paddingEnd="10dp"
+      android:paddingStart="10dp"
+      android:paddingTop="5dp"
       app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toStartOf="@id/txtPointsSuffix"
+      app:layout_constraintEnd_toStartOf="@id/imgArrow"
       app:layout_constraintTop_toTopOf="parent"
-      style="@style/BiggerTitle.2.Black"
+      style="@style/BiggerTitle.2.White"
       />
 
-  <LinearLayout
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtName"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_marginEnd="@dimen/horizontal_margin_small"
       android:layout_marginStart="@dimen/horizontal_margin_small"
-      android:orientation="vertical"
-      app:layout_constraintBottom_toBottomOf="parent"
+      android:ellipsize="end"
+      android:gravity="start"
+      android:maxLines="1"
+      android:textAllCaps="true"
+      app:layout_constraintBottom_toTopOf="@id/txtHint"
       app:layout_constraintEnd_toStartOf="@id/txtPoints"
       app:layout_constraintStart_toEndOf="@id/imgIcon"
       app:layout_constraintTop_toTopOf="parent"
-      >
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textAllCaps="true"
-        style="@style/BiggerTitle.2.Black"
-        />
+      app:layout_constraintVertical_chainStyle="packed"
+      style="@style/BiggerTitle.2.White"
+      />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtHint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4.5dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        style="@style/BiggerBody.Two.Yellow"
-        />
-  </LinearLayout>
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtHint"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:layout_marginTop="4.5dp"
+      android:ellipsize="end"
+      android:gravity="start"
+      android:maxLines="1"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@id/txtPoints"
+      app:layout_constraintStart_toEndOf="@id/imgIcon"
+      app:layout_constraintTop_toBottomOf="@id/txtName"
+      style="@style/Title.2.White40"
+      />
 </android.support.constraint.ConstraintLayout>

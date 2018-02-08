@@ -11,20 +11,20 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
-import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.view.adapter.LeaderboardUserAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardUserLayoutManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
-import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class LeaderboardActivity extends BaseActivity {
 
   @BindView(R.id.recyclerViewLeaderboard) RecyclerView recyclerView;
 
-  @BindView(R.id.viewNewAvatar) NewAvatarView viewNewAvatar;
+  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.txtEmojiGame) EmojiGameView txtEmojiGame;
 
@@ -73,7 +73,6 @@ public class LeaderboardActivity extends BaseActivity {
   private List<Score> items;
   private GameManager gameManager;
   private GameMVPViewAdapter gameMVPViewAdapter;
-  private UserMVPViewAdapter userMVPViewAdapter;
   private User user;
 
   // RESOURCES
@@ -91,15 +90,18 @@ public class LeaderboardActivity extends BaseActivity {
     gameManager = GameManager.getInstance(this);
     items = new ArrayList<>();
 
+    user = (User) getIntent().getSerializableExtra(USER);
+
     initDependencyInjector();
     initPresenter();
     initSubscriptions();
     initUI();
-    setUser(user, user.equals(currentUser));
+    setUser(user, !user.equals(currentUser));
   }
 
   @Override protected void onStart() {
     super.onStart();
+    gamePresenter.onViewAttached(gameMVPViewAdapter);
   }
 
   @Override protected void onStop() {
@@ -162,7 +164,7 @@ public class LeaderboardActivity extends BaseActivity {
     adapter.setUser(user);
 
     txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
-    viewNewAvatar.load(user.getProfilePicture());
+    viewAvatar.load(user.getProfilePicture());
     txtName.setText(user.getDisplayName());
     txtUsername.setText(user.getUsernameDisplay());
 
@@ -171,14 +173,12 @@ public class LeaderboardActivity extends BaseActivity {
     recyclerView.setItemAnimator(null);
     recyclerView.setAdapter(adapter);
     recyclerView.addItemDecoration(
-        new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.grey_divider),
-            screenUtils.dpToPx(0.5f)));
+        new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.black_opacity_10),
+            screenUtils.dpToPx(0.25f)));
 
     subscriptions.add(adapter.onClick()
         .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
-        .subscribe(score -> {
-          // TODO
-        }));
+        .subscribe(score -> navigator.navigateToGameLeaderboard(this, score.getGame().getId())));
 
     if (collapsed) {
       appBarLayout.setExpanded(false);
@@ -191,6 +191,10 @@ public class LeaderboardActivity extends BaseActivity {
   /**
    * ONCLICK
    */
+
+  @OnClick(R.id.btnBack) void back() {
+    onBackPressed();
+  }
 
   /**
    * PUBLIC

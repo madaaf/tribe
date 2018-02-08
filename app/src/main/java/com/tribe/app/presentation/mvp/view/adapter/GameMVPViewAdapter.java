@@ -19,8 +19,7 @@ public class GameMVPViewAdapter implements GameMVPView {
 
   }
 
-  @Override public void onGameLeaderboard(List<Score> scoreList, boolean cloud, boolean friendsOnly,
-      int offset, boolean downwards) {
+  @Override public void onGameLeaderboard(List<Score> scoreList, boolean cloud) {
 
   }
 

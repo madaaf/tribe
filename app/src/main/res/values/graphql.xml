@@ -721,6 +721,7 @@
           display_name
         }
         value
+        ranking
       }
 
       __typename
@@ -740,18 +741,7 @@
   </string>
 
   <string name="game.leaderboard" translatable="false">
-    game (gameId : \"%1$s\") {
-      scores(limit : %2$s, %3$s, friendsOnly : %4$s) {
-        value
-        ranking
-        user {
-          id
-          display_name
-          username
-          picture
-        }
-      }
-    }
+    scores (gameId : \"%1$s\", userIds : [ %2$s ])
   </string>
 
   <string name="addScore" translatable="false">
@@ -777,7 +767,7 @@
 
   <string name="userfragment.leaderboard" translatable="false">
     fragment UserInfos on User {
-      scores (gameIds : %1$s) {
+      scores (gameIds : [%1$s]) {
         game {
           id
         }

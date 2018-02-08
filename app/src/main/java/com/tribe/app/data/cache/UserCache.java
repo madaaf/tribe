@@ -72,4 +72,6 @@ import rx.Observable;
   Observable<String> getRandomBannedUntil();
 
   void putRandomBannedUntil(String date);
+
+  List<ShortcutRealm> singleShortcutsNoObs();
 }

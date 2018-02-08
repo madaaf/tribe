@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutConstraint"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@null"
+    android:gravity="center"
+    android:orientation="vertical"
+    >
+
+  <com.tribe.app.presentation.view.widget.TextViewRanking
+      android:id="@+id/txtRankingFirst"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:elevation="6dp"
+      android:scaleX="0"
+      android:scaleY="0"
+      app:layout_constraintBottom_toBottomOf="@+id/cardAvatarFirst"
+      app:layout_constraintEnd_toEndOf="@id/cardAvatarFirst"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewRanking
+      android:id="@+id/txtRankingSecond"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:elevation="6dp"
+      android:scaleX="0"
+      android:scaleY="0"
+      app:layout_constraintBottom_toBottomOf="@+id/cardAvatarSecond"
+      app:layout_constraintEnd_toEndOf="@id/cardAvatarSecond"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewRanking
+      android:id="@+id/txtRankingThird"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:elevation="6dp"
+      android:scaleX="0"
+      android:scaleY="0"
+      app:layout_constraintBottom_toBottomOf="@+id/cardAvatarThird"
+      app:layout_constraintEnd_toEndOf="@id/cardAvatarThird"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtNameFirst"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/vertical_margin_smaller"
+      app:layout_constraintEnd_toEndOf="@+id/cardAvatarFirst"
+      app:layout_constraintStart_toStartOf="@id/cardAvatarFirst"
+      app:layout_constraintTop_toBottomOf="@id/cardAvatarFirst"
+      style="@style/Title.2.White"
+      />
+
+</android.support.constraint.ConstraintLayout>

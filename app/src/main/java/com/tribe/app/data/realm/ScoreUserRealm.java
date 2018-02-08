@@ -13,10 +13,17 @@ public class ScoreUserRealm extends RealmObject {
   private String display_name;
   private String username;
   private String picture;
-  private int value;
+  private int value, ranking;
 
   public ScoreUserRealm() {
 
+  }
+
+  public ScoreUserRealm(String id, String display_name, String username, String picture) {
+    this.id = id;
+    this.display_name = display_name;
+    this.username = username;
+    this.picture = picture;
   }
 
   public String getId() {
@@ -57,6 +64,14 @@ public class ScoreUserRealm extends RealmObject {
 
   public int getValue() {
     return value;
+  }
+
+  public void setRanking(int ranking) {
+    this.ranking = ranking;
+  }
+
+  public int getRanking() {
+    return ranking;
   }
 
   @Override public boolean equals(Object o) {

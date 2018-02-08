@@ -76,6 +76,7 @@ import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
 import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.activity.GameLeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LeaderboardActivity;
 import com.tribe.app.presentation.view.activity.SmsListener;
@@ -310,6 +311,8 @@ public interface ApplicationComponent {
   void inject(ShareAdapterDelegate shareAdapterDelegate);
 
   void inject(LeaderboardActivity leaderboardActivity);
+
+  void inject(GameLeaderboardActivity gameLeaderboardActivity);
 
   // JOBS
   void inject(BaseJob baseJob);

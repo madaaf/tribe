@@ -7,14 +7,18 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.GameCache;
+import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.FileApi;
 import com.tribe.app.data.network.OpentdbApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.entity.CategoryEntity;
+import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.data.realm.ScoreUserRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaCategoryEnum;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
@@ -38,9 +42,12 @@ public class CloudGameDataStore implements GameDataStore {
   private final Preference<String> gameData;
   private final Gson gson;
   private final GameCache gameCache;
+  private final UserCache userCache;
+  private final AccessToken accessToken;
 
   public CloudGameDataStore(Context context, TribeApi tribeApi, FileApi fileApi,
-      OpentdbApi opentdbApi, Preference<String> gameData, GameCache gameCache) {
+      OpentdbApi opentdbApi, Preference<String> gameData, GameCache gameCache, UserCache userCache,
+      AccessToken accessToken) {
     this.context = context;
     this.tribeApi = tribeApi;
     this.fileApi = fileApi;
@@ -48,6 +55,8 @@ public class CloudGameDataStore implements GameDataStore {
     this.gameData = gameData;
     this.gson = new GsonBuilder().create();
     this.gameCache = gameCache;
+    this.userCache = userCache;
+    this.accessToken = accessToken;
   }
 
   @Override public Observable<Void> synchronizeGamesData() {
@@ -76,21 +85,36 @@ public class CloudGameDataStore implements GameDataStore {
         .doOnError(Throwable::printStackTrace);
   }
 
-  @Override
-  public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, boolean friendsOnly,
-      int limit, int offset) {
-    String body = context.getString(R.string.game_leaderboard, gameId, "" + limit,
-        offset == 0 ? "" : "offset : " + offset, friendsOnly);
+  @Override public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId) {
+    List<ShortcutRealm> singleShortcuts = userCache.singleShortcutsNoObs();
+    String[] userIds = new String[singleShortcuts.size() + 1];
+
+    for (int i = 0; i < singleShortcuts.size(); i++) {
+      ShortcutRealm shortcutRealm = singleShortcuts.get(i);
+      userIds[i] = shortcutRealm.getSingleFriend().getId();
+    }
+
+    userIds[singleShortcuts.size()] = accessToken.getUserId();
+
+    String body =
+        context.getString(R.string.game_leaderboard, gameId, JsonUtils.arrayToJson(userIds));
     final String request = context.getString(R.string.query, body);
+
     return this.tribeApi.getLeaderboard(request).doOnNext(scoreRealmList -> {
+      int i = 0;
+      ScoreUserRealm scoreUserRealm;
       for (ScoreRealm scoreRealm : scoreRealmList) {
         scoreRealm.setGame_id(gameId);
+        if (i < singleShortcuts.size()) {
+          UserRealm userRealm = singleShortcuts.get(i).getSingleFriend();
+          scoreUserRealm = new ScoreUserRealm(userRealm.getId(), userRealm.getDisplayName(),
+              userRealm.getUsername(), userRealm.getProfilePicture());
+          scoreRealm.setUser(scoreUserRealm);
+        }
+        i++;
       }
 
-      if (offset == 0) {
-        gameCache.updateLeaderboard(gameId, friendsOnly,
-            scoreRealmList); // We only save the first page
-      }
+      gameCache.updateLeaderboard(gameId, scoreRealmList);
     }).doOnError(Throwable::printStackTrace);
   }
 

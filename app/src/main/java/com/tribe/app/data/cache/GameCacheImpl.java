@@ -41,6 +41,8 @@ public class GameCacheImpl implements GameCache {
           if (gameRealm.getFriendLeader() != null) {
             gameRealm.setFriendLeaderScoreUser(gameRealm.getFriendLeader().getUser());
             gameRealm.getFriendLeaderScoreUser().setValue(gameRealm.getFriendLeader().getValue());
+            gameRealm.getFriendLeaderScoreUser()
+                .setRanking(gameRealm.getFriendLeader().getRanking());
           }
         }
 
@@ -102,7 +104,7 @@ public class GameCacheImpl implements GameCache {
     }
   }
 
-  @Override public List<ScoreRealm> getGameLeaderboard(String gameId, boolean friendsOnly) {
+  @Override public List<ScoreRealm> getGameLeaderboard(String gameId) {
     Realm newRealm = Realm.getDefaultInstance();
 
     try {
@@ -110,10 +112,8 @@ public class GameCacheImpl implements GameCache {
       List<ScoreRealm> results = new ArrayList<>();
 
       if (gameRealm != null) {
-        if (friendsOnly && gameRealm.getFriends_score() != null) {
+        if (gameRealm.getFriends_score() != null) {
           results.addAll(newRealm.copyFromRealm(gameRealm.getFriends_score()));
-        } else if (!friendsOnly && gameRealm.getOverall_score() != null) {
-          results.addAll(newRealm.copyFromRealm(gameRealm.getOverall_score()));
         }
       }
 

@@ -397,6 +397,10 @@
     <item name="android:textColor">@android:color/white</item>
   </style>
 
+  <style name="BiggerTitle.2.BlueNew" parent="@style/BiggerTitle.2">
+    <item name="android:textColor">@color/blue.new</item>
+  </style>
+
   <style name="Headline">
     <item name="android:textSize">19sp</item>
   </style>

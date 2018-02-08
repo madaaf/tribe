@@ -981,8 +981,7 @@ public class HomeActivity extends BaseActivity
 
   private void navigateToLeaderboardsShortcut(Shortcut shortcut) {
     User friend = shortcut.getSingleFriend();
-    navigator.navigateToLeaderboardsForShortcut(HomeActivity.this, friend.getId(),
-        friend.getDisplayName(), friend.getProfilePicture());
+    navigator.navigateToLeaderboardsForShortcut(HomeActivity.this, friend);
   }
 
   private void navigateToNewCall(@LiveActivity.Source String source, String gameId) {

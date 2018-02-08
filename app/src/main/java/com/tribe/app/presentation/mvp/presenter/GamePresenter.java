@@ -90,33 +90,22 @@ public class GamePresenter implements Presenter {
     gameManager = GameManager.getInstance(gameMVPView.context());
   }
 
-  public void loadGameLeaderboard(String gameId, boolean friendsOnly, boolean shouldLoadFromDisk,
-      int limit, int offset, boolean downwards) {
-    if (offset < 0) return;
-
+  public void loadGameLeaderboard(String gameId) {
     if (cloudGameLeaderboardSubscriber != null) {
       cloudGameLeaderboardSubscriber.unsubscribe();
     }
 
-    cloudGameLeaderboardSubscriber =
-        new GameLeaderboardSubscriber(true, friendsOnly, offset, downwards);
-    cloudGameLeaderboard.setup(gameId, friendsOnly, limit, offset);
+    cloudGameLeaderboardSubscriber = new GameLeaderboardSubscriber(true);
+    cloudGameLeaderboard.setup(gameId);
     cloudGameLeaderboard.execute(cloudGameLeaderboardSubscriber);
   }
 
   private final class GameLeaderboardSubscriber extends DefaultSubscriber<List<Score>> {
 
-    private boolean friendsOnly = false;
-    private int offset = 0;
     private boolean cloud;
-    private boolean downwards;
 
-    public GameLeaderboardSubscriber(boolean cloud, boolean friendsOnly, int offset,
-        boolean downwards) {
+    public GameLeaderboardSubscriber(boolean cloud) {
       this.cloud = cloud;
-      this.friendsOnly = friendsOnly;
-      this.offset = offset;
-      this.downwards = downwards;
     }
 
     @Override public void onCompleted() {
@@ -128,7 +117,7 @@ public class GamePresenter implements Presenter {
 
     @Override public void onNext(List<Score> score) {
       if (gameMVPView != null) {
-        gameMVPView.onGameLeaderboard(score, cloud, friendsOnly, offset, downwards);
+        gameMVPView.onGameLeaderboard(score, cloud);
       }
     }
   }

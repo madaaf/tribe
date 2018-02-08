@@ -1,10 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<com.tribe.app.presentation.view.component.games.GameUserCardView
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/viewGameUserCard"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
-    android:background="@drawable/selectable_button"
+    android:layout_height="90dp"
+    android:background="@drawable/selectable_button_light"
     android:clickable="true"
-    />
+    >
+
+  <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+      android:id="@+id/viewNewAvatar"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:layout_marginStart="23dp"
+      android:scaleType="centerInside"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewRanking
+      android:id="@+id/txtRanking"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="9dp"
+      app:layout_constraintBottom_toTopOf="@+id/txtName"
+      app:layout_constraintStart_toEndOf="@id/viewNewAvatar"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_chainStyle="packed"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toEndOf="@id/viewNewAvatar"
+      app:layout_constraintTop_toBottomOf="@id/txtRanking"
+      style="@style/Title.2.White"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtScore"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/vertical_margin_smaller"
+      android:background="@drawable/bg_pts"
+      android:layout_marginEnd="23dp"
+      android:gravity="center"
+      android:paddingBottom="5dp"
+      android:paddingEnd="10dp"
+      android:paddingStart="10dp"
+      android:paddingTop="5dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      style="@style/BiggerTitle.2.White"
+      />
+
+  <ImageView
+      android:id="@+id/imgConnectBottom"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="15dp"
+      android:src="@drawable/picto_connect_old"
+      app:layout_constraintEnd_toEndOf="@id/viewNewAvatar"
+      app:layout_constraintStart_toStartOf="@id/viewNewAvatar"
+      app:layout_constraintTop_toBottomOf="@id/viewNewAvatar"
+      />
+
+  <ImageView
+      android:id="@+id/imgConnectTop"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="15dp"
+      android:src="@drawable/picto_connect_old"
+      app:layout_constraintBottom_toTopOf="@id/viewNewAvatar"
+      app:layout_constraintEnd_toEndOf="@id/viewNewAvatar"
+      app:layout_constraintStart_toStartOf="@id/viewNewAvatar"
+      />
+
+</android.support.constraint.ConstraintLayout>

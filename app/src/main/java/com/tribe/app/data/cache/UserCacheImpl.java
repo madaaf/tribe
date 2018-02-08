@@ -14,12 +14,15 @@ import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import io.realm.exceptions.RealmException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -500,5 +503,27 @@ public class UserCacheImpl implements UserCache {
 
   @Override public void putRandomBannedUntil(String date) {
     onRandomBannedUntil.onNext(date);
+  }
+
+  @Override public List<ShortcutRealm> singleShortcutsNoObs() {
+    Realm realmNew = Realm.getDefaultInstance();
+    List<ShortcutRealm> returnResults = new ArrayList<>();
+
+    try {
+      RealmResults<ShortcutRealm> shortcutRealmListResuls = realmNew.where(ShortcutRealm.class)
+          .equalTo(ShortcutRealm.SINGLE, true)
+          .equalTo(ShortcutRealm.STATUS, ShortcutRealm.DEFAULT)
+          .findAll();
+
+      if (shortcutRealmListResuls != null) {
+        returnResults.addAll(realmNew.copyFromRealm(shortcutRealmListResuls));
+      }
+    } catch (RealmException ex) {
+      Timber.e(ex);
+    } finally {
+      realmNew.close();
+    }
+
+    return returnResults;
   }
 }

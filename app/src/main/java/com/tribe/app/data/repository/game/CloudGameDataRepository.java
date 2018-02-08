@@ -37,14 +37,14 @@ import timber.log.Timber;
 
   @Override public Observable<List<Game>> getGames() {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
-    return gameDataStore.getGames().map(gameRealm -> gameRealmDataMapper.transform(gameRealm)).doOnError(throwable -> Timber.e(throwable));
+    return gameDataStore.getGames()
+        .map(gameRealm -> gameRealmDataMapper.transform(gameRealm))
+        .doOnError(throwable -> Timber.e(throwable));
   }
 
-  @Override
-  public Observable<List<Score>> getGameLeaderBoard(String gameId, boolean friendsOnly, int limit,
-      int offset) {
+  @Override public Observable<List<Score>> getGameLeaderBoard(String gameId) {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
-    return gameDataStore.getGameLeaderBoard(gameId, friendsOnly, limit, offset)
+    return gameDataStore.getGameLeaderBoard(gameId)
         .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
   }
 

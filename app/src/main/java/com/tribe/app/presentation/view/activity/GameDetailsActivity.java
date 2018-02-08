@@ -37,8 +37,11 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.TextViewRanking;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -51,7 +54,7 @@ import rx.subscriptions.CompositeSubscription;
 public class GameDetailsActivity extends BaseActivity {
 
   private static final int DURATION_MOVING = 2500;
-  private static final int DURATION = 300;
+  private static final int DURATION = 400;
 
   public static final String GAME_ID = "game_id";
 
@@ -75,12 +78,14 @@ public class GameDetailsActivity extends BaseActivity {
   @BindView(R.id.imgAnimation1) ImageView imgAnimation1;
   @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
   @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
-  @BindView(R.id.avatarMyScore) ImageView avatarMyScore;
+  @BindView(R.id.avatarMyScore) NewAvatarView avatarMyScore;
+  @BindView(R.id.txtMyScoreRanking) TextViewRanking txtMyScoreRanking;
   @BindView(R.id.txtMyScoreScore) TextViewFont txtMyScoreScore;
-  @BindView(R.id.txtMyScoreDesc) TextViewFont txtMyScoreDesc;
-  @BindView(R.id.avatarBestScore) ImageView avatarBestScore;
+  @BindView(R.id.txtMyScoreName) TextViewFont txtMyScoreName;
+  @BindView(R.id.avatarBestScore) NewAvatarView avatarBestScore;
+  @BindView(R.id.txtBestScoreRanking) TextViewRanking txtBestScoreRanking;
   @BindView(R.id.txtBestScoreScore) TextViewFont txtBestScoreScore;
-  @BindView(R.id.txtBestScoreDesc) TextViewFont txtBestScoreDesc;
+  @BindView(R.id.txtBestScoreName) TextViewFont txtBestScoreName;
   @BindView(R.id.imgConnect) ImageView imgConnect;
 
   // VARIABLES
@@ -215,27 +220,22 @@ public class GameDetailsActivity extends BaseActivity {
 
     Score score = getCurrentUser().getScoreForGame(game.getId());
     if (score != null) {
-      txtMyScoreScore.setText(score.getValue() + " " + getString(R.string.leaderboards_points));
-      txtMyScoreDesc.setText(R.string.leaderboards_your_score);
+      txtMyScoreScore.setText("" + score.getValue());
     } else {
-      txtMyScoreScore.setText("0 " + getString(R.string.leaderboards_points));
-      txtMyScoreDesc.setText(R.string.leaderboards_no_score);
+      txtMyScoreScore.setText("0");
     }
 
-    new GlideUtils.Builder(this).url(getCurrentUser().getProfilePicture())
-        .hasPlaceholder(true)
-        .target(avatarMyScore)
-        .load();
+    txtMyScoreName.setText(getCurrentUser().getDisplayName());
+    txtMyScoreScore.setText("" + score.getValue());
+    txtMyScoreRanking.setRanking(score.getRanking());
+    avatarMyScore.load(getCurrentUser().getProfilePicture());
 
     if (game.getFriendLeader() != null) {
-      int leaderScore = game.getFriendLeader().getScoreValue();
-      txtBestScoreScore.setText(leaderScore + " " + getString(R.string.leaderboards_points));
-      txtBestScoreDesc.setText(R.string.leaderboards_score);
-
-      new GlideUtils.Builder(this).url(game.getFriendLeader().getPicture())
-          .hasPlaceholder(true)
-          .target(avatarBestScore)
-          .load();
+      TribeGuest friendLeader = game.getFriendLeader();
+      txtBestScoreScore.setText("" + friendLeader.getScoreValue());
+      txtBestScoreName.setText(friendLeader.getDisplayName());
+      txtBestScoreRanking.setRanking(friendLeader.getRankingValue());
+      avatarBestScore.load(friendLeader.getPicture());
     }
   }
 
@@ -312,8 +312,6 @@ public class GameDetailsActivity extends BaseActivity {
       set.clear(R.id.cardAvatarBestScore, ConstraintSet.TOP);
       set.connect(R.id.cardAvatarBestScore, ConstraintSet.BOTTOM, R.id.imgConnect,
           ConstraintSet.TOP);
-    } else {
-
     }
 
     animateLayoutWithConstraintSet(set, null);
@@ -323,7 +321,7 @@ public class GameDetailsActivity extends BaseActivity {
       Transition.TransitionListener transitionListener) {
     Transition transition = new ChangeBounds();
     transition.setDuration(DURATION);
-    transition.setInterpolator(new OvershootInterpolator(0.75f));
+    transition.setInterpolator(new OvershootInterpolator(0.45f));
     if (transitionListener != null) transition.addListener(transitionListener);
     TransitionManager.beginDelayedTransition(layoutConstraint, transition);
     constraintSet.applyTo(layoutConstraint);

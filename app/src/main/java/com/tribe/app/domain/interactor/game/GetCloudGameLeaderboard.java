@@ -14,9 +14,6 @@ public class GetCloudGameLeaderboard extends UseCase {
 
   private GameRepository gameRepository;
   private String gameId;
-  private boolean friendsOnly = true;
-  private int offset;
-  private int limit;
 
   @Inject public GetCloudGameLeaderboard(CloudGameDataRepository gameRepository,
       ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
@@ -24,14 +21,11 @@ public class GetCloudGameLeaderboard extends UseCase {
     this.gameRepository = gameRepository;
   }
 
-  public void setup(String gameId, boolean friendsOnly, int limit, int offset) {
+  public void setup(String gameId) {
     this.gameId = gameId;
-    this.friendsOnly = friendsOnly;
-    this.offset = offset;
-    this.limit = limit;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.gameRepository.getGameLeaderBoard(gameId, friendsOnly, limit, offset);
+    return this.gameRepository.getGameLeaderBoard(gameId);
   }
 }

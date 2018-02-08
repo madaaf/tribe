@@ -26,10 +26,8 @@ public class DiskGameDataStore implements GameDataStore {
     return Observable.just(gameCache.getGames());
   }
 
-  @Override
-  public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, boolean friendsOnly,
-      int limit, int offset) {
-    return Observable.just(gameCache.getGameLeaderboard(gameId, friendsOnly));
+  @Override public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId) {
+    return Observable.just(gameCache.getGameLeaderboard(gameId));
   }
 
   @Override public Observable<List<ScoreRealm>> getUserLeaderboard(String userId) {
@@ -41,7 +39,7 @@ public class DiskGameDataStore implements GameDataStore {
   }
 
   @Override public Observable<List<ScoreRealm>> getFriendsScore(String gameId) {
-    return Observable.just(gameCache.getGameLeaderboard(gameId, true));
+    return Observable.just(gameCache.getGameLeaderboard(gameId));
   }
 
   @Override public Observable<Map<String, List<TriviaQuestion>>> getTriviaData() {

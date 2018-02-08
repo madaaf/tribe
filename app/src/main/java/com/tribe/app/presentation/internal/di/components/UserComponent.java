@@ -16,7 +16,6 @@ import com.tribe.app.presentation.view.activity.GameDetailsActivity;
 import com.tribe.app.presentation.view.activity.GameMembersActivity;
 import com.tribe.app.presentation.view.activity.GameStoreActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
-import com.tribe.app.presentation.view.activity.OldLeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.LiveImmersiveNotificationActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
@@ -232,8 +231,6 @@ import dagger.Component;
   void inject(GameStoreActivity newGameActivity);
 
   void inject(GamesStoreView gamesStoreView);
-
-  void inject(OldLeaderboardActivity leaderboardActivity);
 
   void inject(LeaderboardMainView leaderboardMainView);
 

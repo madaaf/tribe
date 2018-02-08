@@ -73,6 +73,7 @@ import javax.inject.Singleton;
             gameRealm.getFriendLeaderScoreUser().getDisplay_name(),
             gameRealm.getFriendLeaderScoreUser().getPicture(), false, false, null);
         guest.setScoreValue(gameRealm.getFriendLeaderScoreUser().getValue());
+        guest.setRankingValue(gameRealm.getFriendLeaderScoreUser().getRanking());
         game.setFriendLeader(guest);
       }
       game.setEmoji(gameRealm.getEmoji());

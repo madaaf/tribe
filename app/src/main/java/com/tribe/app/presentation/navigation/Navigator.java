@@ -31,6 +31,7 @@ import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GameDetailsActivity;
+import com.tribe.app.presentation.view.activity.GameLeaderboardActivity;
 import com.tribe.app.presentation.view.activity.GameMembersActivity;
 import com.tribe.app.presentation.view.activity.GameStoreActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
@@ -38,7 +39,6 @@ import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.NewGameActivity;
-import com.tribe.app.presentation.view.activity.OldLeaderboardActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
@@ -168,11 +168,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToLeaderboardsForShortcut(Activity activity, String userId,
-      String displayName, String profilePicture) {
+  public void navigateToLeaderboardsForShortcut(Activity activity, User user) {
     if (activity != null) {
-      Intent intent =
-          OldLeaderboardActivity.getCallingIntent(activity, userId, displayName, profilePicture);
+      Intent intent = LeaderboardActivity.getCallingIntent(activity, user);
       activity.startActivityForResult(intent, FROM_LEADERBOARD);
       activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
     }
@@ -191,6 +189,14 @@ public class Navigator {
       Intent intent = GameDetailsActivity.getCallingIntent(activity, gameId);
       activity.startActivityForResult(intent, FROM_GAMESTORE);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
+  }
+
+  public void navigateToGameLeaderboard(Activity activity, String gameId) {
+    if (activity != null) {
+      Intent intent = GameLeaderboardActivity.getCallingIntent(activity, gameId);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }
 

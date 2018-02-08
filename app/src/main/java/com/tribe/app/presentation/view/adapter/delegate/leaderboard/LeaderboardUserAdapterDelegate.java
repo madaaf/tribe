@@ -1,6 +1,8 @@
 package com.tribe.app.presentation.view.adapter.delegate.leaderboard;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -54,6 +56,10 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
     final LeaderboardUserViewHolder vh = new LeaderboardUserViewHolder(
         layoutInflater.inflate(R.layout.item_leaderboard_user, parent, false));
     if (canClick) vh.layoutContent.setOnClickListener(v -> click.onNext(vh.itemView));
+    vh.gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.BL_TR, new int[] {
+        Color.WHITE, Color.WHITE
+    });
+    vh.layoutContent.setBackground(vh.gradientDrawable);
     return vh;
   }
 
@@ -64,9 +70,12 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
 
     vh.txtName.setText(score.getGame().getTitle());
 
+    vh.gradientDrawable.setColors(new int[] {
+        Color.parseColor("#" + score.getGame().getPrimary_color()),
+        Color.parseColor("#" + score.getGame().getSecondary_color())
+    });
+
     new GlideUtils.GameImageBuilder(context, screenUtils).url(score.getGame().getIcon())
-        .hasBorder(true)
-        .hasPlaceholder(true)
         .rounded(true)
         .target(vh.imgIcon)
         .load();
@@ -110,8 +119,9 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
     @BindView(R.id.txtName) TextViewFont txtName;
     @BindView(R.id.txtHint) TextViewFont txtHint;
     @BindView(R.id.txtPoints) TextViewFont txtPoints;
-    @BindView(R.id.txtPointsSuffix) TextViewFont txtPointsSuffix;
     @BindView(R.id.imgArrow) ImageView imgArrow;
+
+    private GradientDrawable gradientDrawable;
 
     public LeaderboardUserViewHolder(View itemView) {
       super(itemView);
