@@ -216,6 +216,7 @@ public class GameDrawView extends GameView {
   }
 
   @Override public void setNextGame() {
+    if (game != null) game.incrementRoundCount();
     if (adapter == null) initView(context);
     new Handler().post(() -> {
       int currentItem = (viewpager.getCurrentItem() + 1);

@@ -198,6 +198,8 @@ public abstract class GameView extends FrameLayout {
     this.peerMapObservable = map;
     this.invitedMapObservable = mapInvited;
 
+    game.resetRoundCount();
+
     subscriptions.add(liveViewsObservable.subscribe(stringLiveStreamViewMap -> {
       this.liveViewsMap.clear();
       this.liveViewsMap.putAll(stringLiveStreamViewMap);

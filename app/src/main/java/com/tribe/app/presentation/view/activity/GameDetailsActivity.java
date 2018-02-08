@@ -386,7 +386,7 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     Bundle bundle = new Bundle();
     bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.HOME);
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.LAUNCHED);
-    bundle.putString(TagManagerUtils.NAME, game.getTitle());
+    bundle.putString(TagManagerUtils.NAME, game.getId());
     tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
     navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
   }

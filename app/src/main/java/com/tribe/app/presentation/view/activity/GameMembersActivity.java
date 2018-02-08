@@ -352,7 +352,7 @@ public class GameMembersActivity extends BaseBroadcastReceiverActivity
   @OnClick(R.id.btnPlay) void clickPlay() {
     if (selectedIds.size() > 0) {
       Bundle bundle = new Bundle();
-      bundle.putString(TagManagerUtils.NAME, game.getTitle());
+      bundle.putString(TagManagerUtils.NAME, game.getId());
       bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.NEW_GAME);
       bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.LAUNCHED);
       tagManager.trackEvent(TagManagerUtils.NewGame, bundle);

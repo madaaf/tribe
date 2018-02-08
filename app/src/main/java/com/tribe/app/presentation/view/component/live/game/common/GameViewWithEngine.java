@@ -372,6 +372,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     Timber.d("setupGameLocally : " + userId + " / players : " + players);
     currentMasterId = userId;
     game.setCurrentMaster(peerMap.get(userId));
+    game.incrementRoundCount();
     listenMessages();
     resetStatuses();
     refactorPending(false);

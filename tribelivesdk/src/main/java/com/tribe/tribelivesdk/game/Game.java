@@ -78,6 +78,7 @@ public class Game {
   protected String logo;
   protected String background;
   protected List<String> animation_icons;
+  protected int roundCount = 0;
 
   // OBSERVABLE / SUBSCRIPTIONS
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -341,6 +342,18 @@ public class Game {
 
   public Map<String, Object> getContextMap() {
     return contextMap;
+  }
+
+  public void incrementRoundCount() {
+    roundCount++;
+  }
+
+  public int getRoundCount() {
+    return roundCount;
+  }
+
+  public void resetRoundCount() {
+
   }
 
   /**

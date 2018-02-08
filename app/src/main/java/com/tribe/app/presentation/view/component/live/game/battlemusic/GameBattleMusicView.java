@@ -201,6 +201,8 @@ public class GameBattleMusicView extends GameViewWithRanking {
   }
 
   private void showPlaylists() {
+    game.incrementRoundCount();
+
     viewCategories.computeCategories(new ArrayList<>(mapPlaylists.values()));
 
     ConstraintSet constraintSet = new ConstraintSet();
@@ -627,7 +629,8 @@ public class GameBattleMusicView extends GameViewWithRanking {
 
   }
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable, Observable<Map<String, TribeGuest>> mapInvitedObservable,
+  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
 

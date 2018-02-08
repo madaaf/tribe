@@ -47,7 +47,7 @@ public class NewGameActivity extends GameActivity {
   @Override protected void onGameSelected(Game game) {
     Bundle bundle = new Bundle();
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.LAUNCHED);
-    bundle.putString(TagManagerUtils.NAME, game.getTitle());
+    bundle.putString(TagManagerUtils.NAME, game.getId());
 
     if (shortcut == null) {
       Intent intent = new Intent();

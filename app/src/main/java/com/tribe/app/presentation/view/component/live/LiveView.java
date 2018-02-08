@@ -1261,9 +1261,10 @@ public class LiveView extends FrameLayout {
     if (gameManager.getCurrentGame() != null) {
       Game game = gameManager.getCurrentGame();
       Bundle bundle = new Bundle();
-      bundle.putString(TagManagerUtils.NAME, game.getTitle());
+      bundle.putString(TagManagerUtils.NAME, game.getId());
       bundle.putDouble(TagManagerUtils.DURATION, durationGame);
       bundle.putDouble(TagManagerUtils.AVERAGE_MEMBERS_COUNT, averageCountGameLive);
+      bundle.putInt(TagManagerUtils.ROUND_COUNT, game.getRoundCount());
       bundle.putString(TagManagerUtils.SOURCE, getSource());
       if (live.getRoom() != null) {
         bundle.putString(TagManagerUtils.TYPE,

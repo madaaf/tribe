@@ -190,6 +190,8 @@ public class GameTriviaView extends GameViewWithRanking {
   }
 
   private void showCategories() {
+    game.incrementRoundCount();
+
     soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK, SoundManager.SOUND_MID);
 
     ConstraintSet constraintSet = new ConstraintSet();
