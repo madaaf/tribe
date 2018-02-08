@@ -16,6 +16,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.TextViewRanking;
+import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.List;
 import rx.Observable;
@@ -68,7 +69,7 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     vh.txtRanking.setTextColor(Color.parseColor("#" + score.getGame().getPrimary_color()));
 
     vh.txtName.setText(score.getUser().getDisplayName());
-    vh.txtScore.setText("" + score.getValue());
+    vh.txtScore.setScore(score.getValue());
 
     if (position == 0) {
       vh.imgConnectTop.setVisibility(View.GONE);
@@ -100,7 +101,7 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     @BindView(R.id.viewNewAvatar) NewAvatarView viewAvatar;
     @BindView(R.id.txtRanking) TextViewRanking txtRanking;
     @BindView(R.id.txtName) TextViewFont txtName;
-    @BindView(R.id.txtScore) TextViewFont txtScore;
+    @BindView(R.id.txtScore) TextViewScore txtScore;
     @BindView(R.id.imgConnectTop) ImageView imgConnectTop;
     @BindView(R.id.imgConnectBottom) ImageView imgConnectBottom;
 

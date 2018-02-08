@@ -39,6 +39,7 @@ import com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdap
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.TextViewRanking;
+import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
@@ -94,7 +95,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @BindView(R.id.txtRankingFirst) TextViewRanking txtRankingFirst;
 
-  @BindView(R.id.txtScoreFirst) TextViewFont txtScoreFirst;
+  @BindView(R.id.txtScoreFirst) TextViewScore txtScoreFirst;
 
   @BindView(R.id.cardAvatarSecond) CardView cardAvatarSecond;
 
@@ -106,7 +107,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @BindView(R.id.txtRankingSecond) TextViewRanking txtRankingSecond;
 
-  @BindView(R.id.txtScoreSecond) TextViewFont txtScoreSecond;
+  @BindView(R.id.txtScoreSecond) TextViewScore txtScoreSecond;
 
   @BindView(R.id.cardAvatarThird) CardView cardAvatarThird;
 
@@ -118,7 +119,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @BindView(R.id.txtRankingThird) TextViewRanking txtRankingThird;
 
-  @BindView(R.id.txtScoreThird) TextViewFont txtScoreThird;
+  @BindView(R.id.txtScoreThird) TextViewScore txtScoreThird;
 
   // VARIABLES
   private LeaderboardDetailsLayoutManager layoutManager;
@@ -293,7 +294,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   private void setupPodium(int position, Score score, NewAvatarView avatar, CardView cardViewAvatar,
       ImageView avatarEmpty, TextViewFont txtName, TextViewRanking txtRanking,
-      TextViewFont txtScore) {
+      TextViewScore txtScore) {
     if (score == null) {
       avatarEmpty.setVisibility(View.VISIBLE);
       GradientDrawable drawable = new GradientDrawable();
@@ -316,7 +317,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       avatar.load(user.getProfilePicture());
       txtName.setText(user.getDisplayName());
       txtRanking.setRanking(position);
-      txtScore.setText("" + score.getValue());
+      txtScore.setScore(score.getValue());
     }
   }
 

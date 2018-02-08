@@ -210,17 +210,11 @@
       style="@style/Title.2.White"
       />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
+  <com.tribe.app.presentation.view.widget.TextViewScore
       android:id="@+id/txtScoreFirst"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/vertical_margin_smaller"
-      android:background="@drawable/bg_pts"
-      android:gravity="center"
-      android:paddingBottom="5dp"
-      android:paddingEnd="10dp"
-      android:paddingStart="10dp"
-      android:paddingTop="5dp"
       android:scaleX="0"
       android:scaleY="0"
       app:layout_constraintEnd_toEndOf="@id/cardAvatarFirst"
@@ -229,17 +223,11 @@
       style="@style/BiggerTitle.2.White"
       />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
+  <com.tribe.app.presentation.view.widget.TextViewScore
       android:id="@+id/txtScoreSecond"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/vertical_margin_smaller"
-      android:background="@drawable/bg_pts"
-      android:gravity="center"
-      android:paddingBottom="5dp"
-      android:paddingEnd="10dp"
-      android:paddingStart="10dp"
-      android:paddingTop="5dp"
       android:scaleX="0"
       android:scaleY="0"
       app:layout_constraintEnd_toEndOf="@id/cardAvatarSecond"
@@ -248,17 +236,11 @@
       style="@style/BiggerTitle.2.White"
       />
 
-  <com.tribe.app.presentation.view.widget.TextViewFont
+  <com.tribe.app.presentation.view.widget.TextViewScore
       android:id="@+id/txtScoreThird"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="@dimen/vertical_margin_smaller"
-      android:background="@drawable/bg_pts"
-      android:gravity="center"
-      android:paddingBottom="5dp"
-      android:paddingEnd="10dp"
-      android:paddingStart="10dp"
-      android:paddingTop="5dp"
       android:scaleX="0"
       android:scaleY="0"
       app:layout_constraintEnd_toEndOf="@id/cardAvatarThird"

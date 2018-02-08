@@ -19,6 +19,7 @@ import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.TextViewScore;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -80,7 +81,7 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
         .target(vh.imgIcon)
         .load();
 
-    vh.txtPoints.setText("" + score.getValue());
+    vh.txtPoints.setScore(score.getValue());
 
     vh.txtHint.setVisibility(View.GONE);
 
@@ -118,7 +119,7 @@ public class LeaderboardUserAdapterDelegate extends RxAdapterDelegate<List<Score
     @BindView(R.id.imgIcon) ImageView imgIcon;
     @BindView(R.id.txtName) TextViewFont txtName;
     @BindView(R.id.txtHint) TextViewFont txtHint;
-    @BindView(R.id.txtPoints) TextViewFont txtPoints;
+    @BindView(R.id.txtPoints) TextViewScore txtPoints;
     @BindView(R.id.imgArrow) ImageView imgArrow;
 
     private GradientDrawable gradientDrawable;

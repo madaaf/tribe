@@ -40,6 +40,7 @@ import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.TextViewRanking;
+import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
@@ -83,12 +84,12 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
   @BindView(R.id.cardAvatarMyScore) CardView cardAvatarMyScore;
   @BindView(R.id.avatarMyScore) NewAvatarView avatarMyScore;
   @BindView(R.id.txtMyScoreRanking) TextViewRanking txtMyScoreRanking;
-  @BindView(R.id.txtMyScoreScore) TextViewFont txtMyScoreScore;
+  @BindView(R.id.txtMyScoreScore) TextViewScore txtMyScoreScore;
   @BindView(R.id.txtMyScoreName) TextViewFont txtMyScoreName;
   @BindView(R.id.cardAvatarBestScore) CardView cardAvatarBestScore;
   @BindView(R.id.avatarBestScore) NewAvatarView avatarBestScore;
   @BindView(R.id.txtBestScoreRanking) TextViewRanking txtBestScoreRanking;
-  @BindView(R.id.txtBestScoreScore) TextViewFont txtBestScoreScore;
+  @BindView(R.id.txtBestScoreScore) TextViewScore txtBestScoreScore;
   @BindView(R.id.txtBestScoreName) TextViewFont txtBestScoreName;
   @BindView(R.id.imgConnect) ImageView imgConnect;
 
@@ -228,16 +229,14 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
       score.setValue(0);
     }
 
-    txtMyScoreScore.setText("" + score.getValue());
-
     txtMyScoreName.setText(getCurrentUser().getDisplayName());
-    txtMyScoreScore.setText("" + score.getValue());
+    txtMyScoreScore.setScore(score.getValue());
     txtMyScoreRanking.setRanking(score.getRanking());
     avatarMyScore.load(getCurrentUser().getProfilePicture());
 
     if (game.getFriendLeader() != null) {
       TribeGuest friendLeader = game.getFriendLeader();
-      txtBestScoreScore.setText("" + friendLeader.getScoreValue());
+      txtBestScoreScore.setScore(friendLeader.getScoreValue());
       txtBestScoreName.setText(friendLeader.getDisplayName());
       txtBestScoreRanking.setRanking(friendLeader.getRankingValue());
       avatarBestScore.load(friendLeader.getPicture());

@@ -144,6 +144,7 @@ import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
+import com.tribe.app.presentation.view.widget.TextViewRanking;
 import com.tribe.app.presentation.view.widget.TooltipView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
@@ -151,6 +152,7 @@ import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
 import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
 import com.tribe.app.presentation.view.widget.text.TextShortcutNameView;
+import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.tribelivesdk.di.LiveModule;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Component;
@@ -313,6 +315,10 @@ public interface ApplicationComponent {
   void inject(LeaderboardActivity leaderboardActivity);
 
   void inject(GameLeaderboardActivity gameLeaderboardActivity);
+
+  void inject(TextViewScore textViewScore);
+
+  void inject(TextViewRanking textViewRanking);
 
   // JOBS
   void inject(BaseJob baseJob);

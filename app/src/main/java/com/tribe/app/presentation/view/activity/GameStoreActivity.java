@@ -102,6 +102,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
   @Override protected void onResume() {
     super.onResume();
+    gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
   }
