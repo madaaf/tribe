@@ -18,7 +18,7 @@ public class CameraUtils {
   private static final String TAG = "TRIBE";
 
   /**
-   * Attempts to find a preview size that matches the provided width and height (which
+   * Attempts to find a preview size that matches the provided width and getRelativeHeight (which
    * specify the dimensions of the encoded video).  If it fails to find a match it just
    * uses the default preview size for video.
    * <p>

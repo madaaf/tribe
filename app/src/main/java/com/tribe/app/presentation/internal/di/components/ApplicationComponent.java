@@ -126,6 +126,7 @@ import com.tribe.app.presentation.view.component.live.TileInviteView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoriesView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoryView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicPlayView;
+import com.tribe.app.presentation.view.component.live.game.birdrush.BirdRush;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswerView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswersView;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView;
@@ -183,6 +184,8 @@ public interface ApplicationComponent {
   void inject(LauncherActivity launcherActivity);
 
   void inject(AvatarView avatarView);
+
+  void inject(BirdRush birdRush);
 
   void inject(PlayerView playerView);
 

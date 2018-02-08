@@ -105,7 +105,7 @@ public class TileInviteView extends SquareFrameLayout {
       widthMeasureSpec = MeasureSpec.makeMeasureSpec(boundedWidth, measureMode);
     }
 
-    // Adjust height as necessary
+    // Adjust getRelativeHeight as necessary
     int measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
     if (boundedWidth > 0 && boundedWidth < measuredHeight) {
       int measureMode = MeasureSpec.getMode(heightMeasureSpec);

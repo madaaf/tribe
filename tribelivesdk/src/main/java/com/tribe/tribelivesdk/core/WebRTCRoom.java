@@ -402,9 +402,9 @@ public class WebRTCRoom {
   public void sendToUser(String userId, JSONObject obj, boolean isAppMessage) {
 
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
-      if (tpc != null &&
-          !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID) &&
-          tpc.getSession().getUserId().equals(userId)) {
+      if (tpc != null
+          && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
+          && tpc.getSession().getUserId().equals(userId)) {
 
         webSocketConnection.send(
             getSendMessagePayload(tpc.getSession().getPeerId(), obj, isAppMessage).toString());
@@ -415,8 +415,9 @@ public class WebRTCRoom {
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
     if (webSocketConnection == null) return;
 
-    if (remotePeer != null &&
-        !remotePeer.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
+    if (remotePeer != null && !remotePeer.getSession()
+        .getPeerId()
+        .equals(TribeSession.PUBLISHER_ID)) {
       webSocketConnection.send(
           getSendMessagePayload(remotePeer.getSession().getPeerId(), obj, isAppMessage).toString());
     }

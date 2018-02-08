@@ -484,7 +484,7 @@ public class LiveActivity extends BaseActivity
 
   private void initRoomSubscription() {
     startService(WSService.getCallingIntentSubscribeRoom(this, room.getId()));
-    //  livePresenter.subscribeToRoomUpdates(room.getId());
+    //  livePresenter.subscribeToRoomUpdates(room.getIdOb());
   }
 
   private void removeRoomSubscription() {
@@ -1162,7 +1162,8 @@ public class LiveActivity extends BaseActivity
         getString(R.string.error_just_banned_kicked_message),
         getString(R.string.walkthrough_action_step2), null)
         .filter(aBoolean -> aBoolean)
-        .subscribe();
+        .subscribeOn(Schedulers.newThread());
+
     finish();
   }
 

@@ -326,7 +326,7 @@ public class ChatView extends IChat {
       context.startService(
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
       messagePresenter.onViewDetached();
-      recyclerView.onDetachedFromWindow();
+      recyclerView.onDetachedFromWindow(); //SOEF
     }
   }
 

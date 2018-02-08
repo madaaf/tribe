@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <FrameLayout
+      android:id="@+id/birdItem"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      >
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+      <ImageView
+          android:id="@+id/bird"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerHorizontal="true"
+          android:background="@drawable/game_bird1"
+          />
+
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/birdName"
+          android:layout_width="100dp"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/bird"
+          android:layout_gravity="center"
+          android:background="@drawable/game_bird_bck"
+          android:gravity="center"
+          android:maxLines="1"
+          android:padding="10dp"
+          android:textSize="10sp"
+          style="@style/Headline.White.2"
+          />
+
+    </RelativeLayout>
+  </FrameLayout>
+
+
+</merge>
+
