@@ -44,7 +44,7 @@ import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-public class GameMembersActivity extends BaseActivity
+public class GameMembersActivity extends BaseBroadcastReceiverActivity
     implements TokenCompleteTextView.TokenListener<Shortcut> {
 
   public static final String GAME_ID = "game_id";

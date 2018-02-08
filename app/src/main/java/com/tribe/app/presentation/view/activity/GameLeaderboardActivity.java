@@ -51,7 +51,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class GameLeaderboardActivity extends BaseActivity {
+public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   private static final int DURATION = 500;
   private static final float OVERSHOOT = 1.25f;

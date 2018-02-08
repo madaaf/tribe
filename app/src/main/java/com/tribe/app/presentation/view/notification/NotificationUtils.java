@@ -67,6 +67,12 @@ public class NotificationUtils {
       builder.sound(SoundManager.GAME_SCORE);
       liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_GAME_SCORE_BEATEN)) {
+      // I beat my own score
+      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+      builder.sound(SoundManager.GAME_FRIEND_LEADER);
+      liveNotificationView = builder.build();
+    } else if (notificationPayload.getClickAction()
         .equals(NotificationPayload.CLICK_ACTION_GAME_LIVE)) {
       // A friend is challenging to a game
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);

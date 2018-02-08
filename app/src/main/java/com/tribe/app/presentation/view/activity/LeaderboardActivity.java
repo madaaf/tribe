@@ -34,7 +34,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
-public class LeaderboardActivity extends BaseActivity {
+public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   public static final String USER = "USER";
 

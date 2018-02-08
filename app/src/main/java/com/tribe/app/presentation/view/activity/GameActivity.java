@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
-public abstract class GameActivity extends BaseActivity {
+public abstract class GameActivity extends BaseBroadcastReceiverActivity {
 
   public static final String GAME_ID = "game_id";
 

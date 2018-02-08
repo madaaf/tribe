@@ -52,7 +52,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class GameDetailsActivity extends BaseActivity {
+public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
 
   private static final int DURATION_MOVING = 2500;
   private static final int DURATION = 400;
