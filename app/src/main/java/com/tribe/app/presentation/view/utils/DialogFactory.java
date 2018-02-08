@@ -378,8 +378,12 @@ public final class DialogFactory {
 
     gameLabels.add(new LabelType(context.getString(R.string.game_menu_play_another_game),
         LabelType.GAME_PLAY_ANOTHER));
-    //gameLabels.add(new LabelType(context.getString(R.string.game_menu_reset_scores),
-    //    LabelType.GAME_RESET_SCORES));
+
+    LabelType labelType = new LabelType(context.getString(R.string.game_menu_leaderboard),
+        LabelType.GAME_LEADERBOARD);
+    labelType.setColor(ContextCompat.getColor(context, R.color.blue_voice_bck));
+    gameLabels.add(labelType);
+
     gameLabels.add(
         new LabelType(context.getString(R.string.game_post_it_menu_stop), LabelType.GAME_STOP));
 
@@ -432,7 +436,8 @@ public final class DialogFactory {
       gameLabels.add(getLeaveCallLabel(context));
     }
 
-    LabelType labelType = new LabelType(context.getString(R.string.action_cancel), LabelType.CANCEL);
+    LabelType labelType =
+        new LabelType(context.getString(R.string.action_cancel), LabelType.CANCEL);
     labelType.setColor(ContextCompat.getColor(context, R.color.blue_voice_bck));
     labelType.setTypeface(Typeface.BOLD);
     gameLabels.add(labelType);

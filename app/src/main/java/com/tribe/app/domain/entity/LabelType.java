@@ -74,6 +74,7 @@ public class LabelType implements Serializable {
   public static final String GAME_PLAY_ANOTHER = "gamePlayAnother";
   public static final String GAME_RESET_SCORES = "gameResetScores";
   public static final String GAME_STOP = "gameStop";
+  public static final String GAME_LEADERBOARD = "gameLeaderboard";
 
   public static final String LEAVE_ROOM = "leaveRoom";
   public static final String STOP_GAME_SOLO = "stopGameSolo";

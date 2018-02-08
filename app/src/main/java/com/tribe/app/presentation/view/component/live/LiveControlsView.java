@@ -158,6 +158,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Boolean> onGameMenuOpened = PublishSubject.create();
   private PublishSubject<Game> onResetScores = PublishSubject.create();
   private PublishSubject<Void> openGameStore = PublishSubject.create();
+  private PublishSubject<Game> onLeaderboard = PublishSubject.create();
 
   private Subscription timerSubscription;
 
@@ -521,8 +522,8 @@ public class LiveControlsView extends FrameLayout {
             ((game, labelType) -> {
               if (labelType.getTypeDef().equals(LabelType.GAME_PLAY_ANOTHER)) {
                 onStopGame.onNext(game);
-              } else if (labelType.getTypeDef().equals(LabelType.GAME_RESET_SCORES)) {
-                onResetScores.onNext(game);
+              } else if (labelType.getTypeDef().equals(LabelType.GAME_LEADERBOARD)) {
+                onLeaderboard.onNext(game);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
                 onStopGame.onNext(game);
               }
@@ -821,5 +822,9 @@ public class LiveControlsView extends FrameLayout {
   public Observable<Void> openGameStore() {
     return openGameStore.debounce(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread());
+  }
+
+  public Observable<Game> onLeaderboard() {
+    return onLeaderboard;
   }
 }

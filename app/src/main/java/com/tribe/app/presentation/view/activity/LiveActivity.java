@@ -976,6 +976,9 @@ public class LiveActivity extends BaseActivity
     subscriptions.add(
         viewLive.openGameStore().subscribe(aVoid -> navigator.navigateToGameStoreNewGame(this)));
 
+    subscriptions.add(viewLive.openLeaderboard()
+        .subscribe(game -> navigator.navigateToGameLeaderboard(this, game.getId())));
+
     subscriptions.add(
         viewLive.onSwipeUp().subscribe(aVoid -> navigator.navigateToGameStoreNewGame(this)));
 
