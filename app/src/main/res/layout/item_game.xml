@@ -1,16 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutContent"
     android:layout_width="match_parent"
     android:layout_height="156dp"
     android:orientation="vertical"
     >
 
+  <RelativeLayout
+      android:id="@+id/layoutBestFriend"
+      android:layout_width="match_parent"
+      android:layout_height="53dp"
+      android:layout_gravity="bottom"
+      android:layout_marginBottom="@dimen/vertical_margin_smaller"
+      android:layout_marginEnd="25dp"
+      android:layout_marginStart="25dp"
+      android:background="@drawable/bg_best_game_store"
+      android:visibility="gone"
+      >
+
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+        android:id="@+id/viewAvatar"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        />
+
+    <com.tribe.app.presentation.view.widget.avatar.EmojiGameView
+        android:id="@+id/txtEmojiGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/viewAvatar"
+        android:layout_alignEnd="@id/viewAvatar"
+        android:layout_marginBottom="-5dp"
+        android:layout_marginEnd="-5dp"
+        style="@style/Body.One.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        style="@style/BiggerBody.Two.Black"
+        />
+  </RelativeLayout>
+
   <android.support.v7.widget.CardView
       android:id="@+id/cardView"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="126dp"
       android:layout_margin="@dimen/horizontal_margin_small"
       android:background="@null"
       android:clickable="true"
@@ -24,7 +65,7 @@
       >
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/layoutContent"
+        android:id="@+id/layoutConstraint"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@null"
@@ -144,4 +185,4 @@
       </eightbitlab.com.blurview.BlurView>
     </android.support.constraint.ConstraintLayout>
   </android.support.v7.widget.CardView>
-</LinearLayout>
+</FrameLayout>

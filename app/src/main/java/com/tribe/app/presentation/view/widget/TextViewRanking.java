@@ -18,6 +18,8 @@ public class TextViewRanking extends TextViewFont {
 
   @Inject ScreenUtils screenUtils;
 
+  private int padding;
+
   public TextViewRanking(Context context) {
     super(context);
     init(context, null);
@@ -37,6 +39,8 @@ public class TextViewRanking extends TextViewFont {
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
 
+    padding = screenUtils.dpToPx(15);
+
     setBackgroundResource(R.drawable.bg_ranking);
     setGravity(Gravity.CENTER);
     TextViewCompat.setTextAppearance(this, R.style.BiggerTitle_2_BlueNew);
@@ -50,10 +54,17 @@ public class TextViewRanking extends TextViewFont {
   public void setRanking(int ranking) {
     if (ranking == 0) {
       setText("∞");
+      setPadding(0, 0, 0, 0);
     } else if (ranking == 1) {
-      setPadding(screenUtils.dpToPx(20), 0, screenUtils.dpToPx(20), 0);
+      setPadding(padding, 0, padding, 0);
       setText(EmojiParser.getEmoji(":crown:") + " " + ranking);
     } else {
+      if (ranking >= 10) {
+        setPadding(padding, 0, padding, 0);
+      } else {
+        setPadding(0, 0, 0, 0);
+      }
+
       setText("" + ranking);
     }
   }

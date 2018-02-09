@@ -8,11 +8,16 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
@@ -21,9 +26,12 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
+import com.tribe.tribelivesdk.model.TribeGuest;
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderScriptBlur;
 import java.util.HashMap;
@@ -116,7 +124,27 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     GameViewHolder vh = (GameViewHolder) holder;
     Game game = items.get(position);
 
-    GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {
+    if (game.getFriendLeader() != null) {
+      UIUtils.changeHeightOfView(vh.layoutContent, screenUtils.dpToPx(200));
+      TribeGuest leader = game.getFriendLeader();
+      vh.layoutBestFriend.setVisibility(View.VISIBLE);
+      vh.viewAvatar.load(leader.getPicture());
+      vh.txtEmojiGame.setText(game.getEmoji());
+
+      String text = context.getString(R.string.leaderboard_friend_is_best, leader.getDisplayName());
+
+      //SpannableString string = new SpannableString(text);
+      //int indexOf = text.indexOf(leader.getDisplayName());
+      //string.setSpan(new TextAppearanceSpan(context, R.style.BiggerBody_Two_Black), 0,
+      //    indexOf + leader.getDisplayName().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+      vh.txtName.setText(text);
+    } else {
+      UIUtils.changeHeightOfView(vh.layoutContent, screenUtils.dpToPx(156));
+      vh.layoutBestFriend.setVisibility(View.GONE);
+    }
+
+    GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.BL_TR, new int[] {
         Color.parseColor("#" + game.getPrimary_color()),
         Color.parseColor("#" + game.getSecondary_color())
     });
@@ -180,6 +208,11 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
     @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
     @BindView(R.id.viewBlur) BlurView viewBlur;
+    @BindView(R.id.layoutContent) FrameLayout layoutContent;
+    @BindView(R.id.layoutBestFriend) RelativeLayout layoutBestFriend;
+    @BindView(R.id.viewAvatar) AvatarView viewAvatar;
+    @BindView(R.id.txtEmojiGame) TextViewFont txtEmojiGame;
+    @BindView(R.id.txtName) TextViewFont txtName;
 
     public GameViewHolder(View itemView) {
       super(itemView);

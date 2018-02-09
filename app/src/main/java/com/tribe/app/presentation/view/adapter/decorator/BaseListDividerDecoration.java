@@ -5,28 +5,24 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
 import android.view.View;
-import com.tribe.app.presentation.view.adapter.HomeListAdapter;
-import com.tribe.app.presentation.view.adapter.SectionCallback;
 
 public class BaseListDividerDecoration extends RecyclerView.ItemDecoration {
 
   private final Paint paint;
-  private int heightDp;
+  private float heightDp;
 
   public BaseListDividerDecoration(Context context, int color, float heightDp) {
     paint = new Paint();
     paint.setStyle(Paint.Style.FILL);
     paint.setColor(color);
-    this.heightDp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, heightDp,
-        context.getResources().getDisplayMetrics());
+    this.heightDp = heightDp;
   }
 
   @Override public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
       RecyclerView.State state) {
     if (hasDividerOnBottom(view, parent, state)) {
-      outRect.set(0, 0, 0, heightDp);
+      outRect.set(0, 0, 0, (int) heightDp);
     } else {
       outRect.setEmpty();
     }

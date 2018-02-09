@@ -98,7 +98,7 @@ public abstract class GameActivity extends BaseBroadcastReceiverActivity {
     recyclerViewGames.setAdapter(gameAdapter);
     recyclerViewGames.addItemDecoration(
         new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.grey_divider),
-            screenUtils.dpToPx(0.3f)));
+            screenUtils.dpToPx(0.5f)));
 
     subscriptions.add(gameAdapter.onClick()
         .map(view -> gameAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view)))

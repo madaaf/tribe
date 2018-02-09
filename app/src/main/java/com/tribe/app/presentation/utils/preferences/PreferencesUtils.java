@@ -26,6 +26,7 @@ public class PreferencesUtils {
   public static String LAST_IM_ONLINE = "LAST_IM_ONLINE";
   public static String PREVIOUS_VERSION_CODE = "PREVIOUS_VERSION_CODE";
   public static String DEBUG_MODE = "DEBUG_MODE";
+  public static String HAS_SOFT_KEYS = "HAS_SOFT_KEYS";
   public static String UI_SOUNDS = "UI_SOUNDS";
   public static String ROUTING_MODE = "ROUTED_MODE";
   public static String NEW_CONTACT_TOOLTIP = "NEW_CONTACT_TOOLTIP";

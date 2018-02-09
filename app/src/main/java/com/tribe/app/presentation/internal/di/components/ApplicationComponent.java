@@ -54,6 +54,7 @@ import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.GameData;
+import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
@@ -108,8 +109,6 @@ import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.common.ShortcutListView;
 import com.tribe.app.presentation.view.component.games.GameUserCardView;
-import com.tribe.app.presentation.view.component.home.HomeWalkthroughVideoView;
-import com.tribe.app.presentation.view.component.home.HomeWalkthroughView;
 import com.tribe.app.presentation.view.component.home.NewGameView;
 import com.tribe.app.presentation.view.component.home.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.TopBarLogoView;
@@ -146,6 +145,7 @@ import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TextViewRanking;
+import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.app.presentation.view.widget.TooltipView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
@@ -153,7 +153,6 @@ import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
 import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
 import com.tribe.app.presentation.view.widget.text.TextShortcutNameView;
-import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.tribelivesdk.di.LiveModule;
 import com.tribe.tribelivesdk.stream.TribeAudioManager;
 import dagger.Component;
@@ -282,10 +281,6 @@ public interface ApplicationComponent {
   void inject(LiveDropZoneView liveDropZone);
 
   void inject(ShortcutNewChatAdapterDelegate shortcutNewChatAdapterDelegate);
-
-  void inject(HomeWalkthroughView homeWalkthroughView);
-
-  void inject(HomeWalkthroughVideoView homeWalkthroughVideoView);
 
   void inject(GameAdapterDelegate gameAdapterDelegate);
 
@@ -445,6 +440,8 @@ public interface ApplicationComponent {
   @TribeState Preference<Set<String>> tribeState();
 
   @DebugMode Preference<Boolean> debugMode();
+
+  @HasSoftKeys Preference<Boolean> hasSoftKeys();
 
   @Walkthrough Preference<Boolean> walkthrough();
 

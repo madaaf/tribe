@@ -9,6 +9,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -67,6 +68,8 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
   @BindView(R.id.appBar) AppBarLayout appBarLayout;
 
   @BindView(R.id.collapsingToolbar) CollapsingToolbarLayout collapsingToolbar;
+
+  @BindView(R.id.layoutUser) RelativeLayout layoutUser;
 
   // VARIABLES
   private LeaderboardUserLayoutManager layoutManager;
@@ -150,7 +153,10 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
   }
 
   private void initUI() {
-
+    appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
+      float range = (float) -appBarLayout.getTotalScrollRange();
+      layoutUser.setAlpha(1.0f - (float) verticalOffset / range);
+    });
   }
 
   private void initDependencyInjector() {
@@ -174,7 +180,7 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
     recyclerView.setAdapter(adapter);
     recyclerView.addItemDecoration(
         new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.black_opacity_10),
-            screenUtils.dpToPx(0.25f)));
+            screenUtils.dpToPx(0.5f)));
 
     subscriptions.add(adapter.onClick()
         .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))

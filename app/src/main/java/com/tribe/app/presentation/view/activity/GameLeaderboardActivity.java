@@ -187,6 +187,10 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         Collections.sort(scoreList, (o1, o2) -> ((Integer) o2.getValue()).compareTo(o1.getValue()));
         items.clear();
 
+        ConstraintSet set = new ConstraintSet();
+        set.clone(getApplicationContext(), R.layout.activity_game_leaderboards_final);
+        animateLayoutWithConstraintSet(set, null);
+
         for (Score score : scoreList) {
           // We add the current user if user == null, it means it's the current user's score
           if (score.getUser() == null) score.setUser(getCurrentUser());
@@ -322,10 +326,6 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   }
 
   private void showAvatars() {
-    ConstraintSet set = new ConstraintSet();
-    set.clone(getApplicationContext(), R.layout.activity_game_leaderboards_final);
-    animateLayoutWithConstraintSet(set, null);
-
     scaleUp(cardAvatarFirst);
     scaleUp(cardAvatarSecond);
     scaleUp(cardAvatarThird);
@@ -361,6 +361,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   }
 
   private void scaleUp(View view) {
+    if (view.getVisibility() != View.VISIBLE) return;
+
     view.setPivotX(view.getMeasuredWidth() >> 1);
     view.setPivotY(view.getMeasuredHeight() >> 1);
 

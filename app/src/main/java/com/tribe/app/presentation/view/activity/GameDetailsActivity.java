@@ -18,6 +18,7 @@ import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
@@ -92,6 +93,7 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
   @BindView(R.id.txtBestScoreScore) TextViewScore txtBestScoreScore;
   @BindView(R.id.txtBestScoreName) TextViewFont txtBestScoreName;
   @BindView(R.id.imgConnect) ImageView imgConnect;
+  @BindView(R.id.btnMulti) View btnMulti;
 
   // VARIABLES
   private UserComponent userComponent;
@@ -123,6 +125,16 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       layoutConstraint.setPadding(0, getStatusBarHeight(), 0, 0);
     }
+
+    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) btnMulti.getLayoutParams();
+
+    if (hasSoftKeys()) {
+      params.bottomMargin = screenUtils.dpToPx(50);
+    } else {
+      params.bottomMargin = screenUtils.dpToPx(15);
+    }
+
+    btnMulti.setLayoutParams(params);
 
     gameManager = GameManager.getInstance(this);
     game = gameManager.getGameById(getIntent().getStringExtra(GAME_ID));
