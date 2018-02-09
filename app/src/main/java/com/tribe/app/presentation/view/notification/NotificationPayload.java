@@ -207,9 +207,8 @@ public class NotificationPayload implements Serializable {
   }
 
   public boolean isLive() {
-    return click_action == null ||
-        click_action.equals(CLICK_ACTION_BUZZ) ||
-        click_action.equals(CLICK_ACTION_LIVE);
+    return click_action == null || click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(
+        CLICK_ACTION_LIVE) || click_action.equals(CLICK_ACTION_GAME_LIVE);
   }
 
   public boolean isUserCall() {

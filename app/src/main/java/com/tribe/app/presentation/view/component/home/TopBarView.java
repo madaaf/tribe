@@ -180,7 +180,7 @@ public class TopBarView extends FrameLayout {
     });
 
     subscriptions.add(RxTextView.textChanges(editTextSearch)
-        .map(CharSequence::toString)
+        .map((charSequence) -> charSequence.toString().toLowerCase())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(onSearch));
     if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
