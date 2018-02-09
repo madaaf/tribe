@@ -17,6 +17,7 @@ import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -73,6 +74,7 @@ import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
+import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageEmojiAdapterDelegate;
 import com.tribe.app.presentation.view.widget.chat.model.Media;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
@@ -146,13 +148,6 @@ public class ChatView extends IChat {
   private int heartsCounter = 0;
   private boolean isRunning = false;
   private boolean firstTick = true;
-  private String[] hearts = new String[] {
-      "\u2764", // "default"
-      "\uD83D\uDC9C", // purple
-      "\uD83D\uDC99", // blue
-      "\uD83D\uDC9A", //green
-      "\uD83D\uDC9B", // yellow
-  };
 
   @BindView(R.id.editText) EditTextFont editText;
   @BindView(R.id.recyclerViewChat) RecyclerMessageView recyclerView;
@@ -228,7 +223,28 @@ public class ChatView extends IChat {
     initRecyclerView();
     initSubscriptions();
     initParams();
+
+    // EventViewTouchListener moveListener = new EventViewTouchListener(likeBtn);
+    //likeBtn.setOnTouchListener(moveListener);
+
+    btnSendLikeContainer.setOnTouchListener((v, me) -> {
+
+      Timber.e("SOEF YO ACTION_DOWN" + me.getAction());
+
+      if (me.getAction() == MotionEvent.ACTION_MOVE) {
+        if (System.currentTimeMillis() - touchDownMs > MessageEmojiAdapterDelegate.HEART_ANIM) {
+          touchDownMs = System.currentTimeMillis();
+          clickLike();
+        }
+      } else {
+        touchDownMs = 0L;
+      }
+
+      return true;
+    });
   }
+
+  long touchDownMs = 0L;
 
   public int getType() {
     return type;
@@ -371,8 +387,9 @@ public class ChatView extends IChat {
         pictoVoiceNote.setTranslationX(
             voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
 
-        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) -
-            (pictoVoiceNote.getHeight() / 2) + screenUtils.dpToPx(12));
+        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (
+            pictoVoiceNote.getHeight()
+                / 2) + screenUtils.dpToPx(12));
 
         voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
@@ -415,6 +432,7 @@ public class ChatView extends IChat {
         } else {
           containerUsers.setVisibility(GONE);
         }*/
+
       }
     });
   }
@@ -439,8 +457,8 @@ public class ChatView extends IChat {
   private void setTypeChatUXSupport() {
     if (isSupport()) {
       voiceNoteBtn.setTranslationX(
-          editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(5) +
-              videoCallBtn.getWidth());
+          editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(5)
+              + videoCallBtn.getWidth());
       pictoVoiceNote.setTranslationX(
           voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
 
@@ -510,11 +528,11 @@ public class ChatView extends IChat {
         uploadTask = riversRef.putStream(inputStream);
       } else if (type.equals(MESSAGE_AUDIO)) {
         uri = Uri.fromFile(new File(audioFile));
-        StorageReference riversRef = storageRef.child("app/uploads/" +
-            user.getId() +
-            "/" +
-            dateUtils.getUTCDateAsString() +
-            uri.getLastPathSegment());
+        StorageReference riversRef = storageRef.child("app/uploads/"
+            + user.getId()
+            + "/"
+            + dateUtils.getUTCDateAsString()
+            + uri.getLastPathSegment());
         uploadTask = riversRef.putFile(uri);
       }
 
@@ -917,11 +935,13 @@ public class ChatView extends IChat {
     super.onDetachedFromWindow();
   }
 
-  private void ok() {
-
-  }
-
+  /*
   @OnClick(R.id.likeBtn) void onClickLike() {
+    clickLike();
+  }*/
+
+  private void clickLike() {
+    Timber.e("SOEF CLICK LILE");
     heartCount++;
     sendHeartMessage();
   }
@@ -945,15 +965,21 @@ public class ChatView extends IChat {
                     .setDuration(ANIM_DURATION)
                     .start())
                 .start();
-            sendMessageToAdapter(MESSAGE_EMOJI, hearts[0], null, false);
+            int i = 0;
+            if (heartsCounter > 0) {
+              i = heartsCounter - 1;
+            }
+            sendMessageToAdapter(MESSAGE_EMOJI, MessageEmoji.hearts[0], null, false);
           }
         }
 
         public void onFinish() {
+          Timber.e("SOEF FINISH "+ seconde);
           firstTick = true;
           isRunning = false;
-          sendToNetwork(MESSAGE_EMOJI, hearts[heartsCounter], MessageRealm.EMOJI, null);
-          recyclerView.updateItem(hearts[heartsCounter], false);
+          sendToNetwork(MESSAGE_EMOJI, MessageEmoji.hearts[heartsCounter], MessageRealm.EMOJI,
+              null);
+          recyclerView.updateItem(MessageEmoji.hearts[heartsCounter], false);
           heartsCounter = 0;
         }
       };
@@ -961,13 +987,12 @@ public class ChatView extends IChat {
       countDownTimer.cancel();
       countDownTimer.start();
     } else {
-      if (heartsCounter < hearts.length - 1) {
+      if (heartsCounter < MessageEmoji.hearts.length - 1) {
         heartsCounter++;
       } else {
         heartsCounter = 0;
       }
-
-      recyclerView.updateItem(hearts[heartsCounter], true);
+      recyclerView.updateItem(MessageEmoji.hearts[heartsCounter], true);
     }
   }
 

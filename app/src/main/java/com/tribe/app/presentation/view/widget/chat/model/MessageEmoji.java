@@ -6,6 +6,15 @@ package com.tribe.app.presentation.view.widget.chat.model;
 
 public class MessageEmoji extends Message {
 
+  public static String[] hearts = new String[] {
+      "\u2764", // "default"
+      "\uD83D\uDC9C", // purple
+      "\uD83D\uDC99", // blue
+      "\uD83D\uDC9A", //green
+      "\uD83D\uDC9B", // yellow
+  };
+
+
   private String emoji;
   private boolean isUpdating;
 

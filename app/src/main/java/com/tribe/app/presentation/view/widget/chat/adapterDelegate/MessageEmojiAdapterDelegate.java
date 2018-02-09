@@ -20,6 +20,7 @@ import java.util.List;
  */
 
 public class MessageEmojiAdapterDelegate extends BaseMessageAdapterDelegate {
+  public final static int HEART_ANIM = 300;
 
   public MessageEmojiAdapterDelegate(Context context, int type) {
     super(context, type);
@@ -46,9 +47,14 @@ public class MessageEmojiAdapterDelegate extends BaseMessageAdapterDelegate {
 
     if (m.isUpdating()) {
       if (position == items.size() - 1) {
-        vh.emoji2.animate().scaleX(1).scaleY(1).setDuration(200)
-            // .withEndAction(() -> vh.emoji.setText(m.getEmoji()))
-            .setInterpolator(new AccelerateDecelerateInterpolator()).start();
+        vh.emoji2.animate().scaleX(1).scaleY(1).setDuration(HEART_ANIM).withStartAction(() -> {
+          String ok = m.getEmoji();
+          for (int i = 0; i < MessageEmoji.hearts.length; i++) {
+            if (MessageEmoji.hearts[i].equals(ok) && i > 0) {
+              vh.emoji.setText(MessageEmoji.hearts[i - 1]);
+            }
+          }
+        }).setInterpolator(new AccelerateDecelerateInterpolator()).start();
         vh.emoji2.setText(m.getEmoji());
       }
     } else {
