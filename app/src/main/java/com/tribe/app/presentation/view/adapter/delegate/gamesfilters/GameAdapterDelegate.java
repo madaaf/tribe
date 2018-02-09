@@ -8,9 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,14 +96,17 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
   }
 
   private void animateImgX(ImageView imgAnimation) {
-    int rdm = new Random().nextInt(5) - 2;
+    int MAX = 10;
+    Random random = new Random();
+    int rdmX = random.nextInt(MAX) * (random.nextBoolean() ? -1 : 1);
+    int rdmY = random.nextInt(MAX) * (random.nextBoolean() ? -1 : 1);
 
-    ValueAnimator animator = mapAnimator.get(imgAnimation.getId());
+    ValueAnimator animator = mapAnimator.get(imgAnimation.getId() + "_x");
     if (animator != null) {
       animator.cancel();
     }
 
-    animator = ValueAnimator.ofInt(0, screenUtils.dpToPx(rdm));
+    animator = ValueAnimator.ofInt(0, screenUtils.dpToPx(rdmX));
     animator.setDuration(DURATION_MOVING);
     animator.setInterpolator(new DecelerateInterpolator());
     animator.setRepeatCount(ValueAnimator.INFINITE);
@@ -114,6 +114,21 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
     animator.addUpdateListener(animation -> {
       int translation = (int) animation.getAnimatedValue();
       imgAnimation.setTranslationX(translation);
+    });
+    animator.start();
+
+    animator = mapAnimator.get(imgAnimation.getId() + "_y");
+    if (animator != null) {
+      animator.cancel();
+    }
+
+    animator = ValueAnimator.ofInt(0, screenUtils.dpToPx(rdmY));
+    animator.setDuration(DURATION_MOVING);
+    animator.setInterpolator(new DecelerateInterpolator());
+    animator.setRepeatCount(ValueAnimator.INFINITE);
+    animator.setRepeatMode(ValueAnimator.REVERSE);
+    animator.addUpdateListener(animation -> {
+      int translation = (int) animation.getAnimatedValue();
       imgAnimation.setTranslationY(translation);
     });
     animator.start();
@@ -132,12 +147,6 @@ public class GameAdapterDelegate extends RxAdapterDelegate<List<Game>> {
       vh.txtEmojiGame.setText(game.getEmoji());
 
       String text = context.getString(R.string.leaderboard_friend_is_best, leader.getDisplayName());
-
-      //SpannableString string = new SpannableString(text);
-      //int indexOf = text.indexOf(leader.getDisplayName());
-      //string.setSpan(new TextAppearanceSpan(context, R.style.BiggerBody_Two_Black), 0,
-      //    indexOf + leader.getDisplayName().length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
       vh.txtName.setText(text);
     } else {
       UIUtils.changeHeightOfView(vh.layoutContent, screenUtils.dpToPx(156));
