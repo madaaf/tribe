@@ -224,13 +224,7 @@ public class ChatView extends IChat {
     initSubscriptions();
     initParams();
 
-    // EventViewTouchListener moveListener = new EventViewTouchListener(likeBtn);
-    //likeBtn.setOnTouchListener(moveListener);
-
-    btnSendLikeContainer.setOnTouchListener((v, me) -> {
-
-      Timber.e("SOEF YO ACTION_DOWN" + me.getAction());
-
+    likeBtn.setOnTouchListener((v, me) -> {
       if (me.getAction() == MotionEvent.ACTION_MOVE) {
         if (System.currentTimeMillis() - touchDownMs > MessageEmojiAdapterDelegate.HEART_ANIM) {
           touchDownMs = System.currentTimeMillis();
@@ -342,7 +336,7 @@ public class ChatView extends IChat {
       context.startService(
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
       messagePresenter.onViewDetached();
-      recyclerView.onDetachedFromWindow(); //SOEF
+      recyclerView.onDetachedFromWindow();
     }
   }
 
@@ -935,21 +929,17 @@ public class ChatView extends IChat {
     super.onDetachedFromWindow();
   }
 
-  /*
-  @OnClick(R.id.likeBtn) void onClickLike() {
-    clickLike();
-  }*/
-
   private void clickLike() {
-    Timber.e("SOEF CLICK LILE");
     heartCount++;
     sendHeartMessage();
   }
 
+  CountDownTimer countDownTimer = null;
+
   private void sendHeartMessage() {
     int seconde = 4000;
-    if (!isRunning) {
-      CountDownTimer countDownTimer = new CountDownTimer(seconde, 1000) {
+    if (countDownTimer == null) {
+      countDownTimer = new CountDownTimer(seconde, 1000) {
         public void onTick(long millisUntilFinished) {
           isRunning = true;
           if (firstTick) {
@@ -974,9 +964,9 @@ public class ChatView extends IChat {
         }
 
         public void onFinish() {
-          Timber.e("SOEF FINISH "+ seconde);
           firstTick = true;
           isRunning = false;
+          countDownTimer = null;
           sendToNetwork(MESSAGE_EMOJI, MessageEmoji.hearts[heartsCounter], MessageRealm.EMOJI,
               null);
           recyclerView.updateItem(MessageEmoji.hearts[heartsCounter], false);
@@ -987,6 +977,9 @@ public class ChatView extends IChat {
       countDownTimer.cancel();
       countDownTimer.start();
     } else {
+      countDownTimer.cancel();
+      countDownTimer.start();
+
       if (heartsCounter < MessageEmoji.hearts.length - 1) {
         heartsCounter++;
       } else {
