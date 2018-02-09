@@ -1076,9 +1076,10 @@ public class HomeActivity extends BaseActivity
   }
 
   private void navigateToChat(Recipient recipient, String gesture) {
-    if (recipient.isSupport()) {
+    if (recipient != null && recipient.isSupport()) {
       supportShortcut.setRead(true);
     }
+
     this.gesture = gesture;
     if (!recipient.isRead()) {
       String shortcutId = "";
@@ -1303,7 +1304,7 @@ public class HomeActivity extends BaseActivity
       if (homeGridAdapter.getItemAtPosition(position) instanceof Recipient) {
         Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(position);
 
-        if (!isSwipingChat && !recipient.isSupport()) {
+        if (!isSwipingChat && recipient != null && !recipient.isSupport()) {
           navigator.navigateToLiveFromSwipe(this, recipient,
               recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
                   : LiveActivity.SOURCE_GRID, recipient.getSectionTag());

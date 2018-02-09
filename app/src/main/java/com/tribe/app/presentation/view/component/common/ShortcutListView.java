@@ -16,8 +16,8 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
 import com.tribe.app.presentation.view.adapter.viewholder.RecipientHomeViewHolder;
+import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
@@ -174,20 +174,14 @@ public class ShortcutListView extends RelativeLayout {
     viewAvatar.load(recipient);
     //}
 
-    if (recipient.isSupport()) {
+    if (recipient != null && recipient.isSupport()) {
       viewPictoLive.setVisibility(GONE);
       vh.itemView.setOnTouchListener((view, motionEvent) -> {
         Timber.e("OK");
         return true;
       });
 
-      vh.itemView.setOnClickListener(new OnClickListener() {
-        @Override public void onClick(View view) {
-          Timber.e("OK");
-        }
-      });
-
-
+      vh.itemView.setOnClickListener(view -> Timber.e("OK"));
     } else {
       viewPictoLive.setVisibility(VISIBLE);
     }

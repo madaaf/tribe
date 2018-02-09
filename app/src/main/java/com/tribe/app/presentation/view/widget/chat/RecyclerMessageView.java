@@ -344,7 +344,7 @@ public class RecyclerMessageView extends IChat {
       messagePresenter.onViewAttached(this);
     }
 
-    if (!shortcut.isSupport()) {
+    if (shortcut == null || !shortcut.isSupport()) {
       context.startService(WSService.getCallingSubscribeChat(context, WSService.CHAT_SUBSCRIBE,
           JsonUtils.arrayToJson(arrIds)));
       messagePresenter.updateShortcutForUserIds(arrIds);
@@ -418,7 +418,9 @@ public class RecyclerMessageView extends IChat {
         if (dy < 0) {
           if (layoutManager.findFirstVisibleItemPosition() < 5 && !load) {
             String lasteDate = messageAdapter.getMessage(0).getCreationDate();
-            if (!shortcut.isSupport()) messagePresenter.loadMessage(arrIds, lasteDate, null);
+            if (shortcut == null || !shortcut.isSupport()) {
+              messagePresenter.loadMessage(arrIds, lasteDate, null);
+            }
             load = true;
           }
         }
@@ -448,7 +450,7 @@ public class RecyclerMessageView extends IChat {
   public void setArrIds(String[] arrIds) {
     this.arrIds = arrIds;
     messageAdapter.setArrIds(arrIds);
-    if (!shortcut.isSupport()) {
+    if (shortcut == null || !shortcut.isSupport()) {
       messagePresenter.loadMessage(arrIds, dateUtils.getUTCDateAsString(),
           dateUtils.getUTCDateWithDeltaAsString(-(2 * ONE_HOUR_DURATION)));
       messagePresenter.loadMessagesDisk(arrIds, dateUtils.getUTCDateAsString(), null);
@@ -462,7 +464,7 @@ public class RecyclerMessageView extends IChat {
 
   public void sendMessageToNetwork(String[] arrIds, String data, String type, int position,
       Uri uri) {
-    if (!shortcut.isSupport()) {
+    if (shortcut == null || !shortcut.isSupport()) {
       messagePresenter.createMessage(arrIds, data, type, position);
     } else {
       if (!haveRequestZendeskId()) {
@@ -590,7 +592,7 @@ public class RecyclerMessageView extends IChat {
   @Override public void successLoadingMessageDisk(List<Message> messages) {
     Timber.i("successLoadingMessageDisk " + messages.size());
     unreadMessage.clear();
-    if (shortcut.isSupport()) {
+    if (shortcut != null && shortcut.isSupport()) {
       boolean addAnimation = false;
       for (Message m : messages) {
         if (messageAdapter.getItems().isEmpty()) {
@@ -632,7 +634,8 @@ public class RecyclerMessageView extends IChat {
       }
     }
 
-    if (!shortcut.isSupport() && (errorLoadingMessages || !successLoadingMessage)) {
+    if ((shortcut == null || !shortcut.isSupport()) &&
+        (errorLoadingMessages || !successLoadingMessage)) {
       Timber.i("message disk displayed " + messages.size());
       messageAdapter.setItems(messages, 0);
       scrollListToBottom();

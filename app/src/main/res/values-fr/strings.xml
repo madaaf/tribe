@@ -996,4 +996,5 @@
 	<string name="new_challenger_popup_other">et un autre</string>
 	<string name="new_challenger_popup_others">et %1$d autres</string>
 	<string name="new_challenger_popup_action_add">AJOUTER AUX CHATS</string>
+	<string name="new_challenger_popup_friends_placeholder"></string>
 </resources>
