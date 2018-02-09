@@ -982,7 +982,7 @@ public class HomeActivity extends BaseActivity
   }
 
   private void navigateToChat(Recipient recipient) {
-    if (recipient.isSupport()) {
+    if (recipient != null && recipient.isSupport()) {
       supportShortcut.setRead(true);
     }
 
