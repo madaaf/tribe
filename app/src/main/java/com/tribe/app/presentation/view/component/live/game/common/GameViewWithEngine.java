@@ -19,7 +19,6 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
-import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushEngine;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -101,13 +100,13 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void becomePlayer() {
     Timber.d("becomePlayer");
+    if (subscriptionsSession != null) subscriptionsSession.clear();
     stopEngine();
     startEngine();
   }
 
   protected void becomeGameMaster() {
     Timber.d("becomeGameMaster");
-    if (subscriptionsSession != null) subscriptionsSession.clear();
 
     startMasterEngine();
 
