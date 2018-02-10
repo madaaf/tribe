@@ -187,6 +187,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Boolean> onOpenChat = PublishSubject.create();
   private PublishSubject<Boolean> onOpenInvite = PublishSubject.create();
   private PublishSubject<Boolean> onTouchEnabled = PublishSubject.create();
+  private PublishSubject<Game> onStopGame = PublishSubject.create();
 
   private PublishSubject<String> onNotificationRemotePeerInvited = PublishSubject.create();
   private PublishSubject<String> onNotificationRemotePeerRemoved = PublishSubject.create();
@@ -467,7 +468,7 @@ public class LiveView extends FrameLayout {
     gameManager.initUIControlsRestartGame(
         Observable.merge(viewControlsLive.onRestartGame(), viewGameManager.onRestartGame()));
     gameManager.initUIControlsStopGame(
-        Observable.merge(viewControlsLive.onStopGame(), viewGameManager.onStopGame()));
+        Observable.merge(viewControlsLive.onStopGame(), viewGameManager.onStopGame(), onStopGame));
     gameManager.initUIControlsResetGame(viewControlsLive.onResetScores());
 
     persistentSubscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
@@ -696,7 +697,6 @@ public class LiveView extends FrameLayout {
 
     webRTCRoom.connect(options);
 
-
     if (!StringUtils.isEmpty(live.getGameId()) &&
         !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
         StringUtils.isEmpty(room.getGameId())) {
@@ -791,8 +791,8 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || live.getRoom() != null && live.getRoom()
-        .acceptsRandom()) {
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE) ||
+        live.getRoom() != null && live.getRoom().acceptsRandom()) {
       viewControlsLive.btnChat.setVisibility(INVISIBLE);
       viewRinging.setVisibility(INVISIBLE);
     }
@@ -1327,7 +1327,9 @@ public class LiveView extends FrameLayout {
         .flatMap(aVoid -> DialogFactory.showBottomSheetForLeaving(getContext(),
             gameManager.getCurrentGame(), nbInRoom()), (aVoid, labelType) -> labelType)
         .filter(labelType -> {
-          if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) stopGame();
+          if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
+            onStopGame.onNext(gameManager.getCurrentGame());
+          }
           return labelType.getTypeDef().equals(LabelType.STOP_GAME_SOLO) ||
               labelType.getTypeDef().equals(LabelType.LEAVE_ROOM);
         })
