@@ -32,7 +32,6 @@ public class GameAliensAttackEngine extends GameEngine {
     super(context);
   }
 
-
   public enum Level {
     MEDIUM(0, 3f, 0.3f), HARD(20, 2f, 0.2f), EXTREME(50, 1.5f, 0.15f), ALIEN(90, 1f, 0.1f);
 
@@ -120,6 +119,7 @@ public class GameAliensAttackEngine extends GameEngine {
   @Override public void start() {
     Timber.d("Start game engine");
     super.start();
+    popAlien(0);
   }
 
   @Override public void stop() {

@@ -160,10 +160,10 @@ public class GameAliensAttackView extends GameViewWithEngine {
             animatorRotation.start();
 
             alienView.animate()
-                .translationY(getMeasuredHeight()
-                    - params.topMargin
-                    - alienView.getHeight()
-                    - viewBackground.getRoadBottomMargin())
+                .translationY(getMeasuredHeight() -
+                    params.topMargin -
+                    alienView.getHeight() -
+                    viewBackground.getRoadBottomMargin())
                 .setDuration((long) (alienView.getSpeed() * 1000))
                 .setStartDelay(0)
                 .setInterpolator(new LinearInterpolator())
@@ -207,7 +207,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
   @Override protected void startMasterEngine() {
     super.startMasterEngine();
-    ((GameAliensAttackEngine) gameEngine).popAlien(0);
+
     subscriptionsSession.add(
         ((GameAliensAttackEngine) gameEngine).onAlien().subscribe(alienView -> {
           webRTCRoom.sendToPeers(getAlienPayload(alienView.asJSON()), true);

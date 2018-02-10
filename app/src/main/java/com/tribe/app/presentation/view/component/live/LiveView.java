@@ -1175,7 +1175,6 @@ public class LiveView extends FrameLayout {
     viewGameManager.disposeGame();
     viewControlsLive.stopGame();
     viewLocalLive.stopGame();
-    viewRinging.startRinging();
     viewRoom.setType(LiveRoomView.TYPE_GRID);
   }
 
