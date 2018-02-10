@@ -226,12 +226,6 @@ public class GameBirdRushBackground extends View {
     if (obstaclePoped != null) {
       obstaclePoped.setIndex(index);
       index++;
-      Timber.e("SOEF T DISPLAY obstPoped "
-          + obstaclePoped.getId()
-          + " "
-          + obstaclesList.size()
-          + " "
-          + obstaclePopedList.size());
       Rect dstObsc = new Rect(obstaclePoped.getX(), obstaclePoped.getY(),
           obstaclePoped.getX() + BirdRushObstacle.wiewWidth,
           Math.round(obstaclePoped.getY() + obstaclePoped.getViewHeight()));
@@ -310,7 +304,6 @@ public class GameBirdRushBackground extends View {
         if (o.getX() - o.getViewWidth() < (screenUtils.getWidthPx() / 2)) {
           if (isBetween(o.getY(), o.getY() + o.getViewHeight(), myBird.getY())) {
             o.setHit(true);
-            // displayObstacles(canvas); // TODO SOEF
             gameOver();
           }
         }
@@ -335,33 +328,6 @@ public class GameBirdRushBackground extends View {
       o.setX(o.getX() - speedPx);
       o.setY(o.getY() + yTranslation(o));
     }
-  }
-
-  private ArrayList<BirdRush> ok() {
-    BirdRush myBird = getMyBird();
-
-    Map<String, String> test = new LinkedHashMap<String, String>();
-    test.put("ok1", "ok");
-    test.put("ok2", "ok");
-    test.put("ok3", "ok");
-    for (Map.Entry<String, String> entry : test.entrySet()) {
-      Timber.e("SOEG " + entry.getKey());
-    }
-
-    String ok = test.get("ok2");
-    test.remove("ok2");
-    test.put("ok2", ok);
-
-    for (Map.Entry<String, String> entry : test.entrySet()) {
-      Timber.e("SOEG V :  " + entry.getKey());
-    }
-
-    ArrayList<String> keys = new ArrayList<String>(test.keySet());
-    for (int i = keys.size() - 1; i >= 0; i--) {
-      System.out.println("SOEG Y " + keys.get(i));
-    }
-
-    return null;
   }
 
   private void sortBirdList() {
@@ -478,8 +444,6 @@ public class GameBirdRushBackground extends View {
   }
 
   private void setTimer() {
-    Timber.e("SOEF NEW TIMEER RESET");
-
     if (scrollTimer == null) {
       subscriptions.add(scrollTimer = Observable.interval(0, 16, TimeUnit.MILLISECONDS)
           .onBackpressureDrop()
@@ -513,7 +477,6 @@ public class GameBirdRushBackground extends View {
   }
 
   private void popObstacles(Long aLong) {
-    // Timber.e(" ON TOME : " + aLong + " " + obstaclesList.size());
     if (obstaclesList != null && !obstaclesList.isEmpty()) {
       aLong = aLong * 100;
       // init first obstacleBtm
@@ -521,7 +484,6 @@ public class GameBirdRushBackground extends View {
         displayFirstObstacle = true;
         obstaclePoped = obstaclesList.get(0);
         delay = ((obstaclePoped.getNextSpawn() * 1000) + aLong);
-        //Timber.idexPopedObstacle("SOEF TI FIRST: " + idexPopedObstacle + " " + aLong + " " + obstaclesList.size() + " " + obstaclePopedList.size());
         idexPopedObstacle++;
       }
 
@@ -531,7 +493,6 @@ public class GameBirdRushBackground extends View {
           obstaclePoped = obstaclesList.get(idexPopedObstacle);
           idexPopedObstacle++;
           delay = ((obstaclePoped.getNextSpawn() * 1000) + aLong);
-          //Timber.w("SOEF TI : " + idexPopedObstacle + " " + obstaclesList.size() + " " + obstaclePopedList.size());
         }
       }
     }
@@ -630,12 +591,10 @@ public class GameBirdRushBackground extends View {
 
   public void stop() { // WHEN TITLE ARRIVE
     pause = true;
-    Timber.e("SOEF BACKGROUND  stop ");
     clearObstacles();
   }
 
   public void dispose() {
-    Timber.e("SOEF BACKGROUND  dispose ");
     resetParams(true);
     subscriptions.clear();
     subscriptions.unsubscribe();
@@ -647,7 +606,6 @@ public class GameBirdRushBackground extends View {
   }
 
   public void clearObstacles() {
-    Timber.e("SOEF clear obstacles");
     obstaclesList.clear();
     obstaclePopedList.clear();
     obstaclePoped = null;
@@ -655,7 +613,6 @@ public class GameBirdRushBackground extends View {
   }
 
   public void resetParams(boolean ok) {
-    Timber.e("SOEF resetParams");
     obstacleBtm = BitmapFactory.decodeResource(getResources(), R.drawable.game_birdrush_obstacle);
     entranceBirdFinish = false;
     displayFirstObstacle = false;

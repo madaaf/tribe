@@ -94,6 +94,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected abstract int getSoundtrack();
 
+  protected abstract String getStyleFont();
+
   protected long startGameTimestamp() {
     return System.currentTimeMillis() + 5 * 1000;
   }
@@ -117,7 +119,6 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void newGame(Set<String> playerIds) {
     Timber.d("newGame");
-    Timber.w("SOEF SEND newGame");
     long timestamp = startGameTimestamp();
     webRTCRoom.sendToPeers(getNewGamePayload(currentUser.getId(), timestamp,
         playerIds.toArray(new String[playerIds.size()])), true);
@@ -144,7 +145,6 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
               JSONObject message = jsonObject.getJSONObject(game.getId());
               if (message.has(ACTION_KEY)) {
                 String actionKey = message.getString(ACTION_KEY);
-                Timber.w("SOEF " + actionKey + " " + message.toString());
                 if (actionKey.equals(ACTION_USER_GAME_OVER)) {
                   String fromUserId = message.getString(USER_KEY);
                   setStatus(RankingStatus.LOST, fromUserId);
@@ -222,7 +222,6 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void imReady() {
-    Timber.e("SOEF imReady");
     webRTCRoom.sendToPeers(getImReadyPayload(currentUser.getId()), true);
     if (gameEngine != null) gameEngine.setUserReady(currentUser.getId());
   }
@@ -236,7 +235,6 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void iLost() {
-    Timber.e("SOEF iLost");
     if (game == null || gameEngine == null) return;
 
     if (roundPoints > 0) {
@@ -355,7 +353,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     paramsMessage.gravity = Gravity.CENTER;
 
     TextViewCompat.setTextAppearance(textViewFont, R.style.GameBody_1_White);
-    textViewFont.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
+    textViewFont.setCustomFont(context, getStyleFont());
     textViewFont.setText(text);
     textViewFont.setAllCaps(true);
     textViewFont.setAlpha(0);
@@ -386,18 +384,16 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
       }
 
       long now = System.nanoTime() * 1000;
-      Timber.e("MADA TIMESTAMP " + now + " " + timestamp);
       if (timestamp > System.currentTimeMillis()) {
         subscriptions.add(Observable.timer(timestamp - now, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(aLong -> {
-              Timber.e("MADA TIMESTAMP " + now + " " + timestamp + " " + (timestamp - now));
               playGame();
             }));
       } else {
         playGame();
       }
-    }, null));
+    }, null), getStyleFont());
 
     if (this instanceof GameWebView) {
       subscriptions.add(onGameReady.subscribe(gameReady -> {
@@ -478,7 +474,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     this.onGameReady.onNext(ready);
   }
 
-  protected void showTitle(LabelListener listener) {
+  protected void showTitle(LabelListener listener, String styleFontType) {
     int translation = screenUtils.dpToPx(30.0f);
 
     int titleResId = StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title");
@@ -492,7 +488,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     txtTitleBG.setGravity(Gravity.CENTER);
 
     TextViewCompat.setTextAppearance(txtTitleBG, R.style.GameTitle_1_White40);
-    txtTitleBG.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
+    txtTitleBG.setCustomFont(context, styleFontType);
     txtTitleBG.setText(title);
     txtTitleBG.setAllCaps(true);
     txtTitleBG.setAlpha(0);
@@ -507,7 +503,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     paramsTitleFront.gravity = Gravity.CENTER;
     txtTitleFront.setGravity(Gravity.CENTER);
     TextViewCompat.setTextAppearance(txtTitleFront, R.style.GameTitle_1_White);
-    txtTitleFront.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
+    txtTitleFront.setCustomFont(context, styleFontType);
     txtTitleFront.setText(title);
     txtTitleFront.setAllCaps(true);
     txtTitleFront.setAlpha(0);
@@ -633,7 +629,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     paramsRestart.gravity = Gravity.CENTER;
 
     TextViewCompat.setTextAppearance(txtRestart, R.style.GameBody_1_White40);
-    txtRestart.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
+    txtRestart.setCustomFont(context, getStyleFont());
     txtRestart.setText(
         StringUtils.stringWithPrefix(getContext(), wordingPrefix, "pending_instructions"));
     txtRestart.setAllCaps(true);

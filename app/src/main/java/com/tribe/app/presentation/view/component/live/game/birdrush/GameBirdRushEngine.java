@@ -57,7 +57,6 @@ public class GameBirdRushEngine extends GameEngine {
   }
 
   public void generateObstacle(int nbr) {
-    //Timber.e("SOEF generate obstacle");
     if (!obstacleList.isEmpty()) {
       obstacleList.clear();
     }
@@ -68,7 +67,6 @@ public class GameBirdRushEngine extends GameEngine {
   }
 
   @Override public void start() {
-    Timber.w("SOEF Start game engine");
     super.start();
   }
 

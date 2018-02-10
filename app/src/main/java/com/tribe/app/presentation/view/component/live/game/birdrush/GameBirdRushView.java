@@ -9,6 +9,7 @@ import butterknife.ButterKnife;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
@@ -78,6 +79,10 @@ public class GameBirdRushView extends GameViewWithEngine {
     return SoundManager.BIRD_RUSH_SOUNDTRACK;
   }
 
+  @Override protected String getStyleFont() {
+    return FontUtils.BLOCK_BERTHOLD;
+  }
+
   @Override protected void initWebRTCRoomSubscriptions() {
     super.initWebRTCRoomSubscriptions();
     subscriptionsRoom.add(webRTCRoom.onGameMessage()
@@ -87,18 +92,15 @@ public class GameBirdRushView extends GameViewWithEngine {
           if (pair.second.has(game.getId())) {
             try {
               JSONObject message = pair.second.getJSONObject(game.getId());
-              Timber.e("SUBS BIRD " + message);
               if (message.has(ACTION_KEY)) {
                 String actionKey = message.getString(ACTION_KEY);
                 if (actionKey.equals(ACTION_NEW_GAME)) {
-                  Timber.w("SOEF ACTION NEW GAME");
                   //viewBackground.clearObstacles();
                 }
                 if (actionKey.equals(BIRD_ACTION_ADD_OBSTACLE)) {
                   JSONArray jsonObstacles = message.getJSONArray(BIRD_KEY_OBSTACLE);
                   List<BirdRushObstacle> obstacles = transform(jsonObstacles);
                   viewBackground.addObstacles(obstacles);
-                  Timber.e("SOEF POP USER POP : " + obstacles.toString());
                 } else if (actionKey.equals(BIRD_ACTION_PLAYER_TAP)) {
                   Double y = null;
                   Double yRatio = null;
@@ -118,10 +120,7 @@ public class GameBirdRushView extends GameViewWithEngine {
 
                   String guestId = message.getString(FROM_KEY);
                   PlayerTap playerTap = new PlayerTap(y, yRatio);
-                  Timber.e("player tap " + playerTap.toString());
                   viewBackground.jumpBird(guestId, playerTap, true);
-                } else {
-                  Timber.e("SOEF ANOTHER ACTION  " + actionKey);
                 }
               }
             } catch (JSONException e) {
@@ -131,14 +130,12 @@ public class GameBirdRushView extends GameViewWithEngine {
         }));
   }
 
-  protected void setupGameLocally(String userId, Set<String> players, long timestamp) { // SOEF
-    Timber.d("SOEF SET UP LOCALLY " + userId + " " + players.size() + " " + timestamp);
+  protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
     super.setupGameLocally(userId, players, timestamp);
     viewBackground.stop();
   }
 
   @Override protected void gameOver(String winnerId, boolean isLocal) {
-    Timber.d("SOEF Game Bird Rush Over : " + winnerId);
     super.gameOver(winnerId, isLocal);
   }
 
@@ -163,7 +160,6 @@ public class GameBirdRushView extends GameViewWithEngine {
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          Timber.d("SOEF playGame");
           super.playGame();
           viewBackground.start();
         }));
@@ -172,13 +168,10 @@ public class GameBirdRushView extends GameViewWithEngine {
   @Override protected void startMasterEngine() {
     super.startMasterEngine();
     ((GameBirdRushEngine) gameEngine).popObstcale();
-    Timber.d(" SOEF start master : i AM MASTER");
 
     subscriptionsSession.add(
         ((GameBirdRushEngine) gameEngine).onObstacle().subscribe(generateObstacleList -> {
           webRTCRoom.sendToPeers(getObstaclePayload(generateObstacleList), true);
-          Timber.e("SOEF POP OP MYSELF " + generateObstacleList.size() + " " + getObstaclePayload(
-              generateObstacleList));
           viewBackground.addObstacles(generateObstacleList);
         }));
 
@@ -212,7 +205,6 @@ public class GameBirdRushView extends GameViewWithEngine {
   }
 
   private void gameOver() {
-    Timber.e("SOEF LOCAL game over");
     setOnTouchListener(null);
     iLost();
   }
@@ -235,7 +227,6 @@ public class GameBirdRushView extends GameViewWithEngine {
       soundManager.playSound(SoundManager.BIRD_RUSH_TAP, SoundManager.SOUND_MAX);
       float ratio = viewBackground.getMyBird().getY() / screenUtils.getHeightPx();
       webRTCRoom.sendToPeers(getTapPayload(viewBackground.getMyBird().getY(), ratio), true);
-      //Timber.w("SOEF TAP " + getTapPayload(viewBackground.getMyBird().getX(), viewBackground.getMyBird().getY()));
       viewBackground.jumpBird(currentUser.getId(), null, onActionDown);
     }));
   }
@@ -254,7 +245,6 @@ public class GameBirdRushView extends GameViewWithEngine {
       int index = 0;
       for (String key : peerMap.keySet()) {
         TribeGuest guest = peerMap.get(key);
-        Timber.e(" SOEF ADD GUEST" + peerMap.get(key) + " " + peerMap.size());
         BirdRush bird = new BirdRush(index, guest, screenUtils, currentUser.getId());
         if (!viewBackground.haveBird(peerMap.get(key))) {
           viewBackground.addBird(bird, index);
@@ -266,17 +256,14 @@ public class GameBirdRushView extends GameViewWithEngine {
 
   @Override public void stop() {
     super.stop();
-    Timber.d(" SOEF on stop game bird rush view");
   }
 
   @Override public void dispose() {
     super.dispose();
-    Timber.d(" SOEF on dispose");
     viewBackground.dispose();
   }
 
   @Override public void setNextGame() {
-    Timber.e(" SOEF setNextGame");
   }
 
   /**

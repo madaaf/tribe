@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
@@ -70,6 +71,10 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
   @Override protected int getSoundtrack() {
     return SoundManager.ALIENS_ATTACK_SOUNDTRACK;
+  }
+
+  @Override protected String getStyleFont() {
+    return FontUtils.GULKAVE_REGULAR;
   }
 
   @Override protected void initWebRTCRoomSubscriptions() {
@@ -250,7 +255,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
   private JSONObject getAlienPayload(JSONObject alienJson) {
     JSONObject obj = new JSONObject();
     JSONObject game = new JSONObject();
-    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_POP_ALIEN); // SOEF
+    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_POP_ALIEN);
     JsonUtils.jsonPut(game, ALIEN_KEY, alienJson);
     JsonUtils.jsonPut(obj, this.game.getId(), game);
     return obj;

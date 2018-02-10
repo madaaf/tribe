@@ -75,6 +75,10 @@ public class ChatActivity extends BaseActivity {
     }
   }
 
+  @Override protected void onStart() {
+    super.onStart();
+  }
+
   @Override protected void onPause() {
     if (receiverRegistered) {
       unregisterReceiver(notificationReceiver);

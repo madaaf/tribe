@@ -86,7 +86,7 @@ public class GameAliensAttackAlienView extends FrameLayout {
     super(context);
 
     try {
-      this.alienType = json.getInt(TYPE_KEY); // SOEF
+      this.alienType = json.getInt(TYPE_KEY);
       this.startX = Float.parseFloat(json.getString(START_RATIO_KEY));
       this.scale = Float.parseFloat(json.getString(SCALE_KEY));
       this.rotation = Float.parseFloat(json.getString(ROTATION_KEY));

@@ -331,7 +331,7 @@ public class ChatView extends IChat {
   }
 
   public void dispose() {
-    if (subscriptions != null) subscriptions.unsubscribe();
+    // if (subscriptions != null) subscriptions.unsubscribe();
     if (arrIds != null) {
       context.startService(
           WSService.getCallingUnSubscribeChat(context, JsonUtils.arrayToJson(arrIds)));
@@ -537,11 +537,10 @@ public class ChatView extends IChat {
       }).addOnSuccessListener(taskSnapshot -> {
         Uri downloadUrl = taskSnapshot.getDownloadUrl();
         recyclerView.sendMessageToNetwork(arrIds, downloadUrl.toString(), finalNetType, position,
-            finalUri); // TODO SOEF
+            finalUri);
       });
     } catch (FileNotFoundException e) {
       e.printStackTrace();
-      Timber.e("error load file " + e.toString());
     }
   }
 
@@ -910,7 +909,6 @@ public class ChatView extends IChat {
         sub.unsubscribe();
       }
       subscriptionList = null;
-      subscriptions.unsubscribe();
       subscriptions.clear();
     }
 
@@ -926,6 +924,7 @@ public class ChatView extends IChat {
     tagMap.put(TagManagerUtils.TEXT_COUNT, textCount);
     TagManagerUtils.manageTags(tagManager, tagMap);
 
+    if (subscriptions != null) subscriptions.unsubscribe();
     super.onDetachedFromWindow();
   }
 

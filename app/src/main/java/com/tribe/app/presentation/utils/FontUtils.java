@@ -12,4 +12,5 @@ public class FontUtils {
   public static final String GULKAVE_REGULAR = "Gulkave-Regular.ttf";
   public static final String CIRCULARSTD_BOLD = "CircularStd-Bold.otf";
   public static final String CIRCULARSTD_MEDIUM = "CircularStd-Medium.otf";
+  public static final String BLOCK_BERTHOLD = "Block-Berthold-Regular.ttf";
 }
