@@ -31,12 +31,15 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
+import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
+import com.tribe.app.presentation.view.Test;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -58,6 +61,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   @Inject UserPresenter userPresenter;
   @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
   @Inject @LastSync Preference<Long> lastSync;
+  @Inject User currentUser;
 
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
   @BindView(R.id.layoutCall) FrameLayout layoutCall;
@@ -97,8 +101,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
-        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
+        PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync);
     }
 
@@ -112,6 +116,28 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
+    mock();
+  }
+
+  private void mock() {
+    Test view = new Test(this);
+    List<NotificationModel> list = new ArrayList<>();
+
+    NotificationModel a =
+        new NotificationModel.Builder().title(getString(R.string.new_challenger_popup_title))
+            .subTitle(getString(R.string.new_challenger_popup_subtitle))
+            .content(getString(R.string.new_challenger_popup_friends))
+            .btn1Content(getString(R.string.new_challenger_popup_action_add))
+            .background(R.drawable.bck_norif_challenge)
+            .profilePicture(currentUser.getProfilePicture())
+            .build();
+    NotificationModel d = new NotificationModel.Builder().title("daia3").build();
+
+    list.add(a);
+    list.add(a);
+    list.add(a);
+    list.add(d);
+    view.show(this, list);
   }
 
   @Override protected void onStop() {

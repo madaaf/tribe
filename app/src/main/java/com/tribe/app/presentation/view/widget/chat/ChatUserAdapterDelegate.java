@@ -172,7 +172,7 @@ public class ChatUserAdapterDelegate extends RxAdapterDelegate<List<User>> {
 
   private LinearLayout initDots(LinearLayout container) {
     if (container.getChildCount() > 0) return container;
-    int sizeDot = context.getResources().getDimensionPixelSize(R.dimen.view_dot_size_chat);
+    int sizeDot = context.getResources().getDimensionPixelSize(R.dimen.waiting_view_dot_size);
     for (int i = 0; i < 3; i++) {
       View v = new View(context);
       v.setBackgroundResource(R.drawable.shape_oval_grey);
