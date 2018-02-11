@@ -34,7 +34,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 10/31/2017.
@@ -190,14 +189,7 @@ public class GameBirdRushBackground extends View {
     for (Map.Entry<BirdRushObstacle, Rect> entry : obstaclePopedList.entrySet()) {
       BirdRushObstacle b = entry.getKey();
       Rect rect = entry.getValue();
-      Timber.e("ANIM OSTAVLE "
-          + b.getId()
-          + " "
-          + b.getX()
-          + " "
-          + b.getY()
-          + " "
-          + obstaclePopedList.size());
+
       rect.set(b.getX(), b.getY(), b.getX() + BirdRushObstacle.wiewWidth,
           Math.round(b.getY() + b.getViewHeight()));
 
@@ -274,7 +266,6 @@ public class GameBirdRushBackground extends View {
       }
 
       if (birdRush.isLost()) {
-        Timber.e("ROTATE BIRD ");
         int pivotX = birdRush.getX();
         int pivotY = birdRush.getY();
         canvas.save(Canvas.MATRIX_SAVE_FLAG);
@@ -366,9 +357,9 @@ public class GameBirdRushBackground extends View {
           b.setY(yCenterBirdPos);
         }
 
-        if (b.getX() >= xCenterBirdPos
-            && b.getY() >= yCenterBirdPos
-            && finalI1 == birdList.size() - 1) {
+        if (b.getX() >= xCenterBirdPos &&
+            b.getY() >= yCenterBirdPos &&
+            finalI1 == birdList.size() - 1) {
 
           subscriptions.add(Observable.timer((1000), TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())

@@ -414,7 +414,7 @@ public class AndroidApplication extends Application {
                   .removeField("banner")
                   .addField("logo", String.class)
                   .addField("background", String.class)
-                  .addRealmListField("animation_icons", schema.get("AnimationIconRealm"));
+                  .addRealmListField("animated_icons", schema.get("AnimationIconRealm"));
             }
 
             oldVersion++;
