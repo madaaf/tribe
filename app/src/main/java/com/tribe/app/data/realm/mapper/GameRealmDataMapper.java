@@ -1,6 +1,7 @@
 package com.tribe.app.data.realm.mapper;
 
 import android.content.Context;
+import com.tribe.app.data.realm.AnimationIconRealm;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
@@ -48,7 +49,6 @@ import javax.inject.Singleton;
       }
 
       game.set__typename(gameRealm.get__typename());
-      game.setBanner(gameRealm.getBanner());
       game.setTitle(gameRealm.getTitle());
       game.setBaseline(gameRealm.getBaseline());
       game.setFeatured(gameRealm.isFeatured());
@@ -60,10 +60,20 @@ import javax.inject.Singleton;
       game.setPlays_count(gameRealm.getPlays_count());
       game.setPrimary_color(gameRealm.getPrimary_color());
       game.setSecondary_color(gameRealm.getSecondary_color());
+
+      List<String> animation_icons = new ArrayList<>();
+      for (AnimationIconRealm iconRealm : gameRealm.getAnimation_icons())
+        animation_icons.add(iconRealm.getUrl());
+      game.setAnimation_icons(animation_icons);
+      game.setLogo(gameRealm.getLogo());
+      game.setBackground(gameRealm.getBackground());
+
       if (gameRealm.getFriendLeaderScoreUser() != null) {
         TribeGuest guest = new TribeGuest(gameRealm.getFriendLeaderScoreUser().getId(),
             gameRealm.getFriendLeaderScoreUser().getDisplay_name(),
             gameRealm.getFriendLeaderScoreUser().getPicture(), false, false, null);
+        guest.setScoreValue(gameRealm.getFriendLeaderScoreUser().getValue());
+        guest.setRankingValue(gameRealm.getFriendLeaderScoreUser().getRanking());
         game.setFriendLeader(guest);
       }
       game.setEmoji(gameRealm.getEmoji());
@@ -87,7 +97,6 @@ import javax.inject.Singleton;
       gameRealm.setId(game.getId());
       gameRealm.set__typename(game.get__typename());
       gameRealm.setTitle(game.getTitle());
-      gameRealm.setBanner(game.getBanner());
       gameRealm.setBaseline(game.getBaseline());
       gameRealm.setFeatured(game.isFeatured());
       gameRealm.setHas_scores(game.hasScores());
@@ -99,6 +108,8 @@ import javax.inject.Singleton;
       gameRealm.setPrimary_color(game.getPrimary_color());
       gameRealm.setSecondary_color(game.getSecondary_color());
       gameRealm.setUrl(game.getUrl());
+      gameRealm.setLogo(game.getLogo());
+      gameRealm.setBackground(game.getBackground());
     }
 
     return gameRealm;

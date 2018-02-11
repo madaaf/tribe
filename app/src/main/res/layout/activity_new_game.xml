@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="52dp"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/new_game_title"
+        android:textAllCaps="true"
+        style="@style/Title.2.Black"
+        />
+
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="@dimen/nav_icon_size"
+        android:layout_height="@dimen/nav_icon_size"
+        android:layout_gravity="left|center_vertical"
+        android:background="@drawable/selectable_button_oval"
+        android:clickable="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_close"
+        />
+
+  </FrameLayout>
+
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerViewGames"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginTop="52dp"
+      android:background="@null"
+      android:scrollbars="none"
+      />
+
+  <View
+      android:layout_width="match_parent"
+      android:layout_height="10dp"
+      android:layout_marginTop="52dp"
+      android:background="@drawable/shadow_bottom"
+      />
+
+</FrameLayout>

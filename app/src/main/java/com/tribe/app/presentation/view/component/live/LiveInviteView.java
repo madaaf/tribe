@@ -35,7 +35,8 @@ import com.tribe.app.presentation.view.adapter.decorator.InviteListDividerDecora
 import com.tribe.app.presentation.view.adapter.diff.LiveInviteDiffCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.LiveInviteAdapterSectionInterface;
 import com.tribe.app.presentation.view.adapter.manager.LiveInviteLayoutManager;
-import com.tribe.app.presentation.view.adapter.model.Header;
+import com.tribe.app.presentation.view.adapter.model.HeaderModel;
+import com.tribe.app.presentation.view.adapter.model.ShareTypeModel;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
@@ -64,12 +65,7 @@ public class LiveInviteView extends FrameLayout
 
   public static final int WIDTH_PARTIAL = 100;
   public static final int WIDTH_FULL = 220;
-
-  private static final int RECYCLER_VIEW_ANIMATIONS_DURATION = 200;
-  private static final int RECYCLER_VIEW_ANIMATIONS_DURATION_LONG = 300;
-  private static final int DURATION = 500;
   private static final int DURATION_FAST = 200;
-  private static final float OVERSHOOT = 0.75f;
 
   @Inject TagManager tagManager;
 
@@ -281,8 +277,11 @@ public class LiveInviteView extends FrameLayout
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
         if (position < 0 || position > list.size() - 1) return false;
-        return list.get(position) instanceof Header &&
-            (list.get(position).getId().equals(Header.HEADER_NAME));
+        return list.get(position) instanceof HeaderModel &&
+            (list.get(position)
+                .getId()
+                .equals(HeaderModel.HEADER_NAME) ||
+                    list.get(position).equals(HeaderModel.HEADER_DRAG_IN));
       }
 
       @Override public int getSectionType(int position) {
@@ -328,12 +327,12 @@ public class LiveInviteView extends FrameLayout
       }
 
       if (room.getShortcut() != null && !room.getShortcut().isSingle()) {
-        temp.add(new Header(Header.HEADER_NAME,
+        temp.add(new HeaderModel(HeaderModel.HEADER_NAME,
             live.getShortcut() != null ? live.getShortcut().getName() : "",
             R.drawable.picto_live_invite_header_edit, Gravity.START | Gravity.CENTER_VERTICAL));
       }
 
-      temp.add(new Header(Header.HEADER_CHAT_MEMBERS,
+      temp.add(new HeaderModel(HeaderModel.HEADER_CHAT_MEMBERS,
           getResources().getString(R.string.live_invite_section_chat_members), 0,
           Gravity.START | Gravity.CENTER_VERTICAL));
 
@@ -354,14 +353,17 @@ public class LiveInviteView extends FrameLayout
         }
       }
 
-      temp.add(room);
-
       positionOfFirstShortcut = temp.size();
       recyclerViewInvite.setPositionToBlock(positionOfFirstShortcut);
 
-      temp.add(new Header(Header.HEADER_DRAG_IN,
+      temp.add(new HeaderModel(HeaderModel.HEADER_DRAG_IN,
           getResources().getString(R.string.live_members_invite_friends_section_title), 0,
-          Gravity.CENTER));
+          Gravity.CENTER_VERTICAL));
+
+      temp.add(new ShareTypeModel(ShareTypeModel.SHARE_TYPE_MESSENGER,
+          R.drawable.picto_invite_messenger));
+      temp.add(new ShareTypeModel(ShareTypeModel.SHARE_TYPE_SMS, R.drawable.picto_invite_hangouts));
+
       for (Shortcut shortcut : listShortcut) {
         User user = shortcut.getSingleFriend();
         user.setSelected(selected != null && selected.getId().equals(shortcut.getId()));
@@ -451,7 +453,7 @@ public class LiveInviteView extends FrameLayout
   }
 
   public TileInviteView findViewByCoords(float rawX, float rawY) {
-    // Find the child view that was touched (perform a hit test)
+    // Find the child view that was touched (perform a hit Test)
     int[] recyclerViewCoords = new int[2];
     recyclerViewInvite.getLocationOnScreen(recyclerViewCoords);
 
@@ -537,10 +539,6 @@ public class LiveInviteView extends FrameLayout
   //   OBSERVABLES    //
   //////////////////////
 
-  public Observable<Void> onShareLink() {
-    return adapter.onShareLink();
-  }
-
   public Observable<Void> onClickBottom() {
     return onClickBottom;
   }
@@ -567,6 +565,10 @@ public class LiveInviteView extends FrameLayout
 
   public Observable<Void> onInviteMessenger() {
     return onInviteMessenger;
+  }
+
+  public Observable<String> onShareLink() {
+    return adapter.onShareLink();
   }
 
   public Observable<Void> onStopAndLaunchDice() {

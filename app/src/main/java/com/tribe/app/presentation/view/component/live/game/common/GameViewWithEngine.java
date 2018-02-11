@@ -43,12 +43,12 @@ import timber.log.Timber;
  */
 
 public abstract class GameViewWithEngine extends GameViewWithRanking {
-
+  private static final int IOS_RATIO_PX_HEIGHT = 667;
   private static final int DURATION = 250;
   private static final int DELAY = 250;
   private static final float OVERSHOOT = 1.25f;
 
-  private static final String ACTION_NEW_GAME = "newGame";
+  protected static final String ACTION_NEW_GAME = "newGame";
   private static final String ACTION_USER_GAME_OVER = "userGameOver";
   private static final String ACTION_USER_WAITING = "userWaiting";
   private static final String ACTION_USER_READY = "userReady";
@@ -94,19 +94,21 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected abstract int getSoundtrack();
 
+  protected abstract String getStyleFont();
+
   protected long startGameTimestamp() {
     return System.currentTimeMillis() + 5 * 1000;
   }
 
   protected void becomePlayer() {
     Timber.d("becomePlayer");
+    if (subscriptionsSession != null) subscriptionsSession.clear();
     stopEngine();
     startEngine();
   }
 
   protected void becomeGameMaster() {
     Timber.d("becomeGameMaster");
-    if (subscriptionsSession != null) subscriptionsSession.clear();
 
     startMasterEngine();
 
@@ -176,6 +178,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected void startMasterEngine() {
     Timber.d("startMasterEngine");
+
     subscriptions.add(gameEngine.onPlayerLost.subscribe(userId -> {
       webRTCRoom.sendToPeers(getLostPayload(userId), true);
       playerLost(userId);
@@ -219,7 +222,6 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void imReady() {
-    Timber.d("imReady");
     webRTCRoom.sendToPeers(getImReadyPayload(currentUser.getId()), true);
     if (gameEngine != null) gameEngine.setUserReady(currentUser.getId());
   }
@@ -233,10 +235,9 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
   }
 
   protected void iLost() {
-    Timber.d("iLost");
     if (game == null || gameEngine == null) return;
 
-    if (gameEngine.mapPlayerStatus.size() > 1 && roundPoints > 0) {
+    if (roundPoints > 0) {
       onAddScore.onNext(Pair.create(game.getId(), roundPoints));
     }
 
@@ -266,7 +267,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     Timber.d("gameOver (winnerId : " + winnerId + " )");
 
     if (subscriptionsSession != null) subscriptionsSession.clear();
-
+    soundManager.playSound(SoundManager.GAME_PLAYER_LOST, SoundManager.SOUND_MAX);
     refactorPending(false);
     onMessage.onNext(null);
     changeMessageStatus(txtRestart, false, true, DURATION, 0, null, null);
@@ -279,7 +280,8 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
       if (player.getId().equals(currentUser.getId())) {
         showMessage(getResources().getString(
-            StringUtils.stringWithPrefix(getContext(), wordingPrefix, "you_won")), 250, null,
+            StringUtils.stringWithPrefix(getContext(), wordingPrefix,
+                gameEngine.mapPlayerStatus.size() > 1 ? "you_won" : "you_lost")), 250, null,
             () -> becomeGameMaster());
       } else {
         showMessage(getResources().getString(
@@ -351,7 +353,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     paramsMessage.gravity = Gravity.CENTER;
 
     TextViewCompat.setTextAppearance(textViewFont, R.style.GameBody_1_White);
-    textViewFont.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
+    textViewFont.setCustomFont(context, getStyleFont());
     textViewFont.setText(text);
     textViewFont.setAllCaps(true);
     textViewFont.setAlpha(0);
@@ -371,6 +373,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     Timber.d("setupGameLocally : " + userId + " / players : " + players);
     currentMasterId = userId;
     game.setCurrentMaster(peerMap.get(userId));
+    game.incrementRoundCount();
     listenMessages();
     resetStatuses();
     refactorPending(false);
@@ -380,15 +383,17 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
         return;
       }
 
-      long now = System.currentTimeMillis();
+      long now = System.nanoTime() * 1000;
       if (timestamp > System.currentTimeMillis()) {
         subscriptions.add(Observable.timer(timestamp - now, TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(aLong -> playGame()));
+            .subscribe(aLong -> {
+              playGame();
+            }));
       } else {
         playGame();
       }
-    }, null));
+    }, null), getStyleFont());
 
     if (this instanceof GameWebView) {
       subscriptions.add(onGameReady.subscribe(gameReady -> {
@@ -411,7 +416,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
       gameEngine.start();
 
       if (gameEngine.mapPlayerStatus.size() <= 1) {
-        if (txtRestart != null) {
+        if (txtRestart != null && invitedMap.size() > 0) {
           txtRestart.setText(
               StringUtils.stringWithPrefix(getContext(), wordingPrefix, "waiting_instructions"));
           changeMessageStatus(txtRestart, true, true, DURATION, 0, null, null);
@@ -469,7 +474,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     this.onGameReady.onNext(ready);
   }
 
-  protected void showTitle(LabelListener listener) {
+  protected void showTitle(LabelListener listener, String styleFontType) {
     int translation = screenUtils.dpToPx(30.0f);
 
     int titleResId = StringUtils.stringWithPrefix(getContext(), wordingPrefix, "title");
@@ -480,9 +485,10 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
     paramsTitleBG.gravity = Gravity.CENTER;
+    txtTitleBG.setGravity(Gravity.CENTER);
 
     TextViewCompat.setTextAppearance(txtTitleBG, R.style.GameTitle_1_White40);
-    txtTitleBG.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
+    txtTitleBG.setCustomFont(context, styleFontType);
     txtTitleBG.setText(title);
     txtTitleBG.setAllCaps(true);
     txtTitleBG.setAlpha(0);
@@ -495,9 +501,9 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
         new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT);
     paramsTitleFront.gravity = Gravity.CENTER;
-
+    txtTitleFront.setGravity(Gravity.CENTER);
     TextViewCompat.setTextAppearance(txtTitleFront, R.style.GameTitle_1_White);
-    txtTitleFront.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
+    txtTitleFront.setCustomFont(context, styleFontType);
     txtTitleFront.setText(title);
     txtTitleFront.setAllCaps(true);
     txtTitleFront.setAlpha(0);
@@ -611,9 +617,10 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
    */
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     Timber.d("start : " + userId);
-    super.start(game, mapObservable, liveViewsObservable, userId);
+    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
 
     txtRestart = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsRestart =
@@ -622,7 +629,7 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
     paramsRestart.gravity = Gravity.CENTER;
 
     TextViewCompat.setTextAppearance(txtRestart, R.style.GameBody_1_White40);
-    txtRestart.setCustomFont(context, FontUtils.GULKAVE_REGULAR);
+    txtRestart.setCustomFont(context, getStyleFont());
     txtRestart.setText(
         StringUtils.stringWithPrefix(getContext(), wordingPrefix, "pending_instructions"));
     txtRestart.setAllCaps(true);

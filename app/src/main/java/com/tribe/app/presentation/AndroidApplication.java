@@ -58,7 +58,6 @@ import io.realm.exceptions.RealmMigrationNeededException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import net.danlew.android.joda.JodaTimeAndroid;
 import timber.log.Timber;
 
@@ -150,7 +149,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(13)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(17)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -196,7 +195,7 @@ public class AndroidApplication extends Application {
                   .addField("url", String.class, FieldAttribute.PRIMARY_KEY)
                   .addField("filesize", Integer.class)
                   .addField("width", String.class)
-                  .addField("height", String.class)
+                  .addField("getRelativeHeight", String.class)
                   .addField("duration", float.class);
 
               schema.create("MessageRealm")
@@ -328,8 +327,7 @@ public class AndroidApplication extends Application {
                   .transform(obj -> {
                     DynamicRealmObject children = obj.getObject("original");
                     if (children == null) return;
-                    DynamicRealmObject migratedChildren =
-                        realm.createObject("MediaRealm");
+                    DynamicRealmObject migratedChildren = realm.createObject("MediaRealm");
                     migratedChildren.set("url", children.getString("url"));
                     migratedChildren.set("filesize", children.getInt("filesize"));
                     migratedChildren.set("width", children.getString("width"));
@@ -359,6 +357,86 @@ public class AndroidApplication extends Application {
                   .addField("supportAuthorId", String.class);
             }
 
+            oldVersion++;
+          }
+
+          if (oldVersion == 12) {
+            if (schema.get("MediaRealm") == null) {
+              schema.create("MediaRealm")
+                  .addField("url", String.class, FieldAttribute.PRIMARY_KEY, FieldAttribute.INDEXED)
+                  .addField("filesize", Integer.class)
+                  .addField("width", String.class)
+                  .addField("getRelativeHeight", String.class)
+                  .addField("duration", float.class);
+
+              schema.get("MessageRealm")
+                  .addRealmObjectField("original_tmp", schema.get("MediaRealm"))
+                  .transform(obj -> {
+                    DynamicRealmObject children = obj.getObject("original");
+                    if (children == null) return;
+                    DynamicRealmObject migratedChildren = obj.getObject("original_tmp");
+                    migratedChildren.set("url", children.getString("url"));
+                    migratedChildren.set("filesize", children.getInt("filesize"));
+                    migratedChildren.set("width", children.getString("width"));
+                    migratedChildren.set("getRelativeHeight", children.getString("getRelativeHeight"));
+                    migratedChildren.set("duration", children.getFloat("duration"));
+                  })
+                  .removeField("original")
+                  .renameField("original_tmp", "original")
+                  .addRealmListField("alts_tmp", schema.get("MediaRealm"))
+                  .transform(obj -> {
+                    RealmList<DynamicRealmObject> children = obj.getList("alts");
+                    if (children == null || children.size() == 0) return;
+                    RealmList<DynamicRealmObject> migratedChildren = obj.getList("alts_tmp");
+                    for (DynamicRealmObject child : children) {
+                      DynamicRealmObject newChild = realm.createObject("MediaRealm");
+                      newChild.set("url", child.getString("url"));
+                      newChild.set("filesize", child.getInt("filesize"));
+                      newChild.set("width", child.getString("width"));
+                      newChild.set("getRelativeHeight", child.getString("getRelativeHeight"));
+                      newChild.set("duration", child.getFloat("duration"));
+                      migratedChildren.add(newChild);
+                    }
+                  })
+                  .removeField("alts")
+                  .renameField("alts_tmp", "alts")
+                  .addField("supportAuthorId", String.class);
+            }
+
+            oldVersion++;
+          }
+
+          if (oldVersion == 13) {
+            if (schema.get("AnimationIconRealm") == null) {
+              schema.create("AnimationIconRealm").addField("url", String.class);
+
+              schema.get("GameRealm")
+                  .removeField("banner")
+                  .addField("logo", String.class)
+                  .addField("background", String.class)
+                  .addRealmListField("animated_icons", schema.get("AnimationIconRealm"));
+            }
+
+            oldVersion++;
+          }
+
+          if (oldVersion == 14) {
+            schema.get("ScoreUserRealm").addField("value", int.class);
+            oldVersion++;
+          }
+
+          if (oldVersion == 15) {
+            if (schema.get("UserPlayingRealm") == null) {
+              schema.create("UserPlayingRealm")
+                  .addField("room_id", String.class)
+                  .addField("game_id", String.class);
+            }
+
+            oldVersion++;
+          }
+
+          if (oldVersion == 16) {
+            schema.get("ScoreUserRealm").addField("ranking", int.class);
             oldVersion++;
           }
         })

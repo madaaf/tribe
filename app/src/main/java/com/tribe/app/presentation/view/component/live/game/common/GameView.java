@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import rx.Observable;
-import rx.Subscription;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -61,6 +60,7 @@ public abstract class GameView extends FrameLayout {
   protected WebRTCRoom webRTCRoom;
   protected Game game;
   protected Map<String, TribeGuest> peerMap;
+  protected Map<String, TribeGuest> invitedMap;
   protected Map<String, LiveStreamView> liveViewsMap;
   protected String currentMasterId;
   protected boolean landscapeMode = false;
@@ -70,6 +70,7 @@ public abstract class GameView extends FrameLayout {
   protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected CompositeSubscription subscriptionsRoom = new CompositeSubscription();
   protected Observable<Map<String, TribeGuest>> peerMapObservable;
+  protected Observable<Map<String, TribeGuest>> invitedMapObservable;
   protected PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
   protected PublishSubject<Game> onRestart = PublishSubject.create();
   protected PublishSubject<Game> onStop = PublishSubject.create();
@@ -92,6 +93,7 @@ public abstract class GameView extends FrameLayout {
     gameManager = GameManager.getInstance(context);
 
     peerMap = new HashMap<>();
+    invitedMap = new HashMap<>();
     liveViewsMap = new HashMap<>();
 
     if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -190,13 +192,22 @@ public abstract class GameView extends FrameLayout {
   public abstract void setNextGame();
 
   public void start(Game game, Observable<Map<String, TribeGuest>> map,
+      Observable<Map<String, TribeGuest>> mapInvited,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     this.game = game;
     this.peerMapObservable = map;
+    this.invitedMapObservable = mapInvited;
+
+    game.resetRoundCount();
 
     subscriptions.add(liveViewsObservable.subscribe(stringLiveStreamViewMap -> {
       this.liveViewsMap.clear();
       this.liveViewsMap.putAll(stringLiveStreamViewMap);
+    }));
+
+    subscriptions.add(mapInvited.subscribe(invitedMap -> {
+      this.invitedMap.clear();
+      this.invitedMap.putAll(invitedMap);
     }));
 
     subscriptions.add(map.subscribe(peerMap -> {

@@ -274,8 +274,9 @@ public abstract class GameViewWithRanking extends GameView {
    */
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> map,
+      Observable<Map<String, TribeGuest>> mapInvited,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    super.start(game, map, liveViewsObservable, userId);
+    super.start(game, map, mapInvited, liveViewsObservable, userId);
 
     game.getContextMap().put(SCORES_KEY, new HashMap<String, Integer>());
 

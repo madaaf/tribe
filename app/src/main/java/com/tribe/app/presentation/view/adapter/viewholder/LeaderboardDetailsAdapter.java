@@ -9,6 +9,7 @@ import com.tribe.app.domain.entity.Score;
 import com.tribe.app.presentation.view.adapter.RxAdapterDelegatesManager;
 import com.tribe.app.presentation.view.adapter.delegate.common.LoadMoreAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsEmptyAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.helper.EndlessRecyclerViewScrollListener;
 import com.tribe.app.presentation.view.adapter.model.LoadMoreModel;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
   // DELEGATES
   private RxAdapterDelegatesManager delegatesManager;
   private LeaderboardDetailsAdapterDelegate leaderboardDetailsAdapterDelegate;
+  private LeaderboardDetailsEmptyAdapterDelegate leaderboardDetailsEmptyAdapterDelegate;
   private LoadMoreAdapterDelegate loadMoreAdapterDelegate;
 
   // VARIABLES
@@ -43,6 +45,9 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
 
     leaderboardDetailsAdapterDelegate = new LeaderboardDetailsAdapterDelegate(context);
     delegatesManager.addDelegate(leaderboardDetailsAdapterDelegate);
+
+    leaderboardDetailsEmptyAdapterDelegate = new LeaderboardDetailsEmptyAdapterDelegate(context);
+    delegatesManager.addDelegate(leaderboardDetailsEmptyAdapterDelegate);
 
     loadMoreAdapterDelegate = new LoadMoreAdapterDelegate(context);
     delegatesManager.addDelegate(loadMoreAdapterDelegate);
@@ -106,7 +111,7 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
     return items;
   }
 
-  public void setItems(List<Object> items) {
+  public void setItems(List<Score> items) {
     this.items.clear();
     this.items.addAll(items);
 

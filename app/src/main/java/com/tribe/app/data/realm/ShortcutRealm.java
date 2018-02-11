@@ -175,6 +175,12 @@ public class ShortcutRealm extends RealmObject {
     }
   }
 
+  public void computeMembersPlaying(Map<String, UserPlayingRealm> playingMap) {
+    for (UserRealm user : members) {
+      user.setIsPlaying(playingMap.get(user.getId()));
+    }
+  }
+
   public void computeMembersLive(Map<String, Boolean> liveMap) {
     for (UserRealm user : members) {
       user.setIsLive(liveMap.containsKey(user.getId()));

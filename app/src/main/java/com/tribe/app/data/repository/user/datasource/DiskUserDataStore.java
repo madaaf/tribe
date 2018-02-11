@@ -14,6 +14,7 @@ import com.tribe.app.data.realm.PinRealm;
 import com.tribe.app.data.realm.RecipientRealmInterface;
 import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.data.realm.UserPlayingRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
@@ -66,11 +67,11 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   @Override public Observable<UserRealm> userInfos(String userId) {
     return Observable.combineLatest(this.userCache.userInfos(accessToken.getUserId()),
         this.userCache.shortcuts().compose(listShortcutOnlineLiveTransformer),
-        liveCache.onlineMap(), liveCache.liveMap(),
-        (userRealm, shortcutRealmList, onlineMap, liveMap) -> {
+        liveCache.onlineMap(), liveCache.liveMap(), liveCache.playingMap(),
+        (userRealm, shortcutRealmList, onlineMap, liveMap, playingMap) -> {
           userRealm.setShortcuts(shortcutRealmList);
           return userRealm;
-        });
+        }).doOnError(throwable -> throwable.printStackTrace());
   }
 
   @Override public Observable<List<UserRealm>> userInfosList(List<String> userIds) {
@@ -149,6 +150,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
   @Override public Observable<Map<String, Boolean>> onlineMap() {
     return liveCache.onlineMap();
+  }
+
+  @Override public Observable<Map<String, UserPlayingRealm>> playingMap() {
+    return liveCache.playingMap();
   }
 
   @Override public Observable<Map<String, Boolean>> liveMap() {
@@ -233,6 +238,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
         for (ShortcutRealm shortcutRealm : shortcutRealmList) {
           transformOnlineShortcut(shortcutRealm);
           transformLiveShortcut(shortcutRealm);
+          transformPlayingShortcut(shortcutRealm);
         }
 
         return shortcutRealmList;
@@ -242,6 +248,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
       shortcutRealmObservable -> shortcutRealmObservable.map(shortcutRealm -> {
         transformOnlineShortcut(shortcutRealm);
         transformLiveShortcut(shortcutRealm);
+        transformPlayingShortcut(shortcutRealm);
         return shortcutRealm;
       });
 
@@ -249,8 +256,15 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     Map<String, Boolean> onlineMap = liveCache.getOnlineMap();
     if (shortcutRealm != null) {
       shortcutRealm.computeMembersOnline(onlineMap);
-      shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId())
-          || shortcutRealm.isUniqueMemberOnline());
+      shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId()) ||
+          shortcutRealm.isUniqueMemberOnline());
+    }
+  }
+
+  private void transformPlayingShortcut(ShortcutRealm shortcutRealm) {
+    Map<String, UserPlayingRealm> playingMap = liveCache.getPlayingMap();
+    if (shortcutRealm != null) {
+      shortcutRealm.computeMembersPlaying(playingMap);
     }
   }
 

@@ -10,6 +10,7 @@ import com.tribe.tribelivesdk.webrtc.Frame;
 import com.tribe.tribelivesdk.webrtc.TribeI420Frame;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -36,7 +37,7 @@ import rx.subscriptions.CompositeSubscription;
 
   public static final String[] playableGames = {
       Game.GAME_SLICE_FRUIT, Game.GAME_DRAW, Game.GAME_SPEED_RACER, Game.GAME_CHALLENGE,
-      Game.GAME_INVADERS, Game.GAME_POST_IT, Game.GAME_TRIVIA, Game.GAME_BATTLE_MUSIC
+      Game.GAME_INVADERS, Game.GAME_POST_IT, Game.GAME_TRIVIA, Game.GAME_BATTLE_MUSIC, Game.GAME_BIRD_RUSH
   };
 
   // VARIABLES
@@ -94,7 +95,15 @@ import rx.subscriptions.CompositeSubscription;
         }
       }
     }
+
+    Collections.sort(gameList, (o1, o2) -> {
+      int res = ((Boolean) o2.isFeatured()).compareTo(o1.isFeatured());
+      if (res != 0) return res;
+
+      return ((Integer) o2.getPlays_count()).compareTo(o1.getPlays_count());
+    });
   }
+
 
   public void initSubscriptions() {
     for (Game game : gameList) {

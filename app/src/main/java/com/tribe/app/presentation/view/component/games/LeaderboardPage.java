@@ -102,7 +102,7 @@ public class LeaderboardPage extends LinearLayout {
     recyclerView.addItemDecoration(new BaseListDividerDecoration(getContext(),
         ContextCompat.getColor(getContext(), R.color.grey_divider), screenUtils.dpToPx(0.5f)));
 
-    adapter.setItems(items);
+    //adapter.setItems(items);
 
     //subscriptions.add(adapter.onLoadMore().subscribe(downwards -> {
     //  if (!downwards && friends) return;
@@ -110,7 +110,7 @@ public class LeaderboardPage extends LinearLayout {
     //  if (downwards) {
     //    if (items.get(items.size() - 1) instanceof Score) {
     //      Score score = (Score) items.get(items.size() - 1);
-    //      gamePresenter.load(selectedGame.getId(), friends, false, LIMIT,
+    //      gamePresenter.load(selectedGame.getIdOb(), friends, false, LIMIT,
     //          score.getRanking() + 1, downwards);
     //    }
     //  } else {
@@ -119,7 +119,7 @@ public class LeaderboardPage extends LinearLayout {
     //      if (score.getRanking() == 0 || score.getRanking() == 1) return;
     //      int offset = score.getRanking() - LIMIT;
     //      int limit = offset < 0 ? LIMIT + offset : LIMIT;
-    //      gamePresenter.loadGameLeaderboard(selectedGame.getId(), friends, false, limit,
+    //      gamePresenter.loadGameLeaderboard(selectedGame.getIdOb(), friends, false, limit,
     //          offset < 0 ? 0 : offset, downwards);
     //    }
     //  }
@@ -134,9 +134,7 @@ public class LeaderboardPage extends LinearLayout {
         return getContext();
       }
 
-      @Override
-      public void onGameLeaderboard(List<Score> scoreList, boolean cloud, boolean friendsOnly,
-          int offset, boolean downwards) {
+      @Override public void onGameLeaderboard(List<Score> scoreList, boolean cloud) {
         // NOT USED FOR NOW
         //if (cloud) {
         //  if (!downwards) {
@@ -155,7 +153,7 @@ public class LeaderboardPage extends LinearLayout {
         Collections.sort(scoreList, (o1, o2) -> ((Integer) o2.getValue()).compareTo(o1.getValue()));
         items.clear();
         items.addAll(scoreList);
-        adapter.setItems(items);
+        //adapter.setItems(items);
       }
     };
   }
@@ -193,8 +191,7 @@ public class LeaderboardPage extends LinearLayout {
     subscriptions.add(scoreObs.subscribe(score -> {
       items.clear();
       adapter.clear();
-      gamePresenter.loadGameLeaderboard(selectedGame.getId(), friends, false, LIMIT,
-          score.getRanking(), true);
+      gamePresenter.loadGameLeaderboard(selectedGame.getId());
     }));
   }
 

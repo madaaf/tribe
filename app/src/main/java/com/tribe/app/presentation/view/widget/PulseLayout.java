@@ -246,7 +246,7 @@ public class PulseLayout extends RelativeLayout {
       PulseView pulseView = new PulseView(getContext());
       pulseView.setScaleX(0);
       pulseView.setScaleY(0);
-      pulseView.setAlpha(0.2f);
+      pulseView.setAlpha(0.3f);
 
       addView(pulseView, index, layoutParams);
       views.add(pulseView);

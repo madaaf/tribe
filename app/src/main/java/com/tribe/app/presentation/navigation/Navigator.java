@@ -30,6 +30,10 @@ import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
+import com.tribe.app.presentation.view.activity.GameDetailsActivity;
+import com.tribe.app.presentation.view.activity.GameLeaderboardActivity;
+import com.tribe.app.presentation.view.activity.GameMembersActivity;
+import com.tribe.app.presentation.view.activity.GameStoreActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
 import com.tribe.app.presentation.view.activity.LeaderboardActivity;
@@ -56,6 +60,8 @@ public class Navigator {
   public static int FROM_CHAT = 1003;
   public static int FROM_NEW_GAME = 1004;
   public static int FROM_LEADERBOARD = 1005;
+  public static int FROM_GAMESTORE = 1006;
+  public static int FROM_GAME_DETAILS = 1007;
   public static String SNAPCHAT = "com.snapchat.android";
   public static String INSTAGRAM = "com.instagram.android";
   public static String TWITTER = "com.twitter.android";
@@ -113,13 +119,11 @@ public class Navigator {
    *
    * @param activity An activity needed to open the destiny activity.
    */
-  public void navigateToHomeFromStart(Activity activity, Uri uriDeepLink) {
+  public void navigateToHome(Activity activity) {
     if (activity != null) {
       Intent intent = HomeActivity.getCallingIntent(activity);
-      if (uriDeepLink != null) {
-        intent.setData(uriDeepLink);
-      }
       activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
     }
   }
 
@@ -156,21 +160,11 @@ public class Navigator {
     }
   }
 
-  public void navigateToLeaderboards(Activity activity) {
+  public void navigateToLeaderboards(Activity activity, User user) {
     if (activity != null) {
-      Intent intent = LeaderboardActivity.getCallingIntent(activity);
+      Intent intent = LeaderboardActivity.getCallingIntent(activity, user);
       activity.startActivityForResult(intent, FROM_LEADERBOARD);
-      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
-    }
-  }
-
-  public void navigateToLeaderboardsForShortcut(Activity activity, String userId,
-      String displayName, String profilePicture) {
-    if (activity != null) {
-      Intent intent =
-          LeaderboardActivity.getCallingIntent(activity, userId, displayName, profilePicture);
-      activity.startActivityForResult(intent, FROM_LEADERBOARD);
-      activity.overridePendingTransition(R.anim.in_from_left, R.anim.activity_out_scale_down);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }
 
@@ -178,6 +172,30 @@ public class Navigator {
     if (activity != null) {
       Intent intent = VideoActivity.getCallingIntent(activity);
       activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+    }
+  }
+
+  public void navigateToGameDetails(Activity activity, String gameId) {
+    if (activity != null) {
+      Intent intent = GameDetailsActivity.getCallingIntent(activity, gameId);
+      activity.startActivityForResult(intent, FROM_GAMESTORE);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
+  }
+
+  public void navigateToGameLeaderboard(Activity activity, String gameId) {
+    if (activity != null) {
+      Intent intent = GameLeaderboardActivity.getCallingIntent(activity, gameId);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
+    }
+  }
+
+  public void navigateToGameMembers(Activity activity, String gameId) {
+    if (activity != null) {
+      Intent intent = GameMembersActivity.getCallingIntent(activity, gameId);
+      activity.startActivityForResult(intent, FROM_GAME_DETAILS);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }
@@ -243,10 +261,9 @@ public class Navigator {
   }
 
   public void navigateToChat(Activity activity, Recipient recipient, Shortcut fromShortcut,
-      String gesture, String section, boolean noHistory) {
+      String section, boolean noHistory) {
     if (activity != null) {
-      Intent intent =
-          ChatActivity.getCallingIntent(activity, recipient, fromShortcut, gesture, section);
+      Intent intent = ChatActivity.getCallingIntent(activity, recipient, fromShortcut, section);
 
       if (noHistory) {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -264,18 +281,6 @@ public class Navigator {
     Intent intent = PictureActivity.getCallingIntent(activity, messageId, arrIds);
     activity.startActivity(intent);
     // activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
-  }
-
-  public void navigateToLiveFromSwipe(Activity activity, Recipient recipient,
-      @LiveActivity.Source String source, String section) {
-    if (activity != null) {
-      Intent intent =
-          LiveActivity.getCallingIntent(activity, recipient, source, TagManagerUtils.GESTURE_SWIPE,
-              section, null);
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      activity.startActivityForResult(intent, FROM_LIVE);
-      activity.overridePendingTransition(0, 0);
-    }
   }
 
   public void navigateToIntent(Activity activity, Intent intent) {
@@ -307,11 +312,26 @@ public class Navigator {
     }
   }
 
-  public void navigateToNewGame(Activity activity, String source) {
+  public void navigateToGameStoreLogin(Activity activity) {
     if (activity != null) {
-      Intent intent = NewGameActivity.getCallingIntent(activity, source);
+      Intent intent = GameStoreActivity.getCallingIntent(activity);
+      activity.startActivity(intent);
+    }
+  }
+
+  public void navigateToGameStoreNewGame(Activity activity) {
+    if (activity != null) {
+      Intent intent = NewGameActivity.getCallingIntent(activity);
       activity.startActivityForResult(intent, FROM_NEW_GAME);
-      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.activity_out_scale_down);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
+  }
+
+  public void navigateToGameStoreForNewLive(Activity activity, Shortcut shortcut) {
+    if (activity != null) {
+      Intent intent = NewGameActivity.getCallingIntent(activity, shortcut);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
   }
 

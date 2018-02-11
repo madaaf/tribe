@@ -426,7 +426,7 @@ import timber.log.Timber;
         .onBackpressureDrop()
         .subscribeOn(Schedulers.from(Executors.newSingleThreadExecutor()))
         .subscribe(invite -> {
-          //if (invite.getRoom() != null) unsubscribeRoomUpdate(invite.getRoom().getId());
+          //if (invite.getRoom() != null) unsubscribeRoomUpdate(invite.getRoom().getIdOb());
           liveCache.removeInvite(invite);
         }));
 
@@ -436,6 +436,14 @@ import timber.log.Timber;
     persistentSubscriptions.add(jsonToModel.onRemovedOnline()
         .onBackpressureDrop()
         .subscribe(s -> liveCache.removeOnline(s)));
+
+    persistentSubscriptions.add(jsonToModel.onAddedPlaying()
+        .onBackpressureDrop()
+        .subscribe(pair -> liveCache.putPlaying(pair.first, pair.second)));
+
+    persistentSubscriptions.add(jsonToModel.onRemovedPlaying()
+        .onBackpressureDrop()
+        .subscribe(s -> liveCache.removePlaying(s)));
 
     persistentSubscriptions.add(
         jsonToModel.onRandomRoomAssigned().onBackpressureDrop().subscribe(assignedRoomId -> {
@@ -509,7 +517,7 @@ import timber.log.Timber;
           if (!shortcutRealm.isOnline()) {
             liveCache.removeOnline(shortcutRealm.getId());
           } else if (shortcutRealm.isOnline()) liveCache.putOnline(shortcutRealm.getId());
-           userCache.updateShortcut(shortcutRealm);
+          userCache.updateShortcut(shortcutRealm);
         }));
 
     persistentSubscriptions.add(jsonToModel.onShortcutRemoved()

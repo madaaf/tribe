@@ -51,6 +51,7 @@ public class User
   private boolean push_notif;
   private boolean mute_online_notif;
   private boolean is_online = false;
+  private UserPlaying is_playing;
   private boolean is_live = false;
   private boolean isActive = false;
   private boolean isTyping = false;
@@ -237,6 +238,14 @@ public class User
     //    (System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES));
     // We consider that somebody that was online less than fifteen minutes ago is still online
     return System.currentTimeMillis() - last_seen_at.getTime() <= FIFTEEN_MINUTES;
+  }
+
+  public UserPlaying isPlaying() {
+    return is_playing;
+  }
+
+  public void setPlaying(UserPlaying userPlaying) {
+    this.is_playing = userPlaying;
   }
 
   @Override public boolean isLive() {

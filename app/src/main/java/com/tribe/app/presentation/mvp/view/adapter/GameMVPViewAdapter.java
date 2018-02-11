@@ -5,6 +5,7 @@ import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
+import com.tribe.tribelivesdk.game.Game;
 import java.util.List;
 import java.util.Map;
 
@@ -18,8 +19,7 @@ public class GameMVPViewAdapter implements GameMVPView {
 
   }
 
-  @Override public void onGameLeaderboard(List<Score> scoreList, boolean cloud, boolean friendsOnly,
-      int offset, boolean downwards) {
+  @Override public void onGameLeaderboard(List<Score> scoreList, boolean cloud) {
 
   }
 
@@ -36,6 +36,10 @@ public class GameMVPViewAdapter implements GameMVPView {
   }
 
   @Override public void onBattleMusicData(Map<String, BattleMusicPlaylist> map) {
+
+  }
+
+  @Override public void onGameList(List<Game> gameList) {
 
   }
 }

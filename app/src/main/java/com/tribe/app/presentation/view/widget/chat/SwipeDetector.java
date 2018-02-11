@@ -15,7 +15,6 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ResizeAnimation;
@@ -146,8 +145,8 @@ public class SwipeDetector implements View.OnTouchListener {
                 mView.setTranslationX(e2.getRawX() - viewMotionDownX);
               } else if (mView.getX() < initPos) { // TRASH BTN POSTITION
                 mView.setX(initPos);
-              } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
-                  && mView.getX() < initialPosition) {
+              } else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE &&
+                  mView.getX() < initialPosition) {
                 mView.setTranslationX(e2.getRawX() - viewMotionDownX);
               } else if (mView.getX() > initialPosition) {
                 mView.setX(initialPosition);
@@ -373,6 +372,7 @@ public class SwipeDetector implements View.OnTouchListener {
           context.uploadImageBtn.setVisibility(GONE);
           context.layoutPulse.setVisibility(GONE);
           context.videoCallBtn.setVisibility(GONE);
+          context.btnGame.setVisibility(GONE);
           recordingView.setAlpha(0);
           recordingView.setScaleX(0);
           recordingView.setScaleY(0);
@@ -454,11 +454,11 @@ public class SwipeDetector implements View.OnTouchListener {
 
   private void startRecording() { //MADA
 
-    context.fileName = context.getContext().getExternalCacheDir().getAbsolutePath()
-        + File.separator
-        + context.dateUtils.getUTCDateAsString()
-        + context.user.getId()
-        + "audiorecord.mp4";
+    context.fileName = context.getContext().getExternalCacheDir().getAbsolutePath() +
+        File.separator +
+        context.dateUtils.getUTCDateAsString() +
+        context.user.getId() +
+        "audiorecord.mp4";
     context.fileName = context.fileName.replaceAll(" ", "_").replaceAll(":", "-");
 
     Timber.i("startRecording" + context.fileName);
@@ -511,6 +511,7 @@ public class SwipeDetector implements View.OnTouchListener {
           context.uploadImageBtn.setVisibility(VISIBLE);
           context.layoutPulse.setVisibility(VISIBLE);
           context.videoCallBtn.setVisibility(VISIBLE);
+          context.btnGame.setVisibility(GONE);
           context.editText.setCursorVisible(true);
           context.hintEditText.setVisibility(View.INVISIBLE);
         })
@@ -556,8 +557,8 @@ public class SwipeDetector implements View.OnTouchListener {
     context.voiceNoteBtn.setScaleY(ratio * VOICE_NOTE_SCALE_RATIO);
 
     float newRatio = ratio - 1;
-    float val = (newRatio * context.recordingViewInitWidth) + ((1 - newRatio)
-        * (context.playerBtn.getWidth()));
+    float val = (newRatio * context.recordingViewInitWidth) +
+        ((1 - newRatio) * (context.playerBtn.getWidth()));
 
     ViewGroup.LayoutParams layoutParams = recordingView.getLayoutParams();
     layoutParams.width = (int) val;
@@ -598,9 +599,9 @@ public class SwipeDetector implements View.OnTouchListener {
   }
 
   public void onSingleTap() {
-      Toast.makeText(context.getContext(),
-              context.getContext().getString(R.string.chat_placeholder_tap_and_hold),
-              Toast.LENGTH_SHORT).show();
+    Toast.makeText(context.getContext(),
+        context.getContext().getString(R.string.chat_placeholder_tap_and_hold), Toast.LENGTH_SHORT)
+        .show();
   }
 
   /*

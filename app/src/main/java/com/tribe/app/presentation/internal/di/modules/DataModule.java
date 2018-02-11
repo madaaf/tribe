@@ -12,6 +12,7 @@ import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.GameData;
+import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
@@ -139,7 +140,7 @@ import static android.content.Context.MODE_PRIVATE;
 
   @Provides @Singleton @SupportIsUsed Preference<Set<String>> provideSupportIsUsed(Context context,
       RxSharedPreferences prefs) {
-    return prefs.getStringSet(PreferencesUtils.SUPPORT_IS_USED,  new HashSet<>());
+    return prefs.getStringSet(PreferencesUtils.SUPPORT_IS_USED, new HashSet<>());
   }
 
   @Provides @Singleton @IsGroupCreated Preference<Boolean> provideIsGroupCreated(Context context,
@@ -154,6 +155,11 @@ import static android.content.Context.MODE_PRIVATE;
 
   @Provides @Singleton @DebugMode Preference<Boolean> provideDebugMode(RxSharedPreferences prefs) {
     return prefs.getBoolean(PreferencesUtils.DEBUG_MODE, false);
+  }
+
+  @Provides @Singleton @HasSoftKeys Preference<Boolean> provideHasSoftKeys(
+      RxSharedPreferences prefs) {
+    return prefs.getBoolean(PreferencesUtils.HAS_SOFT_KEYS, false);
   }
 
   // We add the previous preferences, in case the user has already seen the

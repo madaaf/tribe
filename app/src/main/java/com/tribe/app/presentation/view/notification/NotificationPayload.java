@@ -33,6 +33,9 @@ public class NotificationPayload implements Serializable {
   public static final String ACTION_LEFT = "left";
   public static final String CLICK_ACTION_GAME_LEADER = "game_friend_leader";
   public static final String BODY_NEW_MESSAGE = "New message";
+  public static final String CLICK_ACTION_GAME_SCORE = "game_score";
+  public static final String CLICK_ACTION_GAME_LIVE = "live-game";
+  public static final String CLICK_ACTION_GAME_SCORE_BEATEN = "game_score_beaten";
 
   private String user_id;
   private String body;
@@ -205,7 +208,7 @@ public class NotificationPayload implements Serializable {
 
   public boolean isLive() {
     return click_action == null || click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(
-        CLICK_ACTION_LIVE);
+        CLICK_ACTION_LIVE) || click_action.equals(CLICK_ACTION_GAME_LIVE);
   }
 
   public boolean isUserCall() {

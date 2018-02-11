@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -47,6 +48,7 @@ public class TileInviteView extends SquareFrameLayout {
   @Inject ScreenUtils screenUtils;
 
   @BindView(R.id.viewNewAvatar) NewAvatarView viewNewAvatar;
+  @BindView(R.id.imgInviteAvatar) ImageView imgInviteAvatar;
   @BindView(R.id.viewBG) View viewBG;
   @BindView(R.id.viewShadow) View viewShadow;
 
@@ -103,7 +105,7 @@ public class TileInviteView extends SquareFrameLayout {
       widthMeasureSpec = MeasureSpec.makeMeasureSpec(boundedWidth, measureMode);
     }
 
-    // Adjust height as necessary
+    // Adjust getRelativeHeight as necessary
     int measuredHeight = MeasureSpec.getSize(heightMeasureSpec);
     if (boundedWidth > 0 && boundedWidth < measuredHeight) {
       int measureMode = MeasureSpec.getMode(heightMeasureSpec);
@@ -128,6 +130,7 @@ public class TileInviteView extends SquareFrameLayout {
     viewNewAvatar.updateWidth(width - marginAvatar);
     UIUtils.changeMarginOfView(viewBG, marginBG);
     UIUtils.changeMarginOfView(viewNewAvatar, marginAvatar);
+    UIUtils.changeSizeOfView(imgInviteAvatar, width - (int) (marginAvatar * 1.75f));
     post(() -> requestLayout());
   }
 
@@ -228,6 +231,8 @@ public class TileInviteView extends SquareFrameLayout {
   public void setUser(User user) {
     this.user = user;
 
+    viewNewAvatar.setVisibility(View.VISIBLE);
+
     if (this.user != null) {
       if (user.isSelected()) {
         springTile.setEndValue(1);
@@ -248,6 +253,11 @@ public class TileInviteView extends SquareFrameLayout {
       viewNewAvatar.loadColorPlaceholder(
           ContextCompat.getColor(getContext(), R.color.grey_placeholder));
     }
+  }
+
+  public void setDrawable(int drawableId) {
+    imgInviteAvatar.setVisibility(View.VISIBLE);
+    imgInviteAvatar.setImageResource(drawableId);
   }
 
   public void scaleAvatar(float scale) {

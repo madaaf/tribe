@@ -3,11 +3,18 @@ package com.tribe.app.presentation.view.activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
+import android.view.ViewConfiguration;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -15,6 +22,7 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import javax.inject.Inject;
 
 /**
@@ -25,6 +33,8 @@ public abstract class BaseActivity extends AppCompatActivity {
   @Inject Navigator navigator;
 
   @Inject TagManager tagManager;
+
+  @Inject @HasSoftKeys Preference<Boolean> hasSoftKeys;
 
   @Override protected void onStart() {
     super.onStart();
@@ -37,6 +47,7 @@ public abstract class BaseActivity extends AppCompatActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     this.getApplicationComponent().inject(this);
+    if (!hasSoftKeys.isSet()) hasSoftKeys.set(hasSoftKeys());
   }
 
   @Override protected void onResume() {
@@ -44,6 +55,34 @@ public abstract class BaseActivity extends AppCompatActivity {
     if (getResources().getBoolean(R.bool.isTablet)) {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
+  }
+
+  public boolean hasSoftKeys() {
+    boolean hasSoftwareKeys;
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      Display d = getWindowManager().getDefaultDisplay();
+
+      DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+      d.getRealMetrics(realDisplayMetrics);
+
+      int realHeight = realDisplayMetrics.heightPixels;
+      int realWidth = realDisplayMetrics.widthPixels;
+
+      DisplayMetrics displayMetrics = new DisplayMetrics();
+      d.getMetrics(displayMetrics);
+
+      int displayHeight = displayMetrics.heightPixels;
+      int displayWidth = displayMetrics.widthPixels;
+
+      hasSoftwareKeys = (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
+    } else {
+      boolean hasMenuKey = ViewConfiguration.get(this).hasPermanentMenuKey();
+      boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+      hasSoftwareKeys = !hasMenuKey && !hasBackKey;
+    }
+
+    return hasSoftwareKeys;
   }
 
   /**
@@ -91,6 +130,15 @@ public abstract class BaseActivity extends AppCompatActivity {
    */
   protected void showToastMessage(String message) {
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+  }
+
+  protected int getStatusBarHeight() {
+    int result = 0;
+    int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+    if (resourceId > 0) {
+      result = getResources().getDimensionPixelSize(resourceId);
+    }
+    return result;
   }
 
   protected void onResumeLockPhone() {

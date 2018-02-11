@@ -142,6 +142,9 @@
   <dimen name="translation_bolt_small_min_negative">-20dp</dimen>
   <dimen name="translation_bolt_small_max_negative">-25dp</dimen>
 
+  <!-- ROUNDED CORNERS -->
+  <dimen name="avatar_live_rounded_corners">4dp</dimen>
+
 
   <!--ALERTS-->
   <dimen name="alerter_alert_min_height">64dp</dimen>

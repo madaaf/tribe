@@ -12,7 +12,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -29,20 +28,15 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-import com.jenzz.appstate.AppStateListener;
-import com.jenzz.appstate.AppStateMonitor;
-import com.jenzz.appstate.RxAppStateMonitor;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
-import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
 import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.LabelType;
-import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
@@ -69,13 +63,9 @@ import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
-import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.LastSync;
-import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
-import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
-import com.tribe.app.presentation.utils.preferences.Walkthrough;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
@@ -83,20 +73,15 @@ import com.tribe.app.presentation.view.adapter.decorator.HomeListDividerDecorati
 import com.tribe.app.presentation.view.adapter.decorator.HomeSectionItemDecoration;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.diff.GridDiffCallback;
-import com.tribe.app.presentation.view.adapter.helper.HomeListTouchHelperCallback;
 import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.adapter.manager.HomeLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
-import com.tribe.app.presentation.view.component.home.HomeWalkthroughView;
-import com.tribe.app.presentation.view.component.home.NewGameView;
 import com.tribe.app.presentation.view.component.home.SearchView;
 import com.tribe.app.presentation.view.component.home.TopBarContainer;
-import com.tribe.app.presentation.view.component.live.LiveViewFake;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
-import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -134,7 +119,7 @@ import static com.tribe.app.presentation.view.ShortcutUtil.createShortcutSupport
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, ShortcutMVPView, HomeGridMVPView,
-    GoogleApiClient.OnConnectionFailedListener, AppStateListener {
+    GoogleApiClient.OnConnectionFailedListener {
 
   private static final long TWENTY_FOUR_HOURS = 86400000;
   public static final int SETTINGS_RESULT = 101;
@@ -167,13 +152,7 @@ public class HomeActivity extends BaseActivity
 
   @Inject @LastSync Preference<Long> lastSync;
 
-  @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
-
-  @Inject @CallTagsMap Preference<String> callTagsMap;
-
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
-
-  @Inject @Walkthrough Preference<Boolean> walkthrough;
 
   @Inject RxImagePicker rxImagePicker;
 
@@ -193,19 +172,11 @@ public class HomeActivity extends BaseActivity
 
   @BindView(R.id.errorNotificationView) ErrorNotificationView errorNotificationView;
 
-  @BindView(R.id.btnNewGame) NewGameView btnNewGame;
-
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
   @BindView(R.id.nativeDialogsView) PopupContainerView popupContainerView;
 
   @BindView(R.id.txtSyncedContacts) TextViewFont txtSyncedContacts;
-
-  @BindView(R.id.viewFadeInSwipe) View viewFadeInSwipe;
-
-  @BindView(R.id.viewLiveFake) LiveViewFake viewLiveFake;
-
-  @BindView(R.id.viewWalkthrough) HomeWalkthroughView viewWalkthrough;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -220,21 +191,17 @@ public class HomeActivity extends BaseActivity
 
   // VARIABLES
   private HomeLayoutManager layoutManager;
-  private ItemTouchHelper itemTouchHelper;
   private List<HomeAdapterInterface> latestRecipientList;
   private TribeBroadcastReceiver notificationReceiver;
   private NotificationReceiverSupport notificationReceiverSupport;
   private boolean shouldOverridePendingTransactions = false, receiverRegistered = false, hasSynced =
-      false, canEndRefresh = false, finish = false, searchViewDisplayed = false, isSwipingChat =
-      false, shouldNavigateToChat = false;
-  private AppStateMonitor appStateMonitor;
+      false, canEndRefresh = false, finish = false, searchViewDisplayed = false,
+      shouldNavigateToChat = false;
   private RxPermissions rxPermissions;
   private FirebaseRemoteConfig firebaseRemoteConfig;
-  private String gesture;
   private Shortcut supportShortcut = createShortcutSupport();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
-    getWindow().setBackgroundDrawableResource(android.R.color.black);
     super.onCreate(savedInstanceState);
 
     initDependencyInjector();
@@ -242,13 +209,10 @@ public class HomeActivity extends BaseActivity
     initUi();
     initDimensions();
     initRegistrationToken();
-    initAppState();
     initRecyclerView();
     initTopBar();
     initSearch();
     initPullToRefresh();
-    initPreviousCallTags();
-    initNewCall();
     initRemoteConfig();
     manageLogin(getIntent());
     manageIntent(getIntent());
@@ -257,7 +221,6 @@ public class HomeActivity extends BaseActivity
 
     homeGridPresenter.onViewAttached(this);
     homeGridPresenter.reload(hasSynced);
-    homeGridPresenter.getGames();
     if (!hasSynced) {
       hasSynced = true;
     }
@@ -304,10 +267,6 @@ public class HomeActivity extends BaseActivity
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       lookupContacts();
     }
-
-    if (System.currentTimeMillis() - lastSyncGameData.get() > TWENTY_FOUR_HOURS) {
-      homeGridPresenter.synchronizeGamesData(DeviceUtils.getLanguage(this), lastSyncGameData);
-    }
   }
 
   @Override protected void onRestart() {
@@ -330,9 +289,6 @@ public class HomeActivity extends BaseActivity
   @Override protected void onResume() {
     super.onResume();
     if (finish) return;
-
-    startService(WSService.
-        getCallingIntent(this, null, null));
 
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
@@ -358,15 +314,6 @@ public class HomeActivity extends BaseActivity
     }
 
     homeGridPresenter.reload(hasSynced);
-
-    initRecyclerViewCallback();
-
-    if (!walkthrough.get()) {
-      walkthrough.set(true);
-      subscriptions.add(Observable.timer(1500, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> viewWalkthrough.show()));
-    }
   }
 
   @Override protected void onPause() {
@@ -375,6 +322,7 @@ public class HomeActivity extends BaseActivity
       unregisterReceiver(notificationReceiverSupport);
       receiverRegistered = false;
     }
+
     super.onPause();
   }
 
@@ -384,16 +332,15 @@ public class HomeActivity extends BaseActivity
     if (homeGridPresenter != null) homeGridPresenter.onViewDetached();
 
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
-    if (appStateMonitor != null) {
-      appStateMonitor.removeListener(this);
-      appStateMonitor.stop();
-    }
 
     if (soundManager != null) soundManager.cancelMediaPlayer();
 
-    stopService();
-
     super.onDestroy();
+  }
+
+  @Override public void finish() {
+    super.finish();
+    overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_left);
   }
 
   private void displaySyncBanner(String txt) {
@@ -401,11 +348,6 @@ public class HomeActivity extends BaseActivity
     txtSyncedContacts.setVisibility(VISIBLE);
     Animation anim = AnimationUtils.loadAnimation(this, R.anim.slide_up_down_up);
     txtSyncedContacts.startAnimation(anim);
-  }
-
-  private void stopService() {
-    Intent i = new Intent(this, WSService.class);
-    stopService(i);
   }
 
   private void init() {
@@ -457,7 +399,6 @@ public class HomeActivity extends BaseActivity
   private void initUi() {
     setContentView(R.layout.activity_home);
     ButterKnife.bind(this);
-    viewLiveFake.setTranslationX(screenUtils.getWidthPx());
   }
 
   private void initDimensions() {
@@ -474,7 +415,6 @@ public class HomeActivity extends BaseActivity
           if (canEndRefresh) {
             topBarContainer.endRefresh();
             latestRecipientList.clear();
-            homeGridPresenter.getGames();
             homeGridPresenter.reload(false);
             canEndRefresh = false;
           }
@@ -494,8 +434,7 @@ public class HomeActivity extends BaseActivity
                 recyclerViewFriends.getChildLayoutPosition(view))), homeGridAdapter.onMainClick()
             .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
                 recyclerViewFriends.getChildLayoutPosition(view))), searchView.onClickChat(),
-        searchView.onMainClick())
-        .subscribe(item -> navigateToChat(item, TagManagerUtils.GESTURE_TAP)));
+        searchView.onMainClick()).subscribe(item -> navigateToChat(item)));
 
     subscriptions.add(Observable.merge(homeGridAdapter.onLiveClick()
         .map(view -> (Recipient) homeGridAdapter.getItemAtPosition(
@@ -505,8 +444,8 @@ public class HomeActivity extends BaseActivity
         .subscribe(item -> onClickItem(item)));
 
     subscriptions.add(homeGridAdapter.onAddUser().map(view -> {
-      HomeAdapterInterface user = (User) homeGridAdapter.getItemAtPosition(
-          recyclerViewFriends.getChildLayoutPosition(view));
+      HomeAdapterInterface user =
+          homeGridAdapter.getItemAtPosition(recyclerViewFriends.getChildLayoutPosition(view));
       int position = recyclerViewFriends.getChildAdapterPosition(view);
       return new Pair(position, user);
     }).doOnError(throwable -> throwable.printStackTrace()).subscribe(pair -> {
@@ -755,13 +694,6 @@ public class HomeActivity extends BaseActivity
     }));
   }
 
-  private void initNewCall() {
-    subscriptions.add(btnNewGame.onNewGame().subscribe(aVoid -> navigateToNewGame()));
-
-    subscriptions.add(
-        btnNewGame.onBackToTop().subscribe(aVoid -> recyclerViewFriends.smoothScrollToPosition(0)));
-  }
-
   private void initRemoteConfig() {
     firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
     FirebaseRemoteConfigSettings configSettings =
@@ -791,10 +723,9 @@ public class HomeActivity extends BaseActivity
 
   private void initTopBar() {
     subscriptions.add(
-        topBarContainer.onClickProfile().subscribe(aVoid -> navigateToLeaderboards()));
+        topBarContainer.onClickProfile().subscribe(aVoid -> navigator.navigateToProfile(this)));
 
-    subscriptions.add(topBarContainer.onClickCallRoulette()
-        .subscribe(aVoid -> navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, null)));
+    subscriptions.add(topBarContainer.onBack().subscribe(aVoid -> finish()));
 
     subscriptions.add(topBarContainer.onOpenCloseSearch()
         .doOnNext(open -> {
@@ -851,24 +782,6 @@ public class HomeActivity extends BaseActivity
 
     subscriptions.add(topBarContainer.onSyncContacts().subscribe(aVoid -> syncContacts()));
     subscriptions.add(searchView.onSyncContacts().subscribe(aVoid -> syncContacts()));
-  }
-
-  private void initAppState() {
-    appStateMonitor = RxAppStateMonitor.create(getApplication());
-    appStateMonitor.addListener(this);
-    appStateMonitor.start();
-  }
-
-  private void initPreviousCallTags() {
-    String callTags = callTagsMap.get();
-    if (!StringUtils.isEmpty(callTags)) {
-      TagManagerUtils.manageTags(tagManager, PreferencesUtils.getMapFromJson(callTagsMap));
-      callTagsMap.set("");
-    }
-  }
-
-  private void declineInvitation(String sessionId) {
-    homeGridPresenter.declineInvite(sessionId);
   }
 
   private void invite(ContactAB contact) {
@@ -1018,7 +931,6 @@ public class HomeActivity extends BaseActivity
               .filter(aBoolean -> aBoolean)
               .subscribe());
       isBannedUser = true;
-      topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
     } else if (user.getRandom_banned_until() != null &&
         !dateUtils.isBefore(user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
 
@@ -1029,7 +941,6 @@ public class HomeActivity extends BaseActivity
               .filter(aBoolean -> aBoolean)
               .subscribe());
       isBannedUser = true;
-      topBarContainer.getDiceViewBtn().setVisibility(View.GONE);
     }
   }
 
@@ -1057,14 +968,9 @@ public class HomeActivity extends BaseActivity
         Toast.LENGTH_SHORT).show();
   }
 
-  private void navigateToLeaderboards() {
-    navigator.navigateToLeaderboards(HomeActivity.this);
-  }
-
   private void navigateToLeaderboardsShortcut(Shortcut shortcut) {
     User friend = shortcut.getSingleFriend();
-    navigator.navigateToLeaderboardsForShortcut(HomeActivity.this, friend.getId(),
-        friend.getDisplayName(), friend.getProfilePicture());
+    navigator.navigateToLeaderboards(HomeActivity.this, friend);
   }
 
   private void navigateToNewCall(@LiveActivity.Source String source, String gameId) {
@@ -1072,15 +978,14 @@ public class HomeActivity extends BaseActivity
   }
 
   private void navigateToNewGame() {
-    HomeActivity.this.navigator.navigateToNewGame(this, TagManagerUtils.HOME);
+    HomeActivity.this.navigator.navigateToGameStoreNewGame(this);
   }
 
-  private void navigateToChat(Recipient recipient, String gesture) {
+  private void navigateToChat(Recipient recipient) {
     if (recipient != null && recipient.isSupport()) {
       supportShortcut.setRead(true);
     }
 
-    this.gesture = gesture;
     if (!recipient.isRead()) {
       String shortcutId = "";
 
@@ -1095,10 +1000,10 @@ public class HomeActivity extends BaseActivity
     }
 
     if (recipient instanceof Shortcut) {
-      navigator.navigateToChat(this, recipient, null, gesture, recipient.getSectionTag(), false);
+      navigator.navigateToChat(this, recipient, null, recipient.getSectionTag(), false);
     } else {
       if (((Invite) recipient).getShortcut() != null) {
-        navigator.navigateToChat(this, recipient, null, gesture, recipient.getSectionTag(), false);
+        navigator.navigateToChat(this, recipient, null, recipient.getSectionTag(), false);
       } else {
         List<String> list = ((Invite) recipient).getRoomUserIds();
         String[] array = new String[list.size()];
@@ -1121,7 +1026,7 @@ public class HomeActivity extends BaseActivity
 
   @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
     if (shouldNavigateToChat) {
-      navigator.navigateToChat(this, shortcut, null, gesture, shortcut.getSectionTag(), false);
+      navigator.navigateToChat(this, shortcut, null, shortcut.getSectionTag(), false);
       shouldNavigateToChat = false;
     }
   }
@@ -1164,14 +1069,6 @@ public class HomeActivity extends BaseActivity
     syncContacts();
   }
 
-  @Override public void onAppDidEnterForeground() {
-  }
-
-  @Override public void onAppDidEnterBackground() {
-    Timber.d("App in background stopping the service");
-    stopService();
-  }
-
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
@@ -1183,23 +1080,23 @@ public class HomeActivity extends BaseActivity
       homeGridPresenter.updateShortcutLeaveOnlineUntil(
           data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
     } else if (requestCode == Navigator.FROM_NEW_GAME && data != null) {
-      String gameId = data.getStringExtra(NewGameActivity.GAME_ID);
-      boolean callRoulette = data.getBooleanExtra(NewGameActivity.CALL_ROULETTE, false);
-      Shortcut shortcut = (Shortcut) data.getSerializableExtra(NewGameActivity.SHORTCUT);
-      subscriptions.add(Observable.timer(250, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> {
-            if (callRoulette) {
-              navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, gameId);
-            } else if (shortcut != null) {
-              if (!StringUtils.isEmpty(gameId)) {
-                navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
-                    TagManagerUtils.SECTION_SHORTCUT, gameId);
-              } else {
-                navigateToChat(shortcut, TagManagerUtils.GESTURE_TAP);
-              }
-            }
-          }));
+      //String gameId = data.getStringExtra(GameStoreActivity.GAME_ID);
+      //boolean callRoulette = data.getBooleanExtra(GameStoreActivity.CALL_ROULETTE, false);
+      //Shortcut shortcut = (Shortcut) data.getSerializableExtra(GameStoreActivity.SHORTCUT);
+      //subscriptions.add(Observable.timer(250, TimeUnit.MILLISECONDS)
+      //    .observeOn(AndroidSchedulers.mainThread())
+      //    .subscribe(aLong -> {
+      //      if (callRoulette) {
+      //        navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, gameId);
+      //      } else if (shortcut != null) {
+      //        if (!StringUtils.isEmpty(gameId)) {
+      //          navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
+      //              TagManagerUtils.SECTION_SHORTCUT, gameId);
+      //        } else {
+      //          navigateToChat(shortcut);
+      //        }
+      //      }
+      //    }));
     } else if (requestCode == Navigator.FROM_LIVE &&
         data != null &&
         data.hasExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
@@ -1252,71 +1149,6 @@ public class HomeActivity extends BaseActivity
         getResources().getDimensionPixelSize(R.dimen.list_home_header_height), true,
         getSectionCallback(homeGridAdapter.getItems()), screenUtils);
     recyclerViewFriends.addItemDecoration(sectionItemDecoration);
-  }
-
-  private void initRecyclerViewCallback() {
-    viewFadeInSwipe.setVisibility(View.GONE);
-    viewFadeInSwipe.setAlpha(0);
-    viewLiveFake.setTranslationX(screenUtils.getWidthPx());
-
-    HomeListTouchHelperCallback callback = new HomeListTouchHelperCallback(0, 0, homeGridAdapter);
-
-    if (itemTouchHelper == null) {
-      itemTouchHelper = new ItemTouchHelper(callback);
-    }
-
-    itemTouchHelper.attachToRecyclerView(null);
-    itemTouchHelper.attachToRecyclerView(recyclerViewFriends);
-
-    subscriptions.add(callback.onDxChange().subscribe(pairPosDx -> {
-      if (pairPosDx.first == homeGridAdapter.getSupportPosition()) {
-        return;
-      }
-
-      if (pairPosDx.second == 0) {
-        viewFadeInSwipe.setVisibility(View.GONE);
-        viewFadeInSwipe.setAlpha(0);
-      } else if (homeGridAdapter.getItemAtPosition(pairPosDx.first) instanceof Recipient) {
-        Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(pairPosDx.first);
-
-        if (pairPosDx.second < 0) {
-          isSwipingChat = false;
-          Live live = LiveActivity.getLive(recipient,
-              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-                  : LiveActivity.SOURCE_GRID);
-          if (recipient instanceof Shortcut) {
-            Shortcut shortcut = (Shortcut) recipient;
-            live.setShortcut(shortcut);
-          }
-
-          viewLiveFake.setLive(live, recipient);
-          viewLiveFake.setTranslationX(screenUtils.getWidthPx() + pairPosDx.second);
-          viewFadeInSwipe.setVisibility(View.VISIBLE);
-          viewFadeInSwipe.setTranslationX(pairPosDx.second);
-          viewFadeInSwipe.setAlpha(Math.abs(pairPosDx.second) / (float) screenUtils.getWidthPx());
-        } else {
-          isSwipingChat = true;
-        }
-      }
-    }));
-
-    subscriptions.add(callback.onSwipedItem().subscribe(position -> {
-      if (homeGridAdapter.getItemAtPosition(position) instanceof Recipient) {
-        Recipient recipient = (Recipient) homeGridAdapter.getItemAtPosition(position);
-
-        if (!isSwipingChat && recipient != null && !recipient.isSupport()) {
-          navigator.navigateToLiveFromSwipe(this, recipient,
-              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-                  : LiveActivity.SOURCE_GRID, recipient.getSectionTag());
-        } else {
-          navigateToChat(recipient, TagManagerUtils.GESTURE_SWIPE);
-        }
-
-        subscriptions.add(Observable.timer(3, TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(aLong -> viewLiveFake.setTranslationX(screenUtils.getWidthPx())));
-      }
-    }));
   }
 
   private SectionCallback getSectionCallback(final List<HomeAdapterInterface> recipientList) {
@@ -1379,13 +1211,14 @@ public class HomeActivity extends BaseActivity
   class NotificationReceiverSupport extends BroadcastReceiver {
 
     @Override public void onReceive(Context context, Intent intent) {
-
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
+
       if (notificationPayload != null &&
           !StringUtils.isEmpty(notificationPayload.getUserId()) &&
           notificationPayload.getUserId().equals(Shortcut.SUPPORT) &&
           supportShortcut != null) {
+
         supportShortcut.setRead(false);
         supportShortcut.setSingle(true);
         onSupportUpdate.onNext(supportShortcut);

@@ -1,16 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutContent"
     android:layout_width="match_parent"
     android:layout_height="156dp"
     android:orientation="vertical"
     >
 
+  <RelativeLayout
+      android:id="@+id/layoutBestFriend"
+      android:layout_width="match_parent"
+      android:layout_height="53dp"
+      android:layout_gravity="bottom"
+      android:layout_marginBottom="@dimen/vertical_margin_smaller"
+      android:layout_marginEnd="25dp"
+      android:layout_marginStart="25dp"
+      android:background="@drawable/bg_best_game_store"
+      android:visibility="gone"
+      >
+
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+        android:id="@+id/viewAvatar"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        />
+
+    <com.tribe.app.presentation.view.widget.avatar.EmojiGameView
+        android:id="@+id/txtEmojiGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/viewAvatar"
+        android:layout_alignEnd="@id/viewAvatar"
+        android:layout_marginBottom="-5dp"
+        android:layout_marginEnd="-5dp"
+        style="@style/Body.One.Black"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        style="@style/BiggerBody.Two.Black"
+        />
+  </RelativeLayout>
+
   <android.support.v7.widget.CardView
       android:id="@+id/cardView"
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="126dp"
       android:layout_margin="@dimen/horizontal_margin_small"
       android:background="@null"
       android:clickable="true"
@@ -18,13 +59,13 @@
       android:elevation="0dp"
       android:foreground="@drawable/selectable_button_all_rounded_5_black_5"
       app:cardBackgroundColor="@android:color/transparent"
-      app:cardCornerRadius="6dp"
+      app:cardCornerRadius="10dp"
       app:cardElevation="5dp"
       app:cardPreventCornerOverlap="false"
       >
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/layoutContent"
+        android:id="@+id/layoutConstraint"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@null"
@@ -41,37 +82,26 @@
           />
 
       <ImageView
-          android:id="@+id/imgBanner"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:scaleType="fitEnd"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintTop_toTopOf="parent"
-          />
-
-      <ImageView
           android:id="@+id/imgIcon"
           android:layout_width="65dp"
           android:layout_height="65dp"
           android:layout_marginStart="@dimen/horizontal_margin_large"
           android:scaleType="fitXY"
-          app:layout_constraintBottom_toTopOf="@+id/viewBackgroundBottom"
+          app:layout_constraintBottom_toTopOf="@+id/viewBlur"
           app:layout_constraintStart_toStartOf="@id/viewBackground"
           app:layout_constraintTop_toTopOf="parent"
           />
 
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/txtTitle"
+      <ImageView
+          android:id="@+id/imgLogo"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginEnd="@dimen/horizontal_margin"
           android:layout_marginStart="@dimen/horizontal_margin"
-          android:layout_marginTop="7.5dp"
-          android:ellipsize="end"
-          android:textAllCaps="true"
+          android:layout_marginTop="12.5dp"
+          android:scaleType="centerInside"
           app:layout_constraintStart_toEndOf="@id/imgIcon"
           app:layout_constraintTop_toTopOf="@id/imgIcon"
-          style="@style/Headline.White.2"
           />
 
       <com.tribe.app.presentation.view.widget.TextViewFont
@@ -86,42 +116,73 @@
           android:maxLines="1"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toEndOf="@id/imgIcon"
-          app:layout_constraintTop_toBottomOf="@id/txtTitle"
+          app:layout_constraintTop_toBottomOf="@id/imgLogo"
           style="@style/Title.Regular.Black40"
           />
 
-      <View
-          android:id="@+id/viewBackgroundBottom"
-          android:layout_width="0dp"
+      <ImageView
+          android:id="@+id/imgAnimation1"
+          android:layout_width="30dp"
+          android:layout_height="30dp"
+          android:layout_marginEnd="5dp"
+          android:layout_marginTop="5dp"
+          android:scaleType="centerInside"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          />
+
+      <ImageView
+          android:id="@+id/imgAnimation2"
+          android:layout_width="30dp"
+          android:layout_height="30dp"
+          android:layout_marginTop="10dp"
+          android:scaleType="centerInside"
+          app:layout_constraintEnd_toStartOf="@id/imgAnimation1"
+          app:layout_constraintTop_toTopOf="parent"
+          />
+
+      <ImageView
+          android:id="@+id/imgAnimation3"
+          android:layout_width="55dp"
+          android:layout_height="55dp"
+          android:layout_marginEnd="5dp"
+          android:layout_marginTop="2dp"
+          android:scaleType="centerInside"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/imgAnimation1"
+          />
+
+      <eightbitlab.com.blurview.BlurView
+          android:id="@+id/viewBlur"
+          android:layout_width="match_parent"
           android:layout_height="26dp"
           app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
-          />
+          >
 
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/txtInfo"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="@dimen/horizontal_margin_smaller"
-          android:textAllCaps="true"
-          app:layout_constraintBottom_toBottomOf="@id/viewBackgroundBottom"
-          app:layout_constraintStart_toStartOf="@id/viewBackgroundBottom"
-          app:layout_constraintTop_toTopOf="@id/viewBackgroundBottom"
-          style="@style/Caption.Two.White"
-          />
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/horizontal_margin_smaller"
+            android:shadowColor="@android:color/black"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:textAllCaps="true"
+            style="@style/Caption.Two.White"
+            />
 
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/txtPlayCount"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginEnd="@dimen/horizontal_margin_smaller"
-          android:textAllCaps="true"
-          app:layout_constraintBottom_toBottomOf="@id/viewBackgroundBottom"
-          app:layout_constraintEnd_toEndOf="@id/viewBackgroundBottom"
-          app:layout_constraintTop_toTopOf="@id/viewBackgroundBottom"
-          style="@style/Caption.Two.White"
-          />
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/txtPlayCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="@dimen/horizontal_margin_smaller"
+            android:textAllCaps="true"
+            style="@style/Caption.Two.White"
+            />
+
+      </eightbitlab.com.blurview.BlurView>
     </android.support.constraint.ConstraintLayout>
   </android.support.v7.widget.CardView>
-</LinearLayout>
+</FrameLayout>

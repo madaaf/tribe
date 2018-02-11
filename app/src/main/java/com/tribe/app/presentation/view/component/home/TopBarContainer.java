@@ -53,8 +53,6 @@ public class TopBarContainer extends FrameLayout {
 
   @BindView(R.id.txtNewContacts) TextViewFont txtNewContacts;
 
-  @BindView(R.id.btnNewGame) NewGameView btnNewGame;
-
   // VARIABLES
   private ScreenUtils screenUtils;
   private float currentDragPercent;
@@ -155,22 +153,12 @@ public class TopBarContainer extends FrameLayout {
             tooltipView.setVisibility(View.VISIBLE);
           }
         }
-
-        if (overallYScroll > scrollThresholdFloatingButton) {
-          btnNewGame.showBackToTop();
-        } else {
-          btnNewGame.showNewGame();
-        }
       }
     });
   }
 
   private void initDimen() {
 
-  }
-
-  public View getDiceViewBtn() {
-    return topBarView.getDiceViewBtn();
   }
 
   private void initSubscriptions() {
@@ -427,8 +415,8 @@ public class TopBarContainer extends FrameLayout {
     return topBarView.onClickProfile();
   }
 
-  public Observable<Void> onClickCallRoulette() {
-    return topBarView.onClickCallRoulette();
+  public Observable<Void> onBack() {
+    return topBarView.onBack();
   }
 
   public Observable<Boolean> onOpenCloseSearch() {

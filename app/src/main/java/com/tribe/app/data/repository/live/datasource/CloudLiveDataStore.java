@@ -54,13 +54,16 @@ public class CloudLiveDataStore implements LiveDataStore {
         .compose(onlineLiveTransformer);
   }
 
-  @Override public Observable<Room> createRoom(String name, String[] userIds) {
+  @Override public Observable<Room> createRoom(String name, String gameId) {
     String params = "";
 
     if (!StringUtils.isEmpty(name)) {
-      params += "( " + context.getString(R.string.createRoom_name, name);
+      params += context.getString(R.string.createRoom_name, name);
     }
-    if (params.length() > 0) params += " )";
+
+    if (!StringUtils.isEmpty(gameId)) {
+      params += context.getString(R.string.createRoom_gameId, gameId);
+    }
 
     String body = context.getString(R.string.createRoom, params);
 

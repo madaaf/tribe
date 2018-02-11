@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.back;
 
 import android.support.annotation.StringDef;
+import com.neovisionaries.ws.client.ThreadType;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
@@ -60,8 +61,8 @@ public class WebSocketConnection {
     return new WebSocketConnection(factory);
   }
 
-  private static final int CONNECT_TIMEOUT = 1000;
-  private static final int CLOSE_TIMEOUT = 1000;
+  private static final int CONNECT_TIMEOUT = 10000;
+  private static final int CLOSE_TIMEOUT = 10000;
 
   @StringDef({ STATE_NEW, STATE_CONNECTING, STATE_CONNECTED, STATE_DISCONNECTED, STATE_ERROR })
   public @interface WebSocketState {
@@ -297,6 +298,24 @@ public class WebSocketConnection {
             List<String[]> headers) throws Exception {
           Timber.d("WebSocket onSendingHandshake : " + requestLine);
         }
+
+        @Override
+        public void onThreadCreated(WebSocket websocket, ThreadType threadType, Thread thread)
+            throws Exception {
+
+        }
+
+        @Override
+        public void onThreadStarted(WebSocket websocket, ThreadType threadType, Thread thread)
+            throws Exception {
+
+        }
+
+        @Override
+        public void onThreadStopping(WebSocket websocket, ThreadType threadType, Thread thread)
+            throws Exception {
+
+        }
       });
     } catch (IOException e) {
       e.printStackTrace();
@@ -328,12 +347,13 @@ public class WebSocketConnection {
       retrying = true;
       int time = generateInterval(attempts);
       Timber.d("Trying to reconnect in : " + time);
- 
-      subscriptions.add(Observable.timer(time, TimeUnit.MILLISECONDS).onBackpressureDrop().subscribe(aLong -> {
-        Timber.d("Reconnecting");
-        attempts++;
-        connect(url);
-      }));
+
+      subscriptions.add(
+          Observable.timer(time, TimeUnit.MILLISECONDS).onBackpressureDrop().subscribe(aLong -> {
+            Timber.d("Reconnecting");
+            attempts++;
+            connect(url);
+          }));
     }
   }
 

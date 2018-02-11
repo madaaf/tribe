@@ -88,7 +88,7 @@ import rx.Observable;
           user.setInviteList(inviteMap.values());
 
           return user;
-        });
+        }).doOnError(throwable -> throwable.printStackTrace());
   }
 
   @Override public Observable<Shortcut> getShortcuts(String shortcutId) {

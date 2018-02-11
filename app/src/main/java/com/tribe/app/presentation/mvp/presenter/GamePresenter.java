@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
@@ -7,13 +8,17 @@ import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.game.GetBattleMusicData;
 import com.tribe.app.domain.interactor.game.GetCloudFriendsScores;
 import com.tribe.app.domain.interactor.game.GetCloudGameLeaderboard;
+import com.tribe.app.domain.interactor.game.GetCloudGames;
 import com.tribe.app.domain.interactor.game.GetCloudUserLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskFriendsScores;
 import com.tribe.app.domain.interactor.game.GetDiskGameLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskUserLeaderboard;
+import com.tribe.app.domain.interactor.game.GetGamesData;
 import com.tribe.app.domain.interactor.game.GetTriviaData;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameManager;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -26,7 +31,11 @@ public class GamePresenter implements Presenter {
   // VIEW ATTACHED
   private GameMVPView gameMVPView;
 
+  // VARIABLES
+  private GameManager gameManager;
+
   // USECASES
+  private GetCloudGames getGames;
   private GetCloudGameLeaderboard cloudGameLeaderboard;
   private GetDiskGameLeaderboard diskGameLeaderboard;
   private GetCloudUserLeaderboard cloudUserLeaderboard;
@@ -35,6 +44,7 @@ public class GamePresenter implements Presenter {
   private GetDiskFriendsScores diskFriendsScores;
   private GetTriviaData getTriviaData;
   private GetBattleMusicData getBattleMusicData;
+  private GetGamesData getGamesData;
 
   // SUBSCRIBERS
   private GameLeaderboardSubscriber cloudGameLeaderboardSubscriber;
@@ -48,7 +58,7 @@ public class GamePresenter implements Presenter {
       GetDiskGameLeaderboard diskGameLeaderboard, GetCloudUserLeaderboard cloudUserLeaderboard,
       GetDiskUserLeaderboard diskUserLeaderboard, GetDiskFriendsScores diskFriendsScores,
       GetCloudFriendsScores cloudFriendsScores, GetTriviaData getTriviaData,
-      GetBattleMusicData getBattleMusicData) {
+      GetBattleMusicData getBattleMusicData, GetCloudGames getGames, GetGamesData getGamesData) {
     this.cloudGameLeaderboard = cloudGameLeaderboard;
     this.diskGameLeaderboard = diskGameLeaderboard;
     this.cloudUserLeaderboard = cloudUserLeaderboard;
@@ -57,6 +67,8 @@ public class GamePresenter implements Presenter {
     this.cloudFriendsScores = cloudFriendsScores;
     this.getTriviaData = getTriviaData;
     this.getBattleMusicData = getBattleMusicData;
+    this.getGames = getGames;
+    this.getGamesData = getGamesData;
   }
 
   @Override public void onViewDetached() {
@@ -68,50 +80,32 @@ public class GamePresenter implements Presenter {
     diskFriendsScores.unsubscribe();
     getTriviaData.unsubscribe();
     getBattleMusicData.unsubscribe();
+    getGames.unsubscribe();
+    getGamesData.unsubscribe();
     gameMVPView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {
     gameMVPView = (GameMVPView) v;
+    gameManager = GameManager.getInstance(gameMVPView.context());
   }
 
-  public void loadGameLeaderboard(String gameId, boolean friendsOnly, boolean shouldLoadFromDisk,
-      int limit, int offset, boolean downwards) {
-    if (offset < 0) return;
-    //if (shouldLoadFromDisk) {
-    //  if (diskGameLeaderboardSubscriber != null) {
-    //    diskGameLeaderboardSubscriber.unsubscribe();
-    //  }
-    //
-    //  diskGameLeaderboardSubscriber =
-    //      new GameLeaderboardSubscriber(false, friendsOnly, offset, downwards);
-    //  diskGameLeaderboard.setup(gameId, friendsOnly, limit, offset);
-    //  diskGameLeaderboard.execute(diskGameLeaderboardSubscriber);
-    //}
-
+  public void loadGameLeaderboard(String gameId) {
     if (cloudGameLeaderboardSubscriber != null) {
       cloudGameLeaderboardSubscriber.unsubscribe();
     }
 
-    cloudGameLeaderboardSubscriber =
-        new GameLeaderboardSubscriber(true, friendsOnly, offset, downwards);
-    cloudGameLeaderboard.setup(gameId, friendsOnly, limit, offset);
+    cloudGameLeaderboardSubscriber = new GameLeaderboardSubscriber(true);
+    cloudGameLeaderboard.setup(gameId);
     cloudGameLeaderboard.execute(cloudGameLeaderboardSubscriber);
   }
 
   private final class GameLeaderboardSubscriber extends DefaultSubscriber<List<Score>> {
 
-    private boolean friendsOnly = false;
-    private int offset = 0;
     private boolean cloud;
-    private boolean downwards;
 
-    public GameLeaderboardSubscriber(boolean cloud, boolean friendsOnly, int offset,
-        boolean downwards) {
+    public GameLeaderboardSubscriber(boolean cloud) {
       this.cloud = cloud;
-      this.friendsOnly = friendsOnly;
-      this.offset = offset;
-      this.downwards = downwards;
     }
 
     @Override public void onCompleted() {
@@ -123,7 +117,8 @@ public class GamePresenter implements Presenter {
 
     @Override public void onNext(List<Score> score) {
       if (gameMVPView != null) {
-        gameMVPView.onGameLeaderboard(score, cloud, friendsOnly, offset, downwards);
+        gameMVPView.onGameLeaderboard(score, cloud);
+        unsubscribe();
       }
     }
   }
@@ -226,6 +221,27 @@ public class GamePresenter implements Presenter {
       @Override public void onNext(Map<String, BattleMusicPlaylist> map) {
         if (map != null && gameMVPView != null) gameMVPView.onBattleMusicData(map);
         unsubscribe();
+      }
+    });
+  }
+
+  public void getGames() {
+    getGames.execute(new DefaultSubscriber<List<Game>>() {
+      @Override public void onError(Throwable e) {
+        Timber.e(e);
+      }
+
+      @Override public void onNext(List<Game> gameList) {
+        if (gameMVPView != null) gameMVPView.onGameList(gameList);
+      }
+    });
+  }
+
+  public void synchronizeGameData(String lang, Preference<Long> lastSyncGameData) {
+    getGamesData.setup(lang);
+    getGamesData.execute(new DefaultSubscriber() {
+      @Override public void onNext(Object o) {
+        lastSyncGameData.set(System.currentTimeMillis());
       }
     });
   }

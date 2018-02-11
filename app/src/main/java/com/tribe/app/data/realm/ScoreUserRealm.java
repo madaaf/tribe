@@ -1,7 +1,6 @@
 package com.tribe.app.data.realm;
 
 import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -14,12 +13,17 @@ public class ScoreUserRealm extends RealmObject {
   private String display_name;
   private String username;
   private String picture;
-
-  @Ignore private boolean is_online = false;
-  @Ignore private boolean is_live = false;
+  private int value, ranking;
 
   public ScoreUserRealm() {
 
+  }
+
+  public ScoreUserRealm(String id, String display_name, String username, String picture) {
+    this.id = id;
+    this.display_name = display_name;
+    this.username = username;
+    this.picture = picture;
   }
 
   public String getId() {
@@ -54,20 +58,20 @@ public class ScoreUserRealm extends RealmObject {
     this.picture = picture;
   }
 
-  public boolean is_online() {
-    return is_online;
+  public void setValue(int value) {
+    this.value = value;
   }
 
-  public void setIs_online(boolean is_online) {
-    this.is_online = is_online;
+  public int getValue() {
+    return value;
   }
 
-  public boolean is_live() {
-    return is_live;
+  public void setRanking(int ranking) {
+    this.ranking = ranking;
   }
 
-  public void setIs_live(boolean is_live) {
-    this.is_live = is_live;
+  public int getRanking() {
+    return ranking;
   }
 
   @Override public boolean equals(Object o) {

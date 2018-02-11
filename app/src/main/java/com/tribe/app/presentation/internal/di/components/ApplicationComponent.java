@@ -54,6 +54,7 @@ import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.GameData;
+import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
 import com.tribe.app.presentation.utils.preferences.IsGroupCreated;
@@ -76,7 +77,9 @@ import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
 import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.activity.GameLeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.activity.LeaderboardActivity;
 import com.tribe.app.presentation.view.activity.SmsListener;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseListAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.base.BaseNotifAdapterDelegate;
@@ -94,7 +97,7 @@ import com.tribe.app.presentation.view.adapter.delegate.gamesfilters.GamesFilter
 import com.tribe.app.presentation.view.adapter.delegate.grid.CallRouletteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.LiveInviteHeaderAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.LiveInviteSubHeaderAdapterDelegate;
-import com.tribe.app.presentation.view.adapter.delegate.grid.RoomLinkAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.grid.ShareAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteFullAdapterDelegate;
@@ -106,8 +109,6 @@ import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.common.ShortcutListView;
 import com.tribe.app.presentation.view.component.games.GameUserCardView;
-import com.tribe.app.presentation.view.component.home.HomeWalkthroughVideoView;
-import com.tribe.app.presentation.view.component.home.HomeWalkthroughView;
 import com.tribe.app.presentation.view.component.home.NewGameView;
 import com.tribe.app.presentation.view.component.home.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.TopBarLogoView;
@@ -124,9 +125,10 @@ import com.tribe.app.presentation.view.component.live.TileInviteView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoriesView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicCategoryView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicPlayView;
+import com.tribe.app.presentation.view.component.live.game.birdrush.BirdRush;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswerView;
-import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswersView;
+import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
 import com.tribe.app.presentation.view.utils.ImageUtils;
@@ -142,6 +144,8 @@ import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
+import com.tribe.app.presentation.view.widget.TextViewRanking;
+import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.app.presentation.view.widget.TooltipView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
@@ -179,6 +183,8 @@ public interface ApplicationComponent {
   void inject(LauncherActivity launcherActivity);
 
   void inject(AvatarView avatarView);
+
+  void inject(BirdRush birdRush);
 
   void inject(PlayerView playerView);
 
@@ -246,8 +252,6 @@ public interface ApplicationComponent {
 
   void inject(LiveViewFake liveViewFake);
 
-  void inject(RoomLinkAdapterDelegate roomAdapterDelegate);
-
   void inject(TextShortcutNameView textShortcutNameView);
 
   void inject(TopBarLogoView topBarLogoView);
@@ -278,10 +282,6 @@ public interface ApplicationComponent {
 
   void inject(ShortcutNewChatAdapterDelegate shortcutNewChatAdapterDelegate);
 
-  void inject(HomeWalkthroughView homeWalkthroughView);
-
-  void inject(HomeWalkthroughVideoView homeWalkthroughVideoView);
-
   void inject(GameAdapterDelegate gameAdapterDelegate);
 
   void inject(FooterAdapterDelegate footerAdapterDelegate);
@@ -307,6 +307,16 @@ public interface ApplicationComponent {
   void inject(GameBattleMusicCategoriesView gameBattleMusicCategoriesView);
 
   void inject(GameBattleMusicPlayView gameBattleMusicPlayView);
+
+  void inject(ShareAdapterDelegate shareAdapterDelegate);
+
+  void inject(LeaderboardActivity leaderboardActivity);
+
+  void inject(GameLeaderboardActivity gameLeaderboardActivity);
+
+  void inject(TextViewScore textViewScore);
+
+  void inject(TextViewRanking textViewRanking);
 
   // JOBS
   void inject(BaseJob baseJob);
@@ -430,6 +440,8 @@ public interface ApplicationComponent {
   @TribeState Preference<Set<String>> tribeState();
 
   @DebugMode Preference<Boolean> debugMode();
+
+  @HasSoftKeys Preference<Boolean> hasSoftKeys();
 
   @Walkthrough Preference<Boolean> walkthrough();
 

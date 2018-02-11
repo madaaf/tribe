@@ -49,6 +49,8 @@ public class Game {
   public static final String GAME_TRIVIA = "trivia";
   public static final String GAME_SUPPORT = "GAME_SUPPORT";
   public static final String GAME_LOGO = "GAME_LOGO";
+  public static final String GAME_BIRD_RUSH = "birdRush";
+
 
   // VARIABLE
   protected Context context;
@@ -61,7 +63,6 @@ public class Game {
   protected String title;
   protected String baseline;
   protected String icon;
-  protected String banner;
   protected String primary_color;
   protected String secondary_color;
   protected int plays_count;
@@ -76,6 +77,10 @@ public class Game {
   protected TribeGuest currentMaster;
   protected TribeGuest friendLeader;
   protected String emoji;
+  protected String logo;
+  protected String background;
+  protected List<String> animation_icons;
+  protected int roundCount = 0;
 
   // OBSERVABLE / SUBSCRIPTIONS
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -89,7 +94,7 @@ public class Game {
     this.localFrameDifferent = id.equals(GAME_POST_IT);
     this.hasView = !id.equals(GAME_POST_IT);
     this.isOverLive =
-        id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
+        id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT) || id.equals(GAME_BIRD_RUSH);
     this.isNotOverLiveWithScores = id.equals(GAME_TRIVIA) || id.equals(GAME_BATTLE_MUSIC);
     this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
     this.needsLandscape = id.equals(GAME_SLICE_FRUIT);
@@ -198,14 +203,6 @@ public class Game {
     this.icon = icon;
   }
 
-  public String getBanner() {
-    return banner;
-  }
-
-  public void setBanner(String banner) {
-    this.banner = banner;
-  }
-
   public String getPrimary_color() {
     return primary_color;
   }
@@ -274,6 +271,30 @@ public class Game {
     return emoji;
   }
 
+  public String getLogo() {
+    return logo;
+  }
+
+  public void setLogo(String logo) {
+    this.logo = logo;
+  }
+
+  public String getBackground() {
+    return background;
+  }
+
+  public void setBackground(String background) {
+    this.background = background;
+  }
+
+  public List<String> getAnimation_icons() {
+    return animation_icons;
+  }
+
+  public void setAnimation_icons(List<String> animation_icons) {
+    this.animation_icons = animation_icons;
+  }
+
   protected TribeGuest getNextGuest() {
     Collections.sort(peerList, (o1, o2) -> o1.getId().compareTo(o2.getId()));
     TribeGuest tribeGuest;
@@ -323,6 +344,18 @@ public class Game {
 
   public Map<String, Object> getContextMap() {
     return contextMap;
+  }
+
+  public void incrementRoundCount() {
+    roundCount++;
+  }
+
+  public int getRoundCount() {
+    return roundCount;
+  }
+
+  public void resetRoundCount() {
+    roundCount = 0;
   }
 
   /**

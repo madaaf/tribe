@@ -42,11 +42,12 @@ public class TagManagerUtils {
   public static final String EditGroupName = "EditGroupName";
   public static final String Shortcut = "Shortcut";
   public static final String Chats = "Chats";
-  public static final String Game = "Game";
+  public static final String NewGame = "NewGame";
   public static final String Searched = "Searched";
   public static final String KPI_Onboarding_WalkthroughCompleted =
       "KPI_Onboarding_WalkthroughCompleted";
   public static final String Technical_Error = "Technical_Error";
+  public static final String Games = "Games";
 
   /**
    * ERRORS
@@ -66,6 +67,9 @@ public class TagManagerUtils {
   public static final String SWIPE = "swipe";
   public static final String SCREEN = "screen";
   public static final String HOME = "home";
+  public static final String NEW_GAME = "new_game";
+  public static final String LAUNCHED = "launched";
+  public static final String SUGGESTED = "suggested";
   public static final String LIVE = "live";
   public static final String CALL = "call";
   public static final String SEARCH = "search";
@@ -74,6 +78,7 @@ public class TagManagerUtils {
   public static final String ONBOARDING = "onboarding";
   public static final String PROFILE = "profile";
   public static final String ACTION = "action";
+  public static final String NAME = "name";
   public static final String GAME = "game";
   public static final String UNKNOWN = "unknown";
   public static final String CANCELLED = "cancelled";
@@ -112,6 +117,9 @@ public class TagManagerUtils {
   public static final String SIGNUP = "signup";
   public static final String CONTENT_TYPE = "contentType";
   public static final String SEARCH_STRING = "searchString";
+  public static final String TYPE_SOLO = "solo";
+  public static final String TYPE_MULTI = "multi";
+  public static final String ROUND_COUNT = "round_count";
 
   public static final String tagGameCountSuffix = "_game_count";
   public static final String tagGameDurationSuffix = "_game_duration";

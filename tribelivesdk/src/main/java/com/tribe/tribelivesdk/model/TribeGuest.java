@@ -24,6 +24,7 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   private boolean isAnonymous = false;
   private boolean isExternal = false;
   private boolean isFriend = true;
+  private int scoreValue, rankingValue;
 
   public TribeGuest(String id) {
     this.id = id;
@@ -118,4 +119,34 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   public boolean canPlayGames(String gameId) {
     return true;
   }
+
+  public void setScoreValue(int scoreValue) {
+    this.scoreValue = scoreValue;
+  }
+
+  public int getScoreValue() {
+    return scoreValue;
+  }
+
+
+  public void setRankingValue(int rankingValue) {
+    this.rankingValue = rankingValue;
+  }
+
+  public int getRankingValue() {
+    return rankingValue;
+  }
+  @Override public String toString() {
+    return "TribeGuest{"
+        + "id='"
+        + id
+        + '\''
+        + ", displayName='"
+        + displayName
+        + '\''
+        + ", userName='"
+        + userName
+        + '\''
+        + '}';
+      }
 }

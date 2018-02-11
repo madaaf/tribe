@@ -33,10 +33,10 @@ import rx.Observable;
     return cloudDataStore.getRoom(live).compose(roomWithShortcutTransformer);
   }
 
-  @Override public Observable<Room> createRoom(String name, String... userIds) {
+  @Override public Observable<Room> createRoom(String name, String gameId) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.createRoom(name, userIds);
+    return cloudDataStore.createRoom(name, gameId);
   }
 
   @Override public Observable<Room> updateRoom(String roomId, List<Pair<String, String>> pairList) {

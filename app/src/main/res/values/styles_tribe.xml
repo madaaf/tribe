@@ -57,6 +57,10 @@
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>
 
+  <style name="BiggerBody.Two.Black" parent="BiggerBody.Two">
+    <item name="android:textColor">@android:color/black</item>
+  </style>
+
   <style name="BiggerBody.Two.Yellow" parent="BiggerBody.Two">
     <item name="android:textColor">@color/yellow</item>
   </style>
@@ -395,6 +399,10 @@
 
   <style name="BiggerTitle.2.White" parent="@style/BiggerTitle.2">
     <item name="android:textColor">@android:color/white</item>
+  </style>
+
+  <style name="BiggerTitle.2.BlueNew" parent="@style/BiggerTitle.2">
+    <item name="android:textColor">@color/blue.new</item>
   </style>
 
   <style name="Headline">

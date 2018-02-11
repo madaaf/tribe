@@ -28,7 +28,6 @@ public class ChatActivity extends BaseActivity {
   private static final String EXTRA_LIVE = "EXTRA_LIVE";
   private static final String FROM_SHORTCUT = "FROM_SHORTCUT";
   public static final String EXTRA_SHORTCUT_ID = "EXTRA_SHORTCUT_ID";
-  public static final String EXTRA_GESTURE = "EXTRA_GESTURE";
   public static final String EXTRA_SECTION = "EXTRA_SECTION";
 
   // OBSERVABLES
@@ -41,12 +40,11 @@ public class ChatActivity extends BaseActivity {
   @BindView(R.id.chatview) ChatView chatView;
 
   public static Intent getCallingIntent(Context context, Recipient recipient, Shortcut shortcut,
-      String gesture, String section) {
+      String section) {
     Intent intent = new Intent(context, ChatActivity.class);
     intent.putExtra(EXTRA_LIVE, recipient);
     intent.putExtra(FROM_SHORTCUT, shortcut);
     intent.putExtra(EXTRA_SECTION, section);
-    intent.putExtra(EXTRA_GESTURE, gesture);
     return intent;
   }
 
@@ -75,9 +73,10 @@ public class ChatActivity extends BaseActivity {
       }
       chatView.setChatId(shortcut, recipient);
     }
+  }
 
-    chatView.setGestureAndSection(intent.getStringExtra(EXTRA_GESTURE),
-        intent.getStringExtra(EXTRA_SECTION));
+  @Override protected void onStart() {
+    super.onStart();
   }
 
   @Override protected void onPause() {

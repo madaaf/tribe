@@ -49,17 +49,6 @@
         android:scrollbars="none"
         />
 
-    <com.tribe.app.presentation.view.component.home.NewGameView
-        android:id="@+id/btnNewGame"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/bottom_bar_height"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_margin="@dimen/horizontal_margin_large"
-        android:background="@drawable/shape_oval_white"
-        android:clickable="true"
-        android:elevation="10dp"
-        />
-
   </com.tribe.app.presentation.view.component.home.TopBarContainer>
 
   <com.tribe.app.presentation.view.widget.PopupContainerView
@@ -106,33 +95,10 @@
       android:id="@+id/txtSyncedContacts"
       android:layout_width="match_parent"
       android:layout_height="@dimen/top_bar_notification_height_small"
-      android:background="@android:color/black"
+      android:background="@android:color/white"
       android:gravity="center"
-      android:textColor="@android:color/white"
+      android:textColor="@android:color/black"
       android:visibility="gone"
-      />
-
-  <View
-      android:id="@+id/viewFadeInSwipe"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:alpha="0"
-      android:background="@android:color/black"
-      android:visibility="gone"
-      />
-
-  <com.tribe.app.presentation.view.component.live.LiveViewFake
-      android:id="@+id/viewLiveFake"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@null"
-      />
-
-  <com.tribe.app.presentation.view.component.home.HomeWalkthroughView
-      android:id="@+id/viewWalkthrough"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:clickable="true"
       />
 
 </FrameLayout>

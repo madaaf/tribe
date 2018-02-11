@@ -98,6 +98,7 @@ public class GameChallengesView extends GameView {
   }
 
   @Override public void setNextGame() {
+    if (game != null) game.incrementRoundCount();
     if (adapter == null) initView(context);
     if (popupDisplayed) hidePopup();
     new Handler().post(() -> {

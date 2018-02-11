@@ -19,8 +19,7 @@ public interface GameRepository {
 
   Observable<List<Game>> getGames();
 
-  Observable<List<Score>> getGameLeaderBoard(String gameId, boolean friendsOnly, int limit,
-      int offset);
+  Observable<List<Score>> getGameLeaderBoard(String gameId);
 
   Observable<List<Score>> getUserLeaderboard(String userId);
 

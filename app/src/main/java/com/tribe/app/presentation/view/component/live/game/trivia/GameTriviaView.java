@@ -190,6 +190,8 @@ public class GameTriviaView extends GameViewWithRanking {
   }
 
   private void showCategories() {
+    game.incrementRoundCount();
+
     soundManager.playSound(SoundManager.TRIVIA_SOUNDTRACK, SoundManager.SOUND_MID);
 
     ConstraintSet constraintSet = new ConstraintSet();
@@ -674,8 +676,9 @@ public class GameTriviaView extends GameViewWithRanking {
   }
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    super.start(game, mapObservable, liveViewsObservable, userId);
+    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
 
     currentMasterId = userId;
 

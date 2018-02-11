@@ -25,6 +25,7 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
@@ -87,6 +88,10 @@ public class GameWebView extends GameViewWithEngine {
 
   @Override protected int getSoundtrack() {
     return -1;
+  }
+
+  @Override protected String getStyleFont() {
+    return FontUtils.GULKAVE_REGULAR;
   }
 
   @Override protected void gameOver(String winnerId, boolean isLocal) {
@@ -190,7 +195,7 @@ public class GameWebView extends GameViewWithEngine {
     return code.replaceAll("\n", "<br>");
   }
 
-  @Override protected void showTitle(LabelListener listener) {
+  @Override protected void showTitle(LabelListener listener, String font) {
     executeJavascript("Tribe.displayTitle(3.5)");
 
     subscriptions.add(Observable.timer(3500, TimeUnit.MILLISECONDS)
@@ -289,9 +294,10 @@ public class GameWebView extends GameViewWithEngine {
    */
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     wordingPrefix = "game_webv1_";
-    super.start(game, mapObservable, liveViewsObservable, userId);
+    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
     if (!StringUtils.isEmpty(game.getUrl())) webView.loadUrl(game.getUrl());
   }
 

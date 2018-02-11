@@ -152,9 +152,9 @@ public class AccessView {
     });
   }
 
-  private void setLayout(View view, int width, int height) {
+  private void setLayout(View view, int width, int getRelativeHeight) {
     ViewGroup.LayoutParams viewLayoutParams = view.getLayoutParams();
-    viewLayoutParams.height = height;
+    viewLayoutParams.getRelativeHeight = getRelativeHeight;
     viewLayoutParams.width = width;
     view.setLayoutParams(viewLayoutParams);
   }

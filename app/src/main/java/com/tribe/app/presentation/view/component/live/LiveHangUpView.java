@@ -18,8 +18,11 @@ import com.facebook.rebound.SpringUtil;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
@@ -39,6 +42,8 @@ public class LiveHangUpView extends FrameLayout {
   public static final int MAX_ROTATION = -100;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject StateManager stateManager;
 
   @BindView(R.id.imgPhone) ImageView imgPhone;
 
@@ -104,7 +109,18 @@ public class LiveHangUpView extends FrameLayout {
   }
 
   @OnClick(R.id.viewCard) void onHangUp() {
-    onEndCall.onNext(null);
+    if (stateManager.shouldDisplay(StateManager.LEAVING_ROOM_POPUP)) {
+      subscriptions.add(DialogFactory.dialog(getContext(),
+          EmojiParser.demojizedText(getContext().getString(R.string.tips_leavingroom_title)),
+          EmojiParser.demojizedText(getContext().getString(R.string.tips_leavingroom_message)),
+          getContext().getString(R.string.tips_leavingroom_action1),
+          getContext().getString(R.string.tips_leavingroom_action2))
+          .filter(x -> x == true)
+          .subscribe(a -> onEndCall.onNext(null)));
+      stateManager.addTutorialKey(StateManager.LEAVING_ROOM_POPUP);
+    } else {
+      onEndCall.onNext(null);
+    }
   }
 
   ///////////////////////

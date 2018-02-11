@@ -17,6 +17,7 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
@@ -72,6 +73,10 @@ public class GameAliensAttackView extends GameViewWithEngine {
     return SoundManager.ALIENS_ATTACK_SOUNDTRACK;
   }
 
+  @Override protected String getStyleFont() {
+    return FontUtils.GULKAVE_REGULAR;
+  }
+
   @Override protected void initWebRTCRoomSubscriptions() {
     super.initWebRTCRoomSubscriptions();
     subscriptionsRoom.add(webRTCRoom.onGameMessage()
@@ -99,6 +104,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
 
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
     super.setupGameLocally(userId, players, timestamp);
+
     subscriptionsSession.add(onPending.subscribe(aBoolean -> {
       for (int i = 0; i < viewAliens.getChildCount(); i++) {
         if (viewAliens.getChildAt(i) instanceof GameAliensAttackAlienView) {
@@ -169,7 +175,7 @@ public class GameAliensAttackView extends GameViewWithEngine {
                 .setListener(new AnimatorListenerAdapter() {
                   @Override public void onAnimationCancel(Animator animation) {
                     super.onAnimationCancel(animation);
-                    //Timber.d("Animation cancel : " + alienView.getId());
+                    //Timber.d("Animation cancel : " + alienView.getBirdId());
                   }
 
                   @Override public void onAnimationEnd(Animator animation) {
@@ -260,9 +266,10 @@ public class GameAliensAttackView extends GameViewWithEngine {
    */
 
   @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     wordingPrefix = "game_aliens_attack_";
-    super.start(game, mapObservable, liveViewsObservable, userId);
+    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
     viewBackground.start();
 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
