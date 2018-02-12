@@ -325,7 +325,11 @@ public class GameBattleMusicView extends GameViewWithRanking {
           String answer = message.getString(ANSWER_KEY);
           if (answer.equals(ANSWER_GUESS)) {
             nbAnswers++;
-            if (message.getString(NAME_KEY).equals(currentTrack.getName())) {
+            String name = "";
+
+            if (currentTrack != null) name = currentTrack.getName();
+
+            if (message.getString(NAME_KEY).equals(name)) {
               if (!weHaveAWinner) {
                 weHaveAWinner = true;
                 endTrack(true, tribeSession);
