@@ -401,6 +401,7 @@ public class WebRTCRoom {
   }
 
   public void sendToUser(String userId, JSONObject obj, boolean isAppMessage) {
+    if (webSocketConnection == null) return;
 
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
       if (tpc != null &&
