@@ -7,6 +7,7 @@ import android.support.v4.util.Pair;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
+import com.tribe.tribelivesdk.back.WebSocketConnectionAbs;
 import com.tribe.tribelivesdk.model.RemotePeer;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeJoinRoom;
@@ -76,7 +77,7 @@ public class WebRTCRoom {
   public static final int DURATION = 60; // SECS
 
   private Context context;
-  private WebSocketConnection webSocketConnection;
+  private WebSocketConnectionAbs webSocketConnection;
   private WebRTCClient webRTCClient;
   private TribeLiveOptions options;
   private @WebRTCRoom.RoomState String state;
@@ -110,7 +111,7 @@ public class WebRTCRoom {
   private PublishSubject<Pair<TribeSession, String>> onStopGame = PublishSubject.create();
   private PublishSubject<RemotePeer> onReceivedStream = PublishSubject.create();
 
-  public WebRTCRoom(Context context, WebSocketConnection webSocketConnection,
+  public WebRTCRoom(Context context, WebSocketConnectionAbs webSocketConnection,
       WebRTCClient webRTCClient) {
     this.context = context;
     this.webSocketConnection = webSocketConnection;
@@ -402,9 +403,9 @@ public class WebRTCRoom {
   public void sendToUser(String userId, JSONObject obj, boolean isAppMessage) {
 
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
-      if (tpc != null
-          && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)
-          && tpc.getSession().getUserId().equals(userId)) {
+      if (tpc != null &&
+          !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID) &&
+          tpc.getSession().getUserId().equals(userId)) {
 
         webSocketConnection.send(
             getSendMessagePayload(tpc.getSession().getPeerId(), obj, isAppMessage).toString());
@@ -415,9 +416,8 @@ public class WebRTCRoom {
   public void sendToPeer(RemotePeer remotePeer, JSONObject obj, boolean isAppMessage) {
     if (webSocketConnection == null) return;
 
-    if (remotePeer != null && !remotePeer.getSession()
-        .getPeerId()
-        .equals(TribeSession.PUBLISHER_ID)) {
+    if (remotePeer != null &&
+        !remotePeer.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
       webSocketConnection.send(
           getSendMessagePayload(remotePeer.getSession().getPeerId(), obj, isAppMessage).toString());
     }

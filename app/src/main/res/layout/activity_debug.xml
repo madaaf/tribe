@@ -79,6 +79,16 @@
           android:layout_height="@dimen/divider_size"
           android:background="@color/grey.light"
           />
+
+      <com.tribe.app.presentation.view.component.ActionView
+          android:id="@+id/viewActionNewWS"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@null"
+          app:actionTitle="New WebSocket"
+          app:actionType="toggle"
+          />
+
     </LinearLayout>
   </ScrollView>
 </FrameLayout>

@@ -26,6 +26,7 @@ import com.tribe.app.presentation.mvp.presenter.UserPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.LastSync;
@@ -79,6 +80,12 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
 
     super.onCreate(savedInstanceState);
+
+    if (getIntent().getData() != null) {
+      Intent newIntent = IntentUtils.getLiveIntentFromURI(this, getIntent().getData(),
+          LiveActivity.SOURCE_DEEPLINK);
+      if (newIntent != null) navigator.navigateToIntent(this, newIntent);
+    }
 
     rxPermissions = new RxPermissions(this);
     initAppStateMonitor();

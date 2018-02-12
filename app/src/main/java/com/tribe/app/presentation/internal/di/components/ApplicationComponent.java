@@ -66,6 +66,7 @@ import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
+import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
@@ -448,6 +449,8 @@ public interface ApplicationComponent {
   @UISounds Preference<Boolean> uiSounds();
 
   @RoutingMode Preference<String> routingMode();
+
+  @NewWS Preference<Boolean> newWs();
 
   @FullscreenNotifications Preference<Boolean> fullscreenNotifications();
 

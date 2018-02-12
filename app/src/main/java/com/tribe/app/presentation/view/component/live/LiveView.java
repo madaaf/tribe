@@ -34,6 +34,7 @@ import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
+import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
@@ -112,6 +113,8 @@ public class LiveView extends FrameLayout {
   @Inject @CounterOfCallsForGrpButton Preference<Integer> counterOfCallsForGrpButton;
 
   @Inject @MinutesOfCalls Preference<Float> minutesOfCalls;
+
+  @Inject @NewWS Preference<Boolean> newWs;
 
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
@@ -797,7 +800,7 @@ public class LiveView extends FrameLayout {
       viewRinging.setVisibility(INVISIBLE);
     }
 
-    webRTCRoom = tribeLiveSDK.newRoom();
+    webRTCRoom = tribeLiveSDK.newRoom(newWs.get());
     webRTCRoom.initLocalStream(viewLocalLive.getLocalPeerView());
 
     gameManager.setWebRTCRoom(webRTCRoom);

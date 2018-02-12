@@ -1,6 +1,5 @@
 package com.tribe.tribelivesdk.back;
 
-import android.support.annotation.StringDef;
 import com.neovisionaries.ws.client.ThreadType;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketException;
@@ -17,17 +16,12 @@ import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import rx.Observable;
-import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
-public class WebSocketConnection {
+public class WebSocketConnection extends WebSocketConnectionAbs {
 
   public static WebSocketConnection newInstance() {
     SSLContext sslContext = null;
@@ -61,51 +55,15 @@ public class WebSocketConnection {
     return new WebSocketConnection(factory);
   }
 
-  private static final int CONNECT_TIMEOUT = 10000;
-  private static final int CLOSE_TIMEOUT = 10000;
-
-  @StringDef({ STATE_NEW, STATE_CONNECTING, STATE_CONNECTED, STATE_DISCONNECTED, STATE_ERROR })
-  public @interface WebSocketState {
-  }
-
-  public static final String STATE_NEW = "new";
-  public static final String STATE_CONNECTING = "connecting";
-  public static final String STATE_CONNECTED = "connected";
-  public static final String STATE_DISCONNECTED = "disconnected";
-  public static final String STATE_ERROR = "error";
-
-  public static final String PROTOCOL = "Sec-WebSocket-Protocol";
-  public static final String VERSION = "Sec-WebSocket-Version";
-  public static final String AUTHORIZATION = "Authorization";
-  public static final String USER_AGENT = "User-Agent";
-  public static final String CONTENT_TYPE = "Content-Type";
-  public static final String ORIGIN = "Origin";
-
-  private @WebSocketState String state;
   private WebSocket webSocketClient;
   private WebSocketFactory clientFactory;
-  private Map<String, String> headers;
-  private Set<String> pendingMessages;
-  private final Object closeLock = new Object();
-  private boolean close, shouldReconnect = true, retrying = false;
-  private int attempts = 1;
-  private String url;
 
   // OBSERVABLE
-  private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<String> onStateChanged = PublishSubject.create();
-  private PublishSubject<String> onMessage = PublishSubject.create();
-  private PublishSubject<String> onConnectError = PublishSubject.create();
-  private PublishSubject<String> onError = PublishSubject.create();
 
   public WebSocketConnection(WebSocketFactory clientFactory) {
     state = STATE_NEW;
     this.clientFactory = clientFactory;
     this.pendingMessages = new HashSet<>();
-  }
-
-  public void setHeaders(Map<String, String> headers) {
-    this.headers = headers;
   }
 
   public void connect(final String url) {
@@ -330,45 +288,6 @@ public class WebSocketConnection {
     webSocketClient.setPingPayloadGenerator(() -> "{}".getBytes());
   }
 
-  private void processPendingMessages() {
-    if (pendingMessages == null || pendingMessages.size() == 0) {
-      return;
-    } else {
-      for (String request : pendingMessages) {
-        send(request);
-      }
-
-      pendingMessages.clear();
-    }
-  }
-
-  private void retry() {
-    if (shouldReconnect && !retrying) {
-      retrying = true;
-      int time = generateInterval(attempts);
-      Timber.d("Trying to reconnect in : " + time);
-
-      subscriptions.add(
-          Observable.timer(time, TimeUnit.MILLISECONDS).onBackpressureDrop().subscribe(aLong -> {
-            Timber.d("Reconnecting");
-            attempts++;
-            connect(url);
-          }));
-    }
-  }
-
-  private boolean isConnected() {
-    return state == STATE_CONNECTED;
-  }
-
-  private int generateInterval(int k) {
-    return (int) (Math.random() * (Math.min(30, (Math.pow(2, k) - 1)) * 1000));
-  }
-
-  public void setShouldReconnect(boolean shouldReconnect) {
-    this.shouldReconnect = shouldReconnect;
-  }
-
   public void disconnect(boolean waitForComplete) {
     Timber.d("Disconnect");
 
@@ -413,27 +332,7 @@ public class WebSocketConnection {
     webSocketClient.sendText(msg);
   }
 
-  public @WebSocketState String getState() {
-    return state;
-  }
-
   /////////////////
   // OBSERVABLES //
   /////////////////
-
-  public Observable<String> onStateChanged() {
-    return onStateChanged;
-  }
-
-  public Observable<String> onMessage() {
-    return onMessage;
-  }
-
-  public Observable<String> onError() {
-    return onError;
-  }
-
-  public Observable<String> onConnectError() {
-    return onConnectError;
-  }
 }

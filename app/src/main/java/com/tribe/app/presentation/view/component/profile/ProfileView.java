@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -24,9 +25,11 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import javax.inject.Inject;
 import rx.Observable;
@@ -40,6 +43,10 @@ public class ProfileView extends ScrollView {
   @Inject TagManager tagManager;
 
   @Inject Navigator navigator;
+
+  @Inject @DebugMode Preference<Boolean> debugMode;
+
+  @Inject SoundManager soundManager;
 
   @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
 
@@ -70,6 +77,8 @@ public class ProfileView extends ScrollView {
   @BindView(R.id.txtTimeInCall) TextViewFont txtTimeInCall;
 
   @BindView(R.id.imgLogo) ImageView imgLogo;
+
+  private int tapCount = 0;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
@@ -205,8 +214,16 @@ public class ProfileView extends ScrollView {
   ///////////////
 
   @OnClick(R.id.imgLogo) void clickLogo() {
-    if (BuildConfig.DEBUG) {
+    if (tapCount == 10 || debugMode.get()) {
+      if (!debugMode.isSet()) {
+        Toast.makeText(getContext(), "Debug mode enabled!", Toast.LENGTH_SHORT).show();
+        soundManager.playSound(SoundManager.GAME_SCORE, SoundManager.SOUND_MID);
+        debugMode.set(true);
+      }
+
       onDebugMode.onNext(null);
+    } else {
+      tapCount++;
     }
   }
 

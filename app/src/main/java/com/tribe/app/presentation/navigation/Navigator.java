@@ -312,9 +312,12 @@ public class Navigator {
     }
   }
 
-  public void navigateToGameStoreLogin(Activity activity) {
+  public void navigateToGameStoreLogin(Activity activity, Uri deeplink) {
     if (activity != null) {
       Intent intent = GameStoreActivity.getCallingIntent(activity);
+      if (deeplink != null) {
+        intent.setData(deeplink);
+      }
       activity.startActivity(intent);
     }
   }

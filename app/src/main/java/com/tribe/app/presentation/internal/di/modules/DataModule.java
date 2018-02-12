@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
@@ -24,6 +25,7 @@ import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
+import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
@@ -185,6 +187,10 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @RoutingMode Preference<String> provideRoutingMode(
       RxSharedPreferences prefs) {
     return prefs.getString(PreferencesUtils.ROUTING_MODE, TribeLiveOptions.ROUTED);
+  }
+
+  @Provides @Singleton @NewWS Preference<Boolean> provideNewWS(RxSharedPreferences prefs) {
+    return prefs.getBoolean(PreferencesUtils.NEW_WS, BuildConfig.DEBUG);
   }
 
   @Provides @Singleton @FullscreenNotifications Preference<Boolean> provideFullScreenNotifications(

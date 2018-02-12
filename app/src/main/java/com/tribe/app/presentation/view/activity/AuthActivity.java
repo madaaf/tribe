@@ -293,7 +293,7 @@ public class AuthActivity extends BaseActivity
       tagManager.setUserId(user.getId());
       tagLogin();
       Timber.d("goToConnected from " + user.getDisplayName());
-      navigator.navigateToGameStoreLogin(this);
+      navigator.navigateToGameStoreLogin(this, deepLink);
     }
   }
 

@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-
 import com.mixpanel.android.mpmetrics.TribeGCMReceiver;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import io.branch.referral.Branch;
 import javax.inject.Inject;
 
@@ -45,7 +43,7 @@ public class LauncherActivity extends BaseActivity {
     } else if (TribeGCMReceiver.ACTION_CALLROULETTE.equals(action)) {
       navigator.navigateToNewCall(this, LiveActivity.SOURCE_CALL_ROULETTE, null);
     } else {
-      navigator.navigateToGameStoreLogin(this);
+      navigator.navigateToGameStoreLogin(this, deepLink);
     }
 
     finish();

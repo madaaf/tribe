@@ -13,6 +13,7 @@ import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.DebugPresenter;
 import com.tribe.app.presentation.mvp.view.DebugMVPView;
+import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
@@ -40,6 +41,8 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
 
   @Inject @RoutingMode Preference<String> routingMode;
 
+  @Inject @NewWS Preference<Boolean> newWS;
+
   @Inject @TribeState Preference<Set<String>> tutorialState;
 
   @Inject @Walkthrough Preference<Boolean> walkthrough;
@@ -51,6 +54,8 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
   @BindView(R.id.viewActionTooltip) ActionView viewActionTooltip;
 
   @BindView(R.id.viewActionSync) ActionView viewActionSync;
+
+  @BindView(R.id.viewActionNewWS) ActionView viewActionNewWS;
 
   private Unbinder unbinder;
 
@@ -81,6 +86,8 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
     viewActionFuckUpSomeTokens.setTitle("Fuck up some tokens");
     viewActionTooltip.setTitle("Clear tooltip");
     viewActionSync.setTitle("Sync");
+    viewActionNewWS.setTitle("New Websocket");
+    viewActionNewWS.setValue(newWS.get());
   }
 
   private void initDependencyInjector() {
@@ -99,6 +106,8 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
     subscriptions.add(viewActionRouted.onChecked().subscribe(aBoolean -> {
       routingMode.set(aBoolean ? TribeLiveOptions.ROUTED : TribeLiveOptions.P2P);
     }));
+
+    subscriptions.add(viewActionNewWS.onChecked().subscribe(aBoolean -> newWS.set(aBoolean)));
 
     subscriptions.add(viewActionFuckUpSomeTokens.onClick().subscribe(aVoid -> {
       accessToken.setAccessToken("thisisafaketokenfortestingpurposestiago");
