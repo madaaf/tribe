@@ -350,7 +350,7 @@
 	<string name="share_snapchat_story_explanation_ok">Ouvrir snapchat</string>
 	<string name="share_snapchat_story_explanation_cancel">Partager plus tard</string>
 	<string name="share_invite">Ajoute moi sur Tribe !\nNom d’utilisateur: %1$s %2$s</string>
-	<string name="share_live">Je viens de démarrer un appel vidéo sur Tribe ! Rejoins-le ici depuis l\'app ou depuis le web : %1$s</string>
+	<string name="share_live">Je viens de lancer une partie à plusieurs, rejoins moi ! &#128514; %1$s</string>
 	
 	<!-- Search -->
 	<string name="search_user_placeholder">Entrez un nom d\'utilisateur</string>
@@ -990,11 +990,17 @@
 	<string name="hangup_popup_action_leave_call">Quitter le live</string>
 	
 	<!-- New Challenger Popup -->
-	<string name="new_challenger_popup_title">NOUVEAU CHALLENGER !</string>
-	<string name="new_challenger_popup_subtitle">%1$s\nveut discuter !</string>
-	<string name="new_challenger_popup_friends">Amis en commun avec %1$s</string>
-	<string name="new_challenger_popup_other">et un autre</string>
-	<string name="new_challenger_popup_others">et %1$d autres</string>
-	<string name="new_challenger_popup_action_add">AJOUTER AUX CHATS</string>
-	<string name="new_challenger_popup_friends_placeholder"></string>
+	<string name="new_challenger_popup_title">NEW CHALLENGER!</string>
+	<string name="new_challenger_popup_subtitle">%1$s\nwants to chat!</string>
+	<string name="new_challenger_popup_friends">Mutual friends with %1$s</string>
+	<string name="new_challenger_popup_other">and an other</string>
+	<string name="new_challenger_popup_others">and %1$d others</string>
+	<string name="new_challenger_popup_action_add">ADD TO CHATS</string>
+	<string name="new_challenger_popup_friends_placeholder">Receive messages, see games currently playing and play together!</string>
+	
+	<!-- Invite Facebook Popup -->
+	<string name="invite_facebook_popup_title">MORE FRIENDS!</string>
+	<string name="invite_facebook_popup_subtitle">More friends in\nonly one tap!</string>
+	<string name="invite_facebook_popup_description">More friends to battle live, more messages and a wider leaderboard!</string>
+	<string name="invite_facebook_popup_action_notify">NOTIFY THEM</string>
 </resources>

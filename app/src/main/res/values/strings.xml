@@ -350,7 +350,7 @@
 	<string name="share_snapchat_story_explanation_ok">Open Snapchat</string>
 	<string name="share_snapchat_story_explanation_cancel">Share later</string>
 	<string name="share_invite">Add me on Tribe!\nUsername: %1$s %2$s</string>
-	<string name="share_live">Just started a video call on Tribe! Join now from the app or from your laptop: %1$s</string>
+	<string name="share_live">I’ve just launched a multiplayer game, join me now! &#128514; %1$s</string>
 	
 	<!-- Search -->
 	<string name="search_user_placeholder">Enter a username</string>
@@ -997,4 +997,10 @@
 	<string name="new_challenger_popup_others">and %1$d others</string>
 	<string name="new_challenger_popup_action_add">ADD TO CHATS</string>
 	<string name="new_challenger_popup_friends_placeholder">Receive messages, see games currently playing and play together!</string>
+	
+	<!-- Invite Facebook Popup -->
+	<string name="invite_facebook_popup_title">MORE FRIENDS!</string>
+	<string name="invite_facebook_popup_subtitle">More friends in\nonly one tap!</string>
+	<string name="invite_facebook_popup_description">More friends to battle live, more messages and a wider leaderboard!</string>
+	<string name="invite_facebook_popup_action_notify">NOTIFY THEM</string>
 </resources>
