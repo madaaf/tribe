@@ -418,12 +418,6 @@ public class LiveView extends FrameLayout {
     }).subscribe());
 
     persistentSubscriptions.add(
-        viewControlsLive.onOpenInvite().subscribe(aBoolean -> onOpenInvite.onNext(true)));
-
-    persistentSubscriptions.add(
-        viewControlsLive.onCloseInvite().subscribe(aBoolean -> onOpenInvite.onNext(false)));
-
-    persistentSubscriptions.add(
         viewControlsLive.onOpenChat().subscribe(aBoolean -> openChat(true)));
 
     persistentSubscriptions.add(
@@ -1290,8 +1284,12 @@ public class LiveView extends FrameLayout {
   //   OBSERVABLES    //
   //////////////////////
 
-  public Observable<Boolean> onOpenInvite() {
-    return onOpenInvite;
+  public Observable<Integer> onOpenInvite() {
+    return viewControlsLive.onOpenInvite();
+  }
+
+  public Observable<Boolean> onCloseInvite() {
+    return viewControlsLive.onCloseInvite();
   }
 
   public Observable<Boolean> onTouchEnabled() {

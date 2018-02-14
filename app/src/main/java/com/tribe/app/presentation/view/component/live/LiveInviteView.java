@@ -278,10 +278,8 @@ public class LiveInviteView extends FrameLayout
       @Override public boolean isSection(int position) {
         if (position < 0 || position > list.size() - 1) return false;
         return list.get(position) instanceof HeaderModel &&
-            (list.get(position)
-                .getId()
-                .equals(HeaderModel.HEADER_NAME) ||
-                    list.get(position).equals(HeaderModel.HEADER_DRAG_IN));
+            (list.get(position).getId().equals(HeaderModel.HEADER_NAME) ||
+                list.get(position).equals(HeaderModel.HEADER_DRAG_IN));
       }
 
       @Override public int getSectionType(int position) {
@@ -420,9 +418,10 @@ public class LiveInviteView extends FrameLayout
         viewInviteBottom.showLess();
         adapter.setFullMode();
         adapter.notifyDataSetChanged();
-      } else if (event == LiveContainer.OPEN_PARTIAL && drawerState != LiveContainer.CLOSED) {
+      } else if (event == LiveContainer.OPEN_PARTIAL) {
         recyclerViewInvite.setDrawerOpen(false);
-        recyclerViewInvite.smoothScrollToPosition(positionOfFirstShortcut);
+        recyclerViewInvite.post(
+            () -> recyclerViewInvite.smoothScrollToPosition(positionOfFirstShortcut));
         viewInviteBottom.showMore();
         adapter.setPartialMode();
         adapter.notifyDataSetChanged();

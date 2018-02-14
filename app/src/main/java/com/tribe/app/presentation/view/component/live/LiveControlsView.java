@@ -668,7 +668,8 @@ public class LiveControlsView extends FrameLayout {
       if (drawerState == LiveContainer.CLOSED && event != LiveContainer.CLOSED) {
         drawerState = event;
         viewStatusName.openView();
-      } else if (drawerState == LiveContainer.OPEN_PARTIAL && event == LiveContainer.CLOSED) {
+      } else if ((drawerState == LiveContainer.OPEN_PARTIAL ||
+          drawerState == LiveContainer.OPEN_FULL) && event == LiveContainer.CLOSED) {
         drawerState = event;
         viewStatusName.closeView();
       }
@@ -765,8 +766,8 @@ public class LiveControlsView extends FrameLayout {
     return onLeave;
   }
 
-  public Observable<Boolean> onOpenInvite() {
-    return viewStatusName.onOpenView().doOnNext(aBoolean -> {
+  public Observable<Integer> onOpenInvite() {
+    return viewStatusName.onOpenView().doOnNext(type -> {
       invitesMenuOn = true;
       if (gameManager.getCurrentGame() == null) showMenuTop(viewToHideTopInvites);
 
@@ -777,20 +778,23 @@ public class LiveControlsView extends FrameLayout {
           .setDuration(DURATION_NAME)
           .setInterpolator(new DecelerateInterpolator())
           .start();
-    }).filter(aBoolean -> drawerState == LiveContainer.CLOSED);
+    }).filter(type -> drawerState == LiveContainer.CLOSED);
   }
 
   public Observable<Boolean> onCloseInvite() {
-    return viewStatusName.onCloseView().doOnNext(aBoolean -> {
-      invitesMenuOn = false;
-      if (gameManager.getCurrentGame() == null) closeMenuTop(viewToHideTopInvites);
+    return viewStatusName.onCloseView()
+        .doOnNext(aBoolean -> {
+          invitesMenuOn = false;
+          if (gameManager.getCurrentGame() == null) closeMenuTop(viewToHideTopInvites);
 
-      viewStatusName.animate()
-          .translationX(0)
-          .setDuration(DURATION_NAME)
-          .setInterpolator(new DecelerateInterpolator())
-          .start();
-    }).filter(aBoolean -> drawerState == LiveContainer.OPEN_PARTIAL);
+          viewStatusName.animate()
+              .translationX(0)
+              .setDuration(DURATION_NAME)
+              .setInterpolator(new DecelerateInterpolator())
+              .start();
+        })
+        .filter(aBoolean -> drawerState == LiveContainer.OPEN_PARTIAL ||
+            drawerState == LiveContainer.OPEN_FULL);
   }
 
   public Observable<Boolean> onOpenChat() {
