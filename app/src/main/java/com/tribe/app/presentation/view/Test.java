@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewPager;
@@ -29,6 +30,7 @@ import timber.log.Timber;
  */
 
 public class Test extends FrameLayout {
+  private final static String DOTS_TAG_MARKER = "DOTS_TAG_MARKER_";
 
   private Unbinder unbinder;
   private Context context;
@@ -61,7 +63,7 @@ public class Test extends FrameLayout {
     final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
     adapter = new NotificationViewPagerAdapter(context, list);
     initDots(list.size());
-    PageListener pageListener = new PageListener();
+    PageListener pageListener = new PageListener(dotsContainer);
     pager.addOnPageChangeListener(pageListener);
     pager.setAdapter(adapter);
 
@@ -97,16 +99,24 @@ public class Test extends FrameLayout {
   }
 
   private void initDots(int dotsNbr) {
-    int sizeDot = context.getResources().getDimensionPixelSize(R.dimen.view_dot_size_chat);
+    int sizeDot = context.getResources().getDimensionPixelSize(R.dimen.waiting_view_dot_size);
     for (int i = 0; i < dotsNbr; i++) {
       View v = new View(context);
-      v.setBackgroundResource(R.drawable.shape_oval_grey);
+      v.setTag(DOTS_TAG_MARKER + i);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
-      lp.setMargins(0, 0, 10, 0);
+      lp.setMargins(0, 0, 15, 0);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
-      //  viewDots.add(v);
       dotsContainer.addView(v);
+      if (i == 0) {
+        v.setBackgroundResource(R.drawable.shape_oval_white50);
+        v.setScaleX(1.2f);
+        v.setScaleY(1.2f);
+      } else {
+        v.setBackgroundResource(R.drawable.shape_oval_white);
+        v.setScaleX(1f);
+        v.setScaleY(1f);
+      }
     }
   }
 
@@ -115,8 +125,28 @@ public class Test extends FrameLayout {
   ///////////////////
 
   public static class PageListener extends ViewPager.SimpleOnPageChangeListener {
+    LinearLayout dotsContainer;
+
+    public PageListener(LinearLayout dotsContainer) {
+      this.dotsContainer = dotsContainer;
+    }
+
     public void onPageSelected(int position) {
       Timber.i("page selected " + position);
+      for (int i = 0; i < dotsContainer.getChildCount(); i++) {
+        View v = dotsContainer.getChildAt(i);
+        if (v.getTag().toString().startsWith(DOTS_TAG_MARKER + position)) {
+          Timber.i("page TAG  " + v.getTag().toString());
+          v.setBackgroundColor(Color.RED);
+          v.setBackgroundResource(R.drawable.shape_oval_white50);
+          v.animate().scaleX(1.2f).scaleY(1.2f).setDuration(100).start();
+        } else {
+          v.setBackgroundColor(Color.WHITE);
+          v.setBackgroundResource(R.drawable.shape_oval_white);
+          v.setScaleX(1f);
+          v.setScaleY(1f);
+        }
+      }
     }
   }
 
