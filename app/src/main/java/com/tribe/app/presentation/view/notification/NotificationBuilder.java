@@ -24,6 +24,7 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
@@ -35,6 +36,7 @@ import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -50,6 +52,7 @@ import javax.inject.Singleton;
   @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
   @Inject @ImmersiveCallState Preference<Boolean> immersiveCallState;
+  @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
   @Inject JobManager jobManager;
   @Inject MissedCallManager missedCallManager;
   @Inject User user;
@@ -76,6 +79,16 @@ import javax.inject.Singleton;
     }
 
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
+
+      // SOEF
+      ArrayList<String> usersIds = new ArrayList<>();
+      usersIds.add("HkXTE2vIf");
+      usersIds.add("HJ8pOE_i-");
+      usersIds.add("ry8nB63dW");
+
+      challengeNotificationsPref.set(usersIds.toString());
+
+
       if (notificationPayload.getBadge() > 0) {
         userCache.updateBadgeValue(notificationPayload.getBadge());
       }

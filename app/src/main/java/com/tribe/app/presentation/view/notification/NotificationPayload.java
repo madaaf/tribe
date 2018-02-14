@@ -36,6 +36,7 @@ public class NotificationPayload implements Serializable {
   public static final String CLICK_ACTION_GAME_SCORE = "game_score";
   public static final String CLICK_ACTION_GAME_LIVE = "live-game";
   public static final String CLICK_ACTION_GAME_SCORE_BEATEN = "game_score_beaten";
+  public static final String CLICK_ACTION_CHALLENGER = "challengers";
 
   private String user_id;
   private String body;

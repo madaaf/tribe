@@ -13,6 +13,8 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by madaaflak on 09/02/2018.
@@ -23,6 +25,8 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
   private List<NotificationModel> list;
   private Context context;
   private LayoutInflater layoutInflater;
+
+  private PublishSubject<Void> onClickBtn1 = PublishSubject.create();
 
   public NotificationViewPagerAdapter(Context context, List<NotificationModel> dataObjectList) {
     this.context = context;
@@ -51,6 +55,10 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
     ImageView backImage = itemView.findViewById(R.id.backImage);
     NewAvatarView avatarView = itemView.findViewById(R.id.avatarView);
 
+    btn1Content.setOnClickListener(v -> {
+      onClickBtn1.onNext(null);
+    });
+
     if (model.getDrawableBtn1() != null) {
       Drawable img = context.getResources().getDrawable(model.getDrawableBtn1());
       img.setBounds(0, 0, 60, 60);
@@ -74,5 +82,10 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
 
   @Override public void destroyItem(ViewGroup container, int position, Object object) {
     container.removeView((View) object);
+  }
+
+
+  public Observable<Void> onClickBtn1() {
+    return onClickBtn1;
   }
 }

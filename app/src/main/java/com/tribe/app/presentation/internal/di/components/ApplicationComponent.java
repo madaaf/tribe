@@ -48,6 +48,7 @@ import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
@@ -471,6 +472,8 @@ public interface ApplicationComponent {
   @MissedPlayloadNotification Preference<String> missedPlayloadNotification();
 
   @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
+
+  @ChallengeNotifications Preference<String> challengeNotifications();
 
   @ChatShortcutData Preference<String> chatShortcutData();
 

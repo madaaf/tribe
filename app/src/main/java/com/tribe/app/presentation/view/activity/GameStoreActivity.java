@@ -29,6 +29,7 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.view.NotifView;
@@ -61,6 +62,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   @Inject UserPresenter userPresenter;
   @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
   @Inject @LastSync Preference<Long> lastSync;
+  @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
   @Inject User currentUser;
 
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
@@ -74,6 +76,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   private Scheduler singleThreadExecutor;
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
+  private Activity activity;
 
   // RESOURCES
 
@@ -84,7 +87,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
 
     super.onCreate(savedInstanceState);
-
+    activity = this;
     if (getIntent().getData() != null) {
       Intent newIntent = IntentUtils.getLiveIntentFromURI(this, getIntent().getData(),
           LiveActivity.SOURCE_DEEPLINK);
@@ -120,28 +123,18 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   }
 
   private void mock() {
-    NotifView view = new NotifView(this);
-    List<NotificationModel> list = new ArrayList<>();
+    // SOEF
 
-    String content = getString(R.string.new_challenger_popup_friends, "mada , mike") + getString(
-        R.string.new_challenger_popup_others, 3);
+    ArrayList<String> usersIds = new ArrayList<>();
+    usersIds.add("HkXTE2vIf");
+    usersIds.add("HJ8pOE_i-");
+    usersIds.add("ry8nB63dW");
 
-    NotificationModel a =
-        new NotificationModel.Builder().title(getString(R.string.new_challenger_popup_title))
-            .subTitle(getString(R.string.new_challenger_popup_subtitle))
-            .content(content)
-            .btn1Content(getString(R.string.new_challenger_popup_action_add))
-            .drawableBtn1(R.drawable.picto_white_message)
-            .background(R.drawable.bck_norif_challenge)
-            .profilePicture(currentUser.getProfilePicture())
-            .build();
-    NotificationModel d = new NotificationModel.Builder().title("daia3").build();
+    if (challengeNotificationsPref != null) {
 
-    list.add(a);
-    list.add(a);
-    list.add(a);
-    list.add(d);
-    view.show(this, list);
+    }
+
+    userPresenter.getUsersInfoListById(usersIds);
   }
 
   @Override protected void onStop() {
@@ -205,6 +198,31 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     userMVPViewAdapter = new UserMVPViewAdapter() {
       @Override public void onUserInfos(User user) {
         onUser.onNext(user);
+      }
+
+      @Override public void onUserInfosList(List<User> users) {
+        Timber.e("SOEF " + users.toString());
+
+        List<NotificationModel> list = new ArrayList<>();
+        NotifView view = new NotifView(getBaseContext());
+
+        for (User user : users) {
+          String title = getString(R.string.new_challenger_popup_subtitle, user.getDisplayName());
+
+          NotificationModel a =
+              new NotificationModel.Builder().title(getString(R.string.new_challenger_popup_title))
+                  .subTitle(title)
+                  .content(getString(R.string.new_challenger_popup_friends_placeholder))
+                  .btn1Content(getString(R.string.new_challenger_popup_action_add))
+                  .drawableBtn1(R.drawable.picto_white_message)
+                  .background(R.drawable.bck_norif_challenge)
+                  .profilePicture(currentUser.getProfilePicture())
+                  .build();
+
+          list.add(a);
+        }
+
+        view.show(activity, list);
       }
     };
   }

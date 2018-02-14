@@ -23,6 +23,7 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
+import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
@@ -30,6 +31,7 @@ import timber.log.Timber;
  */
 
 public class NotifView extends FrameLayout {
+
   private final static String DOTS_TAG_MARKER = "DOTS_TAG_MARKER_";
 
   private Unbinder unbinder;
@@ -38,12 +40,16 @@ public class NotifView extends FrameLayout {
   private static View v;
   private NotificationViewPagerAdapter adapter;
   private GestureDetectorCompat gestureScanner;
+  private List<NotificationModel> data;
 
   @BindView(R.id.pager) ViewPager pager;
   @BindView(R.id.txtDismiss) TextViewFont textDismiss;
   @BindView(R.id.container) FrameLayout container;
   @BindView(R.id.bgView) View bgView;
   @BindView(R.id.dotsContainer) LinearLayout dotsContainer;
+
+  // OBSERVABLES
+  protected CompositeSubscription subscriptions = new CompositeSubscription();
 
   public NotifView(@NonNull Context context) {
     super(context);
@@ -60,14 +66,22 @@ public class NotifView extends FrameLayout {
   }
 
   public void show(Activity activity, List<NotificationModel> list) {
+    this.data = list;
     final ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
     adapter = new NotificationViewPagerAdapter(context, list);
     initDots(list.size());
     PageListener pageListener = new PageListener(dotsContainer);
     pager.addOnPageChangeListener(pageListener);
     pager.setAdapter(adapter);
-
     decorView.addView(v);
+
+    subscriptions.add(adapter.onClickBtn1().subscribe(aVoid -> {
+      if (pageListener.getPositionViewPage() < data.size()) {
+        pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
+      }else {
+        hideView();
+      }
+    }));
   }
 
   protected void hideView() {
@@ -125,13 +139,20 @@ public class NotifView extends FrameLayout {
   ///////////////////
 
   public static class PageListener extends ViewPager.SimpleOnPageChangeListener {
-    LinearLayout dotsContainer;
+    private LinearLayout dotsContainer;
+    private int positionViewPager;
 
     public PageListener(LinearLayout dotsContainer) {
       this.dotsContainer = dotsContainer;
     }
 
+    public int getPositionViewPage() {
+      return positionViewPager;
+    }
+
     public void onPageSelected(int position) {
+      this.positionViewPager = position;
+      positionViewPager = position;
       Timber.i("page selected " + position);
       for (int i = 0; i < dotsContainer.getChildCount(); i++) {
         View v = dotsContainer.getChildAt(i);
