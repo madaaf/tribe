@@ -29,7 +29,7 @@ import timber.log.Timber;
  * Created by madaaflak on 09/02/2018.
  */
 
-public class Test extends FrameLayout {
+public class NotifView extends FrameLayout {
   private final static String DOTS_TAG_MARKER = "DOTS_TAG_MARKER_";
 
   private Unbinder unbinder;
@@ -45,7 +45,7 @@ public class Test extends FrameLayout {
   @BindView(R.id.bgView) View bgView;
   @BindView(R.id.dotsContainer) LinearLayout dotsContainer;
 
-  public Test(@NonNull Context context) {
+  public NotifView(@NonNull Context context) {
     super(context);
     this.context = context;
     initView();

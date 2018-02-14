@@ -1,10 +1,10 @@
 package com.tribe.app.presentation.view;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +13,6 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import java.util.List;
-import timber.log.Timber;
 
 /**
  * Created by madaaflak on 09/02/2018.
@@ -43,23 +42,20 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
   @Override public Object instantiateItem(ViewGroup container, int position) {
     View itemView = layoutInflater.inflate(R.layout.item_notification, container, false);
     container.addView(itemView);
-
-    return itemView;
-  }
-
-  @Override public boolean isViewFromObject(View view, Object object) {
-    return view == object;
-  }
-
-  @Override public void setPrimaryItem(ViewGroup container, int position, Object object) {
     NotificationModel model = list.get(position);
-    View mCurrentView = (View) object;
-    TextViewFont txtChallenge = mCurrentView.findViewById(R.id.title);
-    TextViewFont subtitle = mCurrentView.findViewById(R.id.subtitle);
-    TextViewFont content = mCurrentView.findViewById(R.id.content);
-    TextViewFont btn1Content = mCurrentView.findViewById(R.id.btn1Content);
-    ImageView backImage = mCurrentView.findViewById(R.id.backImage);
-    NewAvatarView avatarView = mCurrentView.findViewById(R.id.avatarView);
+
+    TextViewFont txtChallenge = itemView.findViewById(R.id.title);
+    TextViewFont subtitle = itemView.findViewById(R.id.subtitle);
+    TextViewFont content = itemView.findViewById(R.id.content);
+    TextViewFont btn1Content = itemView.findViewById(R.id.btn1Content);
+    ImageView backImage = itemView.findViewById(R.id.backImage);
+    NewAvatarView avatarView = itemView.findViewById(R.id.avatarView);
+
+    if (model.getDrawableBtn1() != null) {
+      Drawable img = context.getResources().getDrawable(model.getDrawableBtn1());
+      img.setBounds(0, 0, 60, 60);
+      btn1Content.setCompoundDrawables(img, null, null, null);
+    }
 
     if (model.getContent() != null) content.setText(model.getContent());
     if (model.getSubTitle() != null) subtitle.setText(model.getSubTitle());
@@ -69,11 +65,14 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
       backImage.setImageDrawable(ContextCompat.getDrawable(context, model.getBackground()));
     }
     if (model.getProfilePicture() != null) avatarView.load(model.getProfilePicture());
+    return itemView;
+  }
+
+  @Override public boolean isViewFromObject(View view, Object object) {
+    return view == object;
   }
 
   @Override public void destroyItem(ViewGroup container, int position, Object object) {
     container.removeView((View) object);
   }
-
-
 }

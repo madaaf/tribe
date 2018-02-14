@@ -8,6 +8,7 @@ public class NotificationModel {
   private String title;
   private String subTitle;
   private String btn1Content;
+  private Integer drawableBtn1;
   private String content;
   private String profilePicture;
   private Integer background;
@@ -19,6 +20,7 @@ public class NotificationModel {
     this.content = b.content;
     this.background = b.background;
     this.profilePicture = b.profilePicture;
+    this.drawableBtn1 = b.drawableBtn1;
   }
 
   public String getTitle() {
@@ -37,6 +39,10 @@ public class NotificationModel {
     return btn1Content;
   }
 
+  public Integer getDrawableBtn1() {
+    return drawableBtn1;
+  }
+
   public String getProfilePicture() {
     return profilePicture;
   }
@@ -51,7 +57,13 @@ public class NotificationModel {
     private String btn1Content;
     private String content;
     private Integer background;
+    private Integer drawableBtn1;
     private String profilePicture;
+
+    public Builder drawableBtn1(Integer f) {
+      this.drawableBtn1 = f;
+      return this;
+    }
 
     public Builder content(String f) {
       this.content = f;

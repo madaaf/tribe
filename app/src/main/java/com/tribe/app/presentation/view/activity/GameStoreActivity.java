@@ -31,9 +31,9 @@ import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
+import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
-import com.tribe.app.presentation.view.Test;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
@@ -120,14 +120,18 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   }
 
   private void mock() {
-    Test view = new Test(this);
+    NotifView view = new NotifView(this);
     List<NotificationModel> list = new ArrayList<>();
+
+    String content = getString(R.string.new_challenger_popup_friends, "mada , mike") + getString(
+        R.string.new_challenger_popup_others, 3);
 
     NotificationModel a =
         new NotificationModel.Builder().title(getString(R.string.new_challenger_popup_title))
             .subTitle(getString(R.string.new_challenger_popup_subtitle))
-            .content(getString(R.string.new_challenger_popup_friends))
+            .content(content)
             .btn1Content(getString(R.string.new_challenger_popup_action_add))
+            .drawableBtn1(R.drawable.picto_white_message)
             .background(R.drawable.bck_norif_challenge)
             .profilePicture(currentUser.getProfilePicture())
             .build();
