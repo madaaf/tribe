@@ -514,7 +514,8 @@ public class LiveView extends FrameLayout {
     }));
 
     persistentSubscriptions.add(
-        viewLiveAddFriend.onClick().subscribe(aVoid -> onOpenInvite.onNext(true)));
+        Observable.merge(viewRoom.onClickAddFriend(), viewLiveAddFriend.onClick())
+            .subscribe(aVoid -> onOpenInvite.onNext(true)));
   }
 
   private void openChat(boolean open) {

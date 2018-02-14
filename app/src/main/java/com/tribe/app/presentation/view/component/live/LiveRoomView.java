@@ -82,6 +82,7 @@ public class LiveRoomView extends FrameLayout {
   private boolean landscapeMode = false;
   private @LiveActivity.Source String source;
   private boolean isCallRouletteMode = false;
+  private LiveRowViewAddFriend liveRowViewAddFriend;
 
   private Map<Integer, Guideline> guidelineMap = new HashMap<>(), guidelineLandscapeMap =
       new HashMap<>();
@@ -125,6 +126,9 @@ public class LiveRoomView extends FrameLayout {
     mapViews = new HashMap<>();
     mapViews.put(currentUser.getId(), viewLiveLocal);
     onViews.onNext(mapViews);
+
+    liveRowViewAddFriend = new LiveRowViewAddFriend(getContext());
+    liveRowViewAddFriend.setId(View.generateViewId());
 
     //setScreenSize(0);
     initGuidelines();
@@ -295,6 +299,10 @@ public class LiveRoomView extends FrameLayout {
         .inject(this);
   }
 
+  private int getNBLiveViews() {
+    return mapViews.size();
+  }
+
   /**
    * ON ROLL THE DICE MESSAGE HAS RECEIVED. SOMEONE NEXT THE DICE
    * IF I ENTER NORMALY => THE DICE ENROLL & I WAITING TO SOME CALL ROULETTEUR
@@ -338,7 +346,7 @@ public class LiveRoomView extends FrameLayout {
   }
 
   public void removeView(String userId, LiveRowView view) {
-    int childCount = constraintLayout.getChildCount() - guidelineInUse.size();
+    int childCount = getNBLiveViews();
     manageGuidelines(childCount - 1);
 
     if (view != null) {
@@ -349,9 +357,7 @@ public class LiveRoomView extends FrameLayout {
     mapViews.remove(userId);
     onViews.onNext(mapViews);
 
-    if (source != null &&
-        source.equals(SOURCE_CALL_ROULETTE) &&
-        constraintLayout.getChildCount() < 2) {
+    if (source != null && source.equals(SOURCE_CALL_ROULETTE) && getNBLiveViews() < 2) {
       diceView.setVisibility(VISIBLE);
       diceView.startDiceAnimation();
     }
@@ -366,9 +372,14 @@ public class LiveRoomView extends FrameLayout {
 
     if (type == TYPE_GRID) {
       setBackgroundColor(Color.BLACK);
+      constraintLayout.removeView(liveRowViewAddFriend);
     } else if (type == TYPE_LIST) {
       translation = (getMeasuredHeight() >> 1) - screenUtils.dpToPx(60);
       setBackgroundColor(Color.TRANSPARENT);
+      MarginLayoutParams params =
+          new MarginLayoutParams(screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST),
+              screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
+      constraintLayout.addView(liveRowViewAddFriend, params);
     }
 
     diceView.translateDice(translation, true);
@@ -382,8 +393,8 @@ public class LiveRoomView extends FrameLayout {
     }
     mapViews.put(userId, view);
     onViews.onNext(mapViews);
-    int childCount = constraintLayout.getChildCount() - guidelineInUse.size();
-    manageGuidelines(childCount + 1);
+    int childCount = getNBLiveViews();
+    manageGuidelines(childCount);
     addViewToContainer(childCount, view);
     refactorConstraintsOnChilds();
   }
@@ -401,7 +412,7 @@ public class LiveRoomView extends FrameLayout {
       landscapeMode = false;
     }
 
-    int childCount = constraintLayout.getChildCount() - guidelineInUse.size();
+    int childCount = getNBLiveViews();
     manageGuidelines(childCount);
     refactorConstraintsOnChilds();
   }
@@ -475,680 +486,700 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void refactorConstraintsOnChilds() {
-    int childCount = constraintLayout.getChildCount() - guidelineInUse.size();
+    int childCount = constraintLayout.getChildCount();
+    int liveViewsCount = getNBLiveViews();
+    int lastStream = 0;
 
     ConstraintSet set = new ConstraintSet();
     set.clone(constraintLayout);
 
     LiveStreamView v = null;
+    int liveStreamCount = -1;
 
     for (int i = 0; i < childCount; i++) {
-
       if (constraintLayout.getChildAt(i) instanceof LiveStreamView) {
         v = (LiveStreamView) constraintLayout.getChildAt(i);
+        liveStreamCount++;
+      } else {
+        v = null;
       }
 
-      if (type == TYPE_GRID) {
-        set.clear(v.getId());
-        set.setElevation(v.getId(), 0);
-        v.setStyle(LiveStreamView.TYPE_GRID);
+      if (v != null) {
+        if (type == TYPE_GRID) {
+          set.clear(v.getId());
+          set.setElevation(v.getId(), 0);
+          v.setStyle(LiveStreamView.TYPE_GRID);
 
-        if (landscapeMode) {
-          switch (i) {
-            case 0:
-              if (childCount == 1) {
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-              } else if (childCount == 2) {
-                Guideline guideline = guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guideline.getId(), ConstraintSet.START);
-              } else if (childCount == 3 || childCount == 5) {
-                Guideline guideline =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guideline.getId(), ConstraintSet.START);
-              } else if (childCount == 4 || childCount == 7) {
-                Guideline guideline =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guideline.getId(), ConstraintSet.START);
-              } else if (childCount == 6) {
-                Guideline guidelineSecondThirdWidth =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineSecondThirdWidth.getId(),
-                    ConstraintSet.START);
-              } else if (childCount == 8) {
-                Guideline guidelineThirdQuarterWidth =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineThirdQuarterWidth.getId(),
-                    ConstraintSet.START);
-              }
+          if (landscapeMode) {
+            switch (liveStreamCount) {
+              case 0:
+                if (liveViewsCount == 1) {
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                } else if (liveViewsCount == 2) {
+                  Guideline guideline = guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guideline.getId(),
+                      ConstraintSet.START);
+                } else if (liveViewsCount == 3 || liveViewsCount == 5) {
+                  Guideline guideline =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guideline.getId(),
+                      ConstraintSet.START);
+                } else if (liveViewsCount == 4 || liveViewsCount == 7) {
+                  Guideline guideline =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guideline.getId(),
+                      ConstraintSet.START);
+                } else if (liveViewsCount == 6) {
+                  Guideline guidelineSecondThirdWidth =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineSecondThirdWidth.getId(),
+                      ConstraintSet.START);
+                } else if (liveViewsCount == 8) {
+                  Guideline guidelineThirdQuarterWidth =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineThirdQuarterWidth.getId(),
+                      ConstraintSet.START);
+                }
 
-              set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                  ConstraintSet.END);
-              set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                  ConstraintSet.BOTTOM);
-
-              break;
-
-            case 1:
-              if (childCount == 2) {
-                Guideline guideline = guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_WIDTH);
-
-                set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 3) {
-                Guideline guideline =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
-
-                set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 4) {
-                Guideline guideline =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
-
-                set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 5 || childCount == 6) {
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-                Guideline guideline =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
-                set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 7 || childCount == 8) {
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-                Guideline guideline =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
-                set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
-                    ConstraintSet.BOTTOM);
-              }
-
-              set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                  ConstraintSet.TOP);
-              set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                  ConstraintSet.START);
-
-              break;
-
-            case 2:
-              if (childCount == 3) {
-                Guideline guidelineFirstThird =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
-                Guideline guidelineSecondThird =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
-
-                set.connect(v.getId(), ConstraintSet.END, guidelineSecondThird.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineFirstThird.getId(),
-                    ConstraintSet.START);
-              } else if (childCount == 4) {
-                Guideline guidelineFirstQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
-                Guideline guidelineSecondQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
-
-                set.connect(v.getId(), ConstraintSet.END, guidelineSecondQuarter.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineFirstQuarter.getId(),
-                    ConstraintSet.START);
-              } else if (childCount == 5 || childCount == 6) {
-                Guideline guidelineFirstThird =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
-                Guideline guidelineSecondThird =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-
-                set.connect(v.getId(), ConstraintSet.END, guidelineSecondThird.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
-                    ConstraintSet.BOTTOM);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineFirstThird.getId(),
-                    ConstraintSet.START);
-              } else if (childCount == 7 || childCount == 8) {
-                Guideline guidelineFirstQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
-                Guideline guidelineSecondQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-
-                set.connect(v.getId(), ConstraintSet.END, guidelineSecondQuarter.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
-                    ConstraintSet.BOTTOM);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineFirstQuarter.getId(),
-                    ConstraintSet.START);
-              }
-
-              break;
-
-            case 3:
-              if (childCount == 4) {
-                Guideline guidelineSecondQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
-                Guideline guidelineThirdQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
-
-                set.connect(v.getId(), ConstraintSet.END, guidelineThirdQuarter.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineSecondQuarter.getId(),
-                    ConstraintSet.START);
-              } else if (childCount == 5 || childCount == 6) {
-                Guideline guideline =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-
-                set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-              } else if (childCount == 7 || childCount == 8) {
-                Guideline guideline =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-
-                set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-              }
-
-              break;
-
-            case 4:
-              if (childCount == 5 || childCount == 6) {
-                Guideline guidelineFirstThird =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
-                Guideline guidelineSecondThird =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-
-                set.connect(v.getId(), ConstraintSet.END, guidelineSecondThird.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineFirstThird.getId(),
-                    ConstraintSet.START);
-              } else if (childCount == 7 || childCount == 8) {
-                Guideline guidelineFirstQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
-                Guideline guidelineSecondQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-
-                set.connect(v.getId(), ConstraintSet.END, guidelineSecondQuarter.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineFirstQuarter.getId(),
-                    ConstraintSet.START);
-              }
-
-              break;
-
-            case 5:
-              if (childCount == 6) {
-                Guideline guidelineSecondThirdWidth =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineSecondThirdWidth.getId(),
-                    ConstraintSet.START);
                 set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
                     ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 7 || childCount == 8) {
-                Guideline guidelineThirdQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
-                Guideline guidelineSecondQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-
-                set.connect(v.getId(), ConstraintSet.END, guidelineThirdQuarter.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
-                    ConstraintSet.BOTTOM);
-                set.connect(v.getId(), ConstraintSet.START, guidelineSecondQuarter.getId(),
-                    ConstraintSet.START);
-              }
-
-              break;
-            case 6:
-              if (childCount == 7 || childCount == 8) {
-                Guideline guidelineThirdQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
-                Guideline guidelineSecondQuarter =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
-
-                set.connect(v.getId(), ConstraintSet.END, guidelineThirdQuarter.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
-                    ConstraintSet.TOP);
                 set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
                     ConstraintSet.BOTTOM);
-                set.connect(v.getId(), ConstraintSet.START, guidelineSecondQuarter.getId(),
-                    ConstraintSet.START);
-              }
 
-              break;
+                break;
 
-            case 7:
-              if (childCount == 8) {
-                Guideline guidelineThirdQuarterWidth =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
-                Guideline guidelineHalfHeight =
-                    guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+              case 1:
+                if (liveViewsCount == 2) {
+                  Guideline guideline = guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_WIDTH);
+
+                  set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 3) {
+                  Guideline guideline =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
+
+                  set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 4) {
+                  Guideline guideline =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
+
+                  set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 5 || liveViewsCount == 6) {
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+                  Guideline guideline =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+                  Guideline guideline =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                }
+
                 set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
                     ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineThirdQuarterWidth.getId(),
+                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
                     ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
-                    ConstraintSet.BOTTOM);
-              }
 
-              break;
+                break;
+
+              case 2:
+                if (liveViewsCount == 3) {
+                  Guideline guidelineFirstThird =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
+                  Guideline guidelineSecondThird =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
+
+                  set.connect(v.getId(), ConstraintSet.END, guidelineSecondThird.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineFirstThird.getId(),
+                      ConstraintSet.START);
+                } else if (liveViewsCount == 4) {
+                  Guideline guidelineFirstQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
+                  Guideline guidelineSecondQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
+
+                  set.connect(v.getId(), ConstraintSet.END, guidelineSecondQuarter.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineFirstQuarter.getId(),
+                      ConstraintSet.START);
+                } else if (liveViewsCount == 5 || liveViewsCount == 6) {
+                  Guideline guidelineFirstThird =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
+                  Guideline guidelineSecondThird =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+
+                  set.connect(v.getId(), ConstraintSet.END, guidelineSecondThird.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineFirstThird.getId(),
+                      ConstraintSet.START);
+                } else if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guidelineFirstQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
+                  Guideline guidelineSecondQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+
+                  set.connect(v.getId(), ConstraintSet.END, guidelineSecondQuarter.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineFirstQuarter.getId(),
+                      ConstraintSet.START);
+                }
+
+                break;
+
+              case 3:
+                if (liveViewsCount == 4) {
+                  Guideline guidelineSecondQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
+                  Guideline guidelineThirdQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
+
+                  set.connect(v.getId(), ConstraintSet.END, guidelineThirdQuarter.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineSecondQuarter.getId(),
+                      ConstraintSet.START);
+                } else if (liveViewsCount == 5 || liveViewsCount == 6) {
+                  Guideline guideline =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+
+                  set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                } else if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guideline =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+
+                  set.connect(v.getId(), ConstraintSet.END, guideline.getId(), ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                }
+
+                break;
+
+              case 4:
+                if (liveViewsCount == 5 || liveViewsCount == 6) {
+                  Guideline guidelineFirstThird =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_THIRD_WIDTH);
+                  Guideline guidelineSecondThird =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+
+                  set.connect(v.getId(), ConstraintSet.END, guidelineSecondThird.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineFirstThird.getId(),
+                      ConstraintSet.START);
+                } else if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guidelineFirstQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_FIRST_QUARTER_WIDTH);
+                  Guideline guidelineSecondQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+
+                  set.connect(v.getId(), ConstraintSet.END, guidelineSecondQuarter.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineFirstQuarter.getId(),
+                      ConstraintSet.START);
+                }
+
+                break;
+
+              case 5:
+                if (liveViewsCount == 6) {
+                  Guideline guidelineSecondThirdWidth =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_THIRD_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineSecondThirdWidth.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guidelineThirdQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
+                  Guideline guidelineSecondQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+
+                  set.connect(v.getId(), ConstraintSet.END, guidelineThirdQuarter.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineSecondQuarter.getId(),
+                      ConstraintSet.START);
+                }
+
+                break;
+              case 6:
+                if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guidelineThirdQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
+                  Guideline guidelineSecondQuarter =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_SECOND_QUARTER_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+
+                  set.connect(v.getId(), ConstraintSet.END, guidelineThirdQuarter.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineSecondQuarter.getId(),
+                      ConstraintSet.START);
+                }
+
+                break;
+
+              case 7:
+                if (liveViewsCount == 8) {
+                  Guideline guidelineThirdQuarterWidth =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_THIRD_QUARTER_WIDTH);
+                  Guideline guidelineHalfHeight =
+                      guidelineLandscapeMap.get(GUIDELINE_LANDSCAPE_HALF_HEIGHT);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineThirdQuarterWidth.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                }
+
+                break;
+            }
+          } else {
+            switch (liveStreamCount) {
+              case 0:
+                if (liveViewsCount == 1) {
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 2 || liveViewsCount == 3) {
+                  Guideline guideline = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
+                  set.connect(v.getId(), ConstraintSet.TOP, guideline.getId(), ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 4) {
+                  Guideline guidelineHalfHeight = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 5) {
+                  Guideline guidelineSecondThirdHeight =
+                      guidelineMap.get(GUIDELINE_SECOND_THIRD_HEIGHT);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineSecondThirdHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 6) {
+                  Guideline guidelineSecondThirdHeight =
+                      guidelineMap.get(GUIDELINE_SECOND_THIRD_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineSecondThirdHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 7) {
+                  Guideline guidelineThirdQuarterHeight =
+                      guidelineMap.get(GUIDELINE_THIRD_QUARTER_HEIGHT);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineThirdQuarterHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 8) {
+                  Guideline guidelineThirdQuarterHeight =
+                      guidelineMap.get(GUIDELINE_THIRD_QUARTER_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineThirdQuarterHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                }
+
+                break;
+              case 1:
+                if (liveViewsCount == 2) {
+                  Guideline guideline = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guideline.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 3 || liveViewsCount == 4) {
+                  Guideline guidelineHalfHeight = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 5 || liveViewsCount == 6) {
+                  Guideline guidelineFirstThirdHeight =
+                      guidelineMap.get(GUIDELINE_FIRST_THIRD_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineFirstThirdHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guidelineFirstQuarterHeight =
+                      guidelineMap.get(GUIDELINE_FIRST_QUARTER_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineFirstQuarterHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                }
+
+                break;
+
+              case 2:
+                if (liveViewsCount == 3 || liveViewsCount == 4) {
+                  Guideline guidelineHalfHeight = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 5 || liveViewsCount == 6) {
+                  Guideline guidelineFirstThirdHeight =
+                      guidelineMap.get(GUIDELINE_FIRST_THIRD_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineFirstThirdHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guidelineFirstQuarterHeight =
+                      guidelineMap.get(GUIDELINE_FIRST_QUARTER_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineFirstQuarterHeight.getId(),
+                      ConstraintSet.BOTTOM);
+                }
+
+                break;
+
+              case 3:
+                if (liveViewsCount == 4) {
+                  Guideline guidelineHalfHeight = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 5 || liveViewsCount == 6) {
+                  Guideline guidelineFirstThirdHeight =
+                      guidelineMap.get(GUIDELINE_FIRST_THIRD_HEIGHT);
+                  Guideline guidelineSecondThirdHeight =
+                      guidelineMap.get(GUIDELINE_SECOND_THIRD_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineFirstThirdHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineSecondThirdHeight.getId(),
+                      ConstraintSet.TOP);
+                } else if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guidelineFirstQuarterHeight =
+                      guidelineMap.get(GUIDELINE_FIRST_QUARTER_HEIGHT);
+                  Guideline guidelineSecondQuarterHeight =
+                      guidelineMap.get(GUIDELINE_SECOND_QUARTER_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineFirstQuarterHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineSecondQuarterHeight.getId(),
+                      ConstraintSet.TOP);
+                }
+
+                break;
+
+              case 4:
+                if (liveViewsCount == 5 || liveViewsCount == 6) {
+                  Guideline guidelineFirstThirdHeight =
+                      guidelineMap.get(GUIDELINE_FIRST_THIRD_HEIGHT);
+                  Guideline guidelineSecondThirdHeight =
+                      guidelineMap.get(GUIDELINE_SECOND_THIRD_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineFirstThirdHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineSecondThirdHeight.getId(),
+                      ConstraintSet.TOP);
+                } else if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guidelineFirstQuarterHeight =
+                      guidelineMap.get(GUIDELINE_FIRST_QUARTER_HEIGHT);
+                  Guideline guidelineSecondQuarterHeight =
+                      guidelineMap.get(GUIDELINE_SECOND_QUARTER_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineFirstQuarterHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineSecondQuarterHeight.getId(),
+                      ConstraintSet.TOP);
+                }
+
+                break;
+
+              case 5:
+                if (liveViewsCount == 6) {
+                  Guideline guidelineSecondThirdHeight =
+                      guidelineMap.get(GUIDELINE_SECOND_THIRD_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineSecondThirdHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                } else if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guidelineSecondQuarterHeight =
+                      guidelineMap.get(GUIDELINE_SECOND_QUARTER_HEIGHT);
+                  Guideline guidelineThirdQuarterHeight =
+                      guidelineMap.get(GUIDELINE_THIRD_QUARTER_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineSecondQuarterHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineThirdQuarterHeight.getId(),
+                      ConstraintSet.TOP);
+                }
+
+                break;
+
+              case 6:
+                if (liveViewsCount == 7 || liveViewsCount == 8) {
+                  Guideline guidelineSecondQuarterHeight =
+                      guidelineMap.get(GUIDELINE_SECOND_QUARTER_HEIGHT);
+                  Guideline guidelineThirdQuarterHeight =
+                      guidelineMap.get(GUIDELINE_THIRD_QUARTER_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineSecondQuarterHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineThirdQuarterHeight.getId(),
+                      ConstraintSet.TOP);
+                }
+
+                break;
+
+              case 7:
+                if (liveViewsCount == 8) {
+                  Guideline guidelineThirdQuarterHeight =
+                      guidelineMap.get(GUIDELINE_THIRD_QUARTER_HEIGHT);
+                  Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
+                  set.connect(v.getId(), ConstraintSet.TOP, guidelineThirdQuarterHeight.getId(),
+                      ConstraintSet.TOP);
+                  set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
+                      ConstraintSet.START);
+                  set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
+                      ConstraintSet.END);
+                  set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
+                      ConstraintSet.BOTTOM);
+                }
+
+                break;
+            }
           }
         } else {
+          set.clear(v.getId());
+
+          set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START,
+              screenUtils.dpToPx(20));
+          set.constrainWidth(v.getId(), screenUtils.dpToPx(150));
+          set.constrainHeight(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
+          set.setElevation(v.getId(), screenUtils.dpToPx(10));
+          v.setStyle(LiveStreamView.TYPE_LIST);
+
           switch (i) {
             case 0:
-              if (childCount == 1) {
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 2 || childCount == 3) {
-                Guideline guideline = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
-                set.connect(v.getId(), ConstraintSet.TOP, guideline.getId(), ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 4) {
-                Guideline guidelineHalfHeight = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 5) {
-                Guideline guidelineSecondThirdHeight =
-                    guidelineMap.get(GUIDELINE_SECOND_THIRD_HEIGHT);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineSecondThirdHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 6) {
-                Guideline guidelineSecondThirdHeight =
-                    guidelineMap.get(GUIDELINE_SECOND_THIRD_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineSecondThirdHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 7) {
-                Guideline guidelineThirdQuarterHeight =
-                    guidelineMap.get(GUIDELINE_THIRD_QUARTER_HEIGHT);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineThirdQuarterHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 8) {
-                Guideline guidelineThirdQuarterHeight =
-                    guidelineMap.get(GUIDELINE_THIRD_QUARTER_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineThirdQuarterHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              }
-
-              break;
-            case 1:
-              if (childCount == 2) {
-                Guideline guideline = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guideline.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 3 || childCount == 4) {
-                Guideline guidelineHalfHeight = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 5 || childCount == 6) {
-                Guideline guidelineFirstThirdHeight =
-                    guidelineMap.get(GUIDELINE_FIRST_THIRD_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineFirstThirdHeight.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 7 || childCount == 8) {
-                Guideline guidelineFirstQuarterHeight =
-                    guidelineMap.get(GUIDELINE_FIRST_QUARTER_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineFirstQuarterHeight.getId(),
-                    ConstraintSet.BOTTOM);
-              }
-
+              set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP,
+                  screenUtils.dpToPx(20));
               break;
 
-            case 2:
-              if (childCount == 3 || childCount == 4) {
-                Guideline guidelineHalfHeight = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineHalfHeight.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 5 || childCount == 6) {
-                Guideline guidelineFirstThirdHeight =
-                    guidelineMap.get(GUIDELINE_FIRST_THIRD_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineFirstThirdHeight.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 7 || childCount == 8) {
-                Guideline guidelineFirstQuarterHeight =
-                    guidelineMap.get(GUIDELINE_FIRST_QUARTER_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineFirstQuarterHeight.getId(),
-                    ConstraintSet.BOTTOM);
-              }
-
-              break;
-
-            case 3:
-              if (childCount == 4) {
-                Guideline guidelineHalfHeight = guidelineMap.get(GUIDELINE_HALF_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineHalfHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 5 || childCount == 6) {
-                Guideline guidelineFirstThirdHeight =
-                    guidelineMap.get(GUIDELINE_FIRST_THIRD_HEIGHT);
-                Guideline guidelineSecondThirdHeight =
-                    guidelineMap.get(GUIDELINE_SECOND_THIRD_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineFirstThirdHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineSecondThirdHeight.getId(),
-                    ConstraintSet.TOP);
-              } else if (childCount == 7 || childCount == 8) {
-                Guideline guidelineFirstQuarterHeight =
-                    guidelineMap.get(GUIDELINE_FIRST_QUARTER_HEIGHT);
-                Guideline guidelineSecondQuarterHeight =
-                    guidelineMap.get(GUIDELINE_SECOND_QUARTER_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineFirstQuarterHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineSecondQuarterHeight.getId(),
-                    ConstraintSet.TOP);
-              }
-
-              break;
-
-            case 4:
-              if (childCount == 5 || childCount == 6) {
-                Guideline guidelineFirstThirdHeight =
-                    guidelineMap.get(GUIDELINE_FIRST_THIRD_HEIGHT);
-                Guideline guidelineSecondThirdHeight =
-                    guidelineMap.get(GUIDELINE_SECOND_THIRD_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineFirstThirdHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineSecondThirdHeight.getId(),
-                    ConstraintSet.TOP);
-              } else if (childCount == 7 || childCount == 8) {
-                Guideline guidelineFirstQuarterHeight =
-                    guidelineMap.get(GUIDELINE_FIRST_QUARTER_HEIGHT);
-                Guideline guidelineSecondQuarterHeight =
-                    guidelineMap.get(GUIDELINE_SECOND_QUARTER_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineFirstQuarterHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineSecondQuarterHeight.getId(),
-                    ConstraintSet.TOP);
-              }
-
-              break;
-
-            case 5:
-              if (childCount == 6) {
-                Guideline guidelineSecondThirdHeight =
-                    guidelineMap.get(GUIDELINE_SECOND_THIRD_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineSecondThirdHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              } else if (childCount == 7 || childCount == 8) {
-                Guideline guidelineSecondQuarterHeight =
-                    guidelineMap.get(GUIDELINE_SECOND_QUARTER_HEIGHT);
-                Guideline guidelineThirdQuarterHeight =
-                    guidelineMap.get(GUIDELINE_THIRD_QUARTER_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineSecondQuarterHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineThirdQuarterHeight.getId(),
-                    ConstraintSet.TOP);
-              }
-
-              break;
-
-            case 6:
-              if (childCount == 7 || childCount == 8) {
-                Guideline guidelineSecondQuarterHeight =
-                    guidelineMap.get(GUIDELINE_SECOND_QUARTER_HEIGHT);
-                Guideline guidelineThirdQuarterHeight =
-                    guidelineMap.get(GUIDELINE_THIRD_QUARTER_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineSecondQuarterHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, guidelineHalfWidth.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.END, constraintLayout.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, guidelineThirdQuarterHeight.getId(),
-                    ConstraintSet.TOP);
-              }
-
-              break;
-
-            case 7:
-              if (childCount == 8) {
-                Guideline guidelineThirdQuarterHeight =
-                    guidelineMap.get(GUIDELINE_THIRD_QUARTER_HEIGHT);
-                Guideline guidelineHalfWidth = guidelineMap.get(GUIDELINE_HALF_WIDTH);
-                set.connect(v.getId(), ConstraintSet.TOP, guidelineThirdQuarterHeight.getId(),
-                    ConstraintSet.TOP);
-                set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                    ConstraintSet.START);
-                set.connect(v.getId(), ConstraintSet.END, guidelineHalfWidth.getId(),
-                    ConstraintSet.END);
-                set.connect(v.getId(), ConstraintSet.BOTTOM, constraintLayout.getId(),
-                    ConstraintSet.BOTTOM);
-              }
-
+            default:
+              View previous = constraintLayout.getChildAt(lastStream);
+              set.connect(v.getId(), ConstraintSet.TOP, previous.getId(), ConstraintSet.BOTTOM,
+                  screenUtils.dpToPx(20));
               break;
           }
-        }
-      } else {
-        set.clear(v.getId());
 
-        set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START,
-            screenUtils.dpToPx(20));
-        set.constrainWidth(v.getId(), screenUtils.dpToPx(150));
-        set.constrainHeight(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
-        set.setElevation(v.getId(), screenUtils.dpToPx(10));
-        v.setStyle(LiveStreamView.TYPE_LIST);
-
-        switch (i) {
-          case 0:
-            set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP,
-                screenUtils.dpToPx(20));
-            break;
-
-          default:
-            View previous = constraintLayout.getChildAt(i - 1);
-            set.connect(v.getId(), ConstraintSet.TOP, previous.getId(), ConstraintSet.BOTTOM,
-                screenUtils.dpToPx(20));
-            break;
+          lastStream = i;
         }
       }
+    }
+
+    if (type == TYPE_LIST) {
+      View previous = constraintLayout.getChildAt(lastStream);
+      set.connect(liveRowViewAddFriend.getId(), ConstraintSet.TOP, previous.getId(),
+          ConstraintSet.BOTTOM, screenUtils.dpToPx(20));
+      set.connect(liveRowViewAddFriend.getId(), ConstraintSet.START, constraintLayout.getId(),
+          ConstraintSet.START, screenUtils.dpToPx(20));
     }
 
     AutoTransition autoTransition = new AutoTransition();
@@ -1214,5 +1245,9 @@ public class LiveRoomView extends FrameLayout {
 
   public Observable<Map<String, LiveStreamView>> onLiveViewsChange() {
     return onViews;
+  }
+
+  public Observable<Void> onClickAddFriend() {
+    return liveRowViewAddFriend.onClick();
   }
 }
