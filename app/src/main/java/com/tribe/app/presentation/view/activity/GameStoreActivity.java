@@ -124,17 +124,14 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
   private void mock() {
     // SOEF
-
     ArrayList<String> usersIds = new ArrayList<>();
     usersIds.add("HkXTE2vIf");
     usersIds.add("HJ8pOE_i-");
     usersIds.add("ry8nB63dW");
 
     if (challengeNotificationsPref != null) {
-
+      userPresenter.getUsersInfoListById(usersIds);
     }
-
-    userPresenter.getUsersInfoListById(usersIds);
   }
 
   @Override protected void onStop() {
@@ -202,30 +199,30 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
       @Override public void onUserInfosList(List<User> users) {
         Timber.e("SOEF " + users.toString());
-
-        List<NotificationModel> list = new ArrayList<>();
-        NotifView view = new NotifView(getBaseContext());
-
-        for (User user : users) {
-          String title = getString(R.string.new_challenger_popup_subtitle, user.getDisplayName());
-
-          NotificationModel a =
-              new NotificationModel.Builder().title(getString(R.string.new_challenger_popup_title))
-                  .subTitle(title)
-                  .userId(user.getId())
-                  .content(getString(R.string.new_challenger_popup_friends_placeholder))
-                  .btn1Content(getString(R.string.new_challenger_popup_action_add))
-                  .drawableBtn1(R.drawable.picto_white_message)
-                  .background(R.drawable.bck_norif_challenge)
-                  .profilePicture(currentUser.getProfilePicture())
-                  .build();
-
-          list.add(a);
-        }
-
-        view.show(activity, list);
+        displayChallengeNotification(users);
       }
     };
+  }
+
+  private void displayChallengeNotification(List<User> users) {
+    List<NotificationModel> list = new ArrayList<>();
+    NotifView view = new NotifView(getBaseContext());
+    for (User user : users) {
+      String title = getString(R.string.new_challenger_popup_subtitle, user.getDisplayName());
+      NotificationModel a =
+          new NotificationModel.Builder().title(getString(R.string.new_challenger_popup_title))
+              .subTitle(title)
+              .userId(user.getId())
+              .content(getString(R.string.new_challenger_popup_friends_placeholder))
+              .btn1Content(getString(R.string.new_challenger_popup_action_add))
+              .drawableBtn1(R.drawable.picto_white_message)
+              .background(R.drawable.bck_norif_challenge)
+              .profilePicture(currentUser.getProfilePicture())
+              .build();
+
+      list.add(a);
+    }
+    view.show(activity, list);
   }
 
   @Override protected void initSubscriptions() {

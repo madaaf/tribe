@@ -85,50 +85,6 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
     initView(context);
   }
 
-  private void initView(Context context) {
-    this.context = context;
-    disposeView = false;
-    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    v = inflater.inflate(R.layout.activity_test, this, true);
-    unbinder = ButterKnife.bind(this);
-    textDismiss.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
-    gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
-
-    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
-        .inject(this);
-
-    newChatMVPViewAdapter = new NewChatMVPViewAdapter() {
-      @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
-        Timber.e("SHORTCUET SOEF CREATED " + shortcut.toString());
-      }
-    };
-  }
-
-  private void animateView() {
-    textDismiss.setVisibility(INVISIBLE);
-    dotsContainer.setVisibility(INVISIBLE);
-    pager.setTranslationY(-screenUtils.getHeightPx());
-    pager.setVisibility(VISIBLE);
-    bgView.setAlpha(0f);
-
-    bgView.animate().setDuration(NOTIF_ANIM_DURATION_ENTER).alpha(1f).withEndAction(new Runnable() {
-      @Override public void run() {
-        pager.animate()
-            .translationY(0f)
-            .setDuration(NOTIF_ANIM_DURATION_ENTER)
-            .setInterpolator(new OvershootInterpolator(1.15f))
-            .setListener(new AnimatorListenerAdapter() {
-              @Override public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                textDismiss.setVisibility(VISIBLE);
-                dotsContainer.setVisibility(VISIBLE);
-              }
-            })
-            .start();
-      }
-    }).start();
-  }
-
   public void show(Activity activity, List<NotificationModel> list) {
     this.data = list;
 
@@ -159,18 +115,57 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
     }));
   }
 
-  private void dispose() {
-    setVisibility(GONE);
-    Timber.e("SOEF DISPOSE");
-    clearAnimation();
-    decorView.removeView(v);
-    subscriptions.unsubscribe();
+  ////////////////////
+  // PRIVATE METHOD //
+  ////////////////////
+
+  private void initView(Context context) {
+    this.context = context;
+    disposeView = false;
+    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    v = inflater.inflate(R.layout.activity_test, this, true);
+    unbinder = ButterKnife.bind(this);
+    textDismiss.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
+    gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
+
+    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
+        .inject(this);
+
+    newChatMVPViewAdapter = new NewChatMVPViewAdapter() {
+      @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
+        Timber.d("onShortcutCreatedSuccess" + shortcut.getId());
+      }
+    };
   }
 
-  protected void hideView() {
+  private void animateView() {
+    textDismiss.setVisibility(INVISIBLE);
+    dotsContainer.setVisibility(INVISIBLE);
+    pager.setTranslationY(-screenUtils.getHeightPx());
+    pager.setVisibility(VISIBLE);
+    bgView.setAlpha(0f);
+
+    bgView.animate().setDuration(NOTIF_ANIM_DURATION_ENTER).alpha(1f).withEndAction(new Runnable() {
+      @Override public void run() {
+        pager.animate()
+            .translationY(0f)
+            .setDuration(NOTIF_ANIM_DURATION_ENTER)
+            .setInterpolator(new OvershootInterpolator(1.15f))
+            .setListener(new AnimatorListenerAdapter() {
+              @Override public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                textDismiss.setVisibility(VISIBLE);
+                dotsContainer.setVisibility(VISIBLE);
+              }
+            })
+            .start();
+      }
+    }).start();
+  }
+
+  private void hideView() {
     if (disposeView) return;
     disposeView = true;
-    Timber.e("SOEF HIDE VIEW");
     container.setOnTouchListener((v, event) -> true);
     Animation slideOutAnimation =
         AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_exit_animation);
@@ -196,6 +191,13 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
         .start();
   }
 
+  private void dispose() {
+    setVisibility(GONE);
+    clearAnimation();
+    decorView.removeView(v);
+    subscriptions.unsubscribe();
+  }
+
   private void initDots(int dotsNbr) {
     int sizeDot = context.getResources().getDimensionPixelSize(R.dimen.waiting_view_dot_size);
     for (int i = 0; i < dotsNbr; i++) {
@@ -218,15 +220,14 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
     }
   }
 
-  @Override protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
-    newChatPresenter.onViewAttached(newChatMVPViewAdapter);
-    //  presenter.onViewAttached(this);
-  }
-
   ///////////////////
   //  GESTURE IMP  //
   ///////////////////
+
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    newChatPresenter.onViewAttached(newChatMVPViewAdapter);
+  }
 
   public static class PageListener extends ViewPager.SimpleOnPageChangeListener {
     private LinearLayout dotsContainer;
@@ -243,11 +244,9 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
     public void onPageSelected(int position) {
       this.positionViewPager = position;
       positionViewPager = position;
-      Timber.i("page selected " + position);
       for (int i = 0; i < dotsContainer.getChildCount(); i++) {
         View v = dotsContainer.getChildAt(i);
         if (v.getTag().toString().startsWith(DOTS_TAG_MARKER + position)) {
-          Timber.i("page TAG  " + v.getTag().toString());
           v.setBackgroundColor(Color.RED);
           v.setBackgroundResource(R.drawable.shape_oval_white50);
           v.animate().scaleX(1.2f).scaleY(1.2f).setDuration(100).start();
