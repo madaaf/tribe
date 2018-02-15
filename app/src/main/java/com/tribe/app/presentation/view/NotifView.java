@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import butterknife.BindView;
@@ -28,9 +31,13 @@ import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
 import com.tribe.app.presentation.mvp.view.NewChatMVPView;
 import com.tribe.app.presentation.mvp.view.adapter.NewChatMVPViewAdapter;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -41,6 +48,8 @@ import timber.log.Timber;
 public class NotifView extends FrameLayout implements NewChatMVPView {
 
   private final static String DOTS_TAG_MARKER = "DOTS_TAG_MARKER_";
+
+  private final static int NOTIF_ANIM_DURATION_ENTER = 500;
 
   private static ViewGroup decorView;
   private static View v;
@@ -61,6 +70,7 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
   @BindView(R.id.dotsContainer) LinearLayout dotsContainer;
 
   @Inject NewChatPresenter newChatPresenter;
+  @Inject ScreenUtils screenUtils;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -77,7 +87,7 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
 
   private void initView(Context context) {
     this.context = context;
-    disposeView = true;
+    disposeView = false;
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     v = inflater.inflate(R.layout.activity_test, this, true);
     unbinder = ButterKnife.bind(this);
@@ -94,6 +104,31 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
     };
   }
 
+  private void animateView() {
+    textDismiss.setVisibility(INVISIBLE);
+    dotsContainer.setVisibility(INVISIBLE);
+    pager.setTranslationY(-screenUtils.getHeightPx());
+    pager.setVisibility(VISIBLE);
+    bgView.setAlpha(0f);
+
+    bgView.animate().setDuration(NOTIF_ANIM_DURATION_ENTER).alpha(1f).withEndAction(new Runnable() {
+      @Override public void run() {
+        pager.animate()
+            .translationY(0f)
+            .setDuration(NOTIF_ANIM_DURATION_ENTER)
+            .setInterpolator(new OvershootInterpolator(1.15f))
+            .setListener(new AnimatorListenerAdapter() {
+              @Override public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                textDismiss.setVisibility(VISIBLE);
+                dotsContainer.setVisibility(VISIBLE);
+              }
+            })
+            .start();
+      }
+    }).start();
+  }
+
   public void show(Activity activity, List<NotificationModel> list) {
     this.data = list;
 
@@ -103,27 +138,33 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
     PageListener pageListener = new PageListener(dotsContainer);
     pager.addOnPageChangeListener(pageListener);
     pager.setAdapter(adapter);
+    pager.setVisibility(GONE);
     decorView.addView(v);
+
+    animateView();
 
     subscriptions.add(adapter.onClickBtn1().subscribe(userId -> {
       if (pageListener.getPositionViewPage() < data.size()) {
         newChatPresenter.createShortcut(userId);
         pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
         if (pageListener.getPositionViewPage() == data.size() - 1) {
-          hideView();
+          subscriptions.add(Observable.timer((300), TimeUnit.MILLISECONDS)
+              .onBackpressureDrop()
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(aLong -> {
+                hideView();
+              }));
         }
       }
     }));
   }
 
   private void dispose() {
-    //setVisibility(GONE);
+    setVisibility(GONE);
     Timber.e("SOEF DISPOSE");
     clearAnimation();
     decorView.removeView(v);
     subscriptions.unsubscribe();
-    subscriptions = null;
-    super.onDetachedFromWindow();
   }
 
   protected void hideView() {
@@ -135,7 +176,7 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
         AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_exit_animation);
     setAnimation(slideOutAnimation);
     slideOutAnimation.setFillAfter(true);
-    slideOutAnimation.setDuration(700);
+    slideOutAnimation.setDuration(NOTIF_ANIM_DURATION_ENTER);
     slideOutAnimation.setAnimationListener(new AnimationListenerAdapter() {
       @Override public void onAnimationStart(Animation animation) {
         super.onAnimationStart(animation);
@@ -144,15 +185,12 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
         dispose();
-        //setVisibility(GONE);
-
       }
     });
 
     textDismiss.setVisibility(INVISIBLE);
-
     bgView.animate()
-        .setDuration(300)
+        .setDuration(NOTIF_ANIM_DURATION_ENTER)
         .alpha(0f)
         .withEndAction(() -> startAnimation(slideOutAnimation))
         .start();
