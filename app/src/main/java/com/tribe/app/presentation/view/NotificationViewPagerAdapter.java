@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -27,7 +27,6 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
   private LayoutInflater layoutInflater;
 
   private PublishSubject<String> onClickBtn1 = PublishSubject.create();
-
 
   public NotificationViewPagerAdapter(Context context, List<NotificationModel> dataObjectList) {
     this.context = context;
@@ -54,10 +53,9 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
     TextViewFont content = itemView.findViewById(R.id.content);
     TextViewFont btn1Content = itemView.findViewById(R.id.btn1Content);
     ImageView backImage = itemView.findViewById(R.id.backImage);
-    NewAvatarView avatarView = itemView.findViewById(R.id.avatarView);
+    AvatarView avatarView = itemView.findViewById(R.id.avatarView);
 
     btn1Content.setOnClickListener(v -> {
-      //newChatPresenter.createShortcut(model.getUserId());
       onClickBtn1.onNext(model.getUserId());
     });
 

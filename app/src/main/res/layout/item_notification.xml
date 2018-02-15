@@ -10,8 +10,8 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginBottom="20dp"
-      android:layout_marginLeft="30dp"
-      android:layout_marginRight="30dp"
+      android:layout_marginLeft="40dp"
+      android:layout_marginRight="40dp"
       android:layout_marginTop="100dp"
       android:orientation="vertical"
       >
@@ -25,7 +25,7 @@
       <ImageView
           android:id="@+id/backImage"
           android:layout_width="match_parent"
-          android:layout_height="180dp"
+          android:layout_height="wrap_content"
           android:scaleType="fitXY"
           android:src="@drawable/banner_fb_callroulette"
           />
@@ -34,7 +34,8 @@
           android:id="@+id/title"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_gravity="center"
+          android:layout_gravity="center_horizontal"
+          android:layout_marginTop="50dp"
           android:text="jdnzksjdzk"
           android:textSize="19sp"
           style="@style/Title.2.White"
@@ -44,11 +45,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="240dp"
         android:background="@android:color/white"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingBottom="10dp"
         android:paddingEnd="25dp"
         android:paddingStart="25dp"
         android:paddingTop="25dp"
@@ -69,7 +69,6 @@
           android:id="@+id/content"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_marginBottom="15dp"
           android:gravity="center"
           android:text="@string/unlock_roll_the_dice_description"
           android:textSize="13sp"
@@ -81,7 +80,7 @@
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/btn1Content"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="65dp"
         android:layout_gravity="center"
         android:background="@drawable/bck_btn1"
         android:drawablePadding="10dp"
@@ -96,12 +95,12 @@
 
   </LinearLayout>
 
-  <com.tribe.app.presentation.view.widget.avatar.NewAvatarView
+  <com.tribe.app.presentation.view.widget.avatar.AvatarView
       android:id="@+id/avatarView"
       android:layout_width="100dp"
       android:layout_height="100dp"
       android:layout_gravity="top|center"
-      android:layout_marginTop="235dp"
+      android:layout_marginTop="210dp"
       android:gravity="bottom"
       android:src="@color/blue.1"
       android:visibility="visible"
