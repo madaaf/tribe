@@ -120,6 +120,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
+    // displayFacebookNotification();
     displayChallengerNotifications();
   }
 
@@ -197,7 +198,6 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       }
 
       @Override public void onUserInfosList(List<User> users) {
-        Timber.e("SOEF " + users.toString());
         displayChallengeNotification(users);
       }
     };
@@ -216,13 +216,31 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
               .btn1Content(getString(R.string.new_challenger_popup_action_add))
               .drawableBtn1(R.drawable.picto_white_message)
               .background(R.drawable.bck_norif_challenge)
-              .profilePicture(currentUser.getProfilePicture())
+              .profilePicture(user.getProfilePicture())
               .build();
 
       list.add(a);
     }
     view.show(activity, list);
     challengeNotificationsPref.set("");
+  }
+
+  private void displayFacebookNotification() {
+    List<NotificationModel> list = new ArrayList<>();
+    NotifView view = new NotifView(getBaseContext());
+
+    NotificationModel a =
+        new NotificationModel.Builder().title(getString(R.string.invite_facebook_popup_title))
+            .subTitle(getString(R.string.invite_facebook_popup_subtitle))
+            .content(getString(R.string.invite_facebook_popup_description))
+            .btn1Content(getString(R.string.invite_facebook_popup_action_notify))
+            .drawableBtn1(R.drawable.picto_facebook)
+            .background(R.drawable.fb_back_notif)
+            .profilePicture(currentUser.getProfilePicture())
+            .build();
+
+    list.add(a);
+    view.show(activity, list);
   }
 
   @Override protected void initSubscriptions() {

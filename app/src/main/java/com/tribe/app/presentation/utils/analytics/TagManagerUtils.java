@@ -151,6 +151,15 @@ public class TagManagerUtils {
   public static final String FB_ACTION_SUCCESS = "succeeded";
   public static final String FB_ACTION = "action";
 
+
+  /**
+   * NOTIFICATION
+   */
+  public static final String POPUP = "PopUp";
+  public static final String ADDFRIEND = "add_friend";
+  public static final String CHALLENGER_ACTION_CANCELLED = "cancelled";
+  public static final String CHALLENGER_ACTION_ADDED = "added";
+
   /**
    * ERRORS
    */

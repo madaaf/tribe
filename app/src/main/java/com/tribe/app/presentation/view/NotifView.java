@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
@@ -30,6 +31,8 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
 import com.tribe.app.presentation.mvp.view.NewChatMVPView;
 import com.tribe.app.presentation.mvp.view.adapter.NewChatMVPViewAdapter;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -71,6 +74,7 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
 
   @Inject NewChatPresenter newChatPresenter;
   @Inject ScreenUtils screenUtils;
+  @Inject TagManager tagManager;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -87,7 +91,9 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
 
   public void show(Activity activity, List<NotificationModel> list) {
     this.data = list;
-
+    if (list.size() < 2) {
+      dotsContainer.setAlpha(0f);
+    }
     decorView = (ViewGroup) activity.getWindow().getDecorView();
     adapter = new NotificationViewPagerAdapter(context, list);
     initDots(list.size());
@@ -102,6 +108,7 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
     subscriptions.add(adapter.onClickBtn1().subscribe(userId -> {
       if (pageListener.getPositionViewPage() < data.size()) {
         newChatPresenter.createShortcut(userId);
+        tagAddedFriend();
         pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
         if (pageListener.getPositionViewPage() == data.size() - 1) {
           subscriptions.add(Observable.timer((300), TimeUnit.MILLISECONDS)
@@ -220,6 +227,18 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
     }
   }
 
+  private void tagAddedFriend() {
+    Bundle properties = new Bundle();
+    properties.putString(TagManagerUtils.ADDFRIEND, TagManagerUtils.CHALLENGER_ACTION_ADDED);
+    tagManager.trackEvent(TagManagerUtils.POPUP, properties);
+  }
+
+  private void tagCancelAction() {
+    Bundle properties = new Bundle();
+    properties.putString(TagManagerUtils.ADDFRIEND, TagManagerUtils.CHALLENGER_ACTION_CANCELLED);
+    tagManager.trackEvent(TagManagerUtils.POPUP, properties);
+  }
+
   ///////////////////
   //  GESTURE IMP  //
   ///////////////////
@@ -264,6 +283,7 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
 
     @Override public boolean onDown(MotionEvent e) {
       hideView();
+      tagCancelAction();
       return true;
     }
 
