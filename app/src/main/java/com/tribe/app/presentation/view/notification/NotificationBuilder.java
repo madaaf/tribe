@@ -36,7 +36,6 @@ import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -68,7 +67,6 @@ import javax.inject.Singleton;
   public void sendBundledNotification(RemoteMessage remoteMessage) {
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
-
     if (notificationPayload != null
         && notificationPayload.getUserId() != null
         && notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
@@ -79,15 +77,6 @@ import javax.inject.Singleton;
     }
 
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
-
-      // SOEF
-      ArrayList<String> usersIds = new ArrayList<>();
-      usersIds.add("HkXTE2vIf");
-      usersIds.add("HJ8pOE_i-");
-      usersIds.add("ry8nB63dW");
-
-      challengeNotificationsPref.set(usersIds.toString());
-
 
       if (notificationPayload.getBadge() > 0) {
         userCache.updateBadgeValue(notificationPayload.getBadge());
@@ -106,8 +95,8 @@ import javax.inject.Singleton;
 
       Notification notification = buildNotification(notificationPayload);
 
-      if (application.getAppState() != null &&
-          application.getAppState().equals(AppState.FOREGROUND)) {
+      if (application.getAppState() != null && application.getAppState()
+          .equals(AppState.FOREGROUND)) {
         Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
         intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD, notificationPayload);
         application.sendBroadcast(intentUnique);
@@ -187,8 +176,8 @@ import javax.inject.Singleton;
       if (notificationShortcut != null) {
         if (context instanceof ChatActivity) {
           List<User> memberInChat = null;
-          if (((ChatActivity) context).getShortcut() != null &&
-              ((ChatActivity) context).getShortcut().getMembers() != null) {
+          if (((ChatActivity) context).getShortcut() != null
+              && ((ChatActivity) context).getShortcut().getMembers() != null) {
             memberInChat = ((ChatActivity) context).getShortcut().getMembers();
           }
           boolean isSameChat =
@@ -199,8 +188,8 @@ import javax.inject.Singleton;
           }
         } else if (context instanceof LiveActivity) {
           List<User> memberInlive = null;
-          if (((LiveActivity) context).getShortcut() != null &&
-              ((LiveActivity) context).getShortcut().getMembers() != null) {
+          if (((LiveActivity) context).getShortcut() != null
+              && ((LiveActivity) context).getShortcut().getMembers() != null) {
             memberInlive = ((LiveActivity) context).getShortcut().getMembers();
           }
           boolean isSameChat =
@@ -244,8 +233,10 @@ import javax.inject.Singleton;
         } else {
           return getPendingIntentForLive(payload);
         }
-      } else if (pendingClass.equals(HomeActivity.class) &&
-          payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
+      } else if (pendingClass.equals(HomeActivity.class) && payload.getClickAction()
+          .equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
+        challengeNotificationsPref.set(
+            payload.getUserId() + "," + challengeNotificationsPref.get());
         return getPendingIntentForUserRegistered(payload);
       } else if (pendingClass.equals(ChatActivity.class)) {
         return getPendingIntentForChat(payload);
@@ -260,13 +251,13 @@ import javax.inject.Singleton;
   private Class getClassFromPayload(NotificationPayload payload) {
     if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
       return HomeActivity.class;
-    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
+    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
       return LiveActivity.class;
-    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_MESSAGE) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
+    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_MESSAGE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
       return ChatActivity.class;
     } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       return MissedCallDetailActivity.class;

@@ -41,6 +41,7 @@ import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -119,17 +120,15 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
-    mock();
+    displayChallengerNotifications();
   }
 
-  private void mock() {
-    // SOEF
-    ArrayList<String> usersIds = new ArrayList<>();
-    usersIds.add("HkXTE2vIf");
-    usersIds.add("HJ8pOE_i-");
-    usersIds.add("ry8nB63dW");
-
-    if (challengeNotificationsPref != null) {
+  private void displayChallengerNotifications() {
+    if (challengeNotificationsPref != null
+        && challengeNotificationsPref.get() != null
+        && !challengeNotificationsPref.get().isEmpty()) {
+      ArrayList usersIds =
+          new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
     }
   }
@@ -223,6 +222,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       list.add(a);
     }
     view.show(activity, list);
+    challengeNotificationsPref.set("");
   }
 
   @Override protected void initSubscriptions() {

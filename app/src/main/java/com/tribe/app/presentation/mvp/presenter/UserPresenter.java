@@ -29,7 +29,8 @@ public class UserPresenter implements Presenter {
   private GetUserInfoListSubscriber getUserInfoListSubscriber;
 
   @Inject public UserPresenter(Context context, GetDiskUserInfos diskUserInfos,
-      GetCloudUserInfos cloudUserInfos, SynchroContactList synchroContactList,  GetCloudUserInfosList cloudUserInfosList) {
+      GetCloudUserInfos cloudUserInfos, SynchroContactList synchroContactList,
+      GetCloudUserInfosList cloudUserInfosList) {
 
     this.diskUserInfosUsecase = diskUserInfos;
     this.cloudUserInfos = cloudUserInfos;
@@ -74,12 +75,9 @@ public class UserPresenter implements Presenter {
 
     @Override public void onNext(List<User> users) {
       super.onNext(users);
-      Timber.e("ok soef "+ users.toString());
       if (userMVPView != null) userMVPView.onUserInfosList(users);
-
     }
   }
-
 
   private final class UserInfosSubscriber extends DefaultSubscriber<User> {
     @Override public void onError(Throwable e) {
