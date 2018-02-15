@@ -8,6 +8,8 @@ import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
 import com.tribe.app.presentation.utils.mediapicker.MediaHiddenActivity;
+import com.tribe.app.presentation.view.NotifView;
+import com.tribe.app.presentation.view.NotificationViewPagerAdapter;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;

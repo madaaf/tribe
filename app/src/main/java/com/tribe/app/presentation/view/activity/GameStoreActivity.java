@@ -212,6 +212,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
           NotificationModel a =
               new NotificationModel.Builder().title(getString(R.string.new_challenger_popup_title))
                   .subTitle(title)
+                  .userId(user.getId())
                   .content(getString(R.string.new_challenger_popup_friends_placeholder))
                   .btn1Content(getString(R.string.new_challenger_popup_action_add))
                   .drawableBtn1(R.drawable.picto_white_message)

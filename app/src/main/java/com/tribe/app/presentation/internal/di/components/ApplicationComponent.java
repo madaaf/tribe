@@ -78,6 +78,7 @@ import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
+import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.GameLeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -189,6 +190,8 @@ public interface ApplicationComponent {
   void inject(BirdRush birdRush);
 
   void inject(PlayerView playerView);
+
+  void inject(NotifView notifView);
 
   void inject(TribeFirebaseInstanceIDService instanceIDService);
 

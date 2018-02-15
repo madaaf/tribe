@@ -12,6 +12,7 @@ public class NotificationModel {
   private String content;
   private String profilePicture;
   private Integer background;
+  private String userId;
 
   private NotificationModel(Builder b) {
     this.title = b.title;
@@ -21,6 +22,11 @@ public class NotificationModel {
     this.background = b.background;
     this.profilePicture = b.profilePicture;
     this.drawableBtn1 = b.drawableBtn1;
+    this.userId = b.userId;
+  }
+
+  public String getUserId() {
+    return userId;
   }
 
   public String getTitle() {
@@ -59,6 +65,13 @@ public class NotificationModel {
     private Integer background;
     private Integer drawableBtn1;
     private String profilePicture;
+    private String userId;
+
+
+    public Builder userId(String f) {
+      this.userId = f;
+      return this;
+    }
 
     public Builder drawableBtn1(Integer f) {
       this.drawableBtn1 = f;
