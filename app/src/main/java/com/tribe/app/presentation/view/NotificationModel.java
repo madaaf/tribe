@@ -11,6 +11,7 @@ public class NotificationModel {
   private Integer drawableBtn1;
   private String content;
   private String profilePicture;
+  private Integer logoPicture;
   private Integer background;
   private String userId;
 
@@ -23,6 +24,11 @@ public class NotificationModel {
     this.profilePicture = b.profilePicture;
     this.drawableBtn1 = b.drawableBtn1;
     this.userId = b.userId;
+    this.logoPicture = b.logoPicture;
+  }
+
+  public Integer getLogoPicture() {
+    return logoPicture;
   }
 
   public String getUserId() {
@@ -63,10 +69,16 @@ public class NotificationModel {
     private String btn1Content;
     private String content;
     private Integer background;
+    private Integer logoPicture;
     private Integer drawableBtn1;
     private String profilePicture;
     private String userId;
 
+
+    public Builder logoPicture(Integer f) {
+      this.logoPicture = f;
+      return this;
+    }
 
     public Builder userId(String f) {
       this.userId = f;

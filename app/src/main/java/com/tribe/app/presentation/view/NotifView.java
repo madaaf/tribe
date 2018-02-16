@@ -60,11 +60,12 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
 
   private Unbinder unbinder;
   private Context context;
-  protected LayoutInflater inflater;
+  private LayoutInflater inflater;
   private NotificationViewPagerAdapter adapter;
   private GestureDetectorCompat gestureScanner;
   private List<NotificationModel> data;
   private NewChatMVPViewAdapter newChatMVPViewAdapter;
+  private PageListener pageListener;
 
   @BindView(R.id.pager) ViewPager pager;
   @BindView(R.id.txtDismiss) TextViewFont textDismiss;
@@ -97,7 +98,7 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
     decorView = (ViewGroup) activity.getWindow().getDecorView();
     adapter = new NotificationViewPagerAdapter(context, list);
     initDots(list.size());
-    PageListener pageListener = new PageListener(dotsContainer);
+    pageListener = new PageListener(dotsContainer);
     pager.addOnPageChangeListener(pageListener);
     pager.setAdapter(adapter);
     pager.setVisibility(GONE);
@@ -201,7 +202,7 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
   private void dispose() {
     setVisibility(GONE);
     clearAnimation();
-    decorView.removeView(v);
+    // decorView.removeView(v);
     subscriptions.unsubscribe();
   }
 
@@ -282,8 +283,13 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
   private class TapGestureListener implements GestureDetector.OnGestureListener {
 
     @Override public boolean onDown(MotionEvent e) {
-      hideView();
-      tagCancelAction();
+      if (pager.getCurrentItem() == data.size() - 1) {
+        hideView();
+        tagCancelAction();
+      } else {
+        pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
+      }
+
       return true;
     }
 

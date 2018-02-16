@@ -73,6 +73,10 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
       backImage.setImageDrawable(ContextCompat.getDrawable(context, model.getBackground()));
     }
     if (model.getProfilePicture() != null) avatarView.load(model.getProfilePicture());
+    if (model.getLogoPicture() != null) {
+      avatarView.setBackground(content.getResources().getDrawable(model.getLogoPicture()));
+    }
+
     return itemView;
   }
 
