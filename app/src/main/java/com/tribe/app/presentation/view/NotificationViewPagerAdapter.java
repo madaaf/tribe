@@ -26,7 +26,7 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
   private Context context;
   private LayoutInflater layoutInflater;
 
-  private PublishSubject<String> onClickBtn1 = PublishSubject.create();
+  private PublishSubject<NotificationModel> onClickBtn1 = PublishSubject.create();
 
   public NotificationViewPagerAdapter(Context context, List<NotificationModel> dataObjectList) {
     this.context = context;
@@ -56,7 +56,7 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
     AvatarView avatarView = itemView.findViewById(R.id.avatarView);
 
     btn1Content.setOnClickListener(v -> {
-      onClickBtn1.onNext(model.getUserId());
+      onClickBtn1.onNext(model);
     });
 
     if (model.getDrawableBtn1() != null) {
@@ -88,7 +88,7 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
     container.removeView((View) object);
   }
 
-  public Observable<String> onClickBtn1() {
+  public Observable<NotificationModel> onClickBtn1() {
     return onClickBtn1;
   }
 }

@@ -106,11 +106,19 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
 
     animateView();
 
-    subscriptions.add(adapter.onClickBtn1().subscribe(userId -> {
+    subscriptions.add(adapter.onClickBtn1().subscribe(notificationModel -> {
+      switch (notificationModel.getType()) {
+        case NotificationModel.POPUP_CHALLENGER:
+          Timber.e("SOEF CHALLENGE CLICK");
+          newChatPresenter.createShortcut(notificationModel.getUserId());
+          tagAddedFriend();
+          break;
+        case NotificationModel.POPUP_FACEBOOK:
+          Timber.e("SOEF FB CLICK");
+          break;
+      }
+
       if (pageListener.getPositionViewPage() < data.size()) {
-        newChatPresenter.createShortcut(userId);
-        tagAddedFriend();
-        pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
         if (pageListener.getPositionViewPage() == data.size() - 1) {
           subscriptions.add(Observable.timer((300), TimeUnit.MILLISECONDS)
               .onBackpressureDrop()
@@ -119,6 +127,7 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
                 hideView();
               }));
         }
+        pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
       }
     }));
   }

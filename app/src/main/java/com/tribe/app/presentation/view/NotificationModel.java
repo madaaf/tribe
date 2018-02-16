@@ -1,10 +1,21 @@
 package com.tribe.app.presentation.view;
 
+import android.support.annotation.StringDef;
+
 /**
  * Created by madaaflak on 09/02/2018.
  */
 
 public class NotificationModel {
+
+  public static final String POPUP_CHALLENGER = "POPUP_CHALLENGER";
+  public static final String POPUP_FACEBOOK = "POPUP_FACEBOOK";
+
+  @StringDef({
+      POPUP_CHALLENGER, POPUP_FACEBOOK
+  }) public @interface NotificationType {
+  }
+
   private String title;
   private String subTitle;
   private String btn1Content;
@@ -14,6 +25,7 @@ public class NotificationModel {
   private Integer logoPicture;
   private Integer background;
   private String userId;
+  private @NotificationType String type;
 
   private NotificationModel(Builder b) {
     this.title = b.title;
@@ -25,6 +37,11 @@ public class NotificationModel {
     this.drawableBtn1 = b.drawableBtn1;
     this.userId = b.userId;
     this.logoPicture = b.logoPicture;
+    this.type = b.type;
+  }
+
+  public String getType() {
+    return type;
   }
 
   public Integer getLogoPicture() {
@@ -73,7 +90,12 @@ public class NotificationModel {
     private Integer drawableBtn1;
     private String profilePicture;
     private String userId;
+    private @NotificationType String type;
 
+    public Builder type(@NotificationType String f) {
+      this.type = f;
+      return this;
+    }
 
     public Builder logoPicture(Integer f) {
       this.logoPicture = f;
