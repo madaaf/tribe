@@ -26,16 +26,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
-import com.tribe.app.presentation.mvp.view.NewChatMVPView;
 import com.tribe.app.presentation.mvp.view.adapter.NewChatMVPViewAdapter;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -48,7 +50,7 @@ import timber.log.Timber;
  * Created by madaaflak on 09/02/2018.
  */
 
-public class NotifView extends FrameLayout implements NewChatMVPView {
+public class NotifView extends FrameLayout {
 
   private final static String DOTS_TAG_MARKER = "DOTS_TAG_MARKER_";
 
@@ -76,6 +78,7 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
   @Inject NewChatPresenter newChatPresenter;
   @Inject ScreenUtils screenUtils;
   @Inject TagManager tagManager;
+  @Inject RxFacebook rxFacebook;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -109,12 +112,11 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
     subscriptions.add(adapter.onClickBtn1().subscribe(notificationModel -> {
       switch (notificationModel.getType()) {
         case NotificationModel.POPUP_CHALLENGER:
-          Timber.e("SOEF CHALLENGE CLICK");
           newChatPresenter.createShortcut(notificationModel.getUserId());
           tagAddedFriend();
           break;
         case NotificationModel.POPUP_FACEBOOK:
-          Timber.e("SOEF FB CLICK");
+          newChatPresenter.loadFBContactsInvite();
           break;
       }
 
@@ -151,6 +153,15 @@ public class NotifView extends FrameLayout implements NewChatMVPView {
     newChatMVPViewAdapter = new NewChatMVPViewAdapter() {
       @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
         Timber.d("onShortcutCreatedSuccess" + shortcut.getId());
+      }
+
+      @Override public void onLoadFBContactsInvite(List<Contact> contactList) {
+        Timber.d("onShortcutCreatedSuccess" + contactList.size());
+        ArrayList<String> array = new ArrayList<>();
+        for (Contact c : contactList) {
+          array.add(c.getId());
+        }
+        subscriptions.add(rxFacebook.requestGameInvite(array).subscribe());
       }
     };
   }

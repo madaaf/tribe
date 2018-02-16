@@ -53,9 +53,9 @@ import rx.subjects.PublishSubject;
     return loginSubject;
   }
 
-  public Observable<String> requestGameInvite(String recipientId) {
+  public Observable<String> requestGameInvite(ArrayList<String> recipientIdList) {
     gameRequestSubject = PublishSubject.create();
-    startGameInviteHiddenActivity(FACEBOOK_GAME_REQUEST, recipientId);
+    startGameInviteHiddenActivity(FACEBOOK_GAME_REQUEST, recipientIdList);
     return gameRequestSubject;
   }
 
@@ -206,11 +206,11 @@ import rx.subjects.PublishSubject;
     context.startActivity(intent);
   }
 
-  private void startGameInviteHiddenActivity(int typeRequest, String recipientId) {
+  private void startGameInviteHiddenActivity(int typeRequest, ArrayList<String> recipientIdList) {
     Intent intent = new Intent(context, FacebookHiddenActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.putExtra(FacebookHiddenActivity.FACEBOOK_REQUEST, typeRequest);
-    intent.putExtra(FacebookHiddenActivity.FACEBOOK_RECIPIENT_ID, recipientId);
+    intent.putStringArrayListExtra(FacebookHiddenActivity.FACEBOOK_RECIPIENT_ID, recipientIdList);
     context.startActivity(intent);
   }
 

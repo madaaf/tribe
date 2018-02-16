@@ -94,7 +94,7 @@ public class FacebookHiddenActivity extends BaseActivity {
           });
 
       List<String> recipients = new ArrayList<>();
-      recipients.add(intent.getStringExtra(FACEBOOK_RECIPIENT_ID));
+      recipients.addAll(getIntent().getExtras().getStringArrayList(FACEBOOK_RECIPIENT_ID));
 
       GameRequestContent content =
           new GameRequestContent.Builder().setMessage("...").setRecipients(recipients).build();
