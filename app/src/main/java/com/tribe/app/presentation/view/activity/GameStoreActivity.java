@@ -122,19 +122,18 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
-    // displayFacebookNotification();
+    //displayFacebookNotification(); // SOEF TO REMOVE
     displayChallengerNotifications();
   }
 
   private void displayChallengerNotifications() {
-
+    /*
     // TODO MOCK  SOEF TO REMOVE
-
     ArrayList<String> ok = new ArrayList<>();
     ok.add("HkXTE2vIf");
     ok.add("HJ8pOE_i-");
     ok.add("ry8nB63dW");
-    userPresenter.getUsersInfoListById(ok);
+    userPresenter.getUsersInfoListById(ok);*/
 
     if (challengeNotificationsPref != null
         && challengeNotificationsPref.get() != null
@@ -233,8 +232,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
       list.add(a);
     }
-    if (true) {
-      // if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) { // TODO SOEF
+    //if (true) {
+    if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) { // TODO SOEF
       list.add(getFbNotificationModel());
     }
     view.show(activity, list);
