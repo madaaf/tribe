@@ -123,7 +123,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     startService(WSService.
         getCallingIntent(this, null, null));
     //displayFacebookNotification(); // SOEF TO REMOVE
-    displayChallengerNotifications();
+    // displayChallengerNotifications();
   }
 
   private void displayChallengerNotifications() {
