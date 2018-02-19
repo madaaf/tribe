@@ -243,12 +243,16 @@ public class ChatCacheImpl implements ChatCache {
   }
 
   @Override public Observable<List<MessageRealm>> getMessages(String[] userIds) {
+    if (userIds == null || userIds.length == 0) return Observable.just(new ArrayList<>());
+
     String localIds = "";
+
     if (userIds[0].equals(Shortcut.SUPPORT)) {
       localIds = Shortcut.SUPPORT;
     } else {
       localIds = JsonUtils.arrayToJson(userIds);
     }
+
     RealmResults<MessageRealm> ok =
         realm.where(MessageRealm.class).equalTo("localId", localIds).findAll();
 
