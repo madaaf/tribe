@@ -369,7 +369,12 @@ public class GameTriviaView extends GameViewWithRanking {
           String answer = message.getString(ANSWER_KEY);
           if (answer.equals(ANSWER_GUESS)) {
             nbAnswers++;
-            if (message.getString(NAME_KEY).equals(currentQuestion.getAnswer())) {
+
+            String currentAnswer = "";
+
+            if (currentQuestion != null) currentAnswer = currentQuestion.getAnswer();
+
+            if (message.getString(NAME_KEY).equals(currentAnswer)) {
               if (!weHaveAWinner) {
                 weHaveAWinner = true;
                 endQuestion(true, tribeSession);
