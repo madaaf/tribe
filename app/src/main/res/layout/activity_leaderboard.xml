@@ -74,6 +74,8 @@
               android:layout_width="@dimen/avatar_size_medium"
               android:layout_height="@dimen/avatar_size_medium"
               android:layout_centerHorizontal="true"
+              android:scaleX="0"
+              android:scaleY="0"
               />
 
           <com.tribe.app.presentation.view.widget.avatar.EmojiGameView
@@ -84,6 +86,8 @@
               android:layout_alignEnd="@id/viewAvatar"
               android:layout_marginBottom="-5dp"
               android:layout_marginEnd="-5dp"
+              android:scaleX="0"
+              android:scaleY="0"
               style="@style/Headline.Black.2"
               />
 
@@ -94,6 +98,8 @@
               android:layout_below="@id/viewAvatar"
               android:layout_centerHorizontal="true"
               android:layout_marginTop="@dimen/horizontal_margin_smaller"
+              android:scaleX="0"
+              android:scaleY="0"
               style="@style/BiggerTitle.2.Black"
               />
 
@@ -104,6 +110,8 @@
               android:layout_below="@id/txtName"
               android:layout_centerHorizontal="true"
               android:layout_marginTop="4dp"
+              android:scaleX="0"
+              android:scaleY="0"
               style="@style/BiggerBody.One.Black40"
               />
         </RelativeLayout>
