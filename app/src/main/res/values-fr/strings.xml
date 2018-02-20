@@ -464,6 +464,9 @@
 	<string name="profile_contact_us">Contactez-nous :envelope:</string>
 	<string name="profile_logout">Deconnexion :skull:</string>
 	<string name="profile_calls_length_prefix">Vous avez passé</string>
+	<string name="profile_remove_title">Supprimer votre compte :skull: :skull:</string>
+	<string name="profile_remove_message">Êtes-vous sûr(e) de vouloir supprimer votre compte ?</string>
+	<string name="profile_remove_confirm">Valider</string>
 	<string name="profile_calls_length_suffix">\nà appeler vos amis sur tribe !</string>
 	<string name="profile_calls_length_mins">%1$d mins</string>
 	<string name="profile_calls_length_min">%1$d min</string>
@@ -1003,4 +1006,8 @@
 	<string name="invite_facebook_popup_subtitle">More friends in\nonly one tap!</string>
 	<string name="invite_facebook_popup_description">More friends to battle live, more messages and a wider leaderboard!</string>
 	<string name="invite_facebook_popup_action_notify">NOTIFY THEM</string>
+	
+	<!-- Scores Milestones -->
+	<string name="score_milestone_initial">Ready</string>
+	<string name="score_milestone_scores">Perfect!,Crazy!,Lit!,Awesome!,Damn!,Wow!,Sick!,Neat!</string>
 </resources>

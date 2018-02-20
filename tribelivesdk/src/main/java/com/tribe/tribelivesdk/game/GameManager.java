@@ -1,6 +1,7 @@
 package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.Pair;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -37,7 +38,8 @@ import rx.subscriptions.CompositeSubscription;
 
   public static final String[] playableGames = {
       Game.GAME_SLICE_FRUIT, Game.GAME_DRAW, Game.GAME_SPEED_RACER, Game.GAME_CHALLENGE,
-      Game.GAME_INVADERS, Game.GAME_POST_IT, Game.GAME_TRIVIA, Game.GAME_BATTLE_MUSIC, Game.GAME_BIRD_RUSH
+      Game.GAME_INVADERS, Game.GAME_POST_IT, Game.GAME_TRIVIA, Game.GAME_BATTLE_MUSIC,
+      Game.GAME_BIRD_RUSH, Game.GAME_INVADERS_CORONA
   };
 
   // VARIABLES
@@ -88,10 +90,11 @@ import rx.subscriptions.CompositeSubscription;
 
     if (games != null) {
       for (Game game : games) {
-        if (Arrays.asList(playableGames).contains(game.getId()) &&
-            (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N ||
-                !game.isWeb())) {
+        if (Arrays.asList(playableGames).contains(game.getId()) && (android.os.Build.VERSION.SDK_INT
+            >= android.os.Build.VERSION_CODES.N || !game.isWeb())) {
           gameList.add(game);
+        } else {
+          Log.d("NICO", "excluded game = " + game.getId());
         }
       }
     }
@@ -103,7 +106,6 @@ import rx.subscriptions.CompositeSubscription;
       return ((Integer) o2.getPlays_count()).compareTo(o1.getPlays_count());
     });
   }
-
 
   public void initSubscriptions() {
     for (Game game : gameList) {
