@@ -520,7 +520,9 @@ public class LiveControlsView extends FrameLayout {
         })
         .flatMap(game -> DialogFactory.showBottomSheetForGame(getContext(), game),
             ((game, labelType) -> {
-              if (labelType.getTypeDef().equals(LabelType.GAME_PLAY_ANOTHER)) {
+              if (labelType.getTypeDef().equals(LabelType.GAME_RESTART)) {
+                onRestartGame.onNext(game);
+              } else if (labelType.getTypeDef().equals(LabelType.GAME_PLAY_ANOTHER)) {
                 onStopGame.onNext(game);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_LEADERBOARD)) {
                 onLeaderboard.onNext(game);
