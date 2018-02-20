@@ -461,7 +461,7 @@ public class LiveView extends FrameLayout {
     viewGameManager.initInvitedGuestObservable(tribeInvitedMap.getObservable());
     viewGameManager.initLiveViewsObservable(viewRoom.onLiveViewsChange());
 
-    gameManager.initUIControlsStartGame(viewControlsLive.onStartGame());
+    gameManager.initUIControlsStartGame(viewControlsLive.onStartGame().doOnError(throwable -> throwable.printStackTrace()));
     gameManager.initUIControlsRestartGame(
         Observable.merge(viewControlsLive.onRestartGame(), viewGameManager.onRestartGame()));
     gameManager.initUIControlsStopGame(

@@ -271,7 +271,9 @@ public class GameTriviaView extends GameViewWithRanking {
       questions = TriviaCategoryEnum.getRandomQuestions(NB_QUESTIONS, categoryEnum);
       nextQuestion();
     } else {
-      Toast.makeText(context, R.string.error_technical, Toast.LENGTH_SHORT).show();
+      Toast.makeText(context,
+          EmojiParser.demojizedText(context.getString(R.string.error_technical)),
+          Toast.LENGTH_SHORT).show();
     }
   }
 
