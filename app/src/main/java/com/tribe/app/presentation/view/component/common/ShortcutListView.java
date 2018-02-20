@@ -176,12 +176,6 @@ public class ShortcutListView extends RelativeLayout {
 
     if (recipient != null && recipient.isSupport()) {
       viewPictoLive.setVisibility(GONE);
-      vh.itemView.setOnTouchListener((view, motionEvent) -> {
-        Timber.e("OK");
-        return true;
-      });
-
-      vh.itemView.setOnClickListener(view -> Timber.e("OK"));
     } else {
       viewPictoLive.setVisibility(VISIBLE);
     }

@@ -20,6 +20,7 @@ import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -263,9 +264,15 @@ public class GameTriviaView extends GameViewWithRanking {
         break;
     }
 
-    sendAction(ACTION_PICK_CATEGORY, getCategorySelectionPayload(categoryEnum));
-    questions = TriviaCategoryEnum.getRandomQuestions(NB_QUESTIONS, categoryEnum);
-    nextQuestion();
+    if (categoryEnum != null &&
+        categoryEnum.getQuestions() != null &&
+        categoryEnum.getQuestions().size() > 0) {
+      sendAction(ACTION_PICK_CATEGORY, getCategorySelectionPayload(categoryEnum));
+      questions = TriviaCategoryEnum.getRandomQuestions(NB_QUESTIONS, categoryEnum);
+      nextQuestion();
+    } else {
+      Toast.makeText(context, R.string.error_technical, Toast.LENGTH_SHORT).show();
+    }
   }
 
   private void nextQuestion() {
