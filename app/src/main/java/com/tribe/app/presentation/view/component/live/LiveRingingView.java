@@ -140,15 +140,7 @@ public class LiveRingingView extends RelativeLayout {
               FrameLayout.LayoutParams.WRAP_CONTENT);
       params.gravity = Gravity.CENTER;
       imageView.setImageResource(drawableId);
-
-      if (drawableId == R.drawable.picto_camera_0) {
-        imageView.setAlpha(ALPHA_CAM_WHITE_INIT);
-      } else {
-        imageView.setAlpha(0f);
-      }
-
-      imageView.setScaleX(SCALE_INIT);
-      imageView.setScaleY(SCALE_INIT);
+      imageView.setRotation(-360);
 
       views.add(imageView);
       layoutCameras.addView(imageView, params);
@@ -160,9 +152,11 @@ public class LiveRingingView extends RelativeLayout {
         .setDuration(DURATION_INIT)
         .alpha(1)
         .setInterpolator(new DecelerateInterpolator());
+
     if (views == null) {
       initViews();
     }
+
     for (int i = views.size() - 1; i >= 0; i--) {
       View view = views.get(i);
       view.animate()
@@ -273,15 +267,15 @@ public class LiveRingingView extends RelativeLayout {
 
   public void startRinging() {
     setVisibility(View.VISIBLE);
-    subscriptions.add(Observable.interval(2, TimeUnit.SECONDS)
+    subscriptions.add(Observable.interval(0,2, TimeUnit.SECONDS)
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .onBackpressureDrop()
         .subscribe(aLong -> {
           if (aLong % 2 == 0) {
-            activateRinging();
-          } else {
             disableRinging();
+          } else {
+            activateRinging();
           }
         }));
   }

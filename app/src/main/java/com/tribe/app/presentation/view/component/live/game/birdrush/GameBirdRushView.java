@@ -29,7 +29,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 /**
  * Created by Mada
@@ -244,10 +243,10 @@ public class GameBirdRushView extends GameViewWithEngine {
     subscriptions.add(mapObservable.subscribe(peerMap -> {
       int index = 0;
       for (String key : peerMap.keySet()) {
-        TribeGuest guest = peerMap.get(key);
-        BirdRush bird = new BirdRush(index, guest, screenUtils, currentUser.getId());
         if (!viewBackground.haveBird(peerMap.get(key))) {
-          viewBackground.addBird(bird, index);
+          TribeGuest guest = peerMap.get(key);
+          BirdRush bird = new BirdRush(index, guest, screenUtils, currentUser.getId());
+          viewBackground.addBird(bird);
           index++;
         }
       }

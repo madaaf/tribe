@@ -3,6 +3,10 @@ package com.tribe.app.presentation.view.component.live.game.birdrush;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -21,6 +25,9 @@ public class BirdRush {
   private int x, y, index;
   private float speedX, speedY;
   private int rotation = 0;
+  private int txtWidth = 0;
+  private Paint paint;
+  private RectF rectF;
 
   private Integer[] birdsImage = new Integer[] {
       R.drawable.game_bird1, R.drawable.game_bird2, R.drawable.game_bird3, R.drawable.game_bird4,
@@ -31,6 +38,10 @@ public class BirdRush {
       R.drawable.game_bird_bck, R.drawable.game_bird_bck_2, R.drawable.game_bird_bck_3,
       R.drawable.game_bird_bck_4, R.drawable.game_bird_bck_5, R.drawable.game_bird_bck_6,
       R.drawable.game_bird_bck_7, R.drawable.game_bird_bck_8,
+  };
+
+  private String[] colors = new String[] {
+      "#FBCF26", "#FA7FD9", "#BE9EFF", "#C7FFEA", "#F85C02", "#B6BFBF", "#F61D47", "#FFFFFF"
   };
 
   public BirdRush(int index, TribeGuest guest, ScreenUtils screenUtils, String currentUserId) {
@@ -111,5 +122,37 @@ public class BirdRush {
 
   public Bitmap getBackgroundBitmap() {
     return bitmapBck;
+  }
+
+  public Paint getPaint() {
+    return paint;
+  }
+
+  public Paint putPaint() {
+    paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    paint.setColor(Color.parseColor(colors[index]));
+    paint.setTextSize(25);
+    paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+    Rect bounds = new Rect();
+    String text = this.getName();
+    paint.getTextBounds(text, 0, text.length(), bounds);
+    this.txtWidth = bounds.width();
+    return paint;
+  }
+
+  public int getColor() {
+    return Color.parseColor(colors[index]);
+  }
+
+  public int getTxtWidth() {
+    return txtWidth;
+  }
+
+  public RectF getRectF() {
+    return rectF;
+  }
+
+  public void setRectF(RectF rectF) {
+    this.rectF = rectF;
   }
 }

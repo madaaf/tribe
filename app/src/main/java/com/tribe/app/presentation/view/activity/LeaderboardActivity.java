@@ -9,6 +9,9 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.animation.OvershootInterpolator;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,7 +35,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
@@ -46,6 +52,8 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
   }
 
   public static final String GAME_ID = "game_id";
+  private static final int DURATION = 500;
+  private static final float OVERSHOOT = 1.25f;
 
   @Inject User currentUser;
 
@@ -157,6 +165,14 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
       float range = (float) -appBarLayout.getTotalScrollRange();
       layoutUser.setAlpha(1.0f - (float) verticalOffset / range);
     });
+
+    recyclerView.getViewTreeObserver()
+        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+          @Override public void onGlobalLayout() {
+            recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            recyclerView.setTranslationY(recyclerView.getMeasuredHeight());
+          }
+        });
   }
 
   private void initDependencyInjector() {
@@ -192,6 +208,56 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
     }
 
     gamePresenter.loadUserLeaderboard(user.getId());
+
+    subscriptions.add(Observable.timer(DURATION, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          showAvatar();
+          showRecyclerView();
+
+          subscriptions.add(Observable.timer((int) (DURATION * 0.3f), TimeUnit.MILLISECONDS)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(aLong2 -> showDisplayName()));
+
+          subscriptions.add(Observable.timer((int) (DURATION * 0.6f), TimeUnit.MILLISECONDS)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(aLong2 -> showUsername()));
+        }));
+  }
+
+  private void showAvatar() {
+    scaleUp(viewAvatar);
+    scaleUp(txtEmojiGame);
+  }
+
+  private void showUsername() {
+    scaleUp(txtUsername);
+  }
+
+  private void showDisplayName() {
+    scaleUp(txtName);
+  }
+
+  private void showRecyclerView() {
+    recyclerView.animate()
+        .translationY(0)
+        .setDuration(DURATION)
+        .setInterpolator(new OvershootInterpolator(0.5f))
+        .start();
+  }
+
+  private void scaleUp(View view) {
+    if (view.getVisibility() != View.VISIBLE) return;
+
+    view.setPivotX(view.getMeasuredWidth() >> 1);
+    view.setPivotY(view.getMeasuredHeight() >> 1);
+
+    view.animate()
+        .scaleY(1)
+        .scaleX(1)
+        .setDuration(DURATION)
+        .setInterpolator(new OvershootInterpolator(OVERSHOOT))
+        .start();
   }
 
   /**

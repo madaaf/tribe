@@ -376,13 +376,22 @@ public final class DialogFactory {
   private static List<LabelType> generateLabelsForGame(Context context, Game game) {
     List<LabelType> gameLabels = new ArrayList<>();
 
+    if (game.getId().equals(Game.GAME_DRAW) ||
+        game.getId().equals(Game.GAME_POST_IT) ||
+        game.getId().equals(Game.CHALLENGE)) {
+      gameLabels.add(
+          new LabelType(context.getString(R.string.game_menu_restart), LabelType.GAME_RESTART));
+    }
+
     gameLabels.add(new LabelType(context.getString(R.string.game_menu_play_another_game),
         LabelType.GAME_PLAY_ANOTHER));
 
-    LabelType labelType = new LabelType(context.getString(R.string.game_menu_leaderboard),
-        LabelType.GAME_LEADERBOARD);
-    labelType.setColor(ContextCompat.getColor(context, R.color.blue_voice_bck));
-    gameLabels.add(labelType);
+    if (game.hasScores()) {
+      LabelType labelType = new LabelType(context.getString(R.string.game_menu_leaderboard),
+          LabelType.GAME_LEADERBOARD);
+      labelType.setColor(ContextCompat.getColor(context, R.color.blue_voice_bck));
+      gameLabels.add(labelType);
+    }
 
     gameLabels.add(
         new LabelType(context.getString(R.string.game_post_it_menu_stop), LabelType.GAME_STOP));

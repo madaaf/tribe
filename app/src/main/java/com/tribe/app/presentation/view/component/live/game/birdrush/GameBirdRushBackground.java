@@ -9,6 +9,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -56,7 +58,7 @@ public class GameBirdRushBackground extends View {
   private Double delay = null;
   private int idexPopedObstacle = 0;
   private int index = 1;
-
+  private Typeface font;
   private BirdRushObstacle obstaclePoped = null;
   private Map<BirdRushObstacle, Rect> obstaclePopedList = new HashMap<>();
   private List<BirdRushObstacle> obstaclesList = new ArrayList<>();
@@ -111,6 +113,7 @@ public class GameBirdRushBackground extends View {
 
     xCenterBirdPos = (screenWidth / 2) - (birdBtm.getWidth() / 2) - screenUtils.dpToPx(10);
     yCenterBirdPos = (screenHeight / 2) - (birdBtm.getHeight() / 2) - screenUtils.dpToPx(10);
+    font = Typeface.createFromAsset(getContext().getAssets(), "ProximaNovaSoft-Bold.ttf");
   }
 
   @Override protected void onDraw(Canvas canvas) {
@@ -125,6 +128,7 @@ public class GameBirdRushBackground extends View {
 
   private void handleBirdWallCollision() {
     BirdRush myBird = getMyBird();
+    if (myBird == null) return;
     boolean crossWall =
         (myBird.getY() < 0) || (myBird.getY() + birdBtm.getHeight()) > screenUtils.getHeightPx();
     if (entranceBirdFinish && crossWall && !gameOver) {
@@ -240,29 +244,22 @@ public class GameBirdRushBackground extends View {
       rect.set(birdRush.getX(), birdRush.getY(), birdRush.getX() + birdBtm.getWidth(),
           birdRush.getY() + birdBtm.getHeight());
 
-      // draw text to the Canvas center
-      Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-      paint.setColor(Color.WHITE);
-      paint.setTextSize(25);
-      paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-      Rect bounds = new Rect();
-      String text = birdRush.getName();
-      paint.getTextBounds(text, 0, text.length(), bounds);
+      int nameYPos = birdRush.getY() + birdBtm.getHeight();
+      int nameXPos = birdRush.getX() + (birdBtm.getWidth() / 2) - (birdRush.getTxtWidth() / 2);
 
-      int txtWidth = bounds.width();
+      int margin = screenUtils.dpToPx(0);
 
-      int nameYPos = birdRush.getY() + birdBtm.getHeight() + screenUtils.dpToPx(0);
-      int nameXPos = birdRush.getX() + (birdBtm.getWidth() / 2) - (txtWidth / 2);
+      dstnameLabelBird.set(nameXPos - margin, nameYPos, nameXPos + birdRush.getTxtWidth() + margin,
+          nameYPos + screenUtils.dpToPx(15));
 
-      int margin = screenUtils.dpToPx(15);
-
-      dstnameLabelBird.set(nameXPos - margin, nameYPos, nameXPos + txtWidth + margin,
-          nameYPos + screenUtils.dpToPx(30));
-
+      Paint paint = birdRush.getPaint();
+      paint.setColor(birdRush.getColor());
       if (birdRush.isLost() || !birdRush.getGuestId().equals(currentUser.getId())) {
         myBirdPaint.setAlpha(255 / 2);
+        paint.setAlpha(255 / 2);
       } else {
         myBirdPaint.setAlpha(255);
+        paint.setAlpha(255);
       }
 
       if (birdRush.isLost()) {
@@ -278,9 +275,21 @@ public class GameBirdRushBackground extends View {
           killBirdTimer = null;
         }
       } else {
+        RectF rectF = birdRush.getRectF();
+        rectF.set(dstnameLabelBird.left - screenUtils.dpToPx(10),
+            dstnameLabelBird.top + screenUtils.dpToPx(6),
+            dstnameLabelBird.right + screenUtils.dpToPx(10),
+            dstnameLabelBird.bottom + screenUtils.dpToPx(6));
+
         canvas.drawBitmap(birdRush.getBitmap(), null, rect, myBirdPaint);
-        canvas.drawBitmap(birdRush.getBackgroundBitmap(), null, dstnameLabelBird, myBirdPaint);
-        canvas.drawText(text, nameXPos, nameYPos + screenUtils.dpToPx(18), paint);
+        // canvas.drawBitmap(birdRush.getBackgroundBitmap(), null, dstnameLabelBird, myBirdPaint);
+        canvas.drawRoundRect(rectF, // rect
+            20, // rx
+            20, // ry
+            paint // Paint
+        );
+        paint.setColor(Color.WHITE);
+        canvas.drawText(birdRush.getName(), nameXPos, nameYPos + screenUtils.dpToPx(16), paint);
       }
     }
   }
@@ -357,9 +366,9 @@ public class GameBirdRushBackground extends View {
           b.setY(yCenterBirdPos);
         }
 
-        if (b.getX() >= xCenterBirdPos &&
-            b.getY() >= yCenterBirdPos &&
-            finalI1 == birdList.size() - 1) {
+        if (b.getX() >= xCenterBirdPos
+            && b.getY() >= yCenterBirdPos
+            && finalI1 == birdList.size() - 1) {
 
           subscriptions.add(Observable.timer((1000), TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())
@@ -396,7 +405,7 @@ public class GameBirdRushBackground extends View {
       BirdRush bird = entry.getKey();
       bird.setX(xCenterBirdPos);
 
-      bird.setSpeedY(bird.getSpeedY() + gravity);
+      bird.setSpeedY(bird.getSpeedY() + gravity); // TODO SOEF
       bird.setY((int) (bird.getY() + bird.getSpeedY()));
 
       if (bird.getY() > screenUtils.getHeightPx()) {
@@ -560,7 +569,7 @@ public class GameBirdRushBackground extends View {
     birdRush.setY(yPos);
   }
 
-  public void addBird(BirdRush birdRush, int index) {
+  public void addBird(BirdRush birdRush) {
     birdRush.setBitmap(getResources());
     initBirdPosition(birdRush);
 
@@ -568,8 +577,12 @@ public class GameBirdRushBackground extends View {
         birdRush.getY() + birdBtm.getHeight());
 
     dstnameLabelBird = new Rect(birdRush.getX(), birdRush.getY() + birdBtm.getHeight(),
-        birdRush.getX() + birdBtm.getWidth(), birdRush.getY() + birdBtm.getHeight());
+        birdRush.getX() + birdBtm.getWidth(), birdRush.getY() + birdBtm.getHeight()); // TODO SOEF
 
+    Paint p = birdRush.putPaint();
+    p.setTypeface(font);
+
+    birdRush.setRectF(new RectF());
     birdList.put(birdRush, dstBird);
   }
 

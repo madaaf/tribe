@@ -33,6 +33,7 @@ import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
+import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -151,10 +152,18 @@ public class GameManagerView extends FrameLayout {
     subscriptions.add(Observable.merge(gameManager.onCurrentUserNewSessionGame(),
         gameManager.onRemoteUserNewSessionGame()
             .map(tribeSessionGamePair -> tribeSessionGamePair.second))
-        .filter(game -> game.hasView())
-        .subscribe(game -> {
-
-        }));
+        .doOnNext(game1 -> {
+          if (currentGameView != null) {
+            if (currentGameView instanceof GameDrawView) {
+              GameDrawView gameDrawView = (GameDrawView) currentGameView;
+              gameDrawView.setNextGame();
+            } else if (currentGameView instanceof GameChallengesView) {
+              GameChallengesView gameChallengesView = (GameChallengesView) currentGameView;
+              gameChallengesView.setNextGame();
+            }
+          }
+        })
+        .subscribe());
 
     subscriptions.add(Observable.merge(gameManager.onCurrentUserStopGame(),
         gameManager.onRemoteUserStopGame().map(tribeSessionGamePair -> tribeSessionGamePair.second))

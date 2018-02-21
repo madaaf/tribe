@@ -94,12 +94,12 @@
 
       <ImageView
           android:id="@+id/imgLogo"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+          android:layout_width="150dp"
+          android:layout_height="20dp"
           android:layout_marginEnd="@dimen/horizontal_margin"
           android:layout_marginStart="@dimen/horizontal_margin"
           android:layout_marginTop="12.5dp"
-          android:scaleType="centerInside"
+          android:scaleType="fitStart"
           app:layout_constraintStart_toEndOf="@id/imgIcon"
           app:layout_constraintTop_toTopOf="@id/imgIcon"
           />
