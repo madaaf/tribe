@@ -274,6 +274,12 @@ dependencies {
   compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
     transitive = true;
   }
+
+  // Corona
+  compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+  provided files('libs/Corona.jar')
+  provided files('libs/JNLua.jar')
+  provided files('libs/network.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'

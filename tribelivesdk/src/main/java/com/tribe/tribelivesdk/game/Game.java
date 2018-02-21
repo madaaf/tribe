@@ -69,7 +69,8 @@ public class Game {
   protected String __typename;
   protected String url;
   protected boolean localFrameDifferent = false, hasView = false, isOverLive = false, isWeb = false,
-      isUserAction = false, needsLandscape = false, isNotOverLiveWithScores = false;
+      isCorona = false, isUserAction = false, needsLandscape = false, isNotOverLiveWithScores =
+      false;
   protected List<TribeGuest> peerList;
   protected List<String> dataList;
   protected String previousGuestId = null;
@@ -95,9 +96,10 @@ public class Game {
     this.hasView = !id.equals(GAME_POST_IT);
     this.isOverLive =
         id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT) || id
-            .equals(GAME_BIRD_RUSH);
+            .equals(GAME_BIRD_RUSH) || id.equals(GAME_INVADERS_CORONA);
     this.isNotOverLiveWithScores = id.equals(GAME_TRIVIA) || id.equals(GAME_BATTLE_MUSIC);
     this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
+    this.isCorona = id.equals(GAME_INVADERS_CORONA);
     this.needsLandscape = id.equals(GAME_SLICE_FRUIT);
     this.peerList = new ArrayList<>();
     this.dataList = new ArrayList<>();
@@ -126,6 +128,10 @@ public class Game {
 
   public boolean isWeb() {
     return isWeb;
+  }
+
+  public boolean isCorona() {
+    return isCorona;
   }
 
   public boolean needsLandscape() {

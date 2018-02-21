@@ -28,6 +28,7 @@ import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattl
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
@@ -249,7 +250,6 @@ public class GameManagerView extends FrameLayout {
       GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
       subscriptionsGame.add(gameAlienAttacksView.onAddScore().subscribe(onAddScore));
       gameView = gameAlienAttacksView;
-   
     } else if (game.getId().equals(Game.GAME_TRIVIA)) {
       GameTriviaView gameTriviaView = new GameTriviaView(getContext());
       subscriptionsGame.add(gameTriviaView.onAddScore().subscribe(onAddScore));
@@ -268,7 +268,6 @@ public class GameManagerView extends FrameLayout {
           .doOnNext(aVoid -> onStopGame.onNext(currentGame))
           .subscribe(onPlayOtherGame));
       gameView = gameBattleMusicView;
-   
     } else if (game.getId().equals(Game.GAME_BIRD_RUSH)) {
       GameBirdRushView gameBirdRushView = new GameBirdRushView(getContext());
       subscriptionsGame.add(gameBirdRushView.onAddScore().subscribe(onAddScore));
@@ -277,6 +276,10 @@ public class GameManagerView extends FrameLayout {
       GameWebView gameWebView = new GameWebView(getContext());
       subscriptionsGame.add(gameWebView.onAddScore().subscribe(onAddScore));
       gameView = gameWebView;
+    } else if (game.isCorona()) {
+      GameCoronaView gameCoronaView = new GameCoronaView(getContext());
+      subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
+      gameView = gameCoronaView;
     }
 
     gameView.setWebRTCRoom(webRTCRoom);
