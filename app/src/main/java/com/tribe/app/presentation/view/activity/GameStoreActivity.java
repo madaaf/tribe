@@ -224,8 +224,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
       list.add(a);
     }
-    if (true) {
-      //if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) { // TODO SOEF
+
+    if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
       list.add(getFbNotificationModel());
     }
     view.show(activity, list);
