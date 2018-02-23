@@ -119,6 +119,10 @@ public class NotifView extends FrameLayout {
         case NotificationModel.POPUP_FACEBOOK:
           newChatPresenter.loadFBContactsInvite();
           break;
+        case NotificationModel.POPUP_UPLOAD_PICTURE:
+          //newChatPresenter.loadFBContactsInvite();
+          Timber.e("SOEF ");
+          break;
       }
 
       if (pageListener.getPositionViewPage() < data.size()) {

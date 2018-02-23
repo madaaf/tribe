@@ -124,6 +124,15 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
+    //   displayUplaodAvatarNotification();
+  }
+
+  private void displayUplaodAvatarNotification() {
+    List<NotificationModel> list = new ArrayList<>();
+    NotifView view = new NotifView(getBaseContext());
+    NotificationModel a = NotificationUtils.getAvatarNotificationModel(this);
+    list.add(a);
+    view.show(this, list);
   }
 
   private void displayChallengerNotifications() {
@@ -200,37 +209,10 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       }
 
       @Override public void onUserInfosList(List<User> users) {
-        displayChallengeNotification(users);
+        NotificationUtils.displayChallengeNotification(users, activity, stateManager,
+            challengeNotificationsPref);
       }
     };
-  }
-
-  private void displayChallengeNotification(List<User> users) {
-    List<NotificationModel> list = new ArrayList<>();
-    NotifView view = new NotifView(getBaseContext());
-    for (User user : users) {
-      String title = getString(R.string.new_challenger_popup_subtitle, user.getDisplayName());
-      NotificationModel a =
-          new NotificationModel.Builder().title(getString(R.string.new_challenger_popup_title))
-              .subTitle(title)
-              .userId(user.getId())
-              .content(getString(R.string.new_challenger_popup_friends_placeholder))
-              .btn1Content(getString(R.string.new_challenger_popup_action_add))
-              .drawableBtn1(R.drawable.picto_white_message)
-              .background(R.drawable.bck_norif_challenge)
-              .profilePicture(user.getProfilePicture())
-              .type(NotificationModel.POPUP_CHALLENGER)
-              .build();
-
-      list.add(a);
-    }
-
-    if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
-      list.add(NotificationUtils.getFbNotificationModel(this));
-    }
-    view.show(activity, list);
-    challengeNotificationsPref.set("");
-    stateManager.addTutorialKey(StateManager.FIRST_CHALLENGE_POPUP);
   }
 
   @Override protected void initSubscriptions() {

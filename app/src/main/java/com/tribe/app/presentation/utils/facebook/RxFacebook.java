@@ -161,7 +161,7 @@ import timber.log.Timber;
         Timber.d("Facebook cookies :" + cookies);
 
         webView.loadUrl("javascript:(function(){"
-            + "l=document.getElementById('u_0_0');"
+            + "l=document.getElementById('u_0_1');"
             + "e=document.createEvent('HTMLEvents');"
             + "e.initEvent('click',true,true);"
             + "l.dispatchEvent(e);"

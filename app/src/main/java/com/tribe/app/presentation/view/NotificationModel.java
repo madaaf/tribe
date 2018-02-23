@@ -10,9 +10,10 @@ public class NotificationModel {
 
   public static final String POPUP_CHALLENGER = "POPUP_CHALLENGER";
   public static final String POPUP_FACEBOOK = "POPUP_FACEBOOK";
+  public static final String POPUP_UPLOAD_PICTURE = "POPUP_UPLOAD_PICTURE";
 
   @StringDef({
-      POPUP_CHALLENGER, POPUP_FACEBOOK
+      POPUP_CHALLENGER, POPUP_FACEBOOK,POPUP_UPLOAD_PICTURE
   }) public @interface NotificationType {
   }
 

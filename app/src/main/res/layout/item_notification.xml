@@ -36,7 +36,7 @@
           android:layout_height="wrap_content"
           android:layout_gravity="center_horizontal"
           android:layout_marginTop="50dp"
-          android:text="jdnzksjdzk"
+          android:text=""
           android:textSize="19sp"
           style="@style/Title.2.White"
           />
@@ -77,21 +77,36 @@
 
     </LinearLayout>
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/btn1Content"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:layout_gravity="center"
-        android:background="@drawable/bck_btn1"
-        android:drawablePadding="10dp"
-        android:drawableStart="@drawable/picto_info"
-        android:gravity="center"
-        android:paddingEnd="34dp"
-        android:paddingStart="34dp"
-        android:text="@string/unlock_roll_the_dice_disclaimer"
-        android:textSize="15sp"
-        style="@style/Title.2.White"
-        />
+        android:layout_height="wrap_content"
+        >
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:id="@+id/btn1Content"
+          android:layout_width="match_parent"
+          android:layout_height="65dp"
+          android:layout_gravity="center"
+          android:background="@drawable/bck_btn1"
+          android:drawablePadding="10dp"
+          android:gravity="center"
+          android:paddingEnd="34dp"
+          android:paddingStart="34dp"
+          android:text="@string/unlock_roll_the_dice_disclaimer"
+          android:textSize="15sp"
+          style="@style/Title.2.White"
+          />
+
+      <ImageView
+          android:id="@+id/btn1Drawable"
+          android:layout_width="wrap_content"
+          android:layout_height="65dp"
+          android:layout_gravity="center_vertical"
+          android:layout_margin="0dp"
+          android:src="@drawable/picto_info"
+          />
+    </FrameLayout>
+
 
   </LinearLayout>
 

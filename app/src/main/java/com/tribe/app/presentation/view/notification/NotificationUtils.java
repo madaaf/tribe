@@ -1,20 +1,27 @@
 package com.tribe.app.presentation.view.notification;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
+import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.SoundManager;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by madaaflak on 20/02/2017.
@@ -190,19 +197,61 @@ public class NotificationUtils {
         notificationPayload.getSessionId());
   }
 
-
   public static NotificationModel getFbNotificationModel(Context context) {
-    NotificationModel a =
-        new NotificationModel.Builder().title(context.getString(R.string.invite_facebook_popup_title))
-            .subTitle(context.getString(R.string.invite_facebook_popup_subtitle))
-            .content(context.getString(R.string.invite_facebook_popup_description))
-            .btn1Content(context.getString(R.string.invite_facebook_popup_action_notify))
-            .drawableBtn1(R.drawable.picto_facebook)
-            .background(R.drawable.fb_back_notif)
-            .logoPicture(R.drawable.facebook_circular_icon)
-            .type(NotificationModel.POPUP_FACEBOOK)
-            .build();
+    NotificationModel a = new NotificationModel.Builder().title(
+        context.getString(R.string.invite_facebook_popup_title))
+        .subTitle(context.getString(R.string.invite_facebook_popup_subtitle))
+        .content(context.getString(R.string.invite_facebook_popup_description))
+        .btn1Content(context.getString(R.string.invite_facebook_popup_action_notify))
+        .drawableBtn1(R.drawable.picto_facebook)
+        .background(R.drawable.fb_back_notif)
+        .logoPicture(R.drawable.facebook_circular_icon)
+        .type(NotificationModel.POPUP_FACEBOOK)
+        .build();
     return a;
   }
 
+  public static NotificationModel getAvatarNotificationModel(Context context) {
+    NotificationModel a = new NotificationModel.Builder().subTitle(
+        context.getString(R.string.upload_picture_popup_title))
+        .content(context.getString(R.string.upload_picture_popup_subtitle))
+        .btn1Content(context.getString(R.string.upload_picture_popup_action_upload).toUpperCase())
+        .drawableBtn1(R.drawable.upload_picture_popup_icon)
+        .background(R.drawable.upload_picture_popup_back)
+        .logoPicture(R.drawable.upload_picture_popup_avatar)
+        .type(NotificationModel.POPUP_UPLOAD_PICTURE)
+        .build();
+    return a;
+  }
+
+  public static void displayChallengeNotification(List<User> users, Context context,
+      StateManager stateManager,
+      @ChallengeNotifications Preference<String> challengeNotificationsPref) {
+    List<NotificationModel> list = new ArrayList<>();
+    NotifView view = new NotifView(context);
+    for (User user : users) {
+      String title =
+          context.getString(R.string.new_challenger_popup_subtitle, user.getDisplayName());
+      NotificationModel a = new NotificationModel.Builder().title(
+          context.getString(R.string.new_challenger_popup_title))
+          .subTitle(title)
+          .userId(user.getId())
+          .content(context.getString(R.string.new_challenger_popup_friends_placeholder))
+          .btn1Content(context.getString(R.string.new_challenger_popup_action_add))
+          .drawableBtn1(R.drawable.picto_white_message)
+          .background(R.drawable.bck_norif_challenge)
+          .profilePicture(user.getProfilePicture())
+          .type(NotificationModel.POPUP_CHALLENGER)
+          .build();
+
+      list.add(a);
+    }
+
+    if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
+      list.add(NotificationUtils.getFbNotificationModel(context));
+    }
+    view.show((Activity) context, list);
+    challengeNotificationsPref.set("");
+    stateManager.addTutorialKey(StateManager.FIRST_CHALLENGE_POPUP);
+  }
 }

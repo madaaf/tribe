@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
@@ -53,16 +52,27 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
     TextViewFont content = itemView.findViewById(R.id.content);
     TextViewFont btn1Content = itemView.findViewById(R.id.btn1Content);
     ImageView backImage = itemView.findViewById(R.id.backImage);
+    ImageView btn1Drawable = itemView.findViewById(R.id.btn1Drawable);
     AvatarView avatarView = itemView.findViewById(R.id.avatarView);
 
     btn1Content.setOnClickListener(v -> {
+      switch (model.getType()) {
+        case NotificationModel.POPUP_CHALLENGER:
+          break;
+        case NotificationModel.POPUP_FACEBOOK:
+          break;
+        case NotificationModel.POPUP_UPLOAD_PICTURE:
+          btn1Drawable.animate().translationX(btn1Content.getWidth()).setDuration(300);
+          break;
+      }
       onClickBtn1.onNext(model);
     });
 
     if (model.getDrawableBtn1() != null) {
-      Drawable img = context.getResources().getDrawable(model.getDrawableBtn1());
-      img.setBounds(0, 0, 60, 60);
-      btn1Content.setCompoundDrawables(img, null, null, null);
+      // Drawable img = context.getResources().getDrawable(model.getDrawableBtn1());
+      // img.setBounds(0, 0, 60, 60);
+      // btn1Content.setCompoundDrawables(img, null, null, null);
+      btn1Drawable.setImageResource(model.getDrawableBtn1());
     }
 
     if (model.getContent() != null) content.setText(model.getContent());
