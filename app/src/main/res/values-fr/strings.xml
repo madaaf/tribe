@@ -1008,6 +1008,7 @@
 	<string name="invite_facebook_popup_description">More friends to battle live, more messages and a wider leaderboard!</string>
 	<string name="invite_facebook_popup_action_notify">NOTIFY THEM</string>
 
+
 	
 	<!-- Scores Milestones -->
 	<string name="score_milestone_initial">Ready</string>
@@ -1027,10 +1028,13 @@
 	<string name="poke_emoji_above">&#128525;,&#129321;,&#128563;,&#129303;,&#128558;,&#128580;,&#128125;</string>
 	<string name="poke_emoji_below">&#128514;,&#129315;,&#128517;,&#128169;,&#128569;,&#128518;,&#128584;</string>
 	<string name="poke_emoji_own">&#127941;</string>
+
 	
 	<!-- UPLOAD PICTURE POPUP -->
 	<string name="upload_picture_popup_title"></string>
 	<string name="upload_picture_popup_subtitle"></string>
 	<string name="upload_picture_popup_action_upload"></string>
 	<string name="upload_picture_popup_action_done"></string>
+
+
 </resources>

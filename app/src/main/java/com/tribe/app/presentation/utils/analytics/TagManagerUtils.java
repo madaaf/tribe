@@ -157,8 +157,10 @@ public class TagManagerUtils {
    */
   public static final String POPUP = "PopUp";
   public static final String ADDFRIEND = "add_friend";
+  public static final String FACEBOOK_INVITE = "facebook_invite";
   public static final String CHALLENGER_ACTION_CANCELLED = "cancelled";
   public static final String CHALLENGER_ACTION_ADDED = "added";
+  public static final String ACTION_INVITED = "invited";
 
   /**
    * ERRORS

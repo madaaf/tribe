@@ -605,16 +605,15 @@ public class HomeActivity extends BaseActivity
             invite(contact);
           } else if (o instanceof ContactFB) {
             ArrayList<String> contactFBList = new ArrayList<>();
-            /*
-            for (HomeAdapterInterface i : homeGridAdapter.getItems()) {
-              if (i instanceof ContactFB) {
-                contactFBList.add(((ContactFB) i).getId());
-              }
-            }*/
-
             ContactFB contactFB = (ContactFB) o;
             contactFBList.add(contactFB.getId());
-            subscriptions.add(rxFacebook.requestGameInvite(contactFBList).subscribe());
+
+            subscriptions.add(DialogFactory.dialog(this, contactFB.getDisplayName(),
+                getString(R.string.facebook_invite_popup_message),
+                EmojiParser.demojizedText(getString(R.string.facebook_invite_popup_validate)),
+                getString(R.string.action_cancel)).filter(x -> x).subscribe(a -> {
+              rxFacebook.notifyFriends(context(), contactFBList);
+            }));
           }
         }));
 

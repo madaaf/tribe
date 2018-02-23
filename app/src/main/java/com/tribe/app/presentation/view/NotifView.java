@@ -157,11 +157,12 @@ public class NotifView extends FrameLayout {
 
       @Override public void onLoadFBContactsInvite(List<Contact> contactList) {
         Timber.d("onShortcutCreatedSuccess" + contactList.size());
+        tagNotifyFbFriend();
         ArrayList<String> array = new ArrayList<>();
         for (Contact c : contactList) {
           array.add(c.getId());
         }
-        subscriptions.add(rxFacebook.requestGameInvite(array).subscribe());
+        rxFacebook.notifyFriends(context, array);
       }
     };
   }
@@ -251,6 +252,12 @@ public class NotifView extends FrameLayout {
   private void tagAddedFriend() {
     Bundle properties = new Bundle();
     properties.putString(TagManagerUtils.ADDFRIEND, TagManagerUtils.CHALLENGER_ACTION_ADDED);
+    tagManager.trackEvent(TagManagerUtils.POPUP, properties);
+  }
+
+  private void tagNotifyFbFriend() {
+    Bundle properties = new Bundle();
+    properties.putString(TagManagerUtils.FACEBOOK_INVITE, TagManagerUtils.ACTION_INVITED);
     tagManager.trackEvent(TagManagerUtils.POPUP, properties);
   }
 

@@ -1007,7 +1007,12 @@
 	<string name="invite_facebook_popup_subtitle">More friends in\nonly one tap!</string>
 	<string name="invite_facebook_popup_description">More friends to battle live, more messages and a wider leaderboard!</string>
 	<string name="invite_facebook_popup_action_notify">NOTIFY THEM</string>
+<<<<<<< HEAD
 <!-- Scores Milestones -->
+=======
+	
+	<!-- Scores Milestones -->
+>>>>>>> [Home] Facebook App invites improvements #1237
 	<string name="score_milestone_initial">Ready</string>
 	<string name="score_milestone_scores">Perfect!,Crazy!,Lit!,Awesome!,Damn!,Wow!,Sick!,Neat!</string>
 	

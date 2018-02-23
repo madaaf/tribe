@@ -122,19 +122,11 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
-    //displayFacebookNotification(); // SOEF TO REMOVE
-    // displayChallengerNotifications();
+    // displayFacebookNotification(); // SOEF TO REMOVE
+    displayChallengerNotifications();
   }
 
   private void displayChallengerNotifications() {
-
-    // TODO MOCK  SOEF TO REMOVE
-    ArrayList<String> ok = new ArrayList<>();
-    ok.add("HkXTE2vIf");
-    ok.add("HJ8pOE_i-");
-    ok.add("ry8nB63dW");
-    userPresenter.getUsersInfoListById(ok);
-
     if (challengeNotificationsPref != null
         && challengeNotificationsPref.get() != null
         && !challengeNotificationsPref.get().isEmpty()) {
