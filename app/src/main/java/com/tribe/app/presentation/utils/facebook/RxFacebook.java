@@ -2,7 +2,9 @@ package com.tribe.app.presentation.utils.facebook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.IntDef;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -149,20 +151,32 @@ import timber.log.Timber;
       @Override public void onReceivedError(WebView view, WebResourceRequest request,
           WebResourceError error) {
         super.onReceivedError(view, request, error);
-        Timber.e("SOEF ON RECEIVES ERROR");
+        Timber.e("error on notify all facebook friends");
       }
 
-      @Override public void onPageFinished(WebView view, String url) {
+      @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
+      public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
         String cookies = CookieManager.getInstance().getCookie(url);
         Timber.d("Facebook cookies :" + cookies);
 
-        webView.loadUrl("javascript:(function(){"
+      /*  webView.loadUrl("javascript:(function(){"
             + "l=document.getElementById('u_0_0');"
             + "e=document.createEvent('HTMLEvents');"
             + "e.initEvent('click',true,true);"
             + "l.dispatchEvent(e);"
             + "})()");
+
+        webView.evaluateJavascript(
+            "(function() { return ('<html>'+ document.getElementById(\"u_0_0\")[0].innerHTML +'</html>'); })();",
+            html -> {
+              Timber.d("SOEF HTML" +  html);
+              // code here
+            });
+
+        //  webView.loadUrl("javascript:(function(){document.getElementById('u_0_0').click();})()");
+        webView.loadUrl("javascript:console.log(\"SIOOOOoOOOOOOOOOOOOOOOF\")");
+        webView.loadUrl("javascript:document.getElementById('u_0_0').click()");*/
 
         Toast.makeText(context, EmojiParser.demojizedText(
             context.getResources().getString(R.string.facebook_invite_confirmation)),
@@ -171,7 +185,7 @@ import timber.log.Timber;
     });
     webView.getSettings().setJavaScriptEnabled(true);
     webView.loadUrl(url);
-    webView.setVisibility(View.INVISIBLE);
+    webView.setVisibility(View.VISIBLE);
   }
 
   public void emitFriendsInvitable(Subscriber subscriber) {

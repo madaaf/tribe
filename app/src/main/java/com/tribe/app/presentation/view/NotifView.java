@@ -195,7 +195,7 @@ public class NotifView extends FrameLayout {
 
   private void hideView() {
     if (disposeView) return;
-    listener.onFinishView();
+    if (listener != null) listener.onFinishView();
     disposeView = true;
     container.setOnTouchListener((v, event) -> true);
     Animation slideOutAnimation =

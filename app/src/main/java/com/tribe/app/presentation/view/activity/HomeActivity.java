@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -179,6 +180,8 @@ public class HomeActivity extends BaseActivity
   @BindView(R.id.nativeDialogsView) PopupContainerView popupContainerView;
 
   @BindView(R.id.txtSyncedContacts) TextViewFont txtSyncedContacts;
+
+  @BindView(R.id.test) FrameLayout test;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -610,26 +613,18 @@ public class HomeActivity extends BaseActivity
             ContactFB contactFB = (ContactFB) o;
             contactFBList.add(contactFB.getId());
 
-            /*subscriptions.add(DialogFactory.dialog(this, contactFB.getDisplayName(),
-                getString(R.string.facebook_invite_popup_message),
-                EmojiParser.demojizedText(getString(R.string.facebook_invite_popup_validate)),
-                getString(R.string.action_cancel))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(shouldCancel -> {
-                  if (!shouldCancel) {
-                    rxFacebook.notifyFriends(context(), contactFBList);
-                  }
-
-                  Timber.e("ok");
-                }));*/
-
             subscriptions.add(DialogFactory.dialog(this, contactFB.getDisplayName(),
                 getString(R.string.facebook_invite_popup_message),
                 EmojiParser.demojizedText(getString(R.string.facebook_invite_popup_validate)),
                 getString(R.string.action_cancel)).filter(x -> x).subscribe(a -> {
               rxFacebook.notifyFriends(context(), contactFBList);
-              displayFacebookNotification();
+
+
+              
+              // displayFacebookNotification();
             }));
+
+            //subscriptions.add(rxFacebook.requestGameInvite(contactFBList).subscribe()); // TODO SOEF
           }
         }));
 

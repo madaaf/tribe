@@ -100,6 +100,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
     rxPermissions = new RxPermissions(this);
     initAppStateMonitor();
+    displayChallengerNotifications();
   }
 
   @Override protected void onStart() {
@@ -123,8 +124,6 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
-    // displayFacebookNotification(); // SOEF TO REMOVE
-    displayChallengerNotifications();
   }
 
   private void displayChallengerNotifications() {
