@@ -68,6 +68,7 @@ public class NotifView extends FrameLayout {
   private List<NotificationModel> data;
   private NewChatMVPViewAdapter newChatMVPViewAdapter;
   private PageListener pageListener;
+  private OnFinishEventListener listener;
 
   @BindView(R.id.pager) ViewPager pager;
   @BindView(R.id.txtDismiss) TextViewFont textDismiss;
@@ -194,6 +195,7 @@ public class NotifView extends FrameLayout {
 
   private void hideView() {
     if (disposeView) return;
+    listener.onFinishView();
     disposeView = true;
     container.setOnTouchListener((v, event) -> true);
     Animation slideOutAnimation =
@@ -271,6 +273,10 @@ public class NotifView extends FrameLayout {
   //  GESTURE IMP  //
   ///////////////////
 
+  public void setNotifEventListener(OnFinishEventListener eventListener) {
+    listener = eventListener;
+  }
+
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     newChatPresenter.onViewAttached(newChatMVPViewAdapter);
@@ -341,5 +347,9 @@ public class NotifView extends FrameLayout {
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
       return false;
     }
+  }
+
+  public interface OnFinishEventListener {
+    void onFinishView();
   }
 }

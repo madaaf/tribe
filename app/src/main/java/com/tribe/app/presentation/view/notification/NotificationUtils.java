@@ -8,6 +8,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
@@ -188,4 +189,20 @@ public class NotificationUtils {
         notificationPayload.getTime(), notificationPayload.getTitle(),
         notificationPayload.getSessionId());
   }
+
+
+  public static NotificationModel getFbNotificationModel(Context context) {
+    NotificationModel a =
+        new NotificationModel.Builder().title(context.getString(R.string.invite_facebook_popup_title))
+            .subTitle(context.getString(R.string.invite_facebook_popup_subtitle))
+            .content(context.getString(R.string.invite_facebook_popup_description))
+            .btn1Content(context.getString(R.string.invite_facebook_popup_action_notify))
+            .drawableBtn1(R.drawable.picto_facebook)
+            .background(R.drawable.fb_back_notif)
+            .logoPicture(R.drawable.facebook_circular_icon)
+            .type(NotificationModel.POPUP_FACEBOOK)
+            .build();
+    return a;
+  }
+
 }

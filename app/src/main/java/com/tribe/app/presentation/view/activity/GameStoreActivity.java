@@ -35,6 +35,7 @@ import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.PulseLayout;
@@ -226,33 +227,11 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     }
 
     if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
-      list.add(getFbNotificationModel());
+      list.add(NotificationUtils.getFbNotificationModel(this));
     }
     view.show(activity, list);
     challengeNotificationsPref.set("");
     stateManager.addTutorialKey(StateManager.FIRST_CHALLENGE_POPUP);
-  }
-
-  private NotificationModel getFbNotificationModel() {
-    NotificationModel a =
-        new NotificationModel.Builder().title(getString(R.string.invite_facebook_popup_title))
-            .subTitle(getString(R.string.invite_facebook_popup_subtitle))
-            .content(getString(R.string.invite_facebook_popup_description))
-            .btn1Content(getString(R.string.invite_facebook_popup_action_notify))
-            .drawableBtn1(R.drawable.picto_facebook)
-            .background(R.drawable.fb_back_notif)
-            .logoPicture(R.drawable.facebook_circular_icon)
-            .type(NotificationModel.POPUP_FACEBOOK)
-            .build();
-    return a;
-  }
-
-  private void displayFacebookNotification() {
-    List<NotificationModel> list = new ArrayList<>();
-    NotifView view = new NotifView(getBaseContext());
-    NotificationModel a = getFbNotificationModel();
-    list.add(a);
-    view.show(activity, list);
   }
 
   @Override protected void initSubscriptions() {

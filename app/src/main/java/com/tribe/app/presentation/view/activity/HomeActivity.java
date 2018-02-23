@@ -66,6 +66,8 @@ import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastVersionCode;
+import com.tribe.app.presentation.view.NotifView;
+import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.adapter.HomeListAdapter;
 import com.tribe.app.presentation.view.adapter.SectionCallback;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
@@ -608,11 +610,25 @@ public class HomeActivity extends BaseActivity
             ContactFB contactFB = (ContactFB) o;
             contactFBList.add(contactFB.getId());
 
+            /*subscriptions.add(DialogFactory.dialog(this, contactFB.getDisplayName(),
+                getString(R.string.facebook_invite_popup_message),
+                EmojiParser.demojizedText(getString(R.string.facebook_invite_popup_validate)),
+                getString(R.string.action_cancel))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(shouldCancel -> {
+                  if (!shouldCancel) {
+                    rxFacebook.notifyFriends(context(), contactFBList);
+                  }
+
+                  Timber.e("ok");
+                }));*/
+
             subscriptions.add(DialogFactory.dialog(this, contactFB.getDisplayName(),
                 getString(R.string.facebook_invite_popup_message),
                 EmojiParser.demojizedText(getString(R.string.facebook_invite_popup_validate)),
                 getString(R.string.action_cancel)).filter(x -> x).subscribe(a -> {
               rxFacebook.notifyFriends(context(), contactFBList);
+              displayFacebookNotification();
             }));
           }
         }));
@@ -701,6 +717,14 @@ public class HomeActivity extends BaseActivity
         if (latestRecipientList.size() != 0) layoutManager.scrollToPositionWithOffset(0, 0);
       }
     }));
+  }
+
+  private void displayFacebookNotification() {
+    List<NotificationModel> list = new ArrayList<>();
+    NotifView view = new NotifView(getBaseContext());
+    NotificationModel a = NotificationUtils.getFbNotificationModel(this);
+    list.add(a);
+    view.show(this, list);
   }
 
   private void initRemoteConfig() {
