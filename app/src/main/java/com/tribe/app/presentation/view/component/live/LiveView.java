@@ -261,8 +261,9 @@ public class LiveView extends FrameLayout {
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
 
         onEndCall.onNext(durationInSeconds);
-      } else if ((hasJoined && averageCountLive <= 1 && !live.getType().equals(Live.NEW_CALL)) ||
-          (live.getType().equals(Live.NEW_CALL) && (invitedCount > 0 || hasShared))) {
+      } else if ((hasJoined && averageCountLive <= 1 && !live.getType().equals(Live.NEW_CALL)) || (
+          live.getType().equals(Live.NEW_CALL)
+              && (invitedCount > 0 || hasShared))) {
         state = TagManagerUtils.MISSED;
         tagManager.increment(TagManagerUtils.USER_CALLS_MISSED_COUNT);
       }
@@ -461,7 +462,8 @@ public class LiveView extends FrameLayout {
     viewGameManager.initInvitedGuestObservable(tribeInvitedMap.getObservable());
     viewGameManager.initLiveViewsObservable(viewRoom.onLiveViewsChange());
 
-    gameManager.initUIControlsStartGame(viewControlsLive.onStartGame().doOnError(throwable -> throwable.printStackTrace()));
+    gameManager.initUIControlsStartGame(
+        viewControlsLive.onStartGame().doOnError(throwable -> throwable.printStackTrace()));
     gameManager.initUIControlsRestartGame(
         Observable.merge(viewControlsLive.onRestartGame(), viewGameManager.onRestartGame()));
     gameManager.initUIControlsStopGame(
@@ -608,10 +610,10 @@ public class LiveView extends FrameLayout {
 
           onUserJoined.onNext(remotePeer.getSession().getUserId());
 
-          Timber.d("Remote peer added with id : " +
-              remotePeer.getSession().getPeerId() +
-              " & view : " +
-              remotePeer.getPeerView());
+          Timber.d("Remote peer added with id : "
+              + remotePeer.getSession().getPeerId()
+              + " & view : "
+              + remotePeer.getPeerView());
           addView(remotePeer);
           onNotificationRemoteWaiting.onNext(getDisplayNameFromSession(remotePeer.getSession()));
 
@@ -695,9 +697,9 @@ public class LiveView extends FrameLayout {
 
     webRTCRoom.connect(options);
 
-    if (!StringUtils.isEmpty(live.getGameId()) &&
-        !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
-        StringUtils.isEmpty(room.getGameId())) {
+    if (!StringUtils.isEmpty(live.getGameId())
+        && !live.getSource().equals(SOURCE_CALL_ROULETTE)
+        && StringUtils.isEmpty(room.getGameId())) {
       viewControlsLive.startGame(gameManager.getGameById(live.getGameId()));
     }
   }
@@ -789,8 +791,8 @@ public class LiveView extends FrameLayout {
       }
     }));
 
-    if (live.getSource().equals(SOURCE_CALL_ROULETTE) ||
-        live.getRoom() != null && live.getRoom().acceptsRandom()) {
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || live.getRoom() != null && live.getRoom()
+        .acceptsRandom()) {
       viewControlsLive.btnChat.setVisibility(INVISIBLE);
       viewRinging.setVisibility(INVISIBLE);
     }
@@ -1332,8 +1334,8 @@ public class LiveView extends FrameLayout {
           if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
             onStopGame.onNext(gameManager.getCurrentGame());
           }
-          return labelType.getTypeDef().equals(LabelType.STOP_GAME_SOLO) ||
-              labelType.getTypeDef().equals(LabelType.LEAVE_ROOM);
+          return labelType.getTypeDef().equals(LabelType.STOP_GAME_SOLO) || labelType.getTypeDef()
+              .equals(LabelType.LEAVE_ROOM);
         })
         .map(labelType -> null));
   }

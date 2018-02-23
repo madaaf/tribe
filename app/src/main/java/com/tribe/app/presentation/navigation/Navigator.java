@@ -41,6 +41,7 @@ import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
+import com.tribe.app.presentation.view.activity.corona.GameCoronaActivity;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.PictureActivity;
@@ -142,9 +143,9 @@ public class Navigator {
         intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
       }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-          Intent.FLAG_ACTIVITY_CLEAR_TASK |
-          Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+          | Intent.FLAG_ACTIVITY_CLEAR_TASK
+          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
       if (linkRoomId != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -180,6 +181,15 @@ public class Navigator {
     if (activity != null) {
       Intent intent = GameDetailsActivity.getCallingIntent(activity, gameId);
       activity.startActivityForResult(intent, FROM_GAMESTORE);
+      activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
+  }
+
+  public void navigateToCorona(Activity activity, String gameId, int from) {
+    if (activity != null) {
+      Intent intent = GameCoronaActivity.getCallingIntent(activity, gameId);
+      //Intent intent = GameCoronaFragmentActivity.getCallingIntent(activity, gameId);
+      activity.startActivityForResult(intent, from);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
     }
   }
@@ -442,8 +452,8 @@ public class Navigator {
 
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
-    } else if (activity.getIntent() != null &&
-        activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
+    } else if (activity.getIntent() != null && activity.getIntent()
+        .hasExtra(Extras.IS_FROM_FACEBOOK)) {
       openFacebookAppInvites(activity, url);
     } else {
       openDefaultMessagingApp(activity, text);

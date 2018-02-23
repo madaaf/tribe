@@ -35,7 +35,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
-import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -54,6 +53,8 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+
+import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
 
 public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
 
@@ -164,7 +165,7 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == Navigator.FROM_GAME_DETAILS && resultCode == RESULT_OK && data != null) {
+    if (requestCode == FROM_GAME_DETAILS && resultCode == RESULT_OK && data != null) {
       setResult(RESULT_OK, data);
       finish();
     }
@@ -395,12 +396,15 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
   }
 
   @OnClick(R.id.btnSingle) void openLive() {
+
     Bundle bundle = new Bundle();
     bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.HOME);
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.LAUNCHED);
     bundle.putString(TagManagerUtils.NAME, game.getId());
     tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
-    navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
+
+    //navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
+    navigator.navigateToCorona(this, game.getId(), FROM_GAME_DETAILS);
   }
 
   @OnClick(R.id.btnMulti) void openGameMembers() {

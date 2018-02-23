@@ -25,7 +25,6 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.UserPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
-import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -45,6 +44,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
+
+import static com.tribe.app.presentation.navigation.Navigator.FROM_GAMESTORE;
 
 public class GameStoreActivity extends GameActivity implements AppStateListener {
 
@@ -97,8 +98,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
-        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
+        PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync);
     }
 
@@ -133,7 +134,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == Navigator.FROM_GAMESTORE && data != null) {
+    if (requestCode == FROM_GAMESTORE && data != null) {
       String gameId = data.getStringExtra(GameStoreActivity.GAME_ID);
       boolean callRoulette = data.getBooleanExtra(GameMembersActivity.CALL_ROULETTE, false);
       Shortcut shortcut = (Shortcut) data.getSerializableExtra(GameMembersActivity.SHORTCUT);
@@ -231,7 +232,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
         tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
       }
     } else {
-      navigator.navigateToGameDetails(this, game.getId());
+      //navigator.navigateToGameDetails(this, game.getId());
+      navigator.navigateToCorona(this, game.getId(), FROM_GAMESTORE);
     }
   }
 

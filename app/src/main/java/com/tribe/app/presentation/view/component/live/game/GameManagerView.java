@@ -22,6 +22,8 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.GameData;
+import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.activity.corona.GameCoronaFragment;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicView;
@@ -33,7 +35,6 @@ import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -138,7 +139,13 @@ public class GameManagerView extends FrameLayout {
           currentGame = sessionGamePair.second;
 
           if (currentGameView == null) {
-            addGameView(computeGameView(currentGame, sessionGamePair.first.getUserId()));
+            //addGameView(computeGameView(currentGame, sessionGamePair.first.getUserId()));
+            GameCoronaFragment gcf = new GameCoronaFragment();
+            ((BaseActivity) getContext()).getSupportFragmentManager()
+                .beginTransaction()
+                .add(R.id.viewLiveContainer, gcf)
+                .commit();
+            currentGameView = gcf.coronaView;
           }
 
           if (currentGameView instanceof GameChallengesView) {
@@ -151,19 +158,17 @@ public class GameManagerView extends FrameLayout {
 
     subscriptions.add(Observable.merge(gameManager.onCurrentUserNewSessionGame(),
         gameManager.onRemoteUserNewSessionGame()
-            .map(tribeSessionGamePair -> tribeSessionGamePair.second))
-        .doOnNext(game1 -> {
-          if (currentGameView != null) {
-            if (currentGameView instanceof GameDrawView) {
-              GameDrawView gameDrawView = (GameDrawView) currentGameView;
-              gameDrawView.setNextGame();
-            } else if (currentGameView instanceof GameChallengesView) {
-              GameChallengesView gameChallengesView = (GameChallengesView) currentGameView;
-              gameChallengesView.setNextGame();
-            }
-          }
-        })
-        .subscribe());
+            .map(tribeSessionGamePair -> tribeSessionGamePair.second)).doOnNext(game1 -> {
+      if (currentGameView != null) {
+        if (currentGameView instanceof GameDrawView) {
+          GameDrawView gameDrawView = (GameDrawView) currentGameView;
+          gameDrawView.setNextGame();
+        } else if (currentGameView instanceof GameChallengesView) {
+          GameChallengesView gameChallengesView = (GameChallengesView) currentGameView;
+          gameChallengesView.setNextGame();
+        }
+      }
+    }).subscribe());
 
     subscriptions.add(Observable.merge(gameManager.onCurrentUserStopGame(),
         gameManager.onRemoteUserStopGame().map(tribeSessionGamePair -> tribeSessionGamePair.second))
