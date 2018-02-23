@@ -618,13 +618,8 @@ public class HomeActivity extends BaseActivity
                 EmojiParser.demojizedText(getString(R.string.facebook_invite_popup_validate)),
                 getString(R.string.action_cancel)).filter(x -> x).subscribe(a -> {
               rxFacebook.notifyFriends(context(), contactFBList);
-
-
-              
-              // displayFacebookNotification();
+              displayFacebookNotification();
             }));
-
-            //subscriptions.add(rxFacebook.requestGameInvite(contactFBList).subscribe()); // TODO SOEF
           }
         }));
 

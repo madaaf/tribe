@@ -160,23 +160,12 @@ import timber.log.Timber;
         String cookies = CookieManager.getInstance().getCookie(url);
         Timber.d("Facebook cookies :" + cookies);
 
-      /*  webView.loadUrl("javascript:(function(){"
+        webView.loadUrl("javascript:(function(){"
             + "l=document.getElementById('u_0_0');"
             + "e=document.createEvent('HTMLEvents');"
             + "e.initEvent('click',true,true);"
             + "l.dispatchEvent(e);"
             + "})()");
-
-        webView.evaluateJavascript(
-            "(function() { return ('<html>'+ document.getElementById(\"u_0_0\")[0].innerHTML +'</html>'); })();",
-            html -> {
-              Timber.d("SOEF HTML" +  html);
-              // code here
-            });
-
-        //  webView.loadUrl("javascript:(function(){document.getElementById('u_0_0').click();})()");
-        webView.loadUrl("javascript:console.log(\"SIOOOOoOOOOOOOOOOOOOOOF\")");
-        webView.loadUrl("javascript:document.getElementById('u_0_0').click()");*/
 
         Toast.makeText(context, EmojiParser.demojizedText(
             context.getResources().getString(R.string.facebook_invite_confirmation)),
