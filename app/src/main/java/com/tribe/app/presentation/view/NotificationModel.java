@@ -13,14 +13,12 @@ public class NotificationModel {
   public static final String POPUP_UPLOAD_PICTURE = "POPUP_UPLOAD_PICTURE";
 
   @StringDef({
-      POPUP_CHALLENGER, POPUP_FACEBOOK,POPUP_UPLOAD_PICTURE
+      POPUP_CHALLENGER, POPUP_FACEBOOK, POPUP_UPLOAD_PICTURE
   }) public @interface NotificationType {
   }
 
   private String title;
   private String subTitle;
-  private String btn1Content;
-  private Integer drawableBtn1;
   private String content;
   private String profilePicture;
   private Integer logoPicture;
@@ -28,17 +26,28 @@ public class NotificationModel {
   private String userId;
   private @NotificationType String type;
 
+  private String btn1Content;
+  private Integer btn1DrawableStart;
+  private Integer btn1DrawableEnd;
+  private Integer btn1Background;
+
   private NotificationModel(Builder b) {
     this.title = b.title;
     this.subTitle = b.subTitle;
-    this.btn1Content = b.btn1Content;
     this.content = b.content;
     this.background = b.background;
     this.profilePicture = b.profilePicture;
-    this.drawableBtn1 = b.drawableBtn1;
     this.userId = b.userId;
     this.logoPicture = b.logoPicture;
     this.type = b.type;
+    this.btn1Content = b.btn1Content;
+    this.btn1DrawableEnd = b.btn1DrawableEnd;
+    this.btn1DrawableStart = b.btn1DrawableStart;
+    this.btn1Background = b.btn1Background;
+  }
+
+  public Integer getBtn1Background() {
+    return btn1Background;
   }
 
   public String getType() {
@@ -69,8 +78,8 @@ public class NotificationModel {
     return btn1Content;
   }
 
-  public Integer getDrawableBtn1() {
-    return drawableBtn1;
+  public Integer getBtn1DrawableStart() {
+    return btn1DrawableStart;
   }
 
   public String getProfilePicture() {
@@ -81,20 +90,32 @@ public class NotificationModel {
     return background;
   }
 
+  public Integer getBtn1DrawableEnd() {
+    return btn1DrawableEnd;
+  }
+
   public static class Builder {
     private String subTitle;
     private String title;
-    private String btn1Content;
     private String content;
     private Integer background;
     private Integer logoPicture;
-    private Integer drawableBtn1;
     private String profilePicture;
     private String userId;
+    private Integer btn1DrawableStart;
+    private Integer btn1DrawableEnd;
+    private String btn1Content;
+    private Integer btn1Background;
+
     private @NotificationType String type;
 
     public Builder type(@NotificationType String f) {
       this.type = f;
+      return this;
+    }
+
+    public Builder drawableBtnEnd(Integer f) {
+      this.btn1DrawableEnd = f;
       return this;
     }
 
@@ -108,8 +129,13 @@ public class NotificationModel {
       return this;
     }
 
+    public Builder btn1Background(Integer f) {
+      this.btn1Background = f;
+      return this;
+    }
+
     public Builder drawableBtn1(Integer f) {
-      this.drawableBtn1 = f;
+      this.btn1DrawableStart = f;
       return this;
     }
 

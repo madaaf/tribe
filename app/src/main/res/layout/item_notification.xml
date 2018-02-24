@@ -77,35 +77,55 @@
 
     </LinearLayout>
 
-    <FrameLayout
+    <LinearLayout
+        android:id="@+id/btn1Container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/bck_btn1"
+        android:orientation="horizontal"
+        android:weightSum="4"
         >
+
+      <ImageView
+          android:id="@+id/btn1DrawableStart"
+          android:layout_width="wrap_content"
+          android:layout_height="65dp"
+          android:layout_gravity="center_vertical"
+          android:layout_weight="1"
+          android:paddingEnd="30dp"
+          android:paddingStart="30dp"
+          android:scaleType="center"
+          android:src="@drawable/picto_info"
+          />
+
 
       <com.tribe.app.presentation.view.widget.TextViewFont
           android:id="@+id/btn1Content"
-          android:layout_width="match_parent"
+          android:layout_width="wrap_content"
           android:layout_height="65dp"
           android:layout_gravity="center"
-          android:background="@drawable/bck_btn1"
+          android:layout_weight="2"
           android:drawablePadding="10dp"
           android:gravity="center"
-          android:paddingEnd="34dp"
-          android:paddingStart="34dp"
           android:text="@string/unlock_roll_the_dice_disclaimer"
           android:textSize="15sp"
           style="@style/Title.2.White"
           />
 
+
       <ImageView
-          android:id="@+id/btn1Drawable"
+          android:id="@+id/btn1DrawableEnd"
           android:layout_width="wrap_content"
           android:layout_height="65dp"
-          android:layout_gravity="center_vertical"
-          android:layout_margin="0dp"
+          android:layout_weight="1"
+          android:alpha="0"
+          android:gravity="center"
+          android:paddingEnd="30dp"
+          android:paddingStart="30dp"
+          android:scaleType="center"
           android:src="@drawable/picto_info"
           />
-    </FrameLayout>
+    </LinearLayout>
 
 
   </LinearLayout>

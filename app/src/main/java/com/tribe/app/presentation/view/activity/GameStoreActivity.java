@@ -124,7 +124,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
-    //   displayUplaodAvatarNotification();
+    displayUplaodAvatarNotification();
   }
 
   private void displayUplaodAvatarNotification() {

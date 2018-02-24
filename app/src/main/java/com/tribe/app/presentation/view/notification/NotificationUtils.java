@@ -219,6 +219,7 @@ public class NotificationUtils {
         .drawableBtn1(R.drawable.upload_picture_popup_icon)
         .background(R.drawable.upload_picture_popup_back)
         .logoPicture(R.drawable.upload_picture_popup_avatar)
+        .drawableBtnEnd(R.drawable.upload_picture_popup_picto_done)
         .type(NotificationModel.POPUP_UPLOAD_PICTURE)
         .build();
     return a;

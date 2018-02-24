@@ -7,7 +7,9 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import com.tribe.app.R;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
@@ -20,6 +22,7 @@ import rx.subjects.PublishSubject;
  */
 
 public class NotificationViewPagerAdapter extends PagerAdapter {
+  private static final int DURATION_ANIMATION = 1000;
 
   private List<NotificationModel> list;
   private Context context;
@@ -52,27 +55,55 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
     TextViewFont content = itemView.findViewById(R.id.content);
     TextViewFont btn1Content = itemView.findViewById(R.id.btn1Content);
     ImageView backImage = itemView.findViewById(R.id.backImage);
-    ImageView btn1Drawable = itemView.findViewById(R.id.btn1Drawable);
+    ImageView btn1DrawableStart = itemView.findViewById(R.id.btn1DrawableStart);
+    ImageView btn1DrawableEnd = itemView.findViewById(R.id.btn1DrawableEnd);
     AvatarView avatarView = itemView.findViewById(R.id.avatarView);
+    LinearLayout btn1Container = itemView.findViewById(R.id.btn1Container);
 
-    btn1Content.setOnClickListener(v -> {
+    btn1Container.setOnClickListener(v -> {
       switch (model.getType()) {
         case NotificationModel.POPUP_CHALLENGER:
           break;
         case NotificationModel.POPUP_FACEBOOK:
           break;
         case NotificationModel.POPUP_UPLOAD_PICTURE:
-          btn1Drawable.animate().translationX(btn1Content.getWidth()).setDuration(300);
+
+          float delta = btn1DrawableEnd.getX() - btn1DrawableStart.getX();
+          btn1DrawableStart.animate()
+              .alpha(0f)
+              .translationX(delta)
+              .setInterpolator(new OvershootInterpolator())
+              .withStartAction(() -> {
+                btn1Content.animate()
+                    .alpha(0f)
+                    .setDuration(DURATION_ANIMATION / 2)
+                    .withEndAction(() -> {
+                      btn1Content.setText(
+                          context.getString(R.string.upload_picture_popup_action_done)
+                              .toUpperCase());
+                      btn1Content.animate()
+                          .alpha(1f)
+                          .setDuration(DURATION_ANIMATION / 2)
+                          .withStartAction(() -> btn1DrawableEnd.animate()
+                              .alpha(1f)
+                              .setDuration(DURATION_ANIMATION / 2))
+                          .start();
+                    })
+                    .start();
+              })
+              .setDuration(DURATION_ANIMATION)
+              .start();
+
           break;
       }
       onClickBtn1.onNext(model);
     });
 
-    if (model.getDrawableBtn1() != null) {
-      // Drawable img = context.getResources().getDrawable(model.getDrawableBtn1());
-      // img.setBounds(0, 0, 60, 60);
-      // btn1Content.setCompoundDrawables(img, null, null, null);
-      btn1Drawable.setImageResource(model.getDrawableBtn1());
+    if (model.getBtn1DrawableStart() != null) {
+      btn1DrawableStart.setImageResource(model.getBtn1DrawableStart());
+    }
+    if (model.getBtn1DrawableEnd() != null) {
+      btn1DrawableEnd.setImageResource(model.getBtn1DrawableEnd());
     }
 
     if (model.getContent() != null) content.setText(model.getContent());

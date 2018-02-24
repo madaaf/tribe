@@ -198,10 +198,11 @@ public class NotifView extends FrameLayout {
   }
 
   private void hideView() {
+    if (true) return;
     if (disposeView) return;
     if (listener != null) listener.onFinishView();
     disposeView = true;
-    container.setOnTouchListener((v, event) -> true);
+    container.setOnTouchListener(null);
     Animation slideOutAnimation =
         AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_exit_animation);
     setAnimation(slideOutAnimation);
@@ -228,6 +229,7 @@ public class NotifView extends FrameLayout {
 
   private void dispose() {
     setVisibility(GONE);
+    setOnTouchListener(null);
     clearAnimation();
     // decorView.removeView(v);
     subscriptions.unsubscribe();
