@@ -956,7 +956,7 @@
 	
 	<!-- Game -->
 	<string name="game_loading">Chargement de %1$s</string>
-	<string name="game_rotate_landscape">Tournez en mode paysage</string>
+	<string name="game_rotate_landscape">Tournez en mode Paysage</string>
 	<string name="game_rotate_portrait">Tournez en mode portrait</string>
 	<string name="game_unavailable">Le jeu en cours n\'est pas disponible sur votre téléphone.</string>
 	<string name="game_update_forbidden">Seul %1$s peut changer le jeu.</string>
@@ -1010,4 +1010,19 @@
 	<!-- Scores Milestones -->
 	<string name="score_milestone_initial">Ready</string>
 	<string name="score_milestone_scores">Perfect!,Crazy!,Lit!,Awesome!,Damn!,Wow!,Sick!,Neat!</string>
+	
+	<!-- Poke -->
+	<string name="poke_captions">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
+	<string name="poke_popup_title">Poke %1$s\nabout this score!</string>
+	<string name="poke_popup_subtitle">An automated message will be sent and available in your chat with %1$s.</string>
+	<string name="poke_popup_action_send">SEND &amp; POKE</string>
+	<string name="poke_delay_minutes">%1$d minutes left to poke again %2$s!</string>
+	<string name="poke_delay_seconds">%1$d seconds left to poke again %2$s!</string>
+	<string name="poke_chat_event_above">%1$s just became jealous of your score at %2$s!</string>
+	<string name="poke_chat_event_below">%1$s just made fun of your score at %2$s!</string>
+	<string name="poke_chat_tap_to_play">TAP TO PLAY</string>
+	<string name="poke_share_score">My score at %1$s on @heytribe is %2$d. What\'s yours?</string>
+	<string name="poke_emoji_above">&#128525;,&#129321;,&#128563;,&#129303;,&#128558;,&#128580;,&#128125;</string>
+	<string name="poke_emoji_below">&#128514;,&#129315;,&#128517;,&#128169;,&#128569;,&#128518;,&#128584;</string>
+	<string name="poke_emoji_own">&#127941;</string>
 </resources>
