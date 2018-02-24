@@ -22,7 +22,7 @@ import rx.subjects.PublishSubject;
  */
 
 public class NotificationViewPagerAdapter extends PagerAdapter {
-  private static final int DURATION_ANIMATION = 1000;
+  private static final int DURATION_ANIMATION = 500;
 
   private List<NotificationModel> list;
   private Context context;
