@@ -771,6 +771,7 @@
 	<string name="game_trivia_category_world">World</string>
 	<string name="game_trivia_category_games">Games</string>
 	<string name="game_trivia_category_all">All at once!</string>
+	<string name="game_coolcams_lets_go">Mimic as much\nemojis as possible!</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -835,7 +836,7 @@
 	<string name="home_section_suggested_friends">Suggested friends</string>
 	<string name="home_section_invites_to_send">Invites to send</string>
 	<string name="home_section_results">Results</string>
-	<string name="home_action_is_playing">Playing %1$s %2$s</string>
+	<string name="home_action_is_playing">Now playing %1$s %2$s</string>
 	<string name="home_action_join_live">Tap right to join</string>
 	<string name="home_action_read_chat">Slide right to read</string>
 	<string name="home_action_tap_to_chat">Tap to chat</string>
@@ -1025,4 +1026,10 @@
 	<string name="poke_emoji_above">&#128525;,&#129321;,&#128563;,&#129303;,&#128558;,&#128580;,&#128125;</string>
 	<string name="poke_emoji_below">&#128514;,&#129315;,&#128517;,&#128169;,&#128569;,&#128518;,&#128584;</string>
 	<string name="poke_emoji_own">&#127941;</string>
+	
+	<!-- UPLOAD PICTURE POPUP -->
+	<string name="upload_picture_popup_title">Look prettier with a \nprofile picture!</string>
+	<string name="upload_picture_popup_subtitle">It makes it easier for your friends to recognize you and add you as a friend. Don\'t be shy.</string>
+	<string name="upload_picture_popup_action_upload">upload a picture</string>
+	<string name="upload_picture_popup_action_done">done</string>
 </resources>

@@ -771,6 +771,7 @@
 	<string name="game_trivia_category_world">Monde</string>
 	<string name="game_trivia_category_games">Jeux vidéo</string>
 	<string name="game_trivia_category_all">Tout en même temps!</string>
+	<string name="game_coolcams_lets_go">Mimic as much\nemojis as possible!</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -835,7 +836,7 @@
 	<string name="home_section_suggested_friends">Amis déjà sur Tribe</string>
 	<string name="home_section_invites_to_send">Amis à inviter</string>
 	<string name="home_section_results">Résultats</string>
-	<string name="home_action_is_playing">Joue à %1$s %2$s</string>
+	<string name="home_action_is_playing">En train de jouer à %1$s %2$s</string>
 	<string name="home_action_join_live">Tappez à droite pour rejoindre</string>
 	<string name="home_action_read_chat">Glissez à droite pour ouvrir</string>
 	<string name="home_action_tap_to_chat">Tapez pour discuter</string>
@@ -1025,4 +1026,10 @@
 	<string name="poke_emoji_above">&#128525;,&#129321;,&#128563;,&#129303;,&#128558;,&#128580;,&#128125;</string>
 	<string name="poke_emoji_below">&#128514;,&#129315;,&#128517;,&#128169;,&#128569;,&#128518;,&#128584;</string>
 	<string name="poke_emoji_own">&#127941;</string>
+	
+	<!-- UPLOAD PICTURE POPUP -->
+	<string name="upload_picture_popup_title"></string>
+	<string name="upload_picture_popup_subtitle"></string>
+	<string name="upload_picture_popup_action_upload"></string>
+	<string name="upload_picture_popup_action_done"></string>
 </resources>
