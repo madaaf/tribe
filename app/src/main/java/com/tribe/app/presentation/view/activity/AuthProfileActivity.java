@@ -320,20 +320,12 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
     if (loginEntity.getFbAccessToken() != null) {
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_OpenNewCallFacebook);
-      subscriptions.add(DialogFactory.dialog(this,
-          EmojiParser.demojizedText(getString(R.string.onboarding_user_alert_call_link_title)),
-          getString(R.string.onboarding_user_alert_call_link_msg_facebook),
-          getString(R.string.onboarding_user_alert_call_link_facebook), null)
-          .filter(x -> x == true)
-          .subscribe(a -> {
-            navigator.navigateToGameStoreLogin(this, deepLink);
-            finish();
-          }));
     } else {
       tagSignUp();
-      navigator.navigateToGameStoreLogin(this, deepLink);
-      finish();
     }
+
+    navigator.navigateToGameStoreLogin(this, deepLink);
+    finish();
   }
 
   private void tagSignUp() {

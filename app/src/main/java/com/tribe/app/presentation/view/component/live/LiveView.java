@@ -808,7 +808,7 @@ public class LiveView extends FrameLayout {
 
     viewRinging.setLive(live);
 
-    if (StringUtils.isEmpty(live.getGameId())) {
+    if (StringUtils.isEmpty(live.getGameId()) && !live.fromRoom()) {
       viewRinging.getViewTreeObserver()
           .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override public void onGlobalLayout() {

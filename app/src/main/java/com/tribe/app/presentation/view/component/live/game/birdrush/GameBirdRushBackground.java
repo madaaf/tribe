@@ -276,7 +276,7 @@ public class GameBirdRushBackground extends View {
         }
       } else {
         RectF rectF = birdRush.getRectF();
-        rectF.set(dstnameLabelBird.left - screenUtils.dpToPx(10),
+        rectF.set(dstnameLabelBird.left - screenUtils.dpToPx(5),
             dstnameLabelBird.top + screenUtils.dpToPx(6),
             dstnameLabelBird.right + screenUtils.dpToPx(10),
             dstnameLabelBird.bottom + screenUtils.dpToPx(6));
@@ -284,12 +284,12 @@ public class GameBirdRushBackground extends View {
         canvas.drawBitmap(birdRush.getBitmap(), null, rect, myBirdPaint);
         // canvas.drawBitmap(birdRush.getBackgroundBitmap(), null, dstnameLabelBird, myBirdPaint);
         canvas.drawRoundRect(rectF, // rect
-            20, // rx
-            20, // ry
+            25, // rx
+            25, // ry
             paint // Paint
         );
         paint.setColor(Color.WHITE);
-        canvas.drawText(birdRush.getName(), nameXPos, nameYPos + screenUtils.dpToPx(16), paint);
+        canvas.drawText(birdRush.getName().toUpperCase(), nameXPos, nameYPos + screenUtils.dpToPx(16), paint);
       }
     }
   }
