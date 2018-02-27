@@ -1,7 +1,6 @@
 package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.Pair;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -90,11 +89,13 @@ import rx.subscriptions.CompositeSubscription;
 
     if (games != null) {
       for (Game game : games) {
-        if (Arrays.asList(playableGames).contains(game.getId()) && (android.os.Build.VERSION.SDK_INT
-            >= android.os.Build.VERSION_CODES.N || !game.isWeb())) {
+        if (Arrays.asList(playableGames).contains(game.getId()) &&
+            (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N ||
+                !game.isWeb()) &&
+            (game.get__typename().equals(Game.TYPE_NAME_NATIVE) ||
+                game.get__typename().equals(Game.TYPE_NAME_WEBV1) ||
+                game.get__typename().equals(Game.TYPE_NAME_CORONA))) {
           gameList.add(game);
-        } else {
-          Log.d("NICO", "excluded game = " + game.getId());
         }
       }
     }

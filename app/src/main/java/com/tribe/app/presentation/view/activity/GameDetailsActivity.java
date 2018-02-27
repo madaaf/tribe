@@ -403,8 +403,8 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     bundle.putString(TagManagerUtils.NAME, game.getId());
     tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
 
-    //navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
-    navigator.navigateToCorona(this, game.getId(), FROM_GAME_DETAILS);
+    navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
+    //navigator.navigateToCorona(this, game.getId(), FROM_GAME_DETAILS);
   }
 
   @OnClick(R.id.btnMulti) void openGameMembers() {

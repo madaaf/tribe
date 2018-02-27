@@ -232,8 +232,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
         tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
       }
     } else {
-      //navigator.navigateToGameDetails(this, game.getId());
-      navigator.navigateToCorona(this, game.getId(), FROM_GAMESTORE);
+      navigator.navigateToGameDetails(this, game.getId());
+      //navigator.navigateToCorona(this, game.getId(), FROM_GAMESTORE);
     }
   }
 

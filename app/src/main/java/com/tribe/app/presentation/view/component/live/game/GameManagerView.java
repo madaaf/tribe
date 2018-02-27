@@ -146,6 +146,7 @@ public class GameManagerView extends FrameLayout {
                 .add(R.id.viewLiveContainer, gcf)
                 .commit();
             currentGameView = gcf.coronaView;
+            return;
           }
 
           if (currentGameView instanceof GameChallengesView) {
