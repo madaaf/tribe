@@ -32,8 +32,6 @@ import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
-import com.tribe.app.presentation.view.NotifView;
-import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
@@ -124,15 +122,6 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
-    displayUplaodAvatarNotification();
-  }
-
-  private void displayUplaodAvatarNotification() {
-    List<NotificationModel> list = new ArrayList<>();
-    NotifView view = new NotifView(getBaseContext());
-    NotificationModel a = NotificationUtils.getAvatarNotificationModel(this);
-    list.add(a);
-    view.show(this, list);
   }
 
   private void displayChallengerNotifications() {
@@ -210,7 +199,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
       @Override public void onUserInfosList(List<User> users) {
         NotificationUtils.displayChallengeNotification(users, activity, stateManager,
-            challengeNotificationsPref);
+            challengeNotificationsPref, currentUser);
       }
     };
   }

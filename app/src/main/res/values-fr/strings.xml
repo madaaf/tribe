@@ -2,7 +2,7 @@
 	
 	<!-- Actions -->
 	<string name="action_cancel">Annuler</string>
-	<string name="action_done">Terminé</string>
+	<string name="action_done">Terminé !</string>
 	<string name="action_back">Retour</string>
 	<string name="action_save">Valider</string>
 	<string name="action_create">Créer</string>
@@ -980,6 +980,10 @@
 	<string name="leaderboard_new_high_score">Nouveau meilleur score !</string>
 	<string name="leaderboard_self_is_best">%1$s êtes le(la) meilleur(e) !</string>
 	<string name="leaderboard_friend_is_best">%1$s est le(la) meilleur(e) !</string>
+	<string name="leaderboard_poke_positive_emojis">&#128077;,&#128513;</string>
+	<string name="leaderboard_poke_negative_emojis">&#128078;,&#128543;</string>
+	<string name="leaderboard_poke_positive_words">GG!,Congrats!</string>
+	<string name="leaderboard_poke_negative_words">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
 	
 	<!-- Hang Up -->
 	<string name="hang_up_title">TAP POUR RACCROCHER</string>
@@ -994,13 +998,13 @@
 	<string name="hangup_popup_action_leave_call">Quitter le live</string>
 	
 	<!-- New Challenger Popup -->
-	<string name="new_challenger_popup_title">NEW CHALLENGER!</string>
-	<string name="new_challenger_popup_subtitle">%1$s\nwants to chat!</string>
-	<string name="new_challenger_popup_friends">Mutual friends with %1$s</string>
+	<string name="new_challenger_popup_title">NOUVEAU CHALLENGEUR !</string>
+	<string name="new_challenger_popup_subtitle">%1$s\nsouhaite devenir ami(e) !</string>
+	<string name="new_challenger_popup_friends">Amis en commun avec %1$s</string>
 	<string name="new_challenger_popup_other">and an other</string>
-	<string name="new_challenger_popup_others">and %1$d others</string>
-	<string name="new_challenger_popup_action_add">ADD TO CHATS</string>
-	<string name="new_challenger_popup_friends_placeholder">Receive messages, see games currently playing and play together!</string>
+	<string name="new_challenger_popup_others">et %1$d autres</string>
+	<string name="new_challenger_popup_action_add">AJOUTER EN AMI</string>
+	<string name="new_challenger_popup_friends_placeholder">Discutez, regarder les jeux auxquels vous êtes en train de jouer et défiez-vous !</string>
 	
 	<!-- Invite Facebook Popup -->
 	<string name="invite_facebook_popup_title">MORE FRIENDS!</string>
@@ -1027,10 +1031,22 @@
 	<string name="poke_emoji_below">&#128514;,&#129315;,&#128517;,&#128169;,&#128569;,&#128518;,&#128584;</string>
 	<string name="poke_emoji_own">&#127941;</string>
 	
+<<<<<<< HEAD
 	<!-- UPLOAD PICTURE POPUP -->
 	<string name="upload_picture_popup_title"></string>
 	<string name="upload_picture_popup_subtitle"></string>
 	<string name="upload_picture_popup_action_upload"></string>
 	<string name="upload_picture_popup_action_done"></string>
 
+=======
+	<!-- Upload Picture Popup -->
+	<string name="upload_picture_popup_title">Look prettier with a\nprofile picture!</string>
+	<string name="upload_picture_popup_subtitle">It makes it easier for your friends to recognize you and add you as a friend. Don\'t be shy.</string>
+	<string name="upload_picture_popup_action_upload">UPLOAD A PICTURE</string>
+	<string name="upload_picture_popup_action_done">DONE!</string>
+	
+	<!-- Digest Popup -->
+	<string name="digest_popup_title">EN TRAIN DE JOUER</string>
+	<string name="digest_popup_action_more">PLUS DE CHALLENGERS</string>
+>>>>>>> [Profile] Add an avatar from anywhere #1448
 </resources>

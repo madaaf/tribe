@@ -227,7 +227,7 @@ public class NotificationUtils {
 
   public static void displayChallengeNotification(List<User> users, Context context,
       StateManager stateManager,
-      @ChallengeNotifications Preference<String> challengeNotificationsPref) {
+      @ChallengeNotifications Preference<String> challengeNotificationsPref, User currentUser) {
     List<NotificationModel> list = new ArrayList<>();
     NotifView view = new NotifView(context);
     for (User user : users) {
@@ -250,9 +250,20 @@ public class NotificationUtils {
 
     if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
       list.add(NotificationUtils.getFbNotificationModel(context));
+      if (currentUser.getProfilePicture() == null || currentUser.getProfilePicture().isEmpty()) {
+        list.add(NotificationUtils.getAvatarNotificationModel(context));
+      }
     }
     view.show((Activity) context, list);
     challengeNotificationsPref.set("");
     stateManager.addTutorialKey(StateManager.FIRST_CHALLENGE_POPUP);
+  }
+
+  public static void displayUplaodAvatarNotification(Context context) {
+    List<NotificationModel> list = new ArrayList<>();
+    NotifView view = new NotifView(context);
+    NotificationModel a = NotificationUtils.getAvatarNotificationModel(context);
+    list.add(a);
+    view.show((Activity) context, list);
   }
 }

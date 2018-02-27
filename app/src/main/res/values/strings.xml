@@ -2,7 +2,7 @@
 	
 	<!-- Actions -->
 	<string name="action_cancel">Cancel</string>
-	<string name="action_done">Done</string>
+	<string name="action_done">Done!</string>
 	<string name="action_back">Back</string>
 	<string name="action_save">Save</string>
 	<string name="action_create">Create</string>
@@ -133,8 +133,8 @@
 	<string name="live_notification_title">Pick an option</string>
 	<string name="live_notification_message">Here is what you can do\nwith %1$s now.</string>
 	<string name="live_notification_call">:telephone_receiver: Challenge %1$s</string>
-	<string name="live_notification_leave">:telephone_receiver: Join %1$s call</string>
-	<string name="live_notification_add_as_guest">:busts_in_silhouette: Add %1$s in this call</string>
+	<string name="live_notification_leave">:telephone_receiver: Join %1$s challenge</string>
+	<string name="live_notification_add_as_guest">:busts_in_silhouette: Add %1$s in this challenge</string>
 	<string name="live_notification_text">:speech_balloon: Text %1$s</string>
 	<string name="live_notification_decline">:no_mobile_phones: Decline %1$s challenge</string>
 	<string name="live_notification_ringing_people">Ringing %1$d people</string>
@@ -980,6 +980,10 @@
 	<string name="leaderboard_new_high_score">New high score!</string>
 	<string name="leaderboard_self_is_best">%1$s\'re the best!</string>
 	<string name="leaderboard_friend_is_best">%1$s is the best!</string>
+	<string name="leaderboard_poke_positive_emojis">&#128077;,&#128513;</string>
+	<string name="leaderboard_poke_negative_emojis">&#128078;,&#128543;</string>
+	<string name="leaderboard_poke_positive_words">GG!,Congrats!</string>
+	<string name="leaderboard_poke_negative_words">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
 	
 	<!-- Hang Up -->
 	<string name="hang_up_title">TAP TO HANG UP</string>
@@ -995,12 +999,12 @@
 	
 	<!-- New Challenger Popup -->
 	<string name="new_challenger_popup_title">NEW CHALLENGER!</string>
-	<string name="new_challenger_popup_subtitle">%1$s\nwants to chat!</string>
+	<string name="new_challenger_popup_subtitle">%1$s\nwants to be friend!</string>
 	<string name="new_challenger_popup_friends">Mutual friends with %1$s</string>
 	<string name="new_challenger_popup_other">and an other</string>
 	<string name="new_challenger_popup_others">and %1$d others</string>
-	<string name="new_challenger_popup_action_add">ADD TO CHATS</string>
-	<string name="new_challenger_popup_friends_placeholder">Receive messages, see games currently playing and play together!</string>
+	<string name="new_challenger_popup_action_add">ADD AS FRIEND</string>
+	<string name="new_challenger_popup_friends_placeholder">Chat, see games you\'re currently playing and and creates live challenge!</string>
 	
 	<!-- Invite Facebook Popup -->
 	<string name="invite_facebook_popup_title">MORE FRIENDS!</string>
@@ -1027,9 +1031,13 @@
 	<string name="poke_emoji_below">&#128514;,&#129315;,&#128517;,&#128169;,&#128569;,&#128518;,&#128584;</string>
 	<string name="poke_emoji_own">&#127941;</string>
 	
-	<!-- UPLOAD PICTURE POPUP -->
-	<string name="upload_picture_popup_title">Look prettier with a \nprofile picture!</string>
+	<!-- Upload Picture Popup -->
+	<string name="upload_picture_popup_title">Look prettier with a\nprofile picture!</string>
 	<string name="upload_picture_popup_subtitle">It makes it easier for your friends to recognize you and add you as a friend. Don\'t be shy.</string>
-	<string name="upload_picture_popup_action_upload">upload a picture</string>
-	<string name="upload_picture_popup_action_done">done</string>
+	<string name="upload_picture_popup_action_upload">UPLOAD A PICTURE</string>
+	<string name="upload_picture_popup_action_done">DONE!</string>
+	
+	<!-- Digest Popup -->
+	<string name="digest_popup_title">LIVE PLAYING</string>
+	<string name="digest_popup_action_more">MORE CHALLENGERS</string>
 </resources>

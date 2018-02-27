@@ -33,7 +33,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 27/09/2017.
@@ -68,9 +67,8 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
     userMVPViewAdapter = new UserMVPViewAdapter() {
 
       @Override public void onUserInfosList(List<User> users) {
-        Timber.e("OK SOEF " + users.size());
         NotificationUtils.displayChallengeNotification(users, activity, stateManager,
-            challengeNotificationsPref);
+            challengeNotificationsPref, user);
       }
     };
 

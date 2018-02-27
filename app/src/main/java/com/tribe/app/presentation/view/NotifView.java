@@ -27,14 +27,19 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.NewChatMVPViewAdapter;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.ArrayList;
@@ -80,7 +85,8 @@ public class NotifView extends FrameLayout {
   @Inject ScreenUtils screenUtils;
   @Inject TagManager tagManager;
   @Inject RxFacebook rxFacebook;
-
+  @Inject RxImagePicker rxImagePicker;
+  @Inject User currentUser;
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -120,8 +126,21 @@ public class NotifView extends FrameLayout {
           newChatPresenter.loadFBContactsInvite();
           break;
         case NotificationModel.POPUP_UPLOAD_PICTURE:
-          //newChatPresenter.loadFBContactsInvite();
-          Timber.e("SOEF ");
+
+          subscriptions.add(
+              DialogFactory.showBottomSheetForCamera(getContext()).subscribe(labelType -> {
+                if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
+                  subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+                    newChatPresenter.updateUser(currentUser.getId(), currentUser.getUsername(),
+                        currentUser.getDisplayName(), uri.toString());
+                  }));
+                } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
+                  subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+                    newChatPresenter.updateUser(currentUser.getId(), currentUser.getUsername(),
+                        currentUser.getDisplayName(), uri.toString());
+                  }));
+                }
+              }));
           break;
       }
 
@@ -198,8 +217,8 @@ public class NotifView extends FrameLayout {
   }
 
   private void hideView() {
-    if (true) return;
-    if (disposeView) return;
+    // if (true) return;
+    // if (disposeView) return;
     if (listener != null) listener.onFinishView();
     disposeView = true;
     container.setOnTouchListener(null);
@@ -246,11 +265,11 @@ public class NotifView extends FrameLayout {
       v.setLayoutParams(lp);
       dotsContainer.addView(v);
       if (i == 0) {
-        v.setBackgroundResource(R.drawable.shape_oval_white50);
+        v.setBackgroundResource(R.drawable.shape_oval_white);
         v.setScaleX(1.2f);
         v.setScaleY(1.2f);
       } else {
-        v.setBackgroundResource(R.drawable.shape_oval_white);
+        v.setBackgroundResource(R.drawable.shape_oval_white50);
         v.setScaleX(1f);
         v.setScaleY(1f);
       }
@@ -306,12 +325,10 @@ public class NotifView extends FrameLayout {
       for (int i = 0; i < dotsContainer.getChildCount(); i++) {
         View v = dotsContainer.getChildAt(i);
         if (v.getTag().toString().startsWith(DOTS_TAG_MARKER + position)) {
-          v.setBackgroundColor(Color.RED);
-          v.setBackgroundResource(R.drawable.shape_oval_white50);
+          v.setBackgroundResource(R.drawable.shape_oval_white);
           v.animate().scaleX(1.2f).scaleY(1.2f).setDuration(100).start();
         } else {
-          v.setBackgroundColor(Color.WHITE);
-          v.setBackgroundResource(R.drawable.shape_oval_white);
+          v.setBackgroundResource(R.drawable.shape_oval_white50);
           v.setScaleX(1f);
           v.setScaleY(1f);
         }

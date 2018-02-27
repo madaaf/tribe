@@ -1282,6 +1282,10 @@ public class LiveActivity extends BaseActivity
       });
       NotificationModel a = NotificationUtils.getFbNotificationModel(context());
       list.add(a);
+      if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
+        NotificationModel b = NotificationUtils.getAvatarNotificationModel(context());
+        list.add(b);
+      }
       view.show(this, list);
       stateManager.addTutorialKey(StateManager.FIRST_LEAVE_ROOM);
     } else {
