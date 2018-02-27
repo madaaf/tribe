@@ -16,6 +16,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.viewholder.RecipientHomeViewHolder;
 import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
@@ -25,7 +26,6 @@ import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 09/04/2017.
@@ -155,24 +155,18 @@ public class ShortcutListView extends RelativeLayout {
       if (shortcut.isSingle()) {
         User user = shortcut.getSingleFriend();
         txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
-      }
 
-      //if (!shortcut.isSingle()) {
-      //  subscriptions.add(Observable.interval(1000, TimeUnit.MILLISECONDS)
-      //      .observeOn(AndroidSchedulers.mainThread())
-      //      .subscribe(interval -> {
-      //        User user =
-      //            shortcut.getMembers().get((int) (interval % shortcut.getMembers().size()));
-      //        viewAvatar.load(user.getProfilePicture());
-      //      }));
-      //} else {
-      //  viewAvatar.load(recipient);
-      //}
+        if (user.isPlaying() != null &&
+            !StringUtils.isEmpty(user.isPlaying().getGame_id()) &&
+            !StringUtils.isEmpty(user.isPlaying().getEmoji())) {
+          viewPictoLive.setStatus(PictoLiveView.PLAYING);
+        } else {
+          viewPictoLive.setStatus(PictoLiveView.INACTIVE);
+        }
+      }
     }
 
-    //else {
     viewAvatar.load(recipient);
-    //}
 
     if (recipient != null && recipient.isSupport()) {
       viewPictoLive.setVisibility(GONE);

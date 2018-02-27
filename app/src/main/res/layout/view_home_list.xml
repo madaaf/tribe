@@ -32,26 +32,27 @@
       style="@style/Headline.Black.2"
       />
 
-  <com.tribe.app.presentation.view.widget.picto.PictoLiveView
-      android:id="@+id/viewPictoLive"
-      android:layout_width="@dimen/picto_live_size"
-      android:layout_height="@dimen/picto_live_size"
-      android:layout_alignParentEnd="true"
-      android:layout_centerVertical="true"
-      android:layout_marginEnd="@dimen/horizontal_margin_xsmall"
-      android:layout_marginStart="@dimen/horizontal_margin_xsmall"
-      app:liveStatus="inactive"
-      />
-
   <com.tribe.app.presentation.view.widget.text.TextHomeNameActionView
       android:id="@+id/viewHomeNameAction"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_centerVertical="true"
-      android:layout_marginEnd="60dp"
+      android:layout_marginEnd="@dimen/horizontal_margin_small"
       android:layout_marginStart="@dimen/horizontal_margin_small"
       android:layout_marginTop="@dimen/horizontal_margin_xsmall"
       android:layout_toRightOf="@id/viewNewAvatar"
+      android:layout_toStartOf="@id/viewPictoLive"
+      />
+
+  <com.tribe.app.presentation.view.widget.picto.PictoLiveView
+      android:id="@+id/viewPictoLive"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_centerVertical="true"
+      android:layout_marginEnd="@dimen/horizontal_margin"
+      android:layout_marginStart="@dimen/horizontal_margin_small"
+      app:liveStatus="inactive"
       />
 
 </merge>
