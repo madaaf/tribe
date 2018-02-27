@@ -28,14 +28,25 @@ import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
+import com.tribe.app.presentation.view.NotifView;
+import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
+import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.popup.PopupManager;
+import com.tribe.app.presentation.view.popup.listener.PopupDigestListener;
+import com.tribe.app.presentation.view.popup.view.PopupDigest;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -59,6 +70,9 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   @Inject UserPresenter userPresenter;
   @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
   @Inject @LastSync Preference<Long> lastSync;
+  @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
+  @Inject User currentUser;
+  @Inject StateManager stateManager;
 
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
   @BindView(R.id.layoutCall) FrameLayout layoutCall;
@@ -71,6 +85,10 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   private Scheduler singleThreadExecutor;
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
+  private List<String> userIdsDigest;
+  private List<String> roomIdsDigest;
+  private List<User> usersChallenge;
+  private NotifView notifView;
 
   // RESOURCES
 
@@ -88,8 +106,13 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       if (newIntent != null) navigator.navigateToIntent(this, newIntent);
     }
 
+    userIdsDigest = new ArrayList<>();
+    roomIdsDigest = new ArrayList<>();
+    usersChallenge = new ArrayList<>();
+
     rxPermissions = new RxPermissions(this);
     initAppStateMonitor();
+    loadChallengeNotificationData();
   }
 
   @Override protected void onStart() {
@@ -113,6 +136,17 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
+  }
+
+  private void loadChallengeNotificationData() {
+    if (challengeNotificationsPref != null &&
+        challengeNotificationsPref.get() != null &&
+        !challengeNotificationsPref.get().isEmpty()) {
+      ArrayList usersIds =
+          new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
+      userPresenter.getUsersInfoListById(usersIds);
+      challengeNotificationsPref.set("");
+    }
   }
 
   @Override protected void onStop() {
@@ -177,6 +211,10 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       @Override public void onUserInfos(User user) {
         onUser.onNext(user);
       }
+
+      @Override public void onUserInfosList(List<User> users) {
+        usersChallenge = users;
+      }
     };
   }
 
@@ -185,12 +223,71 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
     subscriptions.add(onUser.onBackpressureBuffer().subscribeOn(singleThreadExecutor).map(user -> {
       boolean hasLive = false, hasNewMessage = false;
+      List<HomeAdapterInterface> items = new ArrayList<>();
       for (Recipient recipient : user.getRecipientList()) {
         if (recipient instanceof Invite) {
+          Invite invite = (Invite) recipient;
           hasLive = true;
-        } else if (recipient instanceof Shortcut && !hasNewMessage) {
-          hasNewMessage = !recipient.isRead();
+          if (!roomIdsDigest.contains(invite.getRoom().getId())) {
+            roomIdsDigest.add(invite.getRoom().getId());
+            items.add(recipient);
+          }
+        } else if (recipient instanceof Shortcut) {
+          Shortcut shortcut = (Shortcut) recipient;
+          if (!hasNewMessage) hasNewMessage = !recipient.isRead();
+          if (shortcut.isSingle()) {
+            User member = shortcut.getSingleFriend();
+            if (member.isPlayingAGame()) {
+              if (!userIdsDigest.contains(member.getId())) {
+                userIdsDigest.add(member.getId());
+                items.add(shortcut);
+              }
+            }
+          }
         }
+      }
+
+      List<NotificationModel> notificationModelList = new ArrayList<>();
+
+      if (items.size() > 0) {
+        PopupDigest popupDigest =
+            (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
+        popupDigest.setItems(items);
+
+        PopupManager popupManager = PopupManager.create(new PopupManager.Builder().activity(this)
+            .dimBackground(false)
+            .listener(new PopupDigestListener() {
+              @Override public void onClick(Recipient recipient) {
+                navigator.navigateToLive(GameStoreActivity.this, recipient,
+                    recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+                        : LiveActivity.SOURCE_GRID, TagManagerUtils.SECTION_ONGOING, null);
+                if (notifView != null) notifView.dispose();
+              }
+
+              @Override public void onClickMore() {
+                onClickHome();
+              }
+            })
+            .view(popupDigest));
+
+        notificationModelList.add(
+            new NotificationModel.Builder().view(popupManager.getView()).build());
+      }
+
+      if (usersChallenge != null && usersChallenge.size() > 0) {
+        notificationModelList.addAll(
+            NotificationUtils.getChallengeNotification(usersChallenge, GameStoreActivity.this));
+        usersChallenge = null;
+      }
+
+      if (notificationModelList.size() > 0) {
+        if (notifView != null) {
+          notifView.dispose();
+          notifView = null;
+        }
+
+        notifView = new NotifView(this);
+        notifView.show(this, notificationModelList);
       }
 
       if (hasLive) {
@@ -268,6 +365,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
   @OnClick({ R.id.btnFriends, R.id.imgLive, R.id.btnNewMessage }) void onClickHome() {
     navigator.navigateToHome(this);
+    if (notifView != null) notifView.dispose();
   }
 
   @OnClick(R.id.btnLeaderboards) void onClickLeaderboards() {

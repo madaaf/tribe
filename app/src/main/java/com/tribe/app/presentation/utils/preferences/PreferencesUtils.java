@@ -51,6 +51,7 @@ public class PreferencesUtils {
   public static String USER_PHONE_NUMBER = "USER_PHONE_NUMBER";
   public static String WALKTHROUGH = "WALKTHROUGH";
   public static String GAME_DATA = "GAME_DATA";
+  public static String CHALLENGE_NOTIF = "CHALLENGE_NOTIF";
 
   public static void saveMapAsJson(Map<String, Object> map, Preference<String> preference) {
     GsonBuilder builder = new GsonBuilder();

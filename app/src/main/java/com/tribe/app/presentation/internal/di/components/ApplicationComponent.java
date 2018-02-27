@@ -48,6 +48,7 @@ import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
@@ -77,6 +78,7 @@ import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
+import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.GameLeaderboardActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -132,6 +134,7 @@ import com.tribe.app.presentation.view.component.live.game.common.GameAnswersVie
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
+import com.tribe.app.presentation.view.popup.view.PopupParentView;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -188,6 +191,8 @@ public interface ApplicationComponent {
   void inject(BirdRush birdRush);
 
   void inject(PlayerView playerView);
+
+  void inject(NotifView notifView);
 
   void inject(TribeFirebaseInstanceIDService instanceIDService);
 
@@ -318,6 +323,8 @@ public interface ApplicationComponent {
   void inject(TextViewScore textViewScore);
 
   void inject(TextViewRanking textViewRanking);
+
+  void inject(PopupParentView popupView);
 
   // JOBS
   void inject(BaseJob baseJob);
@@ -471,6 +478,8 @@ public interface ApplicationComponent {
   @MissedPlayloadNotification Preference<String> missedPlayloadNotification();
 
   @FullscreenNotificationState Preference<Set<String>> fullscreenNotificationState();
+
+  @ChallengeNotifications Preference<String> challengeNotifications();
 
   @ChatShortcutData Preference<String> chatShortcutData();
 

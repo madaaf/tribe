@@ -843,6 +843,8 @@
 	<string name="home_action_chat_preview">%1$s: %2$s</string>
 	<string name="home_action_new_chat">New chat</string>
 	<string name="home_action_new_game">New game</string>
+	<string name="home_action_join">JOIN</string>
+	<string name="home_action_ask_join">ASK TO JOIN</string>
 	<string name="home_anonymous_user">person</string>
 	<string name="home_anonymous_users">persons</string>
 	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Fav to top</string>
@@ -980,10 +982,6 @@
 	<string name="leaderboard_new_high_score">New high score!</string>
 	<string name="leaderboard_self_is_best">%1$s\'re the best!</string>
 	<string name="leaderboard_friend_is_best">%1$s is the best!</string>
-	<string name="leaderboard_poke_positive_emojis">&#128077;,&#128513;</string>
-	<string name="leaderboard_poke_negative_emojis">&#128078;,&#128543;</string>
-	<string name="leaderboard_poke_positive_words">GG!,Congrats!</string>
-	<string name="leaderboard_poke_negative_words">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
 	
 	<!-- Hang Up -->
 	<string name="hang_up_title">TAP TO HANG UP</string>
@@ -1017,7 +1015,8 @@
 	<string name="score_milestone_scores">Perfect!,Crazy!,Lit!,Awesome!,Damn!,Wow!,Sick!,Neat!</string>
 	
 	<!-- Poke -->
-	<string name="poke_captions">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
+	<string name="poke_captions_above">GG!,Congrats!</string>
+	<string name="poke_captions_below">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
 	<string name="poke_popup_title">Poke %1$s\nabout this score!</string>
 	<string name="poke_popup_subtitle">An automated message will be sent and available in your chat with %1$s.</string>
 	<string name="poke_popup_action_send">SEND &amp; POKE</string>
@@ -1027,9 +1026,10 @@
 	<string name="poke_chat_event_below">%1$s just made fun of your score at %2$s!</string>
 	<string name="poke_chat_tap_to_play">TAP TO PLAY</string>
 	<string name="poke_share_score">My score at %1$s on @heytribe is %2$d. What\'s yours?</string>
-	<string name="poke_emoji_above">&#128525;,&#129321;,&#128563;,&#129303;,&#128558;,&#128580;,&#128125;</string>
-	<string name="poke_emoji_below">&#128514;,&#129315;,&#128517;,&#128169;,&#128569;,&#128518;,&#128584;</string>
-	<string name="poke_emoji_own">&#127941;</string>
+	<string name="poke_emoji_above">:heart_eyes:,:flushed:,:hugs:,:open_mouth:,:roll_eyes:,:alien:</string>
+	<string name="poke_emoji_below">:joy:,:rofl:,:sweat_smile:,:poop:,:joy_cat:,:laughing:,:see_no_evil:</string>
+	<string name="poke_emoji_own">:medal_sports:</string>
+	<string name="poke_emoji_disabled">:hourglass:</string>
 	
 	<!-- Upload Picture Popup -->
 	<string name="upload_picture_popup_title">Look prettier with a\nprofile picture!</string>

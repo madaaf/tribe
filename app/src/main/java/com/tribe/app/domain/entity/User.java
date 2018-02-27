@@ -244,6 +244,12 @@ public class User
     return is_playing;
   }
 
+  public boolean isPlayingAGame() {
+    return isPlaying() != null &&
+        !StringUtils.isEmpty(isPlaying().getGame_id()) &&
+        !StringUtils.isEmpty(isPlaying().getEmoji());
+  }
+
   public void setPlaying(UserPlaying userPlaying) {
     this.is_playing = userPlaying;
   }

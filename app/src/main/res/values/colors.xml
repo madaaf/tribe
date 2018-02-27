@@ -67,6 +67,7 @@
   <color name="grey.chat.grey.hint">#D8D8D8</color>
   <color name="grey.lighter">#F6F6F6</color>
   <color name="grey.placeholder">#EFEFEF</color>
+  <color name="grey.popup.digest">#728383</color>
 
   <!-- BLUE -->
   <color name="blue.text">#02ADF2</color>

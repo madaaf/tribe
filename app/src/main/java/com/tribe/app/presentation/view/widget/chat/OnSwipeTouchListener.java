@@ -4,6 +4,9 @@ import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import rx.Observable;
+import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by madaaflak on 11/10/2017.
@@ -12,6 +15,9 @@ import android.view.View;
 public class OnSwipeTouchListener implements View.OnTouchListener {
 
   private final GestureDetector gestureDetector;
+
+  // OBSERVABLES
+  private PublishSubject<Void> onSwipeUp = PublishSubject.create();
 
   public OnSwipeTouchListener(Context ctx) {
     gestureDetector = new GestureDetector(ctx, new GestureListener());
@@ -40,18 +46,18 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
         if (Math.abs(diffX) > Math.abs(diffY)) {
           if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
             if (diffX > 0) {
-              onSwipeRight();
+              swipeRight();
             } else {
-              onSwipeLeft();
+              swipeLeft();
             }
             result = true;
           }
-        } else if (Math.abs(diffY) > SWIPE_THRESHOLD
-            && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
+        } else if (Math.abs(diffY) > SWIPE_THRESHOLD &&
+            Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
           if (diffY > 0) {
-            onSwipeBottom();
+            swipeBottom();
           } else {
-            onSwipeTop();
+            swipeUp();
           }
           result = true;
         }
@@ -62,16 +68,26 @@ public class OnSwipeTouchListener implements View.OnTouchListener {
     }
   }
 
-  public void onSwipeRight() {
+  public void swipeRight() {
+    Timber.d("onSwipeRight");
   }
 
-  public void onSwipeLeft() {
+  public void swipeLeft() {
+    Timber.d("onSwipeLeft");
   }
 
-  public void onSwipeTop() {
+  public void swipeUp() {
+    onSwipeUp.onNext(null);
   }
 
-  public void onSwipeBottom() {
+  public void swipeBottom() {
+    Timber.d("onSwipeBottom");
+  }
+
+  // OBSERVABLES
+
+  public Observable<Void> onSwipeUp() {
+    return onSwipeUp;
   }
 }
 

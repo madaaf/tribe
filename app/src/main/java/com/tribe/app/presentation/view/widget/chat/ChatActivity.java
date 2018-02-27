@@ -51,7 +51,7 @@ public class ChatActivity extends BaseActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    setContentView(R.layout.activity_test);
+    setContentView(R.layout.activity_chat);
     ButterKnife.bind(this);
     initDependencyInjector();
 
