@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -167,7 +166,11 @@ public class NotifView extends FrameLayout {
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     v = inflater.inflate(R.layout.activity_test, this, true);
     unbinder = ButterKnife.bind(this);
-    textDismiss.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
+
+    pager.setOnTouchListener((v, event) -> {
+      gestureScanner.onTouchEvent(event);
+      return super.onTouchEvent(event);
+    });
     gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
 
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
@@ -220,7 +223,7 @@ public class NotifView extends FrameLayout {
     // if (disposeView) return;
     if (listener != null) listener.onFinishView();
     disposeView = true;
-    container.setOnTouchListener(null);
+    pager.setOnTouchListener(null);
     Animation slideOutAnimation =
         AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_exit_animation);
     setAnimation(slideOutAnimation);
@@ -245,11 +248,11 @@ public class NotifView extends FrameLayout {
         .start();
   }
 
-  private void dispose() {
+  public void dispose() {
     setVisibility(GONE);
     setOnTouchListener(null);
     clearAnimation();
-    // decorView.removeView(v);
+    decorView.removeView(v);
     subscriptions.unsubscribe();
   }
 

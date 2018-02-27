@@ -5,7 +5,6 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clickable="true"
     android:orientation="vertical"
     >
 
@@ -39,8 +38,8 @@
         android:layout_height="30dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="55dp"
-        android:orientation="horizontal"
         android:gravity="center"
+        android:orientation="horizontal"
         >
 
     </LinearLayout>

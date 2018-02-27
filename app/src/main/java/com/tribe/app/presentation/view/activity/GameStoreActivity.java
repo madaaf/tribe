@@ -260,6 +260,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
                 navigator.navigateToLive(GameStoreActivity.this, recipient,
                     recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
                         : LiveActivity.SOURCE_GRID, TagManagerUtils.SECTION_ONGOING, null);
+                if (notifView != null) notifView.dispose();
               }
 
               @Override public void onClickMore() {
@@ -280,7 +281,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
       if (notificationModelList.size() > 0) {
         if (notifView != null) {
-          notifView.hideView();
+          notifView.dispose();
           notifView = null;
         }
 
@@ -362,6 +363,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
   @OnClick({ R.id.btnFriends, R.id.imgLive, R.id.btnNewMessage }) void onClickHome() {
     navigator.navigateToHome(this);
+    if (notifView != null) notifView.dispose();
   }
 
   @OnClick(R.id.btnLeaderboards) void onClickLeaderboards() {
