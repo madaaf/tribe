@@ -2,15 +2,26 @@ package com.tribe.app.presentation.utils.facebook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.annotation.IntDef;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
+import com.tribe.app.R;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
+import com.tribe.app.presentation.utils.EmojiParser;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -21,6 +32,7 @@ import org.json.JSONObject;
 import rx.Observable;
 import rx.Subscriber;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 @Singleton public class RxFacebook {
 
@@ -53,9 +65,9 @@ import rx.subjects.PublishSubject;
     return loginSubject;
   }
 
-  public Observable<String> requestGameInvite(String recipientId) {
+  public Observable<String> requestGameInvite(ArrayList<String> recipientIdList) {
     gameRequestSubject = PublishSubject.create();
-    startGameInviteHiddenActivity(FACEBOOK_GAME_REQUEST, recipientId);
+    startGameInviteHiddenActivity(FACEBOOK_GAME_REQUEST, recipientIdList);
     return gameRequestSubject;
   }
 
@@ -114,11 +126,62 @@ import rx.subjects.PublishSubject;
     }
   }
 
+  public void notifyFriends(Context context, ArrayList<String> toIds) {
+    AccessToken a = FacebookUtils.accessToken();
+    String separator = "%2C";
+    String to = "";
+    for (int i = 0; i < toIds.size(); i++) {
+      String id = toIds.get(i);
+      if (i != toIds.size() - 1) {
+        to += id + separator;
+      } else {
+        to += id;
+      }
+    }
+    String url = "https://m.facebook.com/v2.9/dialog/apprequests?access_token="
+        + a.getToken()
+        + "&app_id="
+        + a.getApplicationId()
+        + "&to="
+        + to
+        + "&sdk=android-4.23.0&redirect_uri=fbconnect%3A%2F%2Fsuccess&message=Welcome&display=touch";
+
+    WebView webView = new WebView(context);
+    webView.setWebViewClient(new WebViewClient() {
+      @Override public void onReceivedError(WebView view, WebResourceRequest request,
+          WebResourceError error) {
+        super.onReceivedError(view, request, error);
+        Timber.e("error on notify all facebook friends");
+      }
+
+      @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
+      public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+        String cookies = CookieManager.getInstance().getCookie(url);
+        Timber.d("Facebook cookies :" + cookies);
+
+        webView.loadUrl("javascript:(function(){"
+            + "l=document.getElementById('u_0_1');"
+            + "e=document.createEvent('HTMLEvents');"
+            + "e.initEvent('click',true,true);"
+            + "l.dispatchEvent(e);"
+            + "})()");
+
+        Toast.makeText(context, EmojiParser.demojizedText(
+            context.getResources().getString(R.string.facebook_invite_confirmation)),
+            Toast.LENGTH_LONG).show();
+      }
+    });
+    webView.getSettings().setJavaScriptEnabled(true);
+    webView.loadUrl(url);
+    webView.setVisibility(View.VISIBLE);
+  }
+
   public void emitFriendsInvitable(Subscriber subscriber) {
     if (FacebookUtils.isLoggedIn()) {
-      new GraphRequest(AccessToken.getCurrentAccessToken(), "/" +
-          AccessToken.getCurrentAccessToken().getUserId() +
-          "/invitable_friends?fields=id,name&limit=20", null, HttpMethod.GET,
+      new GraphRequest(AccessToken.getCurrentAccessToken(), "/"
+          + AccessToken.getCurrentAccessToken().getUserId()
+          + "/invitable_friends?fields=id,name&limit=20", null, HttpMethod.GET,
           response -> handleFriendList(response, subscriber, false)).executeAsync();
     } else {
       if (!subscriber.isUnsubscribed()) {
@@ -167,8 +230,8 @@ import rx.subjects.PublishSubject;
 
   public void emitMe(Subscriber subscriber) {
 
-    new GraphRequest(AccessToken.getCurrentAccessToken(), "/me?fields=id,name,email,age_range", null,
-        HttpMethod.GET, response -> {
+    new GraphRequest(AccessToken.getCurrentAccessToken(), "/me?fields=id,name,email,age_range",
+        null, HttpMethod.GET, response -> {
       JSONObject jsonResponse = response.getJSONObject();
       FacebookEntity facebookEntity = new FacebookEntity();
 
@@ -206,11 +269,11 @@ import rx.subjects.PublishSubject;
     context.startActivity(intent);
   }
 
-  private void startGameInviteHiddenActivity(int typeRequest, String recipientId) {
+  private void startGameInviteHiddenActivity(int typeRequest, ArrayList<String> recipientIdList) {
     Intent intent = new Intent(context, FacebookHiddenActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.putExtra(FacebookHiddenActivity.FACEBOOK_REQUEST, typeRequest);
-    intent.putExtra(FacebookHiddenActivity.FACEBOOK_RECIPIENT_ID, recipientId);
+    intent.putStringArrayListExtra(FacebookHiddenActivity.FACEBOOK_RECIPIENT_ID, recipientIdList);
     context.startActivity(intent);
   }
 

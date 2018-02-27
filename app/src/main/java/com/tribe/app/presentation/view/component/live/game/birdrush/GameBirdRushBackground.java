@@ -405,7 +405,7 @@ public class GameBirdRushBackground extends View {
       BirdRush bird = entry.getKey();
       bird.setX(xCenterBirdPos);
 
-      bird.setSpeedY(bird.getSpeedY() + gravity); // TODO SOEF
+      bird.setSpeedY(bird.getSpeedY() + gravity);
       bird.setY((int) (bird.getY() + bird.getSpeedY()));
 
       if (bird.getY() > screenUtils.getHeightPx()) {
@@ -577,7 +577,7 @@ public class GameBirdRushBackground extends View {
         birdRush.getY() + birdBtm.getHeight());
 
     dstnameLabelBird = new Rect(birdRush.getX(), birdRush.getY() + birdBtm.getHeight(),
-        birdRush.getX() + birdBtm.getWidth(), birdRush.getY() + birdBtm.getHeight()); // TODO SOEF
+        birdRush.getX() + birdBtm.getWidth(), birdRush.getY() + birdBtm.getHeight());
 
     Paint p = birdRush.putPaint();
     p.setTypeface(font);

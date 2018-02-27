@@ -982,6 +982,10 @@
 	<string name="leaderboard_new_high_score">New high score!</string>
 	<string name="leaderboard_self_is_best">%1$s\'re the best!</string>
 	<string name="leaderboard_friend_is_best">%1$s is the best!</string>
+	<string name="leaderboard_poke_positive_emojis">&#128077;,&#128513;</string>
+	<string name="leaderboard_poke_negative_emojis">&#128078;,&#128543;</string>
+	<string name="leaderboard_poke_positive_words">GG!,Congrats!</string>
+	<string name="leaderboard_poke_negative_words">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
 	
 	<!-- Hang Up -->
 	<string name="hang_up_title">TAP TO HANG UP</string>

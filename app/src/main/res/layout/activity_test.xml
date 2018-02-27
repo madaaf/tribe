@@ -1,18 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     android:orientation="vertical"
     >
 
-  <com.tribe.app.presentation.view.widget.chat.ChatView
-      android:id="@+id/chatview"
+  <View
+      android:id="@+id/bgView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_gravity="center"
-      android:gravity="center"
-      app:chatViewType="fromchat"
-
+      android:alpha="1"
+      android:background="@color/black.opacity.50"
       />
-</LinearLayout>
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      >
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:gravity="center"
+        >
+
+
+    </android.support.v4.view.ViewPager>
+
+    <LinearLayout
+        android:id="@+id/dotsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="55dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+
+    </LinearLayout>
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/txtDismiss"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_above="@+id/pager"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal|bottom"
+        android:paddingBottom="15dp"
+        android:text="@string/popup_behavior_swipe_dismiss"
+        style="@style/Title.2.White"
+        />
+  </RelativeLayout>
+
+
+</FrameLayout>

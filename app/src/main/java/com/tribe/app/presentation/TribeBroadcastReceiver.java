@@ -5,23 +5,29 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Pair;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.mvp.presenter.UserPresenter;
+import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -36,8 +42,12 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
 
   @Inject Navigator navigator;
   @Inject User user;
+  @Inject UserPresenter userPresenter;
+  @Inject StateManager stateManager;
+  @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
 
   private WeakReference<Activity> weakReferenceActivity;
+  private UserMVPViewAdapter userMVPViewAdapter;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -53,9 +63,20 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
     ApplicationComponent applicationComponent =
         ((AndroidApplication) activity.getApplicationContext()).getApplicationComponent();
     applicationComponent.inject(this);
+
+    userMVPViewAdapter = new UserMVPViewAdapter() {
+
+      @Override public void onUserInfosList(List<User> users) {
+        NotificationUtils.displayChallengeNotification(users, activity, stateManager,
+            challengeNotificationsPref, user);
+      }
+    };
+
+    userPresenter.onViewAttached(userMVPViewAdapter);
   }
 
   public void dispose() {
+    if (userPresenter != null) userPresenter.onViewDetached();
     subscriptions.clear();
     weakReferenceActivity.clear();
   }
@@ -82,8 +103,8 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
       if (notificationShortcut != null) {
         if (context instanceof ChatActivity) {
           List<User> memberInChat = null;
-          if (((ChatActivity) context).getShortcut() != null &&
-              ((ChatActivity) context).getShortcut().getMembers() != null) {
+          if (((ChatActivity) context).getShortcut() != null
+              && ((ChatActivity) context).getShortcut().getMembers() != null) {
             memberInChat = ((ChatActivity) context).getShortcut().getMembers();
           }
           boolean isSameChat =
@@ -94,8 +115,8 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
           }
         } else if (context instanceof LiveActivity) {
           List<User> memberInlive = null;
-          if (((LiveActivity) context).getShortcut() != null &&
-              ((LiveActivity) context).getShortcut().getMembers() != null) {
+          if (((LiveActivity) context).getShortcut() != null
+              && ((LiveActivity) context).getShortcut().getMembers() != null) {
             memberInlive = ((LiveActivity) context).getShortcut().getMembers();
           }
           boolean isSameChat =
@@ -165,9 +186,17 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
       onDisplayNotification.onNext(null);
     }
 
-    if (liveNotificationView != null &&
-        (weakReferenceActivity.get() != null &&
-            !(weakReferenceActivity.get() instanceof LiveActivity))) {
+    if (notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
+      liveNotificationView.getContainer().setOnClickListener(v -> {
+        List<String> usersId = new ArrayList<>();
+        usersId.add(notificationPayload.getUserId());
+        userPresenter.getUsersInfoListById(usersId);
+      });
+    }
+
+    if (liveNotificationView != null && (weakReferenceActivity.get() != null
+        && !(weakReferenceActivity.get() instanceof LiveActivity))) {
       Alerter.create(weakReferenceActivity.get(), liveNotificationView).show();
     } else if (liveNotificationView != null) {
       onShowNotificationLive.onNext(Pair.create(notificationPayload, liveNotificationView));

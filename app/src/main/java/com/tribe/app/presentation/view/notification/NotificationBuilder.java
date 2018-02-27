@@ -24,6 +24,7 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
@@ -50,6 +51,7 @@ import javax.inject.Singleton;
   @Inject @FullscreenNotifications Preference<Boolean> fullScreenNotifications;
   @Inject @FullscreenNotificationState Preference<Set<String>> fullScreenNotificationState;
   @Inject @ImmersiveCallState Preference<Boolean> immersiveCallState;
+  @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
   @Inject JobManager jobManager;
   @Inject MissedCallManager missedCallManager;
   @Inject User user;
@@ -65,7 +67,6 @@ import javax.inject.Singleton;
   public void sendBundledNotification(RemoteMessage remoteMessage) {
     NotificationPayload notificationPayload = getPayload(remoteMessage);
 
-
     if (notificationPayload != null
         && notificationPayload.getUserId() != null
         && notificationPayload.getUserId().equals(Shortcut.SUPPORT)) {
@@ -76,6 +77,7 @@ import javax.inject.Singleton;
     }
 
     if (notificationPayload != null && !StringUtils.isEmpty(notificationPayload.getClickAction())) {
+
       if (notificationPayload.getBadge() > 0) {
         userCache.updateBadgeValue(notificationPayload.getBadge());
       }
@@ -93,8 +95,8 @@ import javax.inject.Singleton;
 
       Notification notification = buildNotification(notificationPayload);
 
-      if (application.getAppState() != null &&
-          application.getAppState().equals(AppState.FOREGROUND)) {
+      if (application.getAppState() != null && application.getAppState()
+          .equals(AppState.FOREGROUND)) {
         Intent intentUnique = new Intent(BroadcastUtils.BROADCAST_NOTIFICATIONS);
         intentUnique.putExtra(BroadcastUtils.NOTIFICATION_PAYLOAD, notificationPayload);
         application.sendBroadcast(intentUnique);
@@ -174,8 +176,8 @@ import javax.inject.Singleton;
       if (notificationShortcut != null) {
         if (context instanceof ChatActivity) {
           List<User> memberInChat = null;
-          if (((ChatActivity) context).getShortcut() != null &&
-              ((ChatActivity) context).getShortcut().getMembers() != null) {
+          if (((ChatActivity) context).getShortcut() != null
+              && ((ChatActivity) context).getShortcut().getMembers() != null) {
             memberInChat = ((ChatActivity) context).getShortcut().getMembers();
           }
           boolean isSameChat =
@@ -186,8 +188,8 @@ import javax.inject.Singleton;
           }
         } else if (context instanceof LiveActivity) {
           List<User> memberInlive = null;
-          if (((LiveActivity) context).getShortcut() != null &&
-              ((LiveActivity) context).getShortcut().getMembers() != null) {
+          if (((LiveActivity) context).getShortcut() != null
+              && ((LiveActivity) context).getShortcut().getMembers() != null) {
             memberInlive = ((LiveActivity) context).getShortcut().getMembers();
           }
           boolean isSameChat =
@@ -231,8 +233,10 @@ import javax.inject.Singleton;
         } else {
           return getPendingIntentForLive(payload);
         }
-      } else if (pendingClass.equals(HomeActivity.class) &&
-          payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
+      } else if (pendingClass.equals(HomeActivity.class) && payload.getClickAction()
+          .equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
+        challengeNotificationsPref.set(
+            payload.getUserId() + "," + challengeNotificationsPref.get());
         return getPendingIntentForUserRegistered(payload);
       } else if (pendingClass.equals(ChatActivity.class)) {
         return getPendingIntentForChat(payload);
@@ -247,13 +251,13 @@ import javax.inject.Singleton;
   private Class getClassFromPayload(NotificationPayload payload) {
     if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_USER_REGISTERED)) {
       return HomeActivity.class;
-    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
+    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
       return LiveActivity.class;
-    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_MESSAGE) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE) ||
-        payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
+    } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_MESSAGE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_ONLINE)
+        || payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_FRIENDSHIP)) {
       return ChatActivity.class;
     } else if (payload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       return MissedCallDetailActivity.class;
@@ -362,4 +366,7 @@ import javax.inject.Singleton;
         : (!StringUtils.isEmpty(payload.getThread()) ? payload.getThread().hashCode()
             : (int) System.currentTimeMillis());
   }
+
+
+
 }

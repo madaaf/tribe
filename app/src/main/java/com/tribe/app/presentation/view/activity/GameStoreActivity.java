@@ -29,14 +29,19 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.view.ShortcutUtil;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -58,6 +63,9 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   @Inject UserPresenter userPresenter;
   @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
   @Inject @LastSync Preference<Long> lastSync;
+  @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
+  @Inject User currentUser;
+  @Inject StateManager stateManager;
 
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
   @BindView(R.id.layoutCall) FrameLayout layoutCall;
@@ -70,6 +78,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   private Scheduler singleThreadExecutor;
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
+  private Activity activity;
 
   // RESOURCES
 
@@ -80,7 +89,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
 
     super.onCreate(savedInstanceState);
-
+    activity = this;
     if (getIntent().getData() != null) {
       Intent newIntent = IntentUtils.getLiveIntentFromURI(this, getIntent().getData(),
           LiveActivity.SOURCE_DEEPLINK);
@@ -89,6 +98,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
     rxPermissions = new RxPermissions(this);
     initAppStateMonitor();
+    displayChallengerNotifications();
   }
 
   @Override protected void onStart() {
@@ -97,8 +107,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
-        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
+        PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync);
     }
 
@@ -112,6 +122,16 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
+  }
+
+  private void displayChallengerNotifications() {
+    if (challengeNotificationsPref != null
+        && challengeNotificationsPref.get() != null
+        && !challengeNotificationsPref.get().isEmpty()) {
+      ArrayList usersIds =
+          new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
+      userPresenter.getUsersInfoListById(usersIds);
+    }
   }
 
   @Override protected void onStop() {
@@ -175,6 +195,11 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     userMVPViewAdapter = new UserMVPViewAdapter() {
       @Override public void onUserInfos(User user) {
         onUser.onNext(user);
+      }
+
+      @Override public void onUserInfosList(List<User> users) {
+        NotificationUtils.displayChallengeNotification(users, activity, stateManager,
+            challengeNotificationsPref, currentUser);
       }
     };
   }
