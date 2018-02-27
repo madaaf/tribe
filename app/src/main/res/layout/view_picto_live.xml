@@ -8,6 +8,8 @@
       android:id="@+id/txtAction"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:duplicateParentState="true"
+      android:foreground="@drawable/selectable_button_light"
       android:maxLines="1"
       android:padding="10dp"
       android:visibility="gone"

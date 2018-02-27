@@ -21,6 +21,7 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
 
   protected LayoutInflater layoutInflater;
   protected Context context;
+  protected boolean hasChat = true;
 
   // RX SUBSCRIPTIONS / SUBJECTS
   protected final PublishSubject<View> clickMoreView = PublishSubject.create();
@@ -52,6 +53,7 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
     recipientGridViewHolder.viewListItem.onMainClick()
         .map(view -> recipientGridViewHolder.itemView)
         .subscribe(onMainClick);
+    recipientGridViewHolder.viewListItem.setHasChat(hasChat);
     return recipientGridViewHolder;
   }
 
@@ -67,6 +69,11 @@ public abstract class RecipientAdapterDelegate extends RxAdapterDelegate<List<Re
 
   private void bind(RecipientHomeViewHolder vh, Recipient recipient) {
     vh.viewListItem.setRecipient(recipient, vh);
+    vh.viewListItem.setHasChat(hasChat);
+  }
+
+  public void setHasChat(boolean hasChat) {
+    this.hasChat = hasChat;
   }
 
   public Observable<View> onClickMore() {

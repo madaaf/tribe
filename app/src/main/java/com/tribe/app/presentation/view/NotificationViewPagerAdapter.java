@@ -46,35 +46,36 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
   }
 
   @Override public Object instantiateItem(ViewGroup container, int position) {
-    View itemView = layoutInflater.inflate(R.layout.item_notification, container, false);
-    container.addView(itemView);
     NotificationModel model = list.get(position);
 
-    TextViewFont txtChallenge = itemView.findViewById(R.id.title);
-    TextViewFont subtitle = itemView.findViewById(R.id.subtitle);
-    TextViewFont content = itemView.findViewById(R.id.content);
-    TextViewFont btn1Content = itemView.findViewById(R.id.btn1Content);
-    ImageView backImage = itemView.findViewById(R.id.backImage);
-    ImageView btn1DrawableStart = itemView.findViewById(R.id.btn1DrawableStart);
-    ImageView btn1DrawableEnd = itemView.findViewById(R.id.btn1DrawableEnd);
-    AvatarView avatarView = itemView.findViewById(R.id.avatarView);
-    LinearLayout btn1Container = itemView.findViewById(R.id.btn1Container);
+    if (model.getView() == null) {
+      View itemView = layoutInflater.inflate(R.layout.item_notification, container, false);
+      container.addView(itemView);
 
-    btn1Container.setOnClickListener(v -> {
-      switch (model.getType()) {
-        case NotificationModel.POPUP_CHALLENGER:
-          break;
-        case NotificationModel.POPUP_FACEBOOK:
-          break;
-        case NotificationModel.POPUP_UPLOAD_PICTURE:
+      TextViewFont txtChallenge = itemView.findViewById(R.id.title);
+      TextViewFont subtitle = itemView.findViewById(R.id.subtitle);
+      TextViewFont content = itemView.findViewById(R.id.content);
+      TextViewFont btn1Content = itemView.findViewById(R.id.btn1Content);
+      ImageView backImage = itemView.findViewById(R.id.backImage);
+      ImageView btn1DrawableStart = itemView.findViewById(R.id.btn1DrawableStart);
+      ImageView btn1DrawableEnd = itemView.findViewById(R.id.btn1DrawableEnd);
+      AvatarView avatarView = itemView.findViewById(R.id.avatarView);
+      LinearLayout btn1Container = itemView.findViewById(R.id.btn1Container);
 
-          float delta = btn1DrawableEnd.getX() - btn1DrawableStart.getX();
-          btn1DrawableStart.animate()
-              .alpha(0f)
-              .translationX(delta)
-              .setInterpolator(new OvershootInterpolator())
-              .withStartAction(() -> {
-                btn1Content.animate()
+      btn1Container.setOnClickListener(v -> {
+        switch (model.getType()) {
+          case NotificationModel.POPUP_CHALLENGER:
+            break;
+          case NotificationModel.POPUP_FACEBOOK:
+            break;
+          case NotificationModel.POPUP_UPLOAD_PICTURE:
+
+            float delta = btn1DrawableEnd.getX() - btn1DrawableStart.getX();
+            btn1DrawableStart.animate()
+                .alpha(0f)
+                .translationX(delta)
+                .setInterpolator(new OvershootInterpolator())
+                .withStartAction(() -> btn1Content.animate()
                     .alpha(0f)
                     .setDuration(DURATION_ANIMATION / 2)
                     .withEndAction(() -> {
@@ -89,36 +90,39 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
                               .setDuration(DURATION_ANIMATION / 2))
                           .start();
                     })
-                    .start();
-              })
-              .setDuration(DURATION_ANIMATION)
-              .start();
+                    .start())
+                .setDuration(DURATION_ANIMATION)
+                .start();
 
-          break;
+            break;
+        }
+        onClickBtn1.onNext(model);
+      });
+
+      if (model.getBtn1DrawableStart() != null) {
+        btn1DrawableStart.setImageResource(model.getBtn1DrawableStart());
       }
-      onClickBtn1.onNext(model);
-    });
+      if (model.getBtn1DrawableEnd() != null) {
+        btn1DrawableEnd.setImageResource(model.getBtn1DrawableEnd());
+      }
 
-    if (model.getBtn1DrawableStart() != null) {
-      btn1DrawableStart.setImageResource(model.getBtn1DrawableStart());
-    }
-    if (model.getBtn1DrawableEnd() != null) {
-      btn1DrawableEnd.setImageResource(model.getBtn1DrawableEnd());
-    }
+      if (model.getContent() != null) content.setText(model.getContent());
+      if (model.getSubTitle() != null) subtitle.setText(model.getSubTitle());
+      if (model.getTitle() != null) txtChallenge.setText(model.getTitle());
+      if (model.getBtn1Content() != null) btn1Content.setText(model.getBtn1Content());
+      if (model.getBackground() != null) {
+        backImage.setImageDrawable(ContextCompat.getDrawable(context, model.getBackground()));
+      }
+      if (model.getProfilePicture() != null) avatarView.load(model.getProfilePicture());
+      if (model.getLogoPicture() != null) {
+        avatarView.setBackground(content.getResources().getDrawable(model.getLogoPicture()));
+      }
 
-    if (model.getContent() != null) content.setText(model.getContent());
-    if (model.getSubTitle() != null) subtitle.setText(model.getSubTitle());
-    if (model.getTitle() != null) txtChallenge.setText(model.getTitle());
-    if (model.getBtn1Content() != null) btn1Content.setText(model.getBtn1Content());
-    if (model.getBackground() != null) {
-      backImage.setImageDrawable(ContextCompat.getDrawable(context, model.getBackground()));
+      return itemView;
+    } else {
+      container.addView(model.getView());
+      return model.getView();
     }
-    if (model.getProfilePicture() != null) avatarView.load(model.getProfilePicture());
-    if (model.getLogoPicture() != null) {
-      avatarView.setBackground(content.getResources().getDrawable(model.getLogoPicture()));
-    }
-
-    return itemView;
   }
 
   @Override public boolean isViewFromObject(View view, Object object) {

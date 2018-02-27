@@ -118,7 +118,8 @@ import timber.log.Timber;
               }
 
               if (shouldUpdatePlayingStatus) {
-                if (userRealm.isPlaying() != null) {
+                if (userRealm.isPlaying() != null &&
+                    !StringUtils.isEmpty(userRealm.isPlaying().getGame_id())) {
                   onAddedPlaying.onNext(Pair.create(userRealm.getId(),
                       gson.fromJson(jo.get("is_playing"), UserPlayingRealm.class)));
                 } else {

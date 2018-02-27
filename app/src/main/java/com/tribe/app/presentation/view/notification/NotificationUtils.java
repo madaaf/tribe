@@ -45,12 +45,12 @@ public class NotificationUtils {
       return builder.build();
     }
 
-    if ((notificationPayload.getClickAction() == null && StringUtils.isEmpty(
-        notificationPayload.getBody())) || notificationPayload.getClickAction()
-        .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+    if ((notificationPayload.getClickAction() == null &&
+        StringUtils.isEmpty(notificationPayload.getBody())) ||
+        notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       return null;
-    } else if (notificationPayload.getClickAction() == null && !StringUtils.isEmpty(
-        notificationPayload.getBody())) {
+    } else if (notificationPayload.getClickAction() == null &&
+        !StringUtils.isEmpty(notificationPayload.getBody())) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       return builder.build();
     }
@@ -228,8 +228,23 @@ public class NotificationUtils {
   public static void displayChallengeNotification(List<User> users, Context context,
       StateManager stateManager,
       @ChallengeNotifications Preference<String> challengeNotificationsPref, User currentUser) {
-    List<NotificationModel> list = new ArrayList<>();
+    List<NotificationModel> list = getChallengeNotification(users, context);
     NotifView view = new NotifView(context);
+
+    if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
+      list.add(NotificationUtils.getFbNotificationModel(context));
+      if (currentUser.getProfilePicture() == null || currentUser.getProfilePicture().isEmpty()) {
+        list.add(NotificationUtils.getAvatarNotificationModel(context));
+      }
+    }
+    view.show((Activity) context, list);
+    challengeNotificationsPref.set("");
+    stateManager.addTutorialKey(StateManager.FIRST_CHALLENGE_POPUP);
+  }
+
+  public static List<NotificationModel> getChallengeNotification(List<User> users,
+      Context context) {
+    List<NotificationModel> list = new ArrayList<>();
     for (User user : users) {
       String title =
           context.getString(R.string.new_challenger_popup_subtitle, user.getDisplayName());
@@ -248,15 +263,7 @@ public class NotificationUtils {
       list.add(a);
     }
 
-    if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
-      list.add(NotificationUtils.getFbNotificationModel(context));
-      if (currentUser.getProfilePicture() == null || currentUser.getProfilePicture().isEmpty()) {
-        list.add(NotificationUtils.getAvatarNotificationModel(context));
-      }
-    }
-    view.show((Activity) context, list);
-    challengeNotificationsPref.set("");
-    stateManager.addTutorialKey(StateManager.FIRST_CHALLENGE_POPUP);
+    return list;
   }
 
   public static void displayUplaodAvatarNotification(Context context) {

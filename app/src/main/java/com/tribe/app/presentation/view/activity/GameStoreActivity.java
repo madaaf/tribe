@@ -32,8 +32,14 @@ import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
+import com.tribe.app.presentation.view.NotifView;
+import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
+import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.popup.PopupManager;
+import com.tribe.app.presentation.view.popup.listener.PopupDigestListener;
+import com.tribe.app.presentation.view.popup.view.PopupDigest;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.PulseLayout;
@@ -78,7 +84,10 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   private Scheduler singleThreadExecutor;
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
-  private Activity activity;
+  private List<String> userIdsDigest;
+  private List<String> roomIdsDigest;
+  private List<User> usersChallenge;
+  private NotifView notifView;
 
   // RESOURCES
 
@@ -89,16 +98,20 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
 
     super.onCreate(savedInstanceState);
-    activity = this;
+
     if (getIntent().getData() != null) {
       Intent newIntent = IntentUtils.getLiveIntentFromURI(this, getIntent().getData(),
           LiveActivity.SOURCE_DEEPLINK);
       if (newIntent != null) navigator.navigateToIntent(this, newIntent);
     }
 
+    userIdsDigest = new ArrayList<>();
+    roomIdsDigest = new ArrayList<>();
+    usersChallenge = new ArrayList<>();
+
     rxPermissions = new RxPermissions(this);
     initAppStateMonitor();
-    displayChallengerNotifications();
+    loadChallengeNotificationData();
   }
 
   @Override protected void onStart() {
@@ -107,8 +120,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
-        PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
+        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync);
     }
 
@@ -124,13 +137,14 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
         getCallingIntent(this, null, null));
   }
 
-  private void displayChallengerNotifications() {
-    if (challengeNotificationsPref != null
-        && challengeNotificationsPref.get() != null
-        && !challengeNotificationsPref.get().isEmpty()) {
+  private void loadChallengeNotificationData() {
+    if (challengeNotificationsPref != null &&
+        challengeNotificationsPref.get() != null &&
+        !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
+      challengeNotificationsPref.set("");
     }
   }
 
@@ -198,8 +212,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       }
 
       @Override public void onUserInfosList(List<User> users) {
-        NotificationUtils.displayChallengeNotification(users, activity, stateManager,
-            challengeNotificationsPref, currentUser);
+        usersChallenge = users;
       }
     };
   }
@@ -209,12 +222,70 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
     subscriptions.add(onUser.onBackpressureBuffer().subscribeOn(singleThreadExecutor).map(user -> {
       boolean hasLive = false, hasNewMessage = false;
+      List<HomeAdapterInterface> items = new ArrayList<>();
       for (Recipient recipient : user.getRecipientList()) {
         if (recipient instanceof Invite) {
+          Invite invite = (Invite) recipient;
           hasLive = true;
-        } else if (recipient instanceof Shortcut && !hasNewMessage) {
-          hasNewMessage = !recipient.isRead();
+          if (!roomIdsDigest.contains(invite.getRoom().getId())) {
+            roomIdsDigest.add(invite.getRoom().getId());
+            items.add(recipient);
+          }
+        } else if (recipient instanceof Shortcut) {
+          Shortcut shortcut = (Shortcut) recipient;
+          if (!hasNewMessage) hasNewMessage = !recipient.isRead();
+          if (shortcut.isSingle()) {
+            User member = shortcut.getSingleFriend();
+            if (member.isPlayingAGame()) {
+              if (!userIdsDigest.contains(member.getId())) {
+                userIdsDigest.add(member.getId());
+                items.add(shortcut);
+              }
+            }
+          }
         }
+      }
+
+      List<NotificationModel> notificationModelList = new ArrayList<>();
+
+      if (items.size() > 0) {
+        PopupDigest popupDigest =
+            (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
+        popupDigest.setItems(items);
+
+        PopupManager popupManager = PopupManager.create(new PopupManager.Builder().activity(this)
+            .dimBackground(false)
+            .listener(new PopupDigestListener() {
+              @Override public void onClick(Recipient recipient) {
+                navigator.navigateToLive(GameStoreActivity.this, recipient,
+                    recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+                        : LiveActivity.SOURCE_GRID, TagManagerUtils.SECTION_ONGOING, null);
+              }
+
+              @Override public void onClickMore() {
+                onClickHome();
+              }
+            })
+            .view(popupDigest));
+
+        notificationModelList.add(
+            new NotificationModel.Builder().view(popupManager.getView()).build());
+      }
+
+      if (usersChallenge != null && usersChallenge.size() > 0) {
+        notificationModelList.addAll(
+            NotificationUtils.getChallengeNotification(usersChallenge, GameStoreActivity.this));
+        usersChallenge = null;
+      }
+
+      if (notificationModelList.size() > 0) {
+        if (notifView != null) {
+          notifView.hideView();
+          notifView = null;
+        }
+
+        notifView = new NotifView(this);
+        notifView.show(this, notificationModelList);
       }
 
       if (hasLive) {

@@ -103,10 +103,10 @@ public class PictoLiveView extends FrameLayout {
     txtAction.setVisibility(View.VISIBLE);
 
     if (status == PLAYING) {
-      txtAction.setText(R.string.home_action_join);
+      txtAction.setText(R.string.home_action_ask_join);
       gradientDrawable.setColor(ContextCompat.getColor(getContext(), R.color.blue_new));
     } else {
-      txtAction.setText(R.string.home_action_ask_join);
+      txtAction.setText(R.string.home_action_join);
       gradientDrawable.setColor(ContextCompat.getColor(getContext(), R.color.red));
     }
   }

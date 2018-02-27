@@ -74,8 +74,8 @@ public class UserPresenter implements Presenter {
     }
 
     @Override public void onNext(List<User> users) {
-      super.onNext(users);
       if (userMVPView != null) userMVPView.onUserInfosList(users);
+      unsubscribe();
     }
   }
 

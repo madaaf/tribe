@@ -16,13 +16,14 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.adapter.viewholder.RecipientHomeViewHolder;
-import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
+import com.tribe.app.presentation.view.widget.avatar.PictoAvatarView;
 import com.tribe.app.presentation.view.widget.picto.PictoChatView;
 import com.tribe.app.presentation.view.widget.picto.PictoLiveView;
 import com.tribe.app.presentation.view.widget.text.TextHomeNameActionView;
+import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -40,9 +41,11 @@ public class ShortcutListView extends RelativeLayout {
   public static final int CHAT = 2;
   public static final int LIVE_CHAT = 3;
 
+  @Inject ScreenUtils screenUtils;
+
   @BindView(R.id.viewPictoChat) PictoChatView viewPictoChat;
   @BindView(R.id.viewPictoLive) PictoLiveView viewPictoLive;
-  @BindView(R.id.txtEmojiGame) EmojiGameView txtEmojiGame;
+  @BindView(R.id.viewPictoAvatar) PictoAvatarView viewPictoAvatar;
   @BindView(R.id.viewNewAvatar) NewAvatarView viewAvatar;
   @BindView(R.id.viewHomeNameAction) TextHomeNameActionView viewHomeNameAction;
 
@@ -61,6 +64,7 @@ public class ShortcutListView extends RelativeLayout {
   private Unbinder unbinder;
   private int type;
   private Recipient recipient;
+  private boolean hasChat = true;
 
   public ShortcutListView(Context context) {
     super(context);
@@ -107,6 +111,8 @@ public class ShortcutListView extends RelativeLayout {
     LayoutInflater.from(getContext()).inflate(resLayout, this);
     unbinder = ButterKnife.bind(this);
 
+    viewPictoChat.setVisibility(hasChat ? View.VISIBLE : View.GONE);
+
     switch (type) {
       case NORMAL:
         viewPictoLive.setStatus(PictoLiveView.INACTIVE);
@@ -141,12 +147,25 @@ public class ShortcutListView extends RelativeLayout {
     viewPictoLive.setOnClickListener(v -> onLive.onNext(v));
   }
 
+  public void setHasChat(boolean hasChat) {
+    this.hasChat = hasChat;
+
+    MarginLayoutParams params = (MarginLayoutParams) viewAvatar.getLayoutParams();
+    if (hasChat) {
+      viewPictoChat.setVisibility(View.VISIBLE);
+      params.leftMargin = 0;
+    } else {
+      viewPictoChat.setVisibility(View.GONE);
+      params.leftMargin = screenUtils.dpToPx(15);
+    }
+  }
+
   public void setRecipient(Recipient recipient, RecipientHomeViewHolder vh) {
     subscriptions.clear();
 
     this.recipient = recipient;
 
-    txtEmojiGame.clear();
+    viewPictoAvatar.setVisibility(View.GONE);
 
     if (!(recipient instanceof Invite)) {
       Shortcut shortcut = (Shortcut) recipient;
@@ -154,16 +173,18 @@ public class ShortcutListView extends RelativeLayout {
 
       if (shortcut.isSingle()) {
         User user = shortcut.getSingleFriend();
-        txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
 
-        if (user.isPlaying() != null &&
-            !StringUtils.isEmpty(user.isPlaying().getGame_id()) &&
-            !StringUtils.isEmpty(user.isPlaying().getEmoji())) {
+        if (user.isPlayingAGame()) {
           viewPictoLive.setStatus(PictoLiveView.PLAYING);
+          viewPictoAvatar.setVisibility(View.VISIBLE);
+          viewPictoAvatar.setPlaying(user.isPlaying().getEmoji());
         } else {
           viewPictoLive.setStatus(PictoLiveView.INACTIVE);
         }
       }
+    } else {
+      viewPictoAvatar.setVisibility(View.VISIBLE);
+      viewPictoAvatar.setLive();
     }
 
     viewAvatar.load(recipient);

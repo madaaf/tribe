@@ -8,8 +8,6 @@ import com.tribe.app.presentation.mvp.presenter.SearchPresenter;
 import com.tribe.app.presentation.mvp.presenter.SettingsPresenter;
 import com.tribe.app.presentation.utils.facebook.FacebookHiddenActivity;
 import com.tribe.app.presentation.utils.mediapicker.MediaHiddenActivity;
-import com.tribe.app.presentation.view.NotifView;
-import com.tribe.app.presentation.view.NotificationViewPagerAdapter;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
@@ -27,7 +25,6 @@ import com.tribe.app.presentation.view.activity.ViewStackActivity;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionTokenView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
-import com.tribe.app.presentation.view.component.games.GamesStoreView;
 import com.tribe.app.presentation.view.component.games.LeaderboardDetailsView;
 import com.tribe.app.presentation.view.component.games.LeaderboardMainView;
 import com.tribe.app.presentation.view.component.games.LeaderboardPage;
@@ -51,8 +48,6 @@ import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackAlienView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackBackground;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicView;
-import com.tribe.app.presentation.view.component.live.game.birdrush.BirdRush;
-import com.tribe.app.presentation.view.component.live.game.birdrush.BirdRushObstacle;
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushBackground;
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
@@ -70,6 +65,7 @@ import com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberVie
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.dialog_fragment.AuthenticationDialogFragment;
 import com.tribe.app.presentation.view.dialog_fragment.SurpriseDialogFragment;
+import com.tribe.app.presentation.view.popup.view.PopupDigest;
 import com.tribe.app.presentation.view.widget.AvatarsSuperposedLayout;
 import com.tribe.app.presentation.view.widget.PopupContainerView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
@@ -209,6 +205,8 @@ import dagger.Component;
 
   void inject(LeaderboardPage leaderboardPage);
 
+  void inject(PopupDigest popupDigest);
+
   /**
    * GAMES
    */
@@ -220,13 +218,14 @@ import dagger.Component;
   void inject(GameTriviaView gameTriviaView);
 
   void inject(GameBattleMusicView gameBattleMusicView);
+
   void inject(GameBirdRushView gameBirdRushView);
+
   void inject(GameChallengesView gameChallengesView);
 
   void inject(GameDrawView gameDrawView);
 
   void inject(GameAliensAttackBackground gameAliensAttackBackground);
-
 
   void inject(GameBirdRushBackground gameBirdRushBackground);
 
@@ -235,8 +234,6 @@ import dagger.Component;
   void inject(GameEngine gameEngine);
 
   void inject(GameStoreActivity newGameActivity);
-
-  void inject(GamesStoreView gamesStoreView);
 
   void inject(LeaderboardMainView leaderboardMainView);
 

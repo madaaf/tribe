@@ -149,10 +149,9 @@ public class NotifView extends FrameLayout {
           subscriptions.add(Observable.timer((300), TimeUnit.MILLISECONDS)
               .onBackpressureDrop()
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(aLong -> {
-                hideView();
-              }));
+              .subscribe(aLong -> hideView()));
         }
+
         pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
       }
     }));
@@ -216,7 +215,7 @@ public class NotifView extends FrameLayout {
     }).start();
   }
 
-  private void hideView() {
+  public void hideView() {
     // if (true) return;
     // if (disposeView) return;
     if (listener != null) listener.onFinishView();

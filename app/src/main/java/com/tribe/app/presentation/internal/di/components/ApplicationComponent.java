@@ -134,6 +134,7 @@ import com.tribe.app.presentation.view.component.live.game.common.GameAnswersVie
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
+import com.tribe.app.presentation.view.popup.view.PopupParentView;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -322,6 +323,8 @@ public interface ApplicationComponent {
   void inject(TextViewScore textViewScore);
 
   void inject(TextViewRanking textViewRanking);
+
+  void inject(PopupParentView popupView);
 
   // JOBS
   void inject(BaseJob baseJob);

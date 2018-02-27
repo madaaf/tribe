@@ -1026,9 +1026,10 @@
 	<string name="poke_chat_event_below">%1$s just made fun of your score at %2$s!</string>
 	<string name="poke_chat_tap_to_play">TAP TO PLAY</string>
 	<string name="poke_share_score">My score at %1$s on @heytribe is %2$d. What\'s yours?</string>
-	<string name="poke_emoji_above">&#128525;,&#129321;,&#128563;,&#129303;,&#128558;,&#128580;,&#128125;</string>
-	<string name="poke_emoji_below">&#128514;,&#129315;,&#128517;,&#128169;,&#128569;,&#128518;,&#128584;</string>
-	<string name="poke_emoji_own">&#127941;</string>
+	<string name="poke_emoji_above">:heart_eyes:,:flushed:,:hugs:,:open_mouth:,:roll_eyes:,:alien:</string>
+	<string name="poke_emoji_below">:joy:,:rofl:,:sweat_smile:,:poop:,:joy_cat:,:laughing:,:see_no_evil:</string>
+	<string name="poke_emoji_own">:medal_sports:</string>
+	<string name="poke_emoji_disabled">:hourglass:</string>
 	
 	<!-- Upload Picture Popup -->
 	<string name="upload_picture_popup_title">Look prettier with a\nprofile picture!</string>

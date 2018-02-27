@@ -1,6 +1,10 @@
 package com.tribe.app.presentation.view;
 
+import android.os.Build;
 import android.support.annotation.StringDef;
+import android.view.View;
+import com.tribe.app.presentation.view.popup.view.PopupParentView;
+import com.tribe.app.presentation.view.popup.view.PopupView;
 
 /**
  * Created by madaaflak on 09/02/2018.
@@ -25,6 +29,7 @@ public class NotificationModel {
   private Integer background;
   private String userId;
   private @NotificationType String type;
+  private View view;
 
   private String btn1Content;
   private Integer btn1DrawableStart;
@@ -44,6 +49,7 @@ public class NotificationModel {
     this.btn1DrawableEnd = b.btn1DrawableEnd;
     this.btn1DrawableStart = b.btn1DrawableStart;
     this.btn1Background = b.btn1Background;
+    this.view = b.view;
   }
 
   public Integer getBtn1Background() {
@@ -94,6 +100,10 @@ public class NotificationModel {
     return btn1DrawableEnd;
   }
 
+  public View getView() {
+    return view;
+  }
+
   public static class Builder {
     private String subTitle;
     private String title;
@@ -106,6 +116,7 @@ public class NotificationModel {
     private Integer btn1DrawableEnd;
     private String btn1Content;
     private Integer btn1Background;
+    private View view;
 
     private @NotificationType String type;
 
@@ -166,6 +177,11 @@ public class NotificationModel {
 
     public Builder title(String f) {
       this.title = f;
+      return this;
+    }
+
+    public Builder view(View view) {
+      this.view = view;
       return this;
     }
 
