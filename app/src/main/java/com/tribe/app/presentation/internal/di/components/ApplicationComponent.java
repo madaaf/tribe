@@ -78,6 +78,7 @@ import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
+import com.tribe.app.presentation.utils.preferences.WebSocketUrlOverride;
 import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.GameLeaderboardActivity;
@@ -456,6 +457,8 @@ public interface ApplicationComponent {
   @UISounds Preference<Boolean> uiSounds();
 
   @RoutingMode Preference<String> routingMode();
+
+  @WebSocketUrlOverride Preference<String> webSocketUrlOverride();
 
   @NewWS Preference<Boolean> newWs();
 

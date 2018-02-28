@@ -38,6 +38,7 @@ import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
+import com.tribe.app.presentation.utils.preferences.WebSocketUrlOverride;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import dagger.Module;
 import dagger.Provides;
@@ -188,6 +189,11 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @RoutingMode Preference<String> provideRoutingMode(
       RxSharedPreferences prefs) {
     return prefs.getString(PreferencesUtils.ROUTING_MODE, TribeLiveOptions.ROUTED);
+  }
+
+  @Provides @Singleton @WebSocketUrlOverride Preference<String> provideWebsocketUrl(
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.WEBSOCKET_URL, "");
   }
 
   @Provides @Singleton @NewWS Preference<Boolean> provideNewWS(RxSharedPreferences prefs) {
