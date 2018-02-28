@@ -14,12 +14,15 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import butterknife.Unbinder;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -29,12 +32,16 @@ import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribeSession;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+import org.json.JSONException;
+import org.json.JSONObject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -65,6 +72,7 @@ public abstract class GameView extends FrameLayout {
   protected String currentMasterId;
   protected boolean landscapeMode = false;
   protected TextViewFont txtViewLandscape;
+  protected String previousSortedHash;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -183,6 +191,39 @@ public abstract class GameView extends FrameLayout {
 
   protected interface LabelListener {
     void call();
+  }
+
+  protected void resetLiveScores() {
+    for (LiveStreamView view : liveViewsMap.values()) {
+      view.updateScoreWithEmoji(0, null);
+    }
+  }
+
+  protected void updateLiveScores(Map<String, Integer> scores,
+      Map<String, GameViewWithRanking.RankingStatus> statuses) {
+    Collection<Integer> rankings = scores.values();
+    int maxRanking = rankings != null && rankings.size() > 0 ? Collections.max(rankings) : 0;
+    int minRanking = rankings != null && rankings.size() > 0 ? Collections.min(rankings) : 0;
+
+    for (String userId : liveViewsMap.keySet()) {
+      LiveStreamView liveStreamView = liveViewsMap.get(userId);
+      if (scores.get(userId) != null) {
+        int newScore = scores.get(userId);
+        int oldScore = liveStreamView.getScore();
+        String statusText = statuses.containsKey(userId) ? statuses.get(userId).getEmoji() : "";
+        String emojiText =
+            (newScore > 0 && newScore == maxRanking ? EmojiParser.demojizedText(":crown:")
+                : ((newScore == minRanking ? EmojiParser.demojizedText(":poop:") : "")));
+        liveStreamView.updateScoreWithEmoji(newScore, statusText + emojiText);
+        if (newScore != oldScore) liveStreamView.bounceView();
+      } else {
+        liveStreamView.updateScoreWithEmoji(0, null);
+      }
+    }
+  }
+
+  protected void receiveMessage(TribeSession tribeSession, JSONObject jsonObject) {
+
   }
 
   /**
