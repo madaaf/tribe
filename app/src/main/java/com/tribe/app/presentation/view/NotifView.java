@@ -275,6 +275,7 @@ public class NotifView extends FrameLayout {
     setVisibility(GONE);
     post(() -> decorView.removeView(v));
     clearAnimation();
+    decorView.removeView(v);
     subscriptions.unsubscribe();
   }
 

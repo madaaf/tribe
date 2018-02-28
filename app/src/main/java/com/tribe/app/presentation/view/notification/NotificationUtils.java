@@ -265,7 +265,8 @@ public class NotificationUtils {
 
     if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
       list.add(NotificationUtils.getFbNotificationModel(context));
-      if (currentUser.getProfilePicture() == null || currentUser.getProfilePicture().isEmpty()) {
+      if (true) {
+        //if (currentUser.getProfilePicture() == null || currentUser.getProfilePicture().isEmpty()) {
         list.add(NotificationUtils.getAvatarNotificationModel(context));
       }
     }

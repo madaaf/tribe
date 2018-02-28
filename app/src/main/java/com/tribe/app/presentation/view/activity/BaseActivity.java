@@ -22,14 +22,19 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.mvp.presenter.UserPresenter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import java.util.ArrayList;
+import com.tribe.app.presentation.view.utils.StateManager;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
@@ -38,6 +43,7 @@ import rx.subscriptions.CompositeSubscription;
  * Base {@link android.app.Activity} class for every Activity in this application.
  */
 public abstract class BaseActivity extends AppCompatActivity {
+  public static boolean firstLeaveRoom;
 
   protected static boolean isFristLeaveRoom = false;
   private Context context;
@@ -52,7 +58,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 
   @Inject @HasSoftKeys Preference<Boolean> hasSoftKeys;
 
-  private CompositeSubscription subscriptions = new CompositeSubscription();
+  @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
+
+  @Inject StateManager stateManager;
+
+  @Inject UserPresenter userPresenter;
+
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
   @Override protected void onStart() {
     super.onStart();
@@ -78,6 +90,30 @@ public abstract class BaseActivity extends AppCompatActivity {
     super.onResume();
     if (getResources().getBoolean(R.bool.isTablet)) {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
+    displayChallengerNotifications();
+  }
+
+  private void displayChallengerNotifications() {
+    // TODO MOCK  SOEF TO REMOVE
+    ArrayList<String> ok = new ArrayList<>();
+    ok.add("HkXTE2vIf");
+    ok.add("HJ8pOE_i-");
+    ok.add("ry8nB63dW");
+    //  userPresenter.getUsersInfoListById(ok);
+
+    if (challengeNotificationsPref != null
+        && challengeNotificationsPref.get() != null
+        && !challengeNotificationsPref.get().isEmpty()) {
+      ArrayList usersIds =
+          new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
+      userPresenter.getUsersInfoListById(usersIds); //SOEF
+    } else if (firstLeaveRoom) {
+      List<NotificationModel> list = new ArrayList<>();
+      NotifView view = new NotifView(getBaseContext());
+      NotificationModel a = NotificationUtils.getFbNotificationModel(this);
+      list.add(a);
+      view.show(this, list);
     }
   }
 
