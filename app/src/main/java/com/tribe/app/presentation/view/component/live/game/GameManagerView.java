@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Pair;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -22,15 +23,13 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.GameData;
-import com.tribe.app.presentation.view.activity.BaseActivity;
-import com.tribe.app.presentation.view.activity.corona.GameCoronaFragment;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicView;
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
-import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaViewOld;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
@@ -98,6 +97,9 @@ public class GameManagerView extends FrameLayout {
   private void initView() {
     initDependencyInjector();
     unbinder = ButterKnife.bind(this);
+
+    setId(View.generateViewId());
+
     gameManager = GameManager.getInstance(getContext());
     peerMap = new HashMap<>();
     invitedMap = new HashMap<>();
@@ -139,13 +141,7 @@ public class GameManagerView extends FrameLayout {
           currentGame = sessionGamePair.second;
 
           if (currentGameView == null) {
-            //addGameView(computeGameView(currentGame, sessionGamePair.first.getUserId()));
-            GameCoronaFragment gcf = new GameCoronaFragment();
-            ((BaseActivity) getContext()).getSupportFragmentManager()
-                .beginTransaction()
-                .add(R.id.viewLiveContainer, gcf)
-                .commit();
-            currentGameView = gcf.coronaView;
+            addGameView(computeGameView(currentGame, sessionGamePair.first.getUserId()));
             return;
           }
 
@@ -292,7 +288,7 @@ public class GameManagerView extends FrameLayout {
       subscriptionsGame.add(gameWebView.onAddScore().subscribe(onAddScore));
       gameView = gameWebView;
     } else if (game.isCorona()) {
-      GameCoronaView gameCoronaView = new GameCoronaView(getContext());
+      GameCoronaViewOld gameCoronaView = new GameCoronaViewOld(getContext());
       subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
       gameView = gameCoronaView;
     }

@@ -6,7 +6,7 @@
     android:background="@color/yellow"
     >
 
-  <com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView
+  <com.tribe.app.presentation.view.component.live.game.corona.GameCoronaViewOld
       android:id="@+id/coronaView"
       android:layout_width="match_parent"
       android:layout_height="match_parent"

@@ -20,17 +20,6 @@ local function removeShownBonus ()
 	end
 end
 
-local function removeWonBonus ()
-
-	local group = wonBonus
-	if group then
-		transition.cancel(group)
-		transition.to(group, { y=-100, time=125, onComplete=function() 
-	 		display.remove(group)
-	 	end})
-	end
-end
-
 local function showBonus (text, icon, useEventName)
 
 	removeShownBonus()
@@ -51,6 +40,9 @@ local function showBonus (text, icon, useEventName)
  	group:insert(arrow)
  	group:insert(background)
  	group:insert(icon)
+ 	
+ 	icon.isHitTestable = true
+ 	background.isHitTestable = true
 
  	transition.to(group, { x=40, rotation=-3, time=125 })
 
@@ -61,28 +53,12 @@ local function showBonus (text, icon, useEventName)
  	group:addEventListener('touch', function (event)
 
  		if event.phase == "began" then
-			if group == pendingShownBonus then
 
-	 			removeWonBonus()
+			removeShownBonus()
 
-	 			pendingShownBonus = nil
-	 			wonBonus = group
-	 			transition.cancel(group)
-
-		 		transition.fadeOut(text)
-		 		transition.fadeOut(arrow)
-		 		transition.fadeOut(background)
-
-		 		transition.moveTo(icon, { x=screenW/2, y=95, time=200 })
-
-		 	elseif group == wonBonus then
-
-		 		removeWonBonus()
-
-		 		if listeners[useEventName] then
-		 			listeners[useEventName]()
-		 		end
-		 	end
+		 	if listeners[useEventName] then
+		 		listeners[useEventName]()
+			end
 	 	end
  	end)
 end
@@ -97,7 +73,6 @@ end
 
 exports.removeBonuses = function ()
 	removeShownBonus()
-	removeWonBonus()
 end
 
 exports.showBomb = function (params)

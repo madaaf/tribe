@@ -11,6 +11,7 @@ local EVENT_ALIEN_KILLED			 = 'alienKilled'
 local EVENT_ALIEN_REACHED_THE_GROUND = 'alienReachedTheGround'
 
 local model = require 'model'
+local boom  = require 'boom'
 
 ---------------------------------------------------------------------------------
 
@@ -22,8 +23,6 @@ local function loadGround()
 	ground.anchorY = 1
 	ground:setFillColor(0,0,0,0)
 
-	physics.addBody(ground, "static", { friction=0.3 })
-	
 	group:insert(ground)
 end
 
@@ -37,7 +36,7 @@ local function loadTopGradient()
 	group:insert(topGradient)
 end
 
-local function removeAlien(alienGroup) 
+local function scaleDownAndRemoveAlien(alienGroup) 
 
 	transition.cancel(alienGroup)
 
@@ -52,16 +51,20 @@ local function showPointsAndRemoveAlien(alienGroup, points)
 
 	transition.cancel(alienGroup)
 
-	local pointsText = display.newText("" .. points, screenW/2, screenH/2 + 20, "assets/fonts/GULKAVE-REGULAR.ttf", 30 )
- 		pointsText.alpha = 0
- 		pointsText.xScale, pointsText.yScale = 0.1,0.1
- 		pointsText.x, pointsText.y = alienImage.x, alienImage.y + 10
- 		alienGroup:insert(pointsText)
- 		transition.to(pointsText, { xScale=1, yScale=1, alpha=1, time=125, onComplete=function()
- 			transition.to(pointsText, { xScale=0.1, yScale=0.1, alpha=0, time=125, delay=100, onComplete=function () 
-		 		display.remove(alienGroup)
-		 	end })
+	local boomSprite = boom.newSprite(alienGroup)
+	boomSprite.x, boomSprite.y = alienImage.x, alienImage.y + 10
+	boomSprite:play()
+
+	local pointsText = display.newText("" .. points, screenW/2, screenH/2 + 20, "assets/fonts/CircularStd-Black.otf", 30 )
+	pointsText.alpha = 0
+	pointsText.xScale, pointsText.yScale = 0.1,0.1
+	pointsText.x, pointsText.y = alienImage.x, alienImage.y + 10
+	alienGroup:insert(pointsText)
+	transition.to(pointsText, { xScale=1, yScale=1, alpha=1, time=125, onComplete=function()
+		transition.to(pointsText, { xScale=0.1, yScale=0.1, alpha=0, time=125, delay=100, onComplete=function () 
+ 			display.remove(alienGroup)
  		end })
+	end })
 
 	local params = { xScale=0.1, yScale=0.1, alpha=0, time=125 }
 	transition.to(alienImage, params)
@@ -80,7 +83,8 @@ local function onTouchAlien(event)
 
 			local points = alienGroup.tapsToKill
 
-			if event.y > (screenH - 0.25) then
+			-- 0.85 to ignore the ground, 0.9 because we double the points in the last 10%.
+			if event.y > (((screenH * 0.85) * 0.9) - alienGroup.height/2) then
 				points = points * 2
 			end
 
@@ -119,7 +123,7 @@ local function onCollisionAlien(alienGroup)
 		alienGroup:insert(alienImageLost)
 
 		if gameEnded then
-			removeAlien(alienGroup)
+			scaleDownAndRemoveAlien(alienGroup)
 
 		else
 			if listeners[EVENT_ALIEN_REACHED_THE_GROUND] then
@@ -197,7 +201,7 @@ aliens.pop = function(alien, paceFactor)
 	}
 
 	local time = alien.speed * 1000 * paceFactor
-	transition.to(alienGroup, { xScale=0.84, yScale=0.84, y=alienTargetY - alienImage.height/2, time=time, onComplete=onCollisionAlien })
+	transition.to(alienGroup, { y=alienTargetY - alienImage.height/2, time=time, onComplete=onCollisionAlien })
 
 	alienGroup:addEventListener('touch', onTouchAlien)
 
@@ -221,7 +225,7 @@ aliens.changeAliensSpeed = function(paceFactor)
 			log('remainingTime = ' .. remainingTime)
 
 			transition.cancel(alienGroup)
-			transition.to(alienGroup, { xScale=0.84, yScale=0.84, y=alienTargetY - alienImage.height/2, time=remainingTime, onComplete=onCollisionAlien })
+			transition.to(alienGroup, { y=alienTargetY - alienImage.height/2, time=remainingTime, onComplete=onCollisionAlien })
 		end
 	end
 end
@@ -252,7 +256,7 @@ aliens.gameStarted = function()
 	
 	for i=1,group.numChildren do
 		if group[i].alien then
-			removeAlien(group[i])
+			scaleDownAndRemoveAlien(group[i])
 		end
 	end
 end

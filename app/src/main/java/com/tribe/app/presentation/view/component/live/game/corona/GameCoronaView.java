@@ -1,53 +1,61 @@
 package com.tribe.app.presentation.view.component.live.game.corona;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.os.AsyncTask;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
-import android.util.Log;
-import com.ansca.corona.CoronaView;
+import android.view.View;
+import android.webkit.ConsoleMessage;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.FontUtils;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
-import com.tribe.app.presentation.view.component.live.game.common.GameView;
+import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
-import com.tribe.tribelivesdk.model.TribeSession;
-import com.tribe.tribelivesdk.util.JsonUtils;
-import java.util.HashMap;
-import java.util.Hashtable;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
 /**
- * Created by nicolasbradier on 20/02/2018.
+ * Created by tiago on 11/13/2017.
  */
 
-public class GameCoronaView extends GameView {
+public class GameCoronaView extends GameViewWithEngine {
 
-  protected static final String ACTION_NEW_GAME = "newGame";
-  private static final String ACTION_USER_GAME_OVER = "userGameOver";
-  private static final String ACTION_USER_WAITING = "userWaiting";
-  private static final String ACTION_USER_READY = "userReady";
-  private static final String ACTION_SHOW_USER_LOST = "showUserLost";
-  private static final String ACTION_GAME_OVER = "gameOver";
+  @BindView(R.id.webView) WebView webView;
+  @BindView(R.id.layoutProgress) FrameLayout layoutProgress;
+  @BindView(R.id.viewProgress) View viewProgress;
+  @BindView(R.id.cardViewProgress) CardView cardViewProgress;
 
-  private static final String PLAYERS = "players";
-  private static final String TIMESTAMP = "timestamp";
-
-  public com.ansca.corona.CoronaView coronaView;
-
-  // OBSERVABLES
-  private CompositeSubscription subscriptions = new CompositeSubscription();
+  // VARIABLES
+  private boolean didRestartWhenReady = false, isResetingScores = false;
+  private MediaPlayer mediaPlayer;
+  private Handler mainHandler;
 
   public GameCoronaView(@NonNull Context context) {
     super(context);
@@ -60,158 +68,263 @@ public class GameCoronaView extends GameView {
   @Override protected void initView(Context context) {
     super.initView(context);
 
-    inflater.inflate(R.layout.view_game_corona, this, true);
-    //unbinder = ButterKnife.bind(this);
-    coronaView = findViewById(R.id.coronaAnscaView);
+    inflater.inflate(R.layout.view_game_web, this, true);
+    unbinder = ButterKnife.bind(this);
+
+    mainHandler = new Handler(context.getMainLooper());
+
+    webView.setFocusable(true);
+    webView.setFocusableInTouchMode(true);
+    webView.getSettings().setJavaScriptEnabled(true);
+    webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+    webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+    webView.getSettings().setDomStorageEnabled(true);
+    webView.getSettings().setDatabaseEnabled(true);
+    webView.getSettings().setAppCacheEnabled(true);
+    webView.setWebChromeClient(webChromeClient);
+    webView.setWebViewClient(webViewClient);
+    webView.addJavascriptInterface(new WebViewGameInterface(), "androidInterface");
   }
 
-  public void setup() {
-    coronaView.init("coronatest/aliens-attack");
-    coronaView.setZOrderMediaOverlay(true);
+  @Override protected int getSoundtrack() {
+    return -1;
   }
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> map,
-      Observable<Map<String, TribeGuest>> mapInvited,
-      Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    super.start(game, map, mapInvited, liveViewsObservable, userId);
-
-    subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-
-          this.setup();
-
-          becomePlayer();
-          if (userId.equals(currentUser.getId())) becomeGameMaster();
-        }));
-
-    /*
-    subscriptions.add(Observable.interval(1000, 1000, TimeUnit.MILLISECONDS)
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          Timber.d("I'M ALIVE");
-        }));
-        */
-
-    //if (getSoundtrack() != -1) soundManager.playSound(getSoundtrack(), SoundManager.SOUND_MAX);
+  @Override protected String getStyleFont() {
+    return FontUtils.GULKAVE_REGULAR;
   }
 
-  protected void becomePlayer() {
-    Log.d("NICO", "becomePlayer");
-    // if (subscriptionsSession != null) subscriptionsSession.clear();
-    // stopEngine();
-    // startEngine();
+  @Override protected void gameOver(String winnerId, boolean isLocal) {
+    super.gameOver(winnerId, isLocal);
   }
 
-  protected void becomeGameMaster() {
-    Log.d("NICO", "becomeGameMaster");
+  @Override protected void startMasterEngine() {
+    super.startMasterEngine();
 
-    // startMasterEngine();
-    // Map<String, Integer> mapPlayerStatus = gameEngine.getMapPlayerStatus();
-    Map<String, Integer> playerIds = new HashMap<>();
-    playerIds.put(currentUser.getId(), 0);
+    didRestartWhenReady = false;
 
-    newGame(playerIds.keySet());
-  }
+    subscriptions.add(gameEngine.onPlayerReady().subscribe(s -> {
+      if (!didRestartWhenReady) {
+        Map<String, Integer> mapPlayerStatus = gameEngine.getMapPlayerStatus();
+        if (mapPlayerStatus.size() == 2) {
+          didRestartWhenReady = true;
 
-  protected void newGame(Set<String> playerIds) {
-    Timber.d("newGame");
-    long timestamp = startGameTimestamp();
-    webRTCRoom.sendToPeers(getNewGamePayload(currentUser.getId(), timestamp,
-        playerIds.toArray(new String[playerIds.size()])), true);
-
-    // setupGameLocally(currentUser.getId(), playerIds, timestamp);
-    // resetScores(false);
-
-    Hashtable<Object, Object> event = new Hashtable<>();
-    Hashtable<Object, Object> playersUsers = new Hashtable<>();
-    Hashtable<Object, Object> meAsCoronaUser = new Hashtable<>();
-    meAsCoronaUser.put("id", currentUser.getId());
-    meAsCoronaUser.put("displayName", currentUser.getDisplayName());
-    meAsCoronaUser.put("username", currentUser.getUsername());
-    meAsCoronaUser.put("picture", currentUser.getProfilePicture());
-
-    playersUsers.put(1, meAsCoronaUser);
-    event.put("name", "startGame");
-    event.put("myUserId", currentUser.getId());
-    event.put("masterUserId", currentUser.getId());
-    event.put("playersUsers", playersUsers);
-
-    Timber.d("event " + playersUsers);
-    coronaView.sendEvent(event);
-
-    coronaView.setCoronaEventListener(new CoronaView.CoronaEventListener() {
-      @Override public Object onReceivedCoronaEvent(CoronaView coronaView,
-          Hashtable<Object, Object> hashtable) {
-        Timber.d("onReceivedCoronaEvent - " + hashtable);
-        if (hashtable.containsValue("gameLoaded")) {
-          // TODO
+          subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+              .onBackpressureDrop()
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(aLong -> {
+                resetScores(false);
+                Set<String> playerIds = mapPlayerStatus.keySet();
+                newGame(playerIds);
+              }));
         }
-        return null;
+      }
+    }));
+  }
+
+  private void playSound() {
+    Timber.d("Play sound");
+  }
+
+  private void gameLoaded() {
+    AnimationUtils.fadeOut(layoutProgress, 250, new AnimatorListenerAdapter() {
+      @Override public void onAnimationEnd(Animator animation) {
+        removeView(layoutProgress);
       }
     });
-  }
 
-  protected long startGameTimestamp() {
-    Log.d("NICO", "startGameTimestamp");
-    return System.currentTimeMillis() + 5 * 1000;
-  }
+    imReady();
 
-  private JSONObject getNewGamePayload(String userId, long timestamp, String[] playerIds) {
-    Log.d("NICO", "getNewGamePayload");
-    JSONObject obj = new JSONObject();
-    JSONObject game = new JSONObject();
-    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_NEW_GAME);
-    JsonUtils.jsonPut(game, FROM_KEY, userId);
-    JSONArray jsonArray = new JSONArray();
-    for (String id : playerIds) jsonArray.put(id);
-    JsonUtils.jsonPut(game, PLAYERS, jsonArray);
-    JsonUtils.jsonPut(game, TIMESTAMP, Long.valueOf(timestamp).doubleValue() / 1000);
-    JsonUtils.jsonPut(obj, this.game.getId(), game);
-    return obj;
-  }
+    refactorReady(true);
 
-  @Override protected void initWebRTCRoomSubscriptions() {
-    Log.d("NICO", "initWebRTCRoomSubscriptions");
-    subscriptionsRoom.add(webRTCRoom.onGameMessage()
-        .onBackpressureDrop()
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(pair -> receiveMessage(pair.first, pair.second)));
-  }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      Timber.d("Trying getSoundtrack()");
+      webView.evaluateJavascript("Tribe.getSoundtrack()", value -> {
+        Timber.d("evaluate getSoundtrack() : " + value);
+        mediaPlayer = new MediaPlayer();
+        try {
+          mediaPlayer.setDataSource(value);
+          mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+          mediaPlayer.prepareAsync();
+          mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
-  protected void receiveMessage(TribeSession tribeSession, JSONObject jsonObject) {
-    Log.d("NICO", "receiveMessage " + tribeSession.toString() + " - " + jsonObject);
-    if (jsonObject.has(game.getId())) {
-      try {
-        JSONObject message = jsonObject.getJSONObject(game.getId());
-        Hashtable<Object, Object> event = new Hashtable<>();
-        event.put("name", "receiveMessage");
-        event.put("message", message);
-        event.put("fromUserId", currentUser.getId());
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-          @Override public void run() {
-
-            AsyncTask.execute(new Runnable() {
-              @Override public void run() {
-                coronaView.sendEvent(event);
-              }
-            });
-          }
-        }, 5000);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
+            @Override public void onPrepared(MediaPlayer mp) {
+              mediaPlayer.start();
+            }
+          });
+        } catch (IOException e) {
+          e.printStackTrace();
+          Timber.e("Soundtrack prepare() failed", e);
+        }
+      });
     }
   }
 
-  @Override protected void takeOverGame() {
+  @Override protected long startGameTimestamp() {
+    return System.currentTimeMillis() + (int) (3.5f * 1000);
+  }
 
+  protected WebChromeClient webChromeClient = new WebChromeClient() {
+    @Override public void onProgressChanged(WebView view, int newProgress) {
+      super.onProgressChanged(view, newProgress);
+    }
+
+    @Override public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+      Timber.d("Console message : " + consoleMessage.message());
+      return super.onConsoleMessage(consoleMessage);
+    }
+  };
+
+  protected WebViewClient webViewClient = new WebViewClient() {
+    @Override
+    public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+      Timber.d("Error");
+    }
+  };
+
+  private void executeJavascript(String code) {
+    Timber.d("evaluateJavascript : " + code);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      webView.evaluateJavascript(code, value -> {
+        Timber.d("value : " + value);
+      });
+    }
+  }
+
+  private String escapeJavascript(String code) {
+    return code.replaceAll("\n", "<br>");
+  }
+
+  @Override protected void showTitle(LabelListener listener, String font) {
+    executeJavascript("Tribe.displayTitle(3.5)");
+
+    subscriptions.add(Observable.timer(3500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          if (listener != null) listener.call();
+        }));
+  }
+
+  @Override
+  protected void showMessage(String text, int duration, LabelListener willDisappearListener,
+      LabelListener completionListener) {
+    executeJavascript("Tribe.displayMessage(\"" + escapeJavascript(text) + "\", 1.5);");
+
+    subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          if (completionListener != null) completionListener.call();
+        }));
+
+    subscriptions.add(Observable.timer(1500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          if (willDisappearListener != null) willDisappearListener.call();
+        }));
+  }
+
+  @Override
+  protected void changeMessageStatus(View view, boolean isVisible, boolean isAnimated, int duration,
+      int delay, LabelListener blockToCall, LabelListener completionListener) {
+    Timber.d("changeMessageStatus");
+    if (view == txtRestart && isVisible) {
+      String restartText = ((TextView) view).getText().toString();
+      if (!StringUtils.isEmpty(restartText)) {
+        executeJavascript("Tribe.displayRestart(\"" + escapeJavascript(restartText) + "\");");
+      }
+    }
+
+    if (blockToCall != null) blockToCall.call();
+
+    if (isAnimated) {
+      subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            if (completionListener != null) completionListener.call();
+          }));
+    } else {
+      if (completionListener != null) completionListener.call();
+    }
+  }
+
+  @Override protected void playGame() {
+    super.playGame();
+    isResetingScores = false;
+    executeJavascript("Tribe.startGame()");
+  }
+
+  @Override public void resetScores(boolean shouldSendGameOver) {
+    super.resetScores(shouldSendGameOver);
+    Timber.d("resetScores");
+    isResetingScores = true;
+  }
+
+  private class WebViewGameInterface {
+
+    @JavascriptInterface public void gameEnded() {
+      if (isResetingScores) return;
+      mainHandler.post(() -> GameCoronaView.this.iLost());
+    }
+
+    @JavascriptInterface public void scoreIncremented(int points) {
+      if (isResetingScores) return;
+      mainHandler.post(() -> GameCoronaView.this.addPoints(points, currentUser.getId(), true));
+    }
+
+    @JavascriptInterface public void gameLoadingProgress(float progress) {
+      mainHandler.post(() -> UIUtils.changeWidthOfView(viewProgress,
+          (int) (progress * cardViewProgress.getWidth())));
+    }
+
+    @JavascriptInterface public void gameLoaded() {
+      mainHandler.post(() -> GameCoronaView.this.gameLoaded());
+    }
+
+    @JavascriptInterface public void playSound() {
+      mainHandler.post(() -> GameCoronaView.this.playSound());
+    }
+  }
+
+  /**
+   * JSON PAYLOAD
+   */
+
+  /**
+   * PUBLIC
+   */
+
+  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+      Observable<Map<String, TribeGuest>> mapInvitedObservable,
+      Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
+    wordingPrefix = "game_webv1_";
+    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
+    if (!StringUtils.isEmpty(game.getUrl())) webView.loadUrl(game.getUrl());
+  }
+
+  @Override public void stop() {
+    super.stop();
+
+    if (mediaPlayer != null) {
+      mediaPlayer.reset();
+      mediaPlayer.stop();
+      mediaPlayer.release();
+      mediaPlayer = null;
+    }
+  }
+
+  @Override public void dispose() {
+    super.dispose();
+    webView.loadUrl("about:blank");
+    webView.setWebViewClient(null);
+    webView.setWebChromeClient(null);
+    webView.removeJavascriptInterface("androidInterface");
   }
 
   @Override public void setNextGame() {
 
   }
+
+  /**
+   * OBSERVABLES
+   */
 }

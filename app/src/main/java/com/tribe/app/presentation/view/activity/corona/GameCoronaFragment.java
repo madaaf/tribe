@@ -10,14 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.R;
-import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaViewOld;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class GameCoronaFragment extends Fragment {
 
-  public GameCoronaView coronaView;
+  public GameCoronaViewOld coronaView;
 
   public GameCoronaFragment() {
   }
@@ -26,7 +26,7 @@ public class GameCoronaFragment extends Fragment {
       Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.fragment_game_corona, container, false);
 
-    coronaView = (GameCoronaView) rootView.findViewById(R.id.coronaView);
+    coronaView = (GameCoronaViewOld) rootView.findViewById(R.id.coronaView);
     coronaView.coronaView.init("coronatest/aliens-attack/");
     coronaView.coronaView.setZOrderMediaOverlay(false);
 

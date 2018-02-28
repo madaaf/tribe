@@ -10,7 +10,7 @@ import android.view.WindowManager;
 import com.ansca.corona.CoronaView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaViewOld;
 import java.util.Hashtable;
 import timber.log.Timber;
 
@@ -21,7 +21,7 @@ import timber.log.Timber;
 public class GameCoronaActivity extends AppCompatActivity {
 
   public static final String GAME_ID = "game_id";
-  public GameCoronaView coronaView;
+  public GameCoronaViewOld coronaView;
 
   public static Intent getCallingIntent(Activity activity, String gameId) {
     Intent intent = new Intent(activity, GameCoronaActivity.class);
@@ -41,7 +41,7 @@ public class GameCoronaActivity extends AppCompatActivity {
     setContentView(R.layout.activity_game_corona);
 
     //CoronaView coronaView = this.findViewById(R.id.coronaView);
-    coronaView = (GameCoronaView) findViewById(R.id.coronaView);
+    coronaView = (GameCoronaViewOld) findViewById(R.id.coronaView);
     coronaView.coronaView.setCoronaEventListener(new CoronaView.CoronaEventListener() {
       @Override public Object onReceivedCoronaEvent(CoronaView coronaView,
           Hashtable<Object, Object> hashtable) {
@@ -65,5 +65,20 @@ public class GameCoronaActivity extends AppCompatActivity {
       setResult(RESULT_OK, data);
       finish();
     }
+  }
+
+  @Override protected void onResume() {
+    super.onResume();
+    coronaView.coronaView.resume();
+  }
+
+  @Override protected void onPause() {
+    super.onPause();
+    coronaView.coronaView.pause();
+  }
+
+  @Override protected void onDestroy() {
+    super.onDestroy();
+    coronaView.coronaView.destroy();
   }
 }

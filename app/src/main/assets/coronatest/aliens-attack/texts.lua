@@ -4,7 +4,7 @@ local strings = require "strings"
 
 ---------------------------------------------------------------------------------
 
-local fontName = "assets/fonts/GULKAVE-REGULAR.ttf"
+local fontName = "assets/fonts/Gulkave-Regular"
 
 local title = strings('title')
 
@@ -15,8 +15,8 @@ local titleSize   = 40
 
 local function fadeOutAndMoveDown(target, params)
 	
-	transition.moveBy(target, { delay=1000, y=100 })
-	transition.fadeOut(target, { delay=1000, time=200, onComplete=function()
+	transition.moveBy(target, { delay=1500, y=20, time=200 })
+	transition.fadeOut(target, { delay=1500, time=150, onComplete=function()
 		
 		display.remove(target)
 
@@ -28,8 +28,8 @@ end
 
 local function fadeInAndMoveUp(target, params)
 	
-	transition.moveTo(target, { x=screenW/2, y=screenH/2, onComplete=params.onComplete })
-	transition.fadeIn(target, { time=200 });
+	transition.moveTo(target, { x=screenW/2, y=screenH/2, time=200, onComplete=params.onComplete })
+	transition.fadeIn(target, { time=150 });
 end
 
 local function showMessage (message, params) 
