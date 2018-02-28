@@ -33,7 +33,6 @@ public class TribeLiveOptions {
 
   private TribeLiveOptions(TribeLiveOptionsBuilder builder) {
     this.wsUrl = builder.wsUrl;
-    //this.wsUrl = "wss://r.tribedev.pm/beta/39321";
     this.iceServers = builder.iceServers;
     this.tokenId = builder.tokenId;
     this.room_id = builder.roomId;

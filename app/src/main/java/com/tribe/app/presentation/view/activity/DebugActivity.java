@@ -3,8 +3,10 @@ package com.tribe.app.presentation.view.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
@@ -17,7 +19,9 @@ import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
+import com.tribe.app.presentation.utils.preferences.WebSocketUrlOverride;
 import com.tribe.app.presentation.view.component.ActionView;
+import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,6 +51,8 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
 
   @Inject @Walkthrough Preference<Boolean> walkthrough;
 
+  @Inject @WebSocketUrlOverride Preference<String> webSocketUrl;
+
   @BindView(R.id.viewActionRouted) ActionView viewActionRouted;
 
   @BindView(R.id.viewActionFuckUpSomeTokens) ActionView viewActionFuckUpSomeTokens;
@@ -56,6 +62,10 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
   @BindView(R.id.viewActionSync) ActionView viewActionSync;
 
   @BindView(R.id.viewActionNewWS) ActionView viewActionNewWS;
+
+  @BindView(R.id.txtAction) TextViewFont txtAction;
+
+  @BindView(R.id.editTxtWebsocket) EditText editTextWebsocket;
 
   private Unbinder unbinder;
 
@@ -88,6 +98,7 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
     viewActionSync.setTitle("Sync");
     viewActionNewWS.setTitle("New Websocket");
     viewActionNewWS.setValue(newWS.get());
+    editTextWebsocket.setText(webSocketUrl.get());
   }
 
   private void initDependencyInjector() {
@@ -123,6 +134,15 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
       viewActionSync.setBody("Syncing...");
       debugPresenter.lookupContacts();
     }));
+  }
+
+  @OnClick(R.id.txtAction) void save() {
+    webSocketUrl.set(editTextWebsocket.getText().toString());
+    finish();
+  }
+
+  @OnClick(R.id.btnBack) void back() {
+    finish();
   }
 
   @Override public void finish() {

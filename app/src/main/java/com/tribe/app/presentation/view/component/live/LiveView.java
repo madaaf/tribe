@@ -36,6 +36,7 @@ import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
+import com.tribe.app.presentation.utils.preferences.WebSocketUrlOverride;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.app.presentation.view.utils.Degrees;
@@ -115,6 +116,8 @@ public class LiveView extends FrameLayout {
   @Inject @MinutesOfCalls Preference<Float> minutesOfCalls;
 
   @Inject @NewWS Preference<Boolean> newWs;
+
+  @Inject @WebSocketUrlOverride Preference<String> webSocketUrlOverride;
 
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
@@ -461,7 +464,8 @@ public class LiveView extends FrameLayout {
     viewGameManager.initInvitedGuestObservable(tribeInvitedMap.getObservable());
     viewGameManager.initLiveViewsObservable(viewRoom.onLiveViewsChange());
 
-    gameManager.initUIControlsStartGame(viewControlsLive.onStartGame().doOnError(throwable -> throwable.printStackTrace()));
+    gameManager.initUIControlsStartGame(
+        viewControlsLive.onStartGame().doOnError(throwable -> throwable.printStackTrace()));
     gameManager.initUIControlsRestartGame(
         Observable.merge(viewControlsLive.onRestartGame(), viewGameManager.onRestartGame()));
     gameManager.initUIControlsStopGame(
@@ -545,8 +549,11 @@ public class LiveView extends FrameLayout {
   public void joinRoom(Room room) {
     Map<String, String> headers = new HashMap<>();
     headers.put(WebSocketConnection.ORIGIN, com.tribe.app.BuildConfig.TRIBE_ORIGIN);
+
+    String webSocketUrl = webSocketUrlOverride.get();
+
     TribeLiveOptions options = new TribeLiveOptions.TribeLiveOptionsBuilder(getContext()).wsUrl(
-        room.getRoomCoordinates().getUrl())
+        !StringUtils.isEmpty(webSocketUrl) ? webSocketUrl : room.getRoomCoordinates().getUrl())
         .tokenId(accessToken.getAccessToken())
         .iceServers(room.getRoomCoordinates().getIceServers())
         .roomId(room.getId())
