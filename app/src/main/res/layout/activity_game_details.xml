@@ -66,7 +66,7 @@
     <ImageView
         android:id="@+id/imgRays"
         android:layout_width="220dp"
-        android:layout_height="220dp"
+        android:layout_height="217dp"
         android:scaleType="centerInside"
         android:src="@drawable/game_trivia_bg"
         app:layout_constraintEnd_toEndOf="parent"
@@ -368,4 +368,14 @@
     </FrameLayout>
 
   </android.support.constraint.ConstraintLayout>
+  <ImageView
+      android:id="@+id/imgBackgroundLogo"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scaleType="centerCrop"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
 </FrameLayout>

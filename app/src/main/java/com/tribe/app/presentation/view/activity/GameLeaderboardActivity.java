@@ -37,6 +37,7 @@ import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecorati
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardDetailsLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.TextViewRanking;
 import com.tribe.app.presentation.view.widget.TextViewScore;
@@ -49,8 +50,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
@@ -68,6 +72,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   @Inject ScreenUtils screenUtils;
 
   @Inject GamePresenter gamePresenter;
+
+  @Inject StateManager stateManager;
 
   @BindView(R.id.imgBackgroundGradient) View imgBackgroundGradient;
 
@@ -133,7 +139,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   // RESOURCES
 
   // OBSERVABLES
-  private CompositeSubscription subscriptions = new CompositeSubscription();
+
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -254,6 +260,12 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     subscriptions = new CompositeSubscription();
   }
 
+  Subscription ok = null;
+  long now;
+  boolean isPoked = false;
+  private CompositeSubscription subscriptions = new CompositeSubscription();
+
+
   private void initUI() {
     txtTitle.setText(game.getTitle());
 
@@ -275,9 +287,37 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         });
     layoutManager = new LeaderboardDetailsLayoutManager(this);
     recyclerView.setLayoutManager(layoutManager);
-    adapter = new LeaderboardDetailsAdapter(this, recyclerView);
+    adapter = new LeaderboardDetailsAdapter(this, recyclerView, stateManager);
     recyclerView.setItemAnimator(null);
     recyclerView.setAdapter(adapter);
+
+    recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+      @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+        super.onScrollStateChanged(recyclerView, newState);
+        Timber.e("SOEF onScrollStateChanged");
+        now = System.currentTimeMillis();
+      }
+    });
+
+    if (ok == null) {
+      subscriptions.add(ok = Observable.interval(100, TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe((Long aLong) -> {
+            float interval = System.currentTimeMillis() - now;
+            if (interval > 2000) {
+              if (!isPoked) {
+                adapter.onPoke(true);
+              }
+              isPoked = true;
+            } else {
+              if (isPoked) {
+                adapter.onPoke(false);
+              }
+              isPoked = false;
+            }
+          }));
+    }
     recyclerView.addItemDecoration(
         new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.white_opacity_10),
             screenUtils.dpToPx(0.25f)));
@@ -399,4 +439,5 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   /**
    * OBSERVABLES
    */
+
 }

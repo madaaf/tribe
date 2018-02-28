@@ -849,7 +849,11 @@
 	<string name="home_action_new_chat">Nouveau chat</string>
 	<string name="home_action_new_game">Nouvelle partie</string>
 	<string name="home_action_join">REJOINDRE</string>
+<<<<<<< HEAD
 	<string name="home_action_ask_join">REJOINDRE</string>
+=======
+	<string name="home_action_ask_join">DEMANDER À REJOINDRE</string>
+>>>>>>> build popup
 	<string name="home_anonymous_user">personne</string>
 	<string name="home_anonymous_users">personnes</string>
 	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Épingler en haut</string>
@@ -987,8 +991,11 @@
 	<string name="leaderboard_new_high_score">Nouveau meilleur score !</string>
 	<string name="leaderboard_self_is_best">%1$s êtes le(la) meilleur(e) !</string>
 	<string name="leaderboard_friend_is_best">%1$s est le(la) meilleur(e) !</string>
+<<<<<<< HEAD
 	<string name="leaderboard_section_trophies">TROPHÉES</string>
 	<string name="leaderboard_section_games">JEUX</string>
+=======
+>>>>>>> build popup
 	
 	<!-- Hang Up -->
 	<string name="hang_up_title">TAP POUR RACCROCHER</string>
@@ -1023,6 +1030,7 @@
 	<string name="score_milestone_scores">Perfect!,Crazy!,Lit!,Awesome!,Damn!,Wow!,Sick!,Neat!</string>
 	
 	<!-- Poke -->
+<<<<<<< HEAD
 	<string name="poke_captions_above">GG !,Bravo !, Génial !, Incroyable !, Dingue !</string>
 	<string name="poke_captions_below">OMG !,Serieux ?,LOL !,Haha !,Trop nul !,WOW</string>
 	<string name="poke_popup_title">Poke %1$s\npour son score !</string>
@@ -1034,7 +1042,24 @@
 	<string name="poke_chat_event_above">%1$s est jaloux de ton score à %2$s! %3$s%4$s</string>
 	<string name="poke_chat_event_below">%1$s se moque de ton score à %2$s! %3$s%4$s</string>
 	<string name="poke_chat_tap_to_play">Tap pour jouer</string>
+<<<<<<< HEAD
 	<string name="poke_share_score">Mon score à %1$s sur Tribe (http://tribe.pm) est de %2$d. Et toi ?</string>
+=======
+	<string name="poke_share_score">Mon score à %1$s à Tribe (http://tribe.pm) est %2$d. What\'s yours?</string>
+=======
+	<string name="poke_captions_above">GG!,Congrats!</string>
+	<string name="poke_captions_below">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
+	<string name="poke_popup_title">Poke %1$s\nabout this score!</string>
+	<string name="poke_popup_subtitle">An automated message will be sent and available in your chat with %1$s.</string>
+	<string name="poke_popup_action_send">SEND &amp; POKE</string>
+	<string name="poke_delay_minutes">%1$d minutes left to poke again %2$s!</string>
+	<string name="poke_delay_seconds">%1$d seconds left to poke again %2$s!</string>
+	<string name="poke_chat_event_above">%1$s just became jealous of your score at %2$s!</string>
+	<string name="poke_chat_event_below">%1$s just made fun of your score at %2$s!</string>
+	<string name="poke_chat_tap_to_play">TAP TO PLAY</string>
+	<string name="poke_share_score">My score at %1$s on @heytribe is %2$d. What\'s yours?</string>
+>>>>>>> build popup
+>>>>>>> build popup
 	<string name="poke_emoji_above">:heart_eyes:,:flushed:,:hugs:,:open_mouth:,:roll_eyes:,:alien:</string>
 	<string name="poke_emoji_below">:joy:,:rofl:,:sweat_smile:,:poop:,:joy_cat:,:laughing:,:see_no_evil:</string>
 	<string name="poke_emoji_own">:medal_sports:</string>
@@ -1049,6 +1074,7 @@
 	<!-- Digest Popup -->
 	<string name="digest_popup_title">EN TRAIN DE JOUER</string>
 	<string name="digest_popup_action_more">PLUS DE CHALLENGERS</string>
+<<<<<<< HEAD
 	
 	<!-- Trophies -->
 	<string name="trophy_noob_title">Noob</string>
@@ -1087,8 +1113,17 @@
 	<string name="ask_to_join_popup_action_decline">DECLINER</string>
 	
 	<!-- Invited To Join Popup -->
+<<<<<<< HEAD
 	<string name="invited_to_join_popup_title">%1$s t\'invite\nà rejoindre un défi !</string>
 	<string name="invited_to_join_popup_subtitle">Avec %1$s</string>
 	<string name="invited_to_join_popup_no_game_selected">PAS DE JEU SÉLÉCTIONNÉ</string>
 	<string name="invited_to_join_popup_action_later">PLUS TARD</string>
+=======
+	<string name="invited_to_join_popup_title">%1$s invited\nyou to join a challenge!</string>
+	<string name="invited_to_join_popup_subtitle">With %1$s</string>
+	<string name="invited_to_join_popup_no_game_selected">NO GAME SELECTED YET</string>
+	<string name="invited_to_join_popup_action_later">LATER</string>
+=======
+>>>>>>> build popup
+>>>>>>> build popup
 </resources>

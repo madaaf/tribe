@@ -120,6 +120,7 @@ public class EmojiParser {
     IEmojiMap.put(":game_die:", "\uD83C\uDFB2");
     IEmojiMap.put(":speech_balloon:", "\uD83D\uDCAC");
     IEmojiMap.put(":hear_no_evil:", "\uD83D\uDE49");
+    //IEmojiMap.put(":joy:", "\uD83D\uDE02");
   }
 
   /**
