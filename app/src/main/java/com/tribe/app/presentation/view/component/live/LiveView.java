@@ -647,14 +647,6 @@ public class LiveView extends FrameLayout {
           viewRoom.removeView(remotePeer.getSession().getUserId(),
               viewRoom.getLiveRowViewFromId(remotePeer.getSession().getUserId()));
 
-          if (shouldLeave()) {
-            if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-              onLeave.onNext(null);
-            } else {
-              stopGame();
-            }
-          }
-
           live.getRoom().userLeftWebRTC(remotePeer.getSession().getUserId());
 
           onNotificationRemotePeerRemoved.onNext(
