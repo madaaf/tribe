@@ -16,7 +16,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import com.tribe.app.R;
-import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
@@ -25,6 +24,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -616,11 +616,14 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
    * PUBLIC
    */
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+  @Override public void start(Game game,
+      Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs,
+      Observable<Map<String, TribeGuest>> mapObservable,
       Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     Timber.d("start : " + userId);
-    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
+    super.start(game, masterMapObs, mapObservable, mapInvitedObservable, liveViewsObservable,
+        userId);
 
     txtRestart = new TextViewFont(getContext());
     FrameLayout.LayoutParams paramsRestart =

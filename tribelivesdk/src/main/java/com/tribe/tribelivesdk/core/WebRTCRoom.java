@@ -373,7 +373,6 @@ public class WebRTCRoom {
 
   public void sendToPeers(JSONObject obj, boolean isAppMessage) {
     if (webSocketConnection == null) return;
-
     for (TribePeerConnection tpc : webRTCClient.getPeers()) {
       if (tpc != null && !tpc.getSession().getPeerId().equals(TribeSession.PUBLISHER_ID)) {
         webSocketConnection.send(

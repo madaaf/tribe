@@ -26,6 +26,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -265,11 +266,11 @@ public class GameAliensAttackView extends GameViewWithEngine {
    * PUBLIC
    */
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+  @Override public void start(Game game, Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs, Observable<Map<String, TribeGuest>> mapObservable,
       Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     wordingPrefix = "game_aliens_attack_";
-    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
+    super.start(game, masterMapObs, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
     viewBackground.start();
 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)

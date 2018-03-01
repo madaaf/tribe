@@ -1,6 +1,9 @@
 package com.tribe.tribelivesdk.model;
 
+import com.tribe.tribelivesdk.game.GameManager;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -117,7 +120,7 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   }
 
   public boolean canPlayGames(String gameId) {
-    return true;
+    return Arrays.asList(GameManager.playableGames).contains(gameId);
   }
 
   public void setScoreValue(int scoreValue) {
@@ -128,7 +131,6 @@ public class TribeGuest extends GroupJoiner implements Serializable {
     return scoreValue;
   }
 
-
   public void setRankingValue(int rankingValue) {
     this.rankingValue = rankingValue;
   }
@@ -136,17 +138,27 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   public int getRankingValue() {
     return rankingValue;
   }
+
+  public Hashtable<Object, Object> asCoronaUser() {
+    Hashtable<Object, Object> data = new Hashtable<>();
+    data.put("id", id);
+    data.put("displayName", displayName);
+    if (picture != null && !picture.equals("")) data.put("picture", picture);
+    if (userName != null && !userName.equals("")) data.put("username", userName);
+    return data;
+  }
+
   @Override public String toString() {
-    return "TribeGuest{"
-        + "id='"
-        + id
-        + '\''
-        + ", displayName='"
-        + displayName
-        + '\''
-        + ", userName='"
-        + userName
-        + '\''
-        + '}';
-      }
+    return "TribeGuest{" +
+        "id='" +
+        id +
+        '\'' +
+        ", displayName='" +
+        displayName +
+        '\'' +
+        ", userName='" +
+        userName +
+        '\'' +
+        '}';
+  }
 }

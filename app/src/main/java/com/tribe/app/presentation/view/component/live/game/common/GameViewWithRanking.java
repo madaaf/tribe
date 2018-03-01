@@ -13,6 +13,7 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -236,10 +237,10 @@ public abstract class GameViewWithRanking extends GameView {
    * PUBLIC
    */
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> map,
+  @Override public void start(Game game, Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs, Observable<Map<String, TribeGuest>> map,
       Observable<Map<String, TribeGuest>> mapInvited,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    super.start(game, map, mapInvited, liveViewsObservable, userId);
+    super.start(game, masterMapObs, map, mapInvited, liveViewsObservable, userId);
 
     game.getContextMap().put(SCORES_KEY, new HashMap<String, Integer>());
 

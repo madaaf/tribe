@@ -14,8 +14,6 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import butterknife.Unbinder;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -33,6 +31,7 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +39,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -77,6 +75,7 @@ public abstract class GameView extends FrameLayout {
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected CompositeSubscription subscriptionsRoom = new CompositeSubscription();
+  protected Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
   protected Observable<Map<String, TribeGuest>> peerMapObservable;
   protected Observable<Map<String, TribeGuest>> invitedMapObservable;
   protected PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
@@ -210,7 +209,8 @@ public abstract class GameView extends FrameLayout {
       if (scores.get(userId) != null) {
         int newScore = scores.get(userId);
         int oldScore = liveStreamView.getScore();
-        String statusText = statuses.containsKey(userId) ? statuses.get(userId).getEmoji() : "";
+        String statusText =
+            statuses != null && statuses.containsKey(userId) ? statuses.get(userId).getEmoji() : "";
         String emojiText =
             (newScore > 0 && newScore == maxRanking ? EmojiParser.demojizedText(":crown:")
                 : ((newScore == minRanking ? EmojiParser.demojizedText(":poop:") : "")));
@@ -232,8 +232,9 @@ public abstract class GameView extends FrameLayout {
 
   public abstract void setNextGame();
 
-  public void start(Game game, Observable<Map<String, TribeGuest>> map,
-      Observable<Map<String, TribeGuest>> mapInvited,
+  public void start(Game game,
+      Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs,
+      Observable<Map<String, TribeGuest>> map, Observable<Map<String, TribeGuest>> mapInvited,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     this.game = game;
     this.peerMapObservable = map;

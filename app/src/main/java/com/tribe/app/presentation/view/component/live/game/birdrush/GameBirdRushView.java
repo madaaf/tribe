@@ -18,6 +18,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -230,11 +231,11 @@ public class GameBirdRushView extends GameViewWithEngine {
     }));
   }
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+  @Override public void start(Game game, Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs, Observable<Map<String, TribeGuest>> mapObservable,
       Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     wordingPrefix = "game_bird_rush_";
-    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
+    super.start(game, masterMapObs, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())

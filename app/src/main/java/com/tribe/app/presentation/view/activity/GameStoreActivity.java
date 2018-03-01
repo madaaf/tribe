@@ -40,6 +40,7 @@ import com.tribe.app.presentation.view.popup.PopupManager;
 import com.tribe.app.presentation.view.popup.listener.PopupDigestListener;
 import com.tribe.app.presentation.view.popup.view.PopupDigest;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
@@ -73,6 +74,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
   @Inject User currentUser;
   @Inject StateManager stateManager;
+  @Inject PaletteGrid paletteGrid;
 
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
   @BindView(R.id.layoutCall) FrameLayout layoutCall;

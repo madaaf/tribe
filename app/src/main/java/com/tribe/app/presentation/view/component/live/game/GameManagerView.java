@@ -29,7 +29,7 @@ import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattl
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
-import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaViewOld;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
@@ -83,6 +83,7 @@ public class GameManagerView extends FrameLayout {
   private PublishSubject<Game> onStopGame = PublishSubject.create();
   private PublishSubject<Void> onPlayOtherGame = PublishSubject.create();
   private PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
+  private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
 
   public GameManagerView(@NonNull Context context) {
     super(context);
@@ -215,6 +216,7 @@ public class GameManagerView extends FrameLayout {
       Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> obs) {
     invitedMap.put(currentUser.getId(), currentUser.asTribeGuest());
     onInvitedMapChange.onNext(invitedMap);
+    masterMapObs = obs;
 
     subscriptions.add(obs.subscribe(rxHashMapAction -> {
       if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD)) {
@@ -288,13 +290,14 @@ public class GameManagerView extends FrameLayout {
       subscriptionsGame.add(gameWebView.onAddScore().subscribe(onAddScore));
       gameView = gameWebView;
     } else if (game.isCorona()) {
-      GameCoronaViewOld gameCoronaView = new GameCoronaViewOld(getContext());
+      GameCoronaView gameCoronaView = new GameCoronaView(getContext(), game);
       subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
       gameView = gameCoronaView;
     }
 
     gameView.setWebRTCRoom(webRTCRoom);
-    gameView.start(game, onPeerMapChange, onInvitedMapChange, onLiveViewsChange, userId);
+    gameView.start(game, masterMapObs, onPeerMapChange, onInvitedMapChange, onLiveViewsChange,
+        userId);
     game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));
 

@@ -52,6 +52,7 @@ import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRush
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
@@ -214,6 +215,8 @@ import dagger.Component;
   void inject(GameManagerView gameManagerView);
 
   void inject(GameView gameView);
+
+  void inject(GameCoronaView gameCoronaView);
 
   void inject(GameTriviaView gameTriviaView);
 

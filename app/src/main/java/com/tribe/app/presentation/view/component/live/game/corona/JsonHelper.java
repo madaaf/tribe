@@ -49,6 +49,17 @@ public class JsonHelper {
     return table;
   }
 
+  public static Hashtable<Object, Object> toHashtableWithFakeIndex(JSONArray array)
+      throws JSONException {
+    Hashtable<Object, Object> table = new Hashtable<>();
+    int j = 1;
+    for (int i = 0; i < array.length(); i++) {
+      table.put(j, fromJson(array.get(i)));
+      j++;
+    }
+    return table;
+  }
+
   public static List toList(JSONArray array) throws JSONException {
     List list = new ArrayList();
     for (int i = 0; i < array.length(); i++) {
@@ -63,7 +74,7 @@ public class JsonHelper {
     } else if (json instanceof JSONObject) {
       return toHashtable((JSONObject) json);
     } else if (json instanceof JSONArray) {
-      return toList((JSONArray) json);
+      return toHashtableWithFakeIndex((JSONArray) json);
     } else {
       return json;
     }
