@@ -144,7 +144,6 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
-      challengeNotificationsPref.set("");
     }
   }
 
@@ -275,7 +274,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
       if (usersChallenge != null && usersChallenge.size() > 0) {
         notificationModelList.addAll(
-            NotificationUtils.getChallengeNotification(usersChallenge, GameStoreActivity.this));
+            NotificationUtils.getChallengeNotification(usersChallenge, GameStoreActivity.this,
+                stateManager, currentUser, challengeNotificationsPref));
         usersChallenge = null;
       }
 

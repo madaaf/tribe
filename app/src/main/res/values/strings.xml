@@ -982,6 +982,8 @@
 	<string name="leaderboard_new_high_score">New high score!</string>
 	<string name="leaderboard_self_is_best">%1$s\'re the best!</string>
 	<string name="leaderboard_friend_is_best">%1$s is the best!</string>
+	<string name="leaderboard_section_trophies">TROPHIES</string>
+	<string name="leaderboard_section_games">GAMES</string>
 	
 	<!-- Hang Up -->
 	<string name="hang_up_title">TAP TO HANG UP</string>
@@ -1040,4 +1042,31 @@
 	<!-- Digest Popup -->
 	<string name="digest_popup_title">LIVE PLAYING</string>
 	<string name="digest_popup_action_more">MORE CHALLENGERS</string>
+	
+	<!-- Trophies -->
+	<string name="trophy_noob_title">Noob</string>
+	<string name="trophy_expert_title">Expert</string>
+	<string name="trophy_pro_title">Pro</string>
+	<string name="trophy_master_title">Master</string>
+	<string name="trophy_god_title">God</string>
+	<string name="trophy_requirement_friends_title">Friends</string>
+	<string name="trophy_requirement_day_usage_title">Days</string>
+	<string name="trophy_requirement_games_played_title">Games</string>
+	<string name="trophy_requirement_multiplayer_sessions_title">Session</string>
+	<string name="trophy_requirement_best_scores_title">Score</string>
+	<string name="trophy_requirement_friends_description">get %1$d friends</string>
+	<string name="trophy_requirement_day_usage_description">open Tribe %1$d days in a row</string>
+	<string name="trophy_requirement_games_played_description">try %1$d games</string>
+	<string name="trophy_requirement_multiplayer_sessions_description">%1$d multiplayer sessions</string>
+	<string name="trophy_requirement_best_scores_description">be the best at %1$d games</string>
+	<string name="trophy_requirement_last_separator">and</string>
+	
+	<!-- Trophy Popup -->
+	<string name="trophy_popup_action_use_icon">USE THIS ICON</string>
+	<string name="trophy_popup_action_got_it">GOT IT!</string>
+	<string name="trophy_popup_icon_currently_used">You\'re currently using this icon</string>
+	
+	<!-- Trophy Notification -->
+	<string name="trophy_notification_title">Leaderboard</string>
+	<string name="trophy_notification_message">Congratulations! You unlocked the "%1$s" trophy! :trophy:</string>
 </resources>

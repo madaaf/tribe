@@ -228,22 +228,16 @@ public class NotificationUtils {
   public static void displayChallengeNotification(List<User> users, Context context,
       StateManager stateManager,
       @ChallengeNotifications Preference<String> challengeNotificationsPref, User currentUser) {
-    List<NotificationModel> list = getChallengeNotification(users, context);
+    List<NotificationModel> list =
+        getChallengeNotification(users, context, stateManager, currentUser,
+            challengeNotificationsPref);
     NotifView view = new NotifView(context);
-
-    if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
-      list.add(NotificationUtils.getFbNotificationModel(context));
-      if (currentUser.getProfilePicture() == null || currentUser.getProfilePicture().isEmpty()) {
-        list.add(NotificationUtils.getAvatarNotificationModel(context));
-      }
-    }
     view.show((Activity) context, list);
-    challengeNotificationsPref.set("");
-    stateManager.addTutorialKey(StateManager.FIRST_CHALLENGE_POPUP);
   }
 
-  public static List<NotificationModel> getChallengeNotification(List<User> users,
-      Context context) {
+  public static List<NotificationModel> getChallengeNotification(List<User> users, Context context,
+      StateManager stateManager, User currentUser,
+      @ChallengeNotifications Preference<String> challengeNotificationsPref) {
     List<NotificationModel> list = new ArrayList<>();
     for (User user : users) {
       String title =
@@ -262,6 +256,16 @@ public class NotificationUtils {
 
       list.add(a);
     }
+
+    if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
+      list.add(NotificationUtils.getFbNotificationModel(context));
+      if (currentUser.getProfilePicture() == null || currentUser.getProfilePicture().isEmpty()) {
+        list.add(NotificationUtils.getAvatarNotificationModel(context));
+      }
+    }
+
+    challengeNotificationsPref.set("");
+    stateManager.addTutorialKey(StateManager.FIRST_CHALLENGE_POPUP);
 
     return list;
   }
