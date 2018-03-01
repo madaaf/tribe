@@ -62,7 +62,8 @@ public class PopupParentView extends FrameLayout implements Animation.AnimationL
         .inject(this);
 
     int size = screenUtils.getWidthPx() - screenUtils.dpToPx(10) * 2;
-    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
+    FrameLayout.LayoutParams params =
+        new FrameLayout.LayoutParams(size, ViewGroup.LayoutParams.WRAP_CONTENT);
     params.gravity = Gravity.CENTER;
     addView(popup.getView(), params);
 

@@ -41,6 +41,7 @@ import com.tribe.app.presentation.view.popup.PopupManager;
 import com.tribe.app.presentation.view.popup.listener.PopupDigestListener;
 import com.tribe.app.presentation.view.popup.view.PopupDigest;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
@@ -72,6 +73,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
   @Inject User currentUser;
   @Inject StateManager stateManager;
+  @Inject PaletteGrid paletteGrid;
 
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
   @BindView(R.id.layoutCall) FrameLayout layoutCall;
@@ -88,6 +90,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   private List<String> roomIdsDigest;
   private List<User> usersChallenge;
   private NotifView notifView;
+  private boolean shouldDisplayDigest = true;
 
   // RESOURCES
 
@@ -177,6 +180,9 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
         navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
             TagManagerUtils.SECTION_SHORTCUT, gameId);
       }
+    } else if (requestCode == Navigator.FROM_LIVE) {
+      shouldDisplayDigest = false;
+      if (notifView != null) notifView.dispose();
     }
   }
 
@@ -236,7 +242,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
           if (shortcut.isSingle()) {
             User member = shortcut.getSingleFriend();
             if (member.isPlayingAGame()) {
-              if (!userIdsDigest.contains(member.getId())) {
+              if (!userIdsDigest.contains(member.getId()) &&
+                  !roomIdsDigest.contains(member.getId())) {
                 userIdsDigest.add(member.getId());
                 items.add(shortcut);
               }
@@ -247,7 +254,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
       List<NotificationModel> notificationModelList = new ArrayList<>();
 
-      if (items.size() > 0) {
+      if (items.size() > 0 && shouldDisplayDigest) {
         PopupDigest popupDigest =
             (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
         popupDigest.setItems(items);
@@ -270,6 +277,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
         notificationModelList.add(
             new NotificationModel.Builder().view(popupManager.getView()).build());
+      } else {
+        shouldDisplayDigest = true;
       }
 
       if (usersChallenge != null && usersChallenge.size() > 0) {

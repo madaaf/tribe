@@ -134,14 +134,15 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
         notificationContainer.getPaddingTop() + (getScreenHeight() / SCREEN_SCALE_FACTOR),
         notificationContainer.getPaddingRight(), 0);
 
-    if (type == LIVE || (!StringUtils.isEmpty(action) && action.equals(
-        NotificationPayload.ACTION_JOINED))) {
+    if (type == LIVE ||
+        (!StringUtils.isEmpty(action) && action.equals(NotificationPayload.ACTION_JOINED))) {
       layoutDetails.setVisibility(View.VISIBLE);
       viewPictoLive.setVisibility(View.VISIBLE);
       viewPictoLive.setStatus(PictoLiveView.ACTIVE);
-    } else if (actionType.equals(NotificationPayload.CLICK_ACTION_MESSAGE) && (StringUtils.isEmpty(
-        action) || (!action.equals(NotificationPayload.ACTION_LEFT) && !actionType.equals(
-        NotificationPayload.ACTION_JOINED)))) {
+    } else if (actionType.equals(NotificationPayload.CLICK_ACTION_MESSAGE) &&
+        (StringUtils.isEmpty(action) ||
+            (!action.equals(NotificationPayload.ACTION_LEFT) &&
+                !actionType.equals(NotificationPayload.ACTION_JOINED)))) {
       layoutDetails.setVisibility(View.VISIBLE);
       viewPictoChat.setVisibility(View.VISIBLE);
       viewPictoChat.setStatus(PictoChatView.ACTIVE);
@@ -280,6 +281,10 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
 
   private void setMessagePictureUrl(String url) {
     if (StringUtils.isEmpty(url)) return;
+
+    MarginLayoutParams params = (MarginLayoutParams) layoutDetails.getLayoutParams();
+    params.rightMargin = screenUtils.dpToPx(20);
+    layoutDetails.setLayoutParams(params);
 
     imgMessage.setVisibility(View.VISIBLE);
     viewPictoChat.setVisibility(View.GONE);

@@ -837,7 +837,7 @@
 	<string name="home_section_invites_to_send">Amis à inviter</string>
 	<string name="home_section_results">Résultats</string>
 	<string name="home_action_is_playing">En train de jouer à %1$s %2$s</string>
-	<string name="home_action_join_live">Tappez à droite pour rejoindre</string>
+	<string name="home_action_join_live">Invité à rejoindre</string>
 	<string name="home_action_read_chat">Glissez à droite pour ouvrir</string>
 	<string name="home_action_tap_to_chat">Tapez pour discuter</string>
 	<string name="home_action_chat_preview">%1$s : %2$s</string>
