@@ -1,6 +1,7 @@
 local screenW, screenH = display.actualContentWidth, display.actualContentHeight
 
 local strings = require "strings"
+local emitter = require "emitter"
 
 local pendingShownBonus
 local wonBonus
@@ -24,9 +25,9 @@ local function showBonus (text, icon, useEventName)
 
 	removeShownBonus()
 
-	local text 		 = display.newText( text, 0, screenH/2 + 100, "assets/fonts/GULKAVE-REGULAR.ttf", 20 )
+	local text 		 = display.newText( text, 0, screenH/2 + 100, "assets/fonts/gulkave.ttf", 20 )
 	local arrow 	 = display.newImageRect("assets/images/arrow.png", 9, 6)
-	local background = display.newImageRect("assets/images/bg_bonus.png", 65, 65)
+	local background = emitter.newBonusEmitter()
 	local icon 	     = display.newImageRect(icon, 35, 36)
 	
 	arrow.y = text.y + 30

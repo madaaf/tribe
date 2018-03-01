@@ -149,7 +149,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(17)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(18)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -378,7 +378,8 @@ public class AndroidApplication extends Application {
                     migratedChildren.set("url", children.getString("url"));
                     migratedChildren.set("filesize", children.getInt("filesize"));
                     migratedChildren.set("width", children.getString("width"));
-                    migratedChildren.set("getRelativeHeight", children.getString("getRelativeHeight"));
+                    migratedChildren.set("getRelativeHeight",
+                        children.getString("getRelativeHeight"));
                     migratedChildren.set("duration", children.getFloat("duration"));
                   })
                   .removeField("original")
@@ -437,6 +438,20 @@ public class AndroidApplication extends Application {
 
           if (oldVersion == 16) {
             schema.get("ScoreUserRealm").addField("ranking", int.class);
+            oldVersion++;
+          }
+
+          if (oldVersion == 17) {
+            if (schema.get("GameFileRealm") == null) {
+              schema.create("GameFileRealm")
+                  .addField("url", String.class, FieldAttribute.PRIMARY_KEY)
+                  .addField("gameId", String.class, FieldAttribute.INDEXED)
+                  .addField("path", String.class)
+                  .addField("downloadStatus", String.class)
+                  .addField("progress", int.class)
+                  .addField("totalSize", int.class);
+            }
+
             oldVersion++;
           }
         })

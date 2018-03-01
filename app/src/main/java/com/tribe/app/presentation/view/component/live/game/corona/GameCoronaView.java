@@ -52,6 +52,8 @@ public class GameCoronaView extends GameView {
   // VARIABLES
   private Handler mainHandler;
 
+
+
   // OBSERVABLES
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
 

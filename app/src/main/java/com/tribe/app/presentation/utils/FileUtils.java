@@ -26,14 +26,15 @@ import javax.inject.Singleton;
  */
 @Singleton public class FileUtils {
 
-  @StringDef({ VIDEO, PHOTO }) public @interface Type {
+  @StringDef({ VIDEO, PHOTO, ZIP }) public @interface Type {
   }
 
   public static final String VIDEO = "video";
   public static final String PHOTO = "photo";
+  public static final String ZIP = "zip";
 
   private static String pathEnd = "/Tribe/Sent";
-  private static String pathEndTemp = "/Tribe/Sent/Temp";
+  private static String pathGameTemp = "/Tribe/Games";
   private static String pathSave = "/Tribe";
   private static String pathAvatarTemp = "/Tribe/Avatars/";
 
@@ -55,7 +56,7 @@ import javax.inject.Singleton;
   }
 
   public static File getFileTemp(Context context, String id, @Type String type) {
-    File endDir = new File(context.getFilesDir() + pathEndTemp);
+    File endDir = new File(context.getFilesDir() + pathGameTemp);
 
     if (!endDir.exists()) {
       endDir.mkdirs();
@@ -74,7 +75,15 @@ import javax.inject.Singleton;
   }
 
   public static String getTribeFilenameForId(String id, @Type String type) {
-    return id + (type == PHOTO ? ".jpeg" : ".mp4");
+    String filename = id;
+
+    if (type.equals(PHOTO)) {
+      filename += ".jpeg";
+    } else if (type.equals(VIDEO)) {
+      filename += ".mp4";
+    } else if (type.equals(ZIP)) filename += ".zip";
+
+    return filename;
   }
 
   public static void delete(Context context, String id, @Type String type) {
@@ -208,11 +217,13 @@ import javax.inject.Singleton;
    * @return - uri
    */
   public static final Uri getUriToDrawable(@NonNull Context context, @AnyRes int drawableId) {
-    Uri imageUri = Uri.parse(
-        ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getResources()
-            .getResourcePackageName(drawableId) + '/' + context.getResources()
-            .getResourceTypeName(drawableId) + '/' + context.getResources()
-            .getResourceEntryName(drawableId));
+    Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+        "://" +
+        context.getResources().getResourcePackageName(drawableId) +
+        '/' +
+        context.getResources().getResourceTypeName(drawableId) +
+        '/' +
+        context.getResources().getResourceEntryName(drawableId));
     return imageUri;
   }
 }

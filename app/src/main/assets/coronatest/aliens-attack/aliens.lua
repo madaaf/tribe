@@ -10,8 +10,8 @@ local gameEnded = false
 local EVENT_ALIEN_KILLED			 = 'alienKilled'
 local EVENT_ALIEN_REACHED_THE_GROUND = 'alienReachedTheGround'
 
-local model = require 'model'
-local boom  = require 'boom'
+local model   = require 'model'
+local emitter = require 'emitter'
 
 ---------------------------------------------------------------------------------
 
@@ -51,11 +51,11 @@ local function showPointsAndRemoveAlien(alienGroup, points)
 
 	transition.cancel(alienGroup)
 
-	local boomSprite = boom.newSprite(alienGroup)
-	boomSprite.x, boomSprite.y = alienImage.x, alienImage.y + 10
-	boomSprite:play()
+	local boomEmitter = emitter.newBoomEmitter(alienGroup)
+	boomEmitter.x, boomEmitter.y = boomEmitter.x, boomEmitter.y + 10
+	alienGroup:insert(boomEmitter)
 
-	local pointsText = display.newText("" .. points, screenW/2, screenH/2 + 20, "assets/fonts/CircularStd-Black.otf", 30 )
+	local pointsText = display.newText("" .. points, screenW/2, screenH/2 + 20, "assets/fonts/circular.otf", 30 )
 	pointsText.alpha = 0
 	pointsText.xScale, pointsText.yScale = 0.1,0.1
 	pointsText.x, pointsText.y = alienImage.x, alienImage.y + 10
@@ -161,17 +161,15 @@ aliens.pop = function(alien, paceFactor)
 
 	if alien.type == 3 then
 		alienImage = display.newImageRect( "assets/images/alien_3.png", 88, 34 )
-		alienGradient = display.newImageRect( "assets/images/alien_3_gradient.png", 84, 56 )
 	elseif alien.type == 1 then
 		alienImage = display.newImageRect( "assets/images/alien_1.png", 51, 37 )
-		alienGradient = display.newImageRect( "assets/images/alien_1_gradient.png", 47, 56 )
 	elseif alien.type == 2 then
 		alienImage = display.newImageRect( "assets/images/alien_2.png", 60, 39 )
-		alienGradient = display.newImageRect( "assets/images/alien_2_gradient.png", 54, 56 )
 	else 
 		alienImage = display.newImageRect( "assets/images/alien_0.png", 48, 27 )
-		alienGradient = display.newImageRect( "assets/images/alien_0_gradient.png", 44, 56 )
 	end
+
+	alienGradient = emitter.newAlienFallingEmitter()
 
 	local alienGroup = display.newGroup()
 	alienGroup.alien = alien
@@ -190,7 +188,7 @@ aliens.pop = function(alien, paceFactor)
 	alienGroup:insert(alienImage)
 
 	alienGroup.x, alienGroup.y = screenW * alien.start, alienSourceY
-	alienGradient.y = -20
+	alienGradient.y = -10
 	alienGroup.rotation = alien.rotation
 
 	local alienShape = { 

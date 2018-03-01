@@ -7,7 +7,8 @@ local currentGradientType = 0
 
 local timers = {}
 
-local model = require 'model'
+local model   = require 'model'
+local emitter = require 'emitter'
 
 ---------------------------------------------------------------------------------
 
@@ -34,6 +35,27 @@ local function loadCity()
 	city.y = screenH * 0.85 - h
 
 	group:insert(city)
+end
+
+local function loadFog()
+	log('loadFog')
+
+	local fog = emitter.newFogEmitter()
+	fog.anchorX = 0
+	fog.anchorY = 1
+	fog.y = screenH
+
+	group:insert(fog)
+end
+
+local function loadStars()
+	log('loadStars')
+
+	local stars = emitter.newStarsEmitter()
+	stars.anchorX = 0
+	stars.anchorY = 0
+
+	group:insert(stars)
 end
 
 local function popCar()
@@ -127,11 +149,11 @@ local function startAnimating()
 	log('startAnimating')
 
 	table.insert(timers, timer.performWithDelay( 2000, popCar,        -1))
-	table.insert(timers, timer.performWithDelay(10000, popStars,      -1))
+	-- table.insert(timers, timer.performWithDelay(10000, popStars,      -1))
 	table.insert(timers, timer.performWithDelay( 1000, popSmallCloud, -1))
 	table.insert(timers, timer.performWithDelay( 2000, popCloud,      -1))
 
-	popStars()
+	-- popStars()
 end
 
 local function stopAnimating()
@@ -164,6 +186,8 @@ exports.load = function()
 
 	loadGradient()
 	loadCity()
+	loadFog()
+	loadStars()
 	startAnimating()
 
 	return group
