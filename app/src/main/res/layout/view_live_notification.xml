@@ -34,7 +34,6 @@
         android:minHeight="67dp"
         android:paddingBottom="10dp"
         android:paddingLeft="@dimen/horizontal_margin_small"
-        android:paddingRight="@dimen/horizontal_margin_small"
         android:paddingTop="10dp"
         >
 
@@ -50,15 +49,17 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_centerVertical="true"
-          android:layout_marginEnd="65dp"
           android:layout_toRightOf="@id/avatar"
+          android:layout_toStartOf="@+id/layoutDetails"
           android:orientation="vertical"
+          android:layout_marginEnd="@dimen/horizontal_margin_xsmall"
           >
 
         <com.tribe.app.presentation.view.widget.TextViewFont
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
             android:visibility="gone"
             style="@style/Body.One.Black"
             />
@@ -68,6 +69,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2.5dp"
+            android:maxLines="10"
+            android:ellipsize="end"
             android:visibility="gone"
             style="@style/Title.1.Black"
             />
@@ -75,7 +78,7 @@
 
       <FrameLayout
           android:id="@+id/layoutDetails"
-          android:layout_width="@dimen/avatar_size_small"
+          android:layout_width="wrap_content"
           android:layout_height="@dimen/avatar_size_small"
           android:layout_alignParentEnd="true"
           android:layout_centerVertical="true"
@@ -93,7 +96,7 @@
 
         <com.tribe.app.presentation.view.widget.picto.PictoChatView
             android:id="@+id/viewPictoChat"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone"

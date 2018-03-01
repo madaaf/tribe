@@ -191,7 +191,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
   private PublishSubject<String> onDismissInvite = PublishSubject.create();
   private PublishSubject<Boolean> onOpenChat = PublishSubject.create();
-  private PublishSubject<Boolean> onOpenInvite = PublishSubject.create();
+  private PublishSubject<Integer> onOpenInvite = PublishSubject.create();
   private PublishSubject<Boolean> onTouchEnabled = PublishSubject.create();
   private PublishSubject<Game> onStopGame = PublishSubject.create();
 
@@ -514,7 +514,7 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(
         Observable.merge(viewRoom.onClickAddFriend(), viewLiveAddFriend.onClick())
-            .subscribe(aVoid -> onOpenInvite.onNext(true)));
+            .subscribe(aVoid -> onOpenInvite.onNext(LiveContainer.OPEN_PARTIAL)));
   }
 
   private void openChat(boolean open) {
@@ -1293,7 +1293,7 @@ public class LiveView extends FrameLayout {
   //////////////////////
 
   public Observable<Integer> onOpenInvite() {
-    return viewControlsLive.onOpenInvite();
+    return Observable.merge(viewControlsLive.onOpenInvite(), onOpenInvite);
   }
 
   public Observable<Boolean> onCloseInvite() {

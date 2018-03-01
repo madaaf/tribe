@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -162,9 +163,21 @@ public class PopupDigest extends PopupView {
     this.items.clear();
     this.items.addAll(items);
     this.adapter.setItems(this.items);
+
+    ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
+    if (items.size() == 1) {
+      params.height = screenUtils.dpToPx(90);
+    } else if (items.size() == 2) {
+      params.height = 2 * screenUtils.dpToPx(85);
+    } else {
+      params.height = 3 * screenUtils.dpToPx(77.5f);
+    }
+
+    recyclerView.setLayoutParams(params);
   }
 
   /**
    * OBSERVABLES
    */
+
 }
