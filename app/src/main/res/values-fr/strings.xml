@@ -837,7 +837,7 @@
 	<string name="home_section_invites_to_send">Amis à inviter</string>
 	<string name="home_section_results">Résultats</string>
 	<string name="home_action_is_playing">En train de jouer à %1$s %2$s</string>
-	<string name="home_action_join_live">Tappez à droite pour rejoindre</string>
+	<string name="home_action_join_live">Invité à rejoindre</string>
 	<string name="home_action_read_chat">Glissez à droite pour ouvrir</string>
 	<string name="home_action_tap_to_chat">Tapez pour discuter</string>
 	<string name="home_action_chat_preview">%1$s : %2$s</string>
@@ -1024,6 +1024,7 @@
 	<string name="poke_popup_action_send">SEND &amp; POKE</string>
 	<string name="poke_delay_minutes">%1$d minutes left to poke again %2$s!</string>
 	<string name="poke_delay_seconds">%1$d seconds left to poke again %2$s!</string>
+	<string name="poke_sent_confirmation">Your poke has been sent to %1$s!</string>
 	<string name="poke_chat_event_above">%1$s just became jealous of your score at %2$s!</string>
 	<string name="poke_chat_event_below">%1$s just made fun of your score at %2$s!</string>
 	<string name="poke_chat_tap_to_play">TAP TO PLAY</string>
@@ -1054,11 +1055,11 @@
 	<string name="trophy_requirement_games_played_title">Games</string>
 	<string name="trophy_requirement_multiplayer_sessions_title">Session</string>
 	<string name="trophy_requirement_best_scores_title">Score</string>
-	<string name="trophy_requirement_friends_description">get %1$d friends</string>
-	<string name="trophy_requirement_day_usage_description">open Tribe %1$d days in a row</string>
-	<string name="trophy_requirement_games_played_description">try %1$d games</string>
-	<string name="trophy_requirement_multiplayer_sessions_description">%1$d multiplayer sessions</string>
-	<string name="trophy_requirement_best_scores_description">be the best at %1$d games</string>
+	<string name="trophy_requirement_friends_description">Get %1$d friends</string>
+	<string name="trophy_requirement_day_usage_description">open Tribe %1$d days in a row</string>
+	<string name="trophy_requirement_games_played_description">try %1$d games</string>
+	<string name="trophy_requirement_multiplayer_sessions_description">%1$d multiplayer sessions</string>
+	<string name="trophy_requirement_best_scores_description">be the best at %1$d games</string>
 	<string name="trophy_requirement_last_separator">and</string>
 	
 	<!-- Trophy Popup -->
