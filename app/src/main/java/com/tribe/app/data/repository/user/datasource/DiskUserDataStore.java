@@ -66,9 +66,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
   @Override public Observable<UserRealm> userInfos(String userId) {
     return Observable.combineLatest(this.userCache.userInfos(accessToken.getUserId()),
-        this.userCache.shortcuts().compose(listShortcutOnlineLiveTransformer),
-        liveCache.onlineMap(), liveCache.liveMap(), liveCache.playingMap(),
-        (userRealm, shortcutRealmList, onlineMap, liveMap, playingMap) -> {
+        Observable.combineLatest(this.userCache.shortcuts(), liveCache.onlineMap(),
+            liveCache.liveMap(), liveCache.playingMap(),
+            (shortcutRealms, onlineMap, liveMap, playingMap) -> shortcutRealms)
+            .compose(listShortcutOnlineLiveTransformer), (userRealm, shortcutRealmList) -> {
           userRealm.setShortcuts(shortcutRealmList);
           return userRealm;
         }).doOnError(throwable -> throwable.printStackTrace());
