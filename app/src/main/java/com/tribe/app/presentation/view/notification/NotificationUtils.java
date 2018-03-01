@@ -45,12 +45,12 @@ public class NotificationUtils {
       return builder.build();
     }
 
-    if ((notificationPayload.getClickAction() == null &&
-        StringUtils.isEmpty(notificationPayload.getBody())) ||
-        notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+    if ((notificationPayload.getClickAction() == null && StringUtils.isEmpty(
+        notificationPayload.getBody())) || notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       return null;
-    } else if (notificationPayload.getClickAction() == null &&
-        !StringUtils.isEmpty(notificationPayload.getBody())) {
+    } else if (notificationPayload.getClickAction() == null && !StringUtils.isEmpty(
+        notificationPayload.getBody())) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       return builder.build();
     }

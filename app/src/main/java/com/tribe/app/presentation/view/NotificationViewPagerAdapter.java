@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.tribe.app.R;
@@ -61,6 +62,7 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
       ImageView btn1DrawableEnd = itemView.findViewById(R.id.btn1DrawableEnd);
       AvatarView avatarView = itemView.findViewById(R.id.avatarView);
       LinearLayout btn1Container = itemView.findViewById(R.id.btn1Container);
+      FrameLayout mask = itemView.findViewById(R.id.mask);
 
       btn1Container.setOnClickListener(v -> {
         switch (model.getType()) {
@@ -115,7 +117,10 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
       }
       if (model.getProfilePicture() != null) avatarView.load(model.getProfilePicture());
       if (model.getLogoPicture() != null) {
+        mask.setVisibility(View.GONE);
         avatarView.setBackground(content.getResources().getDrawable(model.getLogoPicture()));
+      } else {
+        mask.setVisibility(View.VISIBLE);
       }
 
       return itemView;

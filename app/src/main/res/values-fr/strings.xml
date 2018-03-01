@@ -1024,6 +1024,7 @@
 	<string name="poke_popup_action_send">SEND &amp; POKE</string>
 	<string name="poke_delay_minutes">%1$d minutes left to poke again %2$s!</string>
 	<string name="poke_delay_seconds">%1$d seconds left to poke again %2$s!</string>
+	<string name="poke_sent_confirmation">Your poke has been sent to %1$s!</string>
 	<string name="poke_chat_event_above">%1$s just became jealous of your score at %2$s!</string>
 	<string name="poke_chat_event_below">%1$s just made fun of your score at %2$s!</string>
 	<string name="poke_chat_tap_to_play">TAP TO PLAY</string>

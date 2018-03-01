@@ -1,150 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="40dp"
     android:paddingRight="40dp"
     >
-  <FrameLayout
-      android:id="@+id/layoutTop"
-      android:layout_width="0dp"
+
+  <android.support.v7.widget.CardView
+      android:id="@+id/cardView"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@drawable/shape_rect_white_rounded_corners_top"
-      app:layout_constraintBottom_toTopOf="@+id/layoutMiddle"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintVertical_chainStyle="packed"
+      android:layout_gravity="center"
+      android:background="@android:color/transparent"
+      android:clipChildren="false"
+      app:cardBackgroundColor="@android:color/transparent"
+      app:cardElevation="10dp"
+      app:cardMaxElevation="10dp"
+      app:cardPreventCornerOverlap="false"
+      app:cardUseCompatPadding="true"
       >
 
-    <ImageView
-        android:id="@+id/backImage"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="fitXY"
-        android:src="@drawable/banner_fb_callroulette"
-        />
+        >
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="50dp"
-        android:text=""
-        android:textSize="19sp"
-        style="@style/Title.2.White"
-        />
-  </FrameLayout>
+      <FrameLayout
+          android:id="@+id/layoutTop"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:background="@drawable/shape_rect_white_rounded_corners_top"
+          app:layout_constraintBottom_toTopOf="@+id/layoutMiddle"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintVertical_chainStyle="packed"
 
-  <LinearLayout
-      android:id="@+id/layoutMiddle"
-      android:layout_width="0dp"
-      android:layout_height="240dp"
-      android:background="@android:color/white"
-      android:gravity="center"
-      android:orientation="vertical"
-      android:paddingEnd="25dp"
-      android:paddingStart="25dp"
-      android:paddingTop="25dp"
-      app:layout_constraintBottom_toTopOf="@+id/btn1Container"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/layoutTop"
-      >
+          >
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/subtitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
-        android:layout_marginTop="5dp"
-        android:gravity="center"
-        android:text="@string/unlock_roll_the_dice_title"
-        android:textSize="19sp"
-        style="@style/Title.2.Black"
-        />
+        <ImageView
+            android:id="@+id/backImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:src="@drawable/banner_fb_callroulette"
+            />
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/unlock_roll_the_dice_description"
-        android:textSize="13sp"
-        style="@style/Title.2.Black40"
-        />
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="50dp"
+            android:text=""
+            android:textSize="19sp"
+            style="@style/Title.2.White"
+            />
+      </FrameLayout>
 
-  </LinearLayout>
+      <LinearLayout
+          android:id="@+id/layoutMiddle"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:background="@android:color/white"
+          android:gravity="center"
+          android:orientation="vertical"
+          android:paddingBottom="25dp"
+          android:paddingEnd="25dp"
+          android:paddingStart="25dp"
+          android:paddingTop="60dp"
+          app:layout_constraintBottom_toTopOf="@+id/btn1Container"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/layoutTop"
+          >
 
-  <LinearLayout
-      android:id="@+id/btn1Container"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:background="@drawable/bck_btn1"
-      android:orientation="horizontal"
-      android:weightSum="4"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/layoutMiddle"
-      app:layout_constraintVertical_chainStyle="packed"
-      >
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:lineSpacingExtra="8dp"
+            android:text="@string/unlock_roll_the_dice_title"
+            android:textSize="19sp"
+            style="@style/Title.2.Black"
+            />
 
-    <ImageView
-        android:id="@+id/btn1DrawableStart"
-        android:layout_width="wrap_content"
-        android:layout_height="65dp"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="1"
-        android:paddingEnd="30dp"
-        android:paddingStart="30dp"
-        android:scaleType="center"
-        android:src="@drawable/picto_info"
-        />
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:lineSpacingExtra="8dp"
+            android:text="@string/unlock_roll_the_dice_description"
+            android:textSize="13sp"
+            style="@style/Title.2.Black40"
+            />
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:id="@+id/btn1Container"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:background="@drawable/bck_btn1"
+          android:orientation="horizontal"
+          android:weightSum="4"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/layoutMiddle"
+          app:layout_constraintVertical_chainStyle="packed"
+          >
+
+        <ImageView
+            android:id="@+id/btn1DrawableStart"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:paddingEnd="30dp"
+            android:paddingStart="20dp"
+            android:scaleType="center"
+            android:src="@drawable/picto_info"
+            />
 
 
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/btn1Content"
-        android:layout_width="wrap_content"
-        android:layout_height="65dp"
-        android:layout_gravity="center"
-        android:layout_weight="2"
-        android:drawablePadding="10dp"
-        android:gravity="center"
-        android:text="@string/unlock_roll_the_dice_disclaimer"
-        android:textSize="15sp"
-        style="@style/Title.2.White"
-        />
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:id="@+id/btn1Content"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:layout_gravity="center"
+            android:layout_weight="2"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:text="@string/unlock_roll_the_dice_disclaimer"
+            android:textSize="15sp"
+            style="@style/Title.2.White"
+            />
 
 
-    <ImageView
-        android:id="@+id/btn1DrawableEnd"
-        android:layout_width="wrap_content"
-        android:layout_height="65dp"
-        android:layout_weight="1"
-        android:alpha="0"
-        android:gravity="center"
-        android:paddingEnd="30dp"
-        android:paddingStart="30dp"
-        android:scaleType="center"
-        android:src="@drawable/picto_info"
-        />
-  </LinearLayout>
+        <ImageView
+            android:id="@+id/btn1DrawableEnd"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:layout_weight="1"
+            android:alpha="0"
+            android:gravity="center"
+            android:paddingEnd="20dp"
+            android:paddingStart="30dp"
+            android:scaleType="center"
+            android:src="@drawable/picto_info"
+            />
+      </LinearLayout>
 
-  <com.tribe.app.presentation.view.widget.avatar.AvatarView
-      android:id="@+id/avatarView"
-      android:layout_width="100dp"
-      android:layout_height="100dp"
-      android:layout_gravity="top|center"
-      android:gravity="bottom"
-      android:src="@color/blue.1"
-      android:visibility="visible"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/layoutTop"
-      app:layout_constraintBottom_toBottomOf="@id/layoutTop"
-      />
+      <com.tribe.app.presentation.view.widget.avatar.AvatarView
+          android:id="@+id/avatarView"
+          android:layout_width="100dp"
+          android:layout_height="100dp"
+          android:layout_gravity="top|center"
+          android:gravity="bottom"
+          android:visibility="visible"
+          app:layout_constraintBottom_toBottomOf="@id/layoutTop"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/layoutTop"
 
-</android.support.constraint.ConstraintLayout>
+          />
+
+      <FrameLayout
+          android:id="@+id/mask"
+          android:layout_width="130dp"
+          android:layout_height="130dp"
+          android:background="@drawable/circle_mask"
+          android:visibility="visible"
+          app:layout_constraintBottom_toBottomOf="@id/layoutTop"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@id/layoutTop"
+          >
+
+      </FrameLayout>
+
+    </android.support.constraint.ConstraintLayout>
+  </android.support.v7.widget.CardView>
+</FrameLayout>
+
+
+
+

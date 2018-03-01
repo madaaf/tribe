@@ -58,7 +58,7 @@ public class NotifView extends FrameLayout {
 
   private final static String DOTS_TAG_MARKER = "DOTS_TAG_MARKER_";
 
-  private final static int NOTIF_ANIM_DURATION_ENTER = 500;
+  private final static int NOTIF_ANIM_DURATION_ENTER = 1000;
 
   private static ViewGroup decorView;
   private static View v;
@@ -167,11 +167,9 @@ public class NotifView extends FrameLayout {
     v = inflater.inflate(R.layout.activity_test, this, true);
     unbinder = ButterKnife.bind(this);
 
-    pager.setOnTouchListener((v, event) -> {
-      gestureScanner.onTouchEvent(event);
-      return super.onTouchEvent(event);
-    });
     gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
+
+    textDismiss.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
 
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
@@ -218,41 +216,32 @@ public class NotifView extends FrameLayout {
     }).start();
   }
 
+  Animation slideOutAnimation;
+
   public void hideView() {
-    // if (true) return;
-    // if (disposeView) return;
     if (listener != null) listener.onFinishView();
     disposeView = true;
     pager.setOnTouchListener(null);
-    Animation slideOutAnimation =
+    slideOutAnimation =
         AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_exit_animation);
     setAnimation(slideOutAnimation);
     slideOutAnimation.setFillAfter(true);
     slideOutAnimation.setDuration(NOTIF_ANIM_DURATION_ENTER);
     slideOutAnimation.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationStart(Animation animation) {
-        super.onAnimationStart(animation);
-      }
-
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
         dispose();
       }
     });
-
+    pager.startAnimation(slideOutAnimation);
+    bgView.animate().setDuration(NOTIF_ANIM_DURATION_ENTER).alpha(0f).start();
     textDismiss.setVisibility(INVISIBLE);
-    bgView.animate()
-        .setDuration(NOTIF_ANIM_DURATION_ENTER)
-        .alpha(0f)
-        .withEndAction(() -> startAnimation(slideOutAnimation))
-        .start();
   }
 
   public void dispose() {
     setVisibility(GONE);
-    setOnTouchListener(null);
+    post(() -> decorView.removeView(v));
     clearAnimation();
-    decorView.removeView(v);
     subscriptions.unsubscribe();
   }
 
