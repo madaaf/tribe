@@ -5,6 +5,7 @@ package com.tribe.app.domain.interactor.game;
  */
 
 import com.tribe.app.data.network.entity.AddScoreEntity;
+import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
@@ -30,4 +31,6 @@ public interface GameRepository {
   Observable<Map<String, List<TriviaQuestion>>> getTriviaData();
 
   Observable<Map<String, BattleMusicPlaylist>> getBattleMusicData();
+
+  Observable<GameFile> getGameFile(String url);
 }

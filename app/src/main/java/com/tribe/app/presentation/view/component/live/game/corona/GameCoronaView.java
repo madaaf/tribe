@@ -14,8 +14,14 @@ import butterknife.ButterKnife;
 import com.ansca.corona.CoronaView;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.GameFileRealm;
+import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
+import com.tribe.app.presentation.mvp.presenter.GamePresenter;
+import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.unzip.RxUnzip;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -44,6 +50,10 @@ public class GameCoronaView extends GameView {
 
   @Inject AccessToken accessToken;
 
+  @Inject GamePresenter gamePresenter;
+
+  @Inject RxUnzip rxUnzip;
+
   @BindView(R.id.coronaView) CoronaView coronaView;
   @BindView(R.id.layoutProgress) FrameLayout layoutProgress;
   @BindView(R.id.viewProgress) View viewProgress;
@@ -51,16 +61,34 @@ public class GameCoronaView extends GameView {
 
   // VARIABLES
   private Handler mainHandler;
-
-
+  private GameMVPViewAdapter gameMVPViewAdapter;
 
   // OBSERVABLES
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
 
   public GameCoronaView(@NonNull Context context, Game game) {
     super(context);
-    coronaView.init("coronatest/aliens-attack");
-    coronaView.setZOrderMediaOverlay(true);
+
+    FileUtils.getGameUnzippedDir(context).delete();
+
+    gameMVPViewAdapter = new GameMVPViewAdapter() {
+      @Override public void onGameFile(GameFile gameFile) {
+        Timber.d("GameFile : " + gameFile);
+
+        if (gameFile.getDownloadStatus().equals(GameFileRealm.STATUS_DOWNLOADED)) {
+          subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(
+                  aLong -> subscriptions.add(rxUnzip.unzip(gameFile.getPath()).subscribe(path -> {
+                    //coronaView.init("coronatest/aliens-attack");
+                    coronaView.init(FileUtils.getGameUnzippedDir(context).getPath());
+                    coronaView.setZOrderMediaOverlay(true);
+                  }))));
+        }
+      }
+    };
+
+    gamePresenter.getGameFile(game.getUrl());
   }
 
   @Override protected void initView(Context context) {
@@ -70,6 +98,16 @@ public class GameCoronaView extends GameView {
     unbinder = ButterKnife.bind(this);
 
     mainHandler = new Handler(context.getMainLooper());
+  }
+
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    gamePresenter.onViewAttached(gameMVPViewAdapter);
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    gamePresenter.onViewDetached();
   }
 
   @Override protected void initWebRTCRoomSubscriptions() {
@@ -126,9 +164,9 @@ public class GameCoronaView extends GameView {
           startGameTable.put("isVolumeEnabled", true);
 
           coronaView.sendEvent(startGameTable);
-          subscriptions.add(Observable.timer(2000, TimeUnit.MILLISECONDS)
+          subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(aLong -> AnimationUtils.fadeOut(layoutProgress, 250,
+              .subscribe(aLong -> AnimationUtils.fadeOut(layoutProgress, 1000,
                   new AnimatorListenerAdapter() {
                     @Override public void onAnimationEnd(Animator animation) {
                       if (layoutProgress.getParent() != null) removeView(layoutProgress);
@@ -155,7 +193,7 @@ public class GameCoronaView extends GameView {
   private void runGame() {
     Timber.d("runGame");
     coronaView.setCoronaEventListener((coronaView, hashtable) -> {
-      Timber.d("eventListener fired : " + hashtable);
+      //Timber.d("eventListener fired : " + hashtable);
       String event = (String) hashtable.get("event");
 
       mainHandler.post(() -> {
@@ -270,8 +308,8 @@ public class GameCoronaView extends GameView {
 
   @Override public void dispose() {
     Timber.d("dispose");
-    super.dispose();
     coronaView.destroy();
+    super.dispose();
   }
 
   @Override public void setNextGame() {

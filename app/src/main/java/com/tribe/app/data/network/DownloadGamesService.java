@@ -36,13 +36,14 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.exceptions.OnErrorThrowable;
 import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 03/01/2018.
  */
 @Singleton public class DownloadGamesService extends Service {
 
-  public static Intent getCallingIntent(Context context, String recipientId) {
+  public static Intent getCallingIntent(Context context) {
     Intent intent = new Intent(context, DownloadGamesService.class);
     return intent;
   }
@@ -106,13 +107,13 @@ import rx.subjects.AsyncSubject;
         .observeOn(scheduler)
         .flatMap(gameFileList -> Observable.from(gameFileList))
         .flatMap(gameFileRealm -> {
-          File file = FileUtils.getFileTemp(getApplicationContext(), gameFileRealm.getUrl(),
-              FileUtils.VIDEO);
-          File fileReal =
-              FileUtils.getFile(getApplicationContext(), gameFileRealm.getUrl(), FileUtils.VIDEO);
+          File file = FileUtils.getGameFileTemp(getApplicationContext(), gameFileRealm.getGameId(),
+              FileUtils.ZIP);
+          File fileReal = FileUtils.getGameFile(getApplicationContext(), gameFileRealm.getGameId(),
+              FileUtils.ZIP);
 
           if (fileReal.exists()) {
-            return Observable.just(file);
+            fileReal.delete();
           }
 
           if (file.exists()) file.delete();
@@ -152,13 +153,16 @@ import rx.subjects.AsyncSubject;
             return Observable.empty();
           });
         }, (gameFileRealm, file) -> {
+          File finalFile = null;
           if (file != null && file.exists() && file.length() > 0) {
-            FileUtils.copyFile(file.getAbsolutePath(),
-                FileUtils.getFile(getApplicationContext(), gameFileRealm.getUrl(), FileUtils.VIDEO)
-                    .getAbsolutePath());
+            finalFile = FileUtils.getGameFile(getApplicationContext(), gameFileRealm.getGameId(),
+                FileUtils.ZIP);
+            FileUtils.copyFile(file.getAbsolutePath(), finalFile.getAbsolutePath());
+            Timber.d("DOWNLOADED");
             file.delete();
           }
 
+          setPath(gameFileRealm.getUrl(), finalFile.getAbsolutePath());
           computeEndStatus(gameFileRealm, GameFileRealm.STATUS_DOWNLOADED);
 
           return gameFileRealm;
@@ -175,6 +179,13 @@ import rx.subjects.AsyncSubject;
     gameCache.updateGameFiles(gameFileRealm.getUrl(), pairList);
 
     alreadyProcessed.remove(gameFileRealm.getUrl());
+  }
+
+  protected void setPath(String url, String path) {
+    List<Pair<String, Object>> pairList = new ArrayList<>();
+    Pair<String, Object> updatePair = Pair.create(GameFileRealm.PATH, path);
+    pairList.add(updatePair);
+    update(url, pairList);
   }
 
   protected void setStatus(String url, @GameFileRealm.DownloadStatus String status) {

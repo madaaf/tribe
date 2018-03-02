@@ -14,6 +14,7 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.entity.CategoryEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.GameFileRealm;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ScoreUserRealm;
@@ -239,4 +240,8 @@ public class CloudGameDataStore implements GameDataStore {
 
     return result;
   });
+
+  @Override public Observable<GameFileRealm> getGameFile(String url) {
+    return null;
+  }
 }

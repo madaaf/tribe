@@ -15,6 +15,7 @@ import com.jenzz.appstate.AppStateMonitor;
 import com.jenzz.appstate.RxAppStateMonitor;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.data.network.DownloadGamesService;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
@@ -140,6 +141,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
+    startService(DownloadGamesService.
+        getCallingIntent(this));
   }
 
   private void loadChallengeNotificationData() {
@@ -166,6 +169,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     }
 
     stopService();
+    stopDownloadService();
     super.onDestroy();
   }
 
@@ -190,6 +194,11 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
   private void stopService() {
     Intent i = new Intent(this, WSService.class);
+    stopService(i);
+  }
+
+  private void stopDownloadService() {
+    Intent i = new Intent(this, DownloadGamesService.class);
     stopService(i);
   }
 

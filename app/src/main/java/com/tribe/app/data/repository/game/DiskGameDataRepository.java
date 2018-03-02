@@ -1,10 +1,12 @@
 package com.tribe.app.data.repository.game;
 
 import com.tribe.app.data.network.entity.AddScoreEntity;
+import com.tribe.app.data.realm.mapper.GameFileRealmDataMapper;
 import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ScoreRealmDataMapper;
 import com.tribe.app.data.repository.game.datasource.GameDataStore;
 import com.tribe.app.data.repository.game.datasource.GameDataStoreFactory;
+import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
@@ -21,12 +23,15 @@ import rx.Observable;
   private final GameDataStoreFactory dataStoreFactory;
   private final GameRealmDataMapper gameRealmDataMapper;
   private final ScoreRealmDataMapper scoreRealmDataMapper;
+  private final GameFileRealmDataMapper gameFileRealmDataMapper;
 
   @Inject public DiskGameDataRepository(GameDataStoreFactory dataStoreFactory,
-      GameRealmDataMapper gameRealmDataMapper, ScoreRealmDataMapper scoreRealmDataMapper) {
+      GameRealmDataMapper gameRealmDataMapper, ScoreRealmDataMapper scoreRealmDataMapper,
+      GameFileRealmDataMapper gameFileRealmDataMapper) {
     this.dataStoreFactory = dataStoreFactory;
     this.gameRealmDataMapper = gameRealmDataMapper;
     this.scoreRealmDataMapper = scoreRealmDataMapper;
+    this.gameFileRealmDataMapper = gameFileRealmDataMapper;
   }
 
   @Override public Observable<Void> synchronizeGamesData(String lang) {
@@ -68,5 +73,11 @@ import rx.Observable;
   @Override public Observable<Map<String, BattleMusicPlaylist>> getBattleMusicData() {
     GameDataStore gameDataStore = dataStoreFactory.createDiskDataStore();
     return gameDataStore.getBattleMusicData();
+  }
+
+  @Override public Observable<GameFile> getGameFile(String url) {
+    GameDataStore gameDataStore = dataStoreFactory.createDiskDataStore();
+    return gameDataStore.getGameFile(url)
+        .map(gameFileRealm -> gameFileRealmDataMapper.transform(gameFileRealm));
   }
 }

@@ -280,6 +280,7 @@ dependencies {
   provided files('libs/Corona.jar')
   provided files('libs/JNLua.jar')
   provided files('libs/network.jar')
+  provided files('libs/zip4j_1.3.2.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'

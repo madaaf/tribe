@@ -34,7 +34,9 @@ import javax.inject.Singleton;
   public static final String ZIP = "zip";
 
   private static String pathEnd = "/Tribe/Sent";
-  private static String pathGameTemp = "/Tribe/Games";
+  private static String pathGame = "/Tribe/Games";
+  private static String pathGameUnzipped = "/Tribe/Games/Unzipped";
+  private static String pathGameTemp = "/Tribe/Games/Temp";
   private static String pathSave = "/Tribe";
   private static String pathAvatarTemp = "/Tribe/Avatars/";
 
@@ -55,8 +57,30 @@ import javax.inject.Singleton;
     return generateOutputFile(endDir, id, type);
   }
 
-  public static File getFileTemp(Context context, String id, @Type String type) {
+  //Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
+  public static File getGameFileTemp(Context context, String id, @Type String type) {
     File endDir = new File(context.getFilesDir() + pathGameTemp);
+
+    if (!endDir.exists()) {
+      endDir.mkdirs();
+    }
+
+    return generateOutputFile(endDir, id, type);
+  }
+
+  public static File getGameUnzippedDir(Context context) {
+    File endDir = new File(context.getFilesDir() + pathGameUnzipped);
+
+    if (!endDir.exists()) {
+      endDir.mkdirs();
+    }
+
+    return endDir;
+  }
+
+  public static File getGameFile(Context context, String id, @Type String type) {
+    File endDir = new File(context.getFilesDir() + pathGame);
 
     if (!endDir.exists()) {
       endDir.mkdirs();

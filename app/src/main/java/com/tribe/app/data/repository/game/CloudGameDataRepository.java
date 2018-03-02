@@ -1,10 +1,12 @@
 package com.tribe.app.data.repository.game;
 
 import com.tribe.app.data.network.entity.AddScoreEntity;
+import com.tribe.app.data.realm.GameFileRealm;
 import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ScoreRealmDataMapper;
 import com.tribe.app.data.repository.game.datasource.GameDataStore;
 import com.tribe.app.data.repository.game.datasource.GameDataStoreFactory;
+import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
@@ -73,5 +75,9 @@ import timber.log.Timber;
   @Override public Observable<Map<String, BattleMusicPlaylist>> getBattleMusicData() {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
     return gameDataStore.getBattleMusicData();
+  }
+
+  @Override public Observable<GameFile> getGameFile(String url) {
+    return null;
   }
 }

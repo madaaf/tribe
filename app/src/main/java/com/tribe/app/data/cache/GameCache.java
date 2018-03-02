@@ -38,6 +38,10 @@ import rx.Observable;
 
   Observable<List<GameFileRealm>> getFilesToDownload();
 
+  GameFileRealm getGameFile(String url);
+
+  Observable<GameFileRealm> getGameFileObs(String url);
+
   void updateGameFiles(Map<String, List<Pair<String, Object>>> updateList);
 
   void updateGameFiles(String url, List<Pair<String, Object>> updateList);
