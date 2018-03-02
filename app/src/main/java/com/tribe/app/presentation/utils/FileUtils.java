@@ -57,10 +57,8 @@ import javax.inject.Singleton;
     return generateOutputFile(endDir, id, type);
   }
 
-  //Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-
   public static File getGameFileTemp(Context context, String id, @Type String type) {
-    File endDir = new File(context.getFilesDir() + pathGameTemp);
+    File endDir = new File(getBaseDir(context) + pathGameTemp);
 
     if (!endDir.exists()) {
       endDir.mkdirs();
@@ -70,7 +68,7 @@ import javax.inject.Singleton;
   }
 
   public static File getGameUnzippedDir(Context context) {
-    File endDir = new File(context.getFilesDir() + pathGameUnzipped);
+    File endDir = new File(getBaseDir(context) + pathGameUnzipped);
 
     if (!endDir.exists()) {
       endDir.mkdirs();
@@ -80,13 +78,18 @@ import javax.inject.Singleton;
   }
 
   public static File getGameFile(Context context, String id, @Type String type) {
-    File endDir = new File(context.getFilesDir() + pathGame);
+    File endDir = new File(getBaseDir(context) + pathGame);
 
     if (!endDir.exists()) {
       endDir.mkdirs();
     }
 
     return generateOutputFile(endDir, id, type);
+  }
+
+  private static File getBaseDir(Context context) {
+    return context.getFilesDir();
+    //return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
   }
 
   public static File generateOutputFile(File dir, String id, @Type String type) {

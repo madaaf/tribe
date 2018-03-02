@@ -80,8 +80,8 @@ public class GameCoronaView extends GameView {
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
                   aLong -> subscriptions.add(rxUnzip.unzip(gameFile.getPath()).subscribe(path -> {
-                    //coronaView.init("coronatest/aliens-attack");
-                    coronaView.init(FileUtils.getGameUnzippedDir(context).getPath());
+                    coronaView.init(game.getId());
+                    //coronaView.init(FileUtils.getGameUnzippedDir(context).getPath());
                     coronaView.setZOrderMediaOverlay(true);
                   }))));
         }

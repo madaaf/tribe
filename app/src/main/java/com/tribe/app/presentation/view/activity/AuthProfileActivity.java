@@ -31,6 +31,7 @@ import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.PhoneUtils;
@@ -72,6 +73,8 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
   @Inject StateManager stateManager;
 
   @Inject ProfileInfoPresenter profileInfoPresenter;
+
+  @Inject @AddressBook com.f2prateek.rx.preferences.Preference<Boolean> addressBook;
 
   @BindView(R.id.profileInfoView) ProfileInfoView profileInfoView;
 
@@ -128,6 +131,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       Bundle bundleBis = new Bundle();
       bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
+      addressBook.set(true);
     });
   }
 
