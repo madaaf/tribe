@@ -844,7 +844,7 @@
 	<string name="home_action_new_chat">Nouveau chat</string>
 	<string name="home_action_new_game">Nouvelle partie</string>
 	<string name="home_action_join">REJOINDRE</string>
-	<string name="home_action_ask_join">DEMANDER À REJOINDRE</string>
+	<string name="home_action_ask_join">REJOINDRE</string>
 	<string name="home_anonymous_user">personne</string>
 	<string name="home_anonymous_users">personnes</string>
 	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Épingler en haut</string>
@@ -1024,8 +1024,9 @@
 	<string name="poke_popup_action_send">SEND &amp; POKE</string>
 	<string name="poke_delay_minutes">%1$d minutes left to poke again %2$s!</string>
 	<string name="poke_delay_seconds">%1$d seconds left to poke again %2$s!</string>
-	<string name="poke_chat_event_above">%1$s just became jealous of your score at %2$s!</string>
-	<string name="poke_chat_event_below">%1$s just made fun of your score at %2$s!</string>
+	<string name="poke_sent_confirmation">Your poke has been sent to %1$s!</string>
+	<string name="poke_chat_event_above">%1$s just became jealous of your score at %2$s! %3$s%4$s</string>
+	<string name="poke_chat_event_below">%1$s just made fun of your score at %2$s! %3$s%4$s</string>
 	<string name="poke_chat_tap_to_play">TAP TO PLAY</string>
 	<string name="poke_share_score">My score at %1$s on @heytribe is %2$d. What\'s yours?</string>
 	<string name="poke_emoji_above">:heart_eyes:,:flushed:,:hugs:,:open_mouth:,:roll_eyes:,:alien:</string>
