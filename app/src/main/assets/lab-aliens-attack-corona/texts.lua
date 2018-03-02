@@ -4,7 +4,7 @@ local strings = require "strings"
 
 ---------------------------------------------------------------------------------
 
-local fontName = "bonk"
+local fontName = "./bonk"
 
 local title = strings('title')
 

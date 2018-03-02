@@ -692,7 +692,7 @@ public class LiveView extends FrameLayout {
     // We just want to trigger the updates to update the UI
     live.getRoom().update(room, false);
 
-    //webRTCRoom.connect(options);
+    webRTCRoom.connect(options);
 
     if (!StringUtils.isEmpty(live.getGameId()) &&
         !live.getSource().equals(SOURCE_CALL_ROULETTE) &&

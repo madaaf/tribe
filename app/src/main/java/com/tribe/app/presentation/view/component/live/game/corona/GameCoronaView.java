@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.util.Pair;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,6 +26,7 @@ import com.tribe.app.presentation.utils.unzip.RxUnzip;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -80,10 +82,16 @@ public class GameCoronaView extends GameView {
               .observeOn(AndroidSchedulers.mainThread())
               .subscribe(
                   aLong -> subscriptions.add(rxUnzip.unzip(gameFile.getPath()).subscribe(path -> {
-                    coronaView.init(game.getId());
-                    //coronaView.init(FileUtils.getGameUnzippedDir(context).getPath());
+                    AnimationUtils.animateWidth(viewProgress, viewProgress.getMeasuredWidth(),
+                        cardViewProgress.getWidth(), 300, new DecelerateInterpolator());
+                    //coronaView.init(game.getId());
+                    coronaView.init(FileUtils.getGameUnzippedDir(context).getPath());
                     coronaView.setZOrderMediaOverlay(true);
                   }))));
+        } else if (gameFile.getDownloadStatus().equals(GameFileRealm.STATUS_DOWNLOADING)) {
+          UIUtils.changeWidthOfView(viewProgress,
+              (int) (((float) gameFile.getTotalSize() / (float) gameFile.getProgress()) *
+                  cardViewProgress.getWidth()));
         }
       }
     };

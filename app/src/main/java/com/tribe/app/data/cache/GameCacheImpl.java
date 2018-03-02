@@ -43,6 +43,7 @@ public class GameCacheImpl implements GameCache {
     try {
       obsRealm.executeTransaction(realm1 -> {
         realm1.delete(GameRealm.class);
+        realm1.delete(GameFileRealm.class);
 
         for (GameRealm gameRealm : gameRealmList) {
           if (gameRealm.getFriendLeader() != null) {
@@ -55,6 +56,8 @@ public class GameCacheImpl implements GameCache {
           if (gameRealm.get__typename().equals(GameRealm.GAME_CORONA)) {
             GameFileRealm gameFileRealm =
                 realm1.where(GameFileRealm.class).equalTo("gameId", gameRealm.getId()).findFirst();
+
+            gameRealm.setUrl("https://static.tribe.pm/games/corona/aliens-attack-dev.zip?t=10");
 
             if (gameFileRealm == null || !gameFileRealm.getUrl().equals(gameRealm.getUrl())) {
               if (gameFileRealm != null) {

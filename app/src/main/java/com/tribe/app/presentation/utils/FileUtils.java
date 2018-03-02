@@ -88,8 +88,9 @@ import javax.inject.Singleton;
   }
 
   private static File getBaseDir(Context context) {
-    return context.getFilesDir();
-    //return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+    //return CoronaEnvironment.getApplicationSupportDirectory(context);
+    //return context.getFilesDir();
+    return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
   }
 
   public static File generateOutputFile(File dir, String id, @Type String type) {

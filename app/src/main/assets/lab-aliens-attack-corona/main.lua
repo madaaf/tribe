@@ -4,9 +4,9 @@ local composer = require "composer"
 isSimulator = false -- system.getInfo("build") == '2017.3184'
 
 function log(string)
-	-- print('🍺 - Corona - ' .. string)
+    -- print('🍺 - Corona - ' .. string)
 end
 
 ---------------------------------------------------------------------------------
 
-composer.gotoScene("level")
+composer.gotoScene("./level")
