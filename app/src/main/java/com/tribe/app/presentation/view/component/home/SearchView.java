@@ -6,6 +6,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -22,6 +23,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
+import com.facebook.accountkit.ui.AccountKitActivity;
+import com.facebook.accountkit.ui.AccountKitConfiguration;
+import com.facebook.accountkit.ui.LoginType;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.ShortcutRealm;
@@ -77,6 +81,8 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
+import static com.tribe.app.presentation.view.activity.AuthActivity.APP_REQUEST_CODE;
+
 public class SearchView extends CustomFrameLayout implements SearchMVPView, ShortcutMVPView {
 
   private final static int DURATION = 300;
@@ -106,6 +112,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
   @BindView(R.id.layoutBottom) ViewGroup layoutBottom;
 
+  private Context context;
   private LoadFriendsView viewFriendsFBLoad;
   private LoadFriendsView viewFriendsAddressBookLoad;
   private TextViewFont txtTitle;
@@ -169,6 +176,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   private void init(Context context, AttributeSet attrs) {
+    this.context = context;
     initDependencyInjector();
 
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -496,7 +504,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
 
     subscriptions.add(viewFriendsAddressBookLoad.onChecked().subscribe(checked -> {
       if (checked) {
-        //changeMyPhoneNumber();
+        changeMyPhoneNumber();
       } else {
         disableLookupContacts();
       }
@@ -513,6 +521,20 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
     viewOpenClose.setOnClickListener(v -> {
       openCloseContactsView(!isContactsViewOpen(), true);
     });
+  }
+
+  public void onSuccessChangeNumber() {
+    lookupContacts();
+  }
+
+  private void changeMyPhoneNumber() {
+    final Intent intent = new Intent(context(), AccountKitActivity.class);
+    AccountKitConfiguration.AccountKitConfigurationBuilder configurationBuilder =
+        new AccountKitConfiguration.AccountKitConfigurationBuilder(LoginType.PHONE,
+            AccountKitActivity.ResponseType.TOKEN);
+    intent.putExtra(AccountKitActivity.ACCOUNT_KIT_ACTIVITY_CONFIGURATION,
+        configurationBuilder.build());
+    ((Activity) context).startActivityForResult(intent, APP_REQUEST_CODE);
   }
 
   private boolean isContactsViewOpen() {
