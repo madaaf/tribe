@@ -849,11 +849,7 @@
 	<string name="home_action_new_chat">Nouveau chat</string>
 	<string name="home_action_new_game">Nouvelle partie</string>
 	<string name="home_action_join">REJOINDRE</string>
-<<<<<<< HEAD
 	<string name="home_action_ask_join">REJOINDRE</string>
-=======
-	<string name="home_action_ask_join">DEMANDER À REJOINDRE</string>
->>>>>>> build popup
 	<string name="home_anonymous_user">personne</string>
 	<string name="home_anonymous_users">personnes</string>
 	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Épingler en haut</string>
@@ -991,16 +987,8 @@
 	<string name="leaderboard_new_high_score">Nouveau meilleur score !</string>
 	<string name="leaderboard_self_is_best">%1$s êtes le(la) meilleur(e) !</string>
 	<string name="leaderboard_friend_is_best">%1$s est le(la) meilleur(e) !</string>
-<<<<<<< HEAD
-<<<<<<< HEAD
 	<string name="leaderboard_section_trophies">TROPHÉES</string>
 	<string name="leaderboard_section_games">JEUX</string>
-=======
->>>>>>> build popup
-=======
-	<string name="leaderboard_section_trophies">TROPHÉES</string>
-	<string name="leaderboard_section_games">JEUX</string>
->>>>>>> tmp
 	
 	<!-- Hang Up -->
 	<string name="hang_up_title">TAP POUR RACCROCHER</string>
@@ -1035,7 +1023,6 @@
 	<string name="score_milestone_scores">Perfect!,Crazy!,Lit!,Awesome!,Damn!,Wow!,Sick!,Neat!</string>
 	
 	<!-- Poke -->
-<<<<<<< HEAD
 	<string name="poke_captions_above">GG !,Bravo !, Génial !, Incroyable !, Dingue !</string>
 	<string name="poke_captions_below">OMG !,Serieux ?,LOL !,Haha !,Trop nul !,WOW</string>
 	<string name="poke_popup_title">Poke %1$s\npour son score !</string>
@@ -1051,6 +1038,7 @@
 	<string name="poke_share_score">Mon score à %1$s sur Tribe (http://tribe.pm) est de %2$d. Et toi ?</string>
 =======
 	<string name="poke_share_score">Mon score à %1$s à Tribe (http://tribe.pm) est %2$d. What\'s yours?</string>
+<<<<<<< HEAD
 =======
 	<string name="poke_captions_above">GG!,Congrats!</string>
 	<string name="poke_captions_below">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
@@ -1065,6 +1053,8 @@
 	<string name="poke_share_score">My score at %1$s on @heytribe is %2$d. What\'s yours?</string>
 >>>>>>> build popup
 >>>>>>> build popup
+=======
+>>>>>>> fix rebase
 	<string name="poke_emoji_above">:heart_eyes:,:flushed:,:hugs:,:open_mouth:,:roll_eyes:,:alien:</string>
 	<string name="poke_emoji_below">:joy:,:rofl:,:sweat_smile:,:poop:,:joy_cat:,:laughing:,:see_no_evil:</string>
 	<string name="poke_emoji_own">:medal_sports:</string>
@@ -1079,10 +1069,6 @@
 	<!-- Digest Popup -->
 	<string name="digest_popup_title">EN TRAIN DE JOUER</string>
 	<string name="digest_popup_action_more">PLUS DE CHALLENGERS</string>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> tmp
 	
 	<!-- Trophies -->
 	<string name="trophy_noob_title">Noob</string>
@@ -1096,6 +1082,7 @@
 	<string name="trophy_requirement_multiplayer_sessions_title">Sessions</string>
 	<string name="trophy_requirement_best_scores_title">Score</string>
 <<<<<<< HEAD
+<<<<<<< HEAD
 	<string name="trophy_requirement_friends_description">Ajoute %1$d amis</string>
 	<string name="trophy_requirement_day_usage_description">ouvre Tribe %1$d jours à la suite</string>
 	<string name="trophy_requirement_games_played_description">essaie %1$d jeux</string>
@@ -1105,18 +1092,13 @@
 	<string name="trophy_noob_description">T\'es dans la course. Consulte les autres trophées pour commencer !</string>
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> fix rebase
 	<string name="trophy_requirement_friends_description">Get %1$d friends</string>
 	<string name="trophy_requirement_day_usage_description">open Tribe %1$d days in a row</string>
 	<string name="trophy_requirement_games_played_description">try %1$d games</string>
 	<string name="trophy_requirement_multiplayer_sessions_description">%1$d multiplayer sessions</string>
 	<string name="trophy_requirement_best_scores_description">be the best at %1$d games</string>
-=======
-	<string name="trophy_requirement_friends_description">get %1$d friends</string>
-	<string name="trophy_requirement_day_usage_description">open Tribe %1$d days in a row</string>
-	<string name="trophy_requirement_games_played_description">try %1$d games</string>
-	<string name="trophy_requirement_multiplayer_sessions_description">%1$d multiplayer sessions</string>
-	<string name="trophy_requirement_best_scores_description">be the best at %1$d games</string>
->>>>>>> tmp
 	<string name="trophy_requirement_last_separator">and</string>
 	<string name="trophy_noob_description">You\'re in the race. Check out the other trophies to get started!</string>
 >>>>>>> tmp
@@ -1134,7 +1116,10 @@
 	<string name="trophy_notification_title">Leaderboard</string>
 	<string name="trophy_notification_message">Congratulations! You unlocked the "%1$s" trophy! :trophy:</string>
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> tmp
+=======
+>>>>>>> fix rebase
 	
 	<!-- Ask To Join Popup -->
 	<string name="ask_to_join_popup_title">%1$s veut\nrejoindre ta partie !</string>
@@ -1155,6 +1140,7 @@
 	<string name="invited_to_join_popup_subtitle">With %1$s</string>
 	<string name="invited_to_join_popup_no_game_selected">NO GAME SELECTED YET</string>
 	<string name="invited_to_join_popup_action_later">LATER</string>
+<<<<<<< HEAD
 =======
 >>>>>>> build popup
 <<<<<<< HEAD
@@ -1163,4 +1149,6 @@
 =======
 >>>>>>> tmp
 >>>>>>> tmp
+=======
+>>>>>>> fix rebase
 </resources>
