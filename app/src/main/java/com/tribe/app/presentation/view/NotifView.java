@@ -58,7 +58,7 @@ public class NotifView extends FrameLayout {
 
   private final static String DOTS_TAG_MARKER = "DOTS_TAG_MARKER_";
 
-  private final static int NOTIF_ANIM_DURATION_ENTER = 1000;
+  private final static int NOTIF_ANIM_DURATION_ENTER = 500;
 
   private static ViewGroup decorView;
   private static View v;
@@ -125,9 +125,9 @@ public class NotifView extends FrameLayout {
           newChatPresenter.loadFBContactsInvite();
           break;
         case NotificationModel.POPUP_UPLOAD_PICTURE:
-
           subscriptions.add(
-              DialogFactory.showBottomSheetForCamera(getContext()).subscribe(labelType -> {
+              DialogFactory.showBottomSheetForCamera(activity).subscribe(labelType -> {
+                hideView();
                 if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
                   subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
                     newChatPresenter.updateUser(currentUser.getId(), currentUser.getUsername(),
@@ -143,7 +143,7 @@ public class NotifView extends FrameLayout {
           break;
       }
 
-      if (pageListener.getPositionViewPage() < data.size()) {
+      if (data.size() > 1 && pageListener.getPositionViewPage() < data.size()) {
         if (pageListener.getPositionViewPage() == data.size() - 1) {
           subscriptions.add(Observable.timer((300), TimeUnit.MILLISECONDS)
               .onBackpressureDrop()

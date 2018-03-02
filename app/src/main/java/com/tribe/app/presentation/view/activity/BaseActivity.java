@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.activity;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
@@ -38,7 +39,9 @@ import rx.subscriptions.CompositeSubscription;
  * Base {@link android.app.Activity} class for every Activity in this application.
  */
 public abstract class BaseActivity extends AppCompatActivity {
+
   protected static boolean isFristLeaveRoom = false;
+  private Context context;
 
   @Inject Navigator navigator;
 
@@ -64,6 +67,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     this.getApplicationComponent().inject(this);
     if (!hasSoftKeys.isSet()) hasSoftKeys.set(hasSoftKeys());
+    this.context = this;
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {

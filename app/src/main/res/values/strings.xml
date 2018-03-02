@@ -844,7 +844,7 @@
 	<string name="home_action_new_chat">New chat</string>
 	<string name="home_action_new_game">New game</string>
 	<string name="home_action_join">JOIN</string>
-	<string name="home_action_ask_join">ASK TO JOIN</string>
+	<string name="home_action_ask_join">JOIN</string>
 	<string name="home_anonymous_user">person</string>
 	<string name="home_anonymous_users">persons</string>
 	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Fav to top</string>

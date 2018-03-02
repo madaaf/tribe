@@ -844,7 +844,7 @@
 	<string name="home_action_new_chat">Nouveau chat</string>
 	<string name="home_action_new_game">Nouvelle partie</string>
 	<string name="home_action_join">REJOINDRE</string>
-	<string name="home_action_ask_join">DEMANDER À REJOINDRE</string>
+	<string name="home_action_ask_join">REJOINDRE</string>
 	<string name="home_anonymous_user">personne</string>
 	<string name="home_anonymous_users">personnes</string>
 	<string name="home_menu_shortcut_pin">:heavy_heart_exclamation_mark_ornament: Épingler en haut</string>

@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="fitXY"
-            android:src="@drawable/banner_fb_callroulette"
+            android:src="@drawable/upload_picture_popup_back"
             />
 
         <com.tribe.app.presentation.view.widget.TextViewFont
