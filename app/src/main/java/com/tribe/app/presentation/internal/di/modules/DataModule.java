@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
-import com.tribe.app.BuildConfig;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
@@ -197,7 +196,7 @@ import static android.content.Context.MODE_PRIVATE;
   }
 
   @Provides @Singleton @NewWS Preference<Boolean> provideNewWS(RxSharedPreferences prefs) {
-    return prefs.getBoolean(PreferencesUtils.NEW_WS, BuildConfig.DEBUG);
+    return prefs.getBoolean(PreferencesUtils.NEW_WS, true);
   }
 
   @Provides @Singleton @FullscreenNotifications Preference<Boolean> provideFullScreenNotifications(
