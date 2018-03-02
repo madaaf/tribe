@@ -125,9 +125,9 @@ public class NotifView extends FrameLayout {
           newChatPresenter.loadFBContactsInvite();
           break;
         case NotificationModel.POPUP_UPLOAD_PICTURE:
-
           subscriptions.add(
-              DialogFactory.showBottomSheetForCamera(getContext()).subscribe(labelType -> {
+              DialogFactory.showBottomSheetForCamera(activity).subscribe(labelType -> {
+                hideView();
                 if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
                   subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
                     newChatPresenter.updateUser(currentUser.getId(), currentUser.getUsername(),
@@ -143,7 +143,7 @@ public class NotifView extends FrameLayout {
           break;
       }
 
-      if (pageListener.getPositionViewPage() < data.size()) {
+      if (data.size() > 1 && pageListener.getPositionViewPage() < data.size()) {
         if (pageListener.getPositionViewPage() == data.size() - 1) {
           subscriptions.add(Observable.timer((300), TimeUnit.MILLISECONDS)
               .onBackpressureDrop()
@@ -167,11 +167,9 @@ public class NotifView extends FrameLayout {
     v = inflater.inflate(R.layout.activity_test, this, true);
     unbinder = ButterKnife.bind(this);
 
-    pager.setOnTouchListener((v, event) -> {
-      gestureScanner.onTouchEvent(event);
-      return super.onTouchEvent(event);
-    });
     gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
+
+    textDismiss.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
 
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
@@ -218,41 +216,32 @@ public class NotifView extends FrameLayout {
     }).start();
   }
 
+  Animation slideOutAnimation;
+
   public void hideView() {
-    // if (true) return;
-    // if (disposeView) return;
     if (listener != null) listener.onFinishView();
     disposeView = true;
     pager.setOnTouchListener(null);
-    Animation slideOutAnimation =
+    slideOutAnimation =
         AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_exit_animation);
     setAnimation(slideOutAnimation);
     slideOutAnimation.setFillAfter(true);
     slideOutAnimation.setDuration(NOTIF_ANIM_DURATION_ENTER);
     slideOutAnimation.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationStart(Animation animation) {
-        super.onAnimationStart(animation);
-      }
-
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
         dispose();
       }
     });
-
+    pager.startAnimation(slideOutAnimation);
+    bgView.animate().setDuration(NOTIF_ANIM_DURATION_ENTER).alpha(0f).start();
     textDismiss.setVisibility(INVISIBLE);
-    bgView.animate()
-        .setDuration(NOTIF_ANIM_DURATION_ENTER)
-        .alpha(0f)
-        .withEndAction(() -> startAnimation(slideOutAnimation))
-        .start();
   }
 
   public void dispose() {
     setVisibility(GONE);
-    setOnTouchListener(null);
+    post(() -> decorView.removeView(v));
     clearAnimation();
-    decorView.removeView(v);
     subscriptions.unsubscribe();
   }
 

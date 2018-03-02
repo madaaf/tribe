@@ -66,8 +66,6 @@ import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
-import com.tribe.app.presentation.view.NotifView;
-import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.model.ShareTypeModel;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
@@ -78,7 +76,6 @@ import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
-import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
@@ -1249,9 +1246,15 @@ public class LiveActivity extends BaseActivity
     }
   }
 
-  private void finishActivity() {
+  @Override public void finish() {
     if (finished) return;
-
+    if (stateManager.shouldDisplay(StateManager.FIRST_LEAVE_ROOM)) {
+      isFristLeaveRoom = true;
+      stateManager.addTutorialKey(StateManager.FIRST_LEAVE_ROOM);
+    } else {
+      isFristLeaveRoom = false;
+    }
+    
     if (!viewLive.hasJoined() && room != null && !live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       livePresenter.deleteRoom(room.getId());
     }
@@ -1262,35 +1265,13 @@ public class LiveActivity extends BaseActivity
       appStateMonitor.stop();
       appStateMonitor.removeListener(this);
     }
-
     disposeCall(false);
-
     putExtraHomeIntent();
     setExtraForCallFromUnknownUser();
     setExtraForShortcut();
 
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
-  }
-
-  @Override public void finish() {
-    if (stateManager.shouldDisplay(StateManager.FIRST_LEAVE_ROOM) && FacebookUtils.isLoggedIn()) {
-      List<NotificationModel> list = new ArrayList<>();
-      NotifView view = new NotifView(getBaseContext());
-      view.setNotifEventListener(() -> {
-        finishActivity();
-      });
-      NotificationModel a = NotificationUtils.getFbNotificationModel(context());
-      list.add(a);
-      if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
-        NotificationModel b = NotificationUtils.getAvatarNotificationModel(context());
-        list.add(b);
-      }
-      view.show(this, list);
-      stateManager.addTutorialKey(StateManager.FIRST_LEAVE_ROOM);
-    } else {
-      finishActivity();
-    }
   }
 
   public String getShortcutId() {

@@ -2,6 +2,8 @@ package com.tribe.app.presentation.view.activity;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,19 +24,36 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
+import com.tribe.app.presentation.view.NotifView;
+import com.tribe.app.presentation.view.NotificationModel;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
+import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Base {@link android.app.Activity} class for every Activity in this application.
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
+  protected static boolean isFristLeaveRoom = false;
+  private Context context;
+
   @Inject Navigator navigator;
 
   @Inject TagManager tagManager;
 
+  @Inject User user;
+
+  @Inject RxFacebook rxFacebook;
+
   @Inject @HasSoftKeys Preference<Boolean> hasSoftKeys;
+
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
   @Override protected void onStart() {
     super.onStart();
@@ -48,6 +67,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     this.getApplicationComponent().inject(this);
     if (!hasSoftKeys.isSet()) hasSoftKeys.set(hasSoftKeys());
+    this.context = this;
+  }
+
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    connectToFacebook();
   }
 
   @Override protected void onResume() {
@@ -55,6 +80,33 @@ public abstract class BaseActivity extends AppCompatActivity {
     if (getResources().getBoolean(R.bool.isTablet)) {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
+  }
+
+  private void connectToFacebook() {
+    if (isFristLeaveRoom) {
+      if (!FacebookUtils.isLoggedIn()) {
+        subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
+          displayPopups();
+        }));
+      } else {
+        displayPopups();
+      }
+    }
+  }
+
+  private void displayPopups() {
+    List<NotificationModel> list = new ArrayList<>();
+    NotifView view = new NotifView(getBaseContext());
+
+    if (FacebookUtils.isLoggedIn()) {
+      NotificationModel a = NotificationUtils.getFbNotificationModel(this);
+      list.add(a);
+    }
+    if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
+      NotificationModel b = NotificationUtils.getAvatarNotificationModel(this);
+      list.add(b);
+    }
+    if (!list.isEmpty()) view.show(this, list);
   }
 
   public boolean hasSoftKeys() {

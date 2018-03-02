@@ -24,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.f2prateek.rx.preferences.Preference;
 import com.facebook.AccessToken;
+import com.facebook.accountkit.AccountKitLoginResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -119,6 +120,7 @@ import timber.log.Timber;
 
 import static android.view.View.VISIBLE;
 import static com.tribe.app.presentation.view.ShortcutUtil.createShortcutSupport;
+import static com.tribe.app.presentation.view.activity.AuthActivity.APP_REQUEST_CODE;
 
 public class HomeActivity extends BaseActivity
     implements HasComponent<UserComponent>, ShortcutMVPView, HomeGridMVPView,
@@ -1094,6 +1096,17 @@ public class HomeActivity extends BaseActivity
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == APP_REQUEST_CODE) { // confirm that this response matches your request
+      AccountKitLoginResult loginResult = data.getParcelableExtra(AccountKitLoginResult.RESULT_KEY);
+      if (loginResult.getError() != null) {
+        Timber.e("login error " + loginResult.getError());
+      } else {
+        if (loginResult.getAccessToken() != null) {
+          searchView.onSuccessChangeNumber();
+        }
+      }
+    }
 
     if (requestCode == Navigator.FROM_PROFILE) {
       topBarContainer.reloadUserUI();
