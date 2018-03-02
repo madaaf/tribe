@@ -330,7 +330,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       tagSignUp();
     }
 
-    navigator.navigateToGameStoreLogin(this, deepLink);
+    navigator.navigateToGameStoreLogin(this, deepLink, true);
     finish();
   }
 

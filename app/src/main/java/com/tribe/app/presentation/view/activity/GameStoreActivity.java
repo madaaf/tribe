@@ -20,6 +20,7 @@ import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.UserPresenter;
@@ -60,10 +61,12 @@ import timber.log.Timber;
 
 public class GameStoreActivity extends GameActivity implements AppStateListener {
 
+  private static final String FROM_AUTH = "FROM_AUTH";
   private static final long TWENTY_FOUR_HOURS = 86400000;
 
-  public static Intent getCallingIntent(Activity activity) {
+  public static Intent getCallingIntent(Activity activity, boolean fromAuth) {
     Intent intent = new Intent(activity, GameStoreActivity.class);
+    intent.putExtra(FROM_AUTH, fromAuth);
     return intent;
   }
 
@@ -113,8 +116,17 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     usersChallenge = new ArrayList<>();
 
     rxPermissions = new RxPermissions(this);
+
+    initParams(getIntent());
     initAppStateMonitor();
     loadChallengeNotificationData();
+  }
+
+  private void initParams(Intent intent) {
+    if (intent != null && intent.hasExtra(FROM_AUTH)) {
+      boolean fromExtra = (Boolean) intent.getSerializableExtra(FROM_AUTH);
+      if (fromExtra) displayFakeSupportNotif();
+    }
   }
 
   @Override protected void onStart() {
@@ -138,6 +150,11 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
+  }
+
+  private void displayFakeSupportNotif() {
+    TribeBroadcastReceiver receiver = new TribeBroadcastReceiver(this);
+    receiver.notifiyStaticNotifSupport(this);
   }
 
   private void loadChallengeNotificationData() {
@@ -242,8 +259,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
           if (shortcut.isSingle()) {
             User member = shortcut.getSingleFriend();
             if (member.isPlayingAGame()) {
-              if (!userIdsDigest.contains(member.getId()) &&
-                  !roomIdsDigest.contains(member.getId())) {
+              if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
+                  member.getId())) {
                 userIdsDigest.add(member.getId());
                 items.add(shortcut);
               }
