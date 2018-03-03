@@ -6,6 +6,7 @@ import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
@@ -24,6 +25,7 @@ import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
+import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
@@ -35,6 +37,7 @@ import com.tribe.app.presentation.utils.preferences.TribeState;
 import com.tribe.app.presentation.utils.preferences.UISounds;
 import com.tribe.app.presentation.utils.preferences.UserPhoneNumber;
 import com.tribe.app.presentation.utils.preferences.Walkthrough;
+import com.tribe.app.presentation.utils.preferences.WebSocketUrlOverride;
 import com.tribe.tribelivesdk.back.TribeLiveOptions;
 import dagger.Module;
 import dagger.Provides;
@@ -187,6 +190,15 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getString(PreferencesUtils.ROUTING_MODE, TribeLiveOptions.ROUTED);
   }
 
+  @Provides @Singleton @WebSocketUrlOverride Preference<String> provideWebsocketUrl(
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.WEBSOCKET_URL, "");
+  }
+
+  @Provides @Singleton @NewWS Preference<Boolean> provideNewWS(RxSharedPreferences prefs) {
+    return prefs.getBoolean(PreferencesUtils.NEW_WS, true);
+  }
+
   @Provides @Singleton @FullscreenNotifications Preference<Boolean> provideFullScreenNotifications(
       RxSharedPreferences prefs) {
     return prefs.getBoolean(PreferencesUtils.FULLSCREEN_NOTIFICATIONS, true);
@@ -195,6 +207,11 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @FullscreenNotificationState
   Preference<Set<String>> provideFullscreenNotificationState(RxSharedPreferences prefs) {
     return prefs.getStringSet(PreferencesUtils.FULLSCREEN_NOTIFICATION_STATE, new HashSet<>());
+  }
+
+  @Provides @Singleton @ChallengeNotifications Preference<String> providedChallengeNotifications(
+      Context context, RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.CHALLENGE_NOTIF, null);
   }
 
   @Provides @Singleton @ChatShortcutData Preference<String> provideChatShortcutData(

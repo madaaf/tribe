@@ -103,6 +103,12 @@ public class HomeListAdapter extends RecyclerView.Adapter
     delegatesManager.onBindViewHolder(items, holder, position, payloads);
   }
 
+  public void setHasChat(boolean hasChat) {
+    shortcutLiveHomeAdapterDelegate.setHasChat(hasChat);
+    shortcutChatActiveHomeAdapterDelegate.setHasChat(hasChat);
+    shortcutHomeAdapterDelegate.setHasChat(hasChat);
+  }
+
   public void releaseSubscriptions() {
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     delegatesManager.releaseSubscriptions();

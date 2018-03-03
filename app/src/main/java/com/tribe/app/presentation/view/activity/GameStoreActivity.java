@@ -20,22 +20,36 @@ import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.UserPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
+import com.tribe.app.presentation.view.NotifView;
+import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
+import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.popup.PopupManager;
+import com.tribe.app.presentation.view.popup.listener.PopupDigestListener;
+import com.tribe.app.presentation.view.popup.view.PopupDigest;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -47,16 +61,22 @@ import timber.log.Timber;
 
 public class GameStoreActivity extends GameActivity implements AppStateListener {
 
+  private static final String FROM_AUTH = "FROM_AUTH";
   private static final long TWENTY_FOUR_HOURS = 86400000;
 
-  public static Intent getCallingIntent(Activity activity) {
+  public static Intent getCallingIntent(Activity activity, boolean fromAuth) {
     Intent intent = new Intent(activity, GameStoreActivity.class);
+    intent.putExtra(FROM_AUTH, fromAuth);
     return intent;
   }
 
   @Inject UserPresenter userPresenter;
   @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
   @Inject @LastSync Preference<Long> lastSync;
+  @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
+  @Inject User currentUser;
+  @Inject StateManager stateManager;
+  @Inject PaletteGrid paletteGrid;
 
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
   @BindView(R.id.layoutCall) FrameLayout layoutCall;
@@ -69,6 +89,11 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   private Scheduler singleThreadExecutor;
   private AppStateMonitor appStateMonitor;
   private RxPermissions rxPermissions;
+  private List<String> userIdsDigest;
+  private List<String> roomIdsDigest;
+  private List<User> usersChallenge;
+  private NotifView notifView;
+  private boolean shouldDisplayDigest = true;
 
   // RESOURCES
 
@@ -80,8 +105,28 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
     super.onCreate(savedInstanceState);
 
+    if (getIntent().getData() != null) {
+      Intent newIntent = IntentUtils.getLiveIntentFromURI(this, getIntent().getData(),
+          LiveActivity.SOURCE_DEEPLINK);
+      if (newIntent != null) navigator.navigateToIntent(this, newIntent);
+    }
+
+    userIdsDigest = new ArrayList<>();
+    roomIdsDigest = new ArrayList<>();
+    usersChallenge = new ArrayList<>();
+
     rxPermissions = new RxPermissions(this);
+
+    initParams(getIntent());
     initAppStateMonitor();
+    loadChallengeNotificationData();
+  }
+
+  private void initParams(Intent intent) {
+    if (intent != null && intent.hasExtra(FROM_AUTH)) {
+      boolean fromExtra = (Boolean) intent.getSerializableExtra(FROM_AUTH);
+      if (fromExtra) displayFakeSupportNotif();
+    }
   }
 
   @Override protected void onStart() {
@@ -90,8 +135,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
-        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
+        PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync);
     }
 
@@ -105,6 +150,21 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
+  }
+
+  private void displayFakeSupportNotif() {
+    TribeBroadcastReceiver receiver = new TribeBroadcastReceiver(this);
+    receiver.notifiyStaticNotifSupport(this);
+  }
+
+  private void loadChallengeNotificationData() {
+    if (challengeNotificationsPref != null
+        && challengeNotificationsPref.get() != null
+        && !challengeNotificationsPref.get().isEmpty()) {
+      ArrayList usersIds =
+          new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
+      userPresenter.getUsersInfoListById(usersIds);
+    }
   }
 
   @Override protected void onStop() {
@@ -137,6 +197,9 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
         navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
             TagManagerUtils.SECTION_SHORTCUT, gameId);
       }
+    } else if (requestCode == Navigator.FROM_LIVE) {
+      shouldDisplayDigest = false;
+      if (notifView != null) notifView.dispose();
     }
   }
 
@@ -169,6 +232,10 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       @Override public void onUserInfos(User user) {
         onUser.onNext(user);
       }
+
+      @Override public void onUserInfosList(List<User> users) {
+        usersChallenge = users;
+      }
     };
   }
 
@@ -177,12 +244,75 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
     subscriptions.add(onUser.onBackpressureBuffer().subscribeOn(singleThreadExecutor).map(user -> {
       boolean hasLive = false, hasNewMessage = false;
+      List<HomeAdapterInterface> items = new ArrayList<>();
       for (Recipient recipient : user.getRecipientList()) {
         if (recipient instanceof Invite) {
+          Invite invite = (Invite) recipient;
           hasLive = true;
-        } else if (recipient instanceof Shortcut && !hasNewMessage) {
-          hasNewMessage = !recipient.isRead();
+          if (!roomIdsDigest.contains(invite.getRoom().getId())) {
+            roomIdsDigest.add(invite.getRoom().getId());
+            items.add(recipient);
+          }
+        } else if (recipient instanceof Shortcut) {
+          Shortcut shortcut = (Shortcut) recipient;
+          if (!hasNewMessage) hasNewMessage = !recipient.isRead();
+          if (shortcut.isSingle()) {
+            User member = shortcut.getSingleFriend();
+            if (member.isPlayingAGame()) {
+              if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
+                  member.getId())) {
+                userIdsDigest.add(member.getId());
+                items.add(shortcut);
+              }
+            }
+          }
         }
+      }
+
+      List<NotificationModel> notificationModelList = new ArrayList<>();
+
+      //if (items.size() > 0 && shouldDisplayDigest) {
+      //  PopupDigest popupDigest =
+      //      (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
+      //  popupDigest.setItems(items);
+      //
+      //  PopupManager popupManager = PopupManager.create(new PopupManager.Builder().activity(this)
+      //      .dimBackground(false)
+      //      .listener(new PopupDigestListener() {
+      //        @Override public void onClick(Recipient recipient) {
+      //          navigator.navigateToLive(GameStoreActivity.this, recipient,
+      //              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+      //                  : LiveActivity.SOURCE_GRID, TagManagerUtils.SECTION_ONGOING, null);
+      //          if (notifView != null) notifView.dispose();
+      //        }
+      //
+      //        @Override public void onClickMore() {
+      //          onClickHome();
+      //        }
+      //      })
+      //      .view(popupDigest));
+      //
+      //  notificationModelList.add(
+      //      new NotificationModel.Builder().view(popupManager.getView()).build());
+      //} else {
+      //  shouldDisplayDigest = true;
+      //}
+
+      if (usersChallenge != null && usersChallenge.size() > 0) {
+        notificationModelList.addAll(
+            NotificationUtils.getChallengeNotification(usersChallenge, GameStoreActivity.this,
+                stateManager, currentUser, challengeNotificationsPref));
+        usersChallenge = null;
+      }
+
+      if (notificationModelList.size() > 0) {
+        if (notifView != null) {
+          notifView.dispose();
+          notifView = null;
+        }
+
+        notifView = new NotifView(this);
+        notifView.show(this, notificationModelList);
       }
 
       if (hasLive) {
@@ -259,6 +389,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
   @OnClick({ R.id.btnFriends, R.id.imgLive, R.id.btnNewMessage }) void onClickHome() {
     navigator.navigateToHome(this);
+    if (notifView != null) notifView.dispose();
   }
 
   @OnClick(R.id.btnLeaderboards) void onClickLeaderboards() {

@@ -62,6 +62,7 @@ dependencies {
 
   compile presentationDependencies.appCompat
   compile presentationDependencies.webSocket
+  compile presentationDependencies.okHttp
   compile presentationDependencies.timber
   compile presentationDependencies.guava
   compile presentationDependencies.googleVision

@@ -142,9 +142,9 @@ public class Navigator {
         intent.putExtra(Extras.ROOM_LINK_ID, linkRoomId);
       }
       intent.putExtra(Extras.COUNTRY_CODE, countryCode);
-      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-          Intent.FLAG_ACTIVITY_CLEAR_TASK |
-          Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+          | Intent.FLAG_ACTIVITY_CLEAR_TASK
+          | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       activity.startActivity(intent);
       if (linkRoomId != null) {
         activity.overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
@@ -312,9 +312,12 @@ public class Navigator {
     }
   }
 
-  public void navigateToGameStoreLogin(Activity activity) {
+  public void navigateToGameStoreLogin(Activity activity, Uri deeplink, boolean fromAuth) {
     if (activity != null) {
-      Intent intent = GameStoreActivity.getCallingIntent(activity);
+      Intent intent = GameStoreActivity.getCallingIntent(activity, fromAuth);
+      if (deeplink != null) {
+        intent.setData(deeplink);
+      }
       activity.startActivity(intent);
     }
   }
@@ -439,8 +442,8 @@ public class Navigator {
 
     if (!shouldOpenDefaultSMSApp) {
       shareText(activity, text, phoneNumber);
-    } else if (activity.getIntent() != null &&
-        activity.getIntent().hasExtra(Extras.IS_FROM_FACEBOOK)) {
+    } else if (activity.getIntent() != null && activity.getIntent()
+        .hasExtra(Extras.IS_FROM_FACEBOOK)) {
       openFacebookAppInvites(activity, url);
     } else {
       openDefaultMessagingApp(activity, text);

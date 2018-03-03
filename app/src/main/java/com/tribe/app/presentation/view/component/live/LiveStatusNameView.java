@@ -55,7 +55,7 @@ public class LiveStatusNameView extends FrameLayout {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private PublishSubject<Boolean> onOpenView = PublishSubject.create();
+  private PublishSubject<Integer> onOpenView = PublishSubject.create();
   private PublishSubject<Boolean> onCloseView = PublishSubject.create();
 
   public LiveStatusNameView(Context context) {
@@ -157,7 +157,7 @@ public class LiveStatusNameView extends FrameLayout {
 
     txtName.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
 
-    onOpenView.onNext(active);
+    onOpenView.onNext(live.nbInRoom() > 2 ? LiveContainer.OPEN_FULL : LiveContainer.OPEN_PARTIAL);
   }
 
   public void closeView() {
@@ -220,7 +220,7 @@ public class LiveStatusNameView extends FrameLayout {
   // OBSERVABLES //
   /////////////////
 
-  public Observable<Boolean> onOpenView() {
+  public Observable<Integer> onOpenView() {
     return onOpenView;
   }
 

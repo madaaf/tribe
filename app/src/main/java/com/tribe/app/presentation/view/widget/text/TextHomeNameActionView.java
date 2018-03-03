@@ -126,7 +126,9 @@ public class TextHomeNameActionView extends LinearLayout {
       boolean override = false;
       if (shortcut.isSingle()) {
         User member = shortcut.getSingleFriend();
-        if (member.isPlaying() != null && !StringUtils.isEmpty(member.isPlaying().getGame_id())) {
+        if (member.isPlaying() != null &&
+            !StringUtils.isEmpty(member.isPlaying().getGame_id()) &&
+            !StringUtils.isEmpty(member.isPlaying().getEmoji())) {
           txtAction.setText(
               getContext().getString(R.string.home_action_is_playing, member.isPlaying().getTitle(),
                   member.isPlaying().getEmoji()));

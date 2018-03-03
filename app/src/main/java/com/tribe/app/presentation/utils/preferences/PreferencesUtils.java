@@ -29,6 +29,7 @@ public class PreferencesUtils {
   public static String HAS_SOFT_KEYS = "HAS_SOFT_KEYS";
   public static String UI_SOUNDS = "UI_SOUNDS";
   public static String ROUTING_MODE = "ROUTED_MODE";
+  public static String NEW_WS = "NEW_WS";
   public static String NEW_CONTACT_TOOLTIP = "NEW_CONTACT_TOOLTIP";
   public static String FULLSCREEN_NOTIFICATIONS = "FULLSCREEN_NOTIFICATIONS";
   public static String NUMBER_OF_CALLS = "NUMBER_OF_CALLS";
@@ -50,6 +51,8 @@ public class PreferencesUtils {
   public static String USER_PHONE_NUMBER = "USER_PHONE_NUMBER";
   public static String WALKTHROUGH = "WALKTHROUGH";
   public static String GAME_DATA = "GAME_DATA";
+  public static String CHALLENGE_NOTIF = "CHALLENGE_NOTIF";
+  public static String WEBSOCKET_URL = "WEBSOCKET_URL";
 
   public static void saveMapAsJson(Map<String, Object> map, Preference<String> preference) {
     GsonBuilder builder = new GsonBuilder();

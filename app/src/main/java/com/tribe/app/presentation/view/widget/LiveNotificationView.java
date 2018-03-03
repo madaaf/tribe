@@ -282,6 +282,10 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
   private void setMessagePictureUrl(String url) {
     if (StringUtils.isEmpty(url)) return;
 
+    MarginLayoutParams params = (MarginLayoutParams) layoutDetails.getLayoutParams();
+    params.rightMargin = screenUtils.dpToPx(20);
+    layoutDetails.setLayoutParams(params);
+
     imgMessage.setVisibility(View.VISIBLE);
     viewPictoChat.setVisibility(View.GONE);
     Glide.with(getContext().getApplicationContext())

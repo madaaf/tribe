@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.tribe.app.presentation.view.popup.view.PopupDigest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_popup"
+    >
+
+  <LinearLayout
+      android:id="@+id/layoutTop"
+      android:layout_width="match_parent"
+      android:layout_height="40dp"
+      android:gravity="center_vertical"
+      >
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:src="@drawable/picto_game_small"
+        />
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:maxLines="1"
+        android:text="@string/digest_popup_title"
+        style="@style/Body.Two.White"
+        />
+  </LinearLayout>
+
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recyclerView"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="40dp"
+      android:layout_marginTop="40dp"
+      android:background="@null"
+      android:fadingEdgeLength="0dp"
+      android:overScrollMode="never"
+      android:requiresFadingEdge="none"
+      android:scrollbars="none"
+      />
+
+  <LinearLayout
+      android:id="@+id/layoutBottom"
+      android:layout_width="match_parent"
+      android:layout_height="60dp"
+      android:layout_gravity="bottom"
+      android:gravity="center"
+      >
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:text="@string/digest_popup_action_more"
+        style="@style/Body.Two.White"
+        />
+  </LinearLayout>
+</com.tribe.app.presentation.view.popup.view.PopupDigest>

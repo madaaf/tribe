@@ -294,7 +294,7 @@ public class AuthActivity extends BaseActivity
       tagLogin();
       Timber.d("goToConnected from " + user.getDisplayName());
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
-      navigator.navigateToGameStoreLogin(this);
+      navigator.navigateToGameStoreLogin(this, deepLink, false);
     }
   }
 

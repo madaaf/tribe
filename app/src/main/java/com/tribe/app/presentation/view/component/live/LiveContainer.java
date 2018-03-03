@@ -91,7 +91,7 @@ public class LiveContainer extends FrameLayout {
       diffDown, scrollTolerance, initDistance = 0;
   private boolean beingDragged = false, isOpenedPartially = false, isOpenedFully = false, isDown =
       false, hasNotifiedAtRest = false, dropEnabled = false, hasJoined = false, chatOpened = false,
-      gameMenuOpen = false, touchEnabled = true, isEndCallOpened = false;
+      gameMenuOpen = false, touchEnabled = true, isEndCallOpened = false, shouldCloseFully = false;
   private int activePointerId, touchSlop, currentOffsetRight, currentOffsetLeft, overallScrollY = 0,
       statusBarHeight = 0;
   private VelocityTracker velocityTracker;
@@ -205,12 +205,17 @@ public class LiveContainer extends FrameLayout {
       } else if (isOpenedFully) closeFullInviteView();
     }));
 
-    subscriptions.add(viewLive.onOpenInvite().subscribe(aVoid -> {
-      if (!isOpenedPartially) {
+    subscriptions.add(viewLive.onOpenInvite().subscribe(type -> {
+      if (type == OPEN_FULL) {
+        openFullInviteView();
+      } else if (type == OPEN_PARTIAL) {
         openPartialInviteView();
-      } else if (isOpenedPartially) {
-        closePartialInviteView();
       }
+    }));
+
+    subscriptions.add(viewLive.onCloseInvite().subscribe(aVoid -> {
+      shouldCloseFully = true;
+      closePartialInviteView();
     }));
 
     subscriptions.add(viewLive.onTouchEnabled().subscribe(aBoolean -> touchEnabled = aBoolean));
@@ -617,7 +622,8 @@ public class LiveContainer extends FrameLayout {
         float value = (float) spring.getCurrentValue();
         float appliedValue = 0;
 
-        if (isOpenedFully || spring.getStartValue() == -viewLive.getLiveInviteViewFullWidth()) {
+        if ((isOpenedFully || spring.getStartValue() == -viewLive.getLiveInviteViewFullWidth()) &&
+            !shouldCloseFully) {
           appliedValue = Math.min(Math.max(value, -viewLive.getLiveInviteViewFullWidth()),
               -viewLive.getLiveInviteViewPartialWidth());
         } else {
@@ -638,6 +644,10 @@ public class LiveContainer extends FrameLayout {
 
     @Override public void onSpringActivate(Spring spring) {
       hasNotifiedAtRest = false;
+    }
+
+    @Override public void onSpringAtRest(Spring spring) {
+      shouldCloseFully = false;
     }
   }
 

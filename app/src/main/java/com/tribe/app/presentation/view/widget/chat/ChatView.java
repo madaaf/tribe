@@ -450,8 +450,10 @@ public class ChatView extends IChat {
 
   private void setTypeChatUXSupport() {
     if (isSupport()) {
+
       voiceNoteBtn.setTranslationX(
-          editText.getX() + widthRefInit - voiceNoteBtn.getWidth() - screenUtils.dpToPx(5)
+          editText.getX() + widthRefInit + btnGame.getWidth() - voiceNoteBtn.getWidth()
+              + screenUtils.dpToPx(10)
               + videoCallBtn.getWidth());
       pictoVoiceNote.setTranslationX(
           voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));

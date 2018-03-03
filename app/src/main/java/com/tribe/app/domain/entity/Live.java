@@ -257,6 +257,18 @@ public class Live implements Serializable {
     this.gameId = gameId;
   }
 
+  public int nbInRoom() {
+    if (room != null && room.nbUsersTotal() != 0) {
+      return room.nbUsersTotal();
+    } else {
+      if (shortcut != null) {
+        return shortcut.getMembers().size();
+      } else {
+        return userIdsOfShortcut.size();
+      }
+    }
+  }
+
   public static class Builder {
 
     private Room room;

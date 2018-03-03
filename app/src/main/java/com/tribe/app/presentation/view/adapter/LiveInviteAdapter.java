@@ -140,11 +140,13 @@ public class LiveInviteAdapter extends RecyclerView.Adapter {
 
   public void setFullMode() {
     delegatesManager.removeDelegate(shortcutInviteAdapterDelegate);
+    delegatesManager.removeDelegate(SHORTCUT_FULL);
     delegatesManager.addDelegate(SHORTCUT_FULL, shortcutInviteFullAdapterDelegate);
   }
 
   public void setPartialMode() {
     delegatesManager.removeDelegate(shortcutInviteFullAdapterDelegate);
+    delegatesManager.removeDelegate(SHORTCUT_PARTIAL);
     delegatesManager.addDelegate(SHORTCUT_PARTIAL, shortcutInviteAdapterDelegate);
   }
 

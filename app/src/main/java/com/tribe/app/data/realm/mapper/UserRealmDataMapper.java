@@ -70,11 +70,15 @@ import javax.inject.Singleton;
         UserPlayingRealm userPlayingRealm = userRealm.isPlaying();
         UserPlaying userPlaying =
             new UserPlaying(userPlayingRealm.getRoom_id(), userPlayingRealm.getGame_id());
+
         if (!StringUtils.isEmpty(userPlayingRealm.getGame_id())) {
           Game game = gameManager.getGameById(userPlayingRealm.getGame_id());
-          userPlaying.setEmoji(game.getEmoji());
-          userPlaying.setTitle(game.getTitle());
+          if (game != null) {
+            userPlaying.setEmoji(game.getEmoji());
+            userPlaying.setTitle(game.getTitle());
+          }
         }
+
         user.setPlaying(userPlaying);
       }
 
@@ -103,8 +107,9 @@ import javax.inject.Singleton;
 
       if (gameManager.getGames() != null) {
         for (Game game : gameManager.getGames()) {
-          if (game.getFriendLeader() != null &&
-              game.getFriendLeader().getId().equals(user.getId())) {
+          if (game.getFriendLeader() != null && game.getFriendLeader()
+              .getId()
+              .equals(user.getId())) {
             emojis.add(game.getEmoji());
           }
         }
@@ -227,8 +232,8 @@ import javax.inject.Singleton;
       userRealm.setMute_online_notif(user.isMute_online_notif());
       userRealm.setIsOnline(user.isOnline());
       UserPlayingRealm userPlayingRealm = new UserPlayingRealm();
-      userPlayingRealm.setGame_id(user.isPlaying().getGame_id());
-      userPlayingRealm.setRoom_id(user.isPlaying().getRoom_id());
+      if (user.isPlaying() != null) userPlayingRealm.setGame_id(user.isPlaying().getGame_id());
+      if (user.isPlaying() != null) userPlayingRealm.setRoom_id(user.isPlaying().getRoom_id());
       userRealm.setIsPlaying(userPlayingRealm);
       userRealm.setIsLive(user.isLive());
       userRealm.setTimeInCall(user.getTimeInCall());

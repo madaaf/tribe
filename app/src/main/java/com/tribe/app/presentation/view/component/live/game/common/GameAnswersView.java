@@ -16,6 +16,7 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -109,6 +110,8 @@ public class GameAnswersView extends LinearLayout {
   public void initQuestion(String answer, List<String> alternativeAnswers,
       @GameAnswerView.AnswerType int answerType) {
     if (questionSubscriptions != null) questionSubscriptions.clear();
+
+    Collections.shuffle(alternativeAnswers);
 
     clickedAnswerView = null;
 

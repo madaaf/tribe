@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 12/12/2017.
@@ -36,6 +37,7 @@ public enum TriviaCategoryEnum {
   }
 
   public static List<TriviaQuestion> getRandomQuestions(int nb, TriviaCategoryEnum category) {
+    Timber.d("NB questions : " + nb + " for category : " + category.category);
     List<TriviaQuestion> list = new ArrayList<>(category.getQuestions());
     Collections.shuffle(list);
     return list.subList(0, nb);

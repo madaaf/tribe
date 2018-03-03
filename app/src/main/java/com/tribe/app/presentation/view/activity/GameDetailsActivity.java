@@ -311,7 +311,7 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     set.setAlpha(R.id.btnMulti, 1);
     animateLayoutWithConstraintSet(set, new TransitionListenerAdapter() {
       @Override public void onTransitionEnd(@NonNull Transition transition) {
-        showScores();
+        if (game.hasScores()) showScores();
       }
     });
   }

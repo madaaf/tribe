@@ -34,7 +34,9 @@ import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
+import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
+import com.tribe.app.presentation.utils.preferences.WebSocketUrlOverride;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.app.presentation.view.utils.Degrees;
@@ -113,6 +115,10 @@ public class LiveView extends FrameLayout {
 
   @Inject @MinutesOfCalls Preference<Float> minutesOfCalls;
 
+  @Inject @NewWS Preference<Boolean> newWs;
+
+  @Inject @WebSocketUrlOverride Preference<String> webSocketUrlOverride;
+
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
   @BindView(R.id.layoutScoresOverLive) LinearLayout layoutScoresOverLive;
@@ -185,7 +191,7 @@ public class LiveView extends FrameLayout {
   private PublishSubject<Object> onRemotePeerClick = PublishSubject.create();
   private PublishSubject<String> onDismissInvite = PublishSubject.create();
   private PublishSubject<Boolean> onOpenChat = PublishSubject.create();
-  private PublishSubject<Boolean> onOpenInvite = PublishSubject.create();
+  private PublishSubject<Integer> onOpenInvite = PublishSubject.create();
   private PublishSubject<Boolean> onTouchEnabled = PublishSubject.create();
   private PublishSubject<Game> onStopGame = PublishSubject.create();
 
@@ -415,12 +421,6 @@ public class LiveView extends FrameLayout {
     }).subscribe());
 
     persistentSubscriptions.add(
-        viewControlsLive.onOpenInvite().subscribe(aBoolean -> onOpenInvite.onNext(true)));
-
-    persistentSubscriptions.add(
-        viewControlsLive.onCloseInvite().subscribe(aBoolean -> onOpenInvite.onNext(false)));
-
-    persistentSubscriptions.add(
         viewControlsLive.onOpenChat().subscribe(aBoolean -> openChat(true)));
 
     persistentSubscriptions.add(
@@ -464,7 +464,8 @@ public class LiveView extends FrameLayout {
     viewGameManager.initInvitedGuestObservable(tribeInvitedMap.getObservable());
     viewGameManager.initLiveViewsObservable(viewRoom.onLiveViewsChange());
 
-    gameManager.initUIControlsStartGame(viewControlsLive.onStartGame());
+    gameManager.initUIControlsStartGame(
+        viewControlsLive.onStartGame().doOnError(throwable -> throwable.printStackTrace()));
     gameManager.initUIControlsRestartGame(
         Observable.merge(viewControlsLive.onRestartGame(), viewGameManager.onRestartGame()));
     gameManager.initUIControlsStopGame(
@@ -511,7 +512,8 @@ public class LiveView extends FrameLayout {
     }));
 
     persistentSubscriptions.add(
-        viewLiveAddFriend.onClick().subscribe(aVoid -> onOpenInvite.onNext(true)));
+        Observable.merge(viewRoom.onClickAddFriend(), viewLiveAddFriend.onClick())
+            .subscribe(aVoid -> onOpenInvite.onNext(LiveContainer.OPEN_PARTIAL)));
   }
 
   private void openChat(boolean open) {
@@ -547,8 +549,11 @@ public class LiveView extends FrameLayout {
   public void joinRoom(Room room) {
     Map<String, String> headers = new HashMap<>();
     headers.put(WebSocketConnection.ORIGIN, com.tribe.app.BuildConfig.TRIBE_ORIGIN);
+
+    String webSocketUrl = webSocketUrlOverride.get();
+
     TribeLiveOptions options = new TribeLiveOptions.TribeLiveOptionsBuilder(getContext()).wsUrl(
-        room.getRoomCoordinates().getUrl())
+        !StringUtils.isEmpty(webSocketUrl) ? webSocketUrl : room.getRoomCoordinates().getUrl())
         .tokenId(accessToken.getAccessToken())
         .iceServers(room.getRoomCoordinates().getIceServers())
         .roomId(room.getId())
@@ -641,14 +646,6 @@ public class LiveView extends FrameLayout {
 
           viewRoom.removeView(remotePeer.getSession().getUserId(),
               viewRoom.getLiveRowViewFromId(remotePeer.getSession().getUserId()));
-
-          if (shouldLeave()) {
-            if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-              onLeave.onNext(null);
-            } else {
-              stopGame();
-            }
-          }
 
           live.getRoom().userLeftWebRTC(remotePeer.getSession().getUserId());
 
@@ -797,7 +794,7 @@ public class LiveView extends FrameLayout {
       viewRinging.setVisibility(INVISIBLE);
     }
 
-    webRTCRoom = tribeLiveSDK.newRoom();
+    webRTCRoom = tribeLiveSDK.newRoom(newWs.get());
     webRTCRoom.initLocalStream(viewLocalLive.getLocalPeerView());
 
     gameManager.setWebRTCRoom(webRTCRoom);
@@ -808,7 +805,7 @@ public class LiveView extends FrameLayout {
 
     viewRinging.setLive(live);
 
-    if (StringUtils.isEmpty(live.getGameId())) {
+    if (StringUtils.isEmpty(live.getGameId()) && !live.fromRoom()) {
       viewRinging.getViewTreeObserver()
           .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override public void onGlobalLayout() {
@@ -1286,8 +1283,12 @@ public class LiveView extends FrameLayout {
   //   OBSERVABLES    //
   //////////////////////
 
-  public Observable<Boolean> onOpenInvite() {
-    return onOpenInvite;
+  public Observable<Integer> onOpenInvite() {
+    return Observable.merge(viewControlsLive.onOpenInvite(), onOpenInvite);
+  }
+
+  public Observable<Boolean> onCloseInvite() {
+    return viewControlsLive.onCloseInvite();
   }
 
   public Observable<Boolean> onTouchEnabled() {

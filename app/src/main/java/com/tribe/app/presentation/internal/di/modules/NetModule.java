@@ -75,8 +75,11 @@ import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
+import com.tribe.tribelivesdk.back.WebSocketConnectionAbs;
+import com.tribe.tribelivesdk.back.WebSocketConnectionOkhttp;
 import dagger.Module;
 import dagger.Provides;
 import io.realm.RealmObject;
@@ -651,7 +654,8 @@ import timber.log.Timber;
         .writeTimeout(60, TimeUnit.SECONDS);
   }
 
-  @Provides @Named("webSocketApi") @PerApplication WebSocketConnection provideWebSocketApi() {
+  @Provides @Named("webSocketApi") @PerApplication WebSocketConnectionAbs provideWebSocketApi(
+      @NewWS com.f2prateek.rx.preferences.Preference<Boolean> newWS) {
     SSLContext sslContext = null;
 
     try {
@@ -660,7 +664,7 @@ import timber.log.Timber;
           new X509TrustManager() {
             public X509Certificate[] getAcceptedIssuers() {
               Timber.d("getAcceptedIssuers =============");
-              return null;
+              return new X509Certificate[0];
             }
 
             public void checkClientTrusted(X509Certificate[] certs, String authType) {
@@ -678,8 +682,18 @@ import timber.log.Timber;
       e.printStackTrace();
     }
 
-    WebSocketFactory socketFactory = new WebSocketFactory();
-    socketFactory.setSSLContext(sslContext);
-    return new WebSocketConnection(socketFactory);
+    if (newWS.get()) {
+      OkHttpClient.Builder builder = new OkHttpClient.Builder().connectTimeout(20, TimeUnit.SECONDS)
+          .readTimeout(20, TimeUnit.SECONDS)
+          .writeTimeout(20, TimeUnit.SECONDS);
+
+      builder.sslSocketFactory(sslContext.getSocketFactory()).pingInterval(5, TimeUnit.SECONDS);
+
+      return new WebSocketConnectionOkhttp(builder.build());
+    } else {
+      WebSocketFactory socketFactory = new WebSocketFactory();
+      socketFactory.setSSLContext(sslContext);
+      return new WebSocketConnection(socketFactory);
+    }
   }
 }

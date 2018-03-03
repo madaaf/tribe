@@ -3,6 +3,7 @@ package com.tribe.tribelivesdk;
 import android.content.Context;
 import com.tribe.tribelivesdk.back.WebRTCClient;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
+import com.tribe.tribelivesdk.back.WebSocketConnectionOkhttp;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -21,7 +22,9 @@ import javax.inject.Singleton;
     this.webRTCClient = webRTCClient;
   }
 
-  public WebRTCRoom newRoom() {
-    return new WebRTCRoom(context, WebSocketConnection.newInstance(), webRTCClient);
+  public WebRTCRoom newRoom(boolean newWS) {
+    return new WebRTCRoom(context,
+        newWS ? WebSocketConnectionOkhttp.newInstance() : WebSocketConnection.newInstance(),
+        webRTCClient);
   }
 }

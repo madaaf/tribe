@@ -57,15 +57,11 @@ import rx.subscriptions.CompositeSubscription;
 public class NotificationContainerView extends FrameLayout {
 
   @StringDef({
-      DISPLAY_PERMISSION_NOTIF, DISPLAY_ENJOYING_NOTIF, DISPLAY_INVITE_NOTIF, DISPLAY_SHARING_NOTIF,
-      DISPLAY_FB_CALL_ROULETTE
+      DISPLAY_PERMISSION_NOTIF, DISPLAY_FB_CALL_ROULETTE
   }) public @interface NotifType {
   }
 
   public static final String DISPLAY_PERMISSION_NOTIF = "DISPLAY_PERMISSION_NOTIF";
-  public static final String DISPLAY_ENJOYING_NOTIF = "DISPLAY_ENJOYING_NOTIF";
-  public static final String DISPLAY_INVITE_NOTIF = "DISPLAY_INVITE_NOTIF";
-  public static final String DISPLAY_SHARING_NOTIF = "DISPLAY_SHARING_NOTIF";
   public static final String DISPLAY_FB_CALL_ROULETTE = "DISPLAY_FB_CALL_ROULETTE";
 
   private final static int BACKGROUND_ANIM_DURATION_ENTER = 1500;
@@ -120,9 +116,7 @@ public class NotificationContainerView extends FrameLayout {
         case DISPLAY_PERMISSION_NOTIF:
           notifIsDisplayed = displayPermissionNotification();
           break;
-        case DISPLAY_INVITE_NOTIF:
-          notifIsDisplayed = displayInviteNotification();
-          break;
+
         case DISPLAY_FB_CALL_ROULETTE:
           initRemoteConfig();
           container.setOnTouchListener((v, event) -> false);
@@ -179,13 +173,6 @@ public class NotificationContainerView extends FrameLayout {
       return true;
     }
     return false;
-  }
-
-  private boolean displayInviteNotification() {
-    viewToDisplay = new InviteNotificationView(context);
-    addViewInContainer(viewToDisplay);
-    animateView();
-    return true;
   }
 
   private boolean displayFbCallRouletteNotification() {

@@ -68,9 +68,12 @@ public class TribeLiveOptions {
       this.iceServers = new ArrayList<>();
 
       for (IceConfig iceConfig : iceConfigList) {
-        iceServers.add(
-            new PeerConnection.IceServer(iceConfig.getUrls().get(0), iceConfig.getUsername(),
+        if (iceConfig.getUrls() != null) {
+          for (String url : iceConfig.getUrls()) {
+            iceServers.add(new PeerConnection.IceServer(url, iceConfig.getUsername(),
                 iceConfig.getCredential()));
+          }
+        }
       }
 
       return this;

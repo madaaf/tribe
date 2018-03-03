@@ -23,6 +23,7 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.tribelivesdk.back.WebSocketConnection;
+import com.tribe.tribelivesdk.back.WebSocketConnectionAbs;
 import io.realm.RealmList;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,7 +125,7 @@ import timber.log.Timber;
 
   @Inject UserRealmDataMapper userRealmDataMapper;
 
-  @Inject @Named("webSocketApi") WebSocketConnection webSocketConnection;
+  @Inject @Named("webSocketApi") WebSocketConnectionAbs webSocketConnection;
 
   // VARIABLES
   private Map<String, String> headers;
