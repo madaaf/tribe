@@ -65,6 +65,7 @@ import javax.inject.Singleton;
       user.setTimeInCall(userRealm.getTimeInCall());
       user.setPushNotif(userRealm.isPushNotif());
       user.setIsOnline(userRealm.isOnline());
+      user.setTrophy(userRealm.getTrophy());
 
       if (userRealm.isPlaying() != null) {
         UserPlayingRealm userPlayingRealm = userRealm.isPlaying();
@@ -107,9 +108,8 @@ import javax.inject.Singleton;
 
       if (gameManager.getGames() != null) {
         for (Game game : gameManager.getGames()) {
-          if (game.getFriendLeader() != null && game.getFriendLeader()
-              .getId()
-              .equals(user.getId())) {
+          if (game.getFriendLeader() != null &&
+              game.getFriendLeader().getId().equals(user.getId())) {
             emojis.add(game.getEmoji());
           }
         }
@@ -241,6 +241,7 @@ import javax.inject.Singleton;
       userRealm.setRandom_banned_until(user.getRandom_banned_until());
       userRealm.setRandom_banned_permanently(user.isRandom_banned_permanently());
       userRealm.setShortcuts(shortcutRealmDataMapper.transformList(user.getShortcutList()));
+      userRealm.setTrophy(user.getTrophy());
 
       if (user.getMessages() != null && user.getMessageList() != null) {
         userRealm.setMessages(messageRealmDataMapper.transformMessages(user.getMessageList()));

@@ -59,6 +59,7 @@ public class User
   private Date last_seen_at;
   private boolean random_banned_permanently;
   private Date random_banned_until;
+  private String trophy;
 
   private boolean isNewFriend = false;
   private boolean isFriend = false;
@@ -407,6 +408,14 @@ public class User
     return emojiLeaderGameList;
   }
 
+  public String getTrophy() {
+    return trophy;
+  }
+
+  public void setTrophy(String trophy) {
+    this.trophy = trophy;
+  }
+
   public boolean isUserInCall() {
     return !StringUtils.isEmpty(currentRoomId) || ringing;
   }
@@ -446,6 +455,7 @@ public class User
       setMute_online_notif(user.isMute_online_notif());
       setScoreList(user.getScoreList());
       setEmojiLeaderGameList(user.getEmojiLeaderGameList());
+      setTrophy(user.getTrophy());
     }
   }
 
@@ -464,6 +474,7 @@ public class User
     setLastSeenAt(null);
     setRandom_banned_until(null);
     setMute_online_notif(false);
+    setTrophy(null);
   }
 
   public boolean isEmpty() {

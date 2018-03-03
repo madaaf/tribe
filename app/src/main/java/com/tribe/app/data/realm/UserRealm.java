@@ -33,6 +33,15 @@ public class UserRealm extends RealmObject {
   public static final String AGE_RANGE_MIN = "age_range_min";
   public static final String AGE_RANGE_MAX = "age_range_max";
 
+  @StringDef({ NOOB, EXPERT, PRO, MASTER, GOD }) public @interface TrophyType {
+  }
+
+  public static final String NOOB = "NOOB";
+  public static final String EXPERT = "EXPERT";
+  public static final String PRO = "PRO";
+  public static final String MASTER = "MASTER";
+  public static final String GOD = "GOD";
+
   @PrimaryKey private String id;
 
   private Date created_at;
@@ -53,6 +62,7 @@ public class UserRealm extends RealmObject {
   private long time_in_call = 0;
   private Boolean random_banned_permanently;
   private Date random_banned_until;
+  private @TrophyType String trophy = NOOB;
 
   @Ignore private List<Invite> invites;
 
@@ -280,6 +290,14 @@ public class UserRealm extends RealmObject {
 
   public JsonObject getJsonPayloadUpdate() {
     return jsonPayloadUpdate;
+  }
+
+  public void setTrophy(@TrophyType String trophy) {
+    this.trophy = trophy;
+  }
+
+  public @TrophyType String getTrophy() {
+    return trophy;
   }
 
   @Override public boolean equals(Object o) {

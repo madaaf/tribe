@@ -145,6 +145,10 @@
     <item name="android:textColor">@color/blue.new</item>
   </style>
 
+  <style name="Body.Two.Yellow" parent="@style/Body.Two">
+    <item name="android:textColor">@color/yellow</item>
+  </style>
+
   <style name="Body.Two.Black" parent="@style/Body.Two">
     <item name="android:textColor">@android:color/black</item>
   </style>

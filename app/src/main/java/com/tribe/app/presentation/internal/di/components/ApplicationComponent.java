@@ -109,6 +109,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDele
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardUserAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.newchat.ShortcutNewChatAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.trophy.TrophyAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.common.ShortcutListView;
@@ -326,6 +327,8 @@ public interface ApplicationComponent {
   void inject(TextViewRanking textViewRanking);
 
   void inject(PopupParentView popupView);
+
+  void inject(TrophyAdapterDelegate trophyAdapterDelegate);
 
   // JOBS
   void inject(BaseJob baseJob);

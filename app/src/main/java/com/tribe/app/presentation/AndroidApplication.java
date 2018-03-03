@@ -19,16 +19,23 @@ import com.jenzz.appstate.RxAppStateMonitor;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.AnimationIconRealm;
+import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
+import com.tribe.app.data.realm.MediaRealm;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
+import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.data.realm.ScoreUserRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.ShortcutLastSeenRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.data.realm.UserPlayingRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -39,6 +46,7 @@ import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.widget.chat.model.Media;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.filters.Filter;
 import com.tribe.tribelivesdk.filters.lut3d.FilterManager;
@@ -149,7 +157,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(17)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(18)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -378,7 +386,8 @@ public class AndroidApplication extends Application {
                     migratedChildren.set("url", children.getString("url"));
                     migratedChildren.set("filesize", children.getInt("filesize"));
                     migratedChildren.set("width", children.getString("width"));
-                    migratedChildren.set("getRelativeHeight", children.getString("getRelativeHeight"));
+                    migratedChildren.set("getRelativeHeight",
+                        children.getString("getRelativeHeight"));
                     migratedChildren.set("duration", children.getFloat("duration"));
                   })
                   .removeField("original")
@@ -437,6 +446,11 @@ public class AndroidApplication extends Application {
 
           if (oldVersion == 16) {
             schema.get("ScoreUserRealm").addField("ranking", int.class);
+            oldVersion++;
+          }
+
+          if (oldVersion == 17) {
+            schema.get("UserRealm").addField("trophy", String.class);
             oldVersion++;
           }
         })
@@ -551,6 +565,16 @@ public class AndroidApplication extends Application {
         realm1.delete(SearchResultRealm.class);
         realm1.delete(UserRealm.class);
         realm1.delete(MessageRealm.class);
+        realm1.delete(AnimationIconRealm.class);
+        realm1.delete(BadgeRealm.class);
+        realm1.delete(GameRealm.class);
+        realm1.delete(MediaRealm.class);
+        realm1.delete(MessageRealm.class);
+        realm1.delete(ScoreUserRealm.class);
+        realm1.delete(ScoreRealm.class);
+        realm1.delete(ShortcutLastSeenRealm.class);
+        realm1.delete(ShortcutRealm.class);
+        realm1.delete(UserPlayingRealm.class);
       });
     } finally {
       realm.close();

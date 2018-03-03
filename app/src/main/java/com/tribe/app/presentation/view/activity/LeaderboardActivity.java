@@ -12,18 +12,22 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.OvershootInterpolator;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.TrophyEnum;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.view.adapter.LeaderboardUserAdapter;
+import com.tribe.app.presentation.view.adapter.TrophyAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardUserLayoutManager;
+import com.tribe.app.presentation.view.adapter.manager.TrophyLayoutManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -59,11 +63,17 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @Inject ScreenUtils screenUtils;
 
-  @Inject LeaderboardUserAdapter adapter;
+  @Inject LeaderboardUserAdapter leaderboardUserAdapter;
+
+  @Inject TrophyAdapter trophyAdapter;
 
   @Inject GamePresenter gamePresenter;
 
-  @BindView(R.id.recyclerViewLeaderboard) RecyclerView recyclerView;
+  @BindView(R.id.recyclerViewLeaderboard) RecyclerView recyclerViewLeaderboard;
+
+  @BindView(R.id.recyclerViewTrophies) RecyclerView recyclerViewTrophies;
+
+  @BindView(R.id.layoutData) LinearLayout layoutData;
 
   @BindView(R.id.viewAvatar) AvatarView viewAvatar;
 
@@ -80,7 +90,8 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
   @BindView(R.id.layoutUser) RelativeLayout layoutUser;
 
   // VARIABLES
-  private LeaderboardUserLayoutManager layoutManager;
+  private LeaderboardUserLayoutManager layoutManagerLeaderboard;
+  private TrophyLayoutManager layoutManagerTrophy;
   private List<Score> items;
   private GameManager gameManager;
   private GameMVPViewAdapter gameMVPViewAdapter;
@@ -147,7 +158,7 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
 
         items.clear();
         items.addAll(endScoreList);
-        adapter.setItems(items);
+        leaderboardUserAdapter.setItems(items);
       }
 
       @Override public Context context() {
@@ -166,13 +177,47 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
       layoutUser.setAlpha(1.0f - (float) verticalOffset / range);
     });
 
-    recyclerView.getViewTreeObserver()
+    layoutData.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
           @Override public void onGlobalLayout() {
-            recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            recyclerView.setTranslationY(recyclerView.getMeasuredHeight());
+            layoutData.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            layoutData.setTranslationY(layoutData.getMeasuredHeight());
           }
         });
+
+    initLeaderboardRecycler();
+    initTrophyRecycler();
+  }
+
+  private void initLeaderboardRecycler() {
+    layoutManagerLeaderboard = new LeaderboardUserLayoutManager(this);
+    recyclerViewLeaderboard.setLayoutManager(layoutManagerLeaderboard);
+    recyclerViewLeaderboard.setItemAnimator(null);
+    recyclerViewLeaderboard.setAdapter(leaderboardUserAdapter);
+    recyclerViewLeaderboard.addItemDecoration(
+        new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.black_opacity_10),
+            screenUtils.dpToPx(0.5f)));
+
+    subscriptions.add(leaderboardUserAdapter.onClick()
+        .map(view -> leaderboardUserAdapter.getItemAtPosition(
+            recyclerViewLeaderboard.getChildLayoutPosition(view)))
+        .subscribe(score -> navigator.navigateToGameLeaderboard(this, score.getGame().getId())));
+  }
+
+  private void initTrophyRecycler() {
+    layoutManagerTrophy = new TrophyLayoutManager(this);
+    recyclerViewTrophies.setLayoutManager(layoutManagerTrophy);
+    recyclerViewTrophies.setItemAnimator(null);
+    recyclerViewTrophies.setAdapter(trophyAdapter);
+    recyclerViewTrophies.addItemDecoration(
+        new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.black_opacity_10),
+            screenUtils.dpToPx(0.5f)));
+    trophyAdapter.setItems(TrophyEnum.getTrophies());
+
+    subscriptions.add(trophyAdapter.onClick()
+        .map(view -> trophyAdapter.getItemAtPosition(
+            recyclerViewTrophies.getChildLayoutPosition(view)))
+        .subscribe());
   }
 
   private void initDependencyInjector() {
@@ -182,25 +227,13 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
   private void setUser(User user, boolean collapsed) {
     this.user = user;
 
-    adapter.setCanClick(!collapsed);
-    adapter.setUser(user);
+    leaderboardUserAdapter.setCanClick(!collapsed);
+    leaderboardUserAdapter.setUser(user);
 
     txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
     viewAvatar.load(user.getProfilePicture());
     txtName.setText(user.getDisplayName());
     txtUsername.setText(user.getUsernameDisplay());
-
-    layoutManager = new LeaderboardUserLayoutManager(this);
-    recyclerView.setLayoutManager(layoutManager);
-    recyclerView.setItemAnimator(null);
-    recyclerView.setAdapter(adapter);
-    recyclerView.addItemDecoration(
-        new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.black_opacity_10),
-            screenUtils.dpToPx(0.5f)));
-
-    subscriptions.add(adapter.onClick()
-        .map(view -> adapter.getItemAtPosition(recyclerView.getChildLayoutPosition(view)))
-        .subscribe(score -> navigator.navigateToGameLeaderboard(this, score.getGame().getId())));
 
     if (collapsed) {
       appBarLayout.setExpanded(false);
@@ -213,7 +246,7 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           showAvatar();
-          showRecyclerView();
+          showData();
 
           subscriptions.add(Observable.timer((int) (DURATION * 0.3f), TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())
@@ -238,8 +271,8 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
     scaleUp(txtName);
   }
 
-  private void showRecyclerView() {
-    recyclerView.animate()
+  private void showData() {
+    layoutData.animate()
         .translationY(0)
         .setDuration(DURATION)
         .setInterpolator(new OvershootInterpolator(0.5f))
