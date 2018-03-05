@@ -217,7 +217,9 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
     subscriptions.add(trophyAdapter.onClick()
         .map(view -> trophyAdapter.getItemAtPosition(
             recyclerViewTrophies.getChildLayoutPosition(view)))
-        .subscribe());
+        .subscribe(trophyEnum -> {
+
+        }));
   }
 
   private void initDependencyInjector() {
