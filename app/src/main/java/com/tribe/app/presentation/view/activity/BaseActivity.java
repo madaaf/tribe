@@ -24,7 +24,6 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.view.NotifView;
@@ -83,25 +82,15 @@ public abstract class BaseActivity extends AppCompatActivity {
   }
 
   private void connectToFacebook() {
-    if (isFristLeaveRoom) {
-      if (!FacebookUtils.isLoggedIn()) {
-        subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-          displayPopups();
-        }));
-      } else {
-        displayPopups();
-      }
-    }
+    if (isFristLeaveRoom) displayPopups();
   }
 
   private void displayPopups() {
     List<NotificationModel> list = new ArrayList<>();
     NotifView view = new NotifView(getBaseContext());
 
-    if (FacebookUtils.isLoggedIn()) {
-      NotificationModel a = NotificationUtils.getFbNotificationModel(this);
-      list.add(a);
-    }
+    NotificationModel a = NotificationUtils.getFbNotificationModel(this);
+    list.add(a);
     if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
       NotificationModel b = NotificationUtils.getAvatarNotificationModel(this);
       list.add(b);

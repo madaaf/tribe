@@ -34,6 +34,7 @@ import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.NewChatMVPViewAdapter;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
@@ -120,9 +121,18 @@ public class NotifView extends FrameLayout {
         case NotificationModel.POPUP_CHALLENGER:
           newChatPresenter.createShortcut(notificationModel.getUserId());
           tagAddedFriend();
+          hideNextNotif();
           break;
         case NotificationModel.POPUP_FACEBOOK:
-          newChatPresenter.loadFBContactsInvite();
+          if (!FacebookUtils.isLoggedIn()) {
+            subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
+              newChatPresenter.loadFBContactsInvite();
+              hideNextNotif();
+            }));
+          } else {
+            newChatPresenter.loadFBContactsInvite();
+            hideNextNotif();
+          }
           break;
         case NotificationModel.POPUP_UPLOAD_PICTURE:
           subscriptions.add(
@@ -142,18 +152,20 @@ public class NotifView extends FrameLayout {
               }));
           break;
       }
-
-      if (data.size() > 1 && pageListener.getPositionViewPage() < data.size()) {
-        if (pageListener.getPositionViewPage() == data.size() - 1) {
-          subscriptions.add(Observable.timer((300), TimeUnit.MILLISECONDS)
-              .onBackpressureDrop()
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(aLong -> hideView()));
-        }
-
-        pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
-      }
     }));
+  }
+
+  private void hideNextNotif() {
+    if (pageListener.getPositionViewPage() < data.size()) {
+      if (pageListener.getPositionViewPage() == data.size() - 1) {
+        subscriptions.add(Observable.timer((300), TimeUnit.MILLISECONDS)
+            .onBackpressureDrop()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> hideView()));
+      }
+
+      pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
+    }
   }
 
   ////////////////////
