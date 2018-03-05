@@ -21,9 +21,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -33,11 +38,13 @@ import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardDetailsLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.widget.EmojiPoke;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.TextViewRanking;
 import com.tribe.app.presentation.view.widget.TextViewScore;
@@ -52,7 +59,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -90,6 +96,10 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   @BindView(R.id.layoutConstraint) ConstraintLayout layoutConstraint;
 
   @BindView(R.id.layoutContent) LinearLayout layoutContent;
+
+  @BindView(R.id.container) FrameLayout container;
+
+  @BindView(R.id.topBar) FrameLayout topBar;
 
   @BindView(R.id.cardAvatarFirst) CardView cardAvatarFirst;
 
@@ -135,11 +145,15 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   private GameMVPViewAdapter gameMVPViewAdapter;
   private String gameId;
   private Game game;
+  private Subscription pokedSubscription = null;
+  private long now;
+  private boolean isPoked = false;
+  private List<EmojiPoke> emojis = new ArrayList<>();
 
   // RESOURCES
 
   // OBSERVABLES
-
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -260,11 +274,17 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     subscriptions = new CompositeSubscription();
   }
 
-  Subscription ok = null;
-  long now;
-  boolean isPoked = false;
-  private CompositeSubscription subscriptions = new CompositeSubscription();
-
+  private EmojiPoke addPokeEmoji(View view, int x1, int y1, int transX, int transY, boolean isSmall,
+      Animation animation) {
+    EmojiPoke v =
+        new EmojiPoke(this, view.getWidth(), view.getHeight(), x1, y1, transX, transY, isSmall);
+    container.addView(v);
+    if (isSmall) {
+      v.startAnimation(animation);
+    }
+    emojis.add(v);
+    return v;
+  }
 
   private void initUI() {
     txtTitle.setText(game.getTitle());
@@ -288,6 +308,9 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     layoutManager = new LeaderboardDetailsLayoutManager(this);
     recyclerView.setLayoutManager(layoutManager);
     adapter = new LeaderboardDetailsAdapter(this, recyclerView, stateManager);
+
+    subscriptions.add(adapter.onClickPoke().subscribe(this::setClickPokeAnimation));
+
     recyclerView.setItemAnimator(null);
     recyclerView.setAdapter(adapter);
 
@@ -300,8 +323,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       }
     });
 
-    if (ok == null) {
-      subscriptions.add(ok = Observable.interval(100, TimeUnit.MILLISECONDS)
+    if (pokedSubscription == null) {
+      subscriptions.add(pokedSubscription = Observable.interval(100, TimeUnit.MILLISECONDS)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe((Long aLong) -> {
             float interval = System.currentTimeMillis() - now;
@@ -427,6 +450,75 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   /**
    * ONCLICK
    */
+
+  String timerPoke = null;
+
+  private void setClickPokeAnimation(TextView view) {
+    if (view.getTag() != null && view.getTag().toString() != null && view.getTag()
+        .toString()
+        .startsWith("ON CLICK_")) {
+      Toast.makeText(this, timerPoke + "left to poke again Alice Walter!", Toast.LENGTH_SHORT)
+          .show();
+      return;
+    }
+    view.setTag("ON CLICK_" + view.getId());
+    Timber.e("SOEF ON CLICK POKE ");
+    int[] locations = new int[2];
+    view.getLocationOnScreen(locations);
+    int x1 = locations[0];
+    int y1 = locations[1];
+
+    Animation animation = AnimationUtils.loadAnimation(this, R.anim.rotate_poke_emoji);
+    Animation animation2 = AnimationUtils.loadAnimation(this, R.anim.rotate_hourglass_emoji);
+
+    EmojiPoke v = addPokeEmoji(view, x1, y1, 0, 0, false, animation);
+    addPokeEmoji(view, x1, y1, (view.getWidth() / 2), -view.getWidth(), true, animation);
+    addPokeEmoji(view, x1, y1, -(view.getWidth() / 2), +view.getWidth(), true, animation);
+    addPokeEmoji(view, x1, y1, view.getWidth(), 0, true, animation);
+    addPokeEmoji(view, x1, y1, -view.getWidth(), 0, true, animation);
+    addPokeEmoji(view, x1, y1, -(view.getWidth() / 2), -view.getWidth(), true, animation);
+    addPokeEmoji(view, x1, y1, +(view.getWidth() / 2), +view.getWidth(), true, animation);
+
+    v.animate().setInterpolator(new OvershootInterpolator()).withStartAction(() -> {
+      v.setScaleX(0);
+      v.setScaleY(0);
+    }).withEndAction(() -> {
+      view.setText(EmojiParser.demojizedText(":hourglass:"));
+      subscriptions.add(Observable.timer((2000), TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            v.animate().scaleX(1f).scaleY(1f).setDuration(300).withEndAction(() -> {
+              for (EmojiPoke emo : emojis) {
+                emo.clearAnimation();
+                emo.animate()
+                    .translationX(-emo.getTransX())
+                    .translationY(-emo.getTransY())
+                    .scaleX(0)
+                    .scaleY(0)
+                    .setDuration(300)
+                    .withEndAction(() -> {
+                      container.removeView(emo);
+                      view.startAnimation(animation2);
+                      view.setTag("");
+                    })
+                    .start();
+              }
+            }).start();
+          }));
+    }).scaleX(1.5f).scaleY(1.5f).setDuration(300).start();
+
+    subscriptions.add(Observable.interval(0, 100, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          timerPoke = aLong.toString();
+          Timber.e(" OSEF LoNG " + aLong);
+          if (aLong > 2000) {
+            view.setText(EmojiParser.demojizedText(":joy:"));
+          } else {
+
+          }
+        }));
+  }
 
   @OnClick(R.id.btnBack) void back() {
     onBackPressed();

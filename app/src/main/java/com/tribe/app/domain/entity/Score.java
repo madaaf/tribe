@@ -69,4 +69,8 @@ public class Score {
     result = 31 * result + (game.getId() != null ? game.getId().hashCode() : 0);
     return result;
   }
+
+  @Override public String toString() {
+    return super.toString();
+  }
 }

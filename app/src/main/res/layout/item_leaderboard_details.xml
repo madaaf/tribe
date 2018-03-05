@@ -68,10 +68,9 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center_vertical|end"
-        android:background="@drawable/shape_circle_white50"
         android:gravity="center"
+        android:background="@drawable/shape_circle_white50"
         android:paddingBottom="3dp"
-        android:scaleType="centerInside"
         android:textSize="30sp"
         />
 

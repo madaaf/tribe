@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 12/08/17.
@@ -43,6 +44,7 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
   protected LayoutInflater layoutInflater;
 
   protected PublishSubject<View> click = PublishSubject.create();
+  protected PublishSubject<TextView> onClickPoke = PublishSubject.create();
   private boolean onPoke = false;
   private StateManager stateManager;
 
@@ -85,7 +87,8 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     vh.txtScore.setScore(score.getValue());
     vh.pokeEmoji.setText(EmojiParser.demojizedText(":joy:"));
     vh.pokeEmoji.setOnClickListener(v -> {
-
+      Timber.e("ON CLICK "+ score.toString());
+      onClickPoke.onNext(vh.pokeEmoji);
       TextView tv = new TextView(context);
       tv.setText(EmojiParser.demojizedText(":joy:"));
 
@@ -93,11 +96,7 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
         displayUplaodAvatarNotification(context, score.getUser());
         stateManager.addTutorialKey(StateManager.FIRST_POKE);
       } else {
-        vh.pokeEmoji.animate().withStartAction(() -> {
-          vh.pokeEmoji.setScaleX(0);
-          vh.pokeEmoji.setScaleY(0);
-        }).withEndAction(
-            () -> vh.pokeEmoji.animate().scaleX(1f).scaleY(1f).setDuration(300).start()).scaleX(2f).scaleY(2f).setDuration(300).start();
+       // SOEF
       }
     });
     if (onPoke) {
@@ -151,6 +150,10 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
 
   public Observable<View> onClick() {
     return click;
+  }
+
+  public Observable<TextView> onClickPoke() {
+    return onClickPoke;
   }
 
   public void onPoke(boolean b) {
