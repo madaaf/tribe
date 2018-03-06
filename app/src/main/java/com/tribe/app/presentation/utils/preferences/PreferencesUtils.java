@@ -53,6 +53,9 @@ public class PreferencesUtils {
   public static String GAME_DATA = "GAME_DATA";
   public static String CHALLENGE_NOTIF = "CHALLENGE_NOTIF";
   public static String WEBSOCKET_URL = "WEBSOCKET_URL";
+  public static String GAMES_PLAYED = "GAMES_PLAYED";
+  public static String MULTIPLAYER_SESSIONS = "MULTIPLAYER_SESSIONS";
+  public static String DAYS_OF_USAGE = "DAYS_OF_USAGE";
 
   public static void saveMapAsJson(Map<String, Object> map, Preference<String> preference) {
     GsonBuilder builder = new GsonBuilder();

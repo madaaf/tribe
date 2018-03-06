@@ -135,7 +135,7 @@ public class UIUtils {
 
   public static void changeBottomMarginOfView(View v, int margin) {
     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-    params.leftMargin = margin;
+    params.bottomMargin = margin;
     v.setLayoutParams(params);
   }
 

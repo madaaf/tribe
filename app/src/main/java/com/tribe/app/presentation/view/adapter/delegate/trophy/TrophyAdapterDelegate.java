@@ -72,7 +72,11 @@ public class TrophyAdapterDelegate extends RxAdapterDelegate<List<TrophyEnum>> {
     TrophyViewHolder vh = (TrophyViewHolder) holder;
     TrophyEnum trophyEnum = items.get(position);
 
-    Glide.with(context).load(trophyEnum.getIcon()).into(vh.imgIcon);
+    if (trophyEnum.isUnlockedByUser()) {
+      Glide.with(context).load(trophyEnum.getIcon()).into(vh.imgIcon);
+    } else {
+      Glide.with(context).load(trophyEnum.getIconLocked()).into(vh.imgIcon);
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<TrophyEnum> items,

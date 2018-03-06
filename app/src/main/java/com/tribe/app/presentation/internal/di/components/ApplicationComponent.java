@@ -52,10 +52,12 @@ import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
+import com.tribe.app.presentation.utils.preferences.DaysOfUsage;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.GameData;
+import com.tribe.app.presentation.utils.preferences.GamesPlayed;
 import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
@@ -67,6 +69,7 @@ import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
+import com.tribe.app.presentation.utils.preferences.MultiplayerSessions;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
@@ -502,6 +505,12 @@ public interface ApplicationComponent {
   @UserPhoneNumber Preference<String> userPhoneNumber();
 
   @GameData Preference<String> gameData();
+
+  @DaysOfUsage Preference<Integer> daysOfUsage();
+
+  @MultiplayerSessions Preference<Integer> multiplayerSessions();
+
+  @GamesPlayed Preference<Set<String>> gamesPlayed();
 
   SoundManager soundManager();
 

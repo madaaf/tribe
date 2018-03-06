@@ -77,7 +77,7 @@ public class PopupTrophy extends PopupView {
     public Builder bg(int radius) {
       this.bg = new GradientDrawable(GradientDrawable.Orientation.TR_BL, new int[] {
           ColorUtils.setAlphaComponent(
-              ContextCompat.getColor(context, trophyEnum.getPrimaryColor()), (int) 0.8f * 255),
+              ContextCompat.getColor(context, trophyEnum.getPrimaryColor()), (int) (0.8f * 255)),
           ContextCompat.getColor(context, trophyEnum.getSecondaryColor())
       });
 

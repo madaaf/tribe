@@ -15,11 +15,11 @@ public class TrophyRequirement {
   }) public @interface TrophyRequirementType {
   }
 
-  private static final String FRIENDS = "FRIENDS";
-  private static final String DAYS_USAGE = "DAYS_USAGE";
-  private static final String GAMES_PLAYED = "GAMES_PLAYED";
-  private static final String MULTIPLAYER_SESSIONS = "MULTIPLAYER_SESSIONS";
-  private static final String BEST_SCORES = "BEST_SCORES";
+  public static final String FRIENDS = "FRIENDS";
+  public static final String DAYS_USAGE = "DAYS_USAGE";
+  public static final String GAMES_PLAYED = "GAMES_PLAYED";
+  public static final String MULTIPLAYER_SESSIONS = "MULTIPLAYER_SESSIONS";
+  public static final String BEST_SCORES = "BEST_SCORES";
 
   private String requirement;
   private int count;
@@ -67,28 +67,18 @@ public class TrophyRequirement {
     if (requirement.equals(FRIENDS)) {
       return trophiesManager.friendsCount();
     } else if (requirement.equals(DAYS_USAGE)) {
-      return R.string.trophy_requirement_day_usage_title;
+      return trophiesManager.daysOfUsage();
     } else if (requirement.equals(GAMES_PLAYED)) {
-      return R.string.trophy_requirement_games_played_title;
+      return trophiesManager.gamesPlayed();
     } else if (requirement.equals(MULTIPLAYER_SESSIONS)) {
-      return R.string.trophy_requirement_multiplayer_sessions_title;
+      return trophiesManager.multiplayerSessions();
     } else {
-      return R.string.trophy_requirement_best_scores_title;
+      return trophiesManager.bestScoresCount();
     }
   }
 
   public int totalCount() {
-    if (requirement.equals(FRIENDS)) {
-      return R.string.trophy_requirement_day_usage_title;
-    } else if (requirement.equals(DAYS_USAGE)) {
-      return R.string.trophy_requirement_day_usage_title;
-    } else if (requirement.equals(GAMES_PLAYED)) {
-      return R.string.trophy_requirement_games_played_title;
-    } else if (requirement.equals(MULTIPLAYER_SESSIONS)) {
-      return R.string.trophy_requirement_multiplayer_sessions_title;
-    } else {
-      return R.string.trophy_requirement_best_scores_title;
-    }
+    return count;
   }
 }
 

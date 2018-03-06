@@ -9,10 +9,12 @@ import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
+import com.tribe.app.presentation.utils.preferences.DaysOfUsage;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.GameData;
+import com.tribe.app.presentation.utils.preferences.GamesPlayed;
 import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
@@ -24,6 +26,7 @@ import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
+import com.tribe.app.presentation.utils.preferences.MultiplayerSessions;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
@@ -242,5 +245,20 @@ import static android.content.Context.MODE_PRIVATE;
 
   @Provides @Singleton @GameData Preference<String> provideGameData(RxSharedPreferences prefs) {
     return prefs.getString(PreferencesUtils.GAME_DATA, "");
+  }
+
+  @Provides @Singleton @GamesPlayed Preference<Set<String>> provideGamesPlayed(
+      RxSharedPreferences prefs) {
+    return prefs.getStringSet(PreferencesUtils.GAMES_PLAYED, new HashSet<>());
+  }
+
+  @Provides @Singleton @MultiplayerSessions Preference<Integer> provideMultiplayerSessions(
+      RxSharedPreferences prefs) {
+    return prefs.getInteger(PreferencesUtils.MULTIPLAYER_SESSIONS);
+  }
+
+  @Provides @Singleton @DaysOfUsage Preference<Integer> provideDaysOfUsage(
+      RxSharedPreferences prefs) {
+    return prefs.getInteger(PreferencesUtils.DAYS_OF_USAGE);
   }
 }

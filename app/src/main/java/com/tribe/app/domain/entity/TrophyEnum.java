@@ -2,6 +2,7 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.app.R;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.presentation.utils.TrophiesManager;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -21,8 +22,46 @@ public enum TrophyEnum {
     this.trophy = trophy;
   }
 
+  public static TrophyEnum getTrophyEnum(String trophy) {
+    if (trophy.equals(UserRealm.NOOB)) {
+      return NOOB;
+    } else if (trophy.equals(UserRealm.EXPERT)) {
+      return EXPERT;
+    } else if (trophy.equals(UserRealm.PRO)) {
+      return PRO;
+    } else if (trophy.equals(UserRealm.MASTER)) {
+      return MASTER;
+    } else {
+      return GOD;
+    }
+  }
+
   public static List<TrophyEnum> getTrophies() {
     return new ArrayList<>(EnumSet.allOf(TrophyEnum.class));
+  }
+
+  public List<TrophyRequirement> getRequirements() {
+    List<TrophyRequirement> requirements = new ArrayList<>();
+
+    if (trophy.equals(UserRealm.EXPERT)) {
+      requirements.add(new TrophyRequirement(TrophyRequirement.FRIENDS, 3));
+      requirements.add(new TrophyRequirement(TrophyRequirement.DAYS_USAGE, 3));
+      requirements.add(new TrophyRequirement(TrophyRequirement.GAMES_PLAYED, 3));
+    } else if (trophy.equals(UserRealm.PRO)) {
+      requirements.add(new TrophyRequirement(TrophyRequirement.FRIENDS, 7));
+      requirements.add(new TrophyRequirement(TrophyRequirement.DAYS_USAGE, 7));
+      requirements.add(new TrophyRequirement(TrophyRequirement.MULTIPLAYER_SESSIONS, 7));
+    } else if (trophy.equals(UserRealm.MASTER)) {
+      requirements.add(new TrophyRequirement(TrophyRequirement.FRIENDS, 15));
+      requirements.add(new TrophyRequirement(TrophyRequirement.DAYS_USAGE, 15));
+      requirements.add(new TrophyRequirement(TrophyRequirement.BEST_SCORES, 1));
+    } else if (trophy.equals(UserRealm.GOD)) {
+      requirements.add(new TrophyRequirement(TrophyRequirement.FRIENDS, 30));
+      requirements.add(new TrophyRequirement(TrophyRequirement.DAYS_USAGE, 50));
+      requirements.add(new TrophyRequirement(TrophyRequirement.BEST_SCORES, 2));
+    }
+
+    return requirements;
   }
 
   public @Resource int getTitle() {
@@ -103,6 +142,24 @@ public enum TrophyEnum {
     }
 
     return NOOB.getSecondaryColor();
+  }
+
+  public boolean isAchieved() {
+    for (TrophyRequirement req : getRequirements()) if (!req.isAchieved()) return false;
+    return true;
+  }
+
+  public boolean isUnlockedByUser() {
+    String currentTrophy = TrophiesManager.getInstance(null).getCurrentUser().getTrophy();
+    List<TrophyEnum> trophies = getTrophies();
+
+    if (trophies.indexOf(getTrophyEnum(currentTrophy)) >= trophies.indexOf(this)) {
+      return true;
+    } else if (this == NOOB) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
 
