@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +25,7 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.LabelType;
@@ -38,9 +40,11 @@ import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
+import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +91,8 @@ public class NotifView extends FrameLayout {
   @Inject RxFacebook rxFacebook;
   @Inject RxImagePicker rxImagePicker;
   @Inject User currentUser;
+  @Inject @HasSoftKeys Preference<Boolean> hasSoftKeys;
+
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -98,6 +104,10 @@ public class NotifView extends FrameLayout {
   public NotifView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     initView(context);
+  }
+
+  public void overrideBackground(Drawable background) {
+    bgView.setBackground(background);
   }
 
   public void show(Activity activity, List<NotificationModel> list) {
@@ -185,6 +195,10 @@ public class NotifView extends FrameLayout {
 
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
+
+    if (hasSoftKeys.get()) {
+      UIUtils.changeBottomMarginOfView(textDismiss, screenUtils.dpToPx(50));
+    }
 
     newChatMVPViewAdapter = new NewChatMVPViewAdapter() {
       @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {

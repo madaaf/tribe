@@ -43,10 +43,10 @@ import com.tribe.app.presentation.internal.di.components.DaggerApplicationCompon
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.IntentUtils;
+import com.tribe.app.presentation.utils.TrophiesManager;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
-import com.tribe.app.presentation.view.widget.chat.model.Media;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.filters.Filter;
 import com.tribe.tribelivesdk.filters.lut3d.FilterManager;
@@ -98,6 +98,7 @@ public class AndroidApplication extends Application {
     initTakt();
     initUlsee();
     initFilters();
+    initTrophiesManager();
     initGameManager();
     JodaTimeAndroid.init(this);
     initZendesk();
@@ -533,6 +534,10 @@ public class AndroidApplication extends Application {
     if (gameRealmList != null && gameRealmList.size() > 0) {
       gameManager.addGames(gameRealmDataMapper.transform(gameRealmList));
     }
+  }
+
+  private void initTrophiesManager() {
+    TrophiesManager.getInstance(this);
   }
 
   private class SampleAppStateListener implements AppStateListener {

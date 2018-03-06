@@ -80,20 +80,6 @@ public class PopupParentView extends FrameLayout implements Animation.AnimationL
   //      INIT        //
   //////////////////////
 
-  @Override protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
-    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    if (!marginSet) {
-      marginSet = true;
-      if (getLayoutParams() instanceof MarginLayoutParams) {
-        // Add a negative top margin to compensate for overshoot enter animation
-        final ViewGroup.MarginLayoutParams params =
-            (ViewGroup.MarginLayoutParams) getLayoutParams();
-        params.topMargin = params.topMargin - (getScreenHeight() / SCREEN_SCALE_FACTOR);
-        requestLayout();
-      }
-    }
-  }
-
   @Override protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
 

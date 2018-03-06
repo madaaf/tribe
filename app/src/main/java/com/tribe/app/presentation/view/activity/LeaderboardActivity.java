@@ -23,11 +23,16 @@ import com.tribe.app.domain.entity.TrophyEnum;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.view.NotifView;
+import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.adapter.LeaderboardUserAdapter;
 import com.tribe.app.presentation.view.adapter.TrophyAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardUserLayoutManager;
 import com.tribe.app.presentation.view.adapter.manager.TrophyLayoutManager;
+import com.tribe.app.presentation.view.popup.PopupManager;
+import com.tribe.app.presentation.view.popup.listener.PopupDigestListenerAdapter;
+import com.tribe.app.presentation.view.popup.view.PopupTrophy;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -218,7 +223,23 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
         .map(view -> trophyAdapter.getItemAtPosition(
             recyclerViewTrophies.getChildLayoutPosition(view)))
         .subscribe(trophyEnum -> {
+          List<NotificationModel> notificationModelList = new ArrayList<>();
 
+          PopupTrophy popupTrophy =
+              new PopupTrophy.Builder(this, trophyEnum).bg(screenUtils.dpToPx(5)).build();
+
+          PopupManager popupManager = PopupManager.create(new PopupManager.Builder().activity(this)
+              .dimBackground(false)
+              .listener(new PopupDigestListenerAdapter() {
+
+              })
+              .view(popupTrophy));
+
+          notificationModelList.add(
+              new NotificationModel.Builder().view(popupManager.getView()).build());
+          NotifView notifView = new NotifView(this);
+          notifView.overrideBackground(popupTrophy.getBg());
+          notifView.show(this, notificationModelList);
         }));
   }
 
