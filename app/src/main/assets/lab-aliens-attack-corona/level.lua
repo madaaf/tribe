@@ -170,7 +170,6 @@ local function addPointsToScore(points)
 		if score % 100 == 0 then
 			bonus.showBomb()
 		elseif score % 50 == 0 then
-			sounds.playWatch()
 			bonus.showWatch()
 		end
 	end
@@ -219,6 +218,8 @@ end
 
 local function useWatch()
 	log('useWatch')
+	
+	sounds.playWatch()
 
 	aliensPaceFactor = 3
 	aliens.changeAliensSpeed(3)

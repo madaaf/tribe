@@ -3,16 +3,15 @@ local screenW, screenH = display.actualContentWidth, display.actualContentHeight
 local strings = require "strings"
 local emitter = require "emitter"
 
-local pendingShownBonus
-local wonBonus
+local pendingShownBomb
+local pendingShownWatch
 
 local listeners = {}
 
 ---------------------------------------------------------------------------------
 
-local function removeShownBonus ()
+local function removeShownBonuses (group)
 
-	local group = pendingShownBonus
 	if group then
 		transition.cancel(group)
 		transition.to(group, { x=-100, time=125, onComplete=function() 
@@ -21,11 +20,28 @@ local function removeShownBonus ()
 	end
 end
 
+local function removeShownBomb ()
+	removeShownBonuses(pendingShownBomb)
+	pendingShownBomb = nil
+end
+
+local function removeShownWatch ()
+	removeShownBonuses(pendingShownWatch)
+	pendingShownWatch = nil
+end
+
+local function moveExistingBonusRight (group)
+	if group then
+		transition.to(group, { x=100, time=125 })
+		if group[3] then group[3]:removeSelf() end
+		if group[2] then group[2]:removeSelf() end
+		if group[1] then group[1]:removeSelf() end
+	end
+end
+
 local function showBonus (text, icon, useEventName)
 
-	removeShownBonus()
-
-	local text 		 = display.newText( text, 0, screenH/2 + 100, "assets/fonts/gulkave.ttf", 20 )
+	local text 		 = display.newText( text, 0, screenH - 150 - 50 - 30, "assets/fonts/gulkave.ttf", 20 )
 	local arrow 	 = display.newImageRect("assets/images/arrow.png", 9, 6)
 	local background = emitter.newBonusEmitter()
 	local icon 	     = display.newImageRect(icon, 44, 44)
@@ -47,21 +63,19 @@ local function showBonus (text, icon, useEventName)
 
  	transition.to(group, { x=40, rotation=-3, time=125 })
 
-	transition.to(group, { x=-100, time=125, delay=3000, onComplete=function() 
- 		display.remove(group)
- 	end})
-
  	group:addEventListener('touch', function (event)
 
  		if event.phase == "began" then
 
-			removeShownBonus()
+			removeShownBonuses(group)
 
 		 	if listeners[useEventName] then
 		 		listeners[useEventName]()
 			end
 	 	end
  	end)
+
+ 	return group
 end
 
 ---------------------------------------------------------------------------------
@@ -73,17 +87,22 @@ exports.addBonusListener = function(event, listener)
 end
 
 exports.removeBonuses = function ()
-	removeShownBonus()
+	removeShownBomb()
+	removeShownWatch()
 end
 
 exports.showBomb = function (params)
 	log('showBomb')
-	showBonus('ALL AT\nONCE!', 'assets/images/bomb.png', 'useBomb')
+	removeShownBomb()
+	moveExistingBonusRight(pendingShownWatch)
+	pendingShownBomb = showBonus('ALL AT\nONCE!', 'assets/images/bomb.png', 'useBomb')
 end
 
 exports.showWatch = function (params)
 	log('showWatch')
-	showBonus('SLOW\nDOWN', 'assets/images/watch.png', 'useWatch')
+	removeShownWatch()
+	moveExistingBonusRight(pendingShownBomb)
+	pendingShownWatch = showBonus('SLOW\nDOWN', 'assets/images/watch.png', 'useWatch')
 end
 
 return exports

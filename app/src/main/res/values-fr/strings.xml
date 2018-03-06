@@ -1019,18 +1019,18 @@
 	<string name="score_milestone_scores">Perfect!,Crazy!,Lit!,Awesome!,Damn!,Wow!,Sick!,Neat!</string>
 	
 	<!-- Poke -->
-	<string name="poke_captions_above">GG!,Congrats!</string>
-	<string name="poke_captions_below">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
-	<string name="poke_popup_title">Poke %1$s\nabout this score!</string>
-	<string name="poke_popup_subtitle">An automated message will be sent and available in your chat with %1$s.</string>
+	<string name="poke_captions_above">GG !,Bravo !, Génial !, Incroyable !, Dingue !</string>
+	<string name="poke_captions_below">OMG !,Serieux ?,LOL !,Haha !,Trop nul !,WOW</string>
+	<string name="poke_popup_title">Poke %1$s\nau sujet de son score !</string>
+	<string name="poke_popup_subtitle">Un message automatique sera envoyé et disponible dans ta conversation avec %1$s.</string>
 	<string name="poke_popup_action_send">SEND &amp; POKE</string>
-	<string name="poke_delay_minutes">%1$d minutes left to poke again %2$s!</string>
-	<string name="poke_delay_seconds">%1$d seconds left to poke again %2$s!</string>
-	<string name="poke_sent_confirmation">Your poke has been sent to %1$s!</string>
-	<string name="poke_chat_event_above">%1$s just became jealous of your score at %2$s! %3$s%4$s</string>
-	<string name="poke_chat_event_below">%1$s just made fun of your score at %2$s! %3$s%4$s</string>
-	<string name="poke_chat_tap_to_play">TAP TO PLAY</string>
-	<string name="poke_share_score">My score at %1$s on @heytribe is %2$d. What\'s yours?</string>
+	<string name="poke_delay_minutes">Plus que %1$d mins pour re-poker %2$s!</string>
+	<string name="poke_delay_seconds">Plus que %1$d secs pour re-poker  %2$s!</string>
+	<string name="poke_sent_confirmation">Poke envoyé à %1$s!</string>
+	<string name="poke_chat_event_above">%1$s est jaloux de ton score à %2$s! %3$s%4$s</string>
+	<string name="poke_chat_event_below">%1$s se moque de ton score à %2$s! %3$s%4$s</string>
+	<string name="poke_chat_tap_to_play">Tap pour jouer</string>
+	<string name="poke_share_score">Mon score à %1$s à Tribe (http://tribe.pm) est %2$d. What\'s yours?</string>
 	<string name="poke_emoji_above">:heart_eyes:,:flushed:,:hugs:,:open_mouth:,:roll_eyes:,:alien:</string>
 	<string name="poke_emoji_below">:joy:,:rofl:,:sweat_smile:,:poop:,:joy_cat:,:laughing:,:see_no_evil:</string>
 	<string name="poke_emoji_own">:medal_sports:</string>
@@ -1063,6 +1063,7 @@
 	<string name="trophy_requirement_multiplayer_sessions_description">%1$d multiplayer sessions</string>
 	<string name="trophy_requirement_best_scores_description">be the best at %1$d games</string>
 	<string name="trophy_requirement_last_separator">and</string>
+	<string name="trophy_noob_description">You\'re in the race. Check out the other trophies to get started!</string>
 	
 	<!-- Trophy Popup -->
 	<string name="trophy_popup_action_use_icon">USE THIS ICON</string>
@@ -1075,8 +1076,15 @@
 	
 	<!-- Ask To Join Popup -->
 	<string name="ask_to_join_popup_title">%1$s wants\nto join your game!</string>
+	<string name="ask_to_join_popup_title_no_game">%1$s wants\nto join your room!</string>
 	<string name="ask_to_join_popup_score">BEST SCORE</string>
 	<string name="ask_to_join_popup_level">%1$s level</string>
 	<string name="ask_to_join_popup_action_accept">ACCEPT</string>
 	<string name="ask_to_join_popup_action_decline">DECLINE</string>
+	
+	<!-- Invited To Join Popup -->
+	<string name="invited_to_join_popup_title">%1$s invited\nyou to join a challenge!</string>
+	<string name="invited_to_join_popup_subtitle">With %1$s</string>
+	<string name="invited_to_join_popup_no_game_selected">NO GAME SELECTED YET</string>
+	<string name="invited_to_join_popup_action_later">LATER</string>
 </resources>

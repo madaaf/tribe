@@ -205,9 +205,9 @@ local exports = {}
 
 exports.shake = function() 
 
-	transition.to(city, { x=-20, time=150, onComplete=function ()
-		transition.to(city, { x=20, time=150, onComplete=function ()
-			transition.to(city, { x=-20, time=150, onComplete=function ()
+	transition.to(city, { x=-40, time=150, onComplete=function ()
+		transition.to(city, { x=40, time=150, onComplete=function ()
+			transition.to(city, { x=-40, time=150, onComplete=function ()
 				transition.to(city, { x=0, time=150 })
 			end})
 		end})

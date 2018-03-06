@@ -63,7 +63,7 @@ local function showPointsAndRemoveAlien(alienGroup, points)
 	pointsText.x, pointsText.y = alienImage.x, alienImage.y + 10
 	alienGroup:insert(pointsText)
 	transition.to(pointsText, { xScale=1, yScale=1, alpha=1, time=125, onComplete=function()
-		transition.to(pointsText, { xScale=0.1, yScale=0.1, alpha=0, time=125, delay=100, onComplete=function () 
+		transition.to(pointsText, { xScale=0.1, yScale=0.1, alpha=0, time=125, delay=200, onComplete=function () 
  			display.remove(alienGroup)
  		end })
 	end })

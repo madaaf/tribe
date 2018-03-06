@@ -8,25 +8,20 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.util.Pair;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.ansca.corona.CoronaView;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
-import com.tribe.app.data.realm.GameFileRealm;
-import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
-import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.unzip.RxUnzip;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
-import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -71,30 +66,37 @@ public class GameCoronaView extends GameView {
   public GameCoronaView(@NonNull Context context, Game game) {
     super(context);
 
-    FileUtils.getGameUnzippedDir(context).delete();
-
+    //FileUtils.getGameUnzippedDir(context).delete();
+    //
     gameMVPViewAdapter = new GameMVPViewAdapter() {
-      @Override public void onGameFile(GameFile gameFile) {
-        Timber.d("GameFile : " + gameFile);
-
-        if (gameFile.getDownloadStatus().equals(GameFileRealm.STATUS_DOWNLOADED)) {
-          subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(
-                  aLong -> subscriptions.add(rxUnzip.unzip(gameFile.getPath()).subscribe(path -> {
-                    AnimationUtils.animateWidth(viewProgress, viewProgress.getMeasuredWidth(),
-                        cardViewProgress.getWidth(), 300, new DecelerateInterpolator());
-                    //coronaView.init(game.getId());
-                    coronaView.init(FileUtils.getGameUnzippedDir(context).getPath());
-                    coronaView.setZOrderMediaOverlay(true);
-                  }))));
-        } else if (gameFile.getDownloadStatus().equals(GameFileRealm.STATUS_DOWNLOADING)) {
-          UIUtils.changeWidthOfView(viewProgress,
-              (int) (((float) gameFile.getTotalSize() / (float) gameFile.getProgress()) *
-                  cardViewProgress.getWidth()));
-        }
+      @Override public Context context() {
+        return getContext();
       }
+      
+      //@Override public void onGameFile(GameFile gameFile) {
+      //  Timber.d("GameFile : " + gameFile);
+      //
+      //  if (gameFile.getDownloadStatus().equals(GameFileRealm.STATUS_DOWNLOADED)) {
+      //    subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
+      //        .observeOn(AndroidSchedulers.mainThread())
+      //        .subscribe(
+      //            aLong -> subscriptions.add(rxUnzip.unzip(gameFile.getPath()).subscribe(path -> {
+      //              AnimationUtils.animateWidth(viewProgress, viewProgress.getMeasuredWidth(),
+      //                  cardViewProgress.getWidth(), 300, new DecelerateInterpolator());
+      //              //coronaView.init(game.getId());
+      //              coronaView.init(FileUtils.getGameUnzippedDir(context).getPath());
+      //              coronaView.setZOrderMediaOverlay(true);
+      //            }))));
+      //  } else if (gameFile.getDownloadStatus().equals(GameFileRealm.STATUS_DOWNLOADING)) {
+      //    UIUtils.changeWidthOfView(viewProgress,
+      //        (int) (((float) gameFile.getTotalSize() / (float) gameFile.getProgress()) *
+      //            cardViewProgress.getWidth()));
+      //  }
+      //}
     };
+
+    coronaView.init(game.getId());
+    coronaView.setZOrderMediaOverlay(true);
 
     gamePresenter.getGameFile(game.getUrl());
   }
