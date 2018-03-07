@@ -143,8 +143,8 @@
 	<!-- Decline Menu -->
 	<string name="decline_menu_title">Texter %1$s</string>
 	<string name="decline_menu_message">Sélectionnez une option pour l\'envoyer\nà %1$s dans le Chat</string>
-	<string name="decline_menu_answer1">Je te rappelle dès que possible ! :dizzy:</string>
-	<string name="decline_menu_answer2">Je ne peux pas parler. Envoie moi un message sur le chat ! :speech_balloon:</string>
+	<string name="decline_menu_answer1">On se capte après ! :dizzy:</string>
+	<string name="decline_menu_answer2">Envoie moi un message dans le chat ! :speech_balloon:</string>
 	<string name="decline_menu_custom">Réponse personnalisée...</string>
 	
 	<!-- Invited Popup -->
