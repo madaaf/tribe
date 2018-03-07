@@ -50,8 +50,6 @@ import com.tribe.app.presentation.view.widget.chat.adapterDelegate.MessageAdapte
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
-import com.tribe.tribelivesdk.game.Game;
-import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.zendesk.sdk.model.access.Identity;
 import com.zendesk.sdk.model.access.JwtIdentity;
@@ -401,6 +399,7 @@ public class RecyclerMessageView extends IChat {
   private void initRecyclerView() {
     layoutManager = new LinearLayoutManager(getContext());
     messageAdapter = new MessageAdapter(getContext(), type);
+
     layoutManager.setStackFromEnd(true);
 
     DefaultItemAnimator animator = new DefaultItemAnimator() {
@@ -445,6 +444,10 @@ public class RecyclerMessageView extends IChat {
             });
           }
         });
+
+    subscriptions.add(messageAdapter.onClickGame().subscribe(gameId -> {
+      navigator.navigateToGameDetails((Activity) context, gameId);
+    }));
   }
 
   public void scrollListToBottom() {

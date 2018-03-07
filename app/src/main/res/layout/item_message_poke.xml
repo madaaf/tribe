@@ -45,11 +45,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="0dp"
         android:layout_toEndOf="@+id/pokeViewAvatar"
         android:text="@string/poke_chat_event_below"
         android:textColor="@color/yellow.poke"
-        android:textSize="11sp"
+        android:textSize="13sp"
         style="@style/Title.2.Black"
         />
 

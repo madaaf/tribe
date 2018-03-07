@@ -18,8 +18,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.view.utils.GlideUtils;
-import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
@@ -29,6 +29,8 @@ import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import eightbitlab.com.blurview.BlurView;
 import java.util.List;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -37,6 +39,7 @@ import java.util.List;
 public class MessagePokeAdapterDelegate extends BaseMessageAdapterDelegate {
 
   protected GameManager gameManager;
+  private PublishSubject<String> onClickGame = PublishSubject.create();
 
   public MessagePokeAdapterDelegate(Context context, int type) {
     super(context, type);
@@ -63,20 +66,20 @@ public class MessagePokeAdapterDelegate extends BaseMessageAdapterDelegate {
 
     MessagePoke m = (MessagePoke) items.get(position);
     MessagePokeViewHolder vh = (MessagePokeViewHolder) holder;
+    Game game = gameManager.getGameById(m.getGameId());
 
     String message =
         context.getString(R.string.poke_chat_event_below, m.getAuthor().getDisplayName(),
-            m.getGameId(), ":joy:", ":joy:");
+            m.getGameId(), EmojiParser.demojizedText(m.getData()),
+            EmojiParser.demojizedText(game.getEmoji()));
 
     if (m.getAuthor() != null) {
       vh.pokeViewAvatar.load(m.getAuthor().getProfilePicture());
     }
 
     vh.pokeMessage.setText(message);
-    Game game = gameManager.getGameById(m.getGameId());
 
     if (game.getFriendLeader() != null) {
-     // UIUtils.changeHeightOfView(vh.layoutContent, screenUtils.dpToPx(80));
       TribeGuest leader = game.getFriendLeader();
       vh.layoutBestFriend.setVisibility(View.VISIBLE);
       vh.viewAvatar.load(leader.getPicture());
@@ -93,13 +96,6 @@ public class MessagePokeAdapterDelegate extends BaseMessageAdapterDelegate {
     ViewCompat.setBackground(vh.viewBackground, gd);
 
     vh.txtBaseline.setText(context.getString(R.string.poke_chat_tap_to_play));
-    //UIUtils.changeHeightOfView(vh.cardView, screenUtils.dpToPx(60));
-
-    scale(vh.imgIcon, 0.5f);
-    scale(vh.imgLogo, 0.5f);
-    scale(vh.imgAnimation3, 0.5f);
-    scale(vh.imgAnimation2, 0.5f);
-    scale(vh.imgAnimation1, 0.5f);
 
     new GlideUtils.GameImageBuilder(context, screenUtils).url(game.getIcon())
         .hasBorder(true)
@@ -125,13 +121,9 @@ public class MessagePokeAdapterDelegate extends BaseMessageAdapterDelegate {
       Glide.with(context).load(url).into(imageView);
     }
 
+    vh.viewBackground.setOnClickListener(v -> onClickGame.onNext(game.getId()));
+
     //setPendingBehavior(m, vh.container);
-
-  }
-
-  private void scale(View v, float value) {
-    //  v.setScaleX(value);
-    //  v.setScaleY(value);
   }
 
   @Override public void onBindViewHolder(@NonNull List<Message> items,
@@ -168,5 +160,9 @@ public class MessagePokeAdapterDelegate extends BaseMessageAdapterDelegate {
     @Override protected ViewGroup getLayoutContent() {
       return container;
     }
+  }
+
+  public Observable<String> onClickGame() {
+    return onClickGame;
   }
 }

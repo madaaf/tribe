@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import rx.Observable;
+import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by madaaflak on 05/09/2017.
@@ -26,6 +28,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
   private MessageEventAdapterDelegate messageEventAdapterDelegate;
   private MessageAudioAdapterDelegate messageAudioAdapterDelegate;
   private MessagePokeAdapterDelegate messagePokeAdapterDelegate;
+
+  // OBSERVABLE
+  protected CompositeSubscription subscription = new CompositeSubscription();
+  protected PublishSubject<String> onClickGame = PublishSubject.create();
 
   public MessageAdapter(Context context, int type) {
     delegatesManager = new RxAdapterDelegatesManager<>();
@@ -49,6 +55,8 @@ public class MessageAdapter extends RecyclerView.Adapter {
     delegatesManager.addDelegate(messagePokeAdapterDelegate);
 
     items = new ArrayList<>();
+
+    subscription.add(messagePokeAdapterDelegate.onClickGame().subscribe(onClickGame));
   }
 
   public void setArrIds(String[] arrIds) {
@@ -157,6 +165,10 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
   public void onStartRecording() {
     messageAudioAdapterDelegate.stopListenVoiceNote();
+  }
+
+  public Observable<String> onClickGame() {
+    return onClickGame;
   }
 }
 
