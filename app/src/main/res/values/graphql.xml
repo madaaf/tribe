@@ -164,6 +164,7 @@
               game_id
               room_id
             }
+            trophy
             last_seen_at
             time_in_call
             random_banned_permanently
@@ -188,6 +189,7 @@
               game_id
               room_id
             }
+            trophy
             last_seen_at
             time_in_call
             random_banned_permanently
@@ -235,6 +237,7 @@
           username
         }
       }
+      trophy
     }
   </string>
 

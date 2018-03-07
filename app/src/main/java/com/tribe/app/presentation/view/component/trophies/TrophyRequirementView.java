@@ -5,9 +5,9 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import butterknife.BindView;
@@ -26,7 +26,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by tiago on 12/09/2017.
  */
-public class TrophyRequirementView extends ConstraintLayout {
+public class TrophyRequirementView extends LinearLayout {
 
   @Inject ScreenUtils screenUtils;
 
@@ -67,6 +67,9 @@ public class TrophyRequirementView extends ConstraintLayout {
     applicationComponent.inject(this);
     screenUtils = applicationComponent.screenUtils();
 
+    setOrientation(VERTICAL);
+    setGravity(Gravity.CENTER);
+
     initResources();
     initSubscriptions();
   }
@@ -97,9 +100,11 @@ public class TrophyRequirementView extends ConstraintLayout {
 
     layoutReq.setBackground(layerDrawable);
 
-    txtReqDone.setText("3");
-    txtReqTotal.setText("/3");
-    txtRequirement.setText("Friends");
+    txtReqDone.setText("" +
+        ((trophyEnum.isUnlockedByUser()) ? trophyRequirement.totalCount()
+            : trophyRequirement.achievedCount()));
+    txtReqTotal.setText(" / " + trophyRequirement.totalCount());
+    txtRequirement.setText(trophyRequirement.title());
   }
 
   private void initResources() {

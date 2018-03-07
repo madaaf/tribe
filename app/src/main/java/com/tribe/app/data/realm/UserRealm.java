@@ -32,6 +32,7 @@ public class UserRealm extends RealmObject {
   public static final String TIME_IN_CALL = "time_in_call";
   public static final String AGE_RANGE_MIN = "age_range_min";
   public static final String AGE_RANGE_MAX = "age_range_max";
+  public static final String TROPHY = "trophy";
 
   @StringDef({ NOOB, EXPERT, PRO, MASTER, GOD }) public @interface TrophyType {
   }

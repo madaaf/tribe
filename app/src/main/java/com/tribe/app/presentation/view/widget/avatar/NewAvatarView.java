@@ -12,10 +12,12 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.TrophyEnum;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -105,6 +107,28 @@ public class NewAvatarView extends FrameLayout implements Avatar {
 
   @Override public void load(Recipient recipient) {
     avatar.load(recipient);
+    setupTrophy(recipient.getTrophy());
+  }
+
+  @Override public void load(User user) {
+    load(user.getProfilePicture());
+    setupTrophy(user.getTrophy());
+  }
+
+  private void setupTrophy(String trophy) {
+    if (trophy != null && !trophy.equals(UserRealm.NOOB) && type != NORMAL) {
+      if (trophy.equals(UserRealm.PRO)) {
+        strokeColor = ContextCompat.getColor(getContext(), TrophyEnum.PRO.getPrimaryColor());
+      } else if (trophy.equals(UserRealm.MASTER)) {
+        strokeColor = ContextCompat.getColor(getContext(), TrophyEnum.MASTER.getPrimaryColor());
+      } else if (trophy.equals(UserRealm.EXPERT)) {
+        strokeColor = ContextCompat.getColor(getContext(), TrophyEnum.EXPERT.getPrimaryColor());
+      } else if (trophy.equals(UserRealm.GOD)) {
+        strokeColor = ContextCompat.getColor(getContext(), TrophyEnum.GOD.getPrimaryColor());
+      }
+
+      gradientDrawable.setStroke(strokeWidth, strokeColor);
+    }
   }
 
   @Override public void loadGroupAvatar(String url, String previousUrl, String groupId,

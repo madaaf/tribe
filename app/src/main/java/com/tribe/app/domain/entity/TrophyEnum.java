@@ -40,6 +40,10 @@ public enum TrophyEnum {
     return new ArrayList<>(EnumSet.allOf(TrophyEnum.class));
   }
 
+  public String getTrophy() {
+    return trophy;
+  }
+
   public List<TrophyRequirement> getRequirements() {
     List<TrophyRequirement> requirements = new ArrayList<>();
 

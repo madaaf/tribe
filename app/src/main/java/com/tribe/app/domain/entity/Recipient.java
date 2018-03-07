@@ -1,5 +1,6 @@
 package com.tribe.app.domain.entity;
 
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.adapter.decorator.BaseSectionItemDecoration;
@@ -106,6 +107,8 @@ public abstract class Recipient implements Serializable, BaseListInterface, Home
   public abstract Date getLastSeenAt();
 
   public abstract boolean isRead();
+
+  public abstract @UserRealm.TrophyType String getTrophy();
 
   public boolean isFake() {
     return (getId().equals(Recipient.ID_EMPTY)

@@ -158,6 +158,14 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
     return read;
   }
 
+  @Override public String getTrophy() {
+    if (isSingle()) {
+      return getSingleFriend().getTrophy();
+    }
+
+    return null;
+  }
+
   public void setRead(boolean read) {
     this.read = read;
   }

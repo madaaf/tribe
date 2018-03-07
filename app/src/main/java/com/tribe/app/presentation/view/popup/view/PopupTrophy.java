@@ -2,6 +2,9 @@ package com.tribe.app.presentation.view.popup.view;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
+import android.support.constraint.Group;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.CardView;
@@ -11,11 +14,20 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.bumptech.glide.Glide;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.TrophyEnum;
+import com.tribe.app.domain.entity.TrophyRequirement;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.utils.preferences.SelectedTrophy;
 import com.tribe.app.presentation.view.component.trophies.TrophyRequirementView;
+import com.tribe.app.presentation.view.popup.listener.PopupTrophyListener;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -23,6 +35,12 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public class PopupTrophy extends PopupView {
+
+  @Inject @SelectedTrophy Preference<String> selectedTrophy;
+
+  @Inject ScreenUtils screenUtils;
+
+  @BindView(R.id.layoutConstraint) ConstraintLayout layoutConstraint;
 
   @BindView(R.id.layoutTop) View layoutTop;
 
@@ -36,11 +54,19 @@ public class PopupTrophy extends PopupView {
 
   @BindView(R.id.cardViewTrophy) CardView cardViewTrophy;
 
-  @BindView(R.id.viewRequirementFriends) TrophyRequirementView viewRequirementFriends;
+  @BindView(R.id.viewRequirementFirst) TrophyRequirementView viewRequirementFirst;
 
-  @BindView(R.id.viewRequirementDays) TrophyRequirementView viewRequirementDays;
+  @BindView(R.id.viewRequirementSecond) TrophyRequirementView viewRequirementSecond;
 
-  @BindView(R.id.viewRequirementGames) TrophyRequirementView viewRequirementGames;
+  @BindView(R.id.viewRequirementThird) TrophyRequirementView viewRequirementThird;
+
+  @BindView(R.id.btnUseIcon) TextViewFont btnUseIcon;
+
+  @BindView(R.id.btnCloseIcon) TextViewFont btnCloseIcon;
+
+  @BindView(R.id.btnCloseGroup) Group btnCloseGroup;
+
+  @BindView(R.id.txtAlreadyInUse) TextViewFont txtAlreadyInUse;
 
   // VARIABLES
   private GradientDrawable bg, smallBG;
@@ -57,6 +83,8 @@ public class PopupTrophy extends PopupView {
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_popup_trophy, this, true);
     ButterKnife.bind(this);
+    ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
+        .inject(this);
 
     initSubscriptions();
     initUI();
@@ -66,7 +94,6 @@ public class PopupTrophy extends PopupView {
 
     private Context context;
     private GradientDrawable bg, smallBg;
-    private boolean achieved;
     private TrophyEnum trophyEnum;
 
     public Builder(Context context, TrophyEnum trophyEnum) {
@@ -92,11 +119,6 @@ public class PopupTrophy extends PopupView {
       return this;
     }
 
-    public Builder achieved(boolean achieved) {
-      this.achieved = achieved;
-      return this;
-    }
-
     public PopupTrophy build() {
       return new PopupTrophy(this);
     }
@@ -119,15 +141,79 @@ public class PopupTrophy extends PopupView {
   }
 
   private void initUI() {
+    int radius = screenUtils.dpToPx(5);
+    float[] radiusMatrix = new float[] { 0, 0, 0, 0, radius, radius, radius, radius };
+    GradientDrawable background =
+        new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {
+            ContextCompat.getColor(getContext(), R.color.trophy_use_primary),
+            ContextCompat.getColor(getContext(), R.color.trophy_use_secondary)
+        });
+    background.setCornerRadii(radiusMatrix);
+    btnUseIcon.setBackground(background);
+
+    background = new GradientDrawable();
+    background.setColor(ContextCompat.getColor(getContext(), R.color.grey_popup_digest));
+    background.setCornerRadii(radiusMatrix);
+    btnCloseIcon.setBackground(background);
+
+    //if (!selectedTrophy.get().equals(trophyEnum.getTrophy())) {
+    //  if (trophyEnum.isAchieved()) {
+    //    btnCloseGroup.setVisibility(View.GONE);
+    //    btnUseIcon.setVisibility(View.VISIBLE);
+    //  } else {
+    //    btnCloseGroup.setVisibility(View.VISIBLE);
+    //    btnUseIcon.setVisibility(View.GONE);
+    //  }
+    //} else {
+    //  btnCloseGroup.setVisibility(View.GONE);
+    //  btnUseIcon.setVisibility(View.GONE);
+    //  txtAlreadyInUse.setVisibility(View.VISIBLE);
+    //  ConstraintSet constraintSet = new ConstraintSet();
+    //  constraintSet.clone(layoutConstraint);
+    //  constraintSet.clear(layoutDesc.getId(), ConstraintSet.BOTTOM);
+    //  constraintSet.clear(viewRequirementFirst.getId(), ConstraintSet.BOTTOM);
+    //  constraintSet.applyTo(layoutConstraint);
+    //}
+
     txtTitle.setText(trophyEnum.getTitle());
-    txtDesc.setText(getContext().getString(R.string.trophy_requirement_friends_description, 3) +
-        ", " +
-        getContext().getString(R.string.trophy_requirement_day_usage_description, 3) +
-        ", " +
-        getContext().getString(R.string.trophy_requirement_games_played_description, 3));
-    viewRequirementFriends.setRequirement(trophyEnum, null);
-    viewRequirementDays.setRequirement(trophyEnum, null);
-    viewRequirementGames.setRequirement(trophyEnum, null);
+
+    String description = "";
+    int count = 0;
+
+    if (trophyEnum.getRequirements() != null && trophyEnum.getRequirements().size() >= 3) {
+      for (TrophyRequirement trophyRequirement : trophyEnum.getRequirements()) {
+        if (count > 0) description += ", ";
+        description +=
+            getContext().getString(trophyRequirement.description(), trophyRequirement.totalCount());
+        count++;
+      }
+      txtDesc.setText(description);
+
+      viewRequirementFirst.setRequirement(trophyEnum, trophyEnum.getRequirements().get(0));
+      viewRequirementSecond.setRequirement(trophyEnum, trophyEnum.getRequirements().get(1));
+      viewRequirementThird.setRequirement(trophyEnum, trophyEnum.getRequirements().get(2));
+
+      UIUtils.changeHeightOfView(layoutDesc, screenUtils.dpToPx(275));
+    } else {
+      txtDesc.setText(R.string.trophy_noob_description);
+
+      ConstraintSet constraintSet = new ConstraintSet();
+      constraintSet.clone(layoutConstraint);
+      constraintSet.clear(layoutDesc.getId(), ConstraintSet.BOTTOM);
+      constraintSet.connect(layoutDesc.getId(), ConstraintSet.BOTTOM, btnUseIcon.getId(),
+          ConstraintSet.TOP);
+      constraintSet.connect(btnUseIcon.getId(), ConstraintSet.TOP, layoutDesc.getId(),
+          ConstraintSet.BOTTOM);
+      constraintSet.connect(txtDesc.getId(), ConstraintSet.BOTTOM, layoutDesc.getId(),
+          ConstraintSet.BOTTOM);
+      constraintSet.setVisibility(R.id.viewRequirementFirst, View.GONE);
+      constraintSet.setVisibility(R.id.viewRequirementSecond, View.GONE);
+      constraintSet.setVisibility(R.id.viewRequirementThird, View.GONE);
+      constraintSet.setVisibility(R.id.separator, View.GONE);
+      constraintSet.applyTo(layoutConstraint);
+
+      UIUtils.changeHeightOfView(layoutDesc, screenUtils.dpToPx(165));
+    }
 
     layoutTop.setBackground(smallBG);
 
@@ -146,6 +232,13 @@ public class PopupTrophy extends PopupView {
   /**
    * ON CLICK
    */
+
+  @OnClick(R.id.btnUseIcon) void useTrophy() {
+    if (popupListener != null) {
+      ((PopupTrophyListener) popupListener).onClick(trophyEnum);
+      onDone.onNext(null);
+    }
+  }
 
   /**
    * PUBLIC

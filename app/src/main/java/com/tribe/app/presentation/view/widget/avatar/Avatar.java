@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.widget.avatar;
 
 import com.tribe.app.domain.entity.Recipient;
+import com.tribe.app.domain.entity.User;
 import java.util.List;
 
 /**
@@ -10,6 +11,8 @@ import java.util.List;
 public interface Avatar {
 
   void load(Recipient recipient);
+
+  void load(User user);
 
   void load(String url);
 

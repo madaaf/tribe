@@ -108,6 +108,10 @@ public class Invite extends Recipient {
     return null;
   }
 
+  @Override public String getTrophy() {
+    return null;
+  }
+
   public List<String> getMembersPic() {
     List<String> pics = new ArrayList<>();
 

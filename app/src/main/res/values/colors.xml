@@ -279,13 +279,16 @@
   <!-- Trophies -->
   <color name="trophy.noob.primary">@color/blue.new</color>
   <color name="trophy.expert.primary">#F988FF</color>
-  <color name="trophy.pro.primary">#BFCFD5</color>
+  <color name="trophy.pro.primary">#21A6FF</color>
   <color name="trophy.master.primary">#FBCC4C</color>
   <color name="trophy.god.primary">#373737</color>
 
   <color name="trophy.noob.secondary">@color/blue.new</color>
   <color name="trophy.expert.secondary">#BE9BFF</color>
-  <color name="trophy.pro.secondary">#E5E7E9</color>
+  <color name="trophy.pro.secondary">#3DE9DA</color>
   <color name="trophy.master.secondary">#FA8011</color>
   <color name="trophy.god.secondary">#040404</color>
+
+  <color name="trophy.use.primary">#21A6FF</color>
+  <color name="trophy.use.secondary">#3DE9DA</color>
 </resources>

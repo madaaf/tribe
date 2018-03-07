@@ -65,15 +65,15 @@ public class TrophyRequirement {
 
   public int achievedCount() {
     if (requirement.equals(FRIENDS)) {
-      return trophiesManager.friendsCount();
+      return Math.min(trophiesManager.friendsCount(), totalCount());
     } else if (requirement.equals(DAYS_USAGE)) {
-      return trophiesManager.daysOfUsage();
+      return Math.min(trophiesManager.daysOfUsage(), totalCount());
     } else if (requirement.equals(GAMES_PLAYED)) {
-      return trophiesManager.gamesPlayed();
+      return Math.min(trophiesManager.gamesPlayed(), totalCount());
     } else if (requirement.equals(MULTIPLAYER_SESSIONS)) {
-      return trophiesManager.multiplayerSessions();
+      return Math.min(trophiesManager.multiplayerSessions(), totalCount());
     } else {
-      return trophiesManager.bestScoresCount();
+      return Math.min(trophiesManager.bestScoresCount(), totalCount());
     }
   }
 

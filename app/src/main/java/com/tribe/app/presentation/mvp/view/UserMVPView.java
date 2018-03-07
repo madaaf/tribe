@@ -11,4 +11,6 @@ public interface UserMVPView extends MVPView {
 
   void onUserInfosList(List<User> users);
 
+  void onUserRefreshDone();
+
 }

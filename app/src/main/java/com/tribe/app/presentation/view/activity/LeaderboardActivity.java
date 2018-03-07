@@ -1,8 +1,10 @@
 package com.tribe.app.presentation.view.activity;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -31,7 +33,7 @@ import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecorati
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardUserLayoutManager;
 import com.tribe.app.presentation.view.adapter.manager.TrophyLayoutManager;
 import com.tribe.app.presentation.view.popup.PopupManager;
-import com.tribe.app.presentation.view.popup.listener.PopupDigestListenerAdapter;
+import com.tribe.app.presentation.view.popup.listener.PopupTrophyListenerAdapter;
 import com.tribe.app.presentation.view.popup.view.PopupTrophy;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -230,8 +232,16 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
 
           PopupManager popupManager = PopupManager.create(new PopupManager.Builder().activity(this)
               .dimBackground(false)
-              .listener(new PopupDigestListenerAdapter() {
-
+              .listener(new PopupTrophyListenerAdapter() {
+                @Override public void onClick(TrophyEnum trophyEnum) {
+                  //getPackageManager().setComponentEnabledSetting(
+                  //    getComponentName(),
+                  //    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+                  //
+                  //getPackageManager().setComponentEnabledSetting(
+                  //    new ComponentName("com.tribe.app.debug", "com.tribe.app.debug.LauncherActivityPro"),
+                  //    PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+                }
               })
               .view(popupTrophy));
 

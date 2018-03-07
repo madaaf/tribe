@@ -73,7 +73,9 @@ import com.tribe.app.presentation.utils.preferences.MultiplayerSessions;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
+import com.tribe.app.presentation.utils.preferences.PreviousDateUsage;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.utils.preferences.SelectedTrophy;
 import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
 import com.tribe.app.presentation.utils.preferences.SupportRequestId;
 import com.tribe.app.presentation.utils.preferences.SupportUserId;
@@ -142,6 +144,7 @@ import com.tribe.app.presentation.view.component.trophies.TrophyRequirementView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
 import com.tribe.app.presentation.view.popup.view.PopupParentView;
+import com.tribe.app.presentation.view.popup.view.PopupTrophy;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -339,6 +342,8 @@ public interface ApplicationComponent {
 
   void inject(TrophiesManager trophiesManager);
 
+  void inject(PopupTrophy popupTrophy);
+
   // JOBS
   void inject(BaseJob baseJob);
 
@@ -511,6 +516,10 @@ public interface ApplicationComponent {
   @MultiplayerSessions Preference<Integer> multiplayerSessions();
 
   @GamesPlayed Preference<Set<String>> gamesPlayed();
+
+  @SelectedTrophy Preference<String> selectedTrophy();
+
+  @PreviousDateUsage Preference<Long> previousDateUsage();
 
   SoundManager soundManager();
 

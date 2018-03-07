@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
@@ -31,7 +32,9 @@ import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
+import com.tribe.app.presentation.utils.preferences.PreviousDateUsage;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.utils.preferences.SelectedTrophy;
 import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
 import com.tribe.app.presentation.utils.preferences.SupportRequestId;
 import com.tribe.app.presentation.utils.preferences.SupportUserId;
@@ -260,5 +263,15 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @DaysOfUsage Preference<Integer> provideDaysOfUsage(
       RxSharedPreferences prefs) {
     return prefs.getInteger(PreferencesUtils.DAYS_OF_USAGE);
+  }
+
+  @Provides @Singleton @SelectedTrophy Preference<String> provideSelectedTrophy(
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.SELECTED_TROPHY, UserRealm.NOOB);
+  }
+
+  @Provides @Singleton @PreviousDateUsage Preference<Long> providePreviousDateUsage(
+      RxSharedPreferences prefs) {
+    return prefs.getLong(PreferencesUtils.PREVIOUS_DATE_USAGE, 0L);
   }
 }

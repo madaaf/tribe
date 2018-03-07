@@ -45,12 +45,12 @@ public class NotificationUtils {
       return builder.build();
     }
 
-    if ((notificationPayload.getClickAction() == null && StringUtils.isEmpty(
-        notificationPayload.getBody())) || notificationPayload.getClickAction()
-        .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+    if ((notificationPayload.getClickAction() == null &&
+        StringUtils.isEmpty(notificationPayload.getBody())) ||
+        notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       return null;
-    } else if (notificationPayload.getClickAction() == null && !StringUtils.isEmpty(
-        notificationPayload.getBody())) {
+    } else if (notificationPayload.getClickAction() == null &&
+        !StringUtils.isEmpty(notificationPayload.getBody())) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       return builder.build();
     }
@@ -85,6 +85,12 @@ public class NotificationUtils {
       // A friend is challenging to a game
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       builder.sound(SoundManager.GAME_CHALLENGING);
+      liveNotificationView = builder.build();
+    } else if (notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_NEW_TROPHY)) {
+      // A friend got a new trophy
+      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+      builder.sound(SoundManager.GAME_FRIEND_LEADER);
       liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
       // A friend entered live - 1o1
