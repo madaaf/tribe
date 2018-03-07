@@ -846,6 +846,7 @@ public class ChatView extends IChat {
       case MESSAGE_POKE: // SOEF
         realmType = MessageRealm.POKE;
         message = new MessagePoke();
+        break;
     }
 
     message.setType(type);

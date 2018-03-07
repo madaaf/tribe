@@ -550,7 +550,6 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   }
 
   @OnClick(R.id.avatarFirst) void onClickAvatarFirst() {
-    Timber.e("SOEF onClickAvatarFirst");
     Recipient recipient = ShortcutUtil.getRecipientFromId(podiumList.get(0).getId(), user);
     navigator.navigateToChat(this, recipient, null, null, false);
   }
@@ -558,17 +557,16 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   @OnClick(R.id.avatarSecond) void onClickAvatarSecond() {
     Recipient recipient = ShortcutUtil.getRecipientFromId(podiumList.get(1).getId(), user);
     navigator.navigateToChat(this, recipient, null, null, false);
-    Timber.e("SOEF onClickAvatarSecond");
   }
 
   @OnClick(R.id.avatarThird) void onClickAvatarThird() {
     Recipient recipient = ShortcutUtil.getRecipientFromId(podiumList.get(2).getId(), user);
     navigator.navigateToChat(this, recipient, null, null, false);
-    Timber.e("SOEF onClickAvatarThird");
   }
 
   @OnLongClick(R.id.avatarFirst) boolean onLongClickAvatarFirst() {
     Timber.e("SOEF OnLongClick onClickAvatarFirst");
+   // setClickPokeAnimation(scor);
     return true;
   }
 

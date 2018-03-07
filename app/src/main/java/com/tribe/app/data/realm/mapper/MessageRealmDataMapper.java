@@ -85,6 +85,7 @@ import javax.inject.Singleton;
           ((MessagePoke) message).setIntent(messageRealm.getIntent());
           ((MessagePoke) message).setGameId(messageRealm.getGame_id());
           ((MessagePoke) message).setData(messageRealm.getData());
+          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor(), true));
           break;
       }
       if (message != null) {
@@ -153,7 +154,6 @@ import javax.inject.Singleton;
           messageRealm.setIntent(((MessagePoke) message).getIntent());
           messageRealm.setGame_id(((MessagePoke) message).getGameId());
           messageRealm.setData(((MessagePoke) message).getData());
-
           break;
       }
     }
