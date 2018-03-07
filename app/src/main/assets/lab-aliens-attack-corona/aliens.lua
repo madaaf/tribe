@@ -48,8 +48,8 @@ end
 
 local function showPointsAndRemoveAlien(alienGroup, points) 
 
-	local alienImage = alienGroup[1]
-	local alienGradient = alienGroup[2]
+	local alienImage = alienGroup[2]
+	local alienGradient = alienGroup[1]
 
 	transition.cancel(alienGroup)
 
@@ -97,14 +97,14 @@ local function onTouchAlien(event)
 			end
 
 		else
-			local alienImage = alienGroup[1]
+			local alienImage = alienGroup[2]
 			local alienImageHalfKilled = display.newImageRect("assets/images/alien_" .. alien.type .. "_half_killed.png", alienImage.width, alienImage.height)
 			if alienImageHalfKilled then
 
 				transition.to(alienGroup, { rotation=10, time=200 })
 
 				alienGroup:remove(alienImage)
-				alienGroup:insert(alienImageHalfKilled)
+				alienGroup:insert(2, alienImageHalfKilled)
 			end
 		end
 	end
