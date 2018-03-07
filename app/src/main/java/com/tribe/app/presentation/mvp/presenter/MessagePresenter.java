@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import android.net.Uri;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.interactor.chat.AddMessageZendesk;
@@ -200,8 +201,14 @@ public class MessagePresenter implements Presenter {
 
   }
 
+  public void createPoke(String[] userIds, String data, String gameId, String intent) {
+    // SOEF
+    createMessage.setParams(userIds, data, MessageRealm.POKE, gameId, intent);
+    createMessage.execute(new DefaultSubscriber());
+  }
+
   public void createMessage(String[] userIds, String data, String type, int positon) {
-    createMessage.setParams(userIds, data, type);
+    createMessage.setParams(userIds, data, type, null, null);
     createMessage.execute(new CreateMessageSubscriber(positon));
   }
 

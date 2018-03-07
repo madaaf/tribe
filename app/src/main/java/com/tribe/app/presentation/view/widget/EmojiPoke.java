@@ -16,7 +16,8 @@ public class EmojiPoke extends TextView {
   int transY;
   boolean isSmall;
 
-  public EmojiPoke(Context context, int width, int height, int x1, int y1, int transX, int transY, boolean isSmall) {
+  public EmojiPoke(Context context, int width, int height, int x1, int y1, int transX, int transY,
+      boolean isSmall) {
     super(context);
     this.transX = transX;
     this.transY = transY;
@@ -26,6 +27,7 @@ public class EmojiPoke extends TextView {
     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
     params.leftMargin = (int) x1 + transX;
     params.topMargin = (int) y1 + transY;
+    setPadding(0, 0, 0, 3);
     setLayoutParams(params);
     setGravity(Gravity.CENTER);
   }

@@ -44,7 +44,7 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
   protected LayoutInflater layoutInflater;
 
   protected PublishSubject<View> click = PublishSubject.create();
-  protected PublishSubject<TextView> onClickPoke = PublishSubject.create();
+  protected PublishSubject<Score> onClickPoke = PublishSubject.create();
   private boolean onPoke = false;
   private StateManager stateManager;
 
@@ -88,7 +88,8 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     vh.pokeEmoji.setText(EmojiParser.demojizedText(":joy:"));
     vh.pokeEmoji.setOnClickListener(v -> {
       Timber.e("ON CLICK "+ score.toString());
-      onClickPoke.onNext(vh.pokeEmoji);
+      score.setTextView(vh.pokeEmoji);
+      onClickPoke.onNext(score);
       TextView tv = new TextView(context);
       tv.setText(EmojiParser.demojizedText(":joy:"));
 
@@ -152,7 +153,7 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     return click;
   }
 
-  public Observable<TextView> onClickPoke() {
+  public Observable<Score> onClickPoke() {
     return onClickPoke;
   }
 

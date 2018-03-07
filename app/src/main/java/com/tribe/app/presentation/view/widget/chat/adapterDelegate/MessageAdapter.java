@@ -25,6 +25,7 @@ public class MessageAdapter extends RecyclerView.Adapter {
   private MessageImageAdapterDelegate messageImageAdapterDelegate;
   private MessageEventAdapterDelegate messageEventAdapterDelegate;
   private MessageAudioAdapterDelegate messageAudioAdapterDelegate;
+  private MessagePokeAdapterDelegate messagePokeAdapterDelegate;
 
   public MessageAdapter(Context context, int type) {
     delegatesManager = new RxAdapterDelegatesManager<>();
@@ -43,6 +44,9 @@ public class MessageAdapter extends RecyclerView.Adapter {
 
     messageAudioAdapterDelegate = new MessageAudioAdapterDelegate(context, type);
     delegatesManager.addDelegate(messageAudioAdapterDelegate);
+
+    messagePokeAdapterDelegate = new MessagePokeAdapterDelegate(context, type);
+    delegatesManager.addDelegate(messagePokeAdapterDelegate);
 
     items = new ArrayList<>();
   }
@@ -139,14 +143,15 @@ public class MessageAdapter extends RecyclerView.Adapter {
         messageEventAdapterDelegate.onPopulateSCLastSeen(),
         messageImageAdapterDelegate.onPopulateSCLastSeen(),
         messageEmojiAdapterDelegate.onPopulateSCLastSeen(),
-        messageAudioAdapterDelegate.onPopulateSCLastSeen());
+        messageAudioAdapterDelegate.onPopulateSCLastSeen(),
+        messagePokeAdapterDelegate.onPopulateSCLastSeen());
   }
 
   public Observable<Message> onLongClickItem() {
     return Observable.merge(messageTextAdapterDelegate.onLongClickItem(),
         messageEventAdapterDelegate.onLongClickItem(),
         messageImageAdapterDelegate.onLongClickItem(),
-        messageEmojiAdapterDelegate.onLongClickItem(),
+        messageEmojiAdapterDelegate.onLongClickItem(), messagePokeAdapterDelegate.onLongClickItem(),
         messageAudioAdapterDelegate.onLongClickItem());
   }
 

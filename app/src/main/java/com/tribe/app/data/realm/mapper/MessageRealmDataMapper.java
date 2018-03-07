@@ -8,6 +8,7 @@ import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEvent;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
+import com.tribe.app.presentation.view.widget.chat.model.MessagePoke;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import io.realm.RealmList;
 import java.util.ArrayList;
@@ -67,7 +68,8 @@ import javax.inject.Singleton;
           break;
         case Message.MESSAGE_AUDIO:
           message = new MessageAudio(messageRealm.getId());
-          message.setAuthor(userRealmDataMapper.transform(messageRealm.getAuthor(), false)); //   TODO TIAGO
+          message.setAuthor(
+              userRealmDataMapper.transform(messageRealm.getAuthor(), false)); //   TODO TIAGO
           List<MediaRealm> r = messageRealm.getAlts();
           if (!r.isEmpty()) {
             Media i = userRealmDataMapper.transformOriginalRealmList(r, true);
@@ -76,6 +78,13 @@ import javax.inject.Singleton;
             Media i = userRealmDataMapper.transform(messageRealm.getOriginal());
             ((MessageAudio) message).setOriginal(i);
           }
+          break;
+        case Message.MESSAGE_POKE:
+          message = new MessagePoke(messageRealm.getId());
+          ((MessagePoke) message).setClientMessageId(messageRealm.getClient_message_id());
+          ((MessagePoke) message).setIntent(messageRealm.getIntent());
+          ((MessagePoke) message).setGameId(messageRealm.getGame_id());
+          ((MessagePoke) message).setData(messageRealm.getData());
           break;
       }
       if (message != null) {
@@ -137,6 +146,13 @@ import javax.inject.Singleton;
         case Message.MESSAGE_AUDIO:
           Media o2 = ((MessageAudio) message).getOriginal();
           messageRealm.setOriginal(userRealmDataMapper.transform(o2));
+          break;
+
+        case Message.MESSAGE_POKE:
+          messageRealm.setClient_message_id(((MessagePoke) message).getClientMessageId());
+          messageRealm.setIntent(((MessagePoke) message).getIntent());
+          messageRealm.setGame_id(((MessagePoke) message).getGameId());
+          messageRealm.setData(((MessagePoke) message).getData());
 
           break;
       }

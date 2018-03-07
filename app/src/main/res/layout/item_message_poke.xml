@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+
+  <include layout="@layout/item_message_base" />
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="10dp"
+      android:orientation="horizontal"
+      >
+
+
+    <ImageView
+        android:id="@+id/iconPoke"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/icon_poke_message"
+        />
+
+    <com.tribe.app.presentation.view.widget.avatar.AvatarView
+        android:id="@+id/pokeViewAvatar"
+        android:layout_width="@dimen/avatar_size_chat"
+        android:layout_height="@dimen/avatar_size_chat"
+        android:layout_gravity="left|center_vertical"
+        android:layout_toEndOf="@+id/iconPoke"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        />
+
+
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/pokeViewAvatar"
+        android:text="@string/poke_chat_event_below"
+        android:textColor="@color/yellow.poke"
+        android:textSize="11sp"
+        style="@style/Title.2.Black"
+        />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/poke_message_bird_rush"
+        />
+  </RelativeLayout>
+
+  <include
+      layout="@layout/item_message_footer"
+      android:id="@+id/item_message_footer"
+      />
+</LinearLayout>

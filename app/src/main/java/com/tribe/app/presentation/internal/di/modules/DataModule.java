@@ -31,6 +31,7 @@ import com.tribe.app.presentation.utils.preferences.MultiplayerSessions;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
+import com.tribe.app.presentation.utils.preferences.PokeUserGame;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.PreviousDateUsage;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
@@ -150,6 +151,11 @@ import static android.content.Context.MODE_PRIVATE;
   @Provides @Singleton @SupportIsUsed Preference<Set<String>> provideSupportIsUsed(Context context,
       RxSharedPreferences prefs) {
     return prefs.getStringSet(PreferencesUtils.SUPPORT_IS_USED, new HashSet<>());
+  }
+
+  @Provides @Singleton @PokeUserGame Preference<Set<String>> providePokeUserGame(Context context,
+      RxSharedPreferences prefs) {
+    return prefs.getStringSet(PreferencesUtils.POKE_USER_GAME, new HashSet<>());
   }
 
   @Provides @Singleton @IsGroupCreated Preference<Boolean> provideIsGroupCreated(Context context,

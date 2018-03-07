@@ -1,5 +1,6 @@
 package com.tribe.app.domain.entity;
 
+import android.widget.TextView;
 import com.tribe.tribelivesdk.game.Game;
 
 /**
@@ -14,6 +15,10 @@ public class Score {
   private int value = 0;
   private User user;
   private Game game;
+  private Long countDownTimer;
+  private TextView textView;
+  private boolean isWaiting = false;
+
 
   public Score() {
 
@@ -21,6 +26,14 @@ public class Score {
 
   public Score(String id) {
     this.id = id;
+  }
+
+  public TextView getTextView() {
+    return textView;
+  }
+
+  public void setTextView(TextView textView) {
+    this.textView = textView;
   }
 
   public void setId(String id) {
@@ -72,5 +85,21 @@ public class Score {
 
   @Override public String toString() {
     return super.toString();
+  }
+
+  public boolean isWaiting() {
+    return isWaiting;
+  }
+
+  public void setWaiting(boolean waiting) {
+    isWaiting = waiting;
+  }
+
+  public Long getCountDownTimer() {
+    return countDownTimer;
+  }
+
+  public void setCountDownTimer(Long countDownTimer) {
+    this.countDownTimer = countDownTimer;
   }
 }

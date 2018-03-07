@@ -161,7 +161,7 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
     return leaderboardDetailsAdapterDelegate.onClick();
   }
 
-  public Observable<TextView> onClickPoke() {
+  public Observable<Score> onClickPoke() {
     return leaderboardDetailsAdapterDelegate.onClickPoke();
   }
 

@@ -32,13 +32,19 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 import com.bumptech.glide.Glide;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
+import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.preferences.PokeUserGame;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardDetailsLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter;
@@ -54,6 +60,7 @@ import com.tribe.tribelivesdk.game.GameManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -78,6 +85,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   @Inject ScreenUtils screenUtils;
 
   @Inject GamePresenter gamePresenter;
+
+  @Inject MessagePresenter messagePresenter;
 
   @Inject StateManager stateManager;
 
@@ -136,6 +145,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   @BindView(R.id.txtRankingThird) TextViewRanking txtRankingThird;
 
   @BindView(R.id.txtScoreThird) TextViewScore txtScoreThird;
+
+  @Inject @PokeUserGame Preference<Set<String>> pokeUserGame;
 
   // VARIABLES
   private LeaderboardDetailsLayoutManager layoutManager;
@@ -199,6 +210,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     super.onDestroy();
   }
 
+  private List<User> podiumList = new ArrayList<>();
+
   protected void initPresenter() {
     gameMVPViewAdapter = new GameMVPViewAdapter() {
       @Override public void onGameLeaderboard(List<Score> scoreList, boolean cloud) {
@@ -217,13 +230,16 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         }
 
         Score first = scoreList.remove(0);
+        if (first != null) podiumList.add(first.getUser());
         setupPodium(1, first, avatarFirst, cardAvatarFirst, avatarEmptyFirst, txtNameFirst,
             txtRankingFirst, txtScoreFirst);
 
         Score second = null;
+
         if (scoreList.size() > 0) {
           second = scoreList.remove(0);
         }
+        if (second != null) podiumList.add(second.getUser());
 
         setupPodium(2, second, avatarSecond, cardAvatarSecond, avatarEmptySecond, txtNameSecond,
             txtRankingSecond, txtScoreSecond);
@@ -233,6 +249,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
           third = scoreList.remove(0);
         }
 
+        if (third != null) podiumList.add(third.getUser());
         setupPodium(3, third, avatarThird, cardAvatarThird, avatarEmptyThird, txtNameThird,
             txtRankingThird, txtScoreThird);
 
@@ -451,17 +468,27 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
    * ONCLICK
    */
 
-  String timerPoke = null;
+  private void setClickPokeAnimation(Score score) {
+    String[] userIds = new String[1];
+    userIds[0] = score.getUser().getId();
 
-  private void setClickPokeAnimation(TextView view) {
-    if (view.getTag() != null && view.getTag().toString() != null && view.getTag()
-        .toString()
-        .startsWith("ON CLICK_")) {
-      Toast.makeText(this, timerPoke + "left to poke again Alice Walter!", Toast.LENGTH_SHORT)
-          .show();
+    messagePresenter.createPoke(userIds, ":joy:", score.getGame().getId(), "FUN");
+
+    //PreferencesUtils.addToSet(pokeUserGame, shortcut.getTypeSupport());
+
+    TextView view = score.getTextView();
+    if (score.isWaiting()) {
+      String waitingMessage =
+          (score.getCountDownTimer() < 60) ? getString(R.string.poke_delay_seconds,
+              score.getCountDownTimer(), score.getUser().getDisplayName())
+              : getString(R.string.poke_delay_minutes, score.getCountDownTimer() / 60,
+                  score.getUser().getDisplayName());
+
+      //String waitingMessage = ;
+      Toast.makeText(this, waitingMessage, Toast.LENGTH_SHORT).show();
       return;
     }
-    view.setTag("ON CLICK_" + view.getId());
+    score.setWaiting(true);
     Timber.e("SOEF ON CLICK POKE ");
     int[] locations = new int[2];
     view.getLocationOnScreen(locations);
@@ -499,7 +526,6 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
                     .withEndAction(() -> {
                       container.removeView(emo);
                       view.startAnimation(animation2);
-                      view.setTag("");
                     })
                     .start();
               }
@@ -507,16 +533,15 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
           }));
     }).scaleX(1.5f).scaleY(1.5f).setDuration(300).start();
 
-    subscriptions.add(Observable.interval(0, 100, TimeUnit.MILLISECONDS)
+    subscriptions.add(Observable.interval(0, 1, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          timerPoke = aLong.toString();
-          Timber.e(" OSEF LoNG " + aLong);
-          if (aLong > 2000) {
+          score.setCountDownTimer(aLong);
+          if (aLong > 10000) {
+            score.setWaiting(true);
             view.setText(EmojiParser.demojizedText(":joy:"));
-          } else {
-
           }
+          //   Timber.e("SOEF " + aLong);
         }));
   }
 
@@ -524,6 +549,38 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     onBackPressed();
   }
 
+  @OnClick(R.id.avatarFirst) void onClickAvatarFirst() {
+    Timber.e("SOEF onClickAvatarFirst");
+    Recipient recipient = ShortcutUtil.getRecipientFromId(podiumList.get(0).getId(), user);
+    navigator.navigateToChat(this, recipient, null, null, false);
+  }
+
+  @OnClick(R.id.avatarSecond) void onClickAvatarSecond() {
+    Recipient recipient = ShortcutUtil.getRecipientFromId(podiumList.get(1).getId(), user);
+    navigator.navigateToChat(this, recipient, null, null, false);
+    Timber.e("SOEF onClickAvatarSecond");
+  }
+
+  @OnClick(R.id.avatarThird) void onClickAvatarThird() {
+    Recipient recipient = ShortcutUtil.getRecipientFromId(podiumList.get(2).getId(), user);
+    navigator.navigateToChat(this, recipient, null, null, false);
+    Timber.e("SOEF onClickAvatarThird");
+  }
+
+  @OnLongClick(R.id.avatarFirst) boolean onLongClickAvatarFirst() {
+    Timber.e("SOEF OnLongClick onClickAvatarFirst");
+    return true;
+  }
+
+  @OnLongClick(R.id.avatarSecond) boolean onLongClickAvatarSecond() {
+    Timber.e("SOEF OnLongClick onClickAvatarSecond");
+    return true;
+  }
+
+  @OnLongClick(R.id.avatarThird) boolean onLongClickAvatarThird() {
+    Timber.e("SOEF  OnLongClickonClickAvatarThird");
+    return true;
+  }
   /**
    * PUBLIC
    */

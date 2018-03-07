@@ -27,7 +27,7 @@ public class DiskChatDataStore implements ChatDataStore {
 
   @Override
   public Observable<MessageRealm> createMessage(String[] userIds, String type, String data,
-      String date) {
+      String date,  String gameId, String intent) {
     return null;
   }
 
