@@ -57,7 +57,7 @@ local function showPointsAndRemoveAlien(alienGroup, points)
 	boomEmitter.x, boomEmitter.y = boomEmitter.x, boomEmitter.y + 10
 	alienGroup:insert(boomEmitter)
 
-	local pointsText = display.newText("" .. points, screenW/2, screenH/2 + 20, "assets/fonts/circular.otf", 30 )
+	local pointsText = display.newText("" .. points, screenW/2, screenH/2 + 20, 'Circular', 30 )
 	pointsText.alpha = 0
 	pointsText.xScale, pointsText.yScale = 0.1,0.1
 	pointsText.x, pointsText.y = alienImage.x, alienImage.y + 10

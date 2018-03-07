@@ -4,7 +4,7 @@ local strings = require "strings"
 
 ---------------------------------------------------------------------------------
 
-local fontName = "assets/fonts/gulkave.ttf"
+local fontName = 'Gulkave Regular'
 
 local title = strings('title')
 

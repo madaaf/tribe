@@ -30,18 +30,17 @@ local function removeShownWatch ()
 	pendingShownWatch = nil
 end
 
-local function moveExistingBonusRight (group)
+local function moveExistingBonusTop (group)
 	if group then
-		transition.to(group, { x=100, time=125 })
-		if group[3] then group[3]:removeSelf() end
+		transition.to(group, { y=-100, time=125 })
 		if group[2] then group[2]:removeSelf() end
 		if group[1] then group[1]:removeSelf() end
 	end
 end
 
-local function showBonus (text, icon, useEventName)
+local function showBonus (text, icon, useEventName, otherBonusGroup)
 
-	local text 		 = display.newText( text, 0, screenH - 150 - 50 - 30, "assets/fonts/gulkave.ttf", 20 )
+	local text 		 = display.newText( text, 0, screenH - 150 - 50 - 30, 'Gulkave Regular', 20 )
 	local arrow 	 = display.newImageRect("assets/images/arrow.png", 9, 6)
 	local background = emitter.newBonusEmitter()
 	local icon 	     = display.newImageRect(icon, 44, 44)
@@ -52,12 +51,17 @@ local function showBonus (text, icon, useEventName)
 
 	local group = display.newGroup()
 	pendingShownBonus = group
-	
+
  	group:insert(text)
  	group:insert(arrow)
  	group:insert(background)
  	group:insert(icon)
  	
+	if otherBonusGroup then
+		text.isVisible  = false
+		arrow.isVisible = false
+	end
+
  	icon.isHitTestable = true
  	background.isHitTestable = true
 
@@ -94,15 +98,15 @@ end
 exports.showBomb = function (params)
 	log('showBomb')
 	removeShownBomb()
-	moveExistingBonusRight(pendingShownWatch)
-	pendingShownBomb = showBonus('ALL AT\nONCE!', 'assets/images/bomb.png', 'useBomb')
+	moveExistingBonusTop(pendingShownWatch)
+	pendingShownBomb = showBonus('ALL AT\nONCE!', 'assets/images/bomb.png', 'useBomb', pendingShownWatch)
 end
 
 exports.showWatch = function (params)
 	log('showWatch')
 	removeShownWatch()
-	moveExistingBonusRight(pendingShownBomb)
-	pendingShownWatch = showBonus('SLOW\nDOWN', 'assets/images/watch.png', 'useWatch')
+	moveExistingBonusTop(pendingShownBomb)
+	pendingShownWatch = showBonus('SLOW\nDOWN', 'assets/images/watch.png', 'useWatch', pendingShownBomb)
 end
 
 return exports

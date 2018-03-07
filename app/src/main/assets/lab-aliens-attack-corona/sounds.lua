@@ -20,17 +20,25 @@ local function playSoundIfEnabled(sound, params)
 	end
 end
 
+local function soundPath(path)
+	if system.getInfo("platform") == "android" and system.pathForFile("assets/sounds/" .. path .. ".ogg") then
+		return "assets/sounds/" .. path .. ".ogg"
+	end
+
+	return "assets/sounds/" .. path .. ".mp3"
+end
+
 exports.load = function()
 	loadedSounds = {
-		alienKilled = audio.loadSound("assets/sounds/alien_killed.mp3"),
-		playerLost  = audio.loadSound("assets/sounds/player_lost.mp3"),
-		playerWon   = audio.loadSound("assets/sounds/player_won.mp3"),
-		watch       = audio.loadSound("assets/sounds/watch.mp3"),
+		alienKilled = audio.loadSound(soundPath("alien_killed")),
+		playerLost  = audio.loadSound(soundPath("player_lost")),
+		playerWon   = audio.loadSound(soundPath("player_won")),
+		watch       = audio.loadSound(soundPath("watch")),
 	}
 	loadedStreams = {
-		audio.loadStream("assets/sounds/soundtrack_0.mp3"),
-		audio.loadStream("assets/sounds/soundtrack_1.mp3"),
-		audio.loadStream("assets/sounds/soundtrack_2.mp3"),
+		audio.loadStream(soundPath("soundtrack_0")),
+		audio.loadStream(soundPath("soundtrack_1")),
+		audio.loadStream(soundPath("soundtrack_2")),
 	}
 end
 
