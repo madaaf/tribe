@@ -469,6 +469,11 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
    */
 
   private void setClickPokeAnimation(Score score) {
+    if (score.getUser().getId().equals(user.getId())) {
+      navigator.shareGenericText(
+          getString(R.string.poke_share_score, score.getGame().getId(), score.getRanking()), this);
+      return;
+    }
     String[] userIds = new String[1];
     userIds[0] = score.getUser().getId();
 
@@ -510,7 +515,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       v.setScaleX(0);
       v.setScaleY(0);
     }).withEndAction(() -> {
-      view.setText(EmojiParser.demojizedText(":hourglass:"));
+      view.setText(EmojiParser.demojizedText(getString(R.string.poke_emoji_disabled)));
       subscriptions.add(Observable.timer((2000), TimeUnit.MILLISECONDS)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> {
@@ -566,7 +571,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @OnLongClick(R.id.avatarFirst) boolean onLongClickAvatarFirst() {
     Timber.e("SOEF OnLongClick onClickAvatarFirst");
-   // setClickPokeAnimation(scor);
+    // setClickPokeAnimation(scor);
     return true;
   }
 

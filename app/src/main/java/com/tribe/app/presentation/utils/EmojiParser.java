@@ -120,6 +120,16 @@ public class EmojiParser {
     IEmojiMap.put(":game_die:", "\uD83C\uDFB2");
     IEmojiMap.put(":speech_balloon:", "\uD83D\uDCAC");
     IEmojiMap.put(":hear_no_evil:", "\uD83D\uDE49");
+    IEmojiMap.put(":heart_eyes:","\uD83D\uDE0D");
+    IEmojiMap.put(":flushed:", "\uD83D\uDE33");
+    IEmojiMap.put(":hugs:", "\uD83E\uDD17");
+    IEmojiMap.put(":open_mouth:", "\uD83D\uDE2E");
+    IEmojiMap.put(":roll_eyes:", "\uD83D\uDE44");
+    IEmojiMap.put(":alien:", "\uD83D\uDC7D");
+    IEmojiMap.put(":rofl:", "\uD83E\uDD23");
+    IEmojiMap.put(":sweat_smile:", "\uD83D\uDE05");
+    IEmojiMap.put(":laughing:", "\uD83D\uDE02");
+    IEmojiMap.put(":medal_sports:", "\uD83C\uDFC5");
 
     //IEmojiMap.put(":joy:", "\uD83D\uDE02");
   }
