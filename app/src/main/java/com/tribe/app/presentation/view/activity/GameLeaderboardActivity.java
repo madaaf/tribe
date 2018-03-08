@@ -652,7 +652,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
                     .setDuration(300)
                     .withEndAction(() -> {
                       container.removeView(emo);
-                      view.startAnimation(animation2);
+                      //  view.startAnimation(animation2);
                     })
                     .start();
               }
