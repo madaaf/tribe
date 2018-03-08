@@ -21,7 +21,6 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.TrophyEnum;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.UserPresenter;
@@ -160,8 +159,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   }
 
   private void displayFakeSupportNotif() {
-    TribeBroadcastReceiver receiver = new TribeBroadcastReceiver(this);
-    receiver.notifiyStaticNotifSupport(this);
+    getBroadcastReceiver().notifiyStaticNotifSupport(this);
   }
 
   private void loadChallengeNotificationData() {

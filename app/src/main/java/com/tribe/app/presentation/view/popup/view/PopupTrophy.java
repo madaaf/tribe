@@ -10,12 +10,10 @@ import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.TrophyEnum;
@@ -24,6 +22,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.preferences.SelectedTrophy;
 import com.tribe.app.presentation.view.component.trophies.TrophyRequirementView;
 import com.tribe.app.presentation.view.popup.listener.PopupTrophyListener;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -217,16 +216,10 @@ public class PopupTrophy extends PopupView {
 
     layoutTop.setBackground(smallBG);
 
-    cardViewTrophy.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            cardViewTrophy.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            cardViewTrophy.setRadius(((float) cardViewTrophy.getMeasuredWidth() / (float) 4) /
-                (float) 1.61803398874989484820);
-          }
-        });
-
-    Glide.with(getContext()).load(trophyEnum.getIcon()).into(imgIcon);
+    new GlideUtils.TrophyImageBuilder(getContext(), screenUtils).drawableRes(trophyEnum.getIcon())
+        .cardView(cardViewTrophy)
+        .target(imgIcon)
+        .load();
   }
 
   /**

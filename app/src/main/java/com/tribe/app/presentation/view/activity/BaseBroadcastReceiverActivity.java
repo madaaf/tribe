@@ -48,4 +48,8 @@ public abstract class BaseBroadcastReceiverActivity extends BaseActivity {
       receiverRegistered = true;
     }
   }
+
+  public TribeBroadcastReceiver getBroadcastReceiver() {
+    return notificationReceiver;
+  }
 }

@@ -7,16 +7,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.TrophyEnum;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import java.util.List;
 import javax.inject.Inject;
@@ -56,14 +55,6 @@ public class TrophyAdapterDelegate extends RxAdapterDelegate<List<TrophyEnum>> {
         new TrophyViewHolder(layoutInflater.inflate(R.layout.item_trophy, parent, false));
     vh.itemView.setOnClickListener(v -> click.onNext(vh.itemView));
 
-    vh.imgIcon.getViewTreeObserver()
-        .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-          @Override public void onGlobalLayout() {
-            vh.imgIcon.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            vh.cardView.setRadius(((float) vh.imgIcon.getMeasuredWidth() / (float) 4) /
-                (float) 1.61803398874989484820);
-          }
-        });
     return vh;
   }
 
@@ -72,11 +63,17 @@ public class TrophyAdapterDelegate extends RxAdapterDelegate<List<TrophyEnum>> {
     TrophyViewHolder vh = (TrophyViewHolder) holder;
     TrophyEnum trophyEnum = items.get(position);
 
+    int dRes = 0;
     if (trophyEnum.isUnlockedByUser()) {
-      Glide.with(context).load(trophyEnum.getIcon()).into(vh.imgIcon);
+      dRes = trophyEnum.getIcon();
     } else {
-      Glide.with(context).load(trophyEnum.getIconLocked()).into(vh.imgIcon);
+      dRes = trophyEnum.getIconLocked();
     }
+
+    new GlideUtils.TrophyImageBuilder(context, screenUtils).drawableRes(dRes)
+        .cardView(vh.cardView)
+        .target(vh.imgIcon)
+        .load();
   }
 
   @Override public void onBindViewHolder(@NonNull List<TrophyEnum> items,

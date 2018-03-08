@@ -143,6 +143,7 @@ import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCate
 import com.tribe.app.presentation.view.component.trophies.TrophyRequirementView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
+import com.tribe.app.presentation.view.popup.view.PopupAskToJoin;
 import com.tribe.app.presentation.view.popup.view.PopupParentView;
 import com.tribe.app.presentation.view.popup.view.PopupTrophy;
 import com.tribe.app.presentation.view.utils.ImageUtils;
@@ -343,6 +344,8 @@ public interface ApplicationComponent {
   void inject(TrophiesManager trophiesManager);
 
   void inject(PopupTrophy popupTrophy);
+
+  void inject(PopupAskToJoin popupAskToJoin);
 
   // JOBS
   void inject(BaseJob baseJob);

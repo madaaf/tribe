@@ -360,6 +360,18 @@ public class User
     return recipientList;
   }
 
+  public User findUser(String userId) {
+    for (Shortcut shortcut : getShortcutList()) {
+      if (shortcut.getMembers() != null) {
+        for (User member : shortcut.getMembers()) {
+          if (member.getId().equals(userId)) return member;
+        }
+      }
+    }
+
+    return null;
+  }
+
   public void setNew(boolean aNew) {
     isNew = aNew;
   }

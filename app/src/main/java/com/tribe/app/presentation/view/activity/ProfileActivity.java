@@ -5,7 +5,6 @@ import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewCompat;
@@ -44,12 +43,10 @@ import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
-import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.ProfilePresenter;
 import com.tribe.app.presentation.mvp.view.ProfileMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
-import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -77,7 +74,8 @@ import timber.log.Timber;
 import static android.view.View.GONE;
 import static com.tribe.app.presentation.view.activity.AuthActivity.APP_REQUEST_CODE;
 
-public class ProfileActivity extends BaseActivity implements ProfileMVPView, ShortcutMVPView {
+public class ProfileActivity extends BaseBroadcastReceiverActivity
+    implements ProfileMVPView, ShortcutMVPView {
 
   private static final int DURATION = 200;
 
@@ -119,8 +117,6 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
   // VARIABLES
   private boolean disableUI = false;
   private ProgressDialog progressDialog;
-  private TribeBroadcastReceiver notificationReceiver;
-  private boolean receiverRegistered;
   private FirebaseRemoteConfig firebaseRemoteConfig;
 
   // OBSERVABLES
@@ -146,21 +142,9 @@ public class ProfileActivity extends BaseActivity implements ProfileMVPView, Sho
 
   @Override protected void onResume() {
     super.onResume();
-    if (!receiverRegistered) {
-      if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
-
-      registerReceiver(notificationReceiver,
-          new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
-      receiverRegistered = true;
-    }
   }
 
   @Override protected void onPause() {
-    if (receiverRegistered) {
-      unregisterReceiver(notificationReceiver);
-      receiverRegistered = false;
-    }
-
     super.onPause();
   }
 
