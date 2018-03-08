@@ -28,6 +28,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -35,6 +36,7 @@ import butterknife.OnLongClick;
 import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.PokeTiming;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
@@ -43,6 +45,7 @@ import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.preferences.PokeUserGame;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardDetailsLayoutManager;
@@ -67,6 +70,8 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate.maxWaitingTimeSeconde;
 
 public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
@@ -209,7 +214,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     super.onDestroy();
   }
 
-  private List<User> podiumList = new ArrayList<>();
+  private List<Score> podiumList = new ArrayList<>();
 
   protected void initPresenter() {
     gameMVPViewAdapter = new GameMVPViewAdapter() {
@@ -229,7 +234,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         }
 
         Score first = scoreList.remove(0);
-        if (first != null) podiumList.add(first.getUser());
+        if (first != null) podiumList.add(first);
         setupPodium(1, first, avatarFirst, cardAvatarFirst, avatarEmptyFirst, txtNameFirst,
             txtRankingFirst, txtScoreFirst);
 
@@ -238,7 +243,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         if (scoreList.size() > 0) {
           second = scoreList.remove(0);
         }
-        if (second != null) podiumList.add(second.getUser());
+        if (second != null) podiumList.add(second);
 
         setupPodium(2, second, avatarSecond, cardAvatarSecond, avatarEmptySecond, txtNameSecond,
             txtRankingSecond, txtScoreSecond);
@@ -248,7 +253,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
           third = scoreList.remove(0);
         }
 
-        if (third != null) podiumList.add(third.getUser());
+        if (third != null) podiumList.add(third);
         setupPodium(3, third, avatarThird, cardAvatarThird, avatarEmptyThird, txtNameThird,
             txtRankingThird, txtScoreThird);
 
@@ -292,8 +297,10 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   private EmojiPoke addPokeEmoji(View view, String emo, int x1, int y1, int transX, int transY,
       boolean anim, Animation animation) {
+    if (emo == null) emo = ":joy:";
     EmojiPoke v =
-        new EmojiPoke(this, emo, view.getWidth(), view.getHeight(), x1, y1, transX, transY, anim);
+        new EmojiPoke(this, emo, view.getWidth(), view.getHeight(), x1, y1, transX, transY, anim,
+            screenUtils);
     container.addView(v);
     if (anim) {
       v.startAnimation(animation);
@@ -535,35 +542,143 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   }
 
   @OnClick(R.id.avatarFirst) void onClickAvatarFirst() {
-    Recipient recipient = ShortcutUtil.getRecipientFromId(podiumList.get(0).getId(), user);
+    Recipient recipient =
+        ShortcutUtil.getRecipientFromId(podiumList.get(0).getUser().getId(), user);
     navigator.navigateToChat(this, recipient, null, null, false);
   }
 
   @OnClick(R.id.avatarSecond) void onClickAvatarSecond() {
-    Recipient recipient = ShortcutUtil.getRecipientFromId(podiumList.get(1).getId(), user);
+    Recipient recipient =
+        ShortcutUtil.getRecipientFromId(podiumList.get(1).getUser().getId(), user);
     navigator.navigateToChat(this, recipient, null, null, false);
   }
 
   @OnClick(R.id.avatarThird) void onClickAvatarThird() {
-    Recipient recipient = ShortcutUtil.getRecipientFromId(podiumList.get(2).getId(), user);
+    Recipient recipient =
+        ShortcutUtil.getRecipientFromId(podiumList.get(2).getUser().getId(), user);
     navigator.navigateToChat(this, recipient, null, null, false);
+  }
+
+  private Long getWaitingTime(Score score) {
+    Long timeSecond = null;
+    String id = score.getGame().getId() + "_" + score.getUser().getId();
+    List<PokeTiming> testList2 =
+        PreferencesUtils.getPlayloadPokeTimingList(pokeUserGame, maxWaitingTimeSeconde);
+
+    for (PokeTiming p : testList2) {
+      if (p.getId().equals(id)) {
+        long diff = System.currentTimeMillis() - p.getCreationDate();
+        timeSecond = TimeUnit.MILLISECONDS.toSeconds(diff);
+      }
+    }
+    return timeSecond;
+  }
+
+  private boolean ok(View avatar, int index) {
+    Score score = podiumList.get(index);
+    Long t = getWaitingTime(score);
+
+    if (t != null || score.isWaiting()) {
+      if (t != null) {
+        Long diff = maxWaitingTimeSeconde - t;
+        String waitingMessage = (diff < 60) ? getString(R.string.poke_delay_seconds, diff,
+            score.getUser().getDisplayName())
+            : getString(R.string.poke_delay_minutes, diff / 60, score.getUser().getDisplayName());
+        Toast.makeText(this, waitingMessage, Toast.LENGTH_SHORT).show();
+      }
+      return true;
+    } else {
+      score.setWaiting(true);
+      // score.setTextView(vh.pokeEmoji);
+      String id = score.getGame().getId() + "_" + score.getUser().getId();
+      PokeTiming pokeTiming = new PokeTiming(id, System.currentTimeMillis());
+      List<PokeTiming> pokeTimingList = new ArrayList<>();
+      pokeTimingList.add(pokeTiming);
+      PreferencesUtils.savePlayloadPokeTimingAsJson(pokeTimingList, pokeUserGame,
+          maxWaitingTimeSeconde);
+      //onClickPoke.onNext(score);
+    }
+
+    if (score.getUser().getId().equals(user.getId())) {
+      navigator.shareGenericText(
+          getString(R.string.poke_share_score, score.getGame().getId(), score.getRanking()), this);
+      return true;
+    }
+
+    String[] userIds = new String[1];
+    userIds[0] = score.getUser().getId();
+
+    String intent = (score.isAbove()) ? MessagePoke.INTENT_FUN : MessagePoke.INTENT_JEALOUS;
+    messagePresenter.createPoke(userIds, score.getEmoticon(), score.getGame().getId(), intent);
+
+    View view = avatar;
+
+    int[] locations = new int[2];
+    view.getLocationOnScreen(locations);
+    int x1 = locations[0];
+    int y1 = locations[1];
+
+    Animation animation = AnimationUtils.loadAnimation(this, R.anim.rotate_poke_emoji);
+    Animation animation2 = AnimationUtils.loadAnimation(this, R.anim.rotate_hourglass_emoji);
+
+    EmojiPoke v = addPokeEmoji(view, score.getEmoticon(), x1, y1, 0, 0, false, animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, (view.getWidth() / 2), -view.getWidth(), true,
+        animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, -(view.getWidth() / 2), +view.getWidth(), true,
+        animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, view.getWidth(), 0, true, animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, -view.getWidth(), 0, true, animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, -(view.getWidth() / 2), -view.getWidth(), true,
+        animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, +(view.getWidth() / 2), +view.getWidth(), true,
+        animation);
+
+    v.animate().setInterpolator(new OvershootInterpolator()).withStartAction(() -> {
+      v.setScaleX(0);
+      v.setScaleY(0);
+    }).withEndAction(() -> {
+      //view.setText(EmojiParser.demojizedText(getString(R.string.poke_emoji_disabled)));
+      subscriptions.add(Observable.timer((2000), TimeUnit.MILLISECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            v.animate().scaleX(1f).scaleY(1f).setDuration(300).withEndAction(() -> {
+              for (EmojiPoke emo : emojis) {
+                emo.clearAnimation();
+                emo.animate()
+                    .translationX(-emo.getTransX())
+                    .translationY(-emo.getTransY())
+                    .scaleX(0)
+                    .scaleY(0)
+                    .setDuration(300)
+                    .withEndAction(() -> {
+                      container.removeView(emo);
+                      view.startAnimation(animation2);
+                    })
+                    .start();
+              }
+            }).start();
+          }));
+    }).scaleX(1.5f).scaleY(1.5f).setDuration(300).start();
+    return true;
   }
 
   @OnLongClick(R.id.avatarFirst) boolean onLongClickAvatarFirst() {
     Timber.e("SOEF OnLongClick onClickAvatarFirst");
     // setClickPokeAnimation(scor);
-    return true;
+
+    return ok(avatarFirst, 0);
   }
 
   @OnLongClick(R.id.avatarSecond) boolean onLongClickAvatarSecond() {
     Timber.e("SOEF OnLongClick onClickAvatarSecond");
-    return true;
+    return ok(avatarSecond, 1);
   }
 
   @OnLongClick(R.id.avatarThird) boolean onLongClickAvatarThird() {
     Timber.e("SOEF  OnLongClickonClickAvatarThird");
-    return true;
+    return ok(avatarThird, 2);
   }
+
   /**
    * PUBLIC
    */

@@ -75,7 +75,7 @@ public class CloudChatDataStore implements ChatDataStore {
     String req =
         context.getString(R.string.messages_create, JsonUtils.arrayToJson(userIds), type, data,
             gameId, intent, context.getString(R.string.messagefragment_info));
-    Timber.e("SOEF "+ req);
+
     return this.tribeApi.createMessage(req).doOnNext(messageRealm -> {
       RealmList<MessageRealm> list = new RealmList<>();
       list.add(messageRealm);

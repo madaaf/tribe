@@ -5,6 +5,7 @@ import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.view.utils.ScreenUtils;
 
 /**
  * Created by madaaflak on 05/03/2018.
@@ -17,17 +18,21 @@ public class EmojiPoke extends TextView {
   boolean isSmall;
 
   public EmojiPoke(Context context, String emo, int width, int height, int x1, int y1, int transX,
-      int transY, boolean isSmall) {
+      int transY, boolean isSmall, ScreenUtils screenUtils) {
     super(context);
     this.transX = transX;
     this.transY = transY;
     this.isSmall = isSmall;
-    setTextSize(25);
+    if (isSmall) {
+      setTextSize(screenUtils.dpToPx(width / 12));
+    } else {
+      setTextSize(screenUtils.dpToPx(width / 10));
+    }
     setText(EmojiParser.demojizedText(emo));
     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
     params.leftMargin = (int) x1 + transX;
     params.topMargin = (int) y1 + transY;
-    setPadding(0, 0, 0, 3);
+    setPadding(0, 0, 0, screenUtils.dpToPx(3));
     setLayoutParams(params);
     setGravity(Gravity.CENTER);
   }

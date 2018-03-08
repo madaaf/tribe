@@ -48,7 +48,7 @@ import timber.log.Timber;
  */
 public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Score>> {
 
-  private static final int maxWaitingTimeSeconde = 60 * 60;
+  public static final int maxWaitingTimeSeconde = 60 * 60;
   private static final int DURATION = 300;
   private static final int TRANSLATION = 200;
 
@@ -142,13 +142,11 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     // IS WAITING
     if (getWaitingTime(score) != null) {
       score.setWaiting(true);
-      Timber.e(" SOEF LB  IS WAITING : " + score.toString());
       vh.pokeEmoji.setText(
           EmojiParser.demojizedText(context.getString(R.string.poke_emoji_disabled)));
     } else {
       score.setWaiting(false);
       vh.pokeEmoji.setText(emo);
-      Timber.e(" SOEF LB  IS NOT WAITING : " + score.toString());
     }
 
     score.setEmoticon(emo);
@@ -159,10 +157,11 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
       if (score.isWaiting()) {
         Long t = getWaitingTime(score);
         if (t != null) {
+          Long diff = maxWaitingTimeSeconde - t;
           String waitingMessage =
-              (t < maxWaitingTimeSeconde) ? context.getString(R.string.poke_delay_seconds, t,
+              (diff < 60) ? context.getString(R.string.poke_delay_seconds, diff,
                   score.getUser().getDisplayName())
-                  : context.getString(R.string.poke_delay_minutes, t / 60,
+                  : context.getString(R.string.poke_delay_minutes, diff / 60,
                       score.getUser().getDisplayName());
           Toast.makeText(context, waitingMessage, Toast.LENGTH_SHORT).show();
         }
@@ -281,7 +280,6 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
       if (p.getId().equals(id)) {
         long diff = System.currentTimeMillis() - p.getCreationDate();
         timeSecond = TimeUnit.MILLISECONDS.toSeconds(diff);
-        Timber.e(" SOEF LB  IS FIND : " + score.toString());
       }
     }
     return timeSecond;

@@ -202,7 +202,6 @@ public class MessagePresenter implements Presenter {
   }
 
   public void createPoke(String[] userIds, String data, String gameId, String intent) {
-    // SOEF
     createMessage.setParams(userIds, data, MessageRealm.POKE, gameId, intent);
     createMessage.execute(new DefaultSubscriber());
   }
