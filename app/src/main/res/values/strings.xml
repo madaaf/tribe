@@ -1023,23 +1023,7 @@
 	<string name="score_milestone_scores">Perfect!,Crazy!,Lit!,Awesome!,Damn!,Wow!,Sick!,Neat!</string>
 	
 	<!-- Poke -->
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 	<string name="poke_captions_above">GG!,Congrats!, Awesome!, Incredible, LIT!</string>
-=======
-<<<<<<< HEAD
-	<string name="poke_captions_above">GG!,Congrats!, You\'re the best!, Awesome!, Incredible, LIT!</string>
-=======
-	<string name="poke_captions_above">GG!,Congrats!</string>
->>>>>>> build popup
->>>>>>> build popup
-=======
-	<string name="poke_captions_above">GG!,Congrats!, You\'re the best!, Awesome!, Incredible, LIT!</string>
->>>>>>> fix rebase
-=======
-	<string name="poke_captions_above">GG!,Congrats!, Awesome!, Incredible, LIT!</string>
->>>>>>> work on pref
 	<string name="poke_captions_below">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
 	<string name="poke_popup_title">Poke %1$s\nabout this score!</string>
 	<string name="poke_popup_subtitle">An automated message will be sent and available in your chat with %1$s.</string>
