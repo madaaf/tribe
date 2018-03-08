@@ -65,13 +65,13 @@
 
     <TextView
         android:id="@+id/pokeEmoji"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_gravity="center_vertical|end"
         android:gravity="center"
         android:background="@drawable/shape_circle_white50"
         android:paddingBottom="3dp"
-        android:textSize="30sp"
+        android:textSize="20sp"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont

@@ -28,7 +28,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -55,12 +54,12 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.TextViewRanking;
 import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
+import com.tribe.app.presentation.view.widget.chat.model.MessagePoke;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -146,7 +145,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @BindView(R.id.txtScoreThird) TextViewScore txtScoreThird;
 
-  @Inject @PokeUserGame Preference<Set<String>> pokeUserGame;
+  @Inject @PokeUserGame Preference<String> pokeUserGame;
 
   // VARIABLES
   private LeaderboardDetailsLayoutManager layoutManager;
@@ -291,12 +290,12 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     subscriptions = new CompositeSubscription();
   }
 
-  private EmojiPoke addPokeEmoji(View view, int x1, int y1, int transX, int transY, boolean isSmall,
-      Animation animation) {
+  private EmojiPoke addPokeEmoji(View view, String emo, int x1, int y1, int transX, int transY,
+      boolean anim, Animation animation) {
     EmojiPoke v =
-        new EmojiPoke(this, view.getWidth(), view.getHeight(), x1, y1, transX, transY, isSmall);
+        new EmojiPoke(this, emo, view.getWidth(), view.getHeight(), x1, y1, transX, transY, anim);
     container.addView(v);
-    if (isSmall) {
+    if (anim) {
       v.startAnimation(animation);
     }
     emojis.add(v);
@@ -474,27 +473,15 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
           getString(R.string.poke_share_score, score.getGame().getId(), score.getRanking()), this);
       return;
     }
+
     String[] userIds = new String[1];
     userIds[0] = score.getUser().getId();
 
-    messagePresenter.createPoke(userIds, ":joy:", score.getGame().getId(), "FUN");
-
-    //PreferencesUtils.addToSet(pokeUserGame, shortcut.getTypeSupport());
+    String intent = (score.isAbove()) ? MessagePoke.INTENT_FUN : MessagePoke.INTENT_JEALOUS;
+    messagePresenter.createPoke(userIds, score.getEmoticon(), score.getGame().getId(), intent);
 
     TextView view = score.getTextView();
-    if (score.isWaiting()) {
-      String waitingMessage =
-          (score.getCountDownTimer() < 60) ? getString(R.string.poke_delay_seconds,
-              score.getCountDownTimer(), score.getUser().getDisplayName())
-              : getString(R.string.poke_delay_minutes, score.getCountDownTimer() / 60,
-                  score.getUser().getDisplayName());
 
-      //String waitingMessage = ;
-      Toast.makeText(this, waitingMessage, Toast.LENGTH_SHORT).show();
-      return;
-    }
-    score.setWaiting(true);
-    Timber.e("SOEF ON CLICK POKE ");
     int[] locations = new int[2];
     view.getLocationOnScreen(locations);
     int x1 = locations[0];
@@ -503,13 +490,17 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     Animation animation = AnimationUtils.loadAnimation(this, R.anim.rotate_poke_emoji);
     Animation animation2 = AnimationUtils.loadAnimation(this, R.anim.rotate_hourglass_emoji);
 
-    EmojiPoke v = addPokeEmoji(view, x1, y1, 0, 0, false, animation);
-    addPokeEmoji(view, x1, y1, (view.getWidth() / 2), -view.getWidth(), true, animation);
-    addPokeEmoji(view, x1, y1, -(view.getWidth() / 2), +view.getWidth(), true, animation);
-    addPokeEmoji(view, x1, y1, view.getWidth(), 0, true, animation);
-    addPokeEmoji(view, x1, y1, -view.getWidth(), 0, true, animation);
-    addPokeEmoji(view, x1, y1, -(view.getWidth() / 2), -view.getWidth(), true, animation);
-    addPokeEmoji(view, x1, y1, +(view.getWidth() / 2), +view.getWidth(), true, animation);
+    EmojiPoke v = addPokeEmoji(view, score.getEmoticon(), x1, y1, 0, 0, false, animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, (view.getWidth() / 2), -view.getWidth(), true,
+        animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, -(view.getWidth() / 2), +view.getWidth(), true,
+        animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, view.getWidth(), 0, true, animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, -view.getWidth(), 0, true, animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, -(view.getWidth() / 2), -view.getWidth(), true,
+        animation);
+    addPokeEmoji(view, score.getEmoticon(), x1, y1, +(view.getWidth() / 2), +view.getWidth(), true,
+        animation);
 
     v.animate().setInterpolator(new OvershootInterpolator()).withStartAction(() -> {
       v.setScaleX(0);
@@ -537,17 +528,6 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
             }).start();
           }));
     }).scaleX(1.5f).scaleY(1.5f).setDuration(300).start();
-
-    subscriptions.add(Observable.interval(0, 1, TimeUnit.SECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          score.setCountDownTimer(aLong);
-          if (aLong > 10000) {
-            score.setWaiting(true);
-            view.setText(EmojiParser.demojizedText(":joy:"));
-          }
-          //   Timber.e("SOEF " + aLong);
-        }));
   }
 
   @OnClick(R.id.btnBack) void back() {

@@ -10,9 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.PokeTiming;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
@@ -20,6 +23,8 @@ import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.preferences.PokeUserGame;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
@@ -32,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
@@ -42,11 +48,14 @@ import timber.log.Timber;
  */
 public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Score>> {
 
+  private static final int maxWaitingTimeSeconde = 60 * 60;
   private static final int DURATION = 300;
   private static final int TRANSLATION = 200;
 
   // RX SUBSCRIPTIONS / SUBJECTS
   @Inject User user;
+
+  @Inject @PokeUserGame Preference<String> pokeUserGame;
 
   // VARIABLES
   protected Context context;
@@ -85,11 +94,6 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     return vh;
   }
 
-  public static Integer randInt2(int min, int max) {
-    Random r = new Random();
-    return min + r.nextInt() * (max - min);
-  }
-
   public static Integer randInt(int low, int high) {
     Random r = new Random();
     return r.nextInt(high - low) + low;
@@ -108,15 +112,16 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     vh.txtName.setText(score.getUser().getDisplayName());
     vh.txtScore.setScore(score.getValue());
 
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
+        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+
     if (score.getUser().getId().equals(user.getId())) {
       emo = EmojiParser.demojizedText(context.getString(R.string.poke_emoji_own));
 
       String s2 = context.getString(R.string.poke_captions_above);
       List<String> myList2 = new ArrayList<>(Arrays.asList(s2.split(",")));
       reaction = EmojiParser.demojizedText(myList2.get(randInt(0, myList2.size() - 1)));
-    } else if (user.getScoreForGame(score.getGame().getId()) != null
-        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking()) {
-
+    } else if (isAbove) {
       String s = context.getString(R.string.poke_emoji_above);
       List<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
       emo = EmojiParser.demojizedText(myList.get(randInt(0, myList.size() - 1)));
@@ -134,26 +139,50 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
       reaction = EmojiParser.demojizedText(myList2.get(randInt(0, myList2.size() - 1)));
     }
 
-    vh.pokeEmoji.setText(emo);
-    vh.pokeTxt.setText(reaction);
+    // IS WAITING
+    if (getWaitingTime(score) != null) {
+      score.setWaiting(true);
+      Timber.e(" SOEF LB  IS WAITING : " + score.toString());
+      vh.pokeEmoji.setText(
+          EmojiParser.demojizedText(context.getString(R.string.poke_emoji_disabled)));
+    } else {
+      score.setWaiting(false);
+      vh.pokeEmoji.setText(emo);
+      Timber.e(" SOEF LB  IS NOT WAITING : " + score.toString());
+    }
 
-    // poke_emoji_above poke_emoji_below poke_emoji_own
+    score.setEmoticon(emo);
+    vh.pokeTxt.setText(reaction);
+    score.setAbove(isAbove);
+
     vh.pokeEmoji.setOnClickListener(v -> {
-      Timber.e("ON CLICK " + score.toString());
-      score.setTextView(vh.pokeEmoji);
-      onClickPoke.onNext(score);
-      TextView tv = new TextView(context);
-      tv.setText(emo);
+      if (score.isWaiting()) {
+        Long t = getWaitingTime(score);
+        if (t != null) {
+          String waitingMessage =
+              (t < maxWaitingTimeSeconde) ? context.getString(R.string.poke_delay_seconds, t,
+                  score.getUser().getDisplayName())
+                  : context.getString(R.string.poke_delay_minutes, t / 60,
+                      score.getUser().getDisplayName());
+          Toast.makeText(context, waitingMessage, Toast.LENGTH_SHORT).show();
+        }
+      } else {
+        score.setWaiting(true);
+        score.setTextView(vh.pokeEmoji);
+        String id = score.getGame().getId() + "_" + score.getUser().getId();
+        PokeTiming pokeTiming = new PokeTiming(id, System.currentTimeMillis());
+        List<PokeTiming> pokeTimingList = new ArrayList<>();
+        pokeTimingList.add(pokeTiming);
+        PreferencesUtils.savePlayloadPokeTimingAsJson(pokeTimingList, pokeUserGame,
+            maxWaitingTimeSeconde);
+        onClickPoke.onNext(score);
+      }
 
       if (stateManager.shouldDisplay(StateManager.FIRST_POKE)) {
         displayUplaodAvatarNotification(context, score.getUser());
         stateManager.addTutorialKey(StateManager.FIRST_POKE);
-      } else {
-        // SOEF
       }
     });
-
-    // poke_captions_below poke_captions_above
 
     if (onPoke) {
       vh.pokeTxt.setTranslationX(+TRANSLATION);
@@ -240,6 +269,22 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
 
   protected ActivityModule getActivityModule() {
     return new ActivityModule(((Activity) context));
+  }
+
+  private Long getWaitingTime(Score score) {
+    Long timeSecond = null;
+    String id = score.getGame().getId() + "_" + score.getUser().getId();
+    List<PokeTiming> testList2 =
+        PreferencesUtils.getPlayloadPokeTimingList(pokeUserGame, maxWaitingTimeSeconde);
+
+    for (PokeTiming p : testList2) {
+      if (p.getId().equals(id)) {
+        long diff = System.currentTimeMillis() - p.getCreationDate();
+        timeSecond = TimeUnit.MILLISECONDS.toSeconds(diff);
+        Timber.e(" SOEF LB  IS FIND : " + score.toString());
+      }
+    }
+    return timeSecond;
   }
 
   private void initDependencyInjector() {

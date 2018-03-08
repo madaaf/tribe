@@ -105,12 +105,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/imgLogo"
-            android:layout_marginTop="8dp"
             android:layout_marginStart="5dp"
+            android:layout_marginTop="8dp"
             android:ellipsize="end"
             android:gravity="start"
             android:maxLines="1"
-            style="@style/Title.Regular.Black40"
+            android:textSize="12sp"
+            style="@style/Title.2"
             />
 
 
@@ -131,8 +132,8 @@
           android:id="@+id/imgAnimation2"
           android:layout_width="20dp"
           android:layout_height="20dp"
-          android:layout_marginTop="20dp"
           android:layout_marginEnd="10dp"
+          android:layout_marginTop="20dp"
           android:scaleType="centerInside"
           app:layout_constraintEnd_toStartOf="@id/imgAnimation1"
           app:layout_constraintTop_toTopOf="parent"

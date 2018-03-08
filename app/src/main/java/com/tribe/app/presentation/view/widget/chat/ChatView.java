@@ -843,10 +843,6 @@ public class ChatView extends IChat {
         ((MessageAudio) message).setOriginal(m);
         ((MessageAudio) message).setTime(content);
         break;
-      case MESSAGE_POKE: // SOEF
-        realmType = MessageRealm.POKE;
-        message = new MessagePoke();
-        break;
     }
 
     message.setType(type);

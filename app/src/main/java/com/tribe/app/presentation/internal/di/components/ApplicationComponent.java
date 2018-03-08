@@ -469,7 +469,7 @@ public interface ApplicationComponent {
 
   @TribeState Preference<Set<String>> tribeState();
 
-  @PokeUserGame Preference<Set<String>> pokeUserGame();
+  @PokeUserGame Preference<String> pokeUserGame();
 
   @DebugMode Preference<Boolean> debugMode();
 

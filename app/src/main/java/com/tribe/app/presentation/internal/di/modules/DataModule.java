@@ -153,9 +153,9 @@ import static android.content.Context.MODE_PRIVATE;
     return prefs.getStringSet(PreferencesUtils.SUPPORT_IS_USED, new HashSet<>());
   }
 
-  @Provides @Singleton @PokeUserGame Preference<Set<String>> providePokeUserGame(Context context,
+  @Provides @Singleton @PokeUserGame Preference<String> providePokeUserGame(Context context,
       RxSharedPreferences prefs) {
-    return prefs.getStringSet(PreferencesUtils.POKE_USER_GAME, new HashSet<>());
+    return prefs.getString(PreferencesUtils.POKE_USER_GAME, "");
   }
 
   @Provides @Singleton @IsGroupCreated Preference<Boolean> provideIsGroupCreated(Context context,

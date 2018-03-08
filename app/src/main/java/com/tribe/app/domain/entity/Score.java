@@ -11,12 +11,13 @@ public class Score {
   public static final String ID_PROGRESS = "ID_PROGRESS";
 
   private String id;
+  private String emoticon;
   private int ranking = 0;
   private int value = 0;
   private User user;
   private Game game;
-  private Long countDownTimer;
   private TextView textView;
+  private boolean isAbove = false;
   private boolean isWaiting = false;
 
 
@@ -83,23 +84,40 @@ public class Score {
     return result;
   }
 
-  @Override public String toString() {
-    return super.toString();
+  public void setEmoticon(String emoticon) {
+    this.emoticon = emoticon;
+  }
+
+  public String getEmoticon() {
+    return emoticon;
+  }
+
+  public void setAbove(boolean isAbove) {
+    this.isAbove = isAbove;
+  }
+
+  public boolean isAbove() {
+    return isAbove;
+  }
+
+  public void setWaiting(boolean isWaiting) {
+    this.isWaiting = isWaiting;
   }
 
   public boolean isWaiting() {
     return isWaiting;
   }
 
-  public void setWaiting(boolean waiting) {
-    isWaiting = waiting;
-  }
-
-  public Long getCountDownTimer() {
-    return countDownTimer;
-  }
-
-  public void setCountDownTimer(Long countDownTimer) {
-    this.countDownTimer = countDownTimer;
+  @Override public String toString() {
+    return "Score{"
+        + "id='"
+        + id
+        + '\''
+        + ", emoticon='"
+        + emoticon
+        + '\''
+        + ", isWaiting="
+        + isWaiting
+        + '}';
   }
 }

@@ -5,6 +5,8 @@ package com.tribe.app.presentation.view.widget.chat.model;
  */
 
 public class MessagePoke extends Message {
+  public static final String INTENT_FUN = "FUN";
+  public static final String INTENT_JEALOUS = "JEALOUS";
 
   private String data;
   private String clientMessageId;

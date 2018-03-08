@@ -1035,6 +1035,7 @@
 	<string name="poke_chat_event_below">%1$s se moque de ton score à %2$s! %3$s%4$s</string>
 	<string name="poke_chat_tap_to_play">Tap pour jouer</string>
 <<<<<<< HEAD
+<<<<<<< HEAD
 	<string name="poke_share_score">Mon score à %1$s sur Tribe (http://tribe.pm) est de %2$d. Et toi ?</string>
 =======
 	<string name="poke_share_score">Mon score à %1$s à Tribe (http://tribe.pm) est %2$d. What\'s yours?</string>
@@ -1055,6 +1056,9 @@
 >>>>>>> build popup
 =======
 >>>>>>> fix rebase
+=======
+	<string name="poke_share_score">Mon score à %1$s sur Tribe (http://tribe.pm) est de %2$d. Et toi ?</string>
+>>>>>>> work on pref
 	<string name="poke_emoji_above">:heart_eyes:,:flushed:,:hugs:,:open_mouth:,:roll_eyes:,:alien:</string>
 	<string name="poke_emoji_below">:joy:,:rofl:,:sweat_smile:,:poop:,:joy_cat:,:laughing:,:see_no_evil:</string>
 	<string name="poke_emoji_own">:medal_sports:</string>
@@ -1083,6 +1087,9 @@
 	<string name="trophy_requirement_best_scores_title">Score</string>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> work on pref
 	<string name="trophy_requirement_friends_description">Ajoute %1$d amis</string>
 	<string name="trophy_requirement_day_usage_description">ouvre Tribe %1$d jours à la suite</string>
 	<string name="trophy_requirement_games_played_description">essaie %1$d jeux</string>
@@ -1090,6 +1097,7 @@
 	<string name="trophy_requirement_best_scores_description">sois le meilleur à %1$d jeux</string>
 	<string name="trophy_requirement_last_separator">et</string>
 	<string name="trophy_noob_description">T\'es dans la course. Consulte les autres trophées pour commencer !</string>
+<<<<<<< HEAD
 =======
 <<<<<<< HEAD
 =======
@@ -1102,6 +1110,8 @@
 	<string name="trophy_requirement_last_separator">and</string>
 	<string name="trophy_noob_description">You\'re in the race. Check out the other trophies to get started!</string>
 >>>>>>> tmp
+=======
+>>>>>>> work on pref
 	
 	<!-- Trophy Popup -->
 	<string name="trophy_popup_action_use_icon">UTILISER CET ICONE</string>
@@ -1109,6 +1119,7 @@
 	<string name="trophy_popup_icon_currently_used">Tu utilise actuellement cet icone</string>
 	
 	<!-- Trophy Notification -->
+<<<<<<< HEAD
 <<<<<<< HEAD
 	<string name="trophy_notification_title">Classement</string>
 	<string name="trophy_notification_message">Félicitations ! Tu as débloqué le trophée "%1$s" ! :trophy:</string>
@@ -1120,6 +1131,10 @@
 >>>>>>> tmp
 =======
 >>>>>>> fix rebase
+=======
+	<string name="trophy_notification_title">Classement</string>
+	<string name="trophy_notification_message">Félicitations ! Tu as débloqué le trophée "%1$s" ! :trophy:</string>
+>>>>>>> work on pref
 	
 	<!-- Ask To Join Popup -->
 	<string name="ask_to_join_popup_title">%1$s veut\nrejoindre ta partie !</string>
@@ -1131,10 +1146,14 @@
 	
 	<!-- Invited To Join Popup -->
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> work on pref
 	<string name="invited_to_join_popup_title">%1$s t\'invite\nà rejoindre un défi !</string>
 	<string name="invited_to_join_popup_subtitle">Avec %1$s</string>
 	<string name="invited_to_join_popup_no_game_selected">PAS DE JEU SÉLÉCTIONNÉ</string>
 	<string name="invited_to_join_popup_action_later">PLUS TARD</string>
+<<<<<<< HEAD
 =======
 	<string name="invited_to_join_popup_title">%1$s invited\nyou to join a challenge!</string>
 	<string name="invited_to_join_popup_subtitle">With %1$s</string>
@@ -1151,4 +1170,6 @@
 >>>>>>> tmp
 =======
 >>>>>>> fix rebase
+=======
+>>>>>>> work on pref
 </resources>

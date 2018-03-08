@@ -16,14 +16,14 @@ public class EmojiPoke extends TextView {
   int transY;
   boolean isSmall;
 
-  public EmojiPoke(Context context, int width, int height, int x1, int y1, int transX, int transY,
-      boolean isSmall) {
+  public EmojiPoke(Context context, String emo, int width, int height, int x1, int y1, int transX,
+      int transY, boolean isSmall) {
     super(context);
     this.transX = transX;
     this.transY = transY;
     this.isSmall = isSmall;
-    setTextSize(30);
-    setText(EmojiParser.demojizedText(":joy:"));
+    setTextSize(25);
+    setText(EmojiParser.demojizedText(emo));
     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
     params.leftMargin = (int) x1 + transX;
     params.topMargin = (int) y1 + transY;
