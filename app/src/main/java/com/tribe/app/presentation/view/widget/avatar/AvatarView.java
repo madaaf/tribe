@@ -2,7 +2,6 @@ package com.tribe.app.presentation.view.widget.avatar;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.IntDef;
 import android.util.AttributeSet;
@@ -18,6 +17,7 @@ import com.tribe.app.R;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -146,6 +146,10 @@ public class AvatarView extends RelativeLayout implements Avatar {
     } else if (recipient instanceof Shortcut) {
       load(recipient.getProfilePicture());
     }
+  }
+
+  @Override public void load(User user) {
+    load(user.getProfilePicture());
   }
 
   @Override public void loadGroupAvatar(String url, String previousUrl, String groupId,

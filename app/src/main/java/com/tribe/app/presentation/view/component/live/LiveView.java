@@ -33,9 +33,12 @@ import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
+import com.tribe.app.presentation.utils.preferences.GamesPlayed;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
+import com.tribe.app.presentation.utils.preferences.MultiplayerSessions;
 import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
+import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.WebSocketUrlOverride;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
@@ -65,6 +68,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.json.JSONArray;
@@ -118,6 +122,10 @@ public class LiveView extends FrameLayout {
   @Inject @NewWS Preference<Boolean> newWs;
 
   @Inject @WebSocketUrlOverride Preference<String> webSocketUrlOverride;
+
+  @Inject @GamesPlayed Preference<Set<String>> gamesPlayed;
+
+  @Inject @MultiplayerSessions Preference<Integer> multiplayerSessions;
 
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
@@ -262,6 +270,8 @@ public class LiveView extends FrameLayout {
         minutesOfCalls.set(totalDuration);
         tagManager.increment(TagManagerUtils.USER_CALLS_COUNT);
         tagManager.increment(TagManagerUtils.USER_CALLS_MINUTES, duration);
+
+        multiplayerSessions.set(multiplayerSessions.get() + 1);
 
         onEndCall.onNext(durationInSeconds);
       } else if ((hasJoined && averageCountLive <= 1 && !live.getType().equals(Live.NEW_CALL)) ||
@@ -811,13 +821,14 @@ public class LiveView extends FrameLayout {
             @Override public void onGlobalLayout() {
               viewRinging.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-              String txt = getContext().getString(R.string.live_ringing_in, WAITING_SECONDE);
+              int str = !StringUtils.isEmpty(live.getUserAsk()) ? R.string.live_asking_in : R.string.live_ringing_in;
+              String txt = getContext().getString(str, WAITING_SECONDE);
               viewRinging.setPictoCamera(txt);
 
               CountDownTimer countDownTimer = new CountDownTimer(WAITING_SECONDE * 1000, 1000) {
                 public void onTick(long millisUntilFinished) {
-                  String txt =
-                      getContext().getString(R.string.live_ringing_in, millisUntilFinished / 1000);
+                  int str = !StringUtils.isEmpty(live.getUserAsk())  ? R.string.live_asking_in : R.string.live_ringing_in;
+                  String txt = getContext().getString(str, millisUntilFinished / 1000);
                   if (viewRinging != null) viewRinging.setTextTimer(txt);
                 }
 
@@ -1147,6 +1158,8 @@ public class LiveView extends FrameLayout {
         addViewGameManagerAtPosition(indexOfViewRoom + 1);
       }
     }
+
+    PreferencesUtils.addToSet(gamesPlayed, game.getId());
   }
 
   private void addViewGameManagerAtPosition(int position) {

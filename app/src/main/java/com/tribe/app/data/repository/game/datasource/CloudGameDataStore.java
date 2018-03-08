@@ -163,7 +163,13 @@ public class CloudGameDataStore implements GameDataStore {
       return Observable.just(gameCache.getTriviaData());
     }
 
-    if (DeviceUtils.getLanguage(context).equals("en")) {
+    if (DeviceUtils.getLanguage(context).equals("fr")) {
+      return fileApi.getTriviaData()
+          .map(triviaCategoriesHolders -> triviaCategoriesHolders.getCategories())
+          .compose(listCategoryMapTransformer)
+          .doOnNext(stringListMap -> gameCache.setTriviaData(stringListMap))
+          .doOnError(Throwable::printStackTrace);
+    } else {
       return Observable.just(TriviaCategoryEnum.getCategories())
           .flatMap(categoryList -> Observable.from(categoryList))
           .flatMap(category -> {
@@ -176,12 +182,6 @@ public class CloudGameDataStore implements GameDataStore {
                 .compose(new TriviaQuestionsTransformer(category.getCategory()));
           })
           .toList()
-          .compose(listCategoryMapTransformer)
-          .doOnNext(stringListMap -> gameCache.setTriviaData(stringListMap))
-          .doOnError(Throwable::printStackTrace);
-    } else {
-      return fileApi.getTriviaData()
-          .map(triviaCategoriesHolders -> triviaCategoriesHolders.getCategories())
           .compose(listCategoryMapTransformer)
           .doOnNext(stringListMap -> gameCache.setTriviaData(stringListMap))
           .doOnError(Throwable::printStackTrace);

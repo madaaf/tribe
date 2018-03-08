@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +25,7 @@ import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.LabelType;
@@ -34,12 +36,15 @@ import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.NewChatMVPViewAdapter;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
+import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +52,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -62,7 +68,7 @@ public class NotifView extends FrameLayout {
 
   private static ViewGroup decorView;
   private static View v;
-  private static boolean disposeView = false;
+  private static boolean disposeView = true;
 
   private Unbinder unbinder;
   private Context context;
@@ -86,8 +92,11 @@ public class NotifView extends FrameLayout {
   @Inject RxFacebook rxFacebook;
   @Inject RxImagePicker rxImagePicker;
   @Inject User currentUser;
+  @Inject @HasSoftKeys Preference<Boolean> hasSoftKeys;
+
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Void> onDismiss = PublishSubject.create();
 
   public NotifView(@NonNull Context context) {
     super(context);
@@ -99,7 +108,17 @@ public class NotifView extends FrameLayout {
     initView(context);
   }
 
+  public static boolean isDisplayed() {
+    return !disposeView;
+  }
+
+  public void overrideBackground(Drawable background) {
+    bgView.setBackground(background);
+  }
+
   public void show(Activity activity, List<NotificationModel> list) {
+    disposeView = false;
+
     this.data = list;
     if (list.size() < 2) {
       dotsContainer.setAlpha(0f);
@@ -120,14 +139,23 @@ public class NotifView extends FrameLayout {
         case NotificationModel.POPUP_CHALLENGER:
           newChatPresenter.createShortcut(notificationModel.getUserId());
           tagAddedFriend();
+          hideNextNotif();
           break;
         case NotificationModel.POPUP_FACEBOOK:
-          newChatPresenter.loadFBContactsInvite();
+          if (!FacebookUtils.isLoggedIn()) {
+            subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
+              newChatPresenter.loadFBContactsInvite();
+              hideNextNotif();
+            }));
+          } else {
+            newChatPresenter.loadFBContactsInvite();
+            hideNextNotif();
+          }
           break;
         case NotificationModel.POPUP_UPLOAD_PICTURE:
-
           subscriptions.add(
-              DialogFactory.showBottomSheetForCamera(getContext()).subscribe(labelType -> {
+              DialogFactory.showBottomSheetForCamera(activity).subscribe(labelType -> {
+                hideView();
                 if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
                   subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
                     newChatPresenter.updateUser(currentUser.getId(), currentUser.getUsername(),
@@ -142,18 +170,20 @@ public class NotifView extends FrameLayout {
               }));
           break;
       }
-
-      if (pageListener.getPositionViewPage() < data.size()) {
-        if (pageListener.getPositionViewPage() == data.size() - 1) {
-          subscriptions.add(Observable.timer((300), TimeUnit.MILLISECONDS)
-              .onBackpressureDrop()
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(aLong -> hideView()));
-        }
-
-        pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
-      }
     }));
+  }
+
+  private void hideNextNotif() {
+    if (pageListener.getPositionViewPage() < data.size()) {
+      if (pageListener.getPositionViewPage() == data.size() - 1) {
+        subscriptions.add(Observable.timer((300), TimeUnit.MILLISECONDS)
+            .onBackpressureDrop()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> hideView()));
+      }
+
+      pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
+    }
   }
 
   ////////////////////
@@ -162,19 +192,20 @@ public class NotifView extends FrameLayout {
 
   private void initView(Context context) {
     this.context = context;
-    disposeView = false;
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     v = inflater.inflate(R.layout.activity_test, this, true);
     unbinder = ButterKnife.bind(this);
 
-    pager.setOnTouchListener((v, event) -> {
-      gestureScanner.onTouchEvent(event);
-      return super.onTouchEvent(event);
-    });
     gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
+
+    textDismiss.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
 
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
+
+    if (hasSoftKeys.get()) {
+      UIUtils.changeBottomMarginOfView(textDismiss, screenUtils.dpToPx(50));
+    }
 
     newChatMVPViewAdapter = new NewChatMVPViewAdapter() {
       @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
@@ -218,41 +249,32 @@ public class NotifView extends FrameLayout {
     }).start();
   }
 
+  Animation slideOutAnimation;
+
   public void hideView() {
-    // if (true) return;
-    // if (disposeView) return;
     if (listener != null) listener.onFinishView();
     disposeView = true;
     pager.setOnTouchListener(null);
-    Animation slideOutAnimation =
+    slideOutAnimation =
         AnimationUtils.loadAnimation(getContext(), R.anim.notif_container_exit_animation);
     setAnimation(slideOutAnimation);
     slideOutAnimation.setFillAfter(true);
     slideOutAnimation.setDuration(NOTIF_ANIM_DURATION_ENTER);
     slideOutAnimation.setAnimationListener(new AnimationListenerAdapter() {
-      @Override public void onAnimationStart(Animation animation) {
-        super.onAnimationStart(animation);
-      }
-
       @Override public void onAnimationEnd(Animation animation) {
         super.onAnimationEnd(animation);
         dispose();
       }
     });
-
+    pager.startAnimation(slideOutAnimation);
+    bgView.animate().setDuration(NOTIF_ANIM_DURATION_ENTER).alpha(0f).start();
     textDismiss.setVisibility(INVISIBLE);
-    bgView.animate()
-        .setDuration(NOTIF_ANIM_DURATION_ENTER)
-        .alpha(0f)
-        .withEndAction(() -> startAnimation(slideOutAnimation))
-        .start();
   }
 
   public void dispose() {
     setVisibility(GONE);
-    setOnTouchListener(null);
+    post(() -> decorView.removeView(v));
     clearAnimation();
-    decorView.removeView(v);
     subscriptions.unsubscribe();
   }
 
@@ -344,6 +366,7 @@ public class NotifView extends FrameLayout {
       if (pager.getCurrentItem() == data.size() - 1) {
         hideView();
         tagCancelAction();
+        onDismiss.onNext(null);
       } else {
         pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
       }
@@ -376,5 +399,13 @@ public class NotifView extends FrameLayout {
 
   public interface OnFinishEventListener {
     void onFinishView();
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<Void> onDismiss() {
+    return onDismiss;
   }
 }

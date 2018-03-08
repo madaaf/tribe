@@ -424,8 +424,8 @@
 	<string name="live_share_screenshot_caption">Merci @heytribe! :metal: #tribegoals</string>
 	<string name="live_ringing_in">Appel dans %1$d</string>
 	<string name="live_ringing">Appel en cours de %1$s</string>
-	<string name="live_asking_in">Appel dans %1$d</string>
-	<string name="live_asking">Appel en cours de %1$s</string>
+	<string name="live_asking_in">Envoi de la demande dans %1$d</string>
+	<string name="live_asking">Demande à %1$s en cours...</string>
 	<string name="live_joining">Connexion...</string>
 	<string name="live_invite_section_chat_members">Members du chat</string>
 	<string name="live_invite_section_invite_link">Lien d\'nvitation</string>
@@ -774,6 +774,9 @@
 	<string name="game_trivia_category_games">Jeux vidéo</string>
 	<string name="game_trivia_category_all">Tout en même temps!</string>
 	<string name="game_coolcams_lets_go">Mimic as much\nemojis as possible!</string>
+	<string name="game_coolcams_you_won">Tu as gagné !</string>
+	<string name="game_coolcams_someone_won">%1$s a gagné !</string>
+	<string name="game_coolcams_someone_won_plural">%1$s ont gagné !</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -862,7 +865,7 @@
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Marquer comme lu</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Marquer comme non-lu</string>
 	<string name="home_menu_invite_decline">:phone: Rejeter le défi</string>
-	<string name="home_menu_user_leaderboard">:trophy: Scores</string>
+	<string name="home_menu_user_leaderboard">:trophy: Scores &amp; Trophées</string>
 	<string name="home_block_shortcut_title">Bloquer %1$s ?</string>
 	<string name="home_block_shortcut_message">Masquer les nouveaux messages, appels et autres notifications venant de cette personne. Vous pourrez débloquer cette personne depuis votre profil.</string>
 	<string name="home_block_shortcut_validate">Bloquer</string>
@@ -973,8 +976,8 @@
 	
 	<!-- Leaderboards -->
 	<string name="leaderboards_title">Classements</string>
-	<string name="leaderboards_score">Meilleur score</string>
-	<string name="leaderboards_your_score">Votre meilleur score</string>
+	<string name="leaderboards_score">Record</string>
+	<string name="leaderboards_your_score">Votre record</string>
 	<string name="leaderboards_no_score">-</string>
 	<string name="leaderboards_friends">Amis</string>
 	<string name="leaderboards_overall">Global</string>
@@ -994,6 +997,7 @@
 	<string name="gamemode_title">Mode de jeu</string>
 	<string name="gamemode_alone_title">ENTRAINEMENT</string>
 	<string name="gamemode_multi_title">MULTIJOUEUR</string>
+	<string name="gamemode_leaderboard">CLASSEMENT</string>
 	
 	<!-- Hang Up Popup -->
 	<string name="hangup_popup_action_stop_game">Arrêter de jouer</string>
@@ -1003,15 +1007,15 @@
 	<string name="new_challenger_popup_title">NOUVEAU CHALLENGEUR !</string>
 	<string name="new_challenger_popup_subtitle">%1$s\nsouhaite devenir ami(e) !</string>
 	<string name="new_challenger_popup_friends">Amis en commun avec %1$s</string>
-	<string name="new_challenger_popup_other">and an other</string>
+	<string name="new_challenger_popup_other">et un(e) autre</string>
 	<string name="new_challenger_popup_others">et %1$d autres</string>
 	<string name="new_challenger_popup_action_add">AJOUTER EN AMI</string>
 	<string name="new_challenger_popup_friends_placeholder">Discutez, regarder les jeux auxquels vous êtes en train de jouer et défiez-vous !</string>
 	
 	<!-- Invite Facebook Popup -->
-	<string name="invite_facebook_popup_title">MORE FRIENDS!</string>
-	<string name="invite_facebook_popup_subtitle">More friends in\nonly one tap!</string>
-	<string name="invite_facebook_popup_description">More friends to battle live, more messages and a wider leaderboard!</string>
+	<string name="invite_facebook_popup_title">PLUS D\'AMIS !</string>
+	<string name="invite_facebook_popup_subtitle">Plus d\'amis\nen un tap !</string>
+	<string name="invite_facebook_popup_description">Plus d\'amis à défier en live, plus de messages et plus d\'amis dans ton classement !</string>
 	<string name="invite_facebook_popup_action_notify">NOTIFY THEM</string>
 	
 	<!-- Scores Milestones -->
@@ -1021,26 +1025,26 @@
 	<!-- Poke -->
 	<string name="poke_captions_above">GG !,Bravo !, Génial !, Incroyable !, Dingue !</string>
 	<string name="poke_captions_below">OMG !,Serieux ?,LOL !,Haha !,Trop nul !,WOW</string>
-	<string name="poke_popup_title">Poke %1$s\nau sujet de son score !</string>
+	<string name="poke_popup_title">Poke %1$s\npour son score !</string>
 	<string name="poke_popup_subtitle">Un message automatique sera envoyé et disponible dans ta conversation avec %1$s.</string>
-	<string name="poke_popup_action_send">SEND &amp; POKE</string>
+	<string name="poke_popup_action_send">ENVOYER</string>
 	<string name="poke_delay_minutes">Plus que %1$d mins pour re-poker %2$s!</string>
 	<string name="poke_delay_seconds">Plus que %1$d secs pour re-poker  %2$s!</string>
 	<string name="poke_sent_confirmation">Poke envoyé à %1$s!</string>
 	<string name="poke_chat_event_above">%1$s est jaloux de ton score à %2$s! %3$s%4$s</string>
 	<string name="poke_chat_event_below">%1$s se moque de ton score à %2$s! %3$s%4$s</string>
 	<string name="poke_chat_tap_to_play">Tap pour jouer</string>
-	<string name="poke_share_score">Mon score à %1$s à Tribe (http://tribe.pm) est %2$d. What\'s yours?</string>
+	<string name="poke_share_score">Mon score à %1$s sur Tribe (http://tribe.pm) est de %2$d. Et toi ?</string>
 	<string name="poke_emoji_above">:heart_eyes:,:flushed:,:hugs:,:open_mouth:,:roll_eyes:,:alien:</string>
 	<string name="poke_emoji_below">:joy:,:rofl:,:sweat_smile:,:poop:,:joy_cat:,:laughing:,:see_no_evil:</string>
 	<string name="poke_emoji_own">:medal_sports:</string>
 	<string name="poke_emoji_disabled">:hourglass:</string>
 	
 	<!-- Upload Picture Popup -->
-	<string name="upload_picture_popup_title">Look prettier with a\nprofile picture!</string>
-	<string name="upload_picture_popup_subtitle">It makes it easier for your friends to recognize you and add you as a friend. Don\'t be shy.</string>
-	<string name="upload_picture_popup_action_upload">UPLOAD A PICTURE</string>
-	<string name="upload_picture_popup_action_done">DONE!</string>
+	<string name="upload_picture_popup_title">Sois plus frais avec a\n une photo de profil !</string>
+	<string name="upload_picture_popup_subtitle">Ce sera plus simple pour tes amis de te reconnaître et de t\'ajouter en ami. Sois pas timide !</string>
+	<string name="upload_picture_popup_action_upload">CHOISIS UNE PHOTO !</string>
+	<string name="upload_picture_popup_action_done">PARFAIT !</string>
 	
 	<!-- Digest Popup -->
 	<string name="digest_popup_title">EN TRAIN DE JOUER</string>
@@ -1052,39 +1056,39 @@
 	<string name="trophy_pro_title">Pro</string>
 	<string name="trophy_master_title">Master</string>
 	<string name="trophy_god_title">God</string>
-	<string name="trophy_requirement_friends_title">Friends</string>
-	<string name="trophy_requirement_day_usage_title">Days</string>
-	<string name="trophy_requirement_games_played_title">Games</string>
-	<string name="trophy_requirement_multiplayer_sessions_title">Session</string>
+	<string name="trophy_requirement_friends_title">Amis</string>
+	<string name="trophy_requirement_day_usage_title">Jours</string>
+	<string name="trophy_requirement_games_played_title">Jeux</string>
+	<string name="trophy_requirement_multiplayer_sessions_title">Sessions</string>
 	<string name="trophy_requirement_best_scores_title">Score</string>
-	<string name="trophy_requirement_friends_description">Get %1$d friends</string>
-	<string name="trophy_requirement_day_usage_description">open Tribe %1$d days in a row</string>
-	<string name="trophy_requirement_games_played_description">try %1$d games</string>
-	<string name="trophy_requirement_multiplayer_sessions_description">%1$d multiplayer sessions</string>
-	<string name="trophy_requirement_best_scores_description">be the best at %1$d games</string>
-	<string name="trophy_requirement_last_separator">and</string>
-	<string name="trophy_noob_description">You\'re in the race. Check out the other trophies to get started!</string>
+	<string name="trophy_requirement_friends_description">Ajoute %1$d amis</string>
+	<string name="trophy_requirement_day_usage_description">ouvre Tribe %1$d jours à la suite</string>
+	<string name="trophy_requirement_games_played_description">essaie %1$d jeux</string>
+	<string name="trophy_requirement_multiplayer_sessions_description">%1$d sessions mulijoueurs</string>
+	<string name="trophy_requirement_best_scores_description">sois le meilleur à %1$d jeux</string>
+	<string name="trophy_requirement_last_separator">et</string>
+	<string name="trophy_noob_description">T\'es dans la course. Consulte les autres trophées pour commencer !</string>
 	
 	<!-- Trophy Popup -->
-	<string name="trophy_popup_action_use_icon">USE THIS ICON</string>
-	<string name="trophy_popup_action_got_it">GOT IT!</string>
-	<string name="trophy_popup_icon_currently_used">You\'re currently using this icon</string>
+	<string name="trophy_popup_action_use_icon">UTILISER CET ICONE</string>
+	<string name="trophy_popup_action_got_it">C\'EST NOTÉ !</string>
+	<string name="trophy_popup_icon_currently_used">Tu utilise actuellement cet icone</string>
 	
 	<!-- Trophy Notification -->
-	<string name="trophy_notification_title">Leaderboard</string>
-	<string name="trophy_notification_message">Congratulations! You unlocked the "%1$s" trophy! :trophy:</string>
+	<string name="trophy_notification_title">Classement</string>
+	<string name="trophy_notification_message">Félicitations ! Tu as débloqué le trophée "%1$s" ! :trophy:</string>
 	
 	<!-- Ask To Join Popup -->
-	<string name="ask_to_join_popup_title">%1$s wants\nto join your game!</string>
-	<string name="ask_to_join_popup_title_no_game">%1$s wants\nto join your room!</string>
-	<string name="ask_to_join_popup_score">BEST SCORE</string>
+	<string name="ask_to_join_popup_title">%1$s veut\nrejoindre ta partie !</string>
+	<string name="ask_to_join_popup_title_no_game">%1$s veut\nrejoindre ta partie !</string>
+	<string name="ask_to_join_popup_score">RECORD</string>
 	<string name="ask_to_join_popup_level">%1$s level</string>
-	<string name="ask_to_join_popup_action_accept">ACCEPT</string>
-	<string name="ask_to_join_popup_action_decline">DECLINE</string>
+	<string name="ask_to_join_popup_action_accept">ACCEPTER</string>
+	<string name="ask_to_join_popup_action_decline">DECLINER</string>
 	
 	<!-- Invited To Join Popup -->
-	<string name="invited_to_join_popup_title">%1$s invited\nyou to join a challenge!</string>
-	<string name="invited_to_join_popup_subtitle">With %1$s</string>
-	<string name="invited_to_join_popup_no_game_selected">NO GAME SELECTED YET</string>
-	<string name="invited_to_join_popup_action_later">LATER</string>
+	<string name="invited_to_join_popup_title">%1$s t\'invite\nà rejoindre un défi !</string>
+	<string name="invited_to_join_popup_subtitle">Avec %1$s</string>
+	<string name="invited_to_join_popup_no_game_selected">PAS DE JEU SÉLÉCTIONNÉ</string>
+	<string name="invited_to_join_popup_action_later">PLUS TARD</string>
 </resources>

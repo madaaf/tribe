@@ -4,16 +4,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
-import com.tribe.app.BuildConfig;
+import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
+import com.tribe.app.presentation.utils.preferences.DaysOfUsage;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.GameData;
+import com.tribe.app.presentation.utils.preferences.GamesPlayed;
 import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
@@ -25,11 +27,14 @@ import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
+import com.tribe.app.presentation.utils.preferences.MultiplayerSessions;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
+import com.tribe.app.presentation.utils.preferences.PreviousDateUsage;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.utils.preferences.SelectedTrophy;
 import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
 import com.tribe.app.presentation.utils.preferences.SupportRequestId;
 import com.tribe.app.presentation.utils.preferences.SupportUserId;
@@ -197,7 +202,7 @@ import static android.content.Context.MODE_PRIVATE;
   }
 
   @Provides @Singleton @NewWS Preference<Boolean> provideNewWS(RxSharedPreferences prefs) {
-    return prefs.getBoolean(PreferencesUtils.NEW_WS, BuildConfig.DEBUG);
+    return prefs.getBoolean(PreferencesUtils.NEW_WS, true);
   }
 
   @Provides @Singleton @FullscreenNotifications Preference<Boolean> provideFullScreenNotifications(
@@ -243,5 +248,30 @@ import static android.content.Context.MODE_PRIVATE;
 
   @Provides @Singleton @GameData Preference<String> provideGameData(RxSharedPreferences prefs) {
     return prefs.getString(PreferencesUtils.GAME_DATA, "");
+  }
+
+  @Provides @Singleton @GamesPlayed Preference<Set<String>> provideGamesPlayed(
+      RxSharedPreferences prefs) {
+    return prefs.getStringSet(PreferencesUtils.GAMES_PLAYED, new HashSet<>());
+  }
+
+  @Provides @Singleton @MultiplayerSessions Preference<Integer> provideMultiplayerSessions(
+      RxSharedPreferences prefs) {
+    return prefs.getInteger(PreferencesUtils.MULTIPLAYER_SESSIONS);
+  }
+
+  @Provides @Singleton @DaysOfUsage Preference<Integer> provideDaysOfUsage(
+      RxSharedPreferences prefs) {
+    return prefs.getInteger(PreferencesUtils.DAYS_OF_USAGE);
+  }
+
+  @Provides @Singleton @SelectedTrophy Preference<String> provideSelectedTrophy(
+      RxSharedPreferences prefs) {
+    return prefs.getString(PreferencesUtils.SELECTED_TROPHY, UserRealm.NOOB);
+  }
+
+  @Provides @Singleton @PreviousDateUsage Preference<Long> providePreviousDateUsage(
+      RxSharedPreferences prefs) {
+    return prefs.getLong(PreferencesUtils.PREVIOUS_DATE_USAGE, 0L);
   }
 }

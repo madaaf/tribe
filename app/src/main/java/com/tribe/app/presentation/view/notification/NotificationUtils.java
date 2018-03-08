@@ -86,6 +86,12 @@ public class NotificationUtils {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       builder.sound(SoundManager.GAME_CHALLENGING);
       liveNotificationView = builder.build();
+    } else if (notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_NEW_TROPHY)) {
+      // A friend got a new trophy
+      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
+      builder.sound(SoundManager.GAME_FRIEND_LEADER);
+      liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_LIVE)) {
       // A friend entered live - 1o1
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);

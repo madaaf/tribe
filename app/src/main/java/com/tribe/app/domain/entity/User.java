@@ -60,6 +60,7 @@ public class User
   private Date last_seen_at;
   private boolean random_banned_permanently;
   private Date random_banned_until;
+  private String trophy;
 
   private boolean isNewFriend = false;
   private boolean isFriend = false;
@@ -360,6 +361,18 @@ public class User
     return recipientList;
   }
 
+  public User findUser(String userId) {
+    for (Shortcut shortcut : getShortcutList()) {
+      if (shortcut.getMembers() != null) {
+        for (User member : shortcut.getMembers()) {
+          if (member.getId().equals(userId)) return member;
+        }
+      }
+    }
+
+    return null;
+  }
+
   public void setNew(boolean aNew) {
     isNew = aNew;
   }
@@ -406,6 +419,14 @@ public class User
 
   public List<String> getEmojiLeaderGameList() {
     return emojiLeaderGameList;
+  }
+
+  public String getTrophy() {
+    return trophy;
+  }
+
+  public void setTrophy(String trophy) {
+    this.trophy = trophy;
   }
 
   public boolean isUserInCall() {
@@ -456,6 +477,7 @@ public class User
       setMute_online_notif(user.isMute_online_notif());
       setScoreList(user.getScoreList());
       setEmojiLeaderGameList(user.getEmojiLeaderGameList());
+      setTrophy(user.getTrophy());
     }
   }
 
@@ -474,6 +496,7 @@ public class User
     setLastSeenAt(null);
     setRandom_banned_until(null);
     setMute_online_notif(false);
+    setTrophy(null);
   }
 
   public boolean isEmpty() {

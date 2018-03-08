@@ -7,7 +7,7 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.tribe.app.R;
@@ -61,6 +61,7 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
       ImageView btn1DrawableEnd = itemView.findViewById(R.id.btn1DrawableEnd);
       AvatarView avatarView = itemView.findViewById(R.id.avatarView);
       LinearLayout btn1Container = itemView.findViewById(R.id.btn1Container);
+      FrameLayout mask = itemView.findViewById(R.id.mask);
 
       btn1Container.setOnClickListener(v -> {
         switch (model.getType()) {
@@ -69,7 +70,7 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
           case NotificationModel.POPUP_FACEBOOK:
             break;
           case NotificationModel.POPUP_UPLOAD_PICTURE:
-
+              /*
             float delta = btn1DrawableEnd.getX() - btn1DrawableStart.getX();
             btn1DrawableStart.animate()
                 .alpha(0f)
@@ -93,7 +94,7 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
                     .start())
                 .setDuration(DURATION_ANIMATION)
                 .start();
-
+            */
             break;
         }
         onClickBtn1.onNext(model);
@@ -115,7 +116,10 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
       }
       if (model.getProfilePicture() != null) avatarView.load(model.getProfilePicture());
       if (model.getLogoPicture() != null) {
+        mask.setVisibility(View.GONE);
         avatarView.setBackground(content.getResources().getDrawable(model.getLogoPicture()));
+      } else {
+        mask.setVisibility(View.VISIBLE);
       }
 
       return itemView;

@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -46,7 +45,6 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
@@ -54,7 +52,6 @@ import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.RoomMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -66,8 +63,6 @@ import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
-import com.tribe.app.presentation.view.NotifView;
-import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.model.ShareTypeModel;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
@@ -78,7 +73,6 @@ import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
-import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
@@ -108,7 +102,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -118,7 +111,7 @@ import timber.log.Timber;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
-public class LiveActivity extends BaseActivity
+public class LiveActivity extends BaseBroadcastReceiverActivity
     implements LiveMVPView, ShortcutMVPView, RoomMVPView, AppStateListener {
 
   @StringDef({
@@ -190,8 +183,6 @@ public class LiveActivity extends BaseActivity
   private Unbinder unbinder;
   private Live live;
   private Room room;
-  private TribeBroadcastReceiver notificationReceiver;
-  private boolean receiverRegistered = false;
   private AppStateMonitor appStateMonitor;
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private RxPermissions rxPermissions;
@@ -206,24 +197,21 @@ public class LiveActivity extends BaseActivity
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription broadcastSubscription;
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
 
-  public static Live getLive(Recipient recipient, @Source String source) {
-    return computeLive(recipient, source, null);
-  }
-
   public static Intent getCallingIntent(Context context, Recipient recipient, @Source String source,
-      String gesture, String section, String gameId) {
+      String gameId, String userAsk) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    intent.putExtra(EXTRA_LIVE, computeLive(recipient, source, gameId));
+    intent.putExtra(EXTRA_LIVE, computeLive(recipient, source, gameId, userAsk));
     return intent;
   }
 
-  private static Live computeLive(Recipient recipient, @Source String source, String gameId) {
-    Live.Builder builder =
-        new Live.Builder(Live.FRIEND_CALL).countdown(!recipient.isLive()).source(source);
+  private static Live computeLive(Recipient recipient, @Source String source, String gameId,
+      String userAsk) {
+    Live.Builder builder = new Live.Builder(Live.FRIEND_CALL).countdown(!recipient.isLive())
+        .source(source)
+        .userAsk(userAsk);
 
     if (recipient instanceof Shortcut) {
       Shortcut shortcut = (Shortcut) recipient;
@@ -325,34 +313,29 @@ public class LiveActivity extends BaseActivity
     if (chatView != null) chatView.onResumeView();
     onResumeLockPhone();
 
-    if (!receiverRegistered) {
-      if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
+    subscriptionsBroadcastReceiver.add(
+        notificationReceiver.onShowNotificationLive().subscribe(pair -> {
+          NotificationPayload payload = pair.first;
 
-      registerReceiver(notificationReceiver,
-          new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
-      receiverRegistered = true;
+          if (room == null) return;
 
-      if (broadcastSubscription != null) broadcastSubscription.unsubscribe();
+          boolean shouldDisplay = true;
 
-      broadcastSubscription = notificationReceiver.onShowNotificationLive().subscribe(pair -> {
-        NotificationPayload payload = pair.first;
-
-        if (room == null) return;
-
-        boolean shouldDisplay = true;
-
-        if (room.getId().equals(payload.getSessionId())) {
-          String action = payload.getAction();
-          if (action != null &&
-              (action.equals(NotificationPayload.ACTION_LEFT) ||
-                  action.equals(NotificationPayload.ACTION_JOINED))) {
-            shouldDisplay = false;
+          if (room.getId().equals(payload.getSessionId())) {
+            String action = payload.getAction();
+            if (action != null &&
+                (action.equals(NotificationPayload.ACTION_LEFT) ||
+                    action.equals(NotificationPayload.ACTION_JOINED))) {
+              shouldDisplay = false;
+            }
           }
-        }
 
-        if (shouldDisplay) Alerter.create(this, pair.second).show();
-      });
-    }
+          if (shouldDisplay) Alerter.create(this, pair.second).show();
+        }));
+
+    subscriptionsBroadcastReceiver.add(notificationReceiver.onCreateInvite()
+        .filter(userId -> room != null && !StringUtils.isEmpty(userId))
+        .subscribe(userId -> livePresenter.createInvite(room.getId(), false, userId)));
 
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
@@ -361,12 +344,6 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override protected void onPause() {
-    if (receiverRegistered) {
-      unregisterReceiver(notificationReceiver);
-      receiverRegistered = false;
-      if (broadcastSubscription != null) broadcastSubscription.unsubscribe();
-    }
-
     if (chatView != null) chatView.dispose();
 
     super.onPause();
@@ -406,6 +383,7 @@ public class LiveActivity extends BaseActivity
   private void initParams(Intent intent) {
     if (intent.hasExtra(EXTRA_LIVE)) {
       live = (Live) intent.getSerializableExtra(EXTRA_LIVE);
+      setWaitingToJoin(live.getUserAsk());
       live.init();
     }
   }
@@ -717,11 +695,11 @@ public class LiveActivity extends BaseActivity
             Toast.makeText(this,
                 getString(R.string.live_other_user_hung_up, room.getInviter().getDisplayName()),
                 Toast.LENGTH_SHORT).show();
-            livePresenter.createInvite(room.getId(), room.getInviter().getId());
+            livePresenter.createInvite(room.getId(), false, room.getInviter().getId());
           }
         } else if (!live.fromRoom()) {
           List<String> userIds = live.getUserIdsOfShortcut();
-          livePresenter.createInvite(this.room.getId(),
+          livePresenter.createInvite(this.room.getId(), !StringUtils.isEmpty(live.getUserAsk()),
               userIds.toArray(new String[userIds.size()]));
         }
       }
@@ -1252,8 +1230,14 @@ public class LiveActivity extends BaseActivity
     }
   }
 
-  private void finishActivity() {
+  @Override public void finish() {
     if (finished) return;
+    if (stateManager.shouldDisplay(StateManager.FIRST_LEAVE_ROOM)) {
+      isFristLeaveRoom = true;
+      stateManager.addTutorialKey(StateManager.FIRST_LEAVE_ROOM);
+    } else {
+      isFristLeaveRoom = false;
+    }
 
     if (!viewLive.hasJoined() && room != null && !live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       livePresenter.deleteRoom(room.getId());
@@ -1265,35 +1249,13 @@ public class LiveActivity extends BaseActivity
       appStateMonitor.stop();
       appStateMonitor.removeListener(this);
     }
-
     disposeCall(false);
-
     putExtraHomeIntent();
     setExtraForCallFromUnknownUser();
     setExtraForShortcut();
 
     super.finish();
     overridePendingTransition(R.anim.activity_in_scale, R.anim.activity_out_to_right);
-  }
-
-  @Override public void finish() {
-    if (stateManager.shouldDisplay(StateManager.FIRST_LEAVE_ROOM) && FacebookUtils.isLoggedIn()) {
-      List<NotificationModel> list = new ArrayList<>();
-      NotifView view = new NotifView(getBaseContext());
-      view.setNotifEventListener(() -> {
-        finishActivity();
-      });
-      NotificationModel a = NotificationUtils.getFbNotificationModel(context());
-      list.add(a);
-      if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
-        NotificationModel b = NotificationUtils.getAvatarNotificationModel(context());
-        list.add(b);
-      }
-      view.show(this, list);
-      stateManager.addTutorialKey(StateManager.FIRST_LEAVE_ROOM);
-    } else {
-      finishActivity();
-    }
   }
 
   public String getShortcutId() {

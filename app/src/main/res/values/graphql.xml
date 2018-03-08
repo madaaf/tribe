@@ -164,6 +164,7 @@
               game_id
               room_id
             }
+            trophy
             last_seen_at
             time_in_call
             random_banned_permanently
@@ -188,6 +189,7 @@
               game_id
               room_id
             }
+            trophy
             last_seen_at
             time_in_call
             random_banned_permanently
@@ -235,6 +237,7 @@
           username
         }
       }
+      trophy
     }
   </string>
 
@@ -577,8 +580,19 @@
     }
   </string>
 
+  <string name="roomFragment_infos_light" translatable="false">
+    fragment RoomInfos on Room {
+      live_users {
+        ...UserInfos
+      }
+      invited_users {
+        ...UserInfos
+      }
+    }
+  </string>
+
   <string name="createInvite" translatable="false">
-    createInvite%1$s : createInvite (roomId : \"%2$s\", userId : \"%3$s\")
+    createInvite%1$s : createInvite (roomId : \"%2$s\", userId : \"%3$s\", ask : %4$b)
   </string>
 
   <string name="removeInvite" translatable="false">

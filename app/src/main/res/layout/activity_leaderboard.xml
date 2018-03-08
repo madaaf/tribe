@@ -118,13 +118,87 @@
       </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerViewLeaderboard"
+    <LinearLayout
+        android:id="@+id/layoutData"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
+        >
+      
+      <include layout="@layout/view_separator_simple"/>
 
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="40dp"
+          android:gravity="center_vertical"
+          android:orientation="horizontal"
+          >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/horizontal_margin_small"
+            android:scaleType="centerInside"
+            android:src="@drawable/picto_leaderboards_small"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/horizontal_margin_small"
+            android:maxLines="1"
+            android:text="@string/leaderboard_section_trophies"
+            android:textAllCaps="true"
+            style="@style/Body.Two.Yellow"
+            />
+      </LinearLayout>
+
+      <include layout="@layout/view_separator_simple"/>
+
+      <android.support.v7.widget.RecyclerView
+          android:id="@+id/recyclerViewTrophies"
+          android:layout_width="match_parent"
+          android:layout_height="90dp"
+          android:background="@color/black.opacity.3"
+          />
+
+      <include layout="@layout/view_separator_simple"/>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="40dp"
+          android:gravity="center_vertical"
+          android:orientation="horizontal"
+          >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/horizontal_margin_small"
+            android:src="@drawable/picto_game_small"
+            android:tint="@color/blue.new"
+            />
+
+        <com.tribe.app.presentation.view.widget.TextViewFont
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/horizontal_margin_small"
+            android:maxLines="1"
+            android:text="@string/leaderboard_section_games"
+            android:textAllCaps="true"
+            style="@style/Body.Two.BlueNew"
+            />
+      </LinearLayout>
+
+      <include layout="@layout/view_separator_simple"/>
+
+      <android.support.v7.widget.RecyclerView
+          android:id="@+id/recyclerViewLeaderboard"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          />
+    </LinearLayout>
   </android.support.design.widget.CoordinatorLayout>
 
   <View

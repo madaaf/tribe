@@ -24,7 +24,6 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.StringUtils;
-import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
@@ -245,11 +244,9 @@ public class Navigator {
    * @param recipient recipient to go live with
    */
   public void navigateToLive(Activity activity, Recipient recipient,
-      @LiveActivity.Source String source, String section, String gameId) {
+      @LiveActivity.Source String source, String gameId, String userAsk) {
     if (activity != null) {
-      Intent intent =
-          LiveActivity.getCallingIntent(activity, recipient, source, TagManagerUtils.GESTURE_TAP,
-              section, gameId);
+      Intent intent = LiveActivity.getCallingIntent(activity, recipient, source, gameId, userAsk);
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
       if (activity instanceof LiveActivity) {
         activity.startActivity(intent);
@@ -312,9 +309,9 @@ public class Navigator {
     }
   }
 
-  public void navigateToGameStoreLogin(Activity activity, Uri deeplink) {
+  public void navigateToGameStoreLogin(Activity activity, Uri deeplink, boolean fromAuth) {
     if (activity != null) {
-      Intent intent = GameStoreActivity.getCallingIntent(activity);
+      Intent intent = GameStoreActivity.getCallingIntent(activity, fromAuth);
       if (deeplink != null) {
         intent.setData(deeplink);
       }

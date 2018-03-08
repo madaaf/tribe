@@ -11,6 +11,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.facebook.login.LoginResult;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.jakewharton.rxbinding.view.RxView;
@@ -74,7 +75,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
 
   @Inject ProfileInfoPresenter profileInfoPresenter;
 
-  @Inject @AddressBook com.f2prateek.rx.preferences.Preference<Boolean> addressBook;
+  @Inject @AddressBook Preference<Boolean> addressBook;
 
   @BindView(R.id.profileInfoView) ProfileInfoView profileInfoView;
 
@@ -328,7 +329,7 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       tagSignUp();
     }
 
-    navigator.navigateToGameStoreLogin(this, deepLink);
+    navigator.navigateToGameStoreLogin(this, deepLink, true);
     finish();
   }
 

@@ -19,16 +19,23 @@ import com.jenzz.appstate.RxAppStateMonitor;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.AnimationIconRealm;
+import com.tribe.app.data.realm.BadgeRealm;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.LocationRealm;
+import com.tribe.app.data.realm.MediaRealm;
 import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.data.realm.PhoneRealm;
 import com.tribe.app.data.realm.PinRealm;
+import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.data.realm.ScoreUserRealm;
 import com.tribe.app.data.realm.SearchResultRealm;
+import com.tribe.app.data.realm.ShortcutLastSeenRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
+import com.tribe.app.data.realm.UserPlayingRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
@@ -36,6 +43,7 @@ import com.tribe.app.presentation.internal.di.components.DaggerApplicationCompon
 import com.tribe.app.presentation.internal.di.modules.ApplicationModule;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.IntentUtils;
+import com.tribe.app.presentation.utils.TrophiesManager;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
@@ -90,6 +98,7 @@ public class AndroidApplication extends Application {
     initTakt();
     initUlsee();
     initFilters();
+    initTrophiesManager();
     initGameManager();
     JodaTimeAndroid.init(this);
     initZendesk();
@@ -149,7 +158,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(18)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(19)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -442,6 +451,11 @@ public class AndroidApplication extends Application {
           }
 
           if (oldVersion == 17) {
+            schema.get("UserRealm").addField("trophy", String.class);
+            oldVersion++;
+          }
+
+          if (oldVersion == 18) {
             if (schema.get("GameFileRealm") == null) {
               schema.create("GameFileRealm")
                   .addField("url", String.class, FieldAttribute.PRIMARY_KEY)
@@ -451,8 +465,6 @@ public class AndroidApplication extends Application {
                   .addField("progress", int.class)
                   .addField("totalSize", int.class);
             }
-
-            oldVersion++;
           }
         })
         .build();
@@ -536,6 +548,10 @@ public class AndroidApplication extends Application {
     }
   }
 
+  private void initTrophiesManager() {
+    TrophiesManager.getInstance(this);
+  }
+
   private class SampleAppStateListener implements AppStateListener {
 
     @Override public void onAppDidEnterForeground() {
@@ -566,6 +582,16 @@ public class AndroidApplication extends Application {
         realm1.delete(SearchResultRealm.class);
         realm1.delete(UserRealm.class);
         realm1.delete(MessageRealm.class);
+        realm1.delete(AnimationIconRealm.class);
+        realm1.delete(BadgeRealm.class);
+        realm1.delete(GameRealm.class);
+        realm1.delete(MediaRealm.class);
+        realm1.delete(MessageRealm.class);
+        realm1.delete(ScoreUserRealm.class);
+        realm1.delete(ScoreRealm.class);
+        realm1.delete(ShortcutLastSeenRealm.class);
+        realm1.delete(ShortcutRealm.class);
+        realm1.delete(UserPlayingRealm.class);
       });
     } finally {
       realm.close();

@@ -18,13 +18,15 @@ public interface LiveRepository {
 
   Observable<Room> getRoom(Live live);
 
+  Observable<Room> getRoomLight(String roomId);
+
   Observable<Room> createRoom(String name, String gameId);
 
   Observable<Room> updateRoom(String roomId, List<Pair<String, String>> pairList);
 
   Observable<Void> deleteRoom(String roomId);
 
-  Observable<Boolean> createInvite(String roomId, String... userIds);
+  Observable<Boolean> createInvite(String roomId, boolean isAsking, String... userIds);
 
   Observable<Boolean> removeInvite(String roomId, String userId);
 

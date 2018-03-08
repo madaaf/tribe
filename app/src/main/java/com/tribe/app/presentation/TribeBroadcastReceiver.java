@@ -17,12 +17,18 @@ import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
+import com.tribe.app.presentation.view.NotifView;
+import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.popup.PopupManager;
+import com.tribe.app.presentation.view.popup.listener.PopupAskToJoinListenerAdapter;
+import com.tribe.app.presentation.view.popup.view.PopupAskToJoin;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
@@ -48,15 +54,18 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
 
   private WeakReference<Activity> weakReferenceActivity;
   private UserMVPViewAdapter userMVPViewAdapter;
+  private String userIdAsk;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<String> onDeclineInvitation = PublishSubject.create();
   private PublishSubject<String> onCreateShortcut = PublishSubject.create();
   private PublishSubject<String> onDisplayNotification = PublishSubject.create();
-  private PublishSubject<Void> onCallDeclined = PublishSubject.create();
+  private PublishSubject<NotificationPayload> onCallDeclined = PublishSubject.create();
+  private PublishSubject<String> onCreateInvite = PublishSubject.create();
   private PublishSubject<Pair<NotificationPayload, LiveNotificationView>> onShowNotificationLive =
       PublishSubject.create();
+  private PublishSubject<NotificationPayload> onGetRoomMembersLive = PublishSubject.create();
 
   public TribeBroadcastReceiver(Activity activity) {
     weakReferenceActivity = new WeakReference<>(activity);
@@ -93,6 +102,10 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
     computeNotificationPayload(context, payload);
   }
 
+  public void setWaitingToJoin(String userIdAsk) {
+    this.userIdAsk = userIdAsk;
+  }
+
   private boolean showMessageNotification(Context context,
       LiveNotificationView liveNotificationView, NotificationPayload notificationPayload) {
     if (liveNotificationView.getContainer() != null) {
@@ -103,8 +116,8 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
       if (notificationShortcut != null) {
         if (context instanceof ChatActivity) {
           List<User> memberInChat = null;
-          if (((ChatActivity) context).getShortcut() != null
-              && ((ChatActivity) context).getShortcut().getMembers() != null) {
+          if (((ChatActivity) context).getShortcut() != null &&
+              ((ChatActivity) context).getShortcut().getMembers() != null) {
             memberInChat = ((ChatActivity) context).getShortcut().getMembers();
           }
           boolean isSameChat =
@@ -115,8 +128,8 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
           }
         } else if (context instanceof LiveActivity) {
           List<User> memberInlive = null;
-          if (((LiveActivity) context).getShortcut() != null
-              && ((LiveActivity) context).getShortcut().getMembers() != null) {
+          if (((LiveActivity) context).getShortcut() != null &&
+              ((LiveActivity) context).getShortcut().getMembers() != null) {
             memberInlive = ((LiveActivity) context).getShortcut().getMembers();
           }
           boolean isSameChat =
@@ -161,15 +174,19 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
         NotificationUtils.getNotificationViewFromPayload(context, notificationPayload);
 
     if (notificationPayload.isLive()) {
+      if (notificationPayload.getUserId().equals(userIdAsk)) {
+        userIdAsk = null;
+        goToLive(context, notificationPayload);
+        return;
+      }
+
       liveNotificationView.getContainer().setOnClickListener(view -> {
-        Shortcut shortcut = ShortcutUtil.getRecipientFromId(notificationPayload.getUserId(), user);
-        Room room = new Room(notificationPayload.getSessionId());
-        room.setShortcut(shortcut);
-        Invite invite = new Invite();
-        invite.setShortcut(shortcut);
-        invite.setRoom(room);
-        navigator.navigateToLive((Activity) context, invite,
-            LiveActivity.SOURCE_IN_APP_NOTIFICATION, null, null);
+        if (weakReferenceActivity == null || weakReferenceActivity.get() == null) return;
+        if (notificationPayload.isAsking()) {
+          displayJoinPopup(context, notificationPayload, null);
+        } else {
+          onGetRoomMembersLive.onNext(notificationPayload);
+        }
       });
     }
 
@@ -195,12 +212,76 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
       });
     }
 
-    if (liveNotificationView != null && (weakReferenceActivity.get() != null
-        && !(weakReferenceActivity.get() instanceof LiveActivity))) {
+    if (liveNotificationView != null &&
+        (weakReferenceActivity.get() != null &&
+            (!(weakReferenceActivity.get() instanceof LiveActivity) ||
+                notificationPayload.isLive()))) {
       Alerter.create(weakReferenceActivity.get(), liveNotificationView).show();
     } else if (liveNotificationView != null) {
       onShowNotificationLive.onNext(Pair.create(notificationPayload, liveNotificationView));
     }
+  }
+
+  public void displayJoinPopup(Context context, NotificationPayload notificationPayload,
+      List<User> members) {
+    List<NotificationModel> notificationModelList = new ArrayList<>();
+
+    PopupAskToJoin.Builder builder = new PopupAskToJoin.Builder(context,
+        notificationPayload.isAsking() ? PopupAskToJoin.ASK_TO_JOIN
+            : PopupAskToJoin.INVITED_TO_JOIN).user(user.findUser(notificationPayload.getUserId()))
+        .game(notificationPayload.getGame_id());
+
+    if (members != null) {
+      builder.members(members);
+    }
+
+    PopupAskToJoin popupAskToJoin = builder.build();
+
+    NotifView notifView = new NotifView(context);
+
+    PopupManager popupManager = PopupManager.create(
+        new PopupManager.Builder().activity(weakReferenceActivity.get())
+            .dimBackground(false)
+            .listener(new PopupAskToJoinListenerAdapter() {
+              @Override public void accept() {
+                if (!notificationPayload.isAsking()) {
+                  goToLive(context, notificationPayload);
+                  if (notifView != null) notifView.dispose();
+                } else {
+                  onCreateInvite.onNext(notificationPayload.getUserId());
+                  if (notifView != null) notifView.hideView();
+                }
+              }
+
+              @Override public void decline() {
+                onDeclineInvitation.onNext(notificationPayload.getSessionId());
+                if (notifView != null) notifView.hideView();
+              }
+
+              @Override public void later() {
+                if (notifView != null) notifView.hideView();
+              }
+            })
+            .view(popupAskToJoin));
+
+    notificationModelList.add(new NotificationModel.Builder().view(popupManager.getView()).build());
+
+    notifView.show(weakReferenceActivity.get(), notificationModelList);
+
+    subscriptions.add(notifView.onDismiss()
+        .filter(aVoid -> !StringUtils.isEmpty(notificationPayload.getSessionId()))
+        .subscribe(aVoid -> onDeclineInvitation.onNext(notificationPayload.getSessionId())));
+  }
+
+  private void goToLive(Context context, NotificationPayload notificationPayload) {
+    Shortcut shortcut = ShortcutUtil.getRecipientFromId(notificationPayload.getUserId(), user);
+    Room room = new Room(notificationPayload.getSessionId());
+    room.setShortcut(shortcut);
+    Invite invite = new Invite();
+    invite.setShortcut(shortcut);
+    invite.setRoom(room);
+    navigator.navigateToLive((Activity) context, invite, LiveActivity.SOURCE_IN_APP_NOTIFICATION,
+        null, null);
   }
 
   /**
@@ -217,5 +298,13 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
 
   public Observable<Pair<NotificationPayload, LiveNotificationView>> onShowNotificationLive() {
     return onShowNotificationLive;
+  }
+
+  public Observable<String> onCreateInvite() {
+    return onCreateInvite;
+  }
+
+  public Observable<NotificationPayload> onGetRoomMembersLive() {
+    return onGetRoomMembersLive;
   }
 }

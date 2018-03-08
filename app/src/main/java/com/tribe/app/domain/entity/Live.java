@@ -43,6 +43,7 @@ public class Live implements Serializable {
   private String section;
   private String gesture;
   private String gameId;
+  private String userAsk;
 
   private transient CompositeSubscription subscriptions;
   private transient BehaviorSubject<Room> onRoomUpdated;
@@ -63,6 +64,7 @@ public class Live implements Serializable {
     this.gesture = builder.gesture;
     this.section = builder.section;
     this.gameId = builder.gameId;
+    this.userAsk = builder.userAsk;
   }
 
   public void init() {
@@ -257,6 +259,14 @@ public class Live implements Serializable {
     this.gameId = gameId;
   }
 
+  public String getUserAsk() {
+    return userAsk;
+  }
+
+  public void setUserAsk(String userAsk) {
+    this.userAsk = userAsk;
+  }
+
   public int nbInRoom() {
     if (room != null && room.nbUsersTotal() != 0) {
       return room.nbUsersTotal();
@@ -285,6 +295,7 @@ public class Live implements Serializable {
     private String section;
     private Shortcut shortcut;
     private String gameId;
+    private String userAsk;
 
     public Builder(@LiveType String type) {
       this.type = type;
@@ -355,6 +366,11 @@ public class Live implements Serializable {
 
     public Builder gameId(String gameId) {
       this.gameId = gameId;
+      return this;
+    }
+
+    public Builder userAsk(String userAsk) {
+      this.userAsk = userAsk;
       return this;
     }
 
