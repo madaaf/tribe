@@ -52,6 +52,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -67,7 +68,7 @@ public class NotifView extends FrameLayout {
 
   private static ViewGroup decorView;
   private static View v;
-  private static boolean disposeView = false;
+  private static boolean disposeView = true;
 
   private Unbinder unbinder;
   private Context context;
@@ -95,6 +96,7 @@ public class NotifView extends FrameLayout {
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Void> onDismiss = PublishSubject.create();
 
   public NotifView(@NonNull Context context) {
     super(context);
@@ -106,11 +108,17 @@ public class NotifView extends FrameLayout {
     initView(context);
   }
 
+  public static boolean isDisplayed() {
+    return !disposeView;
+  }
+
   public void overrideBackground(Drawable background) {
     bgView.setBackground(background);
   }
 
   public void show(Activity activity, List<NotificationModel> list) {
+    disposeView = false;
+
     this.data = list;
     if (list.size() < 2) {
       dotsContainer.setAlpha(0f);
@@ -184,7 +192,6 @@ public class NotifView extends FrameLayout {
 
   private void initView(Context context) {
     this.context = context;
-    disposeView = false;
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     v = inflater.inflate(R.layout.activity_test, this, true);
     unbinder = ButterKnife.bind(this);
@@ -359,6 +366,7 @@ public class NotifView extends FrameLayout {
       if (pager.getCurrentItem() == data.size() - 1) {
         hideView();
         tagCancelAction();
+        onDismiss.onNext(null);
       } else {
         pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
       }
@@ -391,5 +399,13 @@ public class NotifView extends FrameLayout {
 
   public interface OnFinishEventListener {
     void onFinishView();
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<Void> onDismiss() {
+    return onDismiss;
   }
 }

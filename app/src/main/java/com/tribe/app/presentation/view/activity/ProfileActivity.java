@@ -470,7 +470,7 @@ public class ProfileActivity extends BaseBroadcastReceiverActivity
     subscriptions.add(viewSettingsBlockedFriends.onHangLive()
         .subscribe(
             recipient -> navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_FRIENDS,
-                recipient.getSectionTag(), null)));
+                null, null)));
 
     profilePresenter.loadBlockedShortcuts();
   }

@@ -54,6 +54,18 @@ public class CloudLiveDataStore implements LiveDataStore {
         .compose(onlineLiveTransformer);
   }
 
+  @Override public Observable<Room> getRoomLight(String roomId) {
+    String body = context.getString(R.string.getRoom_roomId, roomId);
+
+    final String request = context.getString(R.string.query, body) +
+        "\n" +
+        context.getString(R.string.roomFragment_infos_light) +
+        "\n" +
+        context.getString(R.string.userfragment_infos_light);
+
+    return this.tribeApi.room(request).compose(onlineLiveTransformer);
+  }
+
   @Override public Observable<Room> createRoom(String name, String gameId) {
     String params = "";
 
@@ -122,14 +134,15 @@ public class CloudLiveDataStore implements LiveDataStore {
         .map(aBoolean -> null);
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {
+  @Override
+  public Observable<Boolean> createInvite(String roomId, boolean isAsking, String... userIds) {
     StringBuffer buffer = new StringBuffer();
 
     if (userIds.length > 0) {
       for (String id : userIds) {
         if (!id.equals(accessToken.getUserId())) {
           buffer.append(context.getString(R.string.createInvite,
-              UUID.randomUUID().toString().replace("-", ""), roomId, id));
+              UUID.randomUUID().toString().replace("-", ""), roomId, id, isAsking));
         }
       }
     }

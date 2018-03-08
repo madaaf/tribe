@@ -55,8 +55,8 @@ public class NewGameActivity extends GameActivity {
       setResult(RESULT_OK, intent);
       bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.LIVE);
     } else {
-      navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
-          TagManagerUtils.SECTION_SHORTCUT, game.getId());
+      navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM, game.getId(),
+          null);
       bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.CHAT);
     }
 

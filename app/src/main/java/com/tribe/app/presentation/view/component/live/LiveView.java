@@ -821,13 +821,14 @@ public class LiveView extends FrameLayout {
             @Override public void onGlobalLayout() {
               viewRinging.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-              String txt = getContext().getString(R.string.live_ringing_in, WAITING_SECONDE);
+              int str = !StringUtils.isEmpty(live.getUserAsk()) ? R.string.live_asking_in : R.string.live_ringing_in;
+              String txt = getContext().getString(str, WAITING_SECONDE);
               viewRinging.setPictoCamera(txt);
 
               CountDownTimer countDownTimer = new CountDownTimer(WAITING_SECONDE * 1000, 1000) {
                 public void onTick(long millisUntilFinished) {
-                  String txt =
-                      getContext().getString(R.string.live_ringing_in, millisUntilFinished / 1000);
+                  int str = !StringUtils.isEmpty(live.getUserAsk())  ? R.string.live_asking_in : R.string.live_ringing_in;
+                  String txt = getContext().getString(str, millisUntilFinished / 1000);
                   if (viewRinging != null) viewRinging.setTextTimer(txt);
                 }
 

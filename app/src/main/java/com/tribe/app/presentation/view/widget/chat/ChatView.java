@@ -381,9 +381,8 @@ public class ChatView extends IChat {
         pictoVoiceNote.setTranslationX(
             voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
 
-        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) - (
-            pictoVoiceNote.getHeight()
-                / 2) + screenUtils.dpToPx(12));
+        pictoVoiceNote.setTranslationY(-editText.getHeight() + (voiceNoteBtn.getHeight() / 2) -
+            (pictoVoiceNote.getHeight() / 2) + screenUtils.dpToPx(12));
 
         voiceNoteBtnX = (int) (voiceNoteBtn.getX());
         float transX =
@@ -452,9 +451,9 @@ public class ChatView extends IChat {
     if (isSupport()) {
 
       voiceNoteBtn.setTranslationX(
-          editText.getX() + widthRefInit + btnGame.getWidth() - voiceNoteBtn.getWidth()
-              + screenUtils.dpToPx(10)
-              + videoCallBtn.getWidth());
+          editText.getX() + widthRefInit + btnGame.getWidth() - voiceNoteBtn.getWidth() +
+              screenUtils.dpToPx(10) +
+              videoCallBtn.getWidth());
       pictoVoiceNote.setTranslationX(
           voiceNoteBtn.getX() + (voiceNoteBtn.getWidth() / 2) - (pictoVoiceNote.getWidth() / 2));
 
@@ -524,11 +523,11 @@ public class ChatView extends IChat {
         uploadTask = riversRef.putStream(inputStream);
       } else if (type.equals(MESSAGE_AUDIO)) {
         uri = Uri.fromFile(new File(audioFile));
-        StorageReference riversRef = storageRef.child("app/uploads/"
-            + user.getId()
-            + "/"
-            + dateUtils.getUTCDateAsString()
-            + uri.getLastPathSegment());
+        StorageReference riversRef = storageRef.child("app/uploads/" +
+            user.getId() +
+            "/" +
+            dateUtils.getUTCDateAsString() +
+            uri.getLastPathSegment());
         uploadTask = riversRef.putFile(uri);
       }
 
@@ -1052,8 +1051,7 @@ public class ChatView extends IChat {
   }
 
   @OnClick(R.id.videoCallBtn) void onClickVideoCall() {
-    navigator.navigateToLive((Activity) context, recipient, LiveActivity.SOURCE_GRID,
-        TagManagerUtils.SECTION_SHORTCUT, null);
+    navigator.navigateToLive((Activity) context, recipient, LiveActivity.SOURCE_GRID, null, null);
   }
 
   @OnClick(R.id.btnGame) void onClickGame() {

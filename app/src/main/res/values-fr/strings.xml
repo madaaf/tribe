@@ -424,8 +424,8 @@
 	<string name="live_share_screenshot_caption">Merci @heytribe! :metal: #tribegoals</string>
 	<string name="live_ringing_in">Appel dans %1$d</string>
 	<string name="live_ringing">Appel en cours de %1$s</string>
-	<string name="live_asking_in">Appel dans %1$d</string>
-	<string name="live_asking">Appel en cours de %1$s</string>
+	<string name="live_asking_in">Envoi de la demande dans %1$d</string>
+	<string name="live_asking">Demande à %1$s en cours...</string>
 	<string name="live_joining">Connexion...</string>
 	<string name="live_invite_section_chat_members">Members du chat</string>
 	<string name="live_invite_section_invite_link">Lien d\'nvitation</string>
@@ -865,7 +865,7 @@
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Marquer comme lu</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Marquer comme non-lu</string>
 	<string name="home_menu_invite_decline">:phone: Rejeter le défi</string>
-	<string name="home_menu_user_leaderboard">:trophy: Scores</string>
+	<string name="home_menu_user_leaderboard">:trophy: Scores &amp; Trophées</string>
 	<string name="home_block_shortcut_title">Bloquer %1$s ?</string>
 	<string name="home_block_shortcut_message">Masquer les nouveaux messages, appels et autres notifications venant de cette personne. Vous pourrez débloquer cette personne depuis votre profil.</string>
 	<string name="home_block_shortcut_validate">Bloquer</string>

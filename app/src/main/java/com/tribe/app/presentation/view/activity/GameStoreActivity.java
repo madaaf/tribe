@@ -42,6 +42,9 @@ import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.popup.PopupManager;
+import com.tribe.app.presentation.view.popup.listener.PopupDigestListener;
+import com.tribe.app.presentation.view.popup.view.PopupDigest;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -199,8 +202,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       if (callRoulette) {
         navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, gameId);
       } else if (shortcut != null) {
-        navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
-            TagManagerUtils.SECTION_SHORTCUT, gameId);
+        navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM, gameId, null);
       }
     } else if (requestCode == Navigator.FROM_LIVE) {
       shouldDisplayDigest = false;
@@ -289,50 +291,59 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
         }
       }
 
-      List<NotificationModel> notificationModelList = new ArrayList<>();
+      if (!NotifView.isDisplayed()) {
+        List<NotificationModel> notificationModelList = new ArrayList<>();
 
-      //if (items.size() > 0 && shouldDisplayDigest) {
-      //  PopupDigest popupDigest =
-      //      (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
-      //  popupDigest.setItems(items);
-      //
-      //  PopupManager popupManager = PopupManager.create(new PopupManager.Builder().activity(this)
-      //      .dimBackground(false)
-      //      .listener(new PopupDigestListener() {
-      //        @Override public void onClick(Recipient recipient) {
-      //          navigator.navigateToLive(GameStoreActivity.this, recipient,
-      //              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-      //                  : LiveActivity.SOURCE_GRID, TagManagerUtils.SECTION_ONGOING, null);
-      //          if (notifView != null) notifView.dispose();
-      //        }
-      //
-      //        @Override public void onClickMore() {
-      //          onClickHome();
-      //        }
-      //      })
-      //      .view(popupDigest));
-      //
-      //  notificationModelList.add(
-      //      new NotificationModel.Builder().view(popupManager.getView()).build());
-      //} else {
-      //  shouldDisplayDigest = true;
-      //}
+        if (items.size() > 0 && shouldDisplayDigest) {
+          PopupDigest popupDigest =
+              (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
+          popupDigest.setItems(items);
 
-      if (usersChallenge != null && usersChallenge.size() > 0) {
-        notificationModelList.addAll(
-            NotificationUtils.getChallengeNotification(usersChallenge, GameStoreActivity.this,
-                stateManager, user, challengeNotificationsPref));
-        usersChallenge = null;
-      }
+          PopupManager popupManager = PopupManager.create(new PopupManager.Builder().activity(this)
+              .dimBackground(false)
+              .listener(new PopupDigestListener() {
+                @Override public void onClick(Recipient recipient) {
+                  String userAsk = null;
 
-      if (notificationModelList.size() > 0) {
-        if (notifView != null) {
-          notifView.dispose();
-          notifView = null;
+                  if (recipient instanceof Shortcut) {
+                    User user = ((Shortcut) recipient).getSingleFriend();
+                    if (user != null) userAsk = user.getId();
+                  }
+
+                  navigator.navigateToLive(GameStoreActivity.this, recipient,
+                      recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+                          : LiveActivity.SOURCE_GRID, null, userAsk);
+                  if (notifView != null) notifView.dispose();
+                }
+
+                @Override public void onClickMore() {
+                  onClickHome();
+                }
+              })
+              .view(popupDigest));
+
+          notificationModelList.add(
+              new NotificationModel.Builder().view(popupManager.getView()).build());
+        } else {
+          shouldDisplayDigest = true;
         }
 
-        notifView = new NotifView(this);
-        notifView.show(this, notificationModelList);
+        if (usersChallenge != null && usersChallenge.size() > 0) {
+          notificationModelList.addAll(
+              NotificationUtils.getChallengeNotification(usersChallenge, GameStoreActivity.this,
+                  stateManager, user, challengeNotificationsPref));
+          usersChallenge = null;
+        }
+
+        if (notificationModelList.size() > 0) {
+          if (notifView != null) {
+            notifView.dispose();
+            notifView = null;
+          }
+
+          notifView = new NotifView(this);
+          notifView.show(this, notificationModelList);
+        }
       }
 
       if (hasLive) {

@@ -11,6 +11,7 @@ import com.tribe.app.domain.interactor.live.CreateRoom;
 import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.domain.interactor.live.DeleteRoom;
 import com.tribe.app.domain.interactor.live.GetRoom;
+import com.tribe.app.domain.interactor.live.GetRoomMembers;
 import com.tribe.app.domain.interactor.live.RandomRoomAssigned;
 import com.tribe.app.domain.interactor.live.RemoveInvite;
 import com.tribe.app.domain.interactor.live.RoomUpdated;
@@ -39,12 +40,13 @@ public class RoomPresenter implements Presenter {
   private DeclineInvite declineInvite;
   private RoomUpdated roomUpdated;
   private RandomRoomAssigned randomRoomAssigned;
+  private GetRoomMembers getRoomMembers;
 
   // SUBSCRIBERS
   private RandomRoomAssignedSubscriber randomRoomAssignedSubscriber;
   private RoomUpdatedSubscriber roomUpdatedSubscriber;
 
-  @Inject public RoomPresenter(GetRoom getRoom, CreateRoom createRoom, UpdateRoom updateRoom,
+  @Inject public RoomPresenter(GetRoom getRoom, GetRoomMembers getRoomMembers, CreateRoom createRoom, UpdateRoom updateRoom,
       DeleteRoom deleteRoom, BuzzRoom buzzRoom, CreateInvite createInvite,
       RemoveInvite removeInvite, DeclineInvite declineInvite, RandomRoomAssigned randomRoomAssigned,
       RoomUpdated roomUpdated) {
@@ -58,6 +60,7 @@ public class RoomPresenter implements Presenter {
     this.randomRoomAssigned = randomRoomAssigned;
     this.roomUpdated = roomUpdated;
     this.deleteRoom = deleteRoom;
+    this.getRoomMembers = getRoomMembers;
   }
 
   @Override public void onViewDetached() {
@@ -71,6 +74,7 @@ public class RoomPresenter implements Presenter {
     declineInvite.unsubscribe();
     randomRoomAssigned.unsubscribe();
     roomUpdated.unsubscribe();
+    getRoomMembers.unsubscribe();
     roomMVPView = null;
   }
 
@@ -81,6 +85,11 @@ public class RoomPresenter implements Presenter {
   public void getRoomInfos(Live live) {
     getRoom.setup(live);
     getRoom.execute(new GetRoomSubscriber());
+  }
+
+  public void getRoomMembers(String roomId) {
+    getRoomMembers.setup(roomId);
+    getRoomMembers.execute(new GetRoomSubscriber());
   }
 
   private final class GetRoomSubscriber extends DefaultSubscriber<Room> {
@@ -138,8 +147,8 @@ public class RoomPresenter implements Presenter {
     buzzRoom.execute(new DefaultSubscriber());
   }
 
-  public void createInvite(String roomId, String... userIds) {
-    createInvite.setup(roomId, userIds);
+  public void createInvite(String roomId, boolean isAsking, String... userIds) {
+    createInvite.setup(roomId, isAsking, userIds);
     createInvite.execute(new DefaultSubscriber());
   }
 

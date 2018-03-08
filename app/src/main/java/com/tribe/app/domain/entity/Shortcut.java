@@ -71,6 +71,11 @@ public class Shortcut extends Recipient implements Serializable, LiveInviteAdapt
     else return getSingleFriend().isPlaying();
   }
 
+  public boolean isPlayingAGame() {
+    if (!single) return false;
+    else return getSingleFriend().isPlayingAGame();
+  }
+
   @Override public boolean isActionAvailable(User currentUser) {
     return true;
   }

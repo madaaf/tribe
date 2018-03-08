@@ -102,7 +102,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -198,24 +197,21 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription broadcastSubscription;
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
 
-  public static Live getLive(Recipient recipient, @Source String source) {
-    return computeLive(recipient, source, null);
-  }
-
   public static Intent getCallingIntent(Context context, Recipient recipient, @Source String source,
-      String gesture, String section, String gameId) {
+      String gameId, String userAsk) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    intent.putExtra(EXTRA_LIVE, computeLive(recipient, source, gameId));
+    intent.putExtra(EXTRA_LIVE, computeLive(recipient, source, gameId, userAsk));
     return intent;
   }
 
-  private static Live computeLive(Recipient recipient, @Source String source, String gameId) {
-    Live.Builder builder =
-        new Live.Builder(Live.FRIEND_CALL).countdown(!recipient.isLive()).source(source);
+  private static Live computeLive(Recipient recipient, @Source String source, String gameId,
+      String userAsk) {
+    Live.Builder builder = new Live.Builder(Live.FRIEND_CALL).countdown(!recipient.isLive())
+        .source(source)
+        .userAsk(userAsk);
 
     if (recipient instanceof Shortcut) {
       Shortcut shortcut = (Shortcut) recipient;
@@ -317,28 +313,29 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
     if (chatView != null) chatView.onResumeView();
     onResumeLockPhone();
 
-    if (!receiverRegistered) {
-      if (broadcastSubscription != null) broadcastSubscription.unsubscribe();
+    subscriptionsBroadcastReceiver.add(
+        notificationReceiver.onShowNotificationLive().subscribe(pair -> {
+          NotificationPayload payload = pair.first;
 
-      broadcastSubscription = notificationReceiver.onShowNotificationLive().subscribe(pair -> {
-        NotificationPayload payload = pair.first;
+          if (room == null) return;
 
-        if (room == null) return;
+          boolean shouldDisplay = true;
 
-        boolean shouldDisplay = true;
-
-        if (room.getId().equals(payload.getSessionId())) {
-          String action = payload.getAction();
-          if (action != null &&
-              (action.equals(NotificationPayload.ACTION_LEFT) ||
-                  action.equals(NotificationPayload.ACTION_JOINED))) {
-            shouldDisplay = false;
+          if (room.getId().equals(payload.getSessionId())) {
+            String action = payload.getAction();
+            if (action != null &&
+                (action.equals(NotificationPayload.ACTION_LEFT) ||
+                    action.equals(NotificationPayload.ACTION_JOINED))) {
+              shouldDisplay = false;
+            }
           }
-        }
 
-        if (shouldDisplay) Alerter.create(this, pair.second).show();
-      });
-    }
+          if (shouldDisplay) Alerter.create(this, pair.second).show();
+        }));
+
+    subscriptionsBroadcastReceiver.add(notificationReceiver.onCreateInvite()
+        .filter(userId -> room != null && !StringUtils.isEmpty(userId))
+        .subscribe(userId -> livePresenter.createInvite(room.getId(), false, userId)));
 
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
@@ -347,10 +344,6 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
   }
 
   @Override protected void onPause() {
-    if (receiverRegistered) {
-      if (broadcastSubscription != null) broadcastSubscription.unsubscribe();
-    }
-
     if (chatView != null) chatView.dispose();
 
     super.onPause();
@@ -390,6 +383,7 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
   private void initParams(Intent intent) {
     if (intent.hasExtra(EXTRA_LIVE)) {
       live = (Live) intent.getSerializableExtra(EXTRA_LIVE);
+      setWaitingToJoin(live.getUserAsk());
       live.init();
     }
   }
@@ -701,11 +695,11 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
             Toast.makeText(this,
                 getString(R.string.live_other_user_hung_up, room.getInviter().getDisplayName()),
                 Toast.LENGTH_SHORT).show();
-            livePresenter.createInvite(room.getId(), room.getInviter().getId());
+            livePresenter.createInvite(room.getId(), false, room.getInviter().getId());
           }
         } else if (!live.fromRoom()) {
           List<String> userIds = live.getUserIdsOfShortcut();
-          livePresenter.createInvite(this.room.getId(),
+          livePresenter.createInvite(this.room.getId(), !StringUtils.isEmpty(live.getUserAsk()),
               userIds.toArray(new String[userIds.size()]));
         }
       }

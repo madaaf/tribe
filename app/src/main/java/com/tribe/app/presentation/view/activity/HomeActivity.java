@@ -200,7 +200,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   private List<HomeAdapterInterface> latestRecipientList;
   private NotificationReceiverSupport notificationReceiverSupport;
   private boolean shouldOverridePendingTransactions = false, hasSynced = false, canEndRefresh =
-      false, finish = false, searchViewDisplayed = false, shouldNavigateToChat = false, notificationReceiverSupportRegistered = false;
+      false, finish = false, searchViewDisplayed = false, shouldNavigateToChat = false,
+      notificationReceiverSupportRegistered = false;
   private RxPermissions rxPermissions;
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private Shortcut supportShortcut = createShortcutSupport();
@@ -308,9 +309,6 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       registerReceiver(notificationReceiverSupport,
           new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
 
-      subscriptions.add(notificationReceiver.onDeclineInvitation()
-          .subscribe(roomId -> homeGridPresenter.declineInvite(roomId)));
-
       notificationReceiverSupportRegistered = true;
     }
 
@@ -320,6 +318,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   @Override protected void onPause() {
     if (notificationReceiverSupportRegistered) {
       unregisterReceiver(notificationReceiverSupport);
+      notificationReceiverSupportRegistered = false;
     }
 
     super.onPause();
@@ -421,9 +420,16 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   }
 
   private void onClickItem(Recipient recipient) {
+    String userAsk = null;
+
+    if (recipient instanceof Shortcut) {
+      User user = ((Shortcut) recipient).getSingleFriend();
+      if (user != null) userAsk = user.getId();
+    }
+
     navigator.navigateToLive(this, recipient,
         recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-            : LiveActivity.SOURCE_GRID, recipient.getSectionTag(), null);
+            : LiveActivity.SOURCE_GRID, null, userAsk);
   }
 
   private void initRecyclerView() {
@@ -780,10 +786,16 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
     subscriptions.add(searchView.onGone().subscribe(aVoid -> searchView.setVisibility(View.GONE)));
 
-    subscriptions.add(searchView.onHangLive()
-        .subscribe(
-            recipient -> navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_SEARCH,
-                recipient.getSectionTag(), null)));
+    subscriptions.add(searchView.onHangLive().subscribe(recipient -> {
+      String userAsk = null;
+
+      if (recipient instanceof Shortcut) {
+        User user = ((Shortcut) recipient).getSingleFriend();
+        if (user != null) userAsk = user.getId();
+      }
+
+      navigator.navigateToLive(this, recipient, LiveActivity.SOURCE_SEARCH, null, userAsk);
+    }));
 
     subscriptions.add(searchView.onInvite().subscribe(contact -> invite(contact)));
 

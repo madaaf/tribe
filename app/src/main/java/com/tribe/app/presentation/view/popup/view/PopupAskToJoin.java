@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Score;
@@ -23,6 +24,7 @@ import com.tribe.app.domain.entity.TrophyEnum;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FontUtils;
+import com.tribe.app.presentation.view.popup.listener.PopupAskToJoinListener;
 import com.tribe.app.presentation.view.transformer.PositionedCropTransformation;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -174,6 +176,7 @@ public class PopupAskToJoin extends PopupView {
     }
 
     if (popupType.equals(INVITED_TO_JOIN)) {
+      btnNegative.setText(R.string.invited_to_join_popup_action_later);
       txtTitle.setText(getContext().getString(R.string.invited_to_join_popup_title, displayName));
       String desc = "";
 
@@ -182,7 +185,7 @@ public class PopupAskToJoin extends PopupView {
           desc += user.getDisplayName() + ", ";
         }
 
-        desc.substring(0, desc.length() - 1);
+        desc.substring(0, desc.length() - 2);
         txtDesc.setText(getContext().getString(R.string.invited_to_join_popup_subtitle, desc));
       } else {
         txtDesc.setVisibility(View.GONE);
@@ -282,6 +285,20 @@ public class PopupAskToJoin extends PopupView {
   /**
    * ON CLICK
    */
+
+  @OnClick(R.id.btnPositive) void clickPositive() {
+    if (popupListener != null) ((PopupAskToJoinListener) popupListener).accept();
+  }
+
+  @OnClick(R.id.btnNegative) void clickNegative() {
+    if (popupListener != null) {
+      if (popupType.equals(ASK_TO_JOIN)) {
+        ((PopupAskToJoinListener) popupListener).decline();
+      } else {
+        ((PopupAskToJoinListener) popupListener).later();
+      }
+    }
+  }
 
   /**
    * PUBLIC

@@ -10,26 +10,23 @@ import rx.Observable;
 /**
  * Created by tiago on 04/05/2016.
  */
-public class CreateInvite extends UseCase {
+public class GetRoomMembers extends UseCase {
 
-  private String[] userIds;
   private String roomId;
-  private boolean isAsking;
   private LiveRepository liveRepository;
 
-  @Inject public CreateInvite(CloudLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
+  @Inject
+  public GetRoomMembers(CloudLiveDataRepository liveRepository, ThreadExecutor threadExecutor,
       PostExecutionThread postExecutionThread) {
     super(threadExecutor, postExecutionThread);
     this.liveRepository = liveRepository;
   }
 
-  public void setup(String roomId, boolean isAsking, String... userIds) {
+  public void setup(String roomId) {
     this.roomId = roomId;
-    this.isAsking = isAsking;
-    this.userIds = userIds;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.liveRepository.createInvite(roomId, isAsking, userIds);
+    return this.liveRepository.getRoomLight(roomId);
   }
 }
