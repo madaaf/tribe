@@ -111,6 +111,17 @@ public class LiveRoomView extends FrameLayout {
     init();
   }
 
+  public void jump() {
+    onViews = BehaviorSubject.create();
+    mapViews.clear();
+    mapViews.put(currentUser.getId(), viewLiveLocal);
+    onViews.onNext(mapViews);
+  }
+
+  public void dispose() {
+    mapViews.clear();
+  }
+
   private void init() {
     initDependencyInjector();
 

@@ -249,7 +249,7 @@ public class GlideUtils {
               if (hasBorder) {
                 drawableRequestBuilder.bitmapTransform(
                     new RoundedCornersTransformation(context, getRadius(target, screenUtils),
-                        screenUtils.dpToPx(3), "#FFFFFF", screenUtils.dpToPx(2)));
+                        screenUtils.dpToPx(3), "#FFFFFF", screenUtils.dpToPx(4)));
               }
 
               drawableRequestBuilder.diskCacheStrategy(DiskCacheStrategy.RESULT).into(target);

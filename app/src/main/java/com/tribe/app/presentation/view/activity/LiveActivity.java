@@ -533,17 +533,6 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
     }
   }
 
-  private Boolean displayRatingNotifDependingFirebaseTrigger() {
-    Random rn = new Random();
-    int randomNumber = rn.nextInt(101);
-    return randomNumber > firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TRIGGER);
-  }
-
-  private Long getFirebaseTimeoutConfig() {
-    Long time = firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TIMEOUT);
-    return time == 0 ? 10 : time;
-  }
-
   private void launchCallRoulette() {
     if (!FacebookUtils.isLoggedIn()) {
       Timber.d("not logged on fb ");

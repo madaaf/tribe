@@ -310,16 +310,27 @@ public class LiveView extends FrameLayout {
       webRTCRoom.leaveRoom();
     }
 
+    Timber.d("dispose !isJump");
+    stopGame();
+    persistentSubscriptions.clear();
+    tempSubscriptions.clear();
+    gameManager.disposeLive();
+    if (viewGameManager != null) viewGameManager.dispose();
+    mapScoreViews.clear();
+    if (callGameAverageSubscription != null) callGameAverageSubscription.unsubscribe();
+    if (callGameDurationSubscription != null) callGameDurationSubscription.unsubscribe();
+
     if (!isJump) {
-      Timber.d("dispose !isJump");
-      persistentSubscriptions.unsubscribe();
       viewLocalLive.dispose();
-      gameManager.disposeLive();
-      if (viewGameManager != null) viewGameManager.dispose();
-      stopGame();
       tempSubscriptions.unsubscribe();
+      persistentSubscriptions.unsubscribe();
+      viewRoom.dispose();
     } else {
-      tempSubscriptions.clear();
+      viewRoom.jump();
+      layoutScoresOverLive.removeAllViews();
+      init();
+      initSubscriptions();
+      initLiveScores();
     }
   }
 
@@ -348,17 +359,7 @@ public class LiveView extends FrameLayout {
     initResources();
     initUI();
     initSubscriptions();
-
-    LiveRowViewScores rowViewScore = new LiveRowViewScores(getContext());
-    rowViewScore.setGuest(user.asTribeGuest());
-    LinearLayout.LayoutParams params =
-        new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT);
-    layoutScoresOverLive.addView(rowViewScore, layoutScoresOverLive.getChildCount() - 1, params);
-    mapScoreViews.put(rowViewScore.getGuest().getId(), rowViewScore);
-    persistentSubscriptions.add(viewLocalLive.onScoreChange()
-        .subscribe(
-            integerStringPair -> mapScoreViews.get(user.getId()).updateScores(integerStringPair)));
+    initLiveScores();
 
     super.onFinishInflate();
   }
@@ -407,6 +408,19 @@ public class LiveView extends FrameLayout {
     if (resourceId > 0) {
       statusBarHeight = getResources().getDimensionPixelSize(resourceId);
     }
+  }
+
+  private void initLiveScores() {
+    LiveRowViewScores rowViewScore = new LiveRowViewScores(getContext());
+    rowViewScore.setGuest(user.asTribeGuest());
+    LinearLayout.LayoutParams params =
+        new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT);
+    layoutScoresOverLive.addView(rowViewScore, layoutScoresOverLive.getChildCount() - 1, params);
+    mapScoreViews.put(rowViewScore.getGuest().getId(), rowViewScore);
+    persistentSubscriptions.add(viewLocalLive.onScoreChange()
+        .subscribe(
+            integerStringPair -> mapScoreViews.get(user.getId()).updateScores(integerStringPair)));
   }
 
   private void setAlphaOnGuestWhenHideControls(boolean hiddenControls) {
@@ -821,13 +835,15 @@ public class LiveView extends FrameLayout {
             @Override public void onGlobalLayout() {
               viewRinging.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 
-              int str = !StringUtils.isEmpty(live.getUserAsk()) ? R.string.live_asking_in : R.string.live_ringing_in;
+              int str = !StringUtils.isEmpty(live.getUserAsk()) ? R.string.live_asking_in
+                  : R.string.live_ringing_in;
               String txt = getContext().getString(str, WAITING_SECONDE);
               viewRinging.setPictoCamera(txt);
 
               CountDownTimer countDownTimer = new CountDownTimer(WAITING_SECONDE * 1000, 1000) {
                 public void onTick(long millisUntilFinished) {
-                  int str = !StringUtils.isEmpty(live.getUserAsk())  ? R.string.live_asking_in : R.string.live_ringing_in;
+                  int str = !StringUtils.isEmpty(live.getUserAsk()) ? R.string.live_asking_in
+                      : R.string.live_ringing_in;
                   String txt = getContext().getString(str, millisUntilFinished / 1000);
                   if (viewRinging != null) viewRinging.setTextTimer(txt);
                 }

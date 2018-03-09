@@ -219,8 +219,6 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
     trophyAdapter.setItems(TrophyEnum.getTrophies());
 
     subscriptions.add(trophyAdapter.onClick()
-        .debounce(1, TimeUnit.SECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
         .map(view -> trophyAdapter.getItemAtPosition(
             recyclerViewTrophies.getChildLayoutPosition(view)))
         .subscribe(trophyEnum -> {
