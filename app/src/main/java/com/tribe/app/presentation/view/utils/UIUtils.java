@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.widget.FrameLayout;
 import com.tribe.app.R;
 
 /**

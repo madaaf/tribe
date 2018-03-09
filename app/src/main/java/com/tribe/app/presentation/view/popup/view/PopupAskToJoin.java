@@ -246,17 +246,14 @@ public class PopupAskToJoin extends PopupView {
         txtGame.setText(R.string.invited_to_join_popup_no_game_selected);
         txtGame.setGravity(Gravity.CENTER);
         txtViewScore.setVisibility(View.GONE);
-      } else {
-
       }
     }
-
-    ViewCompat.setBackground(imgTop, gd);
 
     txtTrophy.setText(getContext().getString(R.string.ask_to_join_popup_level,
         getContext().getString(trophyEnum.getTitle())));
     new GlideUtils.TrophyImageBuilder(getContext(), screenUtils).drawableRes(trophyEnum.getIcon())
         .cardView(cardViewTrophy)
+        .hasBorder(true)
         .target(imgIcon)
         .load();
 
@@ -268,7 +265,7 @@ public class PopupAskToJoin extends PopupView {
         screenUtils.dpToPx(5));
     txtViewScore.setScore(score != null ? score.getValue() : 0);
 
-    int radius = screenUtils.dpToPx(4);
+    int radius = screenUtils.dpToPx(8);
     float[] radiusMatrix = new float[] { 0, 0, 0, 0, 0, 0, radius, radius };
     GradientDrawable gradientDrawable = new GradientDrawable();
     gradientDrawable.setColor(ContextCompat.getColor(getContext(), R.color.blue_new));
@@ -280,6 +277,10 @@ public class PopupAskToJoin extends PopupView {
     gradientDrawable.setColor(ContextCompat.getColor(getContext(), R.color.grey_popup_digest));
     gradientDrawable.setCornerRadii(radiusMatrix);
     btnNegative.setBackground(gradientDrawable);
+
+    radiusMatrix = new float[] { radius, radius, radius, radius, 0, 0, 0, 0 };
+    gd.setCornerRadii(radiusMatrix);
+    ViewCompat.setBackground(imgTop, gd);
   }
 
   /**

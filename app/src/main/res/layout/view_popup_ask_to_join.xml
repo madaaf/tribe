@@ -10,6 +10,7 @@
     android:clipChildren="false"
     app:cardBackgroundColor="@android:color/transparent"
     app:cardElevation="5dp"
+    app:cardCornerRadius="8dp"
     app:cardPreventCornerOverlap="false"
     app:cardUseCompatPadding="true"
     >
@@ -128,7 +129,6 @@
         android:layout_marginEnd="@dimen/horizontal_margin"
         android:layout_marginStart="@dimen/horizontal_margin"
         android:gravity="center_vertical"
-        android:textAllCaps="true"
         app:layout_constraintBottom_toTopOf="@+id/btnPositive"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

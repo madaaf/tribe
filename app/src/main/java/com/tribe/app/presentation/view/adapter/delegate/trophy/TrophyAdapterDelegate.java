@@ -83,7 +83,6 @@ public class TrophyAdapterDelegate extends RxAdapterDelegate<List<TrophyEnum>> {
 
     if (position == items.size() - 1) {
       UIUtils.changeRightMarginOfView(vh.cardView, margin);
-      UIUtils.changeLeftMarginOfView(vh.cardView, 0);
     } else {
       UIUtils.changeRightMarginOfView(vh.cardView, 0);
       UIUtils.changeLeftMarginOfView(vh.cardView, margin);

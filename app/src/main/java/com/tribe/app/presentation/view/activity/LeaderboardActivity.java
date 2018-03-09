@@ -1,10 +1,8 @@
 package com.tribe.app.presentation.view.activity;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -33,13 +31,12 @@ import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecorati
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardUserLayoutManager;
 import com.tribe.app.presentation.view.adapter.manager.TrophyLayoutManager;
 import com.tribe.app.presentation.view.popup.PopupManager;
-import com.tribe.app.presentation.view.popup.listener.PopupTrophyListenerAdapter;
 import com.tribe.app.presentation.view.popup.view.PopupTrophy;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.avatar.EmojiGameView;
+import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import java.util.ArrayList;
@@ -82,7 +79,7 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @BindView(R.id.layoutData) LinearLayout layoutData;
 
-  @BindView(R.id.viewAvatar) AvatarView viewAvatar;
+  @BindView(R.id.viewNewAvatar) NewAvatarView viewNewAvatar;
 
   @BindView(R.id.txtEmojiGame) EmojiGameView txtEmojiGame;
 
@@ -228,22 +225,21 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
           List<NotificationModel> notificationModelList = new ArrayList<>();
 
           PopupTrophy popupTrophy =
-              new PopupTrophy.Builder(this, trophyEnum).bg(screenUtils.dpToPx(5)).build();
+              new PopupTrophy.Builder(this, trophyEnum).bg(screenUtils.dpToPx(8)).build();
 
-          PopupManager popupManager = PopupManager.create(new PopupManager.Builder().activity(this)
-              .dimBackground(false)
-              .listener(new PopupTrophyListenerAdapter() {
-                @Override public void onClick(TrophyEnum trophyEnum) {
-                  //getPackageManager().setComponentEnabledSetting(
-                  //    getComponentName(),
-                  //    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-                  //
-                  //getPackageManager().setComponentEnabledSetting(
-                  //    new ComponentName("com.tribe.app.debug", "com.tribe.app.debug.LauncherActivityPro"),
-                  //    PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-                }
-              })
-              .view(popupTrophy));
+          PopupManager popupManager = PopupManager.create(
+              new PopupManager.Builder().activity(this).dimBackground(false).view(popupTrophy));
+          //.listener(new PopupTrophyListenerAdapter() {
+          //  @Override public void onClick(TrophyEnum trophyEnum) {
+          //    getPackageManager().setComponentEnabledSetting(
+          //        getComponentName(),
+          //        PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+          //
+          //    getPackageManager().setComponentEnabledSetting(
+          //        new ComponentName("com.tribe.app.debug", "com.tribe.app.debug.LauncherActivityPro"),
+          //        PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+          //  }
+          //})
 
           notificationModelList.add(
               new NotificationModel.Builder().view(popupManager.getView()).build());
@@ -264,7 +260,7 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
     leaderboardUserAdapter.setUser(user);
 
     txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
-    viewAvatar.load(user.getProfilePicture());
+    viewNewAvatar.load(user);
     txtName.setText(user.getDisplayName());
     txtUsername.setText(user.getUsernameDisplay());
 
@@ -292,7 +288,7 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
   }
 
   private void showAvatar() {
-    scaleUp(viewAvatar);
+    scaleUp(viewNewAvatar);
     scaleUp(txtEmojiGame);
   }
 

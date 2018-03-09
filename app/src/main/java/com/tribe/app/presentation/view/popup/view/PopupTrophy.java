@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.view.popup.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -140,7 +141,7 @@ public class PopupTrophy extends PopupView {
   }
 
   private void initUI() {
-    int radius = screenUtils.dpToPx(5);
+    int radius = screenUtils.dpToPx(8);
     float[] radiusMatrix = new float[] { 0, 0, 0, 0, radius, radius, radius, radius };
     GradientDrawable background =
         new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[] {
@@ -216,7 +217,15 @@ public class PopupTrophy extends PopupView {
 
     layoutTop.setBackground(smallBG);
 
+    radiusMatrix = new float[] {  0, 0, 0, 0, radius, radius, radius, radius };
+    background =
+        new GradientDrawable();
+    background.setColor(Color.WHITE);
+    background.setCornerRadii(radiusMatrix);
+    layoutDesc.setBackground(background);
+
     new GlideUtils.TrophyImageBuilder(getContext(), screenUtils).drawableRes(trophyEnum.getIcon())
+        .hasBorder(true)
         .cardView(cardViewTrophy)
         .target(imgIcon)
         .load();

@@ -7,17 +7,21 @@ import android.content.Intent;
 import android.util.Pair;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.data.realm.MessageRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.presenter.UserPresenter;
+import com.tribe.app.presentation.mvp.view.adapter.MessageMVPViewAdapter;
 import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.NotificationModel;
@@ -29,6 +33,7 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.popup.PopupManager;
 import com.tribe.app.presentation.view.popup.listener.PopupAskToJoinListenerAdapter;
 import com.tribe.app.presentation.view.popup.view.PopupAskToJoin;
+import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
@@ -49,11 +54,13 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
   @Inject Navigator navigator;
   @Inject User user;
   @Inject UserPresenter userPresenter;
+  @Inject MessagePresenter messagePresenter;
   @Inject StateManager stateManager;
   @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
 
   private WeakReference<Activity> weakReferenceActivity;
   private UserMVPViewAdapter userMVPViewAdapter;
+  private MessageMVPViewAdapter messageMVPViewAdapter;
   private String userIdAsk;
 
   // OBSERVABLES
@@ -80,12 +87,16 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
             challengeNotificationsPref, user);
       }
     };
-
     userPresenter.onViewAttached(userMVPViewAdapter);
+
+    messageMVPViewAdapter = new MessageMVPViewAdapter(activity) {
+    };
+    messagePresenter.onViewAttached(messageMVPViewAdapter);
   }
 
   public void dispose() {
-    if (userPresenter != null) userPresenter.onViewDetached();
+    userPresenter.onViewDetached();
+    messagePresenter.onViewDetached();
     subscriptions.clear();
     weakReferenceActivity.clear();
   }
@@ -255,6 +266,38 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
 
               @Override public void decline() {
                 onDeclineInvitation.onNext(notificationPayload.getSessionId());
+                subscriptions.add(DialogFactory.dialogMultipleChoices(context,
+                    EmojiParser.demojizedText(context.getString(R.string.decline_menu_title,
+                        notificationPayload.getUserDisplayName())),
+                    EmojiParser.demojizedText(context.getString(R.string.decline_menu_message)),
+                    EmojiParser.demojizedText(context.getString(R.string.decline_menu_answer1)),
+                    EmojiParser.demojizedText(context.getString(R.string.decline_menu_answer2)),
+                    EmojiParser.demojizedText(context.getString(R.string.decline_menu_custom)))
+                    .subscribe(integer -> {
+                      String[] array = new String[] { notificationPayload.getUserId() };
+                      switch (integer) {
+                        case 0:
+                          messagePresenter.createMessage(array,
+                              EmojiParser.demojizedText("Let's catch up after! :dizzy:"),
+                              MessageRealm.TEXT, 0);
+                          break;
+
+                        case 1:
+                          messagePresenter.createMessage(array,
+                              EmojiParser.demojizedText("Text me in the chat! :speech_balloon:"),
+                              MessageRealm.TEXT, 0);
+                          break;
+                        case 2:
+                          Shortcut shortcut =
+                              ShortcutUtil.getRecipientFromId(notificationPayload.getUserId(),
+                                  user);
+                          if (weakReferenceActivity.get() != null) {
+                            navigator.navigateToChat(weakReferenceActivity.get(), shortcut,
+                                shortcut, TagManagerUtils.SECTION_ONLINE, false);
+                          }
+                          break;
+                      }
+                    }));
                 if (notifView != null) notifView.hideView();
               }
 

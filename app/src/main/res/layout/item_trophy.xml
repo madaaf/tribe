@@ -13,6 +13,7 @@
       android:id="@+id/cardView"
       android:layout_width="50dp"
       android:layout_height="50dp"
+      android:layout_marginStart="@dimen/horizontal_margin"
       android:clipChildren="false"
       app:cardBackgroundColor="@android:color/transparent"
       android:layout_marginStart="@dimen/horizontal_margin"

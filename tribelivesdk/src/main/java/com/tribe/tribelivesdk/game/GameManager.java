@@ -231,6 +231,7 @@ import rx.subscriptions.CompositeSubscription;
     subscriptionsRoom.clear();
     subscriptionsUI.clear();
     subscriptionsGame.clear();
+    subscriptions.clear();
     webRTCRoom = null;
   }
 

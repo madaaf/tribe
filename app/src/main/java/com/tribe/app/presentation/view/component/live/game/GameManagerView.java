@@ -323,6 +323,9 @@ public class GameManagerView extends FrameLayout {
     subscriptions.clear();
     invitedMap.clear();
     peerMap.clear();
+    mapGameData.clear();
+    onPeerMapChange = BehaviorSubject.create();
+    onInvitedMapChange = BehaviorSubject.create();
     disposeGame();
   }
 
