@@ -116,7 +116,7 @@ public class NewAvatarView extends FrameLayout implements Avatar {
   }
 
   private void setupTrophy(String trophy) {
-    if (trophy != null && !trophy.equals(UserRealm.NOOB) && type != NORMAL) {
+    if (trophy != null && !trophy.equals(UserRealm.NOOB)) {
       if (trophy.equals(UserRealm.PRO)) {
         strokeColor = ContextCompat.getColor(getContext(), TrophyEnum.PRO.getPrimaryColor());
       } else if (trophy.equals(UserRealm.MASTER)) {

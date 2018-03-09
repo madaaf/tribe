@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
+import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import com.bumptech.glide.DrawableRequestBuilder;
@@ -200,6 +201,7 @@ public class GlideUtils {
     private int drawableRes;
     private ImageView target;
     private CardView cardView;
+    private boolean hasBorder = false;
 
     public TrophyImageBuilder(Context context, ScreenUtils screenUtils) {
       this.context = context;
@@ -221,23 +223,42 @@ public class GlideUtils {
       return this;
     }
 
-    public void load() {
-      DrawableRequestBuilder drawableRequestBuilder = Glide.with(context).load(drawableRes);
+    public TrophyImageBuilder hasBorder(boolean hasBorder) {
+      this.hasBorder = hasBorder;
+      return this;
+    }
 
+    public void load() {
       if (cardView != null) {
         cardView.getViewTreeObserver()
             .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
               @Override public void onGlobalLayout() {
                 cardView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                cardView.setRadius(((float) cardView.getMeasuredWidth() / (float) 4) /
-                    (float) 1.61803398874989484820);
+                cardView.setRadius(getRadius(cardView, screenUtils));
               }
             });
       }
 
-      drawableRequestBuilder
-          .diskCacheStrategy(DiskCacheStrategy.RESULT)
-          .into(target);
+      target.getViewTreeObserver()
+          .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+              target.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+              DrawableRequestBuilder drawableRequestBuilder = Glide.with(context).load(drawableRes);
+
+              if (hasBorder) {
+                drawableRequestBuilder.bitmapTransform(
+                    new RoundedCornersTransformation(context, getRadius(target, screenUtils),
+                        screenUtils.dpToPx(3), "#FFFFFF", screenUtils.dpToPx(2)));
+              }
+
+              drawableRequestBuilder.diskCacheStrategy(DiskCacheStrategy.RESULT).into(target);
+            }
+          });
     }
+  }
+
+  private static int getRadius(View view, ScreenUtils screenUtils) {
+    return (int) (((float) view.getMeasuredWidth() / (float) 4) / (float) 1.61803398874989484820);
   }
 }

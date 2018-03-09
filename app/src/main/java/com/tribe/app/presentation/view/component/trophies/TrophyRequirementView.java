@@ -87,16 +87,17 @@ public class TrophyRequirementView extends LinearLayout {
     int radius = screenUtils.dpToPx(5);
     border.setCornerRadius(radius);
 
+    int marginDrawable = screenUtils.dpToPx(2);
+
     GradientDrawable fill = new GradientDrawable();
     fill.setColor(Color.WHITE);
-    fill.setCornerRadius(radius);
+    fill.setCornerRadius(screenUtils.dpToPx(3));
 
     GradientDrawable[] layers = { border, fill };
     LayerDrawable layerDrawable = new LayerDrawable(layers);
 
-    int margin = screenUtils.dpToPx(2);
     layerDrawable.setLayerInset(0, 0, 0, 0, 0);
-    layerDrawable.setLayerInset(1, margin, margin, margin, margin);
+    layerDrawable.setLayerInset(1, marginDrawable, marginDrawable, marginDrawable, marginDrawable);
 
     layoutReq.setBackground(layerDrawable);
 

@@ -7,10 +7,10 @@
 
   <LinearLayout
       android:id="@+id/layoutReq"
-      android:layout_width="match_parent"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="@dimen/horizontal_margin_small"
-      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:paddingStart="@dimen/horizontal_margin_smaller"
+      android:paddingEnd="@dimen/horizontal_margin_smaller"
       android:gravity="center"
       android:orientation="horizontal"
       >

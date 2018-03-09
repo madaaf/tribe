@@ -10,6 +10,7 @@
     android:clipChildren="false"
     app:cardBackgroundColor="@android:color/transparent"
     app:cardElevation="5dp"
+    app:cardCornerRadius="8dp"
     app:cardPreventCornerOverlap="false"
     app:cardUseCompatPadding="true"
     >
