@@ -62,7 +62,6 @@ public class PreferencesUtils {
   public static String SELECTED_TROPHY = "SELECTED_TROPHY";
   public static String PREVIOUS_DATE_USAGE = "PREVIOUS_DATE_USAGE";
   public static String POKE_USER_GAME = "POKE_USER_GAME";
-  
 
   public static void saveMapAsJson(Map<String, Object> map, Preference<String> preference) {
     GsonBuilder builder = new GsonBuilder();
@@ -125,7 +124,7 @@ public class PreferencesUtils {
   }
 
   public static void savePlayloadPokeTimingAsJson(List<PokeTiming> payloadList,
-      Preference<String> preference,  int maxWaitingTimeSeconde) {
+      Preference<String> preference, int maxWaitingTimeSeconde) {
     Gson gson = new GsonBuilder().create();
     Type type = new TypeToken<List<PokeTiming>>() {
     }.getType();
@@ -135,7 +134,8 @@ public class PreferencesUtils {
     preference.set(gson.toJson(payloadList, type));
   }
 
-  public static List<PokeTiming> getPlayloadPokeTimingList(Preference<String> preference, int maxWaitingTimeSeconde) {
+  public static List<PokeTiming> getPlayloadPokeTimingList(Preference<String> preference,
+      int maxWaitingTimeSeconde) {
     Gson gson = new GsonBuilder().create();
     Type type = new TypeToken<List<PokeTiming>>() {
     }.getType();
@@ -144,19 +144,17 @@ public class PreferencesUtils {
         new Gson().fromJson(preference.get(), new TypeToken<List<PokeTiming>>() {
         }.getType());
     List<PokeTiming> copie = new ArrayList<>();
-    copie.addAll(list);
-
-    long timeMillis = System.
-        currentTimeMillis();
-
-    for (PokeTiming pokeTiming : list) {
-      long diff = timeMillis - pokeTiming.getCreationDate();
-      long timeSeconde = TimeUnit.MILLISECONDS.toSeconds(diff);
-      if (timeSeconde > maxWaitingTimeSeconde) {
-        copie.remove(pokeTiming);
+    if (list != null) {
+      copie.addAll(list);
+      long timeMillis = System.currentTimeMillis();
+      for (PokeTiming pokeTiming : list) {
+        long diff = timeMillis - pokeTiming.getCreationDate();
+        long timeSeconde = TimeUnit.MILLISECONDS.toSeconds(diff);
+        if (timeSeconde > maxWaitingTimeSeconde) {
+          copie.remove(pokeTiming);
+        }
       }
     }
-
     preference.set(gson.toJson(copie, type));
     return copie;
   }
