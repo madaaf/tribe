@@ -9,8 +9,8 @@
       android:id="@+id/layoutReq"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginEnd="@dimen/horizontal_margin_small"
-      android:layout_marginStart="@dimen/horizontal_margin_small"
+      android:layout_marginEnd="@dimen/horizontal_margin_xsmall"
+      android:layout_marginStart="@dimen/horizontal_margin_xsmall"
       android:gravity="center"
       android:orientation="horizontal"
       >

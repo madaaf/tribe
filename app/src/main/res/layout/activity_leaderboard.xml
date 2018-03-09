@@ -62,7 +62,7 @@
         <RelativeLayout
             android:id="@+id/layoutUser"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="74dp"
             android:layout_gravity="center"
             android:gravity="center"
             android:orientation="vertical"
@@ -73,7 +73,7 @@
               android:id="@+id/viewAvatar"
               android:layout_width="@dimen/avatar_size_medium"
               android:layout_height="@dimen/avatar_size_medium"
-              android:layout_centerHorizontal="true"
+              android:layout_centerVertical="true"
               android:scaleX="0"
               android:scaleY="0"
               />
@@ -95,9 +95,9 @@
               android:id="@+id/txtName"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:layout_below="@id/viewAvatar"
-              android:layout_centerHorizontal="true"
-              android:layout_marginTop="@dimen/horizontal_margin_smaller"
+              android:layout_alignTop="@id/viewAvatar"
+              android:layout_marginStart="@dimen/horizontal_margin_small"
+              android:layout_toRightOf="@id/viewAvatar"
               android:scaleX="0"
               android:scaleY="0"
               style="@style/BiggerTitle.2.Black"
@@ -107,9 +107,10 @@
               android:id="@+id/txtUsername"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:layout_below="@id/txtName"
-              android:layout_centerHorizontal="true"
+              android:layout_alignBottom="@id/viewAvatar"
+              android:layout_marginStart="@dimen/horizontal_margin_small"
               android:layout_marginTop="4dp"
+              android:layout_toRightOf="@id/viewAvatar"
               android:scaleX="0"
               android:scaleY="0"
               style="@style/BiggerBody.One.Black40"
@@ -125,7 +126,7 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
-      
+
       <include layout="@layout/view_separator_simple"/>
 
       <LinearLayout

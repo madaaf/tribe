@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layoutContent"
-    android:layout_width="90dp"
+    android:layout_width="wrap_content"
     android:layout_height="90dp"
     android:background="@null"
     >
@@ -15,6 +15,7 @@
       android:layout_height="50dp"
       android:clipChildren="false"
       app:cardBackgroundColor="@android:color/transparent"
+      android:layout_marginStart="@dimen/horizontal_margin"
       app:cardElevation="5dp"
       app:cardPreventCornerOverlap="false"
       app:layout_constraintBottom_toBottomOf="parent"

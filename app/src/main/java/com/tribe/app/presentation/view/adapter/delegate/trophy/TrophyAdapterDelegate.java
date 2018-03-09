@@ -17,6 +17,7 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
@@ -31,6 +32,9 @@ public class TrophyAdapterDelegate extends RxAdapterDelegate<List<TrophyEnum>> {
 
   @Inject User user;
 
+  // RESOURCES
+  private int margin;
+
   // RX SUBSCRIPTIONS / SUBJECTS
   // VARIABLES
   protected Context context;
@@ -44,6 +48,8 @@ public class TrophyAdapterDelegate extends RxAdapterDelegate<List<TrophyEnum>> {
         (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+
+    margin = screenUtils.dpToPx(20);
   }
 
   @Override public boolean isForViewType(@NonNull List<TrophyEnum> items, int position) {
@@ -74,6 +80,14 @@ public class TrophyAdapterDelegate extends RxAdapterDelegate<List<TrophyEnum>> {
         .cardView(vh.cardView)
         .target(vh.imgIcon)
         .load();
+
+    if (position == items.size() - 1) {
+      UIUtils.changeRightMarginOfView(vh.cardView, margin);
+      UIUtils.changeLeftMarginOfView(vh.cardView, 0);
+    } else {
+      UIUtils.changeRightMarginOfView(vh.cardView, 0);
+      UIUtils.changeLeftMarginOfView(vh.cardView, margin);
+    }
   }
 
   @Override public void onBindViewHolder(@NonNull List<TrophyEnum> items,

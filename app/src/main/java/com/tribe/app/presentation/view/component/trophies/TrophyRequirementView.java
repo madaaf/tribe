@@ -89,7 +89,7 @@ public class TrophyRequirementView extends LinearLayout {
 
     GradientDrawable fill = new GradientDrawable();
     fill.setColor(Color.WHITE);
-    fill.setCornerRadius(radius);
+    fill.setCornerRadius(radius * 2);
 
     GradientDrawable[] layers = { border, fill };
     LayerDrawable layerDrawable = new LayerDrawable(layers);
