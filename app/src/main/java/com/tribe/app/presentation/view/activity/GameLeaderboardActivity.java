@@ -335,9 +335,15 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       setClickPokeAnimation(score, score.getTextView());
     }));
 
-    subscriptions.add(adapter.onClickAvatar().subscribe(score -> {
-      Recipient recipient = ShortcutUtil.getRecipientFromId(score.getUser().getId(), user);
-      navigator.navigateToChat(this, recipient, null, null, false);
+    subscriptions.add(adapter.onClick().subscribe(score -> {
+      if (score.getUser().getId().equals(user.getId())) {
+        navigator.shareGenericText(
+            getString(R.string.poke_share_score, score.getGame().getId(), score.getRanking()),
+            this);
+      } else {
+        Recipient recipient = ShortcutUtil.getRecipientFromId(score.getUser().getId(), user);
+        navigator.navigateToChat(this, recipient, null, null, false);
+      }
     }));
 
     recyclerView.setItemAnimator(null);
@@ -568,22 +574,27 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     onBackPressed();
   }
 
+  private void onClickAvatar(int index) {
+    Score score = podiumList.get(index);
+    if (score.getUser().getId().equals(user.getId())) {
+      navigator.shareGenericText(
+          getString(R.string.poke_share_score, score.getGame().getId(), score.getRanking()), this);
+    } else {
+      Recipient recipient = ShortcutUtil.getRecipientFromId(score.getUser().getId(), user);
+      navigator.navigateToChat(this, recipient, null, null, false);
+    }
+  }
+
   @OnClick(R.id.avatarFirst) void onClickAvatarFirst() {
-    Recipient recipient =
-        ShortcutUtil.getRecipientFromId(podiumList.get(0).getUser().getId(), user);
-    navigator.navigateToChat(this, recipient, null, null, false);
+    onClickAvatar(0);
   }
 
   @OnClick(R.id.avatarSecond) void onClickAvatarSecond() {
-    Recipient recipient =
-        ShortcutUtil.getRecipientFromId(podiumList.get(1).getUser().getId(), user);
-    navigator.navigateToChat(this, recipient, null, null, false);
+    onClickAvatar(1);
   }
 
   @OnClick(R.id.avatarThird) void onClickAvatarThird() {
-    Recipient recipient =
-        ShortcutUtil.getRecipientFromId(podiumList.get(2).getUser().getId(), user);
-    navigator.navigateToChat(this, recipient, null, null, false);
+    onClickAvatar(2);
   }
 
   @OnLongClick(R.id.avatarFirst) boolean onLongClickAvatarFirst() {

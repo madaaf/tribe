@@ -23,11 +23,7 @@ public class EmojiPoke extends TextView {
     this.transX = transX;
     this.transY = transY;
     this.isSmall = isSmall;
-    if (isSmall) {
-      setTextSize(screenUtils.dpToPx(width / 12));
-    } else {
-      setTextSize(screenUtils.dpToPx(width / 10));
-    }
+
     setText(EmojiParser.demojizedText(emo));
     FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
     params.leftMargin = (int) x1 + transX;
@@ -35,6 +31,11 @@ public class EmojiPoke extends TextView {
     setPadding(0, 0, 0, screenUtils.dpToPx(3));
     setLayoutParams(params);
     setGravity(Gravity.CENTER);
+    if (isSmall) {
+      setTextSize(screenUtils.pxToDp(width) / (2f));
+    } else {
+      setTextSize(screenUtils.pxToDp(width) / (1.5f));
+    }
   }
 
   public boolean isSmall() {

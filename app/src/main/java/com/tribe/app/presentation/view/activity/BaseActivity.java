@@ -31,7 +31,6 @@ import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
-import java.util.ArrayList;
 import com.tribe.app.presentation.view.utils.StateManager;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,9 +42,9 @@ import rx.subscriptions.CompositeSubscription;
  * Base {@link android.app.Activity} class for every Activity in this application.
  */
 public abstract class BaseActivity extends AppCompatActivity {
-  public static boolean firstLeaveRoom;
 
   protected static boolean isFristLeaveRoom = false;
+
   private Context context;
 
   @Inject Navigator navigator;
@@ -64,7 +63,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
   @Inject UserPresenter userPresenter;
 
-    private CompositeSubscription subscriptions = new CompositeSubscription();
+  private CompositeSubscription subscriptions = new CompositeSubscription();
 
   @Override protected void onStart() {
     super.onStart();
@@ -100,8 +99,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         && !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
-      userPresenter.getUsersInfoListById(usersIds); //SOEF
-    } else if (firstLeaveRoom) {
+      userPresenter.getUsersInfoListById(usersIds);
+    } else if (isFristLeaveRoom) {
+      isFristLeaveRoom = false;
       List<NotificationModel> list = new ArrayList<>();
       NotifView view = new NotifView(getBaseContext());
       NotificationModel a = NotificationUtils.getFbNotificationModel(this);
@@ -111,7 +111,10 @@ public abstract class BaseActivity extends AppCompatActivity {
   }
 
   private void connectToFacebook() {
-    if (isFristLeaveRoom) displayPopups();
+    if (isFristLeaveRoom) {
+      displayPopups();
+      isFristLeaveRoom = false;
+    }
   }
 
   private void displayPopups() {

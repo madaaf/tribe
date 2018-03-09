@@ -57,9 +57,8 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
   protected Context context;
   protected LayoutInflater layoutInflater;
 
-  protected PublishSubject<View> click = PublishSubject.create();
   protected PublishSubject<Score> onClickPoke = PublishSubject.create();
-  protected PublishSubject<Score> onClickAvatar = PublishSubject.create();
+  protected PublishSubject<Score> onClick = PublishSubject.create();
 
   private StateManager stateManager;
   private String emo = null;
@@ -86,7 +85,6 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     final LeaderboardUserViewHolder vh = new LeaderboardUserViewHolder(
         layoutInflater.inflate(R.layout.item_leaderboard_details, parent, false));
-    vh.itemView.setOnClickListener(v -> click.onNext(vh.itemView));
     return vh;
   }
 
@@ -136,7 +134,7 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     score.setEmoticon(emo);
 
     score.setAbove(isAbove);
-    vh.viewAvatar.setOnClickListener(v -> onClickAvatar.onNext(score));
+    vh.itemView.setOnClickListener(v -> onClick.onNext(score));
 
     vh.pokeEmoji.setOnClickListener(v -> {
       if (stateManager.shouldDisplay(StateManager.FIRST_POKE)) {
@@ -191,16 +189,12 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     }
   }
 
-  public Observable<View> onClick() {
-    return click;
-  }
-
   public Observable<Score> onClickPoke() {
     return onClickPoke;
   }
 
-  public Observable<Score> onClickAvatar() {
-    return onClickAvatar;
+  public Observable<Score> onClick() {
+    return onClick;
   }
 
   protected ApplicationComponent getApplicationComponent() {

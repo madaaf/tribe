@@ -157,16 +157,14 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
    * OBSERVABLES
    */
 
-  public Observable<View> onClick() {
-    return leaderboardDetailsAdapterDelegate.onClick();
-  }
+
 
   public Observable<Score> onClickPoke() {
     return leaderboardDetailsAdapterDelegate.onClickPoke();
   }
 
-  public Observable<Score> onClickAvatar(){
-    return leaderboardDetailsAdapterDelegate.onClickAvatar();
+  public Observable<Score> onClick(){
+    return leaderboardDetailsAdapterDelegate.onClick();
   }
 
   public Observable<Boolean> onLoadMore() {
