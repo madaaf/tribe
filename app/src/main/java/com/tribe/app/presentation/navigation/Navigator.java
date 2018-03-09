@@ -28,6 +28,7 @@ import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.activity.CoronaGameActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GameDetailsActivity;
 import com.tribe.app.presentation.view.activity.GameLeaderboardActivity;
@@ -180,6 +181,14 @@ public class Navigator {
       Intent intent = GameDetailsActivity.getCallingIntent(activity, gameId);
       activity.startActivityForResult(intent, FROM_GAMESTORE);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
+  }
+
+  public void navigateToCoronaActivity(Activity activity) {
+    if (activity != null) {
+      Intent intent = CoronaGameActivity.getCallingIntent(activity);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }
 

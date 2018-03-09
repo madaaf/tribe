@@ -60,7 +60,6 @@ public class GameManagerView extends FrameLayout {
   /**
    * VARIABLES
    */
-
   private Unbinder unbinder;
   private GameManager gameManager;
   private GameView currentGameView;
@@ -74,7 +73,6 @@ public class GameManagerView extends FrameLayout {
   /**
    * OBSERVABLES
    */
-
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private CompositeSubscription subscriptionsGame = new CompositeSubscription();
   private BehaviorSubject<Map<String, TribeGuest>> onPeerMapChange = BehaviorSubject.create();

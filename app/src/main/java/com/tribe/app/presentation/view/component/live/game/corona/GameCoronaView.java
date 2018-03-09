@@ -122,6 +122,7 @@ public class GameCoronaView extends GameView {
 
   @Override protected void initWebRTCRoomSubscriptions() {
     Timber.d("initWebRTCRoomSubscriptions");
+    if (webRTCRoom == null) return;
     subscriptionsRoom.add(webRTCRoom.onGameMessage()
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
@@ -251,6 +252,8 @@ public class GameCoronaView extends GameView {
   }
 
   private void sendMessage(JSONObject obj, String id) {
+    if (webRTCRoom == null) return;
+
     JSONObject message = new JSONObject();
     JsonUtils.jsonPut(message, this.game.getId(), obj);
     if (StringUtils.isEmpty(id)) {

@@ -37,8 +37,8 @@
 
     <activity
         android:name=".presentation.view.activity.LauncherActivity"
-        android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme.Transparent">
 
@@ -235,6 +235,13 @@
         android:keepScreenOn="true"
         android:launchMode="singleTask"
         android:theme="@style/AppTheme.Transparent"/>
+
+    <activity
+        android:name=".presentation.view.activity.CoronaGameActivity"
+        android:configChanges="orientation|screenSize"
+        android:keepScreenOn="true"
+        android:launchMode="singleTask"
+        android:theme="@style/AppTheme.FullScreen.Black"/>
 
     <activity
         android:name=".presentation.view.activity.VideoActivity"
