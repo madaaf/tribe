@@ -69,7 +69,7 @@ public class CloudChatDataStore implements ChatDataStore {
 
   @Override
   public Observable<MessageRealm> createMessage(String[] userIds, String type, String data,
-      String date, String gameId, String intent) { // SOEF
+      String date, String gameId, String intent) {
     if (userIds == null || userIds.length == 0) return Observable.empty();
 
     String req =

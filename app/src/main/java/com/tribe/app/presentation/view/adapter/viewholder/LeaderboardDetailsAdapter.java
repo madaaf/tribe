@@ -5,7 +5,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.presentation.view.adapter.RxAdapterDelegatesManager;
 import com.tribe.app.presentation.view.adapter.delegate.common.LoadMoreAdapterDelegate;
@@ -46,7 +45,8 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
 
     delegatesManager = new RxAdapterDelegatesManager();
 
-    leaderboardDetailsAdapterDelegate = new LeaderboardDetailsAdapterDelegate(context, stateManager);
+    leaderboardDetailsAdapterDelegate =
+        new LeaderboardDetailsAdapterDelegate(context, stateManager);
     delegatesManager.addDelegate(leaderboardDetailsAdapterDelegate);
 
     leaderboardDetailsEmptyAdapterDelegate = new LeaderboardDetailsEmptyAdapterDelegate(context);
@@ -165,12 +165,11 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
     return leaderboardDetailsAdapterDelegate.onClickPoke();
   }
 
-  public Observable<Boolean> onLoadMore() {
-    return onLoadMore;
+  public Observable<Score> onClickAvatar(){
+    return leaderboardDetailsAdapterDelegate.onClickAvatar();
   }
 
-  public void onPoke(boolean b) {
-    leaderboardDetailsAdapterDelegate.onPoke(b);
-    notifyDataSetChanged();
+  public Observable<Boolean> onLoadMore() {
+    return onLoadMore;
   }
 }

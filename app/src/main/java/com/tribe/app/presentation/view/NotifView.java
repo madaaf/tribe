@@ -22,6 +22,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -29,9 +30,11 @@ import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.NewChatMVPViewAdapter;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -46,6 +49,7 @@ import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.chat.model.MessagePoke;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -93,6 +97,7 @@ public class NotifView extends FrameLayout {
   @Inject RxImagePicker rxImagePicker;
   @Inject User currentUser;
   @Inject @HasSoftKeys Preference<Boolean> hasSoftKeys;
+  @Inject MessagePresenter messagePresenter;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -168,6 +173,15 @@ public class NotifView extends FrameLayout {
                   }));
                 }
               }));
+          break;
+        case NotificationModel.POPUP_POKE:
+          Score score = notificationModel.getScore();
+          String[] userIds = new String[1];
+          userIds[0] = score.getUser().getId();
+          String intent = (score.isAbove()) ? MessagePoke.INTENT_FUN : MessagePoke.INTENT_JEALOUS;
+          messagePresenter.createPoke(userIds, score.getEmoticon(), score.getGame().getId(), intent);
+          Toast.makeText(context, context.getString(R.string.poke_sent_confirmation, score.getUser().getDisplayName()), Toast.LENGTH_SHORT).show();
+          hideNextNotif();
           break;
       }
     }));

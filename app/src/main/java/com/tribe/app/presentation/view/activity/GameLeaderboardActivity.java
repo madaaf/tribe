@@ -51,6 +51,7 @@ import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecorati
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardDetailsLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.EmojiPoke;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -66,10 +67,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 import static com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate.maxWaitingTimeSeconde;
 
@@ -93,6 +92,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   @Inject MessagePresenter messagePresenter;
 
   @Inject StateManager stateManager;
+
+  @Inject SoundManager soundManager;
 
   @BindView(R.id.imgBackgroundGradient) View imgBackgroundGradient;
 
@@ -160,9 +161,6 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   private GameMVPViewAdapter gameMVPViewAdapter;
   private String gameId;
   private Game game;
-  private Subscription pokedSubscription = null;
-  private long now;
-  private boolean isPoked = false;
   private List<EmojiPoke> emojis = new ArrayList<>();
 
   // RESOURCES
@@ -328,42 +326,23 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
             recyclerView.setTranslationY(recyclerView.getMeasuredHeight());
           }
         });
+
     layoutManager = new LeaderboardDetailsLayoutManager(this);
     recyclerView.setLayoutManager(layoutManager);
     adapter = new LeaderboardDetailsAdapter(this, recyclerView, stateManager);
 
-    subscriptions.add(adapter.onClickPoke().subscribe(this::setClickPokeAnimation));
+    subscriptions.add(adapter.onClickPoke().subscribe(score -> {
+      setClickPokeAnimation(score, score.getTextView());
+    }));
+
+    subscriptions.add(adapter.onClickAvatar().subscribe(score -> {
+      Recipient recipient = ShortcutUtil.getRecipientFromId(score.getUser().getId(), user);
+      navigator.navigateToChat(this, recipient, null, null, false);
+    }));
 
     recyclerView.setItemAnimator(null);
     recyclerView.setAdapter(adapter);
 
-    recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
-      @Override public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-        super.onScrollStateChanged(recyclerView, newState);
-        Timber.e("SOEF onScrollStateChanged");
-        now = System.currentTimeMillis();
-      }
-    });
-
-    if (pokedSubscription == null) {
-      subscriptions.add(pokedSubscription = Observable.interval(100, TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe((Long aLong) -> {
-            float interval = System.currentTimeMillis() - now;
-            if (interval > 2000) {
-              if (!isPoked) {
-                adapter.onPoke(true);
-              }
-              isPoked = true;
-            } else {
-              if (isPoked) {
-                adapter.onPoke(false);
-              }
-              isPoked = false;
-            }
-          }));
-    }
     recyclerView.addItemDecoration(
         new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.white_opacity_10),
             screenUtils.dpToPx(0.25f)));
@@ -470,24 +449,64 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     constraintSet.applyTo(layoutConstraint);
   }
 
-  /**
-   * ONCLICK
-   */
+  private void setPokeInPreference(Score score) {
+    String id = score.getGame().getId() + "_" + score.getUser().getId();
+    PokeTiming pokeTiming = new PokeTiming(id, System.currentTimeMillis());
+    List<PokeTiming> pokeTimingList = new ArrayList<>();
+    pokeTimingList.add(pokeTiming);
+    PreferencesUtils.savePlayloadPokeTimingAsJson(pokeTimingList, pokeUserGame,
+        maxWaitingTimeSeconde);
+  }
 
-  private void setClickPokeAnimation(Score score) {
+  private Long getWaitingTime(Score score) {
+    Long timeSecond = null;
+    String id = score.getGame().getId() + "_" + score.getUser().getId();
+    List<PokeTiming> testList2 =
+        PreferencesUtils.getPlayloadPokeTimingList(pokeUserGame, maxWaitingTimeSeconde);
+
+    for (PokeTiming p : testList2) {
+      if (p.getId().equals(id)) {
+        long diff = System.currentTimeMillis() - p.getCreationDate();
+        timeSecond = TimeUnit.MILLISECONDS.toSeconds(diff);
+      }
+    }
+    return timeSecond;
+  }
+
+  private boolean setClickPokeAnimation(Score score, View view) {
     if (score.getUser().getId().equals(user.getId())) {
       navigator.shareGenericText(
           getString(R.string.poke_share_score, score.getGame().getId(), score.getRanking()), this);
-      return;
+      return true;
+    } else if (getWaitingTime(score) != null) {
+      Long t = getWaitingTime(score);
+      if (t != null) {
+        Long diff = maxWaitingTimeSeconde - t;
+        String waitingMessage = (diff < 60) ? getString(R.string.poke_delay_seconds, diff,
+            score.getUser().getDisplayName())
+            : getString(R.string.poke_delay_minutes, diff / 60, score.getUser().getDisplayName());
+        Toast.makeText(this, waitingMessage, Toast.LENGTH_SHORT).show();
+      }
+      return true;
     }
+    setPokeInPreference(score);
 
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
+        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+
+    if (isAbove) {
+      soundManager.playSound(SoundManager.POKE_LAUGH, SoundManager.SOUND_LOW);
+    } else {
+      soundManager.playSound(SoundManager.POKE_JEALOUS, SoundManager.SOUND_LOW);
+    }
     String[] userIds = new String[1];
     userIds[0] = score.getUser().getId();
 
     String intent = (score.isAbove()) ? MessagePoke.INTENT_FUN : MessagePoke.INTENT_JEALOUS;
     messagePresenter.createPoke(userIds, score.getEmoticon(), score.getGame().getId(), intent);
-
-    TextView view = score.getTextView();
+    Toast.makeText(this,
+        getString(R.string.poke_sent_confirmation, score.getUser().getDisplayName()),
+        Toast.LENGTH_SHORT).show();
 
     int[] locations = new int[2];
     view.getLocationOnScreen(locations);
@@ -513,7 +532,10 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       v.setScaleX(0);
       v.setScaleY(0);
     }).withEndAction(() -> {
-      view.setText(EmojiParser.demojizedText(getString(R.string.poke_emoji_disabled)));
+      if (view instanceof TextView) {
+        ((TextView) (view)).setText(
+            EmojiParser.demojizedText(getString(R.string.poke_emoji_disabled)));
+      }
       subscriptions.add(Observable.timer((2000), TimeUnit.MILLISECONDS)
           .observeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> {
@@ -528,14 +550,19 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
                     .setDuration(300)
                     .withEndAction(() -> {
                       container.removeView(emo);
-                      view.startAnimation(animation2);
+                      if (view instanceof TextView) view.startAnimation(animation2);
                     })
                     .start();
               }
             }).start();
           }));
     }).scaleX(1.5f).scaleY(1.5f).setDuration(300).start();
+    return true;
   }
+
+  /**
+   * ONCLICK
+   */
 
   @OnClick(R.id.btnBack) void back() {
     onBackPressed();
@@ -559,124 +586,16 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     navigator.navigateToChat(this, recipient, null, null, false);
   }
 
-  private Long getWaitingTime(Score score) {
-    Long timeSecond = null;
-    String id = score.getGame().getId() + "_" + score.getUser().getId();
-    List<PokeTiming> testList2 =
-        PreferencesUtils.getPlayloadPokeTimingList(pokeUserGame, maxWaitingTimeSeconde);
-
-    for (PokeTiming p : testList2) {
-      if (p.getId().equals(id)) {
-        long diff = System.currentTimeMillis() - p.getCreationDate();
-        timeSecond = TimeUnit.MILLISECONDS.toSeconds(diff);
-      }
-    }
-    return timeSecond;
-  }
-
-  private boolean ok(View avatar, int index) {
-    Score score = podiumList.get(index);
-    Long t = getWaitingTime(score);
-
-    if (t != null || score.isWaiting()) {
-      if (t != null) {
-        Long diff = maxWaitingTimeSeconde - t;
-        String waitingMessage = (diff < 60) ? getString(R.string.poke_delay_seconds, diff,
-            score.getUser().getDisplayName())
-            : getString(R.string.poke_delay_minutes, diff / 60, score.getUser().getDisplayName());
-        Toast.makeText(this, waitingMessage, Toast.LENGTH_SHORT).show();
-      }
-      return true;
-    } else {
-      score.setWaiting(true);
-      // score.setTextView(vh.pokeEmoji);
-      String id = score.getGame().getId() + "_" + score.getUser().getId();
-      PokeTiming pokeTiming = new PokeTiming(id, System.currentTimeMillis());
-      List<PokeTiming> pokeTimingList = new ArrayList<>();
-      pokeTimingList.add(pokeTiming);
-      PreferencesUtils.savePlayloadPokeTimingAsJson(pokeTimingList, pokeUserGame,
-          maxWaitingTimeSeconde);
-      //onClickPoke.onNext(score);
-    }
-
-    if (score.getUser().getId().equals(user.getId())) {
-      navigator.shareGenericText(
-          getString(R.string.poke_share_score, score.getGame().getId(), score.getRanking()), this);
-      return true;
-    }
-
-    String[] userIds = new String[1];
-    userIds[0] = score.getUser().getId();
-
-    String intent = (score.isAbove()) ? MessagePoke.INTENT_FUN : MessagePoke.INTENT_JEALOUS;
-    messagePresenter.createPoke(userIds, score.getEmoticon(), score.getGame().getId(), intent);
-
-    View view = avatar;
-
-    int[] locations = new int[2];
-    view.getLocationOnScreen(locations);
-    int x1 = locations[0];
-    int y1 = locations[1];
-
-    Animation animation = AnimationUtils.loadAnimation(this, R.anim.rotate_poke_emoji);
-    Animation animation2 = AnimationUtils.loadAnimation(this, R.anim.rotate_hourglass_emoji);
-
-    EmojiPoke v = addPokeEmoji(view, score.getEmoticon(), x1, y1, 0, 0, false, animation);
-    addPokeEmoji(view, score.getEmoticon(), x1, y1, (view.getWidth() / 2), -view.getWidth(), true,
-        animation);
-    addPokeEmoji(view, score.getEmoticon(), x1, y1, -(view.getWidth() / 2), +view.getWidth(), true,
-        animation);
-    addPokeEmoji(view, score.getEmoticon(), x1, y1, view.getWidth(), 0, true, animation);
-    addPokeEmoji(view, score.getEmoticon(), x1, y1, -view.getWidth(), 0, true, animation);
-    addPokeEmoji(view, score.getEmoticon(), x1, y1, -(view.getWidth() / 2), -view.getWidth(), true,
-        animation);
-    addPokeEmoji(view, score.getEmoticon(), x1, y1, +(view.getWidth() / 2), +view.getWidth(), true,
-        animation);
-
-    v.animate().setInterpolator(new OvershootInterpolator()).withStartAction(() -> {
-      v.setScaleX(0);
-      v.setScaleY(0);
-    }).withEndAction(() -> {
-      //view.setText(EmojiParser.demojizedText(getString(R.string.poke_emoji_disabled)));
-      subscriptions.add(Observable.timer((2000), TimeUnit.MILLISECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> {
-            v.animate().scaleX(1f).scaleY(1f).setDuration(300).withEndAction(() -> {
-              for (EmojiPoke emo : emojis) {
-                emo.clearAnimation();
-                emo.animate()
-                    .translationX(-emo.getTransX())
-                    .translationY(-emo.getTransY())
-                    .scaleX(0)
-                    .scaleY(0)
-                    .setDuration(300)
-                    .withEndAction(() -> {
-                      container.removeView(emo);
-                      //  view.startAnimation(animation2);
-                    })
-                    .start();
-              }
-            }).start();
-          }));
-    }).scaleX(1.5f).scaleY(1.5f).setDuration(300).start();
-    return true;
-  }
-
   @OnLongClick(R.id.avatarFirst) boolean onLongClickAvatarFirst() {
-    Timber.e("SOEF OnLongClick onClickAvatarFirst");
-    // setClickPokeAnimation(scor);
-
-    return ok(avatarFirst, 0);
+    return setClickPokeAnimation(podiumList.get(0), avatarFirst);
   }
 
   @OnLongClick(R.id.avatarSecond) boolean onLongClickAvatarSecond() {
-    Timber.e("SOEF OnLongClick onClickAvatarSecond");
-    return ok(avatarSecond, 1);
+    return setClickPokeAnimation(podiumList.get(1), avatarSecond);
   }
 
   @OnLongClick(R.id.avatarThird) boolean onLongClickAvatarThird() {
-    Timber.e("SOEF  OnLongClickonClickAvatarThird");
-    return ok(avatarThird, 2);
+    return setClickPokeAnimation(podiumList.get(2), avatarThird);
   }
 
   /**

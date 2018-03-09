@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.f2prateek.rx.preferences.Preference;
@@ -20,14 +19,12 @@ import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
-import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.preferences.PokeUserGame;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
-import com.tribe.app.presentation.view.NotifView;
-import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.TextViewRanking;
@@ -41,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 12/08/17.
@@ -63,10 +59,10 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
 
   protected PublishSubject<View> click = PublishSubject.create();
   protected PublishSubject<Score> onClickPoke = PublishSubject.create();
-  private boolean onPoke = false;
+  protected PublishSubject<Score> onClickAvatar = PublishSubject.create();
+
   private StateManager stateManager;
   private String emo = null;
-  private String reaction = null;
 
   public LeaderboardDetailsAdapterDelegate(Context context, StateManager stateManager) {
     this.context = context;
@@ -117,26 +113,14 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
 
     if (score.getUser().getId().equals(user.getId())) {
       emo = EmojiParser.demojizedText(context.getString(R.string.poke_emoji_own));
-
-      String s2 = context.getString(R.string.poke_captions_above);
-      List<String> myList2 = new ArrayList<>(Arrays.asList(s2.split(",")));
-      reaction = EmojiParser.demojizedText(myList2.get(randInt(0, myList2.size() - 1)));
     } else if (isAbove) {
       String s = context.getString(R.string.poke_emoji_above);
       List<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
       emo = EmojiParser.demojizedText(myList.get(randInt(0, myList.size() - 1)));
-
-      String s2 = context.getString(R.string.poke_captions_above);
-      List<String> myList2 = new ArrayList<>(Arrays.asList(s2.split(",")));
-      reaction = EmojiParser.demojizedText(myList2.get(randInt(0, myList2.size() - 1)));
     } else {
       String s = context.getString(R.string.poke_emoji_below);
       List<String> myList = new ArrayList<>(Arrays.asList(s.split(",")));
       emo = EmojiParser.demojizedText(myList.get(randInt(0, myList.size() - 1)));
-
-      String s2 = context.getString(R.string.poke_captions_below);
-      List<String> myList2 = new ArrayList<>(Arrays.asList(s2.split(",")));
-      reaction = EmojiParser.demojizedText(myList2.get(randInt(0, myList2.size() - 1)));
     }
 
     // IS WAITING
@@ -150,45 +134,21 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     }
 
     score.setEmoticon(emo);
-    vh.pokeTxt.setText(reaction);
+
     score.setAbove(isAbove);
+    vh.viewAvatar.setOnClickListener(v -> onClickAvatar.onNext(score));
 
     vh.pokeEmoji.setOnClickListener(v -> {
-      if (score.isWaiting()) {
-        Long t = getWaitingTime(score);
-        if (t != null) {
-          Long diff = maxWaitingTimeSeconde - t;
-          String waitingMessage =
-              (diff < 60) ? context.getString(R.string.poke_delay_seconds, diff,
-                  score.getUser().getDisplayName())
-                  : context.getString(R.string.poke_delay_minutes, diff / 60,
-                      score.getUser().getDisplayName());
-          Toast.makeText(context, waitingMessage, Toast.LENGTH_SHORT).show();
-        }
-      } else {
-        score.setWaiting(true);
-        score.setTextView(vh.pokeEmoji);
-        String id = score.getGame().getId() + "_" + score.getUser().getId();
-        PokeTiming pokeTiming = new PokeTiming(id, System.currentTimeMillis());
-        List<PokeTiming> pokeTimingList = new ArrayList<>();
-        pokeTimingList.add(pokeTiming);
-        PreferencesUtils.savePlayloadPokeTimingAsJson(pokeTimingList, pokeUserGame,
-            maxWaitingTimeSeconde);
-        onClickPoke.onNext(score);
-      }
-
       if (stateManager.shouldDisplay(StateManager.FIRST_POKE)) {
-        displayUplaodAvatarNotification(context, score.getUser());
+        NotificationUtils.displayUplaodAvatarNotification(context, score);
         stateManager.addTutorialKey(StateManager.FIRST_POKE);
+        vh.pokeEmoji.setText(
+            EmojiParser.demojizedText(context.getString(R.string.poke_emoji_disabled)));
       }
+      score.setWaiting(true);
+      score.setTextView(vh.pokeEmoji);
+      onClickPoke.onNext(score);
     });
-
-    if (onPoke) {
-      vh.pokeTxt.setTranslationX(+TRANSLATION);
-      vh.pokeTxt.animate().translationX(0).alpha(1f).setDuration(DURATION).start();
-    } else {
-      vh.pokeTxt.animate().translationX(+TRANSLATION).alpha(0f).setDuration(DURATION / 2).start();
-    }
 
     if (position == 0) {
       vh.imgConnectTop.setVisibility(View.GONE);
@@ -224,7 +184,6 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     @BindView(R.id.imgConnectTop) ImageView imgConnectTop;
     @BindView(R.id.imgConnectBottom) ImageView imgConnectBottom;
     @BindView(R.id.pokeEmoji) TextView pokeEmoji;
-    @BindView(R.id.pokeTxt) TextViewFont pokeTxt;
 
     public LeaderboardUserViewHolder(View itemView) {
       super(itemView);
@@ -240,26 +199,8 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     return onClickPoke;
   }
 
-  public void onPoke(boolean b) {
-    this.onPoke = b;
-  }
-
-  public void displayUplaodAvatarNotification(Context context, User user) {
-    List<NotificationModel> list = new ArrayList<>();
-    NotifView view = new NotifView(context);
-
-    NotificationModel a = new NotificationModel.Builder().subTitle(
-        context.getString(R.string.poke_popup_title, user.getDisplayName()))
-        .content(context.getString(R.string.poke_popup_subtitle))
-        .btn1Content(context.getString(R.string.poke_popup_action_send).toUpperCase())
-        .drawableBtn1(R.drawable.picto_white_message)
-        .background(R.drawable.poke_popup_background)
-        .profilePicture(user.getProfilePicture())
-        .type(NotificationModel.POPUP_POKE)
-        .build();
-
-    list.add(a);
-    view.show((Activity) context, list);
+  public Observable<Score> onClickAvatar() {
+    return onClickAvatar;
   }
 
   protected ApplicationComponent getApplicationComponent() {
@@ -283,13 +224,5 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
       }
     }
     return timeSecond;
-  }
-
-  private void initDependencyInjector() {
-    DaggerUserComponent.builder()
-        .activityModule(getActivityModule())
-        .applicationComponent(getApplicationComponent())
-        .build()
-        .inject(this);
   }
 }

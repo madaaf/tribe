@@ -1225,7 +1225,7 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
       isFristLeaveRoom = true;
       stateManager.addTutorialKey(StateManager.FIRST_LEAVE_ROOM);
     } else {
-      isFristLeaveRoom = false;
+      isFristLeaveRoom = false; // SOEF
     }
 
     if (!viewLive.hasJoined() && room != null && !live.getSource().equals(SOURCE_CALL_ROULETTE)) {

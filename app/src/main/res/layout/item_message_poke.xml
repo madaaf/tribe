@@ -17,48 +17,51 @@
       >
 
 
-    <ImageView
-        android:id="@+id/iconPoke"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="10dp"
-        android:layout_marginTop="5dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/icon_poke_message"
-        />
-
     <com.tribe.app.presentation.view.widget.avatar.AvatarView
         android:id="@+id/pokeViewAvatar"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_gravity="start|center_horizontal"
         android:layout_marginEnd="10dp"
-        android:layout_toEndOf="@+id/iconPoke"
         android:background="@null"
         android:scaleType="centerCrop"
+        />
+
+    <ImageView
+        android:id="@+id/iconPoke"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="3dp"
+        android:layout_toEndOf="@+id/pokeViewAvatar"
+        android:scaleType="fitCenter"
+        android:src="@drawable/icon_poke_message"
         />
 
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/pokeMessage"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="25dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
-        android:layout_toEndOf="@+id/pokeViewAvatar"
+        android:layout_toEndOf="@+id/iconPoke"
         android:text="@string/poke_chat_event_below"
         android:textColor="@color/yellow.poke"
         android:textSize="13sp"
         style="@style/Title.2.Black"
         />
 
+
     <include
         layout="@layout/item_game_chat"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         />
 
   </RelativeLayout>
