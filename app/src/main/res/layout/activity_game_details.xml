@@ -66,7 +66,7 @@
     <ImageView
         android:id="@+id/imgRays"
         android:layout_width="220dp"
-        android:layout_height="220dp"
+        android:layout_height="217dp"
         android:scaleType="centerInside"
         android:src="@drawable/game_trivia_bg"
         app:layout_constraintEnd_toEndOf="parent"
@@ -140,6 +140,7 @@
         android:scaleX="0"
         android:scaleY="0"
         app:layout_constraintBottom_toBottomOf="@id/imgLogo"
+
         app:layout_constraintStart_toEndOf="@id/imgLogo"
         />
 
@@ -166,7 +167,7 @@
         android:layout_marginStart="@dimen/horizontal_margin"
         android:alpha="0"
         android:clipChildren="false"
-        app:cardBackgroundColor="@android:color/transparent"
+        app:cardBackgroundColor="@color/transparent"
         app:cardCornerRadius="27.5dp"
         app:cardElevation="5dp"
         app:cardPreventCornerOverlap="false"
@@ -194,6 +195,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/cardAvatarMyScore"
         style="@style/BiggerTitle.2.White"
+
         />
 
     <com.tribe.app.presentation.view.widget.TextViewRanking

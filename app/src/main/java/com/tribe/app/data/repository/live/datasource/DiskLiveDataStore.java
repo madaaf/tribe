@@ -26,6 +26,10 @@ public class DiskLiveDataStore
     return null;
   }
 
+  @Override public Observable<Room> getRoomLight(String roomId) {
+    return null;
+  }
+
   @Override public Observable<Room> createRoom(String name, String gameId) {
     return null;
   }
@@ -38,7 +42,7 @@ public class DiskLiveDataStore
     return null;
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String... userId) {
+  @Override public Observable<Boolean> createInvite(String roomId, boolean isAsking, String... userId) {
     return null;
   }
 

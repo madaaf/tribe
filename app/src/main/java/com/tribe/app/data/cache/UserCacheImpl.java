@@ -202,6 +202,10 @@ public class UserCacheImpl implements UserCache {
     if (from.getRandom_banned_permanently() != null) {
       to.setRandom_banned_permanently(from.getRandom_banned_permanently());
     }
+
+    if (from.getTrophy() != null) {
+      to.setTrophy(from.getTrophy());
+    }
   }
 
   public void put(AccessToken accessToken) {

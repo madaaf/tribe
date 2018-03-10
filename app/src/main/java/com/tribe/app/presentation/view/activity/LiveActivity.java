@@ -3,7 +3,6 @@ package com.tribe.app.presentation.view.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -46,7 +45,6 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.LivePresenter;
@@ -54,7 +52,6 @@ import com.tribe.app.presentation.mvp.view.LiveMVPView;
 import com.tribe.app.presentation.mvp.view.RoomMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
 import com.tribe.app.presentation.navigation.Navigator;
-import com.tribe.app.presentation.service.BroadcastUtils;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
@@ -105,7 +102,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -115,7 +111,7 @@ import timber.log.Timber;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
-public class LiveActivity extends BaseActivity
+public class LiveActivity extends BaseBroadcastReceiverActivity
     implements LiveMVPView, ShortcutMVPView, RoomMVPView, AppStateListener {
 
   @StringDef({
@@ -187,8 +183,6 @@ public class LiveActivity extends BaseActivity
   private Unbinder unbinder;
   private Live live;
   private Room room;
-  private TribeBroadcastReceiver notificationReceiver;
-  private boolean receiverRegistered = false;
   private AppStateMonitor appStateMonitor;
   private FirebaseRemoteConfig firebaseRemoteConfig;
   private RxPermissions rxPermissions;
@@ -203,24 +197,21 @@ public class LiveActivity extends BaseActivity
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
-  private Subscription broadcastSubscription;
   private PublishSubject<List<User>> onAnonymousReceived = PublishSubject.create();
 
-  public static Live getLive(Recipient recipient, @Source String source) {
-    return computeLive(recipient, source, null);
-  }
-
   public static Intent getCallingIntent(Context context, Recipient recipient, @Source String source,
-      String gesture, String section, String gameId) {
+      String gameId, String userAsk) {
     Intent intent = new Intent(context, LiveActivity.class);
 
-    intent.putExtra(EXTRA_LIVE, computeLive(recipient, source, gameId));
+    intent.putExtra(EXTRA_LIVE, computeLive(recipient, source, gameId, userAsk));
     return intent;
   }
 
-  private static Live computeLive(Recipient recipient, @Source String source, String gameId) {
-    Live.Builder builder =
-        new Live.Builder(Live.FRIEND_CALL).countdown(!recipient.isLive()).source(source);
+  private static Live computeLive(Recipient recipient, @Source String source, String gameId,
+      String userAsk) {
+    Live.Builder builder = new Live.Builder(Live.FRIEND_CALL).countdown(!recipient.isLive())
+        .source(source)
+        .userAsk(userAsk);
 
     if (recipient instanceof Shortcut) {
       Shortcut shortcut = (Shortcut) recipient;
@@ -322,33 +313,29 @@ public class LiveActivity extends BaseActivity
     if (chatView != null) chatView.onResumeView();
     onResumeLockPhone();
 
-    if (!receiverRegistered) {
-      if (notificationReceiver == null) notificationReceiver = new TribeBroadcastReceiver(this);
+    subscriptionsBroadcastReceiver.add(
+        notificationReceiver.onShowNotificationLive().subscribe(pair -> {
+          NotificationPayload payload = pair.first;
 
-      registerReceiver(notificationReceiver,
-          new IntentFilter(BroadcastUtils.BROADCAST_NOTIFICATIONS));
-      receiverRegistered = true;
+          if (room == null) return;
 
-      if (broadcastSubscription != null) broadcastSubscription.unsubscribe();
+          boolean shouldDisplay = true;
 
-      broadcastSubscription = notificationReceiver.onShowNotificationLive().subscribe(pair -> {
-        NotificationPayload payload = pair.first;
-
-        if (room == null) return;
-
-        boolean shouldDisplay = true;
-
-        if (room.getId().equals(payload.getSessionId())) {
-          String action = payload.getAction();
-          if (action != null && (action.equals(NotificationPayload.ACTION_LEFT) || action.equals(
-              NotificationPayload.ACTION_JOINED))) {
-            shouldDisplay = false;
+          if (room.getId().equals(payload.getSessionId())) {
+            String action = payload.getAction();
+            if (action != null &&
+                (action.equals(NotificationPayload.ACTION_LEFT) ||
+                    action.equals(NotificationPayload.ACTION_JOINED))) {
+              shouldDisplay = false;
+            }
           }
-        }
 
-        if (shouldDisplay) Alerter.create(this, pair.second).show();
-      });
-    }
+          if (shouldDisplay) Alerter.create(this, pair.second).show();
+        }));
+
+    subscriptionsBroadcastReceiver.add(notificationReceiver.onCreateInvite()
+        .filter(userId -> room != null && !StringUtils.isEmpty(userId))
+        .subscribe(userId -> livePresenter.createInvite(room.getId(), false, userId)));
 
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
@@ -357,12 +344,6 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override protected void onPause() {
-    if (receiverRegistered) {
-      unregisterReceiver(notificationReceiver);
-      receiverRegistered = false;
-      if (broadcastSubscription != null) broadcastSubscription.unsubscribe();
-    }
-
     if (chatView != null) chatView.dispose();
 
     super.onPause();
@@ -402,6 +383,7 @@ public class LiveActivity extends BaseActivity
   private void initParams(Intent intent) {
     if (intent.hasExtra(EXTRA_LIVE)) {
       live = (Live) intent.getSerializableExtra(EXTRA_LIVE);
+      setWaitingToJoin(live.getUserAsk());
       live.init();
     }
   }
@@ -551,17 +533,6 @@ public class LiveActivity extends BaseActivity
     }
   }
 
-  private Boolean displayRatingNotifDependingFirebaseTrigger() {
-    Random rn = new Random();
-    int randomNumber = rn.nextInt(101);
-    return randomNumber > firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TRIGGER);
-  }
-
-  private Long getFirebaseTimeoutConfig() {
-    Long time = firebaseRemoteConfig.getLong(Constants.FIREBASE_RATING_NOTIF_TIMEOUT);
-    return time == 0 ? 10 : time;
-  }
-
   private void launchCallRoulette() {
     if (!FacebookUtils.isLoggedIn()) {
       Timber.d("not logged on fb ");
@@ -580,8 +551,8 @@ public class LiveActivity extends BaseActivity
 
   private void initChatView(Shortcut shortcut) {
     Timber.i("init chat view from live activity");
-    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || (live.getRoom() != null && live.getRoom()
-        .acceptsRandom())) {
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE) ||
+        (live.getRoom() != null && live.getRoom().acceptsRandom())) {
       return;
     }
     if (shortcut != null) {
@@ -654,13 +625,14 @@ public class LiveActivity extends BaseActivity
 
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
-        if (chatView != null
-            && chatView.getShortcut() != null
-            && chatView.getShortcut().getMembers() != null
-            && !chatView.getShortcut().getMembers().isEmpty()) {
+        if (chatView != null &&
+            chatView.getShortcut() != null &&
+            chatView.getShortcut().getMembers() != null &&
+            !chatView.getShortcut().getMembers().isEmpty()) {
 
-          if (!allUsers.isEmpty() && !ShortcutUtil.equalShortcutMembers(
-              chatView.getShortcut().getMembers(), allUsers, user)) {
+          if (!allUsers.isEmpty() &&
+              !ShortcutUtil.equalShortcutMembers(chatView.getShortcut().getMembers(), allUsers,
+                  user)) {
             chatView.dispose();
             Shortcut shortcut = getShortcut();
             if (shortcut != null) {
@@ -687,9 +659,8 @@ public class LiveActivity extends BaseActivity
       }));
     } else {
       subscriptions.add(live.onRoomUpdated().subscribe(room1 -> {
-        boolean isCallRoulette =
-            live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) || (live.getRoom() != null
-                && live.getRoom().acceptsRandom());
+        boolean isCallRoulette = live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) ||
+            (live.getRoom() != null && live.getRoom().acceptsRandom());
         userInfosNotificationView.setCallRoulette(isCallRoulette);
       }));
     }
@@ -706,17 +677,18 @@ public class LiveActivity extends BaseActivity
 
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
       if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-        if (live.fromRoom() && (tribeJoinRoom.getSessionList() == null
-            || tribeJoinRoom.getSessionList().size() == 0)) {
+        if (live.fromRoom() &&
+            (tribeJoinRoom.getSessionList() == null ||
+                tribeJoinRoom.getSessionList().size() == 0)) {
           if (room.getInviter() != null) {
             Toast.makeText(this,
                 getString(R.string.live_other_user_hung_up, room.getInviter().getDisplayName()),
                 Toast.LENGTH_SHORT).show();
-            livePresenter.createInvite(room.getId(), room.getInviter().getId());
+            livePresenter.createInvite(room.getId(), false, room.getInviter().getId());
           }
         } else if (!live.fromRoom()) {
           List<String> userIds = live.getUserIdsOfShortcut();
-          livePresenter.createInvite(this.room.getId(),
+          livePresenter.createInvite(this.room.getId(), !StringUtils.isEmpty(live.getUserAsk()),
               userIds.toArray(new String[userIds.size()]));
         }
       }
@@ -1032,8 +1004,8 @@ public class LiveActivity extends BaseActivity
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
-        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE &&
+        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -1099,11 +1071,11 @@ public class LiveActivity extends BaseActivity
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
             byte[] data = baos.toByteArray();
-            StorageReference riversRef = storageRef.child("app/uploads/reported-users/"
-                + user.getId()
-                + "/"
-                + dateUtils.getUTCDateAsString()
-                + suffix);
+            StorageReference riversRef = storageRef.child("app/uploads/reported-users/" +
+                user.getId() +
+                "/" +
+                dateUtils.getUTCDateAsString() +
+                suffix);
             UploadTask uploadTask = riversRef.putBytes(data);
             uploadTask.addOnFailureListener(exception -> {
               Timber.e("error fetching image on firebase ");
@@ -1142,9 +1114,9 @@ public class LiveActivity extends BaseActivity
         String hashMembersInvite = ShortcutUtils.hashShortcut(getCurrentUser().getId(),
             usersInviteList.toArray(new String[usersInviteList.size()]));
 
-        if (hashMembersShortcut.equals(hashMembersInvite)
-            && invite.getRoom() != null
-            && !invite.getRoom().isUserInitiator(getCurrentUser().getId())) {
+        if (hashMembersShortcut.equals(hashMembersInvite) &&
+            invite.getRoom() != null &&
+            !invite.getRoom().isUserInitiator(getCurrentUser().getId())) {
           Live.Builder builder = new Live.Builder(Live.FRIEND_CALL).source(live.getSource());
           live = builder.room(invite.getRoom()).build();
           getRoomInfos();
@@ -1238,9 +1210,9 @@ public class LiveActivity extends BaseActivity
   }
 
   private void setExtraForShortcut() {
-    if (usersThatWereLive.size() > 0
-        && !live.getSource().equals(SOURCE_CALL_ROULETTE)
-        && !room.acceptsRandom()) {
+    if (usersThatWereLive.size() > 0 &&
+        !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
+        !room.acceptsRandom()) {
       returnIntent.putExtra(USER_IDS_FOR_NEW_SHORTCUT, usersThatWereLive);
       setResult(Activity.RESULT_OK, returnIntent);
     }
@@ -1248,13 +1220,14 @@ public class LiveActivity extends BaseActivity
 
   @Override public void finish() {
     if (finished) return;
+    
     if (stateManager.shouldDisplay(StateManager.FIRST_LEAVE_ROOM)) {
       isFristLeaveRoom = true;
       stateManager.addTutorialKey(StateManager.FIRST_LEAVE_ROOM);
     } else {
       isFristLeaveRoom = false;
     }
-    
+
     if (!viewLive.hasJoined() && room != null && !live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       livePresenter.deleteRoom(room.getId());
     }

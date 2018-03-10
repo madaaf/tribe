@@ -179,6 +179,7 @@
   <color name="blue.11">#46C8FC</color>
   <color name="blue.12">#56CEFD</color>
   <color name="blue.13">#38ECDA</color>
+  <color name="blue.14">#6CF0E4</color>
 
   <!-- Red -->
   <color name="red.1">#F9868E</color>
@@ -275,4 +276,24 @@
   <color name="trivia.answer.2">#7F7BFF</color>
   <color name="trivia.answer.3">#00FFE9</color>
   <color name="trivia.answer.4">#FEBE00</color>
+
+
+  <!-- Trophies -->
+  <color name="trophy.noob.primary">@color/blue.new</color>
+  <color name="trophy.expert.primary">#F988FF</color>
+  <color name="trophy.pro.primary">#21A6FF</color>
+  <color name="trophy.master.primary">#FBCC4C</color>
+  <color name="trophy.god.primary">#373737</color>
+
+  <color name="trophy.noob.secondary">@color/blue.new</color>
+  <color name="trophy.expert.secondary">#BE9BFF</color>
+  <color name="trophy.pro.secondary">#3DE9DA</color>
+  <color name="trophy.master.secondary">#FA8011</color>
+  <color name="trophy.god.secondary">#040404</color>
+
+  <color name="trophy.use.primary">#21A6FF</color>
+  <color name="trophy.use.secondary">#3DE9DA</color>
+
+  <color name="yellow.poke">#FCBF00</color>
+
 </resources>

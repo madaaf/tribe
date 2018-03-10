@@ -15,7 +15,7 @@ import rx.Observable;
 public interface ChatDataStore {
 
   Observable<MessageRealm> createMessage(final String[] userIds, String type, String data,
-      String date);
+      String date, String gameId, String intent);
 
   Observable<UserRealm> loadMessages(final String[] userIds, String dateBefore, String dateAfter);
 

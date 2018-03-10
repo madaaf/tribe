@@ -143,8 +143,8 @@
 	<!-- Decline Menu -->
 	<string name="decline_menu_title">Text %1$s</string>
 	<string name="decline_menu_message">Tap on an option to be sent\to %1$s in the chat</string>
-	<string name="decline_menu_answer1">Call you back ASAP! :dizzy:</string>
-	<string name="decline_menu_answer2">Can\'t talk now. Text me! :speech_balloon:</string>
+	<string name="decline_menu_answer1">Let\'s catch up after! :dizzy:</string>
+	<string name="decline_menu_answer2">Text me in the chat! :speech_balloon:</string>
 	<string name="decline_menu_custom">Type custom reply...</string>
 	
 	<!-- Invited Popup -->
@@ -774,6 +774,9 @@
 	<string name="game_trivia_category_games">Games</string>
 	<string name="game_trivia_category_all">All at once!</string>
 	<string name="game_coolcams_lets_go">Mimic as much\nemojis as possible!</string>
+	<string name="game_coolcams_you_won">You won!</string>
+	<string name="game_coolcams_someone_won">%1$s won!</string>
+	<string name="game_coolcams_someone_won_plural">%1$s won!</string>
 	
 	<!-- Call Level -->
 	<string name="call_level_0">Rookie call! :tiger:</string>
@@ -862,7 +865,7 @@
 	<string name="home_menu_shortcut_mark_as_read">:eyes: Mark as read</string>
 	<string name="home_menu_shortcut_mark_as_unread">:thought_balloon: Mark as unread</string>
 	<string name="home_menu_invite_decline">:phone: Decline challenge</string>
-	<string name="home_menu_user_leaderboard">:trophy: Scores</string>
+	<string name="home_menu_user_leaderboard">:trophy: Scores &amp; Trophies</string>
 	<string name="home_block_shortcut_title">Block %1$s?</string>
 	<string name="home_block_shortcut_message">Mute new messages, calls and other associated notifications from this person. You\'ll be able to unblock this person from your profile.</string>
 	<string name="home_block_shortcut_validate">Block</string>
@@ -994,6 +997,7 @@
 	<string name="gamemode_title">Game mode</string>
 	<string name="gamemode_alone_title">SOLO TRAINING</string>
 	<string name="gamemode_multi_title">MULTIPLAYER</string>
+	<string name="gamemode_leaderboard">LEADERBOARD</string>
 	
 	<!-- Hang Up Popup -->
 	<string name="hangup_popup_action_stop_game">Stop playing</string>
@@ -1019,11 +1023,11 @@
 	<string name="score_milestone_scores">Perfect!,Crazy!,Lit!,Awesome!,Damn!,Wow!,Sick!,Neat!</string>
 	
 	<!-- Poke -->
-	<string name="poke_captions_above">GG!,Congrats!, You\'re the best!, Awesome!, Incredible, LIT!</string>
+	<string name="poke_captions_above">GG!,Congrats!, Awesome!, Incredible, LIT!</string>
 	<string name="poke_captions_below">OMG!,Really?,WTF!,Haha!,Damn!,WOW</string>
 	<string name="poke_popup_title">Poke %1$s\nabout this score!</string>
 	<string name="poke_popup_subtitle">An automated message will be sent and available in your chat with %1$s.</string>
-	<string name="poke_popup_action_send">SEND &amp; POKE</string>
+	<string name="poke_popup_action_send">POKE</string>
 	<string name="poke_delay_minutes">%1$d mins left to poke again %2$s!</string>
 	<string name="poke_delay_seconds">%1$d secs left to poke again %2$s!</string>
 	<string name="poke_sent_confirmation">Poke sent to %1$s!</string>
@@ -1055,7 +1059,7 @@
 	<string name="trophy_requirement_friends_title">Friends</string>
 	<string name="trophy_requirement_day_usage_title">Days</string>
 	<string name="trophy_requirement_games_played_title">Games</string>
-	<string name="trophy_requirement_multiplayer_sessions_title">Session</string>
+	<string name="trophy_requirement_multiplayer_sessions_title">Sessions</string>
 	<string name="trophy_requirement_best_scores_title">Score</string>
 	<string name="trophy_requirement_friends_description">Get %1$d friends</string>
 	<string name="trophy_requirement_day_usage_description">open Tribe %1$d days in a row</string>

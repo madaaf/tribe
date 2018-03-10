@@ -22,6 +22,7 @@ import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.activity.ViewStackActivity;
+import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionTokenView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
@@ -176,6 +177,8 @@ import dagger.Component;
   void inject(BuzzView buzzView);
 
   void inject(LiveControlsView liveControlsView);
+
+  void inject(LeaderboardDetailsAdapterDelegate leaderboardDetailsAdapterDelegate);
 
   void inject(LiveStatusNameView liveStatusNameView);
 

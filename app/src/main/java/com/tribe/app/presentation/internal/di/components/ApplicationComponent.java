@@ -42,6 +42,7 @@ import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.service.TribeFirebaseMessagingService;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.TrophiesManager;
 import com.tribe.app.presentation.utils.analytics.AnalyticsManager;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -51,10 +52,12 @@ import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.ChatShortcutData;
 import com.tribe.app.presentation.utils.preferences.CounterOfCallsForGrpButton;
+import com.tribe.app.presentation.utils.preferences.DaysOfUsage;
 import com.tribe.app.presentation.utils.preferences.DebugMode;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotifications;
 import com.tribe.app.presentation.utils.preferences.GameData;
+import com.tribe.app.presentation.utils.preferences.GamesPlayed;
 import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.utils.preferences.ImmersiveCallState;
 import com.tribe.app.presentation.utils.preferences.InvisibleMode;
@@ -66,10 +69,14 @@ import com.tribe.app.presentation.utils.preferences.LastVersionCode;
 import com.tribe.app.presentation.utils.preferences.LookupResult;
 import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.MissedPlayloadNotification;
+import com.tribe.app.presentation.utils.preferences.MultiplayerSessions;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
+import com.tribe.app.presentation.utils.preferences.PreviousDateUsage;
+import com.tribe.app.presentation.utils.preferences.PokeUserGame;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.utils.preferences.SelectedTrophy;
 import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
 import com.tribe.app.presentation.utils.preferences.SupportRequestId;
 import com.tribe.app.presentation.utils.preferences.SupportUserId;
@@ -109,6 +116,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDele
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardUserAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.newchat.ShortcutNewChatAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.trophy.TrophyAdapterDelegate;
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.common.ShortcutListView;
@@ -133,9 +141,12 @@ import com.tribe.app.presentation.view.component.live.game.birdrush.BirdRush;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswerView;
 import com.tribe.app.presentation.view.component.live.game.common.GameAnswersView;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaCategoryView;
+import com.tribe.app.presentation.view.component.trophies.TrophyRequirementView;
 import com.tribe.app.presentation.view.fragment.BaseFragment;
 import com.tribe.app.presentation.view.notification.NotificationBuilder;
+import com.tribe.app.presentation.view.popup.view.PopupAskToJoin;
 import com.tribe.app.presentation.view.popup.view.PopupParentView;
+import com.tribe.app.presentation.view.popup.view.PopupTrophy;
 import com.tribe.app.presentation.view.utils.ImageUtils;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
@@ -327,6 +338,16 @@ public interface ApplicationComponent {
 
   void inject(PopupParentView popupView);
 
+  void inject(TrophyAdapterDelegate trophyAdapterDelegate);
+
+  void inject(TrophyRequirementView trophyRequirementView);
+
+  void inject(TrophiesManager trophiesManager);
+
+  void inject(PopupTrophy popupTrophy);
+
+  void inject(PopupAskToJoin popupAskToJoin);
+
   // JOBS
   void inject(BaseJob baseJob);
 
@@ -448,6 +469,8 @@ public interface ApplicationComponent {
 
   @TribeState Preference<Set<String>> tribeState();
 
+  @PokeUserGame Preference<String> pokeUserGame();
+
   @DebugMode Preference<Boolean> debugMode();
 
   @HasSoftKeys Preference<Boolean> hasSoftKeys();
@@ -493,6 +516,16 @@ public interface ApplicationComponent {
   @UserPhoneNumber Preference<String> userPhoneNumber();
 
   @GameData Preference<String> gameData();
+
+  @DaysOfUsage Preference<Integer> daysOfUsage();
+
+  @MultiplayerSessions Preference<Integer> multiplayerSessions();
+
+  @GamesPlayed Preference<Set<String>> gamesPlayed();
+
+  @SelectedTrophy Preference<String> selectedTrophy();
+
+  @PreviousDateUsage Preference<Long> previousDateUsage();
 
   SoundManager soundManager();
 

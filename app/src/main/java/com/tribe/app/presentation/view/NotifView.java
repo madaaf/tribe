@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,15 +22,19 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.LabelType;
+import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.NewChatMVPViewAdapter;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -38,16 +43,20 @@ import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.mediapicker.RxImagePicker;
 import com.tribe.app.presentation.utils.mediapicker.Sources;
+import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.app.presentation.view.widget.chat.model.MessagePoke;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -63,7 +72,7 @@ public class NotifView extends FrameLayout {
 
   private static ViewGroup decorView;
   private static View v;
-  private static boolean disposeView = false;
+  private static boolean disposeView = true;
 
   private Unbinder unbinder;
   private Context context;
@@ -87,8 +96,12 @@ public class NotifView extends FrameLayout {
   @Inject RxFacebook rxFacebook;
   @Inject RxImagePicker rxImagePicker;
   @Inject User currentUser;
+  @Inject @HasSoftKeys Preference<Boolean> hasSoftKeys;
+  @Inject MessagePresenter messagePresenter;
+
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Void> onDismiss = PublishSubject.create();
 
   public NotifView(@NonNull Context context) {
     super(context);
@@ -100,7 +113,17 @@ public class NotifView extends FrameLayout {
     initView(context);
   }
 
+  public static boolean isDisplayed() {
+    return !disposeView;
+  }
+
+  public void overrideBackground(Drawable background) {
+    bgView.setBackground(background);
+  }
+
   public void show(Activity activity, List<NotificationModel> list) {
+    disposeView = false;
+
     this.data = list;
     if (list.size() < 2) {
       dotsContainer.setAlpha(0f);
@@ -151,6 +174,15 @@ public class NotifView extends FrameLayout {
                 }
               }));
           break;
+        case NotificationModel.POPUP_POKE:
+          Score score = notificationModel.getScore();
+          String[] userIds = new String[1];
+          userIds[0] = score.getUser().getId();
+          String intent = (score.isAbove()) ? MessagePoke.INTENT_FUN : MessagePoke.INTENT_JEALOUS;
+          messagePresenter.createPoke(userIds, score.getEmoticon(), score.getGame().getId(), intent);
+          Toast.makeText(context, context.getString(R.string.poke_sent_confirmation, score.getUser().getDisplayName()), Toast.LENGTH_SHORT).show();
+          hideNextNotif();
+          break;
       }
     }));
   }
@@ -174,7 +206,6 @@ public class NotifView extends FrameLayout {
 
   private void initView(Context context) {
     this.context = context;
-    disposeView = false;
     inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     v = inflater.inflate(R.layout.activity_test, this, true);
     unbinder = ButterKnife.bind(this);
@@ -185,6 +216,10 @@ public class NotifView extends FrameLayout {
 
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
+
+    if (hasSoftKeys.get()) {
+      UIUtils.changeBottomMarginOfView(textDismiss, screenUtils.dpToPx(50));
+    }
 
     newChatMVPViewAdapter = new NewChatMVPViewAdapter() {
       @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
@@ -254,6 +289,7 @@ public class NotifView extends FrameLayout {
     setVisibility(GONE);
     post(() -> decorView.removeView(v));
     clearAnimation();
+    decorView.removeView(v);
     subscriptions.unsubscribe();
   }
 
@@ -345,6 +381,7 @@ public class NotifView extends FrameLayout {
       if (pager.getCurrentItem() == data.size() - 1) {
         hideView();
         tagCancelAction();
+        onDismiss.onNext(null);
       } else {
         pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
       }
@@ -377,5 +414,13 @@ public class NotifView extends FrameLayout {
 
   public interface OnFinishEventListener {
     void onFinishView();
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<Void> onDismiss() {
+    return onDismiss;
   }
 }

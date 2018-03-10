@@ -20,4 +20,8 @@ public class UserMVPViewAdapter implements UserMVPView {
 
   @Override public void onUserInfosList(List<User> users) {
   }
+
+  @Override public void onUserRefreshDone() {
+
+  }
 }

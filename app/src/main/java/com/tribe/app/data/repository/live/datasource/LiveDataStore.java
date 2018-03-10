@@ -14,13 +14,15 @@ public interface LiveDataStore {
 
   Observable<Room> getRoom(Live live);
 
+  Observable<Room> getRoomLight(String roomId);
+
   Observable<Room> createRoom(String name, String gameId);
 
   Observable<Room> updateRoom(String roomId, List<Pair<String, String>> values);
 
   Observable<Void> deleteRoom(String roomId);
 
-  Observable<Boolean> createInvite(String roomId, String... userId);
+  Observable<Boolean> createInvite(String roomId, boolean isAsking, String... userId);
 
   Observable<Boolean> removeInvite(String roomId, String userId);
 

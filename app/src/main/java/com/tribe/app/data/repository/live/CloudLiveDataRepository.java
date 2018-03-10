@@ -33,6 +33,12 @@ import rx.Observable;
     return cloudDataStore.getRoom(live).compose(roomWithShortcutTransformer);
   }
 
+  @Override public Observable<Room> getRoomLight(String roomId) {
+    final CloudLiveDataStore cloudDataStore =
+        (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
+    return cloudDataStore.getRoomLight(roomId).compose(roomWithShortcutTransformer);
+  }
+
   @Override public Observable<Room> createRoom(String name, String gameId) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
@@ -51,10 +57,10 @@ import rx.Observable;
     return cloudDataStore.deleteRoom(roomId);
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {
+  @Override public Observable<Boolean> createInvite(String roomId, boolean isAsking, String... userIds) {
     final CloudLiveDataStore cloudDataStore =
         (CloudLiveDataStore) this.dataStoreFactory.createCloudDataStore();
-    return cloudDataStore.createInvite(roomId, userIds);
+    return cloudDataStore.createInvite(roomId, isAsking, userIds);
   }
 
   @Override public Observable<Boolean> removeInvite(String roomId, String userId) {

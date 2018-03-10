@@ -144,10 +144,11 @@ public final class PopupManager {
       if (view == null || view.getWindowToken() == null) {
         Log.d(Alerter.class.getClass().getSimpleName(), "");
       } else {
-        view.animate()
-            .alpha(0)
-            .withEndAction(() -> ((ViewGroup) view.getParent()).removeView(view))
-            .start();
+        view.animate().alpha(0).withEndAction(() -> {
+          if (view != null && view.getParent() != null) {
+            ((ViewGroup) view.getParent()).removeView(view);
+          }
+        }).start();
         Log.d(Alerter.class.getClass().getSimpleName(), "");
       }
     } catch (Exception ex) {

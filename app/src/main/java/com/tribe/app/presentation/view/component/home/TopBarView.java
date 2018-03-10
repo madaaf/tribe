@@ -189,7 +189,7 @@ public class TopBarView extends FrameLayout {
   }
 
   public void reloadUserUI() {
-    viewAvatar.load(user.getProfilePicture());
+    viewAvatar.load(user);
     txtEmojiGame.setEmojiList(user.getEmojiLeaderGameList());
   }
 

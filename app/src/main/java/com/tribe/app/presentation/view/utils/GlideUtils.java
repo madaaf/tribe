@@ -2,6 +2,9 @@ package com.tribe.app.presentation.view.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.v7.widget.CardView;
+import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import com.bumptech.glide.DrawableRequestBuilder;
 import com.bumptech.glide.Glide;
@@ -189,5 +192,73 @@ public class GlideUtils {
           .diskCacheStrategy(DiskCacheStrategy.RESULT)
           .into(target);
     }
+  }
+
+  public static class TrophyImageBuilder {
+
+    private final Context context;
+    private final ScreenUtils screenUtils;
+    private int drawableRes;
+    private ImageView target;
+    private CardView cardView;
+    private boolean hasBorder = false;
+
+    public TrophyImageBuilder(Context context, ScreenUtils screenUtils) {
+      this.context = context;
+      this.screenUtils = screenUtils;
+    }
+
+    public TrophyImageBuilder target(ImageView target) {
+      this.target = target;
+      return this;
+    }
+
+    public TrophyImageBuilder cardView(CardView cardView) {
+      this.cardView = cardView;
+      return this;
+    }
+
+    public TrophyImageBuilder drawableRes(int drawableRes) {
+      this.drawableRes = drawableRes;
+      return this;
+    }
+
+    public TrophyImageBuilder hasBorder(boolean hasBorder) {
+      this.hasBorder = hasBorder;
+      return this;
+    }
+
+    public void load() {
+      if (cardView != null) {
+        cardView.getViewTreeObserver()
+            .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+              @Override public void onGlobalLayout() {
+                cardView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                cardView.setRadius(getRadius(cardView, screenUtils));
+              }
+            });
+      }
+
+      target.getViewTreeObserver()
+          .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+              target.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+              DrawableRequestBuilder drawableRequestBuilder = Glide.with(context).load(drawableRes);
+
+              if (hasBorder) {
+                drawableRequestBuilder.bitmapTransform(
+                    new RoundedCornersTransformation(context, getRadius(target, screenUtils),
+                        screenUtils.dpToPx(3), "#FFFFFF", screenUtils.dpToPx(4)));
+              }
+
+              drawableRequestBuilder.diskCacheStrategy(DiskCacheStrategy.RESULT).into(target);
+            }
+          });
+    }
+  }
+
+  private static int getRadius(View view, ScreenUtils screenUtils) {
+    return (int) (((float) view.getMeasuredWidth() / (float) 4) / (float) 1.61803398874989484820);
   }
 }

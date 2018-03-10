@@ -145,6 +145,10 @@
     <item name="android:textColor">@color/blue.new</item>
   </style>
 
+  <style name="Body.Two.Yellow" parent="@style/Body.Two">
+    <item name="android:textColor">@color/yellow</item>
+  </style>
+
   <style name="Body.Two.Black" parent="@style/Body.Two">
     <item name="android:textColor">@android:color/black</item>
   </style>
@@ -236,6 +240,9 @@
     <item name="customFont">CircularStd-Bold.otf</item>
   </style>
 
+  <style name="Circular.3" parent="@style/Circular">
+    <item name="customFont">CircularStd-Black.otf</item>
+  </style>
 
   <style name="Circular.1.White40" parent="@style/Circular.1">
     <item name="android:textColor">@color/white.opacity.70</item>
@@ -243,6 +250,26 @@
 
   <style name="Circular.2.White40" parent="@style/Circular.2">
     <item name="android:textColor">@color/white.opacity.70</item>
+  </style>
+
+  <style name="Headline.Circular.2.Black" parent="@style/Circular.2">
+    <item name="android:textColor">@android:color/black</item>
+    <item name="android:textSize">18sp</item>
+  </style>
+
+  <style name="Headline.Circular.3.Black" parent="@style/Circular.3">
+    <item name="android:textColor">@android:color/black</item>
+    <item name="android:textSize">19sp</item>
+  </style>
+
+  <style name="Big.Circular.3.Black" parent="@style/Circular.3">
+    <item name="android:textColor">@android:color/black</item>
+    <item name="android:textSize">25sp</item>
+  </style>
+
+  <style name="Bigger.Circular.3.Black" parent="@style/Circular.3">
+    <item name="android:textColor">@android:color/black</item>
+    <item name="android:textSize">30sp</item>
   </style>
 
   <style name="Title.Regular">

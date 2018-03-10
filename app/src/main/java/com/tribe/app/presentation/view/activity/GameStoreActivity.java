@@ -19,24 +19,32 @@ import com.tribe.app.data.network.WSService;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Shortcut;
+import com.tribe.app.domain.entity.TrophyEnum;
 import com.tribe.app.domain.entity.User;
-import com.tribe.app.presentation.TribeBroadcastReceiver;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.UserPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
+import com.tribe.app.presentation.utils.preferences.DaysOfUsage;
+import com.tribe.app.presentation.utils.preferences.LastSync;
+import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
+import com.tribe.app.presentation.utils.preferences.PreviousDateUsage;
+import com.tribe.app.presentation.view.NotifView;
+import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.utils.preferences.LastSync;
 import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
+import com.tribe.app.presentation.view.notification.NotificationPayload;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.popup.PopupManager;
 import com.tribe.app.presentation.view.popup.listener.PopupDigestListener;
@@ -50,6 +58,8 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
@@ -71,11 +81,21 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   }
 
   @Inject UserPresenter userPresenter;
+
   @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
+
   @Inject @LastSync Preference<Long> lastSync;
+  
   @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
+  
+  @Inject @DaysOfUsage Preference<Integer> daysOfUsage;
+  
+  @Inject @PreviousDateUsage Preference<Long> previousDateUsage;
+  
   @Inject User currentUser;
+  
   @Inject StateManager stateManager;
+
   @Inject PaletteGrid paletteGrid;
 
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
@@ -120,6 +140,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     initParams(getIntent());
     initAppStateMonitor();
     loadChallengeNotificationData();
+    computeDaysUsage();
   }
 
   private void initParams(Intent intent) {
@@ -135,8 +156,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
-        PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
+        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync);
     }
 
@@ -153,14 +174,13 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   }
 
   private void displayFakeSupportNotif() {
-    TribeBroadcastReceiver receiver = new TribeBroadcastReceiver(this);
-    receiver.notifiyStaticNotifSupport(this);
+    getBroadcastReceiver().notifiyStaticNotifSupport(this);
   }
 
   private void loadChallengeNotificationData() {
-    if (challengeNotificationsPref != null
-        && challengeNotificationsPref.get() != null
-        && !challengeNotificationsPref.get().isEmpty()) {
+    if (challengeNotificationsPref != null &&
+        challengeNotificationsPref.get() != null &&
+        !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
@@ -194,8 +214,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       if (callRoulette) {
         navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, gameId);
       } else if (shortcut != null) {
-        navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM,
-            TagManagerUtils.SECTION_SHORTCUT, gameId);
+        navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM, gameId, null);
       }
     } else if (requestCode == Navigator.FROM_LIVE) {
       shouldDisplayDigest = false;
@@ -228,6 +247,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     };
 
     gamePresenter.getGames();
+
     userMVPViewAdapter = new UserMVPViewAdapter() {
       @Override public void onUserInfos(User user) {
         onUser.onNext(user);
@@ -235,6 +255,20 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
       @Override public void onUserInfosList(List<User> users) {
         usersChallenge = users;
+      }
+
+      @Override public void onUserRefreshDone() {
+        String trophy = user.getTrophy();
+        TrophyEnum currentTrophy = TrophyEnum.getTrophyEnum(trophy);
+        List<TrophyEnum> trophies = TrophyEnum.getTrophies();
+
+        for (TrophyEnum te : trophies) {
+          if (trophies.indexOf(te) > trophies.indexOf(currentTrophy) && te.isAchieved()) {
+            userPresenter.updateUserTrophy(te.getTrophy());
+            user.setTrophy(trophy);
+            displayNotificationNewTrophy(te);
+          }
+        }
       }
     };
   }
@@ -259,8 +293,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
           if (shortcut.isSingle()) {
             User member = shortcut.getSingleFriend();
             if (member.isPlayingAGame()) {
-              if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
-                  member.getId())) {
+              if (!userIdsDigest.contains(member.getId()) &&
+                  !roomIdsDigest.contains(member.getId())) {
                 userIdsDigest.add(member.getId());
                 items.add(shortcut);
               }
@@ -269,50 +303,59 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
         }
       }
 
-      List<NotificationModel> notificationModelList = new ArrayList<>();
+      if (!NotifView.isDisplayed()) {
+        List<NotificationModel> notificationModelList = new ArrayList<>();
 
-      //if (items.size() > 0 && shouldDisplayDigest) {
-      //  PopupDigest popupDigest =
-      //      (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
-      //  popupDigest.setItems(items);
-      //
-      //  PopupManager popupManager = PopupManager.create(new PopupManager.Builder().activity(this)
-      //      .dimBackground(false)
-      //      .listener(new PopupDigestListener() {
-      //        @Override public void onClick(Recipient recipient) {
-      //          navigator.navigateToLive(GameStoreActivity.this, recipient,
-      //              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-      //                  : LiveActivity.SOURCE_GRID, TagManagerUtils.SECTION_ONGOING, null);
-      //          if (notifView != null) notifView.dispose();
-      //        }
-      //
-      //        @Override public void onClickMore() {
-      //          onClickHome();
-      //        }
-      //      })
-      //      .view(popupDigest));
-      //
-      //  notificationModelList.add(
-      //      new NotificationModel.Builder().view(popupManager.getView()).build());
-      //} else {
-      //  shouldDisplayDigest = true;
-      //}
+        if (items.size() > 0 && shouldDisplayDigest) {
+          PopupDigest popupDigest =
+              (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
+          popupDigest.setItems(items);
 
-      if (usersChallenge != null && usersChallenge.size() > 0) {
-        notificationModelList.addAll(
-            NotificationUtils.getChallengeNotification(usersChallenge, GameStoreActivity.this,
-                stateManager, currentUser, challengeNotificationsPref));
-        usersChallenge = null;
-      }
+          PopupManager popupManager = PopupManager.create(new PopupManager.Builder().activity(this)
+              .dimBackground(false)
+              .listener(new PopupDigestListener() {
+                @Override public void onClick(Recipient recipient) {
+                  String userAsk = null;
 
-      if (notificationModelList.size() > 0) {
-        if (notifView != null) {
-          notifView.dispose();
-          notifView = null;
+                  if (recipient instanceof Shortcut) {
+                    User user = ((Shortcut) recipient).getSingleFriend();
+                    if (user != null) userAsk = user.getId();
+                  }
+
+                  navigator.navigateToLive(GameStoreActivity.this, recipient,
+                      recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+                          : LiveActivity.SOURCE_GRID, null, userAsk);
+                  if (notifView != null) notifView.dispose();
+                }
+
+                @Override public void onClickMore() {
+                  onClickHome();
+                }
+              })
+              .view(popupDigest));
+
+          notificationModelList.add(
+              new NotificationModel.Builder().view(popupManager.getView()).build());
+        } else {
+          shouldDisplayDigest = true;
         }
 
-        notifView = new NotifView(this);
-        notifView.show(this, notificationModelList);
+        if (usersChallenge != null && usersChallenge.size() > 0) {
+          notificationModelList.addAll(
+              NotificationUtils.getChallengeNotification(usersChallenge, GameStoreActivity.this,
+                  stateManager, user, challengeNotificationsPref));
+          usersChallenge = null;
+        }
+
+        if (notificationModelList.size() > 0) {
+          if (notifView != null) {
+            notifView.dispose();
+            notifView = null;
+          }
+
+          notifView = new NotifView(this);
+          notifView.show(this, notificationModelList);
+        }
       }
 
       if (hasLive) {
@@ -381,6 +424,57 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   @Override public void onAppDidEnterBackground() {
     Timber.d("App in background stopping the service");
     stopService();
+  }
+
+  private void computeDaysUsage() {
+    int nbDays = daysOfUsage.get();
+    long previousDateMilli = previousDateUsage.get();
+
+    if (previousDateMilli > 0) {
+      Date previousDate = new Date(previousDateMilli);
+
+      Calendar calendarToday = Calendar.getInstance();
+      calendarToday.set(Calendar.HOUR_OF_DAY, 0);
+      calendarToday.set(Calendar.MINUTE, 0);
+      calendarToday.set(Calendar.SECOND, 0);
+      calendarToday.set(Calendar.MILLISECOND, 0);
+
+      Calendar calendarYesterday = Calendar.getInstance();
+      calendarYesterday.set(Calendar.HOUR_OF_DAY, 0);
+      calendarYesterday.set(Calendar.MINUTE, 0);
+      calendarYesterday.set(Calendar.SECOND, 0);
+      calendarYesterday.set(Calendar.MILLISECOND, 0);
+      calendarYesterday.add(Calendar.DATE, -1);
+
+      Calendar calendarPreviousDate = Calendar.getInstance();
+      calendarPreviousDate.setTime(previousDate);
+
+      if (calendarPreviousDate.before(calendarYesterday)) {
+        nbDays = 1;
+      } else if ((calendarPreviousDate.after(calendarYesterday) ||
+          calendarPreviousDate.equals(calendarYesterday)) &&
+          calendarPreviousDate.before(calendarToday)) {
+        nbDays += 1;
+      }
+    } else {
+      nbDays = 1;
+    }
+
+    daysOfUsage.set(nbDays);
+    previousDateUsage.set(new Date().getTime());
+  }
+
+  private void displayNotificationNewTrophy(TrophyEnum te) {
+    NotificationPayload notificationPayload = new NotificationPayload();
+    notificationPayload.setSound("game_friend_leader.ogg");
+    notificationPayload.setTitle(getString(R.string.leaderboards_title));
+    notificationPayload.setUserId(user.getId());
+    notificationPayload.setUserDisplayName(user.getDisplayName());
+    notificationPayload.setUserPicture(user.getProfilePicture());
+    notificationPayload.setBody(EmojiParser.demojizedText(
+        getString(R.string.trophy_notification_message, getString(te.getTitle()))));
+    notificationPayload.setClickAction(NotificationPayload.CLICK_ACTION_NEW_TROPHY);
+    notificationReceiver.computeNotificationPayload(this, notificationPayload);
   }
 
   /**

@@ -111,6 +111,10 @@ public class TribeUserDeserializer implements JsonDeserializer<UserRealm> {
       e.printStackTrace();
     }
 
+    userRealm.setTrophy(
+        result.get("trophy") != null && !result.get("trophy").isJsonNull() ? result.get("trophy")
+            .getAsString() : UserRealm.NOOB);
+
     List<ShortcutRealm> listShortcuts = new ArrayList<>();
 
     if (result.has("shortcuts") && !(result.get("shortcuts") instanceof JsonNull)) {

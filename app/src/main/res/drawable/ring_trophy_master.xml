@@ -1,0 +1,15 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:innerRadiusRatio="0"
+    android:shape="ring"
+    android:thickness="4dp"
+    android:useLevel="false">
+
+  <gradient
+      android:centerColor="@color/trophy.master.primary"
+      android:centerX="0"
+      android:centerY="0"
+      android:endColor="@color/trophy.master.secondary"
+      android:gradientRadius="400"
+      android:startColor="@color/trophy.master.primary"
+      android:type="sweep"/>
+</shape>

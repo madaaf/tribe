@@ -22,14 +22,18 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.mvp.presenter.UserPresenter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.utils.preferences.ChallengeNotifications;
 import com.tribe.app.presentation.utils.preferences.HasSoftKeys;
 import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.notification.NotificationUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
@@ -40,6 +44,7 @@ import rx.subscriptions.CompositeSubscription;
 public abstract class BaseActivity extends AppCompatActivity {
 
   protected static boolean isFristLeaveRoom = false;
+
   private Context context;
 
   @Inject Navigator navigator;
@@ -51,6 +56,12 @@ public abstract class BaseActivity extends AppCompatActivity {
   @Inject RxFacebook rxFacebook;
 
   @Inject @HasSoftKeys Preference<Boolean> hasSoftKeys;
+
+  @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
+
+  @Inject StateManager stateManager;
+
+  @Inject UserPresenter userPresenter;
 
   private CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -79,10 +90,31 @@ public abstract class BaseActivity extends AppCompatActivity {
     if (getResources().getBoolean(R.bool.isTablet)) {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
+    displayChallengerNotifications();
+  }
+
+  private void displayChallengerNotifications() {
+    if (challengeNotificationsPref != null
+        && challengeNotificationsPref.get() != null
+        && !challengeNotificationsPref.get().isEmpty()) {
+      ArrayList usersIds =
+          new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
+      userPresenter.getUsersInfoListById(usersIds);
+    } else if (isFristLeaveRoom) {
+      isFristLeaveRoom = false;
+      List<NotificationModel> list = new ArrayList<>();
+      NotifView view = new NotifView(getBaseContext());
+      NotificationModel a = NotificationUtils.getFbNotificationModel(this);
+      list.add(a);
+      view.show(this, list);
+    }
   }
 
   private void connectToFacebook() {
-    if (isFristLeaveRoom) displayPopups();
+    if (isFristLeaveRoom) {
+      displayPopups();
+      isFristLeaveRoom = false;
+    }
   }
 
   private void displayPopups() {

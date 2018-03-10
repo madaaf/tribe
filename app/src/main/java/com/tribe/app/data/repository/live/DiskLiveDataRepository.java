@@ -46,6 +46,10 @@ public class DiskLiveDataRepository implements LiveRepository {
     return null;
   }
 
+  @Override public Observable<Room> getRoomLight(String roomId) {
+    return null;
+  }
+
   @Override public Observable<Room> createRoom(String name, String gameId) {
     return null;
   }
@@ -58,7 +62,7 @@ public class DiskLiveDataRepository implements LiveRepository {
     return null;
   }
 
-  @Override public Observable<Boolean> createInvite(String roomId, String... userIds) {
+  @Override public Observable<Boolean> createInvite(String roomId, boolean isAsking, String... userIds) {
     return null;
   }
 

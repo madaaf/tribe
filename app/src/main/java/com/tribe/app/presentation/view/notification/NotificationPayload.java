@@ -36,7 +36,7 @@ public class NotificationPayload implements Serializable {
   public static final String CLICK_ACTION_GAME_SCORE = "game_score";
   public static final String CLICK_ACTION_GAME_LIVE = "live-game";
   public static final String CLICK_ACTION_GAME_SCORE_BEATEN = "game_score_beaten";
-
+  public static final String CLICK_ACTION_NEW_TROPHY = "trophy";
 
   private String user_id;
   private String body;
@@ -58,6 +58,7 @@ public class NotificationPayload implements Serializable {
   private String users_ids;
   private JsonArray thread_id;
   private String game_id;
+  private boolean is_asking = false;
 
   public void setTime(long time) {
     this.time = time;
@@ -208,12 +209,30 @@ public class NotificationPayload implements Serializable {
   }
 
   public boolean isLive() {
-    return click_action == null || click_action.equals(CLICK_ACTION_BUZZ) || click_action.equals(
-        CLICK_ACTION_LIVE) || click_action.equals(CLICK_ACTION_GAME_LIVE);
+    return click_action == null ||
+        click_action.equals(CLICK_ACTION_BUZZ) ||
+        click_action.equals(CLICK_ACTION_LIVE) ||
+        click_action.equals(CLICK_ACTION_GAME_LIVE);
   }
 
   public boolean isUserCall() {
     return !StringUtils.isEmpty(getUserId());
+  }
+
+  public void setIsAsking(boolean is_asking) {
+    this.is_asking = is_asking;
+  }
+
+  public boolean isAsking() {
+    return is_asking;
+  }
+
+  public String getGame_id() {
+    return game_id;
+  }
+
+  public void setGame_id(String game_id) {
+    this.game_id = game_id;
   }
 
   @Override public boolean equals(Object o) {

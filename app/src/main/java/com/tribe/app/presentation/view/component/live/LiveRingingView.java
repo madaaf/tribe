@@ -203,7 +203,8 @@ public class LiveRingingView extends RelativeLayout {
             shortcut.getMembersIds().size());
       }
 
-      txtRinging.setText(getResources().getString(R.string.live_members_ringing) + " " + name);
+      int str = !StringUtils.isEmpty(live.getUserAsk())  ? R.string.live_asking : R.string.live_ringing;
+      txtRinging.setText(getResources().getString(str, name));
     }
   }
 
@@ -246,7 +247,8 @@ public class LiveRingingView extends RelativeLayout {
       }
     }
 
-    txtRinging.setText(getResources().getString(R.string.live_members_ringing) + " " + name);
+    int str = !StringUtils.isEmpty(live.getUserAsk())  ? R.string.live_asking : R.string.live_ringing;
+    txtRinging.setText(getResources().getString(str, name));
   }
 
   //////////////
@@ -267,7 +269,7 @@ public class LiveRingingView extends RelativeLayout {
 
   public void startRinging() {
     setVisibility(View.VISIBLE);
-    subscriptions.add(Observable.interval(0,2, TimeUnit.SECONDS)
+    subscriptions.add(Observable.interval(0, 2, TimeUnit.SECONDS)
         .onBackpressureDrop()
         .observeOn(AndroidSchedulers.mainThread())
         .onBackpressureDrop()

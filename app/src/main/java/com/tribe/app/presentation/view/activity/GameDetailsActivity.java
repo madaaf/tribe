@@ -195,7 +195,7 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     Glide.with(this).load(game.getLogo()).into(imgLogo);
     Glide.with(this).load(game.getBackground()).into(imgBackgroundLogo);
 
-    GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[] {
+    GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TR_BL, new int[] {
         Color.parseColor("#" + game.getPrimary_color()),
         Color.parseColor("#" + game.getSecondary_color())
     });
