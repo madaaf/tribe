@@ -12,7 +12,7 @@ import rx.Observable;
 
 public interface ChatRepository {
 
-  Observable<Message> createMessage(final String[] userIds, String type, String data);
+  Observable<Message> createMessage(final String[] userIds, String type, String data, String gameId, String intent);
 
   Observable<List<Message>> loadMessages(final String[] userIds, String dateBefore,
       String dateAfter);

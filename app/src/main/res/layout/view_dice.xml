@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
 
   <FrameLayout
@@ -57,4 +59,14 @@
       style="@style/Body.Two.White"
       />
 
+  <TextView
+      android:layout_width="100dp"
+      android:layout_height="100dp"
+      android:background="@color/blue.new.light"
+      android:layout_gravity="center"
+      android:gravity="center"
+      android:autoSizeTextType="uniform"
+      android:text="okokok"
+      app:autoSizeTextType="uniform"
+      ></TextView>
 </merge>

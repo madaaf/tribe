@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view;
 import android.os.Build;
 import android.support.annotation.StringDef;
 import android.view.View;
+import com.tribe.app.domain.entity.Score;
 import com.tribe.app.presentation.view.popup.view.PopupParentView;
 import com.tribe.app.presentation.view.popup.view.PopupView;
 
@@ -15,9 +16,10 @@ public class NotificationModel {
   public static final String POPUP_CHALLENGER = "POPUP_CHALLENGER";
   public static final String POPUP_FACEBOOK = "POPUP_FACEBOOK";
   public static final String POPUP_UPLOAD_PICTURE = "POPUP_UPLOAD_PICTURE";
+  public static final String POPUP_POKE = "POPUP_POKE";
 
   @StringDef({
-      POPUP_CHALLENGER, POPUP_FACEBOOK, POPUP_UPLOAD_PICTURE
+      POPUP_CHALLENGER, POPUP_FACEBOOK, POPUP_UPLOAD_PICTURE, POPUP_POKE
   }) public @interface NotificationType {
   }
 
@@ -30,6 +32,7 @@ public class NotificationModel {
   private String userId;
   private @NotificationType String type;
   private View view;
+  private Score score;
 
   private String btn1Content;
   private Integer btn1DrawableStart;
@@ -50,6 +53,7 @@ public class NotificationModel {
     this.btn1DrawableStart = b.btn1DrawableStart;
     this.btn1Background = b.btn1Background;
     this.view = b.view;
+    this.score = b.score;
   }
 
   public Integer getBtn1Background() {
@@ -104,6 +108,10 @@ public class NotificationModel {
     return view;
   }
 
+  public Score getScore() {
+    return score;
+  }
+
   public static class Builder {
     private String subTitle;
     private String title;
@@ -117,11 +125,17 @@ public class NotificationModel {
     private String btn1Content;
     private Integer btn1Background;
     private View view;
+    private Score score;
 
     private @NotificationType String type;
 
     public Builder type(@NotificationType String f) {
       this.type = f;
+      return this;
+    }
+
+    public Builder score(Score f) {
+      this.score = f;
       return this;
     }
 

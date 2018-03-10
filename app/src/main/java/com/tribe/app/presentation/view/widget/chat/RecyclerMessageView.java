@@ -399,6 +399,7 @@ public class RecyclerMessageView extends IChat {
   private void initRecyclerView() {
     layoutManager = new LinearLayoutManager(getContext());
     messageAdapter = new MessageAdapter(getContext(), type);
+
     layoutManager.setStackFromEnd(true);
 
     DefaultItemAnimator animator = new DefaultItemAnimator() {
@@ -443,6 +444,10 @@ public class RecyclerMessageView extends IChat {
             });
           }
         });
+
+    subscriptions.add(messageAdapter.onClickGame().subscribe(gameId -> {
+      navigator.navigateToGameDetails((Activity) context, gameId);
+    }));
   }
 
   public void scrollListToBottom() {

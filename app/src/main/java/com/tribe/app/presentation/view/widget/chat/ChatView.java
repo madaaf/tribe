@@ -80,6 +80,7 @@ import com.tribe.app.presentation.view.widget.chat.model.Message;
 import com.tribe.app.presentation.view.widget.chat.model.MessageAudio;
 import com.tribe.app.presentation.view.widget.chat.model.MessageEmoji;
 import com.tribe.app.presentation.view.widget.chat.model.MessageImage;
+import com.tribe.app.presentation.view.widget.chat.model.MessagePoke;
 import com.tribe.app.presentation.view.widget.chat.model.MessageText;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -104,6 +105,7 @@ import static com.tribe.app.data.network.WSService.CHAT_SUBSCRIBE_IMTYPING;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_AUDIO;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_EMOJI;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_IMAGE;
+import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_POKE;
 import static com.tribe.app.presentation.view.widget.chat.model.Message.MESSAGE_TEXT;
 
 /**

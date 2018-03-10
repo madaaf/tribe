@@ -34,10 +34,10 @@ import rx.Observable;
     this.chatDataStoreFactory = chatDataStoreFactory;
   }
 
-  @Override public Observable<Message> createMessage(String[] userIds, String type, String data) {
+  @Override public Observable<Message> createMessage(String[] userIds, String type, String data, String gameId, String intent) {
     String date = dateUtils.getUTCDateAsString();
     final ChatDataStore userDataStore = this.chatDataStoreFactory.createCloudDataStore();
-    return userDataStore.createMessage(userIds, type, data, date)
+    return userDataStore.createMessage(userIds, type, data, date, gameId, intent)
         .doOnError(Throwable::printStackTrace)
         .map(this.messageRealmDataMapper::transform);
   }
