@@ -22,6 +22,7 @@ import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecorati
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardDetailsLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +41,8 @@ public class LeaderboardPage extends LinearLayout {
   @Inject GamePresenter gamePresenter;
 
   @Inject ScreenUtils screenUtils;
+
+  @Inject StateManager stateManager;
 
   @BindView(R.id.recyclerView) RecyclerView recyclerView;
 
@@ -96,7 +99,7 @@ public class LeaderboardPage extends LinearLayout {
   private void initUI() {
     layoutManager = new LeaderboardDetailsLayoutManager(getContext());
     recyclerView.setLayoutManager(layoutManager);
-    adapter = new LeaderboardDetailsAdapter(getContext(), recyclerView);
+    adapter = new LeaderboardDetailsAdapter(getContext(), recyclerView, stateManager);
     recyclerView.setItemAnimator(null);
     recyclerView.setAdapter(adapter);
     recyclerView.addItemDecoration(new BaseListDividerDecoration(getContext(),

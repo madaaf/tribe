@@ -124,6 +124,9 @@ public class ChatCacheImpl implements ChatCache {
           m.set__typename(message.get__typename());
           m.setData(message.getData());
           m.setAction(message.getAction());
+          m.setIntent(message.getIntent());
+          m.setGame_id(message.getGame_id());
+          m.setClient_message_id(message.getClient_message_id());
           m.setCreated_at(message.getCreated_at());
 
           if (message.getOriginal() != null) {

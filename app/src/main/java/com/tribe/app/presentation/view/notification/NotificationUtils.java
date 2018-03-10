@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.IntentUtils;
@@ -45,12 +46,12 @@ public class NotificationUtils {
       return builder.build();
     }
 
-    if ((notificationPayload.getClickAction() == null &&
-        StringUtils.isEmpty(notificationPayload.getBody())) ||
-        notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+    if ((notificationPayload.getClickAction() == null && StringUtils.isEmpty(
+        notificationPayload.getBody())) || notificationPayload.getClickAction()
+        .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       return null;
-    } else if (notificationPayload.getClickAction() == null &&
-        !StringUtils.isEmpty(notificationPayload.getBody())) {
+    } else if (notificationPayload.getClickAction() == null && !StringUtils.isEmpty(
+        notificationPayload.getBody())) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       return builder.build();
     }
@@ -217,6 +218,25 @@ public class NotificationUtils {
     return a;
   }
 
+  public static void displayUplaodAvatarNotification(Context context, Score score) {
+    List<NotificationModel> list = new ArrayList<>();
+    NotifView view = new NotifView(context);
+
+    NotificationModel a = new NotificationModel.Builder().subTitle(
+        context.getString(R.string.poke_popup_title, score.getUser().getDisplayName()))
+        .content(context.getString(R.string.poke_popup_subtitle, score.getUser().getDisplayName()))
+        .btn1Content(context.getString(R.string.poke_popup_action_send).toUpperCase())
+        .drawableBtn1(R.drawable.picto_white_message)
+        .background(R.drawable.poke_popup_background)
+        .profilePicture(score.getUser().getProfilePicture())
+        .type(NotificationModel.POPUP_POKE)
+        .score(score)
+        .build();
+
+    list.add(a);
+    view.show((Activity) context, list);
+  }
+
   public static NotificationModel getAvatarNotificationModel(Context context) {
     NotificationModel a = new NotificationModel.Builder().subTitle(
         context.getString(R.string.upload_picture_popup_title))
@@ -265,6 +285,7 @@ public class NotificationUtils {
 
     if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
       list.add(NotificationUtils.getFbNotificationModel(context));
+
       if (currentUser.getProfilePicture() == null || currentUser.getProfilePicture().isEmpty()) {
         list.add(NotificationUtils.getAvatarNotificationModel(context));
       }

@@ -12,6 +12,7 @@ import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardD
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsEmptyAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.helper.EndlessRecyclerViewScrollListener;
 import com.tribe.app.presentation.view.adapter.model.LoadMoreModel;
+import com.tribe.app.presentation.view.utils.StateManager;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -38,12 +39,14 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Boolean> onLoadMore = PublishSubject.create();
 
-  @Inject public LeaderboardDetailsAdapter(Context context, RecyclerView recyclerView) {
+  @Inject public LeaderboardDetailsAdapter(Context context, RecyclerView recyclerView,
+      StateManager stateManager) {
     items = new ArrayList<>();
 
     delegatesManager = new RxAdapterDelegatesManager();
 
-    leaderboardDetailsAdapterDelegate = new LeaderboardDetailsAdapterDelegate(context);
+    leaderboardDetailsAdapterDelegate =
+        new LeaderboardDetailsAdapterDelegate(context, stateManager);
     delegatesManager.addDelegate(leaderboardDetailsAdapterDelegate);
 
     leaderboardDetailsEmptyAdapterDelegate = new LeaderboardDetailsEmptyAdapterDelegate(context);
@@ -65,7 +68,6 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
 
       recyclerView.addOnScrollListener(scrollListener);
     }
-
     setHasStableIds(true);
   }
 
@@ -155,7 +157,13 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
    * OBSERVABLES
    */
 
-  public Observable<View> onClick() {
+
+
+  public Observable<Score> onClickPoke() {
+    return leaderboardDetailsAdapterDelegate.onClickPoke();
+  }
+
+  public Observable<Score> onClick(){
     return leaderboardDetailsAdapterDelegate.onClick();
   }
 

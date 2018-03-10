@@ -38,6 +38,10 @@ import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
 import com.tribe.app.presentation.utils.preferences.PreviousDateUsage;
 import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.NotificationModel;
+import com.tribe.app.presentation.utils.preferences.LastSync;
+import com.tribe.app.presentation.utils.preferences.LastSyncGameData;
+import com.tribe.app.presentation.view.NotifView;
+import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.interfaces.HomeAdapterInterface;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
@@ -77,13 +81,21 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   }
 
   @Inject UserPresenter userPresenter;
-  @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
-  @Inject @LastSync Preference<Long> lastSync;
-  @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
-  @Inject @DaysOfUsage Preference<Integer> daysOfUsage;
-  @Inject @PreviousDateUsage Preference<Long> previousDateUsage;
 
+  @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
+
+  @Inject @LastSync Preference<Long> lastSync;
+  
+  @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
+  
+  @Inject @DaysOfUsage Preference<Integer> daysOfUsage;
+  
+  @Inject @PreviousDateUsage Preference<Long> previousDateUsage;
+  
+  @Inject User currentUser;
+  
   @Inject StateManager stateManager;
+
   @Inject PaletteGrid paletteGrid;
 
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;

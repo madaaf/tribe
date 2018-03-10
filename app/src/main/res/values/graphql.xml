@@ -83,11 +83,11 @@
 
   <string name="messages.create" translatable="false">
         mutation {
-            createMessage(usersIds:[%1$s],  message : {type: %2$s, data: \"%3$s\"}) {
+            createMessage(usersIds:[%1$s],  message : {type: %2$s, data: \"%3$s\", game_id: \"%4$s\", intent : %5$s}) {
                     ...MessagePayload
                   }
                 }
-       %4$s
+       %6$s
 
     </string>
 
@@ -422,6 +422,17 @@
                   action
                   user{id picture display_name}
                   created_at
+            }
+           ... on PokeMessage {
+            author {
+                display_name
+                id
+                picture
+              }
+                  client_message_id
+                  intent
+                  game_id
+                  data
             }
           ... on AudioMessage {
                 author {
