@@ -452,6 +452,9 @@ public class AndroidApplication extends Application {
 
           if (oldVersion == 17) {
             schema.get("UserRealm").addField("trophy", String.class);
+            schema.get("MessageRealm").addField("client_message_id", String.class);
+            schema.get("MessageRealm").addField("intent", String.class);
+            schema.get("MessageRealm").addField("game_id", String.class);
             oldVersion++;
           }
         })
