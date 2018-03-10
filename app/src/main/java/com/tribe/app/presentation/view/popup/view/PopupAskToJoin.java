@@ -226,7 +226,7 @@ public class PopupAskToJoin extends PopupView {
     }
 
     if (game != null) {
-      score = user.getScoreForGame(game.getId());
+      if (user != null) score = user.getScoreForGame(game.getId());
 
       Glide.with(getContext())
           .load(game.getBackground())

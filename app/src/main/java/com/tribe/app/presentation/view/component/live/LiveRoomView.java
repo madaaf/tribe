@@ -360,13 +360,13 @@ public class LiveRoomView extends FrameLayout {
     int childCount = getNBLiveViews();
     manageGuidelines(childCount - 1);
 
+    mapViews.remove(userId);
+    onViews.onNext(mapViews);
+
     if (view != null) {
       constraintLayout.removeView(view);
       refactorConstraintsOnChilds();
     }
-
-    mapViews.remove(userId);
-    onViews.onNext(mapViews);
 
     if (source != null && source.equals(SOURCE_CALL_ROULETTE) && getNBLiveViews() < 2) {
       diceView.setVisibility(VISIBLE);
