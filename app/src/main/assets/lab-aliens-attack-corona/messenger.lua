@@ -58,8 +58,8 @@ local function receiveMessage(event)
 
 		elseif context then
 
-			local scores = context[SCORES_KEY]
-			if scores then
+			local scores = message[SCORES_KEY]
+			if context == 'scores' and scores then
 
 				local listener = listeners['scoresUpdated']
 				if listener then
@@ -96,13 +96,14 @@ end
 
 exports.broadcastScores = function(playersScores)
 
-	local context = {}
-	context[SCORES_KEY] = playersScores
-
 	local message = {}
-	message[CONTEXT_KEY] = context
+	message[CONTEXT_KEY] = 'scores'
+	message[SCORES_KEY]  = playersScores
 
 	broadcastMessage(message)
+
+	local event = { name='coronaView', event='contextGame', context={ scores=playersScores } }
+	Runtime:dispatchEvent(event)
 end
 
 exports.broadcastNewGame = function(fromUserId, timestamp, playersIds)

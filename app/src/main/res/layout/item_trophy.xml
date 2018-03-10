@@ -16,7 +16,6 @@
       android:layout_marginStart="@dimen/horizontal_margin"
       android:clipChildren="false"
       app:cardBackgroundColor="@android:color/transparent"
-      android:layout_marginStart="@dimen/horizontal_margin"
       app:cardElevation="5dp"
       app:cardPreventCornerOverlap="false"
       app:layout_constraintBottom_toBottomOf="parent"

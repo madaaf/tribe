@@ -33,8 +33,14 @@ end
 local function moveExistingBonusTop (group)
 	if group then
 		transition.to(group, { y=-100, time=125 })
-		if group[2] then group[2]:removeSelf() end
-		if group[1] then group[1]:removeSelf() end
+		if group[2] then group[2].isVisible = false end
+		if group[1] then group[1].isVisible = false end
+	end
+end
+
+local function moveExistingBonusBottom (group)
+	if group then
+		transition.to(group, { y=0, time=125 })
 	end
 end
 
@@ -72,6 +78,7 @@ local function showBonus (text, icon, useEventName, otherBonusGroup)
  		if event.phase == "began" then
 
 			removeShownBonuses(group)
+			moveExistingBonusBottom(otherBonusGroup)
 
 		 	if listeners[useEventName] then
 		 		listeners[useEventName]()

@@ -171,7 +171,8 @@ aliens.pop = function(alien, paceFactor)
 		alienImage = display.newImageRect( "assets/images/alien_0.png", 48, 27 )
 	end
 
-	alienGradient = emitter.newAlienFallingEmitter()
+	--alienGradient = emitter.newAlienFallingEmitter()
+	alienGradient = display.newRect( 0, 0, 10, 10)
 
 	alienZone = display.newRect(0, 0, alienImage.width * 1.5, alienImage.height * 1.5)
 	alienZone:setFillColor(1, 0, 0, 0)

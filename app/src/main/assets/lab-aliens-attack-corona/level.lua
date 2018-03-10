@@ -261,6 +261,7 @@ local function newGame(fromUserId, timestamp, playersIds)
 		texts.showLetsGo()
 	end })
 
+	previousOccurrence = 0
 	if isMaster() then
 		timer.performWithDelay(getDelayUntilTimestamp(timestamp), function ()
 			createAlien(0)
@@ -269,11 +270,16 @@ local function newGame(fromUserId, timestamp, playersIds)
 end
 
 local function popAlien(alien, occurrence) 
-	log('popAlien - ' .. occurrence)
 
-	previousOccurrence = occurrence
+	if occurence then
+		log('popAlien - ' .. occurrence)
+		previousOccurrence = occurrence
+	else
+		log('popAlien')
+		previousOccurrence = previousOccurrence + 1
+	end
 	
-	if (occurrence % aliensPaceFactor) == 0 then
+	if (previousOccurrence % aliensPaceFactor) == 0 then
 		aliens.pop(alien, aliensPaceFactor)
 	end
 end
@@ -281,14 +287,16 @@ end
 local function userGameOver(userId)
 	log('userGameOver')
 
-	playingIds[userId] = nil
+	if playingIds[userId] then
+		playingIds[userId] = nil
 
-	if isMaster() then
-		-- No-one is playing anymore
-		if next(playingIds) == nil then
-			messenger.broadcastGameOver(userId)
-		else
-			messenger.broadcastShowUserLost(userId)
+		if isMaster() then
+			-- No-one is playing anymore
+			if next(playingIds) == nil then
+				messenger.broadcastGameOver(userId)
+			else
+				messenger.broadcastShowUserLost(userId)
+			end
 		end
 	end
 end
