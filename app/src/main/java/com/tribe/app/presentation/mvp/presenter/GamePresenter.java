@@ -81,7 +81,6 @@ public class GamePresenter implements Presenter {
     getTriviaData.unsubscribe();
     getBattleMusicData.unsubscribe();
     getGames.unsubscribe();
-    getGamesData.unsubscribe();
     gameMVPView = null;
   }
 
@@ -242,6 +241,7 @@ public class GamePresenter implements Presenter {
     getGamesData.execute(new DefaultSubscriber() {
       @Override public void onNext(Object o) {
         lastSyncGameData.set(System.currentTimeMillis());
+        if (getGamesData != null) getGamesData.unsubscribe();
       }
     });
   }

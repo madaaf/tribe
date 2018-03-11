@@ -218,11 +218,11 @@ public class GameDrawView extends GameView {
   @Override public void setNextGame() {
     if (game != null) game.incrementRoundCount();
     if (adapter == null) initView(context);
-    new Handler().post(() -> {
+    new Handler().postDelayed(() -> {
       int currentItem = (viewpager.getCurrentItem() + 1);
       viewpager.setCurrentItem(currentItem);
       setVisibility(VISIBLE);
-    });
+    }, 500);
   }
 
   /**

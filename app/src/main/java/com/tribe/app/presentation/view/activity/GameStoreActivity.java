@@ -162,6 +162,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     }
 
     if (System.currentTimeMillis() - lastSyncGameData.get() > TWENTY_FOUR_HOURS) {
+      Timber.d("Synchronize game data");
       gamePresenter.synchronizeGameData(DeviceUtils.getLanguage(this), lastSyncGameData);
     }
   }
