@@ -506,6 +506,7 @@ public class LiveControlsView extends FrameLayout {
         .doOnNext(aVoid -> AnimationUtils.makeItBounce(currentGameView, DURATION_GAMES_FILTERS,
             new OvershootInterpolator(OVERSHOOT_LIGHT)))
         .map(aVoid -> gameManager.getCurrentGame())
+        .filter(game -> game != null)
         .filter(game -> {
           if ((game.getCurrentMaster() != null &&
               game.getCurrentMaster().getId().equals(user.getId())) ||

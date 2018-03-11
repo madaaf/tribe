@@ -284,9 +284,9 @@ public class GameManagerView extends FrameLayout {
     }
 
     gameView.setWebRTCRoom(webRTCRoom);
-    gameView.start(game, onPeerMapChange, onInvitedMapChange, onLiveViewsChange, userId);
     game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));
+    gameView.start(game, onPeerMapChange, onInvitedMapChange, onLiveViewsChange, userId);
 
     return gameView;
   }
