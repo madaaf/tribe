@@ -16,7 +16,11 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.mvp.presenter.GamePresenter;
+import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.app.presentation.view.widget.game.GameDrawViewPagerAdapter;
 import com.tribe.app.presentation.view.widget.game.GameViewPager;
@@ -26,6 +30,8 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import rx.Observable;
@@ -39,10 +45,16 @@ import timber.log.Timber;
 
 public class GameDrawView extends GameView {
 
-  private GameDrawViewPagerAdapter adapter;
+  @Inject GamePresenter gamePresenter;
 
   @BindView(R.id.pager) GameViewPager viewpager;
 
+  // VARIABLES
+  private GameDrawViewPagerAdapter adapter;
+  private GameDraw gameDraw;
+  private GameMVPViewAdapter gameMVPViewAdapter;
+
+  // OBSERVABLES
   private PublishSubject<Boolean> onNextDraw;
 
   public GameDrawView(@NonNull Context context) {
@@ -53,11 +65,29 @@ public class GameDrawView extends GameView {
     super(context, attrs);
   }
 
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    gamePresenter.onViewDetached();
+  }
+
   @Override protected void initView(Context context) {
     super.initView(context);
 
     inflater.inflate(R.layout.view_game_draw, this, true);
     unbinder = ButterKnife.bind(this);
+
+    gameMVPViewAdapter = new GameMVPViewAdapter() {
+      @Override public void onGameData(List<String> data) {
+        gameDraw.setDataList(data);
+        Timber.d("Data loaded");
+        setupNewDraw();
+      }
+    };
+    gamePresenter.onViewAttached(gameMVPViewAdapter);
 
     adapter = new GameDrawViewPagerAdapter(context, currentUser);
     viewpager.setAdapter(adapter);
@@ -66,7 +96,7 @@ public class GameDrawView extends GameView {
 
     onNextDraw = PublishSubject.create();
 
-    subscriptions.add(adapter.onNextDraw().subscribe(onNextDraw));
+    subscriptions.add(adapter.onNextDraw().doOnNext(aBoolean -> Timber.d("onNextDraw adapter")).subscribe(onNextDraw));
 
     subscriptions.add(adapter.onCurrentGame().subscribe(game -> {
       GameDraw gameDraw = (GameDraw) game;
@@ -207,22 +237,54 @@ public class GameDrawView extends GameView {
 
           gameManager.setCurrentDataGame(datas.get(0), guestChallenged);
           GameDraw gameDraw = (GameDraw) gameManager.getCurrentGame();
-          if (gameDraw.hasDatas()) setNextGame();
+          if (gameDraw.hasDatas()) nextDraw();
         }));
   }
 
-  @Override protected void takeOverGame() {
+  @Override public void stop() {
+    super.stop();
+    gameDraw = null;
+    gameMVPViewAdapter = null;
+  }
 
+  @Override protected void takeOverGame() {
+    Timber.d("takeOverGame");
+    nextDraw();
   }
 
   @Override public void setNextGame() {
+    Timber.d("setNextGame");
+    nextDraw();
+  }
+
+  @Override public void start(Game game, Observable<Map<String, TribeGuest>> map,
+      Observable<Map<String, TribeGuest>> mapInvited,
+      Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
+    super.start(game, map, mapInvited, liveViewsObservable, userId);
+    gameDraw = (GameDraw) game;
+    Timber.d("start");
+  }
+
+  private void nextDraw() {
+    Timber.d("nextDraw");
     if (game != null) game.incrementRoundCount();
     if (adapter == null) initView(context);
-    new Handler().post(() -> {
+
+    if (gameDraw.getDataList() == null || gameDraw.getDataList().size() == 0) {
+      Timber.d("no data, loading data");
+      gamePresenter.synchronizeGame(DeviceUtils.getLanguage(getContext()), gameDraw.getId());
+    } else {
+      setupNewDraw();
+    }
+  }
+
+  private void setupNewDraw() {
+    Timber.d("setupNewDraw");
+    new Handler().postDelayed(() -> {
       int currentItem = (viewpager.getCurrentItem() + 1);
       viewpager.setCurrentItem(currentItem);
       setVisibility(VISIBLE);
-    });
+    }, 500);
   }
 
   /**

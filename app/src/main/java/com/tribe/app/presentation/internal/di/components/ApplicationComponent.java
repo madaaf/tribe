@@ -76,6 +76,7 @@ import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.utils.preferences.PreviousDateUsage;
+import com.tribe.app.presentation.utils.preferences.PokeUserGame;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.SelectedTrophy;
 import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
@@ -473,6 +474,8 @@ public interface ApplicationComponent {
   @LastVersionCode Preference<Integer> lastVersionCode();
 
   @TribeState Preference<Set<String>> tribeState();
+
+  @PokeUserGame Preference<String> pokeUserGame();
 
   @DebugMode Preference<Boolean> debugMode();
 

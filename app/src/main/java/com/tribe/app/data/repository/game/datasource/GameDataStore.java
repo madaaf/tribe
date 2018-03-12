@@ -17,6 +17,8 @@ public interface GameDataStore {
 
   Observable<Void> synchronizeGamesData();
 
+  Observable<List<String>> synchronizeGameData(String gameId);
+
   Observable<List<GameRealm>> getGames();
 
   Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId);

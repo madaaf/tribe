@@ -5,13 +5,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.data.network.entity.LookupObject;
+import com.tribe.app.domain.entity.PokeTiming;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by tiago on 04/07/2016.
@@ -58,6 +61,7 @@ public class PreferencesUtils {
   public static String DAYS_OF_USAGE = "DAYS_OF_USAGE";
   public static String SELECTED_TROPHY = "SELECTED_TROPHY";
   public static String PREVIOUS_DATE_USAGE = "PREVIOUS_DATE_USAGE";
+  public static String POKE_USER_GAME = "POKE_USER_GAME";
 
   public static void saveMapAsJson(Map<String, Object> map, Preference<String> preference) {
     GsonBuilder builder = new GsonBuilder();
@@ -119,8 +123,46 @@ public class PreferencesUtils {
     }.getType());
   }
 
+  public static void savePlayloadPokeTimingAsJson(List<PokeTiming> payloadList,
+      Preference<String> preference, int maxWaitingTimeSeconde) {
+    Gson gson = new GsonBuilder().create();
+    Type type = new TypeToken<List<PokeTiming>>() {
+    }.getType();
+
+    List<PokeTiming> old = getPlayloadPokeTimingList(preference, maxWaitingTimeSeconde);
+    payloadList.addAll(0, old);
+    preference.set(gson.toJson(payloadList, type));
+  }
+
+  public static List<PokeTiming> getPlayloadPokeTimingList(Preference<String> preference,
+      int maxWaitingTimeSeconde) {
+    Gson gson = new GsonBuilder().create();
+    Type type = new TypeToken<List<PokeTiming>>() {
+    }.getType();
+
+    List<PokeTiming> list =
+        new Gson().fromJson(preference.get(), new TypeToken<List<PokeTiming>>() {
+        }.getType());
+    List<PokeTiming> copie = new ArrayList<>();
+    if (list != null) {
+      copie.addAll(list);
+      long timeMillis = System.currentTimeMillis();
+      for (PokeTiming pokeTiming : list) {
+        long diff = timeMillis - pokeTiming.getCreationDate();
+        long timeSeconde = TimeUnit.MILLISECONDS.toSeconds(diff);
+        if (timeSeconde > maxWaitingTimeSeconde) {
+          copie.remove(pokeTiming);
+        }
+      }
+    }
+    preference.set(gson.toJson(copie, type));
+    return copie;
+  }
+
   public static List<LookupObject> getLookup(Preference<String> preference) {
     return new Gson().fromJson(preference.get(), new TypeToken<List<LookupObject>>() {
     }.getType());
   }
+
+
 }

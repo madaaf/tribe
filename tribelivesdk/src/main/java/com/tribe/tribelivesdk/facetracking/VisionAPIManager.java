@@ -41,7 +41,7 @@ public class VisionAPIManager {
   // VARIABLES
   private Context context;
   private FrameExecutor frameExecutor;
-  private boolean firstFrame = true;
+  private boolean firstFrame = true, isReleased = false;
   private long t0, timeToDetect;
   private FaceDetector faceDetector;
   private boolean isFaceTrackerEnabled = true;
@@ -67,7 +67,10 @@ public class VisionAPIManager {
   /////////////
 
   private void initFaceTracker(boolean isFrontFacing) {
-    if (faceDetector != null) faceDetector.release();
+    if (faceDetector != null) {
+      isReleased = true;
+      faceDetector.release();
+    }
 
     faceDetector = new FaceDetector.Builder(context).setTrackingEnabled(true)
         .setLandmarkType(FaceDetector.ALL_LANDMARKS)
@@ -75,6 +78,8 @@ public class VisionAPIManager {
         .setProminentFaceOnly(isFrontFacing)
         .setMinFaceSize(isFrontFacing ? 0.35f : 0.15f)
         .build();
+
+    isReleased = false;
 
     //Detector.Processor<Face> processor;
     //if (isFrontFacing) {
@@ -196,7 +201,7 @@ public class VisionAPIManager {
 
           return frame;
         })
-        .filter(frame1 -> (t0 - timeToDetect >= 5) && isFaceTrackerEnabled)
+        .filter(frame1 -> (t0 - timeToDetect >= 5) && isFaceTrackerEnabled && !isReleased)
         .flatMap(frame -> Observable.just(frame)
             .observeOn(Schedulers.from(frameExecutor))
             .map(frame1 -> {
@@ -244,6 +249,7 @@ public class VisionAPIManager {
 
   public void dispose() {
     subscriptions.clear();
+    isReleased = true;
     if (faceDetector != null) faceDetector.release();
   }
 

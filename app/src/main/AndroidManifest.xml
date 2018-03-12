@@ -29,6 +29,7 @@
       android:name=".presentation.AndroidApplication"
       android:allowBackup="true"
       android:hardwareAccelerated="true"
+      android:icon="@mipmap/ic_launcher"
       android:label="@string/app_name"
       android:largeHeap="true"
       android:supportsRtl="false"
@@ -37,7 +38,6 @@
 
     <activity
         android:name=".presentation.view.activity.LauncherActivity"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme.Transparent">
@@ -75,7 +75,6 @@
             android:scheme="@string/deeplink_host"/>
 
       </intent-filter>
-
     </activity>
 
     <!--<activity-alias
@@ -234,14 +233,7 @@
         android:configChanges="orientation|screenSize"
         android:keepScreenOn="true"
         android:launchMode="singleTask"
-        android:theme="@style/AppTheme.Black"/>
-
-    <activity
-        android:name=".presentation.view.activity.CoronaGameActivity"
-        android:configChanges="orientation|screenSize"
-        android:keepScreenOn="true"
-        android:launchMode="singleTask"
-        android:theme="@style/AppTheme.FullScreen.Black"/>
+        android:theme="@style/AppTheme.Transparent"/>
 
     <activity
         android:name=".presentation.view.activity.VideoActivity"
@@ -250,7 +242,6 @@
         android:theme="@style/AppTheme.FullScreen.Black"/>
 
     <service android:name=".data.network.WSService"></service>
-    <service android:name=".data.network.DownloadGamesService"></service>
 
     <service android:name=".presentation.service.TribeFirebaseMessagingService">
       <intent-filter>

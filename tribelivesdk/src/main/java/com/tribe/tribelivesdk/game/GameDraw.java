@@ -28,13 +28,16 @@ public class GameDraw extends Game {
   }
 
   @Override public void generateNewDatas() {
+    Timber.d("generateNewDatas");
     if (dataList == null || dataList.size() == 0) {
+      Timber.d("dataList = null");
       return;
     }
     currentDrawName = dataList.get(new Random().nextInt(dataList.size()));
     Timber.d("set current game name  : " + currentDrawName);
 
     if (peerList == null || peerList.size() == 0) {
+      Timber.d("peerList is null");
       return;
     }
     currentMaster = currentDrawer = getNextGuest();

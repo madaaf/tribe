@@ -15,6 +15,7 @@ import com.tribe.app.domain.interactor.game.GetDiskFriendsScores;
 import com.tribe.app.domain.interactor.game.GetDiskGameLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskUserLeaderboard;
 import com.tribe.app.domain.interactor.game.GetGameFile;
+import com.tribe.app.domain.interactor.game.GetGameData;
 import com.tribe.app.domain.interactor.game.GetGamesData;
 import com.tribe.app.domain.interactor.game.GetTriviaData;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
@@ -48,6 +49,7 @@ public class GamePresenter implements Presenter {
   private GetBattleMusicData getBattleMusicData;
   private GetGamesData getGamesData;
   private GetGameFile getGameFile;
+  private GetGameData getGameData;
 
   // SUBSCRIBERS
   private GameLeaderboardSubscriber cloudGameLeaderboardSubscriber;
@@ -62,7 +64,7 @@ public class GamePresenter implements Presenter {
       GetDiskUserLeaderboard diskUserLeaderboard, GetDiskFriendsScores diskFriendsScores,
       GetCloudFriendsScores cloudFriendsScores, GetTriviaData getTriviaData,
       GetBattleMusicData getBattleMusicData, GetCloudGames getGames, GetGamesData getGamesData,
-      GetGameFile getGameFile) {
+      GetGameFile getGameFile, GetGameData getGameData) {
     this.cloudGameLeaderboard = cloudGameLeaderboard;
     this.diskGameLeaderboard = diskGameLeaderboard;
     this.cloudUserLeaderboard = cloudUserLeaderboard;
@@ -74,6 +76,7 @@ public class GamePresenter implements Presenter {
     this.getGames = getGames;
     this.getGamesData = getGamesData;
     this.getGameFile = getGameFile;
+    this.getGameData = getGameData;
   }
 
   @Override public void onViewDetached() {
@@ -86,8 +89,8 @@ public class GamePresenter implements Presenter {
     getTriviaData.unsubscribe();
     getBattleMusicData.unsubscribe();
     getGames.unsubscribe();
-    getGamesData.unsubscribe();
     getGameFile.unsubscribe();
+    getGameData.unsubscribe();
     gameMVPView = null;
   }
 
@@ -248,6 +251,17 @@ public class GamePresenter implements Presenter {
     getGamesData.execute(new DefaultSubscriber() {
       @Override public void onNext(Object o) {
         lastSyncGameData.set(System.currentTimeMillis());
+        if (getGamesData != null) getGamesData.unsubscribe();
+      }
+    });
+  }
+
+  public void synchronizeGame(String lang, String gameId) {
+    getGameData.setup(lang, gameId);
+    getGameData.execute(new DefaultSubscriber<List<String>>() {
+      @Override public void onNext(List<String> o) {
+        if (getGameData != null) getGameData.unsubscribe();
+        if (gameMVPView != null) gameMVPView.onGameData(o);
       }
     });
   }

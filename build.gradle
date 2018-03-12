@@ -14,15 +14,15 @@ buildscript {
     classpath 'me.tatarka:gradle-retrolambda:3.2.3'
     classpath 'com.fernandocejas.frodo:frodo-plugin:0.8.1'
     classpath 'io.realm:realm-gradle-plugin:3.7.1'
-    classpath 'com.google.gms:google-services:3.0.0'
+    classpath 'com.google.gms:google-services:3.1.2'
   }
 }
 
 allprojects {
   ext {
     androidApplicationId = 'com.tribe.app'
-    androidVersionCode = 151
-    androidVersionName = "4.1.4"
+    androidVersionCode = 155
+    androidVersionName = "4.2.0"
     testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
     testApplicationId = 'com.tribe.app.test'
   }

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+
+  <TextView
+      android:id="@+id/pokeEmojiTest"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:layout_centerInParent="true"
+      android:background="@drawable/shape_circle_white50"
+      android:gravity="center"
+      android:paddingBottom="3dp"
+      android:scaleType="centerInside"
+      android:textSize="30sp"
+      />
+
+
+  <TextView
+      android:id="@+id/pokeEmoji2"
+      android:layout_width="25dp"
+      android:layout_height="25dp"
+      android:layout_centerVertical="true"
+      android:layout_marginStart="13dp"
+      android:layout_toEndOf="@+id/pokeEmojiTest"
+      android:background="@drawable/shape_circle_white50"
+      android:gravity="center"
+      android:paddingBottom="3dp"
+      android:scaleType="centerInside"
+      android:textSize="30sp"
+      />
+
+
+  <TextView
+      android:id="@+id/pokeEmoji3"
+      android:layout_width="25dp"
+      android:layout_height="25dp"
+      android:layout_alignBaseline="@+id/pokeEmoji2"
+      android:layout_alignBottom="@+id/pokeEmoji2"
+      android:layout_marginEnd="13dp"
+      android:layout_toStartOf="@+id/pokeEmojiTest"
+      android:background="@drawable/shape_circle_white50"
+      android:gravity="center"
+      android:paddingBottom="3dp"
+      android:scaleType="centerInside"
+      android:textSize="30sp"
+      />
+
+  <TextView
+      android:id="@+id/pokeEmoji4"
+      android:layout_width="25dp"
+      android:layout_height="25dp"
+      android:layout_alignStart="@+id/pokeEmojiTest"
+      android:layout_below="@+id/pokeEmojiTest"
+      android:layout_marginStart="-10dp"
+      android:layout_marginTop="13dp"
+      android:background="@drawable/shape_circle_white50"
+      android:gravity="center"
+      android:paddingBottom="3dp"
+      android:scaleType="centerInside"
+      android:textSize="30sp"
+      />
+
+  <TextView
+      android:id="@+id/pokeEmoji5"
+      android:layout_width="25dp"
+      android:layout_height="25dp"
+      android:layout_alignEnd="@+id/pokeEmojiTest"
+      android:layout_below="@+id/pokeEmojiTest"
+      android:layout_marginEnd="-10dp"
+      android:layout_marginTop="13dp"
+      android:background="@drawable/shape_circle_white50"
+      android:gravity="center"
+      android:paddingBottom="3dp"
+      android:scaleType="centerInside"
+      android:textSize="30sp"
+      />
+
+
+  <TextView
+      android:id="@+id/pokeEmoji6"
+      android:layout_width="25dp"
+      android:layout_height="25dp"
+      android:layout_above="@+id/pokeEmojiTest"
+      android:layout_alignStart="@+id/pokeEmoji4"
+      android:layout_marginBottom="13dp"
+      android:background="@drawable/shape_circle_white50"
+      android:gravity="center"
+      android:paddingBottom="3dp"
+      android:scaleType="centerInside"
+      android:textSize="30sp"
+      />
+  <TextView
+      android:id="@+id/pokeEmoji7"
+      android:layout_width="25dp"
+      android:layout_height="25dp"
+      android:layout_above="@+id/pokeEmojiTest"
+      android:layout_alignStart="@+id/pokeEmoji5"
+      android:layout_marginBottom="13dp"
+      android:background="@drawable/shape_circle_white50"
+      android:gravity="center"
+      android:paddingBottom="3dp"
+      android:scaleType="centerInside"
+      android:textSize="30sp"
+      />
+
+
+</RelativeLayout>

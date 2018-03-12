@@ -252,6 +252,7 @@ dependencies {
   compile group: 'com.zendesk', name: 'sdk-providers', version: '1.11.0.1'
   compile presentationDependencies.exoPlayer
   compile presentationDependencies.blurView
+  //compile presentationDependencies.firebaseCore
 
   //androidTestCompile presentationTestDependencies.mockito
   //androidTestCompile presentationTestDependencies.dexmaker
@@ -271,7 +272,7 @@ dependencies {
   implementation project(':tribelivesdk')
   implementation project(':ViewNavigator')
   implementation project(':tokenlib')
-  compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+  compile('com.crashlytics.sdk.android:crashlytics:2.9.0@aar') {
     transitive = true;
   }
 

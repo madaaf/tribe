@@ -38,6 +38,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<List<String>> synchronizeGameData(String lang, String gameId) {
+    return null;
+  }
+
   @Override public Observable<List<Game>> getGames() {
     GameDataStore gameDataStore = dataStoreFactory.createDiskDataStore();
     return gameDataStore.getGames().map(gameRealm -> gameRealmDataMapper.transform(gameRealm));

@@ -15,6 +15,7 @@ public class MessageRealm extends RealmObject {
   public static final String IMAGE = "IMAGE";
   public static final String EVENT = "EVENT";
   public static final String AUDIO = "AUDIO";
+  public static final String POKE = "POKE";
 
   private String localId;
   @PrimaryKey private String id;
@@ -28,8 +29,37 @@ public class MessageRealm extends RealmObject {
   private String created_at;
   private String threadId;
   private String supportAuthorId;
+  private String client_message_id;
+  private String intent;
+  private String game_id;
+
+
 
   public MessageRealm() {
+  }
+
+  public String getClient_message_id() {
+    return client_message_id;
+  }
+
+  public void setClient_message_id(String client_message_id) {
+    this.client_message_id = client_message_id;
+  }
+
+  public String getIntent() {
+    return intent;
+  }
+
+  public void setIntent(String intent) {
+    this.intent = intent;
+  }
+
+  public String getGame_id() {
+    return game_id;
+  }
+
+  public void setGame_id(String game_id) {
+    this.game_id = game_id;
   }
 
   public String getSupportAuthorId() {

@@ -28,6 +28,7 @@ import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -79,13 +80,21 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   }
 
   @Inject UserPresenter userPresenter;
+
   @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
+
   @Inject @LastSync Preference<Long> lastSync;
+
   @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
+
   @Inject @DaysOfUsage Preference<Integer> daysOfUsage;
+
   @Inject @PreviousDateUsage Preference<Long> previousDateUsage;
 
+  @Inject User currentUser;
+
   @Inject StateManager stateManager;
+
   @Inject PaletteGrid paletteGrid;
 
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
@@ -136,7 +145,11 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   private void initParams(Intent intent) {
     if (intent != null && intent.hasExtra(FROM_AUTH)) {
       boolean fromExtra = (Boolean) intent.getSerializableExtra(FROM_AUTH);
-      if (fromExtra) displayFakeSupportNotif();
+      if (fromExtra){
+        displayFakeSupportNotif();
+        tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
+      }
+
     }
   }
 
@@ -146,12 +159,13 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
-        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
+        PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync);
     }
 
     if (System.currentTimeMillis() - lastSyncGameData.get() > TWENTY_FOUR_HOURS) {
+      Timber.d("Synchronize game data");
       gamePresenter.synchronizeGameData(DeviceUtils.getLanguage(this), lastSyncGameData);
     }
   }
@@ -170,9 +184,9 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   }
 
   private void loadChallengeNotificationData() {
-    if (challengeNotificationsPref != null &&
-        challengeNotificationsPref.get() != null &&
-        !challengeNotificationsPref.get().isEmpty()) {
+    if (challengeNotificationsPref != null
+        && challengeNotificationsPref.get() != null
+        && !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
@@ -274,7 +288,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   @Override protected void initSubscriptions() {
     super.initSubscriptions();
 
-    subscriptions.add(onUser.onBackpressureBuffer().subscribeOn(singleThreadExecutor).map(user -> {
+    subscriptions.add(onUser.onBackpressureBuffer().subscribeOn(singleThreadExecutor).observeOn(AndroidSchedulers.mainThread()).map(user -> {
       boolean hasLive = false, hasNewMessage = false;
       List<HomeAdapterInterface> items = new ArrayList<>();
       for (Recipient recipient : user.getRecipientList()) {
@@ -291,8 +305,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
           if (shortcut.isSingle()) {
             User member = shortcut.getSingleFriend();
             if (member.isPlayingAGame()) {
-              if (!userIdsDigest.contains(member.getId()) &&
-                  !roomIdsDigest.contains(member.getId())) {
+              if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
+                  member.getId())) {
                 userIdsDigest.add(member.getId());
                 items.add(shortcut);
               }
@@ -449,9 +463,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 
       if (calendarPreviousDate.before(calendarYesterday)) {
         nbDays = 1;
-      } else if ((calendarPreviousDate.after(calendarYesterday) ||
-          calendarPreviousDate.equals(calendarYesterday)) &&
-          calendarPreviousDate.before(calendarToday)) {
+      } else if ((calendarPreviousDate.after(calendarYesterday) || calendarPreviousDate.equals(
+          calendarYesterday)) && calendarPreviousDate.before(calendarToday)) {
         nbDays += 1;
       }
     } else {

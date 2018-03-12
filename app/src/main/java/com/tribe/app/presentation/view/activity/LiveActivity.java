@@ -1233,6 +1233,7 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
 
   @Override public void finish() {
     if (finished) return;
+    
     if (stateManager.shouldDisplay(StateManager.FIRST_LEAVE_ROOM)) {
       isFristLeaveRoom = true;
       stateManager.addTutorialKey(StateManager.FIRST_LEAVE_ROOM);

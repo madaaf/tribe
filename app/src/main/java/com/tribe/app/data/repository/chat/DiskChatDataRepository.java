@@ -30,7 +30,7 @@ import rx.Observable;
     this.userRealmDataMapper = userRealmDataMapper;
   }
 
-  @Override public Observable<Message> createMessage(String[] userIds, String type, String data) {
+  @Override public Observable<Message> createMessage(String[] userIds, String type, String data,  String gameId, String intent) {
     return null;
   }
 

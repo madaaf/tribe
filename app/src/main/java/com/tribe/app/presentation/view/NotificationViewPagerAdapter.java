@@ -69,32 +69,9 @@ public class NotificationViewPagerAdapter extends PagerAdapter {
             break;
           case NotificationModel.POPUP_FACEBOOK:
             break;
+          case NotificationModel.POPUP_POKE:
+            break;
           case NotificationModel.POPUP_UPLOAD_PICTURE:
-              /*
-            float delta = btn1DrawableEnd.getX() - btn1DrawableStart.getX();
-            btn1DrawableStart.animate()
-                .alpha(0f)
-                .translationX(delta)
-                .setInterpolator(new OvershootInterpolator())
-                .withStartAction(() -> btn1Content.animate()
-                    .alpha(0f)
-                    .setDuration(DURATION_ANIMATION / 2)
-                    .withEndAction(() -> {
-                      btn1Content.setText(
-                          context.getString(R.string.upload_picture_popup_action_done)
-                              .toUpperCase());
-                      btn1Content.animate()
-                          .alpha(1f)
-                          .setDuration(DURATION_ANIMATION / 2)
-                          .withStartAction(() -> btn1DrawableEnd.animate()
-                              .alpha(1f)
-                              .setDuration(DURATION_ANIMATION / 2))
-                          .start();
-                    })
-                    .start())
-                .setDuration(DURATION_ANIMATION)
-                .start();
-            */
             break;
         }
         onClickBtn1.onNext(model);

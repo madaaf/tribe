@@ -118,7 +118,7 @@ public class TagManagerUtils {
   public static final String CONTENT_TYPE = "contentType";
   public static final String SEARCH_STRING = "searchString";
   public static final String TYPE_SOLO = "solo";
-  public static final String TYPE_MULTI = "multi";
+  public static final String TYPE_MULTI = "multiplayer";
   public static final String ROUND_COUNT = "round_count";
 
   public static final String tagGameCountSuffix = "_game_count";

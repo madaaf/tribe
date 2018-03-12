@@ -29,4 +29,6 @@ public interface GameMVPView extends MVPView {
   void onGameList(List<Game> gameList);
 
   void onGameFile(GameFile gameFile);
+  
+  void onGameData(List<String> data);
 }

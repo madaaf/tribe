@@ -30,7 +30,7 @@ public class GameChallenge extends Game {
       return;
     }
 
-    currentChallenger = getNextGuest();
+    currentMaster = currentChallenger = getNextGuest();
     Timber.d("set current gamer : " + currentChallenger.getDisplayName());
   }
 
