@@ -338,6 +338,10 @@ public class Game {
     generateNewDatas();
   }
 
+  public List<String> getDataList() {
+    return dataList;
+  }
+
   public boolean isUserAction() {
     return isUserAction;
   }

@@ -44,6 +44,7 @@ import rx.Observable;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 10/30/2017.
@@ -143,13 +144,12 @@ public class GameManagerView extends FrameLayout {
             GameChallengesView gameChallengesView = (GameChallengesView) currentGameView;
             gameChallengesView.displayPopup();
           }
-
-          currentGameView.setNextGame();
         }));
 
     subscriptions.add(Observable.merge(gameManager.onCurrentUserNewSessionGame(),
         gameManager.onRemoteUserNewSessionGame()
             .map(tribeSessionGamePair -> tribeSessionGamePair.second)).doOnNext(game1 -> {
+      Timber.d("onRemoteUserNewSessionGame");
       if (currentGameView != null) {
         if (currentGameView instanceof GameDrawView) {
           GameDrawView gameDrawView = (GameDrawView) currentGameView;
@@ -241,15 +241,12 @@ public class GameManagerView extends FrameLayout {
     if (game.getId().equals(Game.GAME_CHALLENGE)) {
       GameChallengesView gameChallengesView = new GameChallengesView(getContext());
       gameView = gameChallengesView;
-      subscriptionsGame.add(gameChallengesView.onNextChallenge()
-          .doOnNext(game1 -> gameChallengesView.setNextGame())
-          .subscribe(onRestartGame));
+      subscriptionsGame.add(gameChallengesView.onNextChallenge().subscribe(onRestartGame));
     } else if (game.getId().equals(Game.GAME_DRAW)) {
       GameDrawView gameDrawView = new GameDrawView(getContext());
       gameView = gameDrawView;
       subscriptionsGame.add(gameDrawView.onNextDraw()
           .map(aBoolean -> gameManager.getCurrentGame())
-          .doOnNext(game1 -> gameDrawView.setNextGame())
           .subscribe(onRestartGame));
     } else if (game.getId().equals(Game.GAME_INVADERS)) {
       GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
@@ -287,6 +284,7 @@ public class GameManagerView extends FrameLayout {
     game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));
     gameView.start(game, onPeerMapChange, onInvitedMapChange, onLiveViewsChange, userId);
+    gameView.setNextGame();
 
     return gameView;
   }

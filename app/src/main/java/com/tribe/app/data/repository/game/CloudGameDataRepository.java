@@ -35,6 +35,11 @@ import timber.log.Timber;
     return gameDataStore.synchronizeGamesData();
   }
 
+  @Override public Observable<List<String>> synchronizeGameData(String lang, String gameId) {
+    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
+    return gameDataStore.synchronizeGameData(gameId);
+  }
+
   @Override public Observable<List<Game>> getGames() {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
     return gameDataStore.getGames()

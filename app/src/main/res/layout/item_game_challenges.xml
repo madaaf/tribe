@@ -110,7 +110,6 @@
           android:paddingEnd="30dp"
           android:paddingStart="30dp"
           android:paddingTop="25dp"
-          android:text="@string/enjoying_tribe_popup_action2"
           style="@style/Headline.White.2"
           />
     </FrameLayout>

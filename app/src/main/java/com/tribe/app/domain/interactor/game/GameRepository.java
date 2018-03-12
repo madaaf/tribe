@@ -17,6 +17,8 @@ public interface GameRepository {
 
   Observable<Void> synchronizeGamesData(String lang);
 
+  Observable<List<String>> synchronizeGameData(String lang, String gameId);
+
   Observable<List<Game>> getGames();
 
   Observable<List<Score>> getGameLeaderBoard(String gameId);

@@ -22,6 +22,10 @@ public class DiskGameDataStore implements GameDataStore {
     return null;
   }
 
+  @Override public Observable<List<String>> synchronizeGameData(String gameId) {
+    return null;
+  }
+
   @Override public Observable<List<GameRealm>> getGames() {
     return Observable.just(gameCache.getGames());
   }

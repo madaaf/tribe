@@ -277,7 +277,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   @Override protected void initSubscriptions() {
     super.initSubscriptions();
 
-    subscriptions.add(onUser.onBackpressureBuffer().subscribeOn(singleThreadExecutor).map(user -> {
+    subscriptions.add(onUser.onBackpressureBuffer().subscribeOn(singleThreadExecutor).observeOn(AndroidSchedulers.mainThread()).map(user -> {
       boolean hasLive = false, hasNewMessage = false;
       List<HomeAdapterInterface> items = new ArrayList<>();
       for (Recipient recipient : user.getRecipientList()) {
