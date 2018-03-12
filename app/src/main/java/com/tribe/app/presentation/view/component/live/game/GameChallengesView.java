@@ -25,7 +25,11 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.mvp.presenter.GamePresenter;
+import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
+import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.app.presentation.view.widget.game.GameChallengeViewPagerAdapter;
 import com.tribe.app.presentation.view.widget.game.GameViewPager;
@@ -34,6 +38,9 @@ import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -48,12 +55,18 @@ public class GameChallengesView extends GameView {
 
   private static int DURATION_EXIT_POPUP = 300;
 
+  @Inject GamePresenter gamePresenter;
+
   @BindView(R.id.pager) GameViewPager viewpager;
   @BindView(R.id.popupChallenge) FrameLayout popup;
 
+  // VARIABLES
   private GameChallengeViewPagerAdapter adapter;
   private boolean popupDisplayed = false;
+  private GameChallenge gameChallenge;
+  private GameMVPViewAdapter gameMVPViewAdapter;
 
+  // OBSERVABLES
   private PublishSubject<GameChallenge> onNextChallenge = PublishSubject.create();
   private PublishSubject<Boolean> onBlockOpenInviteView = PublishSubject.create();
 
@@ -73,6 +86,15 @@ public class GameChallengesView extends GameView {
     adapter = new GameChallengeViewPagerAdapter(context, currentUser);
     viewpager.setAdapter(adapter);
 
+    gameMVPViewAdapter = new GameMVPViewAdapter() {
+      @Override public void onGameData(List<String> data) {
+        gameChallenge.setDataList(data);
+        Timber.d("Data loaded");
+        setupNewChallenge();
+      }
+    };
+    gamePresenter.onViewAttached(gameMVPViewAdapter);
+
     viewpager.setOnTouchListener((v, event) -> {
       if (popupDisplayed) hidePopup();
       return true;
@@ -84,12 +106,18 @@ public class GameChallengesView extends GameView {
 
     subscriptions.add(adapter.onBlockOpenInviteView().subscribe(onBlockOpenInviteView));
     subscriptions.add(adapter.onCurrentGame().subscribe(game -> {
+      Timber.d("onCurrentGame");
       GameChallenge gameChallenge = (GameChallenge) game;
       webRTCRoom.sendToPeers(
           getNewChallengePayload(currentUser.getId(), gameChallenge.getCurrentChallenger().getId(),
               gameChallenge.getCurrentChallenge()), false);
-      onNextChallenge.onNext(gameChallenge);
+      //onNextChallenge.onNext(gameChallenge);
     }));
+  }
+
+  @Override protected void onDetachedFromWindow() {
+    super.onDetachedFromWindow();
+    gamePresenter.onViewDetached();
   }
 
   @Override public void dispose() {
@@ -97,10 +125,46 @@ public class GameChallengesView extends GameView {
     adapter = null;
   }
 
+  @Override public void stop() {
+    super.stop();
+    gameChallenge = null;
+    gameMVPViewAdapter = null;
+  }
+
+  @Override protected void takeOverGame() {
+    Timber.d("takeOverGame");
+    nextChallenge();
+  }
+
   @Override public void setNextGame() {
+    Timber.d("setNextGame");
+    nextChallenge();
+  }
+
+  @Override public void start(Game game, Observable<Map<String, TribeGuest>> map,
+      Observable<Map<String, TribeGuest>> mapInvited,
+      Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
+    super.start(game, map, mapInvited, liveViewsObservable, userId);
+    gameChallenge = (GameChallenge) game;
+    Timber.d("start");
+  }
+
+  private void nextChallenge() {
+    Timber.d("nextChallenge");
     if (game != null) game.incrementRoundCount();
     if (adapter == null) initView(context);
     if (popupDisplayed) hidePopup();
+
+    if (gameChallenge.getDataList() == null || gameChallenge.getDataList().size() == 0) {
+      Timber.d("no data, loading data");
+      gamePresenter.synchronizeGame(DeviceUtils.getLanguage(getContext()), gameChallenge.getId());
+    } else {
+      setupNewChallenge();
+    }
+  }
+
+  private void setupNewChallenge() {
+    Timber.d("setupNewChallenge");
     new Handler().post(() -> {
       int currentItem = (viewpager.getCurrentItem() + 1);
       viewpager.setCurrentItem(currentItem);
@@ -214,10 +278,6 @@ public class GameChallengesView extends GameView {
           GameChallenge gameChallenge = (GameChallenge) gameManager.getCurrentGame();
           if (gameChallenge.hasDatas()) setNextGame();
         }));
-  }
-
-  @Override protected void takeOverGame() {
-
   }
 
   /**

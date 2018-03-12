@@ -42,4 +42,8 @@ public class GameMVPViewAdapter implements GameMVPView {
   @Override public void onGameList(List<Game> gameList) {
 
   }
+
+  @Override public void onGameData(List<String> data) {
+
+  }
 }

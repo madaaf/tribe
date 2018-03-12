@@ -26,4 +26,6 @@ public interface GameMVPView extends MVPView {
   void onBattleMusicData(Map<String, BattleMusicPlaylist> map);
 
   void onGameList(List<Game> gameList);
+
+  void onGameData(List<String> data);
 }

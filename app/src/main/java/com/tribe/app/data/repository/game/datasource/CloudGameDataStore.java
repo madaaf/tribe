@@ -76,6 +76,35 @@ public class CloudGameDataStore implements GameDataStore {
     });
   }
 
+  @Override public Observable<List<String>> synchronizeGameData(String gameId) {
+    final Map<String, List<String>> mapData = getMapFromPrefs();
+    List<GameRealm> gameRealmList = gameCache.getGames();
+    GameRealm game = null;
+
+    for (GameRealm gameRealm : gameRealmList) {
+      if (gameRealm.getId().equals(gameId)) game = gameRealm;
+    }
+
+    if (game == null || !StringUtils.isEmpty(game.getDataUrl())) {
+      return fileApi.getDataForUrl(game.getDataUrl())
+          .map(gameDataEntity -> mapData.put(gameId, gameDataEntity.getData()))
+          .map(gameRealm -> {
+            Type type = new TypeToken<Map<String, List<String>>>() {
+            }.getType();
+            gameData.set(gson.toJson(mapData, type));
+            return mapData.get(gameId);
+          });
+    } else {
+      return Observable.empty();
+    }
+  }
+
+  private Map<String, List<String>> getMapFromPrefs() {
+    if (gameData == null || gameData.get() == null) return new HashMap<>();
+    return new Gson().fromJson(gameData.get(), new TypeToken<HashMap<String, List<String>>>() {
+    }.getType());
+  }
+
   @Override public Observable<List<GameRealm>> getGames() {
     String body = context.getString(R.string.games_infos);
     final String request = context.getString(R.string.query, body);
