@@ -205,7 +205,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
       Shortcut shortcut = (Shortcut) data.getSerializableExtra(GameMembersActivity.SHORTCUT);
 
       if (callRoulette) {
-        navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, gameId);
+        navigator.navigateToNewCall(this, LiveActivity.SOURCE_CALL_ROULETTE, gameId);
       } else if (shortcut != null) {
         navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM, gameId, null);
       }
@@ -395,8 +395,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
         tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
       }
     } else {
-      //navigator.navigateToGameDetails(this, game.getId());
-      navigator.navigateToCoronaActivity(this);
+      navigator.navigateToGameDetails(this, game.getId());
     }
   }
 

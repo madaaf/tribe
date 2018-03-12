@@ -705,7 +705,6 @@ public class LiveControlsView extends FrameLayout {
   }
 
   public void startGame(Game game) {
-    gameManager.setCurrentGame(game);
     onStartGame.onNext(game);
     subscriptions.add(Observable.timer(400, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())

@@ -1,6 +1,6 @@
 local screenW, screenH = display.actualContentWidth, display.actualContentHeight
 
-local strings = require "strings"
+local strings	= require "strings"
 
 ---------------------------------------------------------------------------------
 

@@ -10,6 +10,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.domain.entity.Live;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.presentation.mvp.presenter.common.RoomPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.RoomMVPViewAdapter;
@@ -89,31 +90,56 @@ public class CoronaGameActivity extends BaseActivity {
                 .frontCamera(viewLocalLive.isFrontFacing())
                 .build();
 
-        webRTCRoom = tribeLiveSDK.newRoom(true);
         webRTCRoom.connect(options);
         viewRoom.setType(LiveRoomView.TYPE_LIST);
-        init();
+
+        gameCoronaView = new GameCoronaView(CoronaGameActivity.this,
+            gameManager.getGameById(Game.GAME_INVADERS_CORONA));
+        FrameLayout.LayoutParams params =
+            new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        viewRoot.addView(gameCoronaView, 0, params);
+
+        gameCoronaView.start(gameManager.getGameById(Game.GAME_INVADERS_CORONA),
+            masterMap.getObservable(), mapObservable, mapInvitedObservable, mapViewsObservable,
+            getCurrentUser().getId());
       }
     };
 
     gameManager = GameManager.getInstance(this);
 
     initDependencyInjector();
+    init();
+  }
+
+  @Override protected void onStart() {
+    super.onStart();
+    roomPresenter.onViewAttached(roomMVPViewAdapter);
+  }
+
+  @Override protected void onStop() {
+    roomPresenter.onViewDetached();
+    super.onStop();
   }
 
   @Override protected void onPause() {
     super.onPause();
+    gameCoronaView.onPause();
   }
 
   @Override protected void onDestroy() {
-    if (unbinder != null) unbinder.unbind();
     if (subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     webRTCRoom.leaveRoom();
     viewRoom.dispose();
+    gameCoronaView.stop();
+    if (unbinder != null) unbinder.unbind();
     super.onDestroy();
   }
 
   private void init() {
+    webRTCRoom = tribeLiveSDK.newRoom(true);
+    webRTCRoom.initLocalStream(viewLocalLive.getLocalPeerView());
+
     TribeGuest tribeGuest = getCurrentUser().asTribeGuest();
 
     masterMap.put(tribeGuest.getId(), tribeGuest);
@@ -122,19 +148,11 @@ public class CoronaGameActivity extends BaseActivity {
     mapLiveStream.put(tribeGuest.getId(), new LiveRowView(this));
     mapViewsObservable.onNext(mapLiveStream);
 
-    gameCoronaView = new GameCoronaView(this, gameManager.getGameById(Game.GAME_INVADERS_CORONA));
-    FrameLayout.LayoutParams params =
-        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT);
-    viewRoot.addView(gameCoronaView, params);
-
-    gameCoronaView.start(gameManager.getGameById(Game.GAME_INVADERS_CORONA),
-        masterMap.getObservable(), mapObservable, mapInvitedObservable, mapViewsObservable,
-        getCurrentUser().getId());
+    roomPresenter.createRoom(new Live.Builder(Live.NEW_CALL).build());
   }
 
   private void initDependencyInjector() {
-
+    this.getApplicationComponent().inject(this);
   }
 
   @Override public void finish() {

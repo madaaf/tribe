@@ -1,19 +1,20 @@
 -- Lua
 
-local composer = require "composer"
-local physics  = require "physics"
+local composer 			= require "composer"
+local physics  			= require "physics"
 
 -- Local
 
-local sounds     = require "sounds"
-local texts      = require "texts"
-local messenger  = require "messenger"
-local vibrator   = require "vibrator"
+local sounds     		= require "sounds"
+local texts      		= require "texts"
+local messenger  		= require "messenger"
+local vibrator   		= require "vibrator"
 
-local background = require "background"
-local aliens     = require "aliens"
-local model      = require "model"
-local bonus      = require "bonus"
+local background 		= require "background"
+local aliens     		= require "aliens"
+local model      		= require "model"
+local bonus      		= require "bonus"
+local persistenceStore 	= require "revive.persistenceStore"
 
 ---------------------------------------------------------------------------------
 
@@ -31,6 +32,9 @@ local createAlienTimer
 
 local paceFactorTimer
 local aliensPaceFactor = 1
+local disableAlienCreation = false
+
+local reviveData
 
 ---------------------------------------------------------------------------------
 
@@ -39,7 +43,7 @@ local function isMaster()
 end
 
 local function broadcastUpdatedScores() 
-	log('broadcastUpdatedScores')
+	log('level - broadcastUpdatedScores')
 
 	for i,id in ipairs(playersIds) do
 		if not playersScores[id] then
@@ -59,7 +63,7 @@ local function broadcastUpdatedScores()
 end
 
 local function scoresUpdated(updatedPlayersScores)
-	log('scoresUpdated')
+	log('level - scoresUpdated')
 
 	for userId,score in pairs(updatedPlayersScores) do
 		playersScores[userId] = score
@@ -69,7 +73,7 @@ local function scoresUpdated(updatedPlayersScores)
 end
 
 local function resetScores()
-	log('resetScores')
+	log('level - resetScores')
 
 	playersScores = {}
 	broadcastUpdatedScores()
@@ -88,7 +92,7 @@ end
 ---------------------------------------------------------------------------------
 
 local function toggleVolume(event)
-	log('toggleVolume')
+	log('level - toggleVolume')
 
 	if not (sounds.isVolumeEnabled == event.isEnabled) then
 		
@@ -103,7 +107,7 @@ local function toggleVolume(event)
 end
 
 local function startGame(event) 
-	log('startGame')
+	log('level - startGame')
 
 	myUserId     = event.myUserId
 	masterUserId = event.masterUserId
@@ -128,7 +132,7 @@ local function startGame(event)
 end
 
 local function userJoined(event) 
-	log('userJoined')
+	log('level - userJoined')
 	
 	local user = event.user
 
@@ -141,7 +145,7 @@ local function userJoined(event)
 end
 
 local function userLeft(event) 
-	log('userLeft')
+	log('level - userLeft')
 	
 	local userId = event.userId
 	
@@ -157,7 +161,7 @@ end
 ---------------------------------------------------------------------------------
 
 local function addPointsToScore(points)
-	log('addPointsToScore')
+	log('level - addPointsToScore')
 
 	local score = playersScores[myUserId]
 	if score then
@@ -184,7 +188,7 @@ end
 ---------------------------------------------------------------------------------
 
 local function reelectNewMaster()
-	log('reelectNewMaster')
+	log('level - reelectNewMaster')
 
 	table.sort(playersIds)
 
@@ -196,7 +200,7 @@ local function reelectNewMaster()
 end
 
 local function takeOverGame()
-	log('takeOverGame')
+	log('level - takeOverGame')
 
 	broadcastUpdatedScores()
 
@@ -210,14 +214,14 @@ end
 ---------------------------------------------------------------------------------
 
 local function useBomb()
-	log('useBomb')
+	log('level - useBomb')
 
 	aliens.killAliens()
 	background.shake()
 end
 
 local function useWatch()
-	log('useWatch')
+	log('level - useWatch')
 	
 	sounds.playWatch()
 
@@ -232,8 +236,94 @@ end
 
 ---------------------------------------------------------------------------------
 
+local reviveAlienGroup
+
+local function showReviveOverlay()
+
+	-- Slow down aliens
+	aliensPaceFactor = 1000000
+	aliens.changeAliensSpeed(1000000)
+
+	-- Show Popup
+	--timer.pause(createAlienTimer)
+	disableAlienCreation = true
+
+	composer.setVariable( "titleFontName", 'Gulkave Regular' )
+	composer.showOverlay( "revive.revive", { effect = "fade", time = 250, isModal = true } )
+
+end
+
+local function askRevive(alienGroup)
+	log('level - askRevive')
+	
+	reviveAlienGroup = alienGroup
+	local score = playersScores[myUserId]
+
+	if isSimulator then
+
+		showReviveOverlay()
+		return
+
+	else
+
+		if reviveData and reviveData.gameId and reviveData.minScoreTrigger and reviveData.minRatioTrigger and score and score > reviveData.minScoreTrigger then
+
+			local bestScore = persistenceStore.bestScore(reviveData.gameId)
+			local canRevive = persistenceStore.canRevive(reviveData.gameId)
+
+			log('level - askRevive bestScore ' .. bestScore .. ' canRevive ' .. tostring(canRevive))
+
+			if canRevive and score > bestScore * reviveData.minRatioTrigger then
+				showReviveOverlay()
+				return
+			end
+
+		end
+	end 
+
+	-- No revive
+	aliensPaceFactor = 1000000
+	aliens.changeAliensSpeed(1000000)
+	aliens.endCollision(reviveAlienGroup)
+
+end
+
+function scene:doRevive()
+	log('level - scene:doRevive')
+
+	-- Save info
+	if reviveData and reviveData.gameId and reviveData.disableDurationSec then
+		persistenceStore.didRevive(reviveData.gameId, reviveData.disableDurationSec)
+	end
+
+	-- Kill all aliens
+    useBomb()
+
+    -- Go back to regular pace
+	aliensPaceFactor = 1
+	aliens.changeAliensSpeed(1)
+	-- timer.resume(createAlienTimer)
+	disableAlienCreation = false
+
+end
+
+function scene:cancelRevive()
+	log('level - scene:cancelRevive')
+	
+	-- Make alien lost animation
+	aliens.endCollision(reviveAlienGroup)
+
+	-- Wait a lil before keeping the aliens poping while waiting for others...
+	timer.performWithDelay(250, function() 
+		aliensPaceFactor = 1
+		aliens.changeAliensSpeed(1)
+	end)
+end
+
+---------------------------------------------------------------------------------
+
 local function createAlien(occurrence)
-	log('createAlien')
+	log('level - createAlien')
 
 	local level = model.levelByScore(occurrence)
 	local alien = aliens.create(occurrence, level)
@@ -244,7 +334,7 @@ local function createAlien(occurrence)
 end
 
 local function newGame(fromUserId, timestamp, playersIds)
-	log('newGame')
+	log('level - newGame')
 
 	aliens.gameStarted()
 	background.resetGradient()
@@ -272,20 +362,20 @@ end
 local function popAlien(alien, occurrence) 
 
 	if occurence then
-		log('popAlien - ' .. occurrence)
+		log('level - popAlien - ' .. occurrence)
 		previousOccurrence = occurrence
 	else
-		log('popAlien')
+		log('level - popAlien')
 		previousOccurrence = previousOccurrence + 1
 	end
-	
-	if (previousOccurrence % aliensPaceFactor) == 0 then
+
+	if (previousOccurrence % aliensPaceFactor) == 0 and disableAlienCreation == false then
 		aliens.pop(alien, aliensPaceFactor)
 	end
 end
 
 local function userGameOver(userId)
-	log('userGameOver')
+	log('level - userGameOver')
 
 	if playingIds[userId] then
 		playingIds[userId] = nil
@@ -302,7 +392,7 @@ local function userGameOver(userId)
 end
 
 local function showUserLost(userId)
-	log('showUserLost')
+	log('level - showUserLost')
 
 	sounds.playPlayerLost()
 
@@ -315,16 +405,17 @@ local function showUserLost(userId)
 end
 
 local function becomeGameMaster()
-	log('becomeGameMaster')
+	log('level - becomeGameMaster')
 
 	resetScores()
 	messenger.broadcastNewGame(myUserId, getStartGameTimestamp(), playersIds)
 end
 
 local function gameOver(winnerId)
-	log('gameOver')
+	log('level - gameOver')
 
 	aliensPaceFactor = 1
+	disableAlienCreation = false
 
 	if paceFactorTimer  then timer.cancel(paceFactorTimer)  end
 	if createAlienTimer then timer.cancel(createAlienTimer) end
@@ -356,18 +447,27 @@ end
 ---------------------------------------------------------------------------------
 
 local function alienKilled(points) 
-	log('alienKilled')
+	log('level - alienKilled')
 
 	sounds.playAlienKilled()
 	addPointsToScore(points)
 	vibrator.sendImpact()
 end
 
-local function alienReachedTheGround() 
-	log('alienReachedTheGround')
+local function alienWillReachTheGround(alienGroup) 
+	log('level - alienWillReachTheGround')
+	askRevive(alienGroup)
+end
+
+local function alienDidReachTheGround() 
+	log('level - alienDidReachTheGround')
 
 	local score = playersScores[myUserId]
+
 	if score then
+		if reviveData and reviveData.gameId then
+			persistenceStore.saveScore(score, reviveData.gameId)
+		end
 		Runtime:dispatchEvent({ name='coronaView', event='saveScore', score=score })
 	end
 
@@ -389,6 +489,7 @@ function scene:create(event)
 	local sceneGroup = self.view
 	sceneGroup:insert(background.load())
 	sceneGroup:insert(aliens.load())
+	sceneGroup:insert(bonus.load())
 
 	messenger.addMessageListener('newGame',       newGame)
 	messenger.addMessageListener('popAlien',      popAlien)
@@ -397,8 +498,9 @@ function scene:create(event)
 	messenger.addMessageListener('gameOver',	  gameOver)
 	messenger.addMessageListener('scoresUpdated', scoresUpdated)
 
-	aliens.addAlienListener('alienKilled', 			 alienKilled)
-	aliens.addAlienListener('alienReachedTheGround', alienReachedTheGround)
+	aliens.addAlienListener('alienKilled', 			 	alienKilled)
+	aliens.addAlienListener('alienWillReachTheGround', 	alienWillReachTheGround)
+	aliens.addAlienListener('alienDidReachTheGround', 	alienDidReachTheGround)
 
 	bonus.addBonusListener('useBomb',  useBomb)
 	bonus.addBonusListener('useWatch', useWatch)
@@ -407,27 +509,34 @@ function scene:create(event)
 	Runtime:addEventListener('userJoined',   userJoined)
 	Runtime:addEventListener('userLeft',     userLeft)
 	Runtime:addEventListener('toggleVolume', toggleVolume)
+
+	-- Load best score from native if needed
+	reviveData = Runtime:dispatchEvent({ name='coronaView', event='reviveData' })
+	if reviveData and reviveData.gameId then
+		persistenceStore.bestScore(reviveData.gameId)
+	end
+
 end
 
 function scene:show(event)
-	log('scene:show ' .. event.phase)
+	log('level - scene:show ' .. event.phase)
 
 	if event.phase == "did" then
 		
 		physics.start()
 
 		Runtime:dispatchEvent({ name='coronaView', event='gameLoaded' })
-
 		if isSimulator then
 			local user = { id='toto', displayName='TOTO', username='toto' }
 			-- local user2 = { id='toto2', displayName='TOTO2', username='toto2' }
 			startGame({ myUserId=user.id, masterUserId=user.id, playersUsers={user}, isVolumeEnabled=true })
 		end
+
 	end
 end
 
 function scene:hide(event)
-	log('scene:hide ' .. event.phase)
+	log('level - scene:hide ' .. event.phase)
 
 	if event.phase == "will" then
 
@@ -436,7 +545,7 @@ function scene:hide(event)
 end
 
 function scene:destroy(event)
-	log('scene:destroy')
+	log('level - scene:destroy')
 
 	sounds.dispose()
 	background.dispose()

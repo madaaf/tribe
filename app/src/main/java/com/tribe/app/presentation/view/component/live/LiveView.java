@@ -516,6 +516,11 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(gameManager.onRemoteUserStartGame().subscribe(pairSessionGame -> {
       if (pairSessionGame.second != null) {
+        if (gameManager.getCurrentGame() != null &&
+            !gameManager.getCurrentGame().getId().equals(pairSessionGame.second.getId())) {
+          stopGame();
+        }
+
         startGameStats(pairSessionGame.second.getId());
         String displayName = getDisplayNameFromSession(pairSessionGame.first);
         displayStartGameNotification(pairSessionGame.second.getTitle(), displayName);

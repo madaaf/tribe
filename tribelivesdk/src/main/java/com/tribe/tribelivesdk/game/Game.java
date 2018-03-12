@@ -315,6 +315,8 @@ public class Game {
   }
 
   protected TribeGuest getNextGuest() {
+    if (peerList == null || peerList.size() == 0) return null;
+
     Collections.sort(peerList, (o1, o2) -> o1.getId().compareTo(o2.getId()));
     TribeGuest tribeGuest;
 

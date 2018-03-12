@@ -3,6 +3,7 @@ local screenW, screenH = display.actualContentWidth, display.actualContentHeight
 local strings = require "strings"
 local emitter = require "emitter"
 
+local group
 local pendingShownBomb
 local pendingShownWatch
 
@@ -48,20 +49,25 @@ local function showBonus (text, icon, useEventName, otherBonusGroup)
 
 	local text 		 = display.newText( text, 0, screenH - 150 - 50 - 30, 'Gulkave Regular', 20 )
 	local arrow 	 = display.newImageRect("assets/images/arrow.png", 9, 6)
-	local background = emitter.newBonusEmitter()
+	local emitterBg  = emitter.newBonusEmitter()
 	local icon 	     = display.newImageRect(icon, 44, 44)
+	local background = display.newCircle(0, 0, 50, 50)
 	
 	arrow.y = text.y + 30
-	background.y = arrow.y + 50
-	icon.x, icon.y = background.x, background.y
+	emitterBg.y = arrow.y + 50
+	icon.x, icon.y = emitterBg.x, emitterBg.y
+	background.x, background.y = emitterBg.x, emitterBg.y
 
-	local group = display.newGroup()
-	pendingShownBonus = group
+	local bonusGroup = display.newGroup()
+	pendingShownBonus = bonusGroup
 
- 	group:insert(text)
- 	group:insert(arrow)
- 	group:insert(background)
- 	group:insert(icon)
+	background:setFillColor(1,0,0,0)
+
+ 	bonusGroup:insert(text)
+ 	bonusGroup:insert(arrow)
+ 	bonusGroup:insert(emitterBg)
+ 	bonusGroup:insert(background)
+ 	bonusGroup:insert(icon)
  	
 	if otherBonusGroup then
 		text.isVisible  = false
@@ -71,13 +77,13 @@ local function showBonus (text, icon, useEventName, otherBonusGroup)
  	icon.isHitTestable = true
  	background.isHitTestable = true
 
- 	transition.to(group, { x=40, rotation=-3, time=125 })
+ 	transition.to(bonusGroup, { x=40, rotation=-3, time=125 })
 
- 	group:addEventListener('touch', function (event)
+ 	bonusGroup:addEventListener('touch', function (event)
 
  		if event.phase == "began" then
 
-			removeShownBonuses(group)
+			removeShownBonuses(bonusGroup)
 			moveExistingBonusBottom(otherBonusGroup)
 
 		 	if listeners[useEventName] then
@@ -86,12 +92,19 @@ local function showBonus (text, icon, useEventName, otherBonusGroup)
 	 	end
  	end)
 
- 	return group
+ 	group:insert(bonusGroup)
+ 	
+ 	return bonusGroup
 end
 
 ---------------------------------------------------------------------------------
 
 local exports = {}
+
+exports.load = function()
+	group = display.newGroup()
+	return group
+end
 
 exports.addBonusListener = function(event, listener)
 	listeners[event] = listener

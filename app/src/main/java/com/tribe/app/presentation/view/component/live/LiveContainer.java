@@ -75,23 +75,19 @@ public class LiveContainer extends FrameLayout {
 
   @BindView(R.id.viewLiveDropZone) LiveDropZoneView viewLiveDropZone;
 
-  @BindView(R.id.viewLiveHangUp) LiveHangUpView viewLiveHangUp;
-
   @BindView(R.id.viewRinging) LiveRingingView viewRinging;
 
   // SPRINGS
   private SpringSystem springSystem = null;
   private Spring springRight;
   private RightSpringListener springRightListener;
-  private Spring springLeft;
-  private LeftSpringListener springLeftListener;
 
   // VARIABLES
   private float currentDragPercent, lastDownX, lastDownY, downX, downY, currentX, currentY,
       diffDown, scrollTolerance, initDistance = 0;
   private boolean beingDragged = false, isOpenedPartially = false, isOpenedFully = false, isDown =
       false, hasNotifiedAtRest = false, dropEnabled = false, hasJoined = false, chatOpened = false,
-      gameMenuOpen = false, touchEnabled = true, isEndCallOpened = false, shouldCloseFully = false;
+      gameMenuOpen = false, touchEnabled = true, shouldCloseFully = false;
   private int activePointerId, touchSlop, currentOffsetRight, currentOffsetLeft, overallScrollY = 0,
       statusBarHeight = 0;
   private VelocityTracker velocityTracker;
@@ -100,7 +96,7 @@ public class LiveContainer extends FrameLayout {
   private int[] tileLocationStart = new int[2], tileLocationLast = new int[2];
 
   // DIMENS
-  private int thresholdEnd, thresholdEndCall;
+  private int thresholdEnd;
 
   //// BINDERS / SUBSCRIPTIONS
   private Unbinder unbinder;
@@ -125,7 +121,6 @@ public class LiveContainer extends FrameLayout {
     super.onAttachedToWindow();
 
     springRight.addListener(springRightListener);
-    springLeft.addListener(springLeftListener);
   }
 
   @Override protected void onFinishInflate() {
@@ -145,7 +140,6 @@ public class LiveContainer extends FrameLayout {
 
   public void dispose() {
     springRight.removeListener(springRightListener);
-    springLeft.removeListener(springLeftListener);
 
     try {
       if (unbinder != null) unbinder.unbind();
@@ -162,10 +156,6 @@ public class LiveContainer extends FrameLayout {
     springRight = springSystem.createSpring();
     springRight.setSpringConfig(ORIGAMI_SPRING_CONFIG);
     springRightListener = new RightSpringListener();
-    springLeft = springSystem.createSpring();
-    springLeft.setSpringConfig(ORIGAMI_SPRING_CONFIG);
-    springLeftListener = new LeftSpringListener();
-
     touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 
     diffDown = screenUtils.dpToPx(DIFF_DOWN);
@@ -177,7 +167,6 @@ public class LiveContainer extends FrameLayout {
   private void initResources() {
     thresholdEnd =
         getContext().getResources().getDimensionPixelSize(R.dimen.threshold_open_live_invite);
-    thresholdEndCall = screenUtils.getWidthPx() >> 1;
   }
 
   private void initSubscriptions() {
@@ -231,8 +220,6 @@ public class LiveContainer extends FrameLayout {
         viewRinging.show();
       }
     }));
-
-    subscriptions.add(viewLiveHangUp.onEndCall().subscribe(aVoid -> endCallSuccess()));
   }
 
   public void setStatusBarHeight(int height) {
@@ -263,13 +250,10 @@ public class LiveContainer extends FrameLayout {
     } else if (isOpenedPartially) widthOpen = viewLive.getLiveInviteViewPartialWidth();
 
     boolean isTouchInInviteView = ev.getRawX() >= screenUtils.getWidthPx() - widthOpen;
-    boolean isInHangUpButton =
-        ViewUtils.isIn(viewLiveHangUp.getHangUpButton(), (int) ev.getRawX(), (int) ev.getRawY());
     if (!isEnabled() ||
         gameMenuOpen ||
         (!touchEnabled && !isOpenedFully && !isOpenedPartially) ||
-        chatOpened ||
-        (isInHangUpButton && isEndCallOpened)) { //!hasJoined ||
+        chatOpened) { //!hasJoined ||
       return false;
     }
 
@@ -277,9 +261,8 @@ public class LiveContainer extends FrameLayout {
 
     switch (action) {
       case MotionEvent.ACTION_DOWN:
-        if (!isOpenedPartially && !isOpenedFully && !isEndCallOpened) {
+        if (!isOpenedPartially && !isOpenedFully) {
           springRight.setCurrentValue(0).setAtRest();
-          springLeft.setCurrentValue(0).setAtRest();
         }
 
         activePointerId = ev.getPointerId(0);
@@ -287,7 +270,7 @@ public class LiveContainer extends FrameLayout {
         lastDownX = ev.getRawX();
         lastDownY = ev.getRawY();
 
-        if ((!isOpenedPartially && !isOpenedFully && !isEndCallOpened) || !isTouchInInviteView) {
+        if ((!isOpenedPartially && !isOpenedFully) || !isTouchInInviteView) {
           beingDragged = false;
 
           velocityTracker = VelocityTracker.obtain();
@@ -348,7 +331,6 @@ public class LiveContainer extends FrameLayout {
         break;
       case MotionEvent.ACTION_UP:
       case MotionEvent.ACTION_CANCEL:
-        if (isEndCallOpened) closeEndCall();
         clearTouch();
         break;
     }
@@ -366,8 +348,6 @@ public class LiveContainer extends FrameLayout {
       case MotionEvent.ACTION_MOVE: {
         final int pointerIndex = event.findPointerIndex(activePointerId);
 
-        if (isEndCallOpened) break;
-
         if (pointerIndex != INVALID_POINTER) {
           float x = event.getX(pointerIndex) + location[0];
           float offsetX = x - lastDownX;
@@ -377,8 +357,6 @@ public class LiveContainer extends FrameLayout {
           if (currentTileView == null && !chatOpened && velocityTracker != null) {
             if (offsetX <= 0 && !isOpenedPartially) {
               applyOffsetRightWithTension(offsetX);
-            } else if (offsetX >= 0 && !isOpenedPartially && !isOpenedFully && !isEndCallOpened) {
-              applyOffsetLeftWithTension(offsetX);
             }
 
             velocityTracker.addMovement(event);
@@ -435,14 +413,6 @@ public class LiveContainer extends FrameLayout {
             break;
           }
 
-          if (isEndCallOpened) {
-            if (velocityTracker != null) velocityTracker.addMovement(event);
-            springLeft.setCurrentValue(viewLiveHangUp.getMaxWidth()).setAtRest();
-            closeEndCall();
-            clearTouch();
-            break;
-          }
-
           float x = event.getX(pointerIndex) - location[0];
           float offsetX = x - lastDownX;
 
@@ -467,16 +437,6 @@ public class LiveContainer extends FrameLayout {
             if (isOpenedPartially) {
               springRight.setCurrentValue(-viewLive.getLiveInviteViewPartialWidth()).setAtRest();
               closePartialInviteView();
-            } else if (!isOpenedFully && !isOpenedPartially) {
-              springLeft.setCurrentValue(currentOffsetLeft).setAtRest();
-
-              if (offsetX > thresholdEndCall) {
-                openEndCall();
-                clearTouch();
-                break;
-              } else {
-                springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
-              }
             }
           }
         }
@@ -740,68 +700,6 @@ public class LiveContainer extends FrameLayout {
         (float) ((tensionSlingshotPercent / 4) - Math.pow((tensionSlingshotPercent / 4), 2)) * 2f;
     float extraMove = (slingshotDist) * tensionPercent / 2;
     return (int) ((slingshotDist * boundedDragPercent) + extraMove);
-  }
-
-  private class LeftSpringListener extends SimpleSpringListener {
-
-    @Override public void onSpringUpdate(Spring spring) {
-      if (ViewCompat.isAttachedToWindow(LiveContainer.this)) {
-        float value = (float) spring.getCurrentValue();
-        applyLeft(value);
-      }
-    }
-
-    @Override public void onSpringActivate(Spring spring) {
-      hasNotifiedAtRest = false;
-    }
-  }
-
-  private void applyLeft(float value) {
-    viewLiveHangUp.applyTranslationX(value);
-    viewLive.applyTranslateX(value, false);
-    viewLiveInvite.setTranslationX(value);
-  }
-
-  private boolean applyOffsetLeftWithTension(float offsetX) {
-    final float scrollLeft = offsetX;
-    currentOffsetLeft = (int) scrollLeft;
-    float appliedValue = Math.min(Math.max(offsetX, 0), viewLiveHangUp.getMaxWidth());
-    applyLeft(appliedValue);
-
-    return true;
-  }
-
-  private void openEndCall() {
-    isEndCallOpened = true;
-
-    int endValue = viewLiveHangUp.getMaxWidth();
-    if (velocityTracker != null) {
-      springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(endValue);
-    } else {
-      springLeft.setEndValue(endValue);
-    }
-
-    viewLiveHangUp.showEndCall();
-  }
-
-  private void closeEndCall() {
-    isEndCallOpened = false;
-
-    viewLiveHangUp.hideEndCall();
-
-    if (velocityTracker != null) {
-      springLeft.setVelocity(velocityTracker.getXVelocity()).setEndValue(0);
-    } else {
-      springLeft.setEndValue(0);
-    }
-  }
-
-  private void endCallSuccess() {
-    springLeft.setEndValue(screenUtils.getWidthPx());
-    AnimationUtils.fadeOut(viewLiveHangUp, DURATION);
-    subscriptions.add(Observable.timer(300, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> onEndCall.onNext(null)));
   }
 
   ///////////////////////

@@ -65,8 +65,11 @@ exports.playSoundtrack = function(score)
 				audio.stop(playingSoundtrack)
 			end
 
-			currentSoundtrackIndex = level.soundtrack
-			playingSoundtrack = playSoundIfEnabled(loadedStreams[level.soundtrack], { loops=-1 })
+			if not isSimulator then
+				currentSoundtrackIndex = level.soundtrack
+				playingSoundtrack = playSoundIfEnabled(loadedStreams[level.soundtrack], { loops=-1 })
+			end
+
 		end
 	end
 end

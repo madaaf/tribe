@@ -234,7 +234,7 @@
         android:configChanges="orientation|screenSize"
         android:keepScreenOn="true"
         android:launchMode="singleTask"
-        android:theme="@style/AppTheme.Transparent"/>
+        android:theme="@style/AppTheme.Black"/>
 
     <activity
         android:name=".presentation.view.activity.CoronaGameActivity"

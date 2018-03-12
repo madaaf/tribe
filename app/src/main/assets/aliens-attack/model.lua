@@ -32,7 +32,7 @@ model.levels = {
 	alien = {
 		min 		= 200,
 		popInterval = function () return  0.1 + math.random() * 0.2 end,
-		speed 		= function () return  1.0 + math.random() * 2.0 end,
+		speed 		= function () return  1.5 + math.random() * 1.5 end,
 		background  = 4,
 		soundtrack  = 2,
 	},

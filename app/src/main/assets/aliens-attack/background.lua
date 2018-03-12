@@ -76,6 +76,8 @@ local function popCar()
 	log('popCar')
 
 	local car = display.newImageRect( "assets/images/car.png", 31, 15 )
+	backgroundGroup:insert(car)
+
 	car.x, car.y = -car.width, screenH - groundHeight
 	car.anchorY = 1
 
@@ -87,6 +89,8 @@ local function popStars()
 
 	for i=1,5 do
 		local star = display.newImageRect( "assets/images/star.png", 16, 16 )
+		backgroundGroup:insert(star)
+
 		star.x, star.y = math.random(50, screenW-100), math.random(100, screenH/2)
 		star.alpha = 0
 
@@ -109,6 +113,7 @@ local function popSmallCloud()
 	else 
 		cloud = display.newImageRect( "assets/images/small_cloud_2.png", 30, 24 )
 	end
+	backgroundGroup:insert(cloud)
 
 	cloud.x, cloud.y = -cloud.width, math.random(0, 150)
 	cloud.alpha = math.random()
@@ -129,6 +134,7 @@ local function popCloud()
 	else 
 		cloud = display.newImageRect( "assets/images/cloud_2.png", 206, 158 )
 	end
+	backgroundGroup:insert(cloud)
 
 	cloud.x, cloud.y = -cloud.width, math.random(-100, 150)
 	cloud.alpha = math.random() * 0.3

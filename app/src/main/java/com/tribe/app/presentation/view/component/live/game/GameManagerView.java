@@ -24,7 +24,6 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
-import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicView;
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
@@ -258,9 +257,9 @@ public class GameManagerView extends FrameLayout {
           .doOnNext(game1 -> gameDrawView.setNextGame())
           .subscribe(onRestartGame));
     } else if (game.getId().equals(Game.GAME_INVADERS)) {
-      GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
-      subscriptionsGame.add(gameAlienAttacksView.onAddScore().subscribe(onAddScore));
-      gameView = gameAlienAttacksView;
+      GameCoronaView gameCoronaView = new GameCoronaView(getContext(), game);
+      subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
+      gameView = gameCoronaView;
     } else if (game.getId().equals(Game.GAME_TRIVIA)) {
       GameTriviaView gameTriviaView = new GameTriviaView(getContext());
       subscriptionsGame.add(gameTriviaView.onAddScore().subscribe(onAddScore));

@@ -7,8 +7,9 @@ local listeners = {}
 
 local gameEnded = false
 
-local EVENT_ALIEN_KILLED			 = 'alienKilled'
-local EVENT_ALIEN_REACHED_THE_GROUND = 'alienReachedTheGround'
+local EVENT_ALIEN_KILLED				= 'alienKilled'
+local EVENT_ALIEN_WILL_REACH_THE_GROUND	= 'alienWillReachTheGround'
+local EVENT_ALIEN_DID_REACH_THE_GROUND 	= 'alienDidReachTheGround'
 
 local model   = require 'model'
 local emitter = require 'emitter'
@@ -48,6 +49,8 @@ end
 
 local function showPointsAndRemoveAlien(alienGroup, points) 
 
+	alienGroup.alien.isKilled = true
+
 	local alienImage = alienGroup[2]
 	local alienGradient = alienGroup[1]
 
@@ -83,17 +86,21 @@ local function onTouchAlien(event)
 
 		if alienGroup.taps >= alienGroup.tapsToKill then
 
-			local points = alienGroup.tapsToKill
+			if alien.isKilled == false then
 
-			-- 0.9 because we double the points in the last 10%.
-			if event.y > (((screenH - groundHeight) * 0.9) - alienGroup.height/2) then
-				points = points * 2
-			end
+				local points = alienGroup.tapsToKill
 
-			showPointsAndRemoveAlien(alienGroup, points)
+				-- 0.9 because we double the points in the last 10%.
+				if event.y > (((screenH - groundHeight) * 0.9) - alienGroup.height/2) then
+					points = points * 2
+				end
 
-			if listeners[EVENT_ALIEN_KILLED] then
-				listeners[EVENT_ALIEN_KILLED](points)
+				showPointsAndRemoveAlien(alienGroup, points)
+
+				if listeners[EVENT_ALIEN_KILLED] then
+					listeners[EVENT_ALIEN_KILLED](points)
+				end
+				
 			end
 
 		else
@@ -110,12 +117,36 @@ local function onTouchAlien(event)
 	end
 end
 
-local function onCollisionAlien(alienGroup)
+local function alienWillCollide(alienGroup)
 
 	local alien = alienGroup.alien
 	local alienImage = alienGroup[2]
 	
+	if alienImage and alien.isKilled == false and alien.didCollide == false then
+
+		if gameEnded then
+			alienDidCollide(alienGroup)
+		else 
+
+			if listeners[EVENT_ALIEN_WILL_REACH_THE_GROUND] then
+				listeners[EVENT_ALIEN_WILL_REACH_THE_GROUND](alienGroup)
+			else 
+				alienDidCollide(alienGroup)
+			end
+			
+		end
+
+	end
+end
+
+local function alienDidCollide(alienGroup)
+
+	local alien = alienGroup.alien
+	local alienImage = alienGroup[2]
+	alien.didCollide = true
+
 	if alienImage then
+
 		local alienGradient = alienGroup[1]
 		local alienImageLost = display.newImageRect("assets/images/alien_" .. alien.type .. "_lost.png", alienImage.width, alienImage.height)
 		
@@ -128,12 +159,13 @@ local function onCollisionAlien(alienGroup)
 			scaleDownAndRemoveAlien(alienGroup)
 
 		else
-			if listeners[EVENT_ALIEN_REACHED_THE_GROUND] then
-				listeners[EVENT_ALIEN_REACHED_THE_GROUND]()
+			if listeners[EVENT_ALIEN_DID_REACH_THE_GROUND] then
+				listeners[EVENT_ALIEN_DID_REACH_THE_GROUND]()
 			end
 		end
 	end
 end
+
 
 ---------------------------------------------------------------------------------
 
@@ -171,8 +203,7 @@ aliens.pop = function(alien, paceFactor)
 		alienImage = display.newImageRect( "assets/images/alien_0.png", 48, 27 )
 	end
 
-	--alienGradient = emitter.newAlienFallingEmitter()
-	alienGradient = display.newRect( 0, 0, 10, 10)
+	alienGradient = emitter.newAlienFallingEmitter()
 
 	alienZone = display.newRect(0, 0, alienImage.width * 1.5, alienImage.height * 1.5)
 	alienZone:setFillColor(1, 0, 0, 0)
@@ -207,7 +238,9 @@ aliens.pop = function(alien, paceFactor)
 	}
 
 	local time = alien.speed * 1000 * paceFactor
-	transition.to(alienGroup, { y=alienTargetY - alienImage.height/2, time=time, onComplete=onCollisionAlien })
+	transition.cancel(alienGroup)
+	local handleAlienCollision = function () alienWillCollide(alienGroup) end
+	transition.to(alienGroup, { y=alienTargetY - alienImage.height/2, time=time, onComplete=handleAlienCollision })
 
 	alienGroup:addEventListener('touch', onTouchAlien)
 
@@ -231,7 +264,17 @@ aliens.changeAliensSpeed = function(paceFactor)
 			log('remainingTime = ' .. remainingTime)
 
 			transition.cancel(alienGroup)
-			transition.to(alienGroup, { y=alienTargetY - alienImage.height/2, time=remainingTime, onComplete=onCollisionAlien })
+
+			if group[i].alien.didCollide == false then
+				local handleAlienCollision = function () 
+					if gameEnded then
+						alienDidCollide(alienGroup)
+					else 
+						alienWillCollide(alienGroup) 
+					end
+				end
+				transition.to(alienGroup, { y=alienTargetY - alienImage.height/2, time=remainingTime, onComplete=handleAlienCollision })
+			end
 		end
 	end
 end
@@ -267,6 +310,11 @@ aliens.gameStarted = function()
 	end
 end
 
+aliens.endCollision = function(alienGroup)
+	log('endCollision')
+	alienDidCollide(alienGroup)
+end
+
 aliens.gameEnded = function()
 	log('gameEnded')
 
@@ -286,11 +334,13 @@ aliens.create = function(occurrence, level)
 		alien.taps = 1
 	end
 
-	alien.id       = "" .. math.random()
-	alien.rotation = math.random(-1,1) * 3
-	alien.scale    = 1.2
-	alien.start    = (math.random() * 0.8) + 0.15
-	alien.speed    = level.speed()
+	alien.id       		= "" .. math.random()
+	alien.rotation 		= math.random(-1,1) * 3
+	alien.scale    		= 1.2
+	alien.start    		= (math.random() * 0.8) + 0.15
+	alien.speed    		= level.speed()
+	alien.isKilled 		= false
+	alien.didCollide 	= false
 
 	return alien
 end

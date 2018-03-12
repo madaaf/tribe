@@ -72,7 +72,7 @@ public class GameCoronaView extends GameView {
       @Override public Context context() {
         return getContext();
       }
-      
+
       //@Override public void onGameFile(GameFile gameFile) {
       //  Timber.d("GameFile : " + gameFile);
       //
@@ -98,7 +98,7 @@ public class GameCoronaView extends GameView {
     coronaView.init(game.getId());
     coronaView.setZOrderMediaOverlay(true);
 
-    gamePresenter.getGameFile(game.getUrl());
+    //gamePresenter.getGameFile(game.getUrl());
   }
 
   @Override protected void initView(Context context) {
@@ -320,6 +320,7 @@ public class GameCoronaView extends GameView {
   }
 
   @Override public void dispose() {
+
     Timber.d("dispose");
     coronaView.destroy();
     super.dispose();
@@ -327,6 +328,10 @@ public class GameCoronaView extends GameView {
 
   @Override public void setNextGame() {
 
+  }
+
+  public void onPause() {
+    coronaView.pause();
   }
 
   /**

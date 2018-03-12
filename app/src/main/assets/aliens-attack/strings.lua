@@ -7,7 +7,7 @@ local strings = {
 		you_lost = 'YOU LOST',
 		someone_lost = '%s LOST!',
 		pending_instructions = 'IT WILL RESTART WHEN\nSOMEONE WINS',
-		waiting_instructions = 'IT WILL RESTART WHEN\nSOMEONE JOINS',
+		waiting_instructions = 'IT WILL RESTART WHEN\nSOMEONE JOINS'
 	},
 	fr = {
 		title = 'ALIENS\nATTACK',
@@ -17,7 +17,7 @@ local strings = {
 		you_lost = 'TU AS PERDU',
 		someone_lost = '%s A PERDU !',
 		pending_instructions = 'LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE',
-		waiting_instructions = 'LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE',
+		waiting_instructions = 'LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE'
 	}
 }
 
