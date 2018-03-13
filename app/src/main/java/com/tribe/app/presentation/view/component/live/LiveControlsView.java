@@ -716,6 +716,8 @@ public class LiveControlsView extends FrameLayout {
     if (currentGameView == null) {
       currentGameView = addGameToView(viewFrom, game);
     }
+
+    filterManager.suspendFilter();
   }
 
   public void stopGame() {
@@ -723,6 +725,8 @@ public class LiveControlsView extends FrameLayout {
       layoutContainerParamLive.removeView(currentGameView);
       currentGameView = null;
     }
+
+    filterManager.resumeFilter();
 
     gameManager.stop();
     showGameControls();

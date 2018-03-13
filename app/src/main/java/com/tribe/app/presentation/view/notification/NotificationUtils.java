@@ -46,12 +46,12 @@ public class NotificationUtils {
       return builder.build();
     }
 
-    if ((notificationPayload.getClickAction() == null && StringUtils.isEmpty(
-        notificationPayload.getBody())) || notificationPayload.getClickAction()
-        .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+    if ((notificationPayload.getClickAction() == null &&
+        StringUtils.isEmpty(notificationPayload.getBody())) ||
+        notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       return null;
-    } else if (notificationPayload.getClickAction() == null && !StringUtils.isEmpty(
-        notificationPayload.getBody())) {
+    } else if (notificationPayload.getClickAction() == null &&
+        !StringUtils.isEmpty(notificationPayload.getBody())) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       return builder.build();
     }
@@ -204,7 +204,8 @@ public class NotificationUtils {
         notificationPayload.getSessionId());
   }
 
-  public static NotificationModel getFbNotificationModel(Context context) {
+  public static NotificationModel getFbNotificationModel(Context context,
+      NotificationModel.Listener listener) {
     NotificationModel a = new NotificationModel.Builder().title(
         context.getString(R.string.invite_facebook_popup_title))
         .subTitle(context.getString(R.string.invite_facebook_popup_subtitle))
@@ -214,6 +215,7 @@ public class NotificationUtils {
         .background(R.drawable.fb_back_notif)
         .logoPicture(R.drawable.facebook_circular_icon)
         .type(NotificationModel.POPUP_FACEBOOK)
+        .listener(listener)
         .build();
     return a;
   }
@@ -284,7 +286,7 @@ public class NotificationUtils {
     }
 
     if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
-      list.add(NotificationUtils.getFbNotificationModel(context));
+      list.add(NotificationUtils.getFbNotificationModel(context, null));
 
       if (currentUser.getProfilePicture() == null || currentUser.getProfilePicture().isEmpty()) {
         list.add(NotificationUtils.getAvatarNotificationModel(context));

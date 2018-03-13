@@ -273,4 +273,21 @@ public class CloudGameDataStore implements GameDataStore {
   @Override public Observable<GameFileRealm> getGameFile(String url) {
     return null;
   }
+
+  @Override public Observable<ScoreRealm> getUserBestScore(String gameId) {
+    return this.tribeApi.getUserListInfos(
+        context.getString(R.string.lookup_userid, accessToken.getUserId(),
+            context.getString(R.string.userfragment_leaderboard,
+                JsonUtils.arrayToJson(GameManager.playableGames)))).map(userRealms -> {
+      List<ScoreRealm> realmList = new ArrayList<>();
+      realmList.addAll(userRealms.get(0).getScores());
+      return realmList;
+    }).doOnError(Throwable::printStackTrace).map(scoreRealmList -> {
+      for (ScoreRealm scoreRealm : scoreRealmList) {
+        if (scoreRealm.getGame_id().equals(gameId)) return scoreRealm;
+      }
+
+      return null;
+    });
+  }
 }

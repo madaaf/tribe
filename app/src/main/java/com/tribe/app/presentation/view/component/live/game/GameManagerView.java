@@ -81,6 +81,7 @@ public class GameManagerView extends FrameLayout {
   private PublishSubject<Game> onStopGame = PublishSubject.create();
   private PublishSubject<Void> onPlayOtherGame = PublishSubject.create();
   private PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
+  private PublishSubject<GameCoronaView> onRevive = PublishSubject.create();
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
 
   public GameManagerView(@NonNull Context context) {
@@ -292,7 +293,7 @@ public class GameManagerView extends FrameLayout {
     gameView.setWebRTCRoom(webRTCRoom);
     game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));
-    gameView.start(game, onPeerMapChange, onInvitedMapChange, onLiveViewsChange, userId);
+    gameView.start(game, masterMapObs, onPeerMapChange, onInvitedMapChange, onLiveViewsChange, userId);
     gameView.setNextGame();
 
     return gameView;
@@ -335,6 +336,10 @@ public class GameManagerView extends FrameLayout {
 
   public Observable<Pair<String, Integer>> onAddScore() {
     return onAddScore;
+  }
+
+  public Observable<GameCoronaView> onRevive() {
+    return onRevive;
   }
 
   public Observable<Game> onStopGame() {

@@ -35,4 +35,6 @@ public interface GameRepository {
   Observable<Map<String, BattleMusicPlaylist>> getBattleMusicData();
 
   Observable<GameFile> getGameFile(String url);
+
+  Observable<Score> getUserBestScore(String gameId);
 }

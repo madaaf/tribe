@@ -23,6 +23,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -82,6 +83,7 @@ public abstract class GameView extends FrameLayout {
   protected PublishSubject<Game> onRestart = PublishSubject.create();
   protected PublishSubject<Game> onStop = PublishSubject.create();
   protected PublishSubject<Void> onPlayOtherGame = PublishSubject.create();
+  protected PublishSubject<GameCoronaView> onRevive = PublishSubject.create();
 
   public GameView(@NonNull Context context) {
     super(context);
@@ -291,6 +293,7 @@ public abstract class GameView extends FrameLayout {
     if (userId.equals(currentMasterId)) {
       subscriptions.add(generateNewMasterId().subscribe(newMasterId -> {
         currentMasterId = newMasterId;
+        game.setCurrentMaster(peerMap.get(userId));
 
         if (newMasterId.equals(currentUser.getId())) {
           takeOverGame();

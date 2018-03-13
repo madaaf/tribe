@@ -1,7 +1,6 @@
 package com.tribe.app.data.repository.game;
 
 import com.tribe.app.data.network.entity.AddScoreEntity;
-import com.tribe.app.data.realm.GameFileRealm;
 import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ScoreRealmDataMapper;
 import com.tribe.app.data.repository.game.datasource.GameDataStore;
@@ -84,5 +83,11 @@ import timber.log.Timber;
 
   @Override public Observable<GameFile> getGameFile(String url) {
     return null;
+  }
+
+  @Override public Observable<Score> getUserBestScore(String gameId) {
+    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
+    return gameDataStore.getUserBestScore(gameId)
+        .map(scoreRealm -> scoreRealmDataMapper.transform(scoreRealm));
   }
 }

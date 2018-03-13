@@ -29,6 +29,7 @@ public class FilterManager {
   // VARIABLES
   private List<Filter> filterList;
   private Filter current;
+  private Filter suspendedFilter;
   private RenderScript renderScript;
   private RSCompute rsCompute;
 
@@ -44,7 +45,7 @@ public class FilterManager {
   public void initFilters(List<Filter> filters) {
     filterList.clear();
     filterList.addAll(filters);
-    
+
     for (Filter filter : filterList) {
       if (filter instanceof LUT3DFilter) {
         LUT3DFilter lut3DFilter = (LUT3DFilter) filter;
@@ -73,6 +74,16 @@ public class FilterManager {
     } else {
       this.current = filter;
     }
+  }
+
+  public void suspendFilter() {
+    this.suspendedFilter = current;
+    this.current = null;
+  }
+
+  public void resumeFilter() {
+    this.current = suspendedFilter;
+    this.suspendedFilter = null;
   }
 
   public List<Filter> getFilterList() {

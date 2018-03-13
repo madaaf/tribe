@@ -3,17 +3,21 @@ package com.tribe.app.presentation.view.component.live.game.corona;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
 import android.util.Pair;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.ansca.corona.CoronaView;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.domain.entity.Score;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
@@ -22,6 +26,9 @@ import com.tribe.app.presentation.utils.unzip.RxUnzip;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.RemoteConfigManager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -59,6 +66,7 @@ public class GameCoronaView extends GameView {
   // VARIABLES
   private Handler mainHandler;
   private GameMVPViewAdapter gameMVPViewAdapter;
+  private RemoteConfigManager remoteConfigManager;
 
   // OBSERVABLES
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
@@ -71,6 +79,14 @@ public class GameCoronaView extends GameView {
     gameMVPViewAdapter = new GameMVPViewAdapter() {
       @Override public Context context() {
         return getContext();
+      }
+
+      @Override public void onUserBestScore(Score score) {
+        Hashtable<Object, Object> table = new Hashtable();
+        table.put("name", "bestScore");
+        table.put("score", score.getValue());
+        table.put("gameId", game.getId());
+        coronaView.sendEvent(table);
       }
 
       //@Override public void onGameFile(GameFile gameFile) {
@@ -95,6 +111,8 @@ public class GameCoronaView extends GameView {
       //}
     };
 
+    remoteConfigManager = RemoteConfigManager.getInstance(context);
+
     coronaView.init(game.getId());
     coronaView.setZOrderMediaOverlay(true);
 
@@ -106,6 +124,8 @@ public class GameCoronaView extends GameView {
 
     inflater.inflate(R.layout.view_game_corona, this, true);
     unbinder = ButterKnife.bind(this);
+
+    layoutProgress.setBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
 
     mainHandler = new Handler(context.getMainLooper());
   }
@@ -175,9 +195,13 @@ public class GameCoronaView extends GameView {
           startGameTable.put("isVolumeEnabled", true);
 
           coronaView.sendEvent(startGameTable);
-          subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
+
+          AnimationUtils.animateWidth(viewProgress, viewProgress.getMeasuredWidth(),
+              cardViewProgress.getWidth(), 500, new DecelerateInterpolator());
+
+          subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(aLong -> AnimationUtils.fadeOut(layoutProgress, 1000,
+              .subscribe(aLong -> AnimationUtils.fadeOut(layoutProgress, 300,
                   new AnimatorListenerAdapter() {
                     @Override public void onAnimationEnd(Animator animation) {
                       if (layoutProgress.getParent() != null) removeView(layoutProgress);
@@ -207,27 +231,60 @@ public class GameCoronaView extends GameView {
       //Timber.d("eventListener fired : " + hashtable);
       String event = (String) hashtable.get("event");
 
-      mainHandler.post(() -> {
-        if (event.equals("gameLoaded")) {
-          startGame();
-        } else if (event.equals("saveScore")) {
-          onAddScore.onNext(
-              Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
-        } else if (event.equals("scoresUpdated")) {
-          Map<String, Integer> mapScores = new HashMap<>();
-          Hashtable<String, Double> scores = (Hashtable<String, Double>) hashtable.get("scores");
-          for (String id : scores.keySet()) mapScores.put(id, scores.get(id).intValue());
-          updateLiveScores(mapScores, null);
-        } else if (event.equals("broadcastMessage")) {
-          sendMessage(
-              (JSONObject) getBroadcastPayload((Hashtable<Object, Object>) hashtable.get("message"),
-                  false), null);
-        } else if (event.equals("sendMessage")) {
-          sendMessage(
-              (JSONObject) getBroadcastPayload((Hashtable<Object, Object>) hashtable.get("message"),
-                  false), hashtable.get("to").toString());
+      if (event.equals("reviveData")) {
+        int disableDurationSec =
+            remoteConfigManager.getInt(Constants.FIREBASE_REVIVE_DISABLE_DURATION);
+        int minScoreTrigger =
+            remoteConfigManager.getInt(Constants.FIREBASE_REVIVE_MIN_SCORE_TRIGGER);
+        double minRatioTrigger =
+            remoteConfigManager.getDouble(Constants.FIREBASE_REVIVE_MIN_RATIO_TRIGGER);
+        Hashtable<Object, Object> table = new Hashtable();
+        table.put("gameId", game.getId());
+        table.put("disableDurationSec", disableDurationSec);
+        table.put("minScoreTrigger", minScoreTrigger);
+        table.put("minRatioTrigger", minRatioTrigger);
+
+        return table;
+      } else if (event.equals("getBestScore")) {
+        if (currentUser.getScoreForGame(game.getId()) != null) {
+          return currentUser.getScoreForGame(game.getId()).getValue();
+        } else {
+          gamePresenter.getUserBestScore(game.getId());
         }
-      });
+      } else {
+        mainHandler.post(() -> {
+          if (event.equals("gameLoaded")) {
+            startGame();
+          } else if (event.equals("saveScore")) {
+            onAddScore.onNext(
+                Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
+          } else if (event.equals("revive")) {
+            if (BuildConfig.DEBUG) {
+              subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
+                  .observeOn(AndroidSchedulers.mainThread())
+                  .subscribe(aLong -> {
+                    Hashtable<Object, Object> table = new Hashtable();
+                    table.put("name", "shareToReviveSuccess");
+                    coronaView.sendEvent(table);
+                  }));
+            } else {
+              onRevive.onNext(this);
+            }
+          } else if (event.equals("scoresUpdated")) {
+            Map<String, Integer> mapScores = new HashMap<>();
+            Hashtable<String, Double> scores = (Hashtable<String, Double>) hashtable.get("scores");
+            for (String id : scores.keySet()) mapScores.put(id, scores.get(id).intValue());
+            updateLiveScores(mapScores, null);
+          } else if (event.equals("broadcastMessage")) {
+            sendMessage((JSONObject) getBroadcastPayload(
+                (Hashtable<Object, Object>) hashtable.get("message"), false), null);
+          } else if (event.equals("sendMessage")) {
+            sendMessage((JSONObject) getBroadcastPayload(
+                (Hashtable<Object, Object>) hashtable.get("message"), false),
+                hashtable.get("to").toString());
+          }
+        });
+      }
 
       return null;
     });
@@ -327,6 +384,14 @@ public class GameCoronaView extends GameView {
   }
 
   @Override public void setNextGame() {
+
+  }
+
+  public void successRevive() {
+
+  }
+
+  public void errorRevive() {
 
   }
 

@@ -22,10 +22,7 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.f2prateek.rx.preferences.BuildConfig;
 import com.f2prateek.rx.preferences.Preference;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -63,6 +60,8 @@ import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
+import com.tribe.app.presentation.view.NotifView;
+import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.model.ShareTypeModel;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
@@ -73,9 +72,11 @@ import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
+import com.tribe.app.presentation.view.utils.RemoteConfigManager;
 import com.tribe.app.presentation.view.utils.RuntimePermissionUtil;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
@@ -183,7 +184,7 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
   private Live live;
   private Room room;
   private AppStateMonitor appStateMonitor;
-  private FirebaseRemoteConfig firebaseRemoteConfig;
+  private RemoteConfigManager remoteConfigManager;
   private RxPermissions rxPermissions;
   private Intent returnIntent = new Intent();
   private List userIdList = new ArrayList();
@@ -499,6 +500,10 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
     viewLiveContainer.setStatusBarHeight(result);
   }
 
+  private void initRemoteConfig() {
+    remoteConfigManager = RemoteConfigManager.getInstance(this);
+  }
+
   private void initAppState() {
     if (appStateMonitor == null) {
       appStateMonitor = RxAppStateMonitor.create(getApplication());
@@ -509,19 +514,6 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
 
   private void initGameManager() {
     this.gameManager = GameManager.getInstance(this);
-  }
-
-  private void initRemoteConfig() {
-    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
-    FirebaseRemoteConfigSettings configSettings =
-        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
-            .build();
-    firebaseRemoteConfig.setConfigSettings(configSettings);
-    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        firebaseRemoteConfig.activateFetched();
-      }
-    });
   }
 
   private void disposeCall(boolean isJump) {
@@ -756,8 +748,7 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
       if (room == null) return;
 
       if (aString.equals(ShareTypeModel.SHARE_TYPE_MESSENGER)) {
-        navigator.sendInviteToMessenger(this, firebaseRemoteConfig, TagManagerUtils.CALL,
-            room.getLink());
+        navigator.sendInviteToMessenger(this, TagManagerUtils.CALL, room.getLink());
       } else {
         share(true);
       }
@@ -809,8 +800,8 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
     }));
 
     subscriptions.add(viewLiveInvite.onInviteMessenger()
-        .subscribe(aVoid -> navigator.sendInviteToMessenger(this, firebaseRemoteConfig,
-            TagManagerUtils.CALL, room.getLink())));
+        .subscribe(
+            aVoid -> navigator.sendInviteToMessenger(this, TagManagerUtils.CALL, room.getLink())));
 
     subscriptions.add(viewLiveInvite.onInviteSms().subscribe(aVoid -> share(true)));
 
@@ -877,8 +868,8 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
           bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
           tagManager.trackEvent(TagManagerUtils.Invites, bundle);
           shouldOverridePendingTransactions = true;
-          navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE,
-              live.getLinkId(), room.getId(), false);
+          navigator.sendInviteToCall(this, TagManagerUtils.INVITE, live.getLinkId(), room.getId(),
+              false);
         }));
 
     subscriptions.add(userInfosNotificationView.onClickMore()
@@ -968,6 +959,23 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
         .filter(pair -> pair.second > 0)
         .subscribe(pair -> livePresenter.addScore(pair.first, pair.second)));
 
+    subscriptions.add(viewLive.onRevive().subscribe(gameCoronaView -> {
+      List<NotificationModel> list = new ArrayList<>();
+      NotifView view = new NotifView(getBaseContext());
+      NotificationModel a =
+          NotificationUtils.getFbNotificationModel(this, new NotificationModel.Listener() {
+            @Override public void onError() {
+              gameCoronaView.errorRevive();
+            }
+
+            @Override public void onSuccess() {
+              gameCoronaView.successRevive();
+            }
+          });
+      list.add(a);
+      view.show(this, list);
+    }));
+
     subscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
       userInfosNotificationView.setCurrentGame(game);
 
@@ -996,8 +1004,8 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
     bundle.putString(TagManagerUtils.SCREEN, TagManagerUtils.LIVE);
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.UNKNOWN);
     tagManager.trackEvent(TagManagerUtils.Invites, bundle);
-    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.CALL, room.getLink(),
-        null, shouldOpenSMSDefault);
+    navigator.sendInviteToCall(this, TagManagerUtils.CALL, room.getLink(), null,
+        shouldOpenSMSDefault);
   }
 
   private void reRollTheDiceFromCallRoulette(boolean isFromOthers) {
@@ -1233,7 +1241,7 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
 
   @Override public void finish() {
     if (finished) return;
-    
+
     if (stateManager.shouldDisplay(StateManager.FIRST_LEAVE_ROOM)) {
       isFristLeaveRoom = true;
       stateManager.addTutorialKey(StateManager.FIRST_LEAVE_ROOM);

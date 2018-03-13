@@ -31,4 +31,6 @@ public interface GameMVPView extends MVPView {
   void onGameFile(GameFile gameFile);
   
   void onGameData(List<String> data);
+
+  void onUserBestScore(Score score);
 }

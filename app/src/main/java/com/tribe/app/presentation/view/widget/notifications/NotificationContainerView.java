@@ -23,10 +23,7 @@ import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.f2prateek.rx.preferences.BuildConfig;
 import com.f2prateek.rx.preferences.Preference;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.presentation.AndroidApplication;
@@ -40,6 +37,7 @@ import com.tribe.app.presentation.utils.preferences.MinutesOfCalls;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
 import com.tribe.app.presentation.view.listener.AnimationListenerAdapter;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.RemoteConfigManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -85,7 +83,7 @@ public class NotificationContainerView extends FrameLayout {
   private Unbinder unbinder;
   private Context context;
   private GestureDetectorCompat gestureScanner;
-  private FirebaseRemoteConfig firebaseRemoteConfig;
+  private RemoteConfigManager remoteConfigManager;
   private String unlockRollTheDiceSenderId;
 
   // OBSERVABLES
@@ -138,19 +136,10 @@ public class NotificationContainerView extends FrameLayout {
   }
 
   private void initRemoteConfig() {
-    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
-    FirebaseRemoteConfigSettings configSettings =
-        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
-            .build();
-    firebaseRemoteConfig.setConfigSettings(configSettings);
-    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        firebaseRemoteConfig.activateFetched();
-        String text =
-            firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_decline_action);
-        if (!text.isEmpty()) textDismiss.setText(text);
-      }
-    });
+    remoteConfigManager = RemoteConfigManager.getInstance(getContext());
+    String text =
+        remoteConfigManager.getString(Constants.wording_unlock_roll_the_dice_decline_action, "");
+    if (!text.isEmpty()) textDismiss.setText(text);
   }
 
   ///////////////////

@@ -104,7 +104,7 @@ public abstract class BaseActivity extends AppCompatActivity {
       isFristLeaveRoom = false;
       List<NotificationModel> list = new ArrayList<>();
       NotifView view = new NotifView(getBaseContext());
-      NotificationModel a = NotificationUtils.getFbNotificationModel(this);
+      NotificationModel a = NotificationUtils.getFbNotificationModel(this, null);
       list.add(a);
       view.show(this, list);
     }
@@ -121,7 +121,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     List<NotificationModel> list = new ArrayList<>();
     NotifView view = new NotifView(getBaseContext());
 
-    NotificationModel a = NotificationUtils.getFbNotificationModel(this);
+    NotificationModel a = NotificationUtils.getFbNotificationModel(this, null);
     list.add(a);
     if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
       NotificationModel b = NotificationUtils.getAvatarNotificationModel(this);

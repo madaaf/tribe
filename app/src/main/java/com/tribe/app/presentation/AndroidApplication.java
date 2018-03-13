@@ -47,6 +47,7 @@ import com.tribe.app.presentation.utils.TrophiesManager;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LauncherActivity;
+import com.tribe.app.presentation.view.utils.RemoteConfigManager;
 import com.tribe.tribelivesdk.facetracking.UlseeManager;
 import com.tribe.tribelivesdk.filters.Filter;
 import com.tribe.tribelivesdk.filters.lut3d.FilterManager;
@@ -102,6 +103,7 @@ public class AndroidApplication extends Application {
     initGameManager();
     JodaTimeAndroid.init(this);
     initZendesk();
+    initRemoteConfig();
   }
 
   private void initZendesk() {
@@ -553,6 +555,10 @@ public class AndroidApplication extends Application {
 
   private void initTrophiesManager() {
     TrophiesManager.getInstance(this);
+  }
+
+  private void initRemoteConfig() {
+    RemoteConfigManager.getInstance(this);
   }
 
   private class SampleAppStateListener implements AppStateListener {

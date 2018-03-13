@@ -72,4 +72,8 @@ public class DiskGameDataStore implements GameDataStore {
 
     return null;
   }
+
+  @Override public Observable<ScoreRealm> getUserBestScore(String gameId) {
+    return null;
+  }
 }

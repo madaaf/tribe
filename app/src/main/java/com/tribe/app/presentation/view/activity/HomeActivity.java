@@ -28,10 +28,7 @@ import com.facebook.accountkit.AccountKitLoginResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tbruyelle.rxpermissions.RxPermissions;
-import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
@@ -88,6 +85,7 @@ import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.RemoteConfigManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -203,7 +201,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       false, finish = false, searchViewDisplayed = false, shouldNavigateToChat = false,
       notificationReceiverSupportRegistered = false;
   private RxPermissions rxPermissions;
-  private FirebaseRemoteConfig firebaseRemoteConfig;
+  private RemoteConfigManager remoteConfigManager;
   private Shortcut supportShortcut = createShortcutSupport();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -499,9 +497,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
               return new Triplet<LabelType, Shortcut, HomeAdapterInterface>(labelType, shortcut,
                   recipient);
             }))
-        .filter(
-            pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) || pair.first.getTypeDef()
-                .equals(LabelType.BLOCK_HIDE))
+        .filter(pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) ||
+            pair.first.getTypeDef().equals(LabelType.BLOCK_HIDE))
         .flatMap(pair -> {
           if (pair.first.getTypeDef().equals(LabelType.CUSTOMIZE)) {
             return DialogFactory.showBottomSheetForCustomizeShortcut(this);
@@ -712,23 +709,13 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   private void displayFacebookNotification() {
     List<NotificationModel> list = new ArrayList<>();
     NotifView view = new NotifView(getBaseContext());
-    NotificationModel a = NotificationUtils.getFbNotificationModel(this);
+    NotificationModel a = NotificationUtils.getFbNotificationModel(this, null);
     list.add(a);
     view.show(this, list);
   }
 
   private void initRemoteConfig() {
-    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
-    FirebaseRemoteConfigSettings configSettings =
-        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
-            .build();
-    firebaseRemoteConfig.setConfigSettings(configSettings);
-
-    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        firebaseRemoteConfig.activateFetched();
-      }
-    });
+    remoteConfigManager = RemoteConfigManager.getInstance(this);
   }
 
   private void initDependencyInjector() {
@@ -956,8 +943,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
               .filter(aBoolean -> aBoolean)
               .subscribe());
       isBannedUser = true;
-    } else if (user.getRandom_banned_until() != null && !dateUtils.isBefore(
-        user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
+    } else if (user.getRandom_banned_until() != null &&
+        !dateUtils.isBefore(user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
 
       subscriptions.add(
           DialogFactory.dialog(this, getString(R.string.error_just_banned_temporary_title),
@@ -983,8 +970,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
   @Override
   public void onCreateRoom(Room room, String feature, String phone, boolean shouldOpenSMS) {
-    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, room.getLink(),
-        phone, shouldOpenSMS);
+    navigator.sendInviteToCall(this, TagManagerUtils.INVITE, room.getLink(), phone, shouldOpenSMS);
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -1076,8 +1062,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
-        && !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) &&
+        !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(
@@ -1110,8 +1096,9 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
     if (requestCode == Navigator.FROM_PROFILE) {
       topBarContainer.reloadUserUI();
-    } else if (requestCode == Navigator.FROM_CHAT && data != null && data.hasExtra(
-        ChatActivity.EXTRA_SHORTCUT_ID)) {
+    } else if (requestCode == Navigator.FROM_CHAT &&
+        data != null &&
+        data.hasExtra(ChatActivity.EXTRA_SHORTCUT_ID)) {
       homeGridPresenter.updateShortcutLeaveOnlineUntil(
           data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
     } else if (requestCode == Navigator.FROM_NEW_GAME && data != null) {
@@ -1132,16 +1119,19 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       //        }
       //      }
       //    }));
-    } else if (requestCode == Navigator.FROM_LIVE && data != null && data.hasExtra(
-        LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
+    } else if (requestCode == Navigator.FROM_LIVE &&
+        data != null &&
+        data.hasExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
       HashSet<String> userIds =
           (HashSet<String>) data.getSerializableExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT);
       homeGridPresenter.createShortcut(userIds.toArray(new String[userIds.size()]));
-    } else if (requestCode == Navigator.FROM_LIVE && data != null && data.hasExtra(
-        LiveActivity.LAUNCH_SEARCH)) {
+    } else if (requestCode == Navigator.FROM_LIVE &&
+        data != null &&
+        data.hasExtra(LiveActivity.LAUNCH_SEARCH)) {
       topBarContainer.openSearch();
-    } else if (requestCode == Navigator.FROM_LIVE && data != null && data.hasExtra(
-        LiveActivity.LAUNCH_DICE)) {
+    } else if (requestCode == Navigator.FROM_LIVE &&
+        data != null &&
+        data.hasExtra(LiveActivity.LAUNCH_DICE)) {
       navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, null);
     } else if (data != null) {
       if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {
@@ -1187,10 +1177,10 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
         if (position < 0 || position > recipientList.size() - 1) return false;
-        return position == 0
-            || recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE
-            && recipientList.get(position).getHomeSectionType() != recipientList.get(position - 1)
-            .getHomeSectionType();
+        return position == 0 ||
+            recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE &&
+                recipientList.get(position).getHomeSectionType() !=
+                    recipientList.get(position - 1).getHomeSectionType();
       }
 
       @Override public int getSectionType(int position) {
@@ -1246,10 +1236,10 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      if (notificationPayload != null
-          && !StringUtils.isEmpty(notificationPayload.getUserId())
-          && notificationPayload.getUserId().equals(Shortcut.SUPPORT)
-          && supportShortcut != null) {
+      if (notificationPayload != null &&
+          !StringUtils.isEmpty(notificationPayload.getUserId()) &&
+          notificationPayload.getUserId().equals(Shortcut.SUPPORT) &&
+          supportShortcut != null) {
 
         supportShortcut.setRead(false);
         supportShortcut.setSingle(true);

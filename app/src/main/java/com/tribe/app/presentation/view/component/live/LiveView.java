@@ -42,6 +42,7 @@ import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.WebSocketUrlOverride;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.utils.Degrees;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.DoubleUtils;
@@ -1470,6 +1471,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Pair<String, Integer>> onAddScore() {
     return viewGameManager.onAddScore();
+  }
+
+  public Observable<GameCoronaView> onRevive() {
+    return viewGameManager.onRevive();
   }
 }
 

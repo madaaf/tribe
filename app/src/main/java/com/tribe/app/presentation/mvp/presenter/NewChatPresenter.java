@@ -11,6 +11,7 @@ import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.NewChatMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.view.NotificationModel;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -66,12 +67,12 @@ public class NewChatPresenter implements Presenter {
     updateUser.execute(updateUserSubscriber);
   }
 
-  public void loadFBContactsInvite() {
+  public void loadFBContactsInvite(NotificationModel.Listener listener) {
     if (fbContactListInviteSubscriber != null) {
       fbContactListInviteSubscriber.unsubscribe();
     }
 
-    fbContactListInviteSubscriber = new FBContactListInviteSubscriber();
+    fbContactListInviteSubscriber = new FBContactListInviteSubscriber(listener);
     getDiskFBContactInviteList.execute(fbContactListInviteSubscriber);
   }
 
@@ -85,15 +86,22 @@ public class NewChatPresenter implements Presenter {
 
   private final class FBContactListInviteSubscriber extends DefaultSubscriber<List<Contact>> {
 
+    private NotificationModel.Listener listener;
+
+    public FBContactListInviteSubscriber(NotificationModel.Listener listener) {
+      this.listener = listener;
+    }
+
     @Override public void onCompleted() {
     }
 
     @Override public void onError(Throwable e) {
-
+      if (e != null && listener != null) listener.onError();
     }
 
     @Override public void onNext(List<Contact> contactList) {
       chatMVPView.onLoadFBContactsInvite(contactList);
+      if (listener != null) listener.onSuccess();
     }
   }
 

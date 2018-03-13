@@ -84,4 +84,8 @@ import rx.Observable;
     return gameDataStore.getGameFile(url)
         .map(gameFileRealm -> gameFileRealmDataMapper.transform(gameFileRealm));
   }
+
+  @Override public Observable<Score> getUserBestScore(String gameId) {
+    return null;
+  }
 }

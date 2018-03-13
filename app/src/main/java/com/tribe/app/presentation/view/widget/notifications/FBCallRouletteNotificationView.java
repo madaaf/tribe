@@ -14,15 +14,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import com.f2prateek.rx.preferences.BuildConfig;
 import com.facebook.AccessToken;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.presentation.mvp.view.FBInfoMVPView;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.RemoteConfigManager;
 import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import timber.log.Timber;
@@ -44,7 +42,7 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
   private LayoutInflater inflater;
 
   // VARIABLES
-  private FirebaseRemoteConfig firebaseRemoteConfig;
+  private RemoteConfigManager remoteConfigManager;
   private Unbinder unbinder;
   private String unlockRollTheDiceSenderId;
 
@@ -99,29 +97,21 @@ public class FBCallRouletteNotificationView extends LifeNotification implements 
   }
 
   private void initRemoteConfig() {
-    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
-    FirebaseRemoteConfigSettings configSettings =
-        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
-            .build();
-    firebaseRemoteConfig.setConfigSettings(configSettings);
-    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        firebaseRemoteConfig.activateFetched();
-        setLabelFromFirebase();
-      }
-    });
+    remoteConfigManager = RemoteConfigManager.getInstance(getContext());
+    setLabelFromFirebase();
   }
 
   private void setLabelFromFirebase() {
-    String txt1 = firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_title);
+    String txt1 = remoteConfigManager.getString(Constants.wording_unlock_roll_the_dice_title, "");
     if (!txt1.isEmpty()) txtLabel.setText(txt1);
     String txt2 =
-        firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_description);
+        remoteConfigManager.getString(Constants.wording_unlock_roll_the_dice_description, "");
     if (!txt2.isEmpty()) txtSubLabel.setText(txt2);
     String txt3 =
-        firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_facebook_action);
+        remoteConfigManager.getString(Constants.wording_unlock_roll_the_dice_facebook_action, "");
     if (!txt3.isEmpty()) txtAction.setText(txt3);
-    String txt4 = firebaseRemoteConfig.getString(Constants.wording_unlock_roll_the_dice_disclaimer);
+    String txt4 =
+        remoteConfigManager.getString(Constants.wording_unlock_roll_the_dice_disclaimer, "");
     if (!txt4.isEmpty()) txtBottom.setText(txt4);
   }
 

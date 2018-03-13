@@ -51,4 +51,8 @@ public class GameMVPViewAdapter implements GameMVPView {
   @Override public void onGameData(List<String> data) {
 
   }
+
+  @Override public void onUserBestScore(Score score) {
+
+  }
 }

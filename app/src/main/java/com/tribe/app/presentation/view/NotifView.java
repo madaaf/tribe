@@ -149,11 +149,11 @@ public class NotifView extends FrameLayout {
         case NotificationModel.POPUP_FACEBOOK:
           if (!FacebookUtils.isLoggedIn()) {
             subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-              newChatPresenter.loadFBContactsInvite();
+              newChatPresenter.loadFBContactsInvite(notificationModel.getListener());
               hideNextNotif();
             }));
           } else {
-            newChatPresenter.loadFBContactsInvite();
+            newChatPresenter.loadFBContactsInvite(notificationModel.getListener());
             hideNextNotif();
           }
           break;
@@ -179,8 +179,11 @@ public class NotifView extends FrameLayout {
           String[] userIds = new String[1];
           userIds[0] = score.getUser().getId();
           String intent = (score.isAbove()) ? MessagePoke.INTENT_FUN : MessagePoke.INTENT_JEALOUS;
-          messagePresenter.createPoke(userIds, score.getEmoticon(), score.getGame().getId(), intent);
-          Toast.makeText(context, context.getString(R.string.poke_sent_confirmation, score.getUser().getDisplayName()), Toast.LENGTH_SHORT).show();
+          messagePresenter.createPoke(userIds, score.getEmoticon(), score.getGame().getId(),
+              intent);
+          Toast.makeText(context,
+              context.getString(R.string.poke_sent_confirmation, score.getUser().getDisplayName()),
+              Toast.LENGTH_SHORT).show();
           hideNextNotif();
           break;
       }

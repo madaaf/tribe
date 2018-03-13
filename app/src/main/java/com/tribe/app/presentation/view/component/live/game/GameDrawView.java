@@ -28,6 +28,7 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameDraw;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -257,11 +258,13 @@ public class GameDrawView extends GameView {
     nextDraw();
   }
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> map,
+  @Override public void start(Game game, Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs, Observable<Map<String, TribeGuest>> map,
       Observable<Map<String, TribeGuest>> mapInvited,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    super.start(game, map, mapInvited, liveViewsObservable, userId);
+    super.start(game, masterMapObs, map, mapInvited, liveViewsObservable, userId);
     gameDraw = (GameDraw) game;
+    currentMasterId = userId;
+    game.setCurrentMaster(peerMap.get(userId));
     Timber.d("start");
   }
 
