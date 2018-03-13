@@ -25,4 +25,6 @@ public interface ContactInterface {
   void setNew(boolean isNew);
 
   boolean isNew();
+
+  void setFriends(RealmList<String> friends);
 }

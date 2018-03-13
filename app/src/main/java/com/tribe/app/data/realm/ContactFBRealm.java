@@ -18,6 +18,8 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
   private int howManyFriends = 0;
   private boolean isNew = false;
   private boolean hasApp = false;
+  private RealmList<String> friends;
+
 
   @Override public String getId() {
     return id;
@@ -49,6 +51,10 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
 
   @Override public boolean isNew() {
     return isNew;
+  }
+
+  @Override public void setFriends(RealmList<String> friends) {
+    this.friends = friends;
   }
 
   @Override public void setNew(boolean aNew) {

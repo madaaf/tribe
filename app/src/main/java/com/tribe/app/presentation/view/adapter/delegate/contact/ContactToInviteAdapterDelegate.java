@@ -1,13 +1,18 @@
 package com.tribe.app.presentation.view.adapter.delegate.contact;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.TextViewCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.TypefaceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.tokenautocomplete.CustomTypefaceSpan;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
@@ -68,8 +73,27 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
     vh.txtName.setText(contact.getName());
     if (contact.getHowManyFriends() > 0) {
       vh.txtDetails.setVisibility(View.VISIBLE);
-      vh.txtDetails.setText(context.getString(R.string.contacts_section_addressbook_friends_in_app,
-          contact.getHowManyFriends()));
+      //vh.txtDetails.setText(context.getString(R.string.contacts_section_addressbook_friends_in_app, contact.getHowManyFriends()));
+
+      Typeface fontBold = Typeface.createFromAsset(context.getAssets(), "ProximaNovaSoft-Bold.ttf");
+      //Typeface fontRegular = Typeface.createFromAsset(context.getAssets(), "ProximaNovaSoft-Regular.otf");
+
+      TypefaceSpan robotoRegularSpan = new CustomTypefaceSpan("", fontBold);
+
+      String m1 = context.getString(R.string.contacts_section_addressbook_friends_in_app_prefix);
+      String m2 = context.getString(R.string.contacts_section_addressbook_friends_in_app_friends,
+          contact.getHowManyFriends());
+      String m3 = context.getString(R.string.contacts_section_addressbook_friends_in_app_suffix);
+      String m = m1 + m2 + " " + m3;
+
+      SpannableStringBuilder finalSpan = new SpannableStringBuilder(m);
+      finalSpan.setSpan(robotoRegularSpan, m.indexOf(m2), m.indexOf(m2) + m2.length(),
+          Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+      vh.txtDetails.setText(finalSpan);
+
+      //vh.txtDetails.setText(context.getString(R.string.contacts_section_addressbook_friends_in_app, contact.getHowManyFriends()));
+
     } else {
       vh.txtDetails.setVisibility(View.GONE);
     }

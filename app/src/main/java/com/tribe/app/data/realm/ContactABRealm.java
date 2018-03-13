@@ -22,12 +22,17 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
   private boolean isNew = false;
   private String firstName;
   private String lastName;
+  private List<String> friends;
 
   @Ignore private List<String> emails;
 
   public ContactABRealm() {
 
   }
+  @Override public void setFriends(List<String> friends) {
+    this.friends = friends;
+  }
+
 
   @Override public String getId() {
     return id;
