@@ -48,6 +48,7 @@ public class TagManagerUtils {
       "KPI_Onboarding_WalkthroughCompleted";
   public static final String Technical_Error = "Technical_Error";
   public static final String Games = "Games";
+  public static final String Revive = "Revive";
 
   /**
    * ERRORS
@@ -120,6 +121,7 @@ public class TagManagerUtils {
   public static final String TYPE_SOLO = "solo";
   public static final String TYPE_MULTI = "multiplayer";
   public static final String ROUND_COUNT = "round_count";
+  public static final String SCORE = "score";
 
   public static final String tagGameCountSuffix = "_game_count";
   public static final String tagGameDurationSuffix = "_game_duration";

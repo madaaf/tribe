@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
@@ -22,6 +23,8 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.utils.StringUtils;
+import com.tribe.app.presentation.utils.analytics.TagManager;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.unzip.RxUnzip;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
@@ -29,6 +32,7 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.RemoteConfigManager;
+import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -52,9 +56,14 @@ import timber.log.Timber;
 
 public class GameCoronaView extends GameView {
 
+  protected static final String SCORES_KEY = "scores";
+  protected static final String CONTEXT_KEY = "context";
+
   @Inject AccessToken accessToken;
 
   @Inject GamePresenter gamePresenter;
+
+  @Inject TagManager tagManager;
 
   @Inject RxUnzip rxUnzip;
 
@@ -67,6 +76,7 @@ public class GameCoronaView extends GameView {
   private Handler mainHandler;
   private GameMVPViewAdapter gameMVPViewAdapter;
   private RemoteConfigManager remoteConfigManager;
+  private Map<String, Integer> mapScores = new HashMap<>();
 
   // OBSERVABLES
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
@@ -271,7 +281,7 @@ public class GameCoronaView extends GameView {
               onRevive.onNext(this);
             }
           } else if (event.equals("scoresUpdated")) {
-            Map<String, Integer> mapScores = new HashMap<>();
+            mapScores.clear();
             Hashtable<String, Double> scores = (Hashtable<String, Double>) hashtable.get("scores");
             for (String id : scores.keySet()) mapScores.put(id, scores.get(id).intValue());
             updateLiveScores(mapScores, null);
@@ -282,6 +292,20 @@ public class GameCoronaView extends GameView {
             sendMessage((JSONObject) getBroadcastPayload(
                 (Hashtable<Object, Object>) hashtable.get("message"), false),
                 hashtable.get("to").toString());
+          } else if (event.equals("contextGame")) {
+            Timber.d("Hashtable : " + hashtable);
+            Hashtable<String, Double> scores =
+                (Hashtable<String, Double>) ((Hashtable<Object, Object>) hashtable.get(CONTEXT_KEY))
+                    .get(SCORES_KEY);
+            Map<String, Integer> contextScores = new HashMap<>();
+            for (String key : scores.keySet()) {
+              contextScores.put(key, scores.get(key).intValue());
+            }
+            game.getContextMap().put(SCORES_KEY, contextScores);
+
+            JSONObject jsonObject = getCompleteContextPayload(SCORES_KEY, game.getContextMap());
+            webRTCRoom.sendToPeers(jsonObject, true);
+            receiveMessage(null, jsonObject);
           }
         });
       }
@@ -323,6 +347,46 @@ public class GameCoronaView extends GameView {
   /**
    * JSON PAYLOAD
    */
+
+  private JSONObject getContextPayload(Map<String, Integer> context) {
+    JSONObject obj = new JSONObject();
+    JSONObject gameContext = new JSONObject();
+    JsonUtils.jsonPut(gameContext, Game.CONTEXT, computeScoreMap(context, true));
+    JsonUtils.jsonPut(gameContext, Game.ID, game.getId());
+    JsonUtils.jsonPut(obj, WebRTCRoom.MESSAGE_GAME, gameContext);
+    return obj;
+  }
+
+  private JSONObject getCompleteContextPayload(String key, Map<String, Object> context) {
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    Map<String, Integer> scoreMap = (Map<String, Integer>) context.get(key);
+    JsonUtils.jsonPut(game, key, computeScoreMap(scoreMap, false));
+    JsonUtils.jsonPut(game, CONTEXT_KEY, key);
+    JsonUtils.jsonPut(obj, this.game.getId(), game);
+    return obj;
+  }
+
+  private JSONObject computeScoreMap(Map<String, Integer> scoreMap, boolean includeId) {
+    JSONObject json = new JSONObject();
+    JSONObject scoresJson = new JSONObject();
+
+    try {
+      for (String scoreKeyId : scoreMap.keySet()) {
+        scoresJson.put(scoreKeyId, scoreMap.get(scoreKeyId));
+      }
+
+      json.put(SCORES_KEY, scoresJson);
+    } catch (JSONException ex) {
+      ex.printStackTrace();
+    }
+
+    if (includeId) {
+      return json;
+    } else {
+      return scoresJson;
+    }
+  }
 
   private Object getBroadcastPayload(Hashtable<Object, Object> hashtable, boolean isArray) {
     if (isArray) {
@@ -388,7 +452,10 @@ public class GameCoronaView extends GameView {
   }
 
   public void successRevive() {
-
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.NAME, game.getId());
+    bundle.putInt(TagManagerUtils.SCORE, mapScores.get(currentUser.getId()));
+    tagManager.trackEvent(TagManagerUtils.Revive, bundle);
   }
 
   public void errorRevive() {
