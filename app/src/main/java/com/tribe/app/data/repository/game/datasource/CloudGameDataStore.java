@@ -275,8 +275,9 @@ public class CloudGameDataStore implements GameDataStore {
   }
 
   @Override public Observable<ScoreRealm> getUserBestScore(String gameId) {
+    String userIdsListFormated = "\"" + accessToken.getUserId() + "\"";
     return this.tribeApi.getUserListInfos(
-        context.getString(R.string.lookup_userid, accessToken.getUserId(),
+        context.getString(R.string.lookup_userid, userIdsListFormated,
             context.getString(R.string.userfragment_leaderboard,
                 JsonUtils.arrayToJson(GameManager.playableGames)))).map(userRealms -> {
       List<ScoreRealm> realmList = new ArrayList<>();

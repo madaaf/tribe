@@ -22,6 +22,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -220,7 +221,7 @@ public class NotificationUtils {
     return a;
   }
 
-  public static void displayUplaodAvatarNotification(Context context, Score score) {
+  public static void displayPokeNotificationModel(Context context, Score score) {
     List<NotificationModel> list = new ArrayList<>();
     NotifView view = new NotifView(context);
 
@@ -288,8 +289,13 @@ public class NotificationUtils {
     if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
       list.add(NotificationUtils.getFbNotificationModel(context, null));
 
-      if (currentUser.getProfilePicture() == null || currentUser.getProfilePicture().isEmpty()) {
-        list.add(NotificationUtils.getAvatarNotificationModel(context));
+      Date now = new Date();
+      if ((currentUser.getProfilePicture() == null ||
+          currentUser.getProfilePicture().isEmpty() ||
+          currentUser.getProfilePicture().equals("http://no")) &&
+          (currentUser.getCreatedAt() != null && (now.getTime() - currentUser.getCreatedAt().getTime()) > 24 * 60 * 60 * 1000)) {
+        NotificationModel b = NotificationUtils.getAvatarNotificationModel(context);
+        list.add(b);
       }
     }
 
@@ -297,13 +303,5 @@ public class NotificationUtils {
     stateManager.addTutorialKey(StateManager.FIRST_CHALLENGE_POPUP);
 
     return list;
-  }
-
-  public static void displayUplaodAvatarNotification(Context context) {
-    List<NotificationModel> list = new ArrayList<>();
-    NotifView view = new NotifView(context);
-    NotificationModel a = NotificationUtils.getAvatarNotificationModel(context);
-    list.add(a);
-    view.show((Activity) context, list);
   }
 }

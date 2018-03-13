@@ -139,7 +139,7 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
 
     vh.pokeEmoji.setOnClickListener(v -> {
       if (stateManager.shouldDisplay(StateManager.FIRST_POKE)) {
-        NotificationUtils.displayUplaodAvatarNotification(context, score);
+        NotificationUtils.displayPokeNotificationModel(context, score);
         stateManager.addTutorialKey(StateManager.FIRST_POKE);
         vh.pokeEmoji.setText(
             EmojiParser.demojizedText(context.getString(R.string.poke_emoji_disabled)));

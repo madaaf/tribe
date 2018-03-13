@@ -77,6 +77,7 @@ public class GameCoronaView extends GameView {
   private GameMVPViewAdapter gameMVPViewAdapter;
   private RemoteConfigManager remoteConfigManager;
   private Map<String, Integer> mapScores = new HashMap<>();
+  private Score bestScore = null;
 
   // OBSERVABLES
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
@@ -94,8 +95,9 @@ public class GameCoronaView extends GameView {
       @Override public void onUserBestScore(Score score) {
         Hashtable<Object, Object> table = new Hashtable();
         table.put("name", "bestScore");
-        table.put("score", score.getValue());
+        table.put("score", (score == null) ? 0 : score.getValue());
         table.put("gameId", game.getId());
+        bestScore = score;
         coronaView.sendEvent(table);
       }
 
@@ -240,6 +242,7 @@ public class GameCoronaView extends GameView {
     coronaView.setCoronaEventListener((coronaView, hashtable) -> {
       //Timber.d("eventListener fired : " + hashtable);
       String event = (String) hashtable.get("event");
+      if (game == null) return null;
 
       if (event.equals("reviveData")) {
         int disableDurationSec =
@@ -258,7 +261,10 @@ public class GameCoronaView extends GameView {
       } else if (event.equals("getBestScore")) {
         if (currentUser.getScoreForGame(game.getId()) != null) {
           return currentUser.getScoreForGame(game.getId()).getValue();
-        } else {
+        }
+        //else if (bestScore != null) {
+        //  return bestScore.getValue();
+        else {
           gamePresenter.getUserBestScore(game.getId());
         }
       } else {
@@ -305,7 +311,6 @@ public class GameCoronaView extends GameView {
 
             JSONObject jsonObject = getCompleteContextPayload(SCORES_KEY, game.getContextMap());
             webRTCRoom.sendToPeers(jsonObject, true);
-            receiveMessage(null, jsonObject);
           }
         });
       }
@@ -333,7 +338,7 @@ public class GameCoronaView extends GameView {
   }
 
   private void sendMessage(JSONObject obj, String id) {
-    if (webRTCRoom == null) return;
+    if (webRTCRoom == null || game == null) return;
 
     JSONObject message = new JSONObject();
     JsonUtils.jsonPut(message, this.game.getId(), obj);
@@ -437,13 +442,13 @@ public class GameCoronaView extends GameView {
   }
 
   @Override public void stop() {
+    coronaView.setCoronaEventListener(null);
+    coronaView.destroy();
     super.stop();
   }
 
   @Override public void dispose() {
-
     Timber.d("dispose");
-    coronaView.destroy();
     super.dispose();
   }
 
