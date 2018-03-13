@@ -17,18 +17,18 @@ public class LookupObject {
   @SerializedName("ln") private String lastName;
   @SerializedName("fn") private String firstName;
   @SerializedName("e") private String email;
-  @SerializedName("ff") private List<String> friends;
+  @SerializedName("ff") private List<String> commonFriends;
 
-  private List<String> friendsNameList;
+  private List<String> commonFriendsNameList;
 
   private UserRealm userRealm;
 
-  public List<String> getFriends() {
-    return friends;
+  public List<String> getCommonFriends() {
+    return commonFriends;
   }
 
-  public void setFriends(List<String> friends) {
-    this.friends = friends;
+  public void setCommonFriends(List<String> commonFriends) {
+    this.commonFriends = commonFriends;
   }
 
   public String getPhone() {
@@ -64,14 +64,14 @@ public class LookupObject {
   }
 
   public void addFriendsDisplayName(String displayName) {
-    if(friendsNameList==null){
-      friendsNameList = new ArrayList<>();
+    if(commonFriendsNameList==null){
+      commonFriendsNameList = new ArrayList<>();
     }
-    friendsNameList.add(displayName);
+    commonFriendsNameList.add(displayName);
   }
 
-  public List<String> getFriendsNameList() {
-    return friendsNameList;
+  public List<String> getcommonFriendsNameList() {
+    return commonFriendsNameList;
   }
 
 }

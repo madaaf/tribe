@@ -9,8 +9,8 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center_vertical"
-      android:layout_marginStart="@dimen/horizontal_margin"
       android:layout_marginEnd="40dp"
+      android:layout_marginStart="@dimen/horizontal_margin"
       android:orientation="vertical"
       >
     <com.tribe.app.presentation.view.widget.TextViewFont

@@ -16,7 +16,7 @@ public class Contact implements Comparable<Contact>, HomeAdapterInterface {
   protected String name;
   protected List<User> userList;
   protected int howManyFriends;
-  protected List<String> friendsNameList;
+  protected List<String> commonFriendsNameList;
   protected boolean isNew;
 
   public Contact(String id) {
@@ -97,12 +97,12 @@ public class Contact implements Comparable<Contact>, HomeAdapterInterface {
     this.howManyFriends = howManyFriends;
   }
 
-  public void setFriendsNameList(List<String> friendsNameList) {
-    this.friendsNameList = friendsNameList;
+  public void setcommonFriendsNameList(List<String> commonFriendsNameList) {
+    this.commonFriendsNameList = commonFriendsNameList;
   }
 
-  public List<String> getFriendsNameList() {
-    return friendsNameList;
+  public List<String> getcommonFriendsNameList() {
+    return commonFriendsNameList;
   }
 
   public boolean isNew() {

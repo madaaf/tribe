@@ -8,6 +8,8 @@ import io.realm.RealmObject;
 
 public class StringRealm extends RealmObject {
 
+  private String content;
+
   public StringRealm() {
   }
 
@@ -19,5 +21,5 @@ public class StringRealm extends RealmObject {
     this.content = content;
   }
 
-  private String content;
+
 }

@@ -23,8 +23,8 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
   private boolean isNew = false;
   private String firstName;
   private String lastName;
-  private RealmList<StringRealm> friends;
-  private RealmList<StringRealm> friendsNameList;
+  private RealmList<StringRealm> commonFriends;
+  private RealmList<StringRealm> commonFriendsNameList;
 
   @Ignore private List<String> emails;
 
@@ -32,32 +32,32 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
 
   }
 
-  @Override public void setFriends(List<String> list) {
-    this.friends = new RealmList<>();
+  @Override public void setCommonFriends(List<String> list) {
+    this.commonFriends = new RealmList<>();
     if (list != null) {
       for (String friend : list) {
         StringRealm stringRealm = new StringRealm();
         stringRealm.setContent(friend);
-        friends.add(stringRealm);
+        commonFriends.add(stringRealm);
       }
     }
   }
 
-  @Override public void setFriendsNameList(List<String> list) {
-    this.friendsNameList = new RealmList<>();
+  @Override public void setCommonFriendsNameList(List<String> list) {
+    this.commonFriendsNameList = new RealmList<>();
     if (list != null) {
       for (String friend : list) {
         StringRealm stringRealm = new StringRealm();
         stringRealm.setContent(friend);
-        friendsNameList.add(stringRealm);
+        commonFriendsNameList.add(stringRealm);
       }
     }
   }
 
-  public List<String> getFriendsNameList() {
+  public List<String> getcommonFriendsNameList() {
     List<String> list = new ArrayList<>();
-    if (friendsNameList != null) {
-      for (StringRealm stringRealm : friendsNameList) {
+    if (commonFriendsNameList != null) {
+      for (StringRealm stringRealm : commonFriendsNameList) {
         list.add(stringRealm.getContent());
       }
     }

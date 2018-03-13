@@ -19,8 +19,8 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
   private int howManyFriends = 0;
   private boolean isNew = false;
   private boolean hasApp = false;
-  private RealmList<StringRealm> friends;
-  private RealmList<StringRealm> friendsNameList;
+  private RealmList<StringRealm> commonFriends;
+  private RealmList<StringRealm> commonFriendsNameList;
 
   @Override public String getId() {
     return id;
@@ -54,24 +54,24 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
     return isNew;
   }
 
-  @Override public void setFriends(List<String> list) {
-    this.friends = new RealmList<>();
+  @Override public void setCommonFriends(List<String> list) {
+    this.commonFriends = new RealmList<>();
     if (list != null) {
       for (String friend : list) {
         StringRealm stringRealm = new StringRealm();
         stringRealm.setContent(friend);
-        friends.add(stringRealm);
+        commonFriends.add(stringRealm);
       }
     }
   }
 
-  @Override public void setFriendsNameList(List<String> list) {
-    this.friendsNameList = new RealmList<>();
+  @Override public void setCommonFriendsNameList(List<String> list) {
+    this.commonFriendsNameList = new RealmList<>();
     if (list != null) {
       for (String friend : list) {
         StringRealm stringRealm = new StringRealm();
         stringRealm.setContent(friend);
-        friendsNameList.add(stringRealm);
+        commonFriendsNameList.add(stringRealm);
       }
     }
   }
@@ -88,10 +88,10 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
     return howManyFriends;
   }
 
-  public List<String> getFriendsNameList() {
+  public List<String> getcommonFriendsNameList() {
     List<String> list = new ArrayList<>();
-    if (friendsNameList != null) {
-      for (StringRealm stringRealm : friendsNameList) {
+    if (commonFriendsNameList != null) {
+      for (StringRealm stringRealm : commonFriendsNameList) {
         list.add(stringRealm.getContent());
       }
     }

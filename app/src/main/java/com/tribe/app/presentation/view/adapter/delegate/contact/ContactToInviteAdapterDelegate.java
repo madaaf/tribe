@@ -88,11 +88,11 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
 
       String m = m1 + " " + m2 + " " + m3 + " ";
       Boolean haveCommonFriend =
-          contact.getFriendsNameList() != null && !contact.getFriendsNameList().isEmpty();
+          contact.getcommonFriendsNameList() != null && !contact.getcommonFriendsNameList().isEmpty();
       if (haveCommonFriend) {
-        for (int i = 0; i < contact.getFriendsNameList().size(); i++) {
-          String name = contact.getFriendsNameList().get(i);
-          if (i == contact.getFriendsNameList().size() - 1) {
+        for (int i = 0; i < contact.getcommonFriendsNameList().size(); i++) {
+          String name = contact.getcommonFriendsNameList().get(i);
+          if (i == contact.getcommonFriendsNameList().size() - 1) {
             friendsList.append(name);
           } else {
             friendsList.append(name).append(", ");

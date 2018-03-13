@@ -454,10 +454,10 @@ public class CloudUserDataStore implements UserDataStore {
             List<String> friendsDisplayName = new ArrayList<>();
 
             for (LookupObject lookupObject : lookupObjects) {
-              if (lookupObject != null && lookupObject.getFriends() != null) {
+              if (lookupObject != null && lookupObject.getCommonFriends() != null) {
                 for (ShortcutRealm sh : currentUser.getShortcuts()) {
                   for (UserRealm u : sh.getMembers()) {
-                    if (lookupObject.getFriends().contains(u.getId())) {
+                    if (lookupObject.getCommonFriends().contains(u.getId())) {
                       friendsDisplayName.add(u.getDisplayName());
                       lookupObject.addFriendsDisplayName(u.getDisplayName());
                     }
@@ -465,7 +465,6 @@ public class CloudUserDataStore implements UserDataStore {
                 }
               }
             }
-            Timber.e("DISPLAY NAM E" + friendsDisplayName.toString());
 
             if (lookupFBResult != null && lookupFBResult.getLookup() != null) {
               for (int i = 0; i < lookupFBResult.getLookup().size(); i++) {
@@ -534,8 +533,8 @@ public class CloudUserDataStore implements UserDataStore {
             } else {
               ci.setHowManyFriends(lookupObject.getHowManyFriends());
             }
-            ci.setFriendsNameList(lookupObject.getFriendsNameList());
-            ci.setFriends(lookupObject.getFriends());
+            ci.setCommonFriendsNameList(lookupObject.getcommonFriendsNameList());
+            ci.setCommonFriends(lookupObject.getCommonFriends());
             ci.setPhone(lookupObject.getPhone());
           }
         }

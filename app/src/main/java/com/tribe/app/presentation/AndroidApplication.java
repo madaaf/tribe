@@ -470,6 +470,19 @@ public class AndroidApplication extends Application {
                   .addField("progress", int.class)
                   .addField("totalSize", int.class);
             }
+                     if (schema.get("StringRealm") == null) {
+              schema.create("StringRealm").addField("content", String.class);
+            }
+
+            schema.get("ContactABRealm")
+                .addRealmListField("commonFriends", schema.get("StringRealm"));
+            schema.get("ContactABRealm")
+                .addRealmListField("commonFriendsNameList", schema.get("StringRealm"));
+            schema.get("ContactFBRealm")
+                .addRealmListField("commonFriends", schema.get("StringRealm"));
+            schema.get("ContactFBRealm")
+                .addRealmListField("commonFriendsNameList", schema.get("StringRealm"));
+            oldVersion++;
           }
         })
         .build();
