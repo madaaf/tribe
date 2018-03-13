@@ -450,7 +450,22 @@ public class CloudUserDataStore implements UserDataStore {
             LookupHolder lookupHolder = new LookupHolder();
             lookupHolder.setContactPhoneList(phones);
             lookupHolder.setLookupObjectList(lookupObjects);
-            lookupObjects.get(3).getFriends(); // SOEF
+
+            List<String> friendsDisplayName = new ArrayList<>();
+
+            for (LookupObject lookupObject : lookupObjects) {
+              if (lookupObject != null && lookupObject.getFriends() != null) {
+                for (ShortcutRealm sh : currentUser.getShortcuts()) {
+                  for (UserRealm u : sh.getMembers()) {
+                    if (lookupObject.getFriends().contains(u.getId())) {
+                      friendsDisplayName.add(u.getDisplayName());
+                      lookupObject.addFriendsDisplayName(u.getDisplayName());
+                    }
+                  }
+                }
+              }
+            }
+            Timber.e("DISPLAY NAM E" + friendsDisplayName.toString());
 
             if (lookupFBResult != null && lookupFBResult.getLookup() != null) {
               for (int i = 0; i < lookupFBResult.getLookup().size(); i++) {
@@ -519,7 +534,8 @@ public class CloudUserDataStore implements UserDataStore {
             } else {
               ci.setHowManyFriends(lookupObject.getHowManyFriends());
             }
-            ci.setFriends(lookupObject.getFriends()); // SOEF
+            ci.setFriendsNameList(lookupObject.getFriendsNameList());
+            ci.setFriends(lookupObject.getFriends());
             ci.setPhone(lookupObject.getPhone());
           }
         }

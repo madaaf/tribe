@@ -4,6 +4,7 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,17 +23,46 @@ public class ContactABRealm extends RealmObject implements ContactInterface {
   private boolean isNew = false;
   private String firstName;
   private String lastName;
-  private List<String> friends;
+  private RealmList<StringRealm> friends;
+  private RealmList<StringRealm> friendsNameList;
 
   @Ignore private List<String> emails;
 
   public ContactABRealm() {
 
   }
-  @Override public void setFriends(List<String> friends) {
-    this.friends = friends;
+
+  @Override public void setFriends(List<String> list) {
+    this.friends = new RealmList<>();
+    if (list != null) {
+      for (String friend : list) {
+        StringRealm stringRealm = new StringRealm();
+        stringRealm.setContent(friend);
+        friends.add(stringRealm);
+      }
+    }
   }
 
+  @Override public void setFriendsNameList(List<String> list) {
+    this.friendsNameList = new RealmList<>();
+    if (list != null) {
+      for (String friend : list) {
+        StringRealm stringRealm = new StringRealm();
+        stringRealm.setContent(friend);
+        friendsNameList.add(stringRealm);
+      }
+    }
+  }
+
+  public List<String> getFriendsNameList() {
+    List<String> list = new ArrayList<>();
+    if (friendsNameList != null) {
+      for (StringRealm stringRealm : friendsNameList) {
+        list.add(stringRealm.getContent());
+      }
+    }
+    return list;
+  }
 
   @Override public String getId() {
     return id;

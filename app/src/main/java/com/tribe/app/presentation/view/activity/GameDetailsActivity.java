@@ -243,7 +243,7 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     txtMyScoreName.setText(getCurrentUser().getDisplayName());
     txtMyScoreScore.setScore(score.getValue());
     txtMyScoreRanking.setRanking(score.getRanking());
-    avatarMyScore.load(getCurrentUser().getProfilePicture()); //SOEF
+    avatarMyScore.load(getCurrentUser().getProfilePicture());
   }
 
   private void initDependencyInjector() {

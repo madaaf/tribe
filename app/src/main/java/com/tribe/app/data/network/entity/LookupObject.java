@@ -2,6 +2,7 @@ package com.tribe.app.data.network.entity;
 
 import com.google.gson.annotations.SerializedName;
 import com.tribe.app.data.realm.UserRealm;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +18,8 @@ public class LookupObject {
   @SerializedName("fn") private String firstName;
   @SerializedName("e") private String email;
   @SerializedName("ff") private List<String> friends;
+
+  private List<String> friendsNameList;
 
   private UserRealm userRealm;
 
@@ -59,4 +62,16 @@ public class LookupObject {
   public UserRealm getUserRealm() {
     return userRealm;
   }
+
+  public void addFriendsDisplayName(String displayName) {
+    if(friendsNameList==null){
+      friendsNameList = new ArrayList<>();
+    }
+    friendsNameList.add(displayName);
+  }
+
+  public List<String> getFriendsNameList() {
+    return friendsNameList;
+  }
+
 }
