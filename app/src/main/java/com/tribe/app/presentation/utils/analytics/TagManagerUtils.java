@@ -50,6 +50,7 @@ public class TagManagerUtils {
   public static final String Games = "Games";
   public static final String Revive = "Revive";
   public static final String Poke = "Poke";
+  public static final String PopUp = "PopUp";
 
   /**
    * ERRORS
@@ -124,6 +125,7 @@ public class TagManagerUtils {
   public static final String ROUND_COUNT = "round_count";
   public static final String SCORE = "score";
   public static final String RANK = "rank";
+  public static final String TROPHY = "trophy";
 
   public static final String tagGameCountSuffix = "_game_count";
   public static final String tagGameDurationSuffix = "_game_duration";

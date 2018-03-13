@@ -23,6 +23,7 @@ import com.tribe.app.domain.entity.TrophyEnum;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.NotifView;
 import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.adapter.LeaderboardUserAdapter;
@@ -222,6 +223,12 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
         .map(view -> trophyAdapter.getItemAtPosition(
             recyclerViewTrophies.getChildLayoutPosition(view)))
         .subscribe(trophyEnum -> {
+          Bundle bundle = new Bundle();
+          bundle.putString(TagManagerUtils.NAME, trophyEnum.name().toLowerCase());
+          bundle.putString(TagManagerUtils.TYPE, TagManagerUtils.TROPHY);
+          bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.CANCELLED);
+          tagManager.trackEvent(TagManagerUtils.PopUp, bundle);
+
           List<NotificationModel> notificationModelList = new ArrayList<>();
 
           PopupTrophy popupTrophy =
