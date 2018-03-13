@@ -1065,7 +1065,7 @@
 	<string name="trophy_requirement_day_usage_description">open Tribe %1$d days in a row</string>
 	<string name="trophy_requirement_games_played_description">try %1$d games</string>
 	<string name="trophy_requirement_multiplayer_sessions_description">%1$d multiplayer sessions</string>
-	<string name="trophy_requirement_best_scores_description">be the best at %1$d games</string>
+	<string name="trophy_requirement_best_scores_description">be the best at %1$d game(s)</string>
 	<string name="trophy_requirement_last_separator">and</string>
 	<string name="trophy_noob_description">You\'re in the race. Check out the other trophies to get started!</string>
 	

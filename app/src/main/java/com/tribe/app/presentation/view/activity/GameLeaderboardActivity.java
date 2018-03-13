@@ -502,7 +502,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
     Bundle bundle = new Bundle();
     bundle.putInt(TagManagerUtils.RANK, score.getRanking());
-    tagManager.trackEvent(TagManagerUtils.Poke);
+    tagManager.trackEvent(TagManagerUtils.Poke, bundle);
 
     boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null &&
         score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();

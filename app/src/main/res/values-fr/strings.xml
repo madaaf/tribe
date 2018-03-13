@@ -1064,15 +1064,15 @@
 	<string name="trophy_requirement_friends_description">Ajoute %1$d amis</string>
 	<string name="trophy_requirement_day_usage_description">ouvre Tribe %1$d jours à la suite</string>
 	<string name="trophy_requirement_games_played_description">essaie %1$d jeux</string>
-	<string name="trophy_requirement_multiplayer_sessions_description">%1$d sessions mulijoueurs</string>
-	<string name="trophy_requirement_best_scores_description">sois le meilleur à %1$d jeux</string>
+	<string name="trophy_requirement_multiplayer_sessions_description">%1$d sessions multijoueurs</string>
+	<string name="trophy_requirement_best_scores_description">sois le meilleur à %1$d jeu(x)</string>
 	<string name="trophy_requirement_last_separator">et</string>
 	<string name="trophy_noob_description">T\'es dans la course. Consulte les autres trophées pour commencer !</string>
 	
 	<!-- Trophy Popup -->
-	<string name="trophy_popup_action_use_icon">UTILISER CET ICONE</string>
+	<string name="trophy_popup_action_use_icon">UTILISER CETTE ICONE</string>
 	<string name="trophy_popup_action_got_it">C\'EST NOTÉ !</string>
-	<string name="trophy_popup_icon_currently_used">Tu utilise actuellement cet icone</string>
+	<string name="trophy_popup_icon_currently_used">Tu utilises actuellement cette icone</string>
 	
 	<!-- Trophy Notification -->
 	<string name="trophy_notification_title">Classement</string>

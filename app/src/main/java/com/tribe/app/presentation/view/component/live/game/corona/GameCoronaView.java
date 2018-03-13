@@ -283,9 +283,7 @@ public class GameCoronaView extends GameView {
             if (BuildConfig.DEBUG) {
               subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
                   .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aLong -> {
-                    sendSuccessRevive();
-                  }));
+                  .subscribe(aLong -> sendSuccessRevive()));
             } else {
               onRevive.onNext(this);
             }
