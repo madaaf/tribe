@@ -245,12 +245,18 @@ public class GameCoronaView extends GameView {
       if (game == null) return null;
 
       if (event.equals("reviveData")) {
-        int disableDurationSec =
-            remoteConfigManager.getInt(Constants.FIREBASE_REVIVE_DISABLE_DURATION);
-        int minScoreTrigger =
-            remoteConfigManager.getInt(Constants.FIREBASE_REVIVE_MIN_SCORE_TRIGGER);
-        double minRatioTrigger =
-            remoteConfigManager.getDouble(Constants.FIREBASE_REVIVE_MIN_RATIO_TRIGGER);
+        int disableDurationSec = 10;
+        int minScoreTrigger = 10;
+        double minRatioTrigger = 0.0D;
+
+        if (!BuildConfig.DEBUG) {
+          disableDurationSec =
+              remoteConfigManager.getInt(Constants.FIREBASE_REVIVE_DISABLE_DURATION);
+          minScoreTrigger = remoteConfigManager.getInt(Constants.FIREBASE_REVIVE_MIN_SCORE_TRIGGER);
+          minRatioTrigger =
+              remoteConfigManager.getDouble(Constants.FIREBASE_REVIVE_MIN_RATIO_TRIGGER);
+        }
+
         Hashtable<Object, Object> table = new Hashtable();
         table.put("gameId", game.getId());
         table.put("disableDurationSec", disableDurationSec);
@@ -261,10 +267,9 @@ public class GameCoronaView extends GameView {
       } else if (event.equals("getBestScore")) {
         if (currentUser.getScoreForGame(game.getId()) != null) {
           return currentUser.getScoreForGame(game.getId()).getValue();
-        }
-        //else if (bestScore != null) {
-        //  return bestScore.getValue();
-        else {
+        } else if (bestScore != null) {
+          return bestScore.getValue();
+        } else {
           gamePresenter.getUserBestScore(game.getId());
         }
       } else {
@@ -279,9 +284,7 @@ public class GameCoronaView extends GameView {
               subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
                   .observeOn(AndroidSchedulers.mainThread())
                   .subscribe(aLong -> {
-                    Hashtable<Object, Object> table = new Hashtable();
-                    table.put("name", "shareToReviveSuccess");
-                    coronaView.sendEvent(table);
+                    sendSuccessRevive();
                   }));
             } else {
               onRevive.onNext(this);
@@ -423,6 +426,12 @@ public class GameCoronaView extends GameView {
     }
   }
 
+  private void sendSuccessRevive() {
+    Hashtable<Object, Object> hashtable = new Hashtable<>();
+    hashtable.put("name", "shareToReviveSuccess");
+    coronaView.sendEvent(hashtable);
+  }
+
   /**
    * PUBLIC
    */
@@ -461,10 +470,14 @@ public class GameCoronaView extends GameView {
     bundle.putString(TagManagerUtils.NAME, game.getId());
     bundle.putInt(TagManagerUtils.SCORE, mapScores.get(currentUser.getId()));
     tagManager.trackEvent(TagManagerUtils.Revive, bundle);
+
+    sendSuccessRevive();
   }
 
   public void errorRevive() {
-
+    Hashtable<Object, Object> hashtable = new Hashtable<>();
+    hashtable.put("name", "shareToReviveError");
+    coronaView.sendEvent(hashtable);
   }
 
   public void onPause() {

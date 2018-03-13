@@ -310,6 +310,10 @@ public abstract class GameView extends FrameLayout {
     return onAddScore;
   }
 
+  public Observable<GameCoronaView> onRevive() {
+    return onRevive;
+  }
+
   public Observable<Game> onRestart() {
     return onRestart;
   }

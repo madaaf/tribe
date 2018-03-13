@@ -257,6 +257,7 @@ public class GameManagerView extends FrameLayout {
     } else if (game.getId().equals(Game.GAME_INVADERS)) {
       GameCoronaView gameCoronaView = new GameCoronaView(getContext(), game);
       subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
+      subscriptionsGame.add(gameCoronaView.onRevive().subscribe(onRevive));
       gameView = gameCoronaView;
     } else if (game.getId().equals(Game.GAME_TRIVIA)) {
       GameTriviaView gameTriviaView = new GameTriviaView(getContext());
@@ -287,13 +288,15 @@ public class GameManagerView extends FrameLayout {
     } else if (game.isCorona()) {
       GameCoronaView gameCoronaView = new GameCoronaView(getContext(), game);
       subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
+      subscriptionsGame.add(gameCoronaView.onRevive().subscribe(onRevive));
       gameView = gameCoronaView;
     }
 
     gameView.setWebRTCRoom(webRTCRoom);
     game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));
-    gameView.start(game, masterMapObs, onPeerMapChange, onInvitedMapChange, onLiveViewsChange, userId);
+    gameView.start(game, masterMapObs, onPeerMapChange, onInvitedMapChange, onLiveViewsChange,
+        userId);
     gameView.setNextGame();
 
     return gameView;

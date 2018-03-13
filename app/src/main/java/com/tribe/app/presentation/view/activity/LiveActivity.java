@@ -973,6 +973,11 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
             }
           });
       list.add(a);
+
+      subscriptions.add(view.onDismiss().subscribe(aVoid -> {
+        gameCoronaView.errorRevive();
+      }));
+
       view.show(this, list);
     }));
 
