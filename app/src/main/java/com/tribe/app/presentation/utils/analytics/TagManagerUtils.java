@@ -49,6 +49,7 @@ public class TagManagerUtils {
   public static final String Technical_Error = "Technical_Error";
   public static final String Games = "Games";
   public static final String Revive = "Revive";
+  public static final String Poke = "Poke";
 
   /**
    * ERRORS
@@ -122,6 +123,7 @@ public class TagManagerUtils {
   public static final String TYPE_MULTI = "multiplayer";
   public static final String ROUND_COUNT = "round_count";
   public static final String SCORE = "score";
+  public static final String RANK = "rank";
 
   public static final String tagGameCountSuffix = "_game_count";
   public static final String tagGameDurationSuffix = "_game_duration";
@@ -152,7 +154,6 @@ public class TagManagerUtils {
   public static final String FB_ACTION_FAILED = "failed";
   public static final String FB_ACTION_SUCCESS = "succeeded";
   public static final String FB_ACTION = "action";
-
 
   /**
    * NOTIFICATION
