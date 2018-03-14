@@ -469,7 +469,7 @@
 	<string name="profile_remove_title">Delete your account :skull: :skull:</string>
 	<string name="profile_remove_message">Are you sure you want to delete your account?</string>
 	<string name="profile_remove_confirm">Confirm</string>
-	<string name="profile_calls_length_suffix">\ncalling friends on tribe!</string>
+	<string name="profile_calls_length_suffix">\nplaying with friends on tribe!</string>
 	<string name="profile_calls_length_mins">%1$d mins</string>
 	<string name="profile_calls_length_min">%1$d min</string>
 	<string name="profile_change_phone">Change phone number :telephone:</string>

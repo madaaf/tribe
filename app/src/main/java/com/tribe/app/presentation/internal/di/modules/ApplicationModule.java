@@ -52,7 +52,6 @@ import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
 import com.tribe.app.presentation.utils.RXZendesk.RXZendesk;
-import com.tribe.app.presentation.utils.unzip.RxUnzip;
 import com.tribe.app.presentation.utils.analytics.AnalyticsManager;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -158,10 +157,6 @@ import timber.log.Timber;
       @Named("userThreadSafe") User user, PhoneUtils phoneUtils,
       @AddressBook Preference<Boolean> addressBook) {
     return new RxContacts(context, user, phoneUtils, addressBook);
-  }
-
-  @Provides @Singleton RxUnzip provideRxUnzip(Context context) {
-    return new RxUnzip(context);
   }
 
   @Provides @Singleton RXZendesk provideRxZendesk(User user, DateUtils dateUtils,

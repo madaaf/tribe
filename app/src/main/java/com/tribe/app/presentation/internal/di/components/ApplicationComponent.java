@@ -43,7 +43,6 @@ import com.tribe.app.presentation.service.TribeFirebaseInstanceIDService;
 import com.tribe.app.presentation.service.TribeFirebaseMessagingService;
 import com.tribe.app.presentation.utils.DateUtils;
 import com.tribe.app.presentation.utils.FileUtils;
-import com.tribe.app.presentation.utils.unzip.RxUnzip;
 import com.tribe.app.presentation.utils.TrophiesManager;
 import com.tribe.app.presentation.utils.analytics.AnalyticsManager;
 import com.tribe.app.presentation.utils.analytics.TagManager;
@@ -444,8 +443,6 @@ public interface ApplicationComponent {
   RxFacebook rxFacebook();
 
   RxImagePicker rxImagePicker();
-
-  RxUnzip rxUnzip();
 
   SharedPreferences sharedPreferences();
 

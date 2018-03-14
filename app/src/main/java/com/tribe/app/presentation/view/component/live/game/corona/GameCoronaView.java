@@ -25,7 +25,6 @@ import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
-import com.tribe.app.presentation.utils.unzip.RxUnzip;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -64,8 +63,6 @@ public class GameCoronaView extends GameView {
   @Inject GamePresenter gamePresenter;
 
   @Inject TagManager tagManager;
-
-  @Inject RxUnzip rxUnzip;
 
   @BindView(R.id.coronaView) CoronaView coronaView;
   @BindView(R.id.layoutProgress) FrameLayout layoutProgress;
