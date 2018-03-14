@@ -49,6 +49,7 @@ import timber.log.Timber;
   private Context context;
   private PublishSubject<LoginResult> loginSubject;
   private PublishSubject<String> gameRequestSubject;
+  private PublishSubject<Boolean> notifyFriendsSubject;
   private Observable<List<ContactFBRealm>> friendListObservable;
   private Observable<List<ContactFBRealm>> friendInvitableListObservable;
   private Observable<FacebookEntity> facebookEntityObservable;
@@ -126,7 +127,8 @@ import timber.log.Timber;
     }
   }
 
-  public void notifyFriends(Context context, ArrayList<String> toIds) {
+  public Observable<Boolean> notifyFriends(Context context, ArrayList<String> toIds) {
+    notifyFriendsSubject = PublishSubject.create();
     AccessToken a = FacebookUtils.accessToken();
     String separator = "%2C";
     String to = "";
@@ -152,6 +154,8 @@ import timber.log.Timber;
           WebResourceError error) {
         super.onReceivedError(view, request, error);
         Timber.e("error on notify all facebook friends");
+        notifyFriendsSubject.onNext(false);
+        notifyFriendsSubject.onCompleted();
       }
 
       @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
@@ -170,11 +174,15 @@ import timber.log.Timber;
         Toast.makeText(context, EmojiParser.demojizedText(
             context.getResources().getString(R.string.facebook_invite_confirmation)),
             Toast.LENGTH_LONG).show();
+
+        notifyFriendsSubject.onNext(true);
+        notifyFriendsSubject.onCompleted();
       }
     });
     webView.getSettings().setJavaScriptEnabled(true);
     webView.loadUrl(url);
     webView.setVisibility(View.VISIBLE);
+    return notifyFriendsSubject;
   }
 
   public void emitFriendsInvitable(Subscriber subscriber) {

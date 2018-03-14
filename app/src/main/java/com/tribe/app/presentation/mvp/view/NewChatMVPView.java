@@ -7,4 +7,5 @@ import java.util.List;
 public interface NewChatMVPView extends MVPView {
 
   void onLoadFBContactsInvite(List<Contact> contactList);
+  void onLoadFBContactsInviteFailed();
 }

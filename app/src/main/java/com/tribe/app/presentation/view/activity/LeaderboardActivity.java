@@ -31,6 +31,7 @@ import com.tribe.app.presentation.view.adapter.TrophyAdapter;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardUserLayoutManager;
 import com.tribe.app.presentation.view.adapter.manager.TrophyLayoutManager;
+import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.popup.PopupManager;
 import com.tribe.app.presentation.view.popup.view.PopupTrophy;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -250,6 +251,9 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
 
           notificationModelList.add(
               new NotificationModel.Builder().view(popupManager.getView()).build());
+
+          notificationModelList.add(NotificationUtils.getAvatarNotificationModel(this));
+
           NotifView notifView = new NotifView(this);
           notifView.overrideBackground(popupTrophy.getBg());
           notifView.show(this, notificationModelList);

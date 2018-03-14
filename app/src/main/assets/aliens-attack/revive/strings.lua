@@ -9,7 +9,7 @@ local strings = {
 	fr = {
 		revive_title = 'Seconde chance!',
 		revive_message = 'Notifie tes amis Facebook \net reprend le jeu à ton score courant!',
-		revive_facebook_button = 'Notifier et continuer',
+		revive_facebook_button = 'NOTIFIER ET CONTINUER',
 		revive_notifying = 'NOTIFICATION EN COURS...',
 		revive_skip_button = 'PASSER SA CHANCE'
 	}

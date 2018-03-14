@@ -18,13 +18,19 @@ import com.ansca.corona.CoronaView;
 import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
+import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.mvp.view.adapter.NewChatMVPViewAdapter;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
@@ -37,8 +43,10 @@ import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -62,7 +70,11 @@ public class GameCoronaView extends GameView {
 
   @Inject GamePresenter gamePresenter;
 
+  @Inject NewChatPresenter newChatPresenter;
+
   @Inject TagManager tagManager;
+
+  @Inject RxFacebook rxFacebook;
 
   @BindView(R.id.coronaView) CoronaView coronaView;
   @BindView(R.id.layoutProgress) FrameLayout layoutProgress;
@@ -72,6 +84,7 @@ public class GameCoronaView extends GameView {
   // VARIABLES
   private Handler mainHandler;
   private GameMVPViewAdapter gameMVPViewAdapter;
+  private NewChatMVPViewAdapter newChatMVPViewAdapter;
   private RemoteConfigManager remoteConfigManager;
   private Map<String, Integer> mapScores = new HashMap<>();
   private Score bestScore = null;
@@ -120,6 +133,27 @@ public class GameCoronaView extends GameView {
       //}
     };
 
+    newChatMVPViewAdapter = new NewChatMVPViewAdapter() {
+      @Override public void onLoadFBContactsInvite(List<Contact> contactList) {
+        Timber.d("onLoadFBContactsInvite");
+        ArrayList<String> array = new ArrayList<>();
+        for (Contact c : contactList) {
+          array.add(c.getId());
+        }
+
+        Timber.d("Notify FB friends");
+        subscriptionsRoom.add(rxFacebook.notifyFriends(context, array).subscribe(aBoolean -> {
+          Timber.d("Notify FB answer : " + aBoolean);
+          if (aBoolean) successRevive();
+          else errorRevive();
+        }));
+      }
+
+      @Override public void onLoadFBContactsInviteFailed() {
+        errorRevive();
+      }
+    };
+
     remoteConfigManager = RemoteConfigManager.getInstance(context);
 
     coronaView.init(game.getId());
@@ -142,11 +176,13 @@ public class GameCoronaView extends GameView {
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     gamePresenter.onViewAttached(gameMVPViewAdapter);
+    newChatPresenter.onViewAttached(newChatMVPViewAdapter);
   }
 
   @Override protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     gamePresenter.onViewDetached();
+    newChatPresenter.onViewDetached();
   }
 
   @Override protected void initWebRTCRoomSubscriptions() {
@@ -277,13 +313,23 @@ public class GameCoronaView extends GameView {
             onAddScore.onNext(
                 Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
           } else if (event.equals("revive")) {
-            if (BuildConfig.DEBUG) {
-              subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aLong -> sendSuccessRevive()));
-            } else {
-              onRevive.onNext(this);
-            }
+            //if (BuildConfig.DEBUG) {
+            //  subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
+            //      .observeOn(AndroidSchedulers.mainThread())
+            //      .subscribe(aLong -> sendSuccessRevive()));
+            //} else {
+            Timber.d("Revive");
+              if (!FacebookUtils.isLoggedIn()) {
+                Timber.d("Ask FB login");
+                subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
+                  Timber.d("Load contacts");
+                  newChatPresenter.loadFBContactsInvite(null);
+                }));
+              } else {
+                Timber.d("Load contacts");
+                newChatPresenter.loadFBContactsInvite(null);
+              }
+            //}
           } else if (event.equals("scoresUpdated")) {
             mapScores.clear();
             Hashtable<String, Double> scores = (Hashtable<String, Double>) hashtable.get("scores");
