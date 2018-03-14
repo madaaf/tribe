@@ -322,8 +322,12 @@ public class GameCoronaView extends GameView {
               if (!FacebookUtils.isLoggedIn()) {
                 Timber.d("Ask FB login");
                 subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-                  Timber.d("Load contacts");
-                  newChatPresenter.loadFBContactsInvite(null);
+                  if (loginResult != null) {
+                    Timber.d("Load contacts");
+                    newChatPresenter.loadFBContactsInvite(null);
+                  } else {
+                    errorRevive();
+                  }
                 }));
               } else {
                 Timber.d("Load contacts");
