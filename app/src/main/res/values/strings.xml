@@ -989,6 +989,10 @@
 	<string name="leaderboard_friend_is_best">%1$s is the best!</string>
 	<string name="leaderboard_section_trophies">TROPHIES</string>
 	<string name="leaderboard_section_games">GAMES</string>
+	<string name="leaderboard_address_book_title">Connect Address Book</string>
+	<string name="leaderboard_address_book_subtitle">Tap to see more friends scores!</string>
+	<string name="leaderboard_facebook_title">Connect Facebook</string>
+	<string name="leaderboard_facebook_subtitle">Tap to see more friends scores!</string>
 	
 	<!-- Hang Up -->
 	<string name="hang_up_title">TAP TO HANG UP</string>

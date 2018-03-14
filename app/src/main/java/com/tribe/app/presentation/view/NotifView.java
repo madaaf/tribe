@@ -215,7 +215,10 @@ public class NotifView extends FrameLayout {
 
     gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
 
-    textDismiss.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
+    pager.setOnTouchListener((v, event) -> {
+      gestureScanner.onTouchEvent(event);
+      return super.onTouchEvent(event);
+    });
 
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
@@ -381,6 +384,14 @@ public class NotifView extends FrameLayout {
   private class TapGestureListener implements GestureDetector.OnGestureListener {
 
     @Override public boolean onDown(MotionEvent e) {
+      return false;
+    }
+
+    @Override public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override public boolean onSingleTapUp(MotionEvent e) {
       if (pager.getCurrentItem() == data.size() - 1) {
         hideView();
         tagCancelAction();
@@ -390,14 +401,6 @@ public class NotifView extends FrameLayout {
       }
 
       return true;
-    }
-
-    @Override public void onShowPress(MotionEvent e) {
-
-    }
-
-    @Override public boolean onSingleTapUp(MotionEvent e) {
-      return false;
     }
 
     @Override

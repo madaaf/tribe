@@ -60,8 +60,6 @@ import com.tribe.app.presentation.utils.mediapicker.Sources;
 import com.tribe.app.presentation.utils.preferences.CallTagsMap;
 import com.tribe.app.presentation.utils.preferences.FullscreenNotificationState;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
-import com.tribe.app.presentation.view.NotifView;
-import com.tribe.app.presentation.view.NotificationModel;
 import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.model.ShareTypeModel;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
@@ -72,7 +70,6 @@ import com.tribe.app.presentation.view.component.live.LiveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
 import com.tribe.app.presentation.view.notification.Alerter;
 import com.tribe.app.presentation.view.notification.NotificationPayload;
-import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
@@ -958,28 +955,6 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
     subscriptions.add(viewLive.onAddScore()
         .filter(pair -> pair.second > 0)
         .subscribe(pair -> livePresenter.addScore(pair.first, pair.second)));
-
-    subscriptions.add(viewLive.onRevive().subscribe(gameCoronaView -> {
-      List<NotificationModel> list = new ArrayList<>();
-      NotifView view = new NotifView(getBaseContext());
-      NotificationModel a =
-          NotificationUtils.getFbNotificationModel(this, new NotificationModel.Listener() {
-            @Override public void onError() {
-              gameCoronaView.errorRevive();
-            }
-
-            @Override public void onSuccess() {
-              gameCoronaView.successRevive();
-            }
-          });
-      list.add(a);
-
-      subscriptions.add(view.onDismiss().subscribe(aVoid -> {
-        gameCoronaView.errorRevive();
-      }));
-
-      view.show(this, list);
-    }));
 
     subscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
       userInfosNotificationView.setCurrentGame(game);

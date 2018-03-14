@@ -250,6 +250,7 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
 
           notificationModelList.add(
               new NotificationModel.Builder().view(popupManager.getView()).build());
+
           NotifView notifView = new NotifView(this);
           notifView.overrideBackground(popupTrophy.getBg());
           notifView.show(this, notificationModelList);

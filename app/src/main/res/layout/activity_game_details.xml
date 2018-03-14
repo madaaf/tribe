@@ -108,7 +108,7 @@
         style="@style/Title.1.Black40"
         />
 
-    <FrameLayout
+    <View
         android:id="@+id/leaderbordContainer"
         android:layout_width="match_parent"
         android:layout_height="130dp"
