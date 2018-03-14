@@ -166,6 +166,9 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
     super.onAttachedToWindow();
     searchPresenter.onViewAttached(this);
     lookupContacts();// TODO SOEF DELETE
+    ArrayList<String> ok = new ArrayList<>();
+    ok.add("10154396462508081");
+    rxFacebook.notifyFriends2(context, ok);
   }
 
   @Override protected void onDetachedFromWindow() {

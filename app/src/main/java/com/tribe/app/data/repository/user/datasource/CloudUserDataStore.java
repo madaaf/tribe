@@ -1,8 +1,12 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
 import com.f2prateek.rx.preferences.Preference;
@@ -34,6 +38,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
@@ -382,7 +387,7 @@ public class CloudUserDataStore implements UserDataStore {
       UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
 
       List<LookupEntity> lookupPhones = new ArrayList<>();
-
+      ArrayList<String> ok = new ArrayList<>();
       if (contactList.size() > 0) {
         for (ContactInterface contactI : contactList) {
           if (contactI instanceof ContactABRealm) {
@@ -405,6 +410,7 @@ public class CloudUserDataStore implements UserDataStore {
           } else if (contactI instanceof ContactFBRealm) {
             ContactFBRealm contactFBRealm = (ContactFBRealm) contactI;
             fbIds.add(contactFBRealm);
+            ok.add(contactFBRealm.getId());
           }
         }
       }
@@ -451,7 +457,7 @@ public class CloudUserDataStore implements UserDataStore {
             lookupHolder.setContactPhoneList(phones);
             lookupHolder.setLookupObjectList(lookupObjects);
 
-            List<String> friendsDisplayName = new ArrayList<>();
+            List<String> friendsDisplayName = new ArrayList<>(); // SOEF
 
             for (LookupObject lookupObject : lookupObjects) {
               if (lookupObject != null && lookupObject.getCommonFriends() != null) {
@@ -481,7 +487,10 @@ public class CloudUserDataStore implements UserDataStore {
             }
 
             lookupHolder.setContactFBList(fbIds);
+            List<UserRealm> list2 = lookupFBResult.getLookup();
+            for(ContactInterface contactInterface : lookupHolder.getContactFBList()){
 
+            }
             return lookupHolder;
           });
     }, (contactList, lookupHolder) -> lookupHolder).flatMap(lookupHolder -> {
