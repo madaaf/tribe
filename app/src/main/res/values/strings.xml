@@ -247,7 +247,7 @@
 	<string name="onboarding_new_version_popup_done">Let\'s go!</string>
 	
 	<!-- Onboarding Phone -->
-	<string name="onboarding_baseline">Have fun, together.</string>
+	<string name="onboarding_baseline">Live battle your friends!</string>
 	<string name="onboarding_enter_options">Enter with</string>
 	<string name="onboarding_option_facebook">Facebook</string>
 	<string name="onboarding_option_phone_number">Phone number</string>
