@@ -54,6 +54,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 /**
@@ -350,6 +351,8 @@ public class GameCoronaView extends GameView {
             sendMessage((JSONObject) getBroadcastPayload(
                 (Hashtable<Object, Object>) hashtable.get("message"), false),
                 hashtable.get("to").toString());
+          } else if (event.equals("showGameLeaderboard")) {
+            onOpenLeaderboard.onNext(game);
           } else if (event.equals("contextGame")) {
             Timber.d("Hashtable : " + hashtable);
             Hashtable<String, Double> scores =
