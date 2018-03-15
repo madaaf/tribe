@@ -1002,7 +1002,7 @@ public class LiveView extends FrameLayout {
     for (User user : live.getRoom().getAllUsers()) {
       if (remotePeer.getSession().getUserId().equals(user.getId())) {
         guest = new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
-            true, user.getUsername());
+            true, user.getUsername(), user.getTrophy());
         guest.setExternal(remotePeer.getSession().isExternal());
       }
     }
@@ -1013,7 +1013,7 @@ public class LiveView extends FrameLayout {
         if (remotePeer.getSession().getUserId().equals(friend.getId())) {
           guest =
               new TribeGuest(friend.getId(), friend.getDisplayName(), friend.getProfilePicture(),
-                  false, true, friend.getUsername());
+                  false, true, friend.getUsername(), friend.getTrophy());
           guest.setExternal(remotePeer.getSession().isExternal());
         }
       }
@@ -1021,7 +1021,7 @@ public class LiveView extends FrameLayout {
 
     if (guest == null) {
       guest = new TribeGuest(remotePeer.getSession().getUserId(),
-          getDisplayNameFromId(remotePeer.getSession().getUserId()), null, false, false, "");
+          getDisplayNameFromId(remotePeer.getSession().getUserId()), null, false, false, "", null);
       guest.setExternal(remotePeer.getSession().isExternal());
     }
 

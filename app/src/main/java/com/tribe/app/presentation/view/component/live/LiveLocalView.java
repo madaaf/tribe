@@ -115,7 +115,7 @@ public class LiveLocalView extends LiveStreamView {
 
     viewPeerOverlay.setGuest(
         new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false, false,
-            user.getUsername()));
+            user.getUsername(), user.getTrophy()));
 
     initSubscriptions();
 
