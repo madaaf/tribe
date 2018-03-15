@@ -640,6 +640,12 @@
     <item name="android:textColor">@android:color/white</item>
   </style>
 
+  <style name="CoolCam">
+    <item name="customFont">Mario-Heavy.otf</item>
+    <item name="android:textColor">@android:color/white</item>
+    <item name="android:textSize">20sp</item>
+  </style>
+
   <!--Alerter-->
   <style name="AlertStyle" parent="@android:style/Widget">
     <item name="android:layout_width">match_parent</item>

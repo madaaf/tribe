@@ -94,6 +94,12 @@ public class GameCoolCamsView extends GameViewWithRanking {
 
   @BindView(R.id.layoutConstraint) ConstraintLayout layoutConstraint;
 
+  @BindView(R.id.imgCoolCamsBottom) ImageView imgCoolCamsBottom;
+
+  @BindView(R.id.imgCoolCamsTop) ImageView imgCoolCamsTop;
+
+  @BindView(R.id.txtCoolCamsInstructions) TextViewFont txtCoolCamsInstructions;
+
   // VARIABLES
   private GameMVPViewAdapter gameMVPViewAdapter;
 
@@ -175,6 +181,14 @@ public class GameCoolCamsView extends GameViewWithRanking {
     super.receiveMessage(tribeSession, jsonObject);
   }
 
+  private void broadcastNewGame() {
+
+  }
+
+  private void broadcastNewSong() {
+
+  }
+
   /**
    * JSON PAYLOAD
    */
@@ -197,6 +211,8 @@ public class GameCoolCamsView extends GameViewWithRanking {
 
     currentMasterId = userId;
     game.setCurrentMaster(peerMap.get(currentMasterId));
+
+
   }
 
   @Override public void stop() {
