@@ -3,11 +3,9 @@ package com.tribe.app.presentation.mvp.presenter;
 import android.content.Context;
 import android.util.Pair;
 import com.f2prateek.rx.preferences.Preference;
-import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.user.ContactsFbId;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfosList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
@@ -29,7 +27,6 @@ public class UserPresenter implements Presenter {
   private GetDiskUserInfos diskUserInfosUsecase;
   private GetCloudUserInfos cloudUserInfos;
   private SynchroContactList synchroContactList;
-  private ContactsFbId contactsFbId;
   private GetCloudUserInfosList cloudUserInfosList;
   private UpdateUser updateUser;
 
@@ -38,14 +35,13 @@ public class UserPresenter implements Presenter {
 
   @Inject public UserPresenter(Context context, GetDiskUserInfos diskUserInfos,
       GetCloudUserInfos cloudUserInfos, SynchroContactList synchroContactList,
-      GetCloudUserInfosList cloudUserInfosList, UpdateUser updateUser, ContactsFbId contactsFbId) {
+      GetCloudUserInfosList cloudUserInfosList, UpdateUser updateUser) {
 
     this.diskUserInfosUsecase = diskUserInfos;
     this.cloudUserInfos = cloudUserInfos;
     this.synchroContactList = synchroContactList;
     this.cloudUserInfosList = cloudUserInfosList;
     this.updateUser = updateUser;
-    this.contactsFbId = contactsFbId;
   }
 
   @Override public void onViewDetached() {
@@ -53,27 +49,12 @@ public class UserPresenter implements Presenter {
     diskUserInfosUsecase.unsubscribe();
     cloudUserInfosList.unsubscribe();
     synchroContactList.unsubscribe();
-    contactsFbId.unsubscribe();
     updateUser.unsubscribe();
     userMVPView = null;
   }
 
   @Override public void onViewAttached(MVPView v) {
     userMVPView = (UserMVPView) v;
-  }
-
-  public void getContactsFbId(Context context) {
-    contactsFbId.setParams(context);
-    contactsFbId.execute(new DefaultSubscriber<List<LookupObject>>() {
-
-      @Override public void onError(Throwable e) {
-        super.onError(e);
-      }
-
-      @Override public void onNext(List<LookupObject> o) {
-        Timber.e("SOEF " + o);
-      }
-    });
   }
 
   public void getUserInfos() {

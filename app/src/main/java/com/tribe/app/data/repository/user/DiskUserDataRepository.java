@@ -218,10 +218,6 @@ import rx.Observable;
             new ArrayList<ContactInterface>(collection)));
   }
 
-  @Override public Observable<List<LookupFbObject>> contactsFbId(Context context) {
-    return null;
-  }
-
   @Override public Observable<List<Contact>> contactsFB() {
     final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
     return userDataStore.contactsFB()

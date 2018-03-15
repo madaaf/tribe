@@ -181,12 +181,7 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
 =======
 
     context = this;
-  //  this.runOnUiThread(() -> userPresenter.getContactsFbId(context));
-    ArrayList<String> li = new ArrayList<>();
-    li.add("10154396462508081");
-    li.add("10153748473475981");
-    li.add(
-        "AVlid3m7E2H78g6OoON9Lt2uSQAp3fUTvLScdCkxrj-Y_M0OTmMRVT5feX3eTSeKNtdzZmJOlNVGsipJsWkGDgOVJ2ZJYpzbRNEYC7bjgs_qIg");
+    //this.runOnUiThread(() -> userPresenter.getContactsFbId(context));
     //rxFacebook.contactsFbId(context, li).subscribe(aVoid -> {Timber.e("ok soef " + aVoid.toString());});
 >>>>>>> tmp
   }

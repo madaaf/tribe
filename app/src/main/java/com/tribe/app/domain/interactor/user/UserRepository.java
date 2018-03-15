@@ -18,6 +18,7 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -92,7 +93,6 @@ public interface UserRepository {
    */
   Observable<List<Contact>> contacts();
 
-  Observable<List<LookupFbObject>> contactsFbId(Context context);
   /**
    * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos
    * about the contacts from Facebook.

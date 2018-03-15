@@ -36,8 +36,6 @@ import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
 import com.tribe.app.data.network.deserializer.LookupFBDeserializer;
-import com.tribe.app.data.network.deserializer.LookupFbObjectDeserializer;
-import com.tribe.app.data.network.deserializer.LookupObjectDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.RemoveMessageDeserializer;
 import com.tribe.app.data.network.deserializer.RoomDeserializer;
@@ -46,7 +44,6 @@ import com.tribe.app.data.network.deserializer.ScoreRealmDeserializer;
 import com.tribe.app.data.network.deserializer.ScoreRealmListDeserializer;
 import com.tribe.app.data.network.deserializer.SearchResultDeserializer;
 import com.tribe.app.data.network.deserializer.ShortcutRealmDeserializer;
-import com.tribe.app.data.network.deserializer.TribeAccessTokenDeserializer;
 import com.tribe.app.data.network.deserializer.TribeUserDeserializer;
 import com.tribe.app.data.network.deserializer.TriviaQuestionsDeserializer;
 import com.tribe.app.data.network.deserializer.UserListDeserializer;
@@ -54,8 +51,6 @@ import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.GameDataEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
-import com.tribe.app.data.network.entity.LookupFbObject;
-import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
@@ -182,9 +177,6 @@ import timber.log.Timber;
     })
         .registerTypeAdapter(new TypeToken<UserRealm>() {
         }.getType(), new TribeUserDeserializer(utcSimpleDate))
-        .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
-        .registerTypeAdapter(LookupFbObject.class, new LookupFbObjectDeserializer()) // SOEF
-        .registerTypeAdapter(LookupObject.class, new LookupObjectDeserializer()) // SOEF
         .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
         .registerTypeAdapter(MessageRealm.class, new CreateMessageDeserializer())
         .registerTypeAdapter(Date.class,

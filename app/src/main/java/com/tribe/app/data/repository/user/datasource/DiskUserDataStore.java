@@ -110,7 +110,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return contactCache.contacts().map(contactABRealms -> new ArrayList<>(contactABRealms));
   }
 
-  @Override public Observable<List<LookupFbObject>> contactsFbId(Context context) {
+  @Override
+  public Observable<List<LookupFbObject>> contactsFbId(Context context, ArrayList<String> fbIds) {
     return null;
   }
 

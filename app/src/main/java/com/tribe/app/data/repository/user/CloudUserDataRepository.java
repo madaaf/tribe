@@ -1,10 +1,7 @@
 package com.tribe.app.data.repository.user;
 
-import android.content.Context;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.LoginEntity;
-import com.tribe.app.data.network.entity.LookupFbObject;
-import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
@@ -31,8 +28,6 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * {@link CloudUserDataRepository} for retrieving user data.
@@ -160,15 +155,9 @@ import rx.schedulers.Schedulers;
 
   @Override public Observable<List<Contact>> contacts() {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.contacts()
-        .map(collection -> {
-          return this.contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection));
-        });
-  }
-
-  @Override public Observable<List<LookupFbObject>> contactsFbId(Context context) {
-    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.contactsFbId(context);
+    return userDataStore.contacts().map(collection -> {
+      return this.contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection));
+    });
   }
 
   @Override public Observable<List<Contact>> contactsFB() {

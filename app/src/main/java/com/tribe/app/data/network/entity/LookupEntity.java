@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 public class LookupEntity {
 
   @SerializedName("n") private String phone;
+  @SerializedName("fb") private String fbId;
   @SerializedName("fn") private String firstName;
   @SerializedName("ln") private String lastName;
   @SerializedName("e") private String email;
@@ -18,6 +19,18 @@ public class LookupEntity {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
+  }
+
+  public LookupEntity(String fbId) {
+    this.fbId = fbId;
+  }
+
+  public String getFbId() {
+    return fbId;
+  }
+
+  public void setFbId(String fbId) {
+    this.fbId = fbId;
   }
 
   public String getPhone() {
