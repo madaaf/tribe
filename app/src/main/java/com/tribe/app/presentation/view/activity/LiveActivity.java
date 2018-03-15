@@ -946,7 +946,7 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
     subscriptions.add(
         viewLive.openGameStore().subscribe(aVoid -> navigator.navigateToGameStoreNewGame(this)));
 
-    subscriptions.add(viewLive.openLeaderboard()
+    subscriptions.add(viewLive.onOpenLeaderboard()
         .subscribe(game -> navigator.navigateToGameLeaderboard(this, game.getId())));
 
     subscriptions.add(

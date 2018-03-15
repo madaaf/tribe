@@ -80,6 +80,7 @@ public class GameManagerView extends FrameLayout {
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
   private PublishSubject<Game> onStopGame = PublishSubject.create();
   private PublishSubject<Void> onPlayOtherGame = PublishSubject.create();
+  private PublishSubject<Game> onOpenLeaderboard = PublishSubject.create();
   private PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
   private PublishSubject<GameCoronaView> onRevive = PublishSubject.create();
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
@@ -258,6 +259,7 @@ public class GameManagerView extends FrameLayout {
       GameCoronaView gameCoronaView = new GameCoronaView(getContext(), game);
       subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
       subscriptionsGame.add(gameCoronaView.onRevive().subscribe(onRevive));
+      subscriptionsGame.add(gameCoronaView.onOpenLeaderboard().subscribe(onOpenLeaderboard));
       gameView = gameCoronaView;
     } else if (game.getId().equals(Game.GAME_TRIVIA)) {
       GameTriviaView gameTriviaView = new GameTriviaView(getContext());
@@ -289,6 +291,7 @@ public class GameManagerView extends FrameLayout {
       GameCoronaView gameCoronaView = new GameCoronaView(getContext(), game);
       subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
       subscriptionsGame.add(gameCoronaView.onRevive().subscribe(onRevive));
+      subscriptionsGame.add(gameCoronaView.onOpenLeaderboard().subscribe(onOpenLeaderboard));
       gameView = gameCoronaView;
     }
 
@@ -351,5 +354,9 @@ public class GameManagerView extends FrameLayout {
 
   public Observable<Void> onPlayOtherGame() {
     return onPlayOtherGame;
+  }
+
+  public Observable<Game> onOpenLeaderboard() {
+    return onOpenLeaderboard;
   }
 }

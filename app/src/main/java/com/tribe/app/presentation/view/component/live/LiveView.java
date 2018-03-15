@@ -1461,8 +1461,8 @@ public class LiveView extends FrameLayout {
     return Observable.merge(viewControlsLive.openGameStore(), viewGameManager.onPlayOtherGame());
   }
 
-  public Observable<Game> openLeaderboard() {
-    return viewControlsLive.onLeaderboard();
+  public Observable<Game> onOpenLeaderboard() {
+    return Observable.merge(viewControlsLive.onOpenLeaderboard(), viewGameManager.onOpenLeaderboard());
   }
 
   public Observable<Void> onSwipeUp() {

@@ -84,6 +84,7 @@ public abstract class GameView extends FrameLayout {
   protected PublishSubject<Game> onStop = PublishSubject.create();
   protected PublishSubject<Void> onPlayOtherGame = PublishSubject.create();
   protected PublishSubject<GameCoronaView> onRevive = PublishSubject.create();
+  protected PublishSubject<Game> onOpenLeaderboard = PublishSubject.create();
 
   public GameView(@NonNull Context context) {
     super(context);
@@ -324,5 +325,9 @@ public abstract class GameView extends FrameLayout {
 
   public Observable<Void> onPlayOtherGame() {
     return onPlayOtherGame;
+  }
+
+  public Observable<Game> onOpenLeaderboard() {
+    return onOpenLeaderboard;
   }
 }
