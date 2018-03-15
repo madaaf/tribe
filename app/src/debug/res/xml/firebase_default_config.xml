@@ -6,4 +6,16 @@
       :smile_cat::joy_cat::heart_eyes_cat::scream_cat:,:hand1::punch::hand2::v:,:smile::kissing_smiling_eyes::joy::grin:,:panda_face::tiger::dog::monkey_face:,:lemon::watermelon::peach::grapes:,:popcorn::doughnut::cookie::lollipop:
     </value>
   </entry>
+  <entry>
+    <key>revive_disable_duration</key>
+    <value>3600</value>
+  </entry>
+  <entry>
+    <key>revive_min_score_trigger</key>
+    <value>100</value>
+  </entry>
+  <entry>
+    <key>revive_min_ratio_trigger</key>
+    <value>0.1</value>
+  </entry>
 </defaultsMap>

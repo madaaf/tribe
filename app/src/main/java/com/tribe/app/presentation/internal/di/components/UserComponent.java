@@ -46,13 +46,12 @@ import com.tribe.app.presentation.view.component.live.TileInviteView;
 import com.tribe.app.presentation.view.component.live.game.GameChallengesView;
 import com.tribe.app.presentation.view.component.live.game.GameDrawView;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
-import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackAlienView;
-import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackBackground;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicView;
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushBackground;
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
 import com.tribe.app.presentation.view.component.onboarding.CodeView;
@@ -218,6 +217,8 @@ import dagger.Component;
 
   void inject(GameView gameView);
 
+  void inject(GameCoronaView gameCoronaView);
+
   void inject(GameTriviaView gameTriviaView);
 
   void inject(GameBattleMusicView gameBattleMusicView);
@@ -228,11 +229,7 @@ import dagger.Component;
 
   void inject(GameDrawView gameDrawView);
 
-  void inject(GameAliensAttackBackground gameAliensAttackBackground);
-
   void inject(GameBirdRushBackground gameBirdRushBackground);
-
-  void inject(GameAliensAttackAlienView gameAliensAttackAlienView);
 
   void inject(GameEngine gameEngine);
 

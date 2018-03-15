@@ -27,14 +27,11 @@ import com.facebook.accountkit.ui.AccountKitActivity;
 import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.solera.defrag.AnimationHandler;
 import com.solera.defrag.TraversalAnimation;
 import com.solera.defrag.TraversingOperation;
 import com.solera.defrag.TraversingState;
 import com.solera.defrag.ViewStack;
-import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
@@ -61,6 +58,7 @@ import com.tribe.app.presentation.view.component.settings.SettingsPhoneNumberVie
 import com.tribe.app.presentation.view.component.settings.SettingsProfileView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.MissedCallManager;
+import com.tribe.app.presentation.view.utils.RemoteConfigManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewStackHelper;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -117,7 +115,7 @@ public class ProfileActivity extends BaseBroadcastReceiverActivity
   // VARIABLES
   private boolean disableUI = false;
   private ProgressDialog progressDialog;
-  private FirebaseRemoteConfig firebaseRemoteConfig;
+  private RemoteConfigManager remoteConfigManager;
 
   // OBSERVABLES
   private Unbinder unbinder;
@@ -194,17 +192,7 @@ public class ProfileActivity extends BaseBroadcastReceiverActivity
   }
 
   private void initRemoteConfig() {
-    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
-    FirebaseRemoteConfigSettings configSettings =
-        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
-            .build();
-    firebaseRemoteConfig.setConfigSettings(configSettings);
-
-    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        firebaseRemoteConfig.activateFetched();
-      }
-    });
+    remoteConfigManager = RemoteConfigManager.getInstance(this);
   }
 
   private void initDependencyInjector() {
@@ -583,8 +571,8 @@ public class ProfileActivity extends BaseBroadcastReceiverActivity
   }
 
   @Override public void onCreateRoom(Room room) {
-    String linkId = navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.PROFILE,
-        room.getLink(), null, false);
+    String linkId =
+        navigator.sendInviteToCall(this, TagManagerUtils.PROFILE, room.getLink(), null, false);
   }
 
   @Override public void successUpdateUser(User user) {

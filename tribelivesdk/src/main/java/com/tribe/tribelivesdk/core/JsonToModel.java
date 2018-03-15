@@ -199,7 +199,7 @@ public class JsonToModel {
               JSONObject guest = arrayInvited.getJSONObject(i);
               String userName = guest.has("username") ? guest.getString("username") : null;
               guestList.add(new TribeGuest(guest.getString("id"), guest.getString("display_name"),
-                  guest.getString("picture"), false, true, userName));
+                  guest.getString("picture"), false, true, userName, guest.getString("trophy")));
             }
             onInvitedTribeGuestList.onNext(guestList);
           } else if (app.has(WebRTCRoom.MESSAGE_INVITE_REMOVED)) {

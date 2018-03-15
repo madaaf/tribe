@@ -15,6 +15,9 @@ public class Constants {
   public static final String FIREBASE_RATING_NOTIF_TRIGGER = "calls_ratings_trigger";
   public static final String FIREBASE_RATING_NOTIF_TIMEOUT = "calls_ratings_timeout";
   public static final String FIREBASE_COUNTRY_CODES_INVITE = "invite_friends_enabled_country_codes";
+  public static final String FIREBASE_REVIVE_DISABLE_DURATION = "revive_disable_duration";
+  public static final String FIREBASE_REVIVE_MIN_SCORE_TRIGGER = "revive_min_score_trigger";
+  public static final String FIREBASE_REVIVE_MIN_RATIO_TRIGGER = "revive_min_ratio_trigger";
 
   public static final String wording_unlock_roll_the_dice_title =
       "wording_unlock_roll_the_dice_title";

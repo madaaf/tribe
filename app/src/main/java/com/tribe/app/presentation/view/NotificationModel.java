@@ -1,11 +1,8 @@
 package com.tribe.app.presentation.view;
 
-import android.os.Build;
 import android.support.annotation.StringDef;
 import android.view.View;
 import com.tribe.app.domain.entity.Score;
-import com.tribe.app.presentation.view.popup.view.PopupParentView;
-import com.tribe.app.presentation.view.popup.view.PopupView;
 
 /**
  * Created by madaaflak on 09/02/2018.
@@ -39,6 +36,8 @@ public class NotificationModel {
   private Integer btn1DrawableEnd;
   private Integer btn1Background;
 
+  private Listener listener;
+
   private NotificationModel(Builder b) {
     this.title = b.title;
     this.subTitle = b.subTitle;
@@ -54,6 +53,7 @@ public class NotificationModel {
     this.btn1Background = b.btn1Background;
     this.view = b.view;
     this.score = b.score;
+    this.listener = b.listener;
   }
 
   public Integer getBtn1Background() {
@@ -112,6 +112,10 @@ public class NotificationModel {
     return score;
   }
 
+  public Listener getListener() {
+    return listener;
+  }
+
   public static class Builder {
     private String subTitle;
     private String title;
@@ -126,6 +130,7 @@ public class NotificationModel {
     private Integer btn1Background;
     private View view;
     private Score score;
+    private Listener listener;
 
     private @NotificationType String type;
 
@@ -199,8 +204,19 @@ public class NotificationModel {
       return this;
     }
 
+    public Builder listener(Listener listener) {
+      this.listener = listener;
+      return this;
+    }
+
     public NotificationModel build() {
       return new NotificationModel(this);
     }
+  }
+
+  public interface Listener {
+    void onSuccess();
+
+    void onError();
   }
 }

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Pair;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -23,11 +24,11 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.preferences.GameData;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
-import com.tribe.app.presentation.view.component.live.game.aliensattack.GameAliensAttackView;
 import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattleMusicView;
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
@@ -59,7 +60,6 @@ public class GameManagerView extends FrameLayout {
   /**
    * VARIABLES
    */
-
   private Unbinder unbinder;
   private GameManager gameManager;
   private GameView currentGameView;
@@ -73,7 +73,6 @@ public class GameManagerView extends FrameLayout {
   /**
    * OBSERVABLES
    */
-
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private CompositeSubscription subscriptionsGame = new CompositeSubscription();
   private BehaviorSubject<Map<String, TribeGuest>> onPeerMapChange = BehaviorSubject.create();
@@ -81,7 +80,10 @@ public class GameManagerView extends FrameLayout {
   private PublishSubject<Game> onRestartGame = PublishSubject.create();
   private PublishSubject<Game> onStopGame = PublishSubject.create();
   private PublishSubject<Void> onPlayOtherGame = PublishSubject.create();
+  private PublishSubject<Game> onOpenLeaderboard = PublishSubject.create();
   private PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
+  private PublishSubject<GameCoronaView> onRevive = PublishSubject.create();
+  private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
 
   public GameManagerView(@NonNull Context context) {
     super(context);
@@ -96,6 +98,9 @@ public class GameManagerView extends FrameLayout {
   private void initView() {
     initDependencyInjector();
     unbinder = ButterKnife.bind(this);
+
+    setId(View.generateViewId());
+
     gameManager = GameManager.getInstance(getContext());
     peerMap = new HashMap<>();
     invitedMap = new HashMap<>();
@@ -138,6 +143,7 @@ public class GameManagerView extends FrameLayout {
 
           if (currentGameView == null) {
             addGameView(computeGameView(currentGame, sessionGamePair.first.getUserId()));
+            return;
           }
 
           if (currentGameView instanceof GameChallengesView) {
@@ -209,6 +215,7 @@ public class GameManagerView extends FrameLayout {
       Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> obs) {
     invitedMap.put(currentUser.getId(), currentUser.asTribeGuest());
     onInvitedMapChange.onNext(invitedMap);
+    masterMapObs = obs;
 
     subscriptions.add(obs.subscribe(rxHashMapAction -> {
       if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD)) {
@@ -249,9 +256,11 @@ public class GameManagerView extends FrameLayout {
           .map(aBoolean -> gameManager.getCurrentGame())
           .subscribe(onRestartGame));
     } else if (game.getId().equals(Game.GAME_INVADERS)) {
-      GameAliensAttackView gameAlienAttacksView = new GameAliensAttackView(getContext());
-      subscriptionsGame.add(gameAlienAttacksView.onAddScore().subscribe(onAddScore));
-      gameView = gameAlienAttacksView;
+      GameCoronaView gameCoronaView = new GameCoronaView(getContext(), game);
+      subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
+      subscriptionsGame.add(gameCoronaView.onRevive().subscribe(onRevive));
+      subscriptionsGame.add(gameCoronaView.onOpenLeaderboard().subscribe(onOpenLeaderboard));
+      gameView = gameCoronaView;
     } else if (game.getId().equals(Game.GAME_TRIVIA)) {
       GameTriviaView gameTriviaView = new GameTriviaView(getContext());
       subscriptionsGame.add(gameTriviaView.onAddScore().subscribe(onAddScore));
@@ -278,12 +287,19 @@ public class GameManagerView extends FrameLayout {
       GameWebView gameWebView = new GameWebView(getContext());
       subscriptionsGame.add(gameWebView.onAddScore().subscribe(onAddScore));
       gameView = gameWebView;
+    } else if (game.isCorona()) {
+      GameCoronaView gameCoronaView = new GameCoronaView(getContext(), game);
+      subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
+      subscriptionsGame.add(gameCoronaView.onRevive().subscribe(onRevive));
+      subscriptionsGame.add(gameCoronaView.onOpenLeaderboard().subscribe(onOpenLeaderboard));
+      gameView = gameCoronaView;
     }
 
     gameView.setWebRTCRoom(webRTCRoom);
     game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));
-    gameView.start(game, onPeerMapChange, onInvitedMapChange, onLiveViewsChange, userId);
+    gameView.start(game, masterMapObs, onPeerMapChange, onInvitedMapChange, onLiveViewsChange,
+        userId);
     gameView.setNextGame();
 
     return gameView;
@@ -328,11 +344,19 @@ public class GameManagerView extends FrameLayout {
     return onAddScore;
   }
 
+  public Observable<GameCoronaView> onRevive() {
+    return onRevive;
+  }
+
   public Observable<Game> onStopGame() {
     return onStopGame;
   }
 
   public Observable<Void> onPlayOtherGame() {
     return onPlayOtherGame;
+  }
+
+  public Observable<Game> onOpenLeaderboard() {
+    return onOpenLeaderboard;
   }
 }

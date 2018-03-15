@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.view.adapter;
 
 import android.content.Context;
+import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
@@ -43,7 +44,15 @@ public class GameMVPViewAdapter implements GameMVPView {
 
   }
 
+  @Override public void onGameFile(GameFile gameFile) {
+  
+  }
+  
   @Override public void onGameData(List<String> data) {
+
+  }
+
+  @Override public void onUserBestScore(Score score) {
 
   }
 }

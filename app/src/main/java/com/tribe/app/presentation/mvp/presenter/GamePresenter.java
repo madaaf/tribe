@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.f2prateek.rx.preferences.Preference;
+import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
@@ -13,9 +14,11 @@ import com.tribe.app.domain.interactor.game.GetCloudUserLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskFriendsScores;
 import com.tribe.app.domain.interactor.game.GetDiskGameLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskUserLeaderboard;
+import com.tribe.app.domain.interactor.game.GetGameFile;
 import com.tribe.app.domain.interactor.game.GetGameData;
 import com.tribe.app.domain.interactor.game.GetGamesData;
 import com.tribe.app.domain.interactor.game.GetTriviaData;
+import com.tribe.app.domain.interactor.game.GetUserBestScore;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.tribelivesdk.game.Game;
@@ -46,7 +49,9 @@ public class GamePresenter implements Presenter {
   private GetTriviaData getTriviaData;
   private GetBattleMusicData getBattleMusicData;
   private GetGamesData getGamesData;
+  private GetGameFile getGameFile;
   private GetGameData getGameData;
+  private GetUserBestScore getUserBestScore;
 
   // SUBSCRIBERS
   private GameLeaderboardSubscriber cloudGameLeaderboardSubscriber;
@@ -61,7 +66,7 @@ public class GamePresenter implements Presenter {
       GetDiskUserLeaderboard diskUserLeaderboard, GetDiskFriendsScores diskFriendsScores,
       GetCloudFriendsScores cloudFriendsScores, GetTriviaData getTriviaData,
       GetBattleMusicData getBattleMusicData, GetCloudGames getGames, GetGamesData getGamesData,
-      GetGameData getGameData) {
+      GetGameFile getGameFile, GetGameData getGameData, GetUserBestScore getUserBestScore) {
     this.cloudGameLeaderboard = cloudGameLeaderboard;
     this.diskGameLeaderboard = diskGameLeaderboard;
     this.cloudUserLeaderboard = cloudUserLeaderboard;
@@ -72,7 +77,9 @@ public class GamePresenter implements Presenter {
     this.getBattleMusicData = getBattleMusicData;
     this.getGames = getGames;
     this.getGamesData = getGamesData;
+    this.getGameFile = getGameFile;
     this.getGameData = getGameData;
+    this.getUserBestScore = getUserBestScore;
   }
 
   @Override public void onViewDetached() {
@@ -85,6 +92,7 @@ public class GamePresenter implements Presenter {
     getTriviaData.unsubscribe();
     getBattleMusicData.unsubscribe();
     getGames.unsubscribe();
+    getGameFile.unsubscribe();
     getGameData.unsubscribe();
     gameMVPView = null;
   }
@@ -257,6 +265,28 @@ public class GamePresenter implements Presenter {
       @Override public void onNext(List<String> o) {
         if (getGameData != null) getGameData.unsubscribe();
         if (gameMVPView != null) gameMVPView.onGameData(o);
+      }
+    });
+  }
+
+  public void getGameFile(String url) {
+    getGameFile.setup(url);
+    getGameFile.execute(new DefaultSubscriber<GameFile>() {
+      @Override public void onError(Throwable e) {
+        Timber.e(e);
+      }
+
+      @Override public void onNext(GameFile gameFile) {
+        if (gameMVPView != null) gameMVPView.onGameFile(gameFile);
+      }
+    });
+  }
+
+  public void getUserBestScore(String gameId) {
+    getUserBestScore.setup(gameId);
+    getUserBestScore.execute(new DefaultSubscriber<Score>() {
+      @Override public void onNext(Score score) {
+        if (gameMVPView != null) gameMVPView.onUserBestScore(score);
       }
     });
   }

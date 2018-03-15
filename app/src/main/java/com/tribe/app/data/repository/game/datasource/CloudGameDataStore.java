@@ -14,6 +14,7 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.entity.CategoryEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.GameFileRealm;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ScoreUserRealm;
@@ -268,4 +269,26 @@ public class CloudGameDataStore implements GameDataStore {
 
     return result;
   });
+
+  @Override public Observable<GameFileRealm> getGameFile(String url) {
+    return null;
+  }
+
+  @Override public Observable<ScoreRealm> getUserBestScore(String gameId) {
+    String userIdsListFormated = "\"" + accessToken.getUserId() + "\"";
+    return this.tribeApi.getUserListInfos(
+        context.getString(R.string.lookup_userid, userIdsListFormated,
+            context.getString(R.string.userfragment_leaderboard,
+                JsonUtils.arrayToJson(GameManager.playableGames)))).map(userRealms -> {
+      List<ScoreRealm> realmList = new ArrayList<>();
+      realmList.addAll(userRealms.get(0).getScores());
+      return realmList;
+    }).doOnError(Throwable::printStackTrace).map(scoreRealmList -> {
+      for (ScoreRealm scoreRealm : scoreRealmList) {
+        if (scoreRealm.getGame_id().equals(gameId)) return scoreRealm;
+      }
+
+      return null;
+    });
+  }
 }

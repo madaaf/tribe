@@ -5,6 +5,7 @@ import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ScoreRealmDataMapper;
 import com.tribe.app.data.repository.game.datasource.GameDataStore;
 import com.tribe.app.data.repository.game.datasource.GameDataStoreFactory;
+import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
@@ -78,5 +79,15 @@ import timber.log.Timber;
   @Override public Observable<Map<String, BattleMusicPlaylist>> getBattleMusicData() {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
     return gameDataStore.getBattleMusicData();
+  }
+
+  @Override public Observable<GameFile> getGameFile(String url) {
+    return null;
+  }
+
+  @Override public Observable<Score> getUserBestScore(String gameId) {
+    GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
+    return gameDataStore.getUserBestScore(gameId)
+        .map(scoreRealm -> scoreRealmDataMapper.transform(scoreRealm));
   }
 }

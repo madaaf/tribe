@@ -3,6 +3,7 @@ package com.tribe.app.presentation.view.component.live.game.web;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -30,9 +31,11 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
@@ -72,6 +75,8 @@ public class GameWebView extends GameViewWithEngine {
     unbinder = ButterKnife.bind(this);
 
     mainHandler = new Handler(context.getMainLooper());
+
+    layoutProgress.setBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
 
     webView.setFocusable(true);
     webView.setFocusableInTouchMode(true);
@@ -293,11 +298,14 @@ public class GameWebView extends GameViewWithEngine {
    * PUBLIC
    */
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+  @Override public void start(Game game,
+      Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs,
+      Observable<Map<String, TribeGuest>> mapObservable,
       Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     wordingPrefix = "game_webv1_";
-    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
+    super.start(game, masterMapObs, mapObservable, mapInvitedObservable, liveViewsObservable,
+        userId);
     if (!StringUtils.isEmpty(game.getUrl())) webView.loadUrl(game.getUrl());
   }
 

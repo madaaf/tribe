@@ -762,6 +762,10 @@
       ...on GameWebRoom {
         url
       }
+
+      ...on GameCorona {
+        url
+      }
     }
   </string>
 

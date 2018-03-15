@@ -181,6 +181,7 @@ android {
           'proguard-glide.pro',
           'proguard-retrofit.pro',
           'proguard-webrtc.pro',
+          'proguard-corona.pro',
           'proguard-rules.pro'
     }
   }
@@ -275,6 +276,13 @@ dependencies {
   compile('com.crashlytics.sdk.android:crashlytics:2.9.0@aar') {
     transitive = true;
   }
+
+  // Corona
+  compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+  provided files('libs/Corona.jar')
+  provided files('libs/JNLua.jar')
+  provided files('libs/network.jar')
+  //provided files('libs/zip4j_1.3.2.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'

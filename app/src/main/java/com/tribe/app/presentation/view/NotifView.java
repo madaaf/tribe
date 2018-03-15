@@ -149,11 +149,11 @@ public class NotifView extends FrameLayout {
         case NotificationModel.POPUP_FACEBOOK:
           if (!FacebookUtils.isLoggedIn()) {
             subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-              newChatPresenter.loadFBContactsInvite();
+              newChatPresenter.loadFBContactsInvite(notificationModel.getListener());
               hideNextNotif();
             }));
           } else {
-            newChatPresenter.loadFBContactsInvite();
+            newChatPresenter.loadFBContactsInvite(notificationModel.getListener());
             hideNextNotif();
           }
           break;
@@ -179,8 +179,11 @@ public class NotifView extends FrameLayout {
           String[] userIds = new String[1];
           userIds[0] = score.getUser().getId();
           String intent = (score.isAbove()) ? MessagePoke.INTENT_FUN : MessagePoke.INTENT_JEALOUS;
-          messagePresenter.createPoke(userIds, score.getEmoticon(), score.getGame().getId(), intent);
-          Toast.makeText(context, context.getString(R.string.poke_sent_confirmation, score.getUser().getDisplayName()), Toast.LENGTH_SHORT).show();
+          messagePresenter.createPoke(userIds, score.getEmoticon(), score.getGame().getId(),
+              intent);
+          Toast.makeText(context,
+              context.getString(R.string.poke_sent_confirmation, score.getUser().getDisplayName()),
+              Toast.LENGTH_SHORT).show();
           hideNextNotif();
           break;
       }
@@ -212,7 +215,10 @@ public class NotifView extends FrameLayout {
 
     gestureScanner = new GestureDetectorCompat(getContext(), new TapGestureListener());
 
-    textDismiss.setOnTouchListener((v, event) -> gestureScanner.onTouchEvent(event));
+    pager.setOnTouchListener((v, event) -> {
+      gestureScanner.onTouchEvent(event);
+      return super.onTouchEvent(event);
+    });
 
     ((AndroidApplication) getContext().getApplicationContext()).getApplicationComponent()
         .inject(this);
@@ -378,6 +384,14 @@ public class NotifView extends FrameLayout {
   private class TapGestureListener implements GestureDetector.OnGestureListener {
 
     @Override public boolean onDown(MotionEvent e) {
+      return false;
+    }
+
+    @Override public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override public boolean onSingleTapUp(MotionEvent e) {
       if (pager.getCurrentItem() == data.size() - 1) {
         hideView();
         tagCancelAction();
@@ -387,14 +401,6 @@ public class NotifView extends FrameLayout {
       }
 
       return true;
-    }
-
-    @Override public void onShowPress(MotionEvent e) {
-
-    }
-
-    @Override public boolean onSingleTapUp(MotionEvent e) {
-      return false;
     }
 
     @Override

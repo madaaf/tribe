@@ -496,7 +496,7 @@ public class CloudUserDataStore implements UserDataStore {
             context.getString(R.string.userfragment_infos)));
       }
     }, (lookupHolder, lookupUsers) -> {
-      if (lookupHolder != null && lookupUsers != null) {
+      if (lookupHolder != null && lookupUsers != null && lookupHolder.getLookupObjectList() != null) {
         List<LookupObject> listLookup = lookupHolder.getLookupObjectList();
         for (int i = 0; i < listLookup.size(); i++) {
           LookupObject lookupObject = listLookup.get(i);

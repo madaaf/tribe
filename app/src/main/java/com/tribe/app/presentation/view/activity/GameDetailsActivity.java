@@ -35,7 +35,6 @@ import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
-import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -45,7 +44,6 @@ import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
-import com.tribe.tribelivesdk.model.TribeGuest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -54,6 +52,8 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+
+import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
 
 public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
 
@@ -87,13 +87,12 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
   @BindView(R.id.txtMyScoreRanking) TextViewRanking txtMyScoreRanking;
   @BindView(R.id.txtMyScoreScore) TextViewScore txtMyScoreScore;
   @BindView(R.id.txtMyScoreName) TextViewFont txtMyScoreName;
-  @BindView(R.id.cardAvatarBestScore) CardView cardAvatarBestScore;
-  @BindView(R.id.avatarBestScore) NewAvatarView avatarBestScore;
-  @BindView(R.id.txtBestScoreRanking) TextViewRanking txtBestScoreRanking;
-  @BindView(R.id.txtBestScoreScore) TextViewScore txtBestScoreScore;
-  @BindView(R.id.txtBestScoreName) TextViewFont txtBestScoreName;
-  @BindView(R.id.imgConnect) ImageView imgConnect;
   @BindView(R.id.btnMulti) View btnMulti;
+  @BindView(R.id.leaderbordContainer) View leaderbordContainer;
+  @BindView(R.id.leaderbordLabel) TextViewFont leaderbordLabel;
+  @BindView(R.id.leaderbordPictoStart) ImageView leaderbordPictoStart;
+  @BindView(R.id.leaderbordPictoEnd) ImageView leaderbordPictoEnd;
+  @BindView(R.id.leaderbordSeparator) View leaderbordSeparator;
 
   // VARIABLES
   private UserComponent userComponent;
@@ -164,7 +163,7 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == Navigator.FROM_GAME_DETAILS && resultCode == RESULT_OK && data != null) {
+    if (requestCode == FROM_GAME_DETAILS && resultCode == RESULT_OK && data != null) {
       setResult(RESULT_OK, data);
       finish();
     }
@@ -244,15 +243,7 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     txtMyScoreName.setText(getCurrentUser().getDisplayName());
     txtMyScoreScore.setScore(score.getValue());
     txtMyScoreRanking.setRanking(score.getRanking());
-    avatarMyScore.load(getCurrentUser().getProfilePicture());
-
-    if (game.getFriendLeader() != null) {
-      TribeGuest friendLeader = game.getFriendLeader();
-      txtBestScoreScore.setScore(friendLeader.getScoreValue());
-      txtBestScoreName.setText(friendLeader.getDisplayName());
-      txtBestScoreRanking.setRanking(friendLeader.getRankingValue());
-      avatarBestScore.load(friendLeader.getPicture());
-    }
+    avatarMyScore.load(getCurrentUser().getProfilePicture()); //SOEF
   }
 
   private void initDependencyInjector() {
@@ -321,14 +312,11 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     animateViewEntry(txtMyScoreName);
     animateViewEntry(txtMyScoreRanking);
     animateViewEntry(txtMyScoreScore);
-
-    if (game.getFriendLeader() != null) {
-      animateViewEntry(imgConnect);
-      animateViewEntry(cardAvatarBestScore);
-      animateViewEntry(txtBestScoreName);
-      animateViewEntry(txtBestScoreRanking);
-      animateViewEntry(txtBestScoreScore);
-    }
+    animateViewEntry(leaderbordContainer);
+    animateViewEntry(leaderbordLabel);
+    animateViewEntry(leaderbordPictoStart);
+    animateViewEntry(leaderbordPictoEnd);
+    animateViewEntry(leaderbordSeparator);
   }
 
   private void animateLayoutWithConstraintSet(ConstraintSet constraintSet,
@@ -390,21 +378,24 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     finish();
   }
 
-  @OnClick(R.id.btnLeaderboards) void openLeaderboards() {
-    navigator.navigateToGameLeaderboard(this, game.getId());
-  }
-
   @OnClick(R.id.btnSingle) void openLive() {
+
     Bundle bundle = new Bundle();
     bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.HOME);
     bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.LAUNCHED);
     bundle.putString(TagManagerUtils.NAME, game.getId());
     tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
+
     navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
+    //navigator.navigateToCorona(this, game.getId(), FROM_GAME_DETAILS);
   }
 
   @OnClick(R.id.btnMulti) void openGameMembers() {
     navigator.navigateToGameMembers(this, game.getId());
+  }
+
+  @OnClick(R.id.leaderbordContainer) void onClickLeaderbordLabel() {
+    navigator.navigateToGameLeaderboard(this, game.getId());
   }
 
   /**

@@ -42,6 +42,7 @@ import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.utils.preferences.WebSocketUrlOverride;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.utils.Degrees;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.DoubleUtils;
@@ -516,6 +517,11 @@ public class LiveView extends FrameLayout {
 
     persistentSubscriptions.add(gameManager.onRemoteUserStartGame().subscribe(pairSessionGame -> {
       if (pairSessionGame.second != null) {
+        if (gameManager.getCurrentGame() != null &&
+            !gameManager.getCurrentGame().getId().equals(pairSessionGame.second.getId())) {
+          stopGame();
+        }
+
         startGameStats(pairSessionGame.second.getId());
         String displayName = getDisplayNameFromSession(pairSessionGame.first);
         displayStartGameNotification(pairSessionGame.second.getTitle(), displayName);
@@ -853,6 +859,7 @@ public class LiveView extends FrameLayout {
                     viewRinging.onFinish();
                     viewRinging.startRinging();
                   }
+
                   onShouldJoinRoom.onNext(null);
                 }
               };
@@ -893,10 +900,6 @@ public class LiveView extends FrameLayout {
   public int nbInRoom() {
     if (live.getRoom() == null) return 1;
     return Math.max(1, live.getRoom().nbUsersTotal());
-  }
-
-  public boolean shouldLeave() {
-    return liveRowViewMap.size() == 0 && live != null;
   }
 
   public @LiveActivity.Source String getSource() {
@@ -999,7 +1002,7 @@ public class LiveView extends FrameLayout {
     for (User user : live.getRoom().getAllUsers()) {
       if (remotePeer.getSession().getUserId().equals(user.getId())) {
         guest = new TribeGuest(user.getId(), user.getDisplayName(), user.getProfilePicture(), false,
-            true, user.getUsername());
+            true, user.getUsername(), user.getTrophy());
         guest.setExternal(remotePeer.getSession().isExternal());
       }
     }
@@ -1010,7 +1013,7 @@ public class LiveView extends FrameLayout {
         if (remotePeer.getSession().getUserId().equals(friend.getId())) {
           guest =
               new TribeGuest(friend.getId(), friend.getDisplayName(), friend.getProfilePicture(),
-                  false, true, friend.getUsername());
+                  false, true, friend.getUsername(), friend.getTrophy());
           guest.setExternal(remotePeer.getSession().isExternal());
         }
       }
@@ -1018,7 +1021,7 @@ public class LiveView extends FrameLayout {
 
     if (guest == null) {
       guest = new TribeGuest(remotePeer.getSession().getUserId(),
-          getDisplayNameFromId(remotePeer.getSession().getUserId()), null, false, false, "");
+          getDisplayNameFromId(remotePeer.getSession().getUserId()), null, false, false, "", null);
       guest.setExternal(remotePeer.getSession().isExternal());
     }
 
@@ -1458,8 +1461,8 @@ public class LiveView extends FrameLayout {
     return Observable.merge(viewControlsLive.openGameStore(), viewGameManager.onPlayOtherGame());
   }
 
-  public Observable<Game> openLeaderboard() {
-    return viewControlsLive.onLeaderboard();
+  public Observable<Game> onOpenLeaderboard() {
+    return Observable.merge(viewControlsLive.onOpenLeaderboard(), viewGameManager.onOpenLeaderboard());
   }
 
   public Observable<Void> onSwipeUp() {
@@ -1468,6 +1471,10 @@ public class LiveView extends FrameLayout {
 
   public Observable<Pair<String, Integer>> onAddScore() {
     return viewGameManager.onAddScore();
+  }
+
+  public Observable<GameCoronaView> onRevive() {
+    return viewGameManager.onRevive();
   }
 }
 

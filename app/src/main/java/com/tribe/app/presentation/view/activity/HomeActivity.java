@@ -28,10 +28,7 @@ import com.facebook.accountkit.AccountKitLoginResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.tbruyelle.rxpermissions.RxPermissions;
-import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
@@ -88,6 +85,7 @@ import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.ListUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
+import com.tribe.app.presentation.view.utils.RemoteConfigManager;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -203,7 +201,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       false, finish = false, searchViewDisplayed = false, shouldNavigateToChat = false,
       notificationReceiverSupportRegistered = false;
   private RxPermissions rxPermissions;
-  private FirebaseRemoteConfig firebaseRemoteConfig;
+  private RemoteConfigManager remoteConfigManager;
   private Shortcut supportShortcut = createShortcutSupport();
 
   @Override protected void onCreate(Bundle savedInstanceState) {
@@ -712,23 +710,13 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   private void displayFacebookNotification() {
     List<NotificationModel> list = new ArrayList<>();
     NotifView view = new NotifView(getBaseContext());
-    NotificationModel a = NotificationUtils.getFbNotificationModel(this);
+    NotificationModel a = NotificationUtils.getFbNotificationModel(this, null);
     list.add(a);
     view.show(this, list);
   }
 
   private void initRemoteConfig() {
-    firebaseRemoteConfig = firebaseRemoteConfig.getInstance();
-    FirebaseRemoteConfigSettings configSettings =
-        new FirebaseRemoteConfigSettings.Builder().setDeveloperModeEnabled(BuildConfig.DEBUG)
-            .build();
-    firebaseRemoteConfig.setConfigSettings(configSettings);
-
-    firebaseRemoteConfig.fetch().addOnCompleteListener(task -> {
-      if (task.isSuccessful()) {
-        firebaseRemoteConfig.activateFetched();
-      }
-    });
+    remoteConfigManager = RemoteConfigManager.getInstance(this);
   }
 
   private void initDependencyInjector() {
@@ -983,8 +971,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
   @Override
   public void onCreateRoom(Room room, String feature, String phone, boolean shouldOpenSMS) {
-    navigator.sendInviteToCall(this, firebaseRemoteConfig, TagManagerUtils.INVITE, room.getLink(),
-        phone, shouldOpenSMS);
+    navigator.sendInviteToCall(this, TagManagerUtils.INVITE, room.getLink(), phone, shouldOpenSMS);
   }
 
   @Override public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

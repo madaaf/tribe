@@ -13,7 +13,6 @@ import android.widget.Toast;
 import com.facebook.accountkit.AccountKit;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.domain.entity.Recipient;
@@ -28,6 +27,7 @@ import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActivity;
+import com.tribe.app.presentation.view.activity.CoronaGameActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GameDetailsActivity;
 import com.tribe.app.presentation.view.activity.GameLeaderboardActivity;
@@ -41,6 +41,7 @@ import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.utils.Constants;
+import com.tribe.app.presentation.view.utils.RemoteConfigManager;
 import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.PictureActivity;
 import java.util.List;
@@ -52,6 +53,8 @@ import javax.inject.Inject;
 public class Navigator {
 
   @Inject User user;
+
+  private RemoteConfigManager remoteConfigManager;
 
   public static int REQUEST_COUNTRY = 1000;
   public static int FROM_LIVE = 1001;
@@ -67,6 +70,7 @@ public class Navigator {
 
   @Inject public Navigator(Context context) {
     ((AndroidApplication) context.getApplicationContext()).getApplicationComponent().inject(this);
+    remoteConfigManager = RemoteConfigManager.getInstance(context);
   }
 
   public void navigateToLauncher(Context context) {
@@ -180,6 +184,14 @@ public class Navigator {
       Intent intent = GameDetailsActivity.getCallingIntent(activity, gameId);
       activity.startActivityForResult(intent, FROM_GAMESTORE);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+    }
+  }
+
+  public void navigateToCoronaActivity(Activity activity) {
+    if (activity != null) {
+      Intent intent = CoronaGameActivity.getCallingIntent(activity);
+      activity.startActivity(intent);
+      activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
   }
 
@@ -426,10 +438,9 @@ public class Navigator {
     shareText(activity, text, phoneNumber);
   }
 
-  public void openMessageAppForInviteWithUrl(Activity activity,
-      FirebaseRemoteConfig firebaseRemoteConfig, String url, String phoneNumber,
+  public void openMessageAppForInviteWithUrl(Activity activity, String url, String phoneNumber,
       boolean shouldOpenDefaultSMSApp) {
-    String text = firebaseRemoteConfig.getString("invite_message");
+    String text = remoteConfigManager.getString("invite_message", "");
 
     if (StringUtils.isEmpty(text)) {
       text = activity.getString(R.string.onboarding_user_alert_call_link_content, url);
@@ -459,8 +470,8 @@ public class Navigator {
     }
   }
 
-  public String sendInviteToCall(BaseActivity activity, FirebaseRemoteConfig firebaseRemoteConfig,
-      String feature, String link, String phoneNumber, boolean shouldOpenDefaultSms) {
+  public String sendInviteToCall(BaseActivity activity, String feature, String link,
+      String phoneNumber, boolean shouldOpenDefaultSms) {
     String title = activity.getString(R.string.onboarding_user_alert_call_link_metadata_title,
         activity.getCurrentUser().getDisplayName());
     String description =
@@ -478,15 +489,13 @@ public class Navigator {
                 finalUrl = link;
               }
 
-              openMessageAppForInviteWithUrl(activity, firebaseRemoteConfig, finalUrl, phoneNumber,
-                  shouldOpenDefaultSms);
+              openMessageAppForInviteWithUrl(activity, finalUrl, phoneNumber, shouldOpenDefaultSms);
             });
 
     return link;
   }
 
-  public String sendInviteToMessenger(BaseActivity activity,
-      FirebaseRemoteConfig firebaseRemoteConfig, String feature, String link) {
+  public String sendInviteToMessenger(BaseActivity activity, String feature, String link) {
     String title = activity.getString(R.string.onboarding_user_alert_call_link_metadata_title,
         activity.getCurrentUser().getDisplayName());
     String description =
@@ -504,7 +513,7 @@ public class Navigator {
                 finalUrl = link;
               }
 
-              String text = firebaseRemoteConfig.getString("invite_message");
+              String text = remoteConfigManager.getString("invite_message", "");
 
               if (StringUtils.isEmpty(text)) {
                 text =

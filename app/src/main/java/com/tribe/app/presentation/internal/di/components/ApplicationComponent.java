@@ -10,6 +10,7 @@ import com.tribe.app.data.cache.ChatCache;
 import com.tribe.app.data.cache.GameCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
+import com.tribe.app.data.network.DownloadGamesService;
 import com.tribe.app.data.network.WSService;
 import com.tribe.app.data.network.authorizer.TribeAuthorizer;
 import com.tribe.app.data.network.job.BaseJob;
@@ -367,6 +368,8 @@ public interface ApplicationComponent {
 
   // SERVICES
   void inject(WSService wsService);
+
+  void inject(DownloadGamesService gamesService);
 
   //Exposed to sub-graphs.
   Context context();

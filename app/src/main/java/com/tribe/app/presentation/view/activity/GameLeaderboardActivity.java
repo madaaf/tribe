@@ -44,6 +44,7 @@ import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.utils.preferences.PokeUserGame;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.ShortcutUtil;
@@ -381,6 +382,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       txtRanking.setVisibility(View.GONE);
       txtScore.setBackgroundResource(R.drawable.bg_empty_podium_score);
     } else {
+      score.setRanking(position);
       avatarEmpty.setVisibility(View.GONE);
       cardViewAvatar.setVisibility(View.VISIBLE);
       txtName.setBackground(null);
@@ -495,10 +497,15 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       }
       return true;
     }
+
     setPokeInPreference(score);
 
-    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
-        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+    Bundle bundle = new Bundle();
+    bundle.putInt(TagManagerUtils.RANK, score.getRanking());
+    tagManager.trackEvent(TagManagerUtils.Poke, bundle);
+
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null &&
+        score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
 
     if (isAbove) {
       soundManager.playSound(SoundManager.POKE_LAUGH, SoundManager.SOUND_LOW);

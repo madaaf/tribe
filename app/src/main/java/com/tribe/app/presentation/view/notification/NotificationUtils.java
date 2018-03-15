@@ -22,6 +22,7 @@ import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,12 +47,12 @@ public class NotificationUtils {
       return builder.build();
     }
 
-    if ((notificationPayload.getClickAction() == null && StringUtils.isEmpty(
-        notificationPayload.getBody())) || notificationPayload.getClickAction()
-        .equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
+    if ((notificationPayload.getClickAction() == null &&
+        StringUtils.isEmpty(notificationPayload.getBody())) ||
+        notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_END_LIVE)) {
       return null;
-    } else if (notificationPayload.getClickAction() == null && !StringUtils.isEmpty(
-        notificationPayload.getBody())) {
+    } else if (notificationPayload.getClickAction() == null &&
+        !StringUtils.isEmpty(notificationPayload.getBody())) {
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       return builder.build();
     }
@@ -204,7 +205,8 @@ public class NotificationUtils {
         notificationPayload.getSessionId());
   }
 
-  public static NotificationModel getFbNotificationModel(Context context) {
+  public static NotificationModel getFbNotificationModel(Context context,
+      NotificationModel.Listener listener) {
     NotificationModel a = new NotificationModel.Builder().title(
         context.getString(R.string.invite_facebook_popup_title))
         .subTitle(context.getString(R.string.invite_facebook_popup_subtitle))
@@ -214,11 +216,12 @@ public class NotificationUtils {
         .background(R.drawable.fb_back_notif)
         .logoPicture(R.drawable.facebook_circular_icon)
         .type(NotificationModel.POPUP_FACEBOOK)
+        .listener(listener)
         .build();
     return a;
   }
 
-  public static void displayUplaodAvatarNotification(Context context, Score score) {
+  public static void displayPokeNotificationModel(Context context, Score score) {
     List<NotificationModel> list = new ArrayList<>();
     NotifView view = new NotifView(context);
 
@@ -284,10 +287,15 @@ public class NotificationUtils {
     }
 
     if (stateManager.shouldDisplay(StateManager.FIRST_CHALLENGE_POPUP)) {
-      list.add(NotificationUtils.getFbNotificationModel(context));
+      list.add(NotificationUtils.getFbNotificationModel(context, null));
 
-      if (currentUser.getProfilePicture() == null || currentUser.getProfilePicture().isEmpty()) {
-        list.add(NotificationUtils.getAvatarNotificationModel(context));
+      Date now = new Date();
+      if ((currentUser.getProfilePicture() == null ||
+          currentUser.getProfilePicture().isEmpty() ||
+          currentUser.getProfilePicture().equals("http://no")) &&
+          (currentUser.getCreatedAt() != null && (now.getTime() - currentUser.getCreatedAt().getTime()) > 24 * 60 * 60 * 1000)) {
+        NotificationModel b = NotificationUtils.getAvatarNotificationModel(context);
+        list.add(b);
       }
     }
 
@@ -295,13 +303,5 @@ public class NotificationUtils {
     stateManager.addTutorialKey(StateManager.FIRST_CHALLENGE_POPUP);
 
     return list;
-  }
-
-  public static void displayUplaodAvatarNotification(Context context) {
-    List<NotificationModel> list = new ArrayList<>();
-    NotifView view = new NotifView(context);
-    NotificationModel a = NotificationUtils.getAvatarNotificationModel(context);
-    list.add(a);
-    view.show((Activity) context, list);
   }
 }

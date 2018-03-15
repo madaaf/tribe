@@ -37,6 +37,7 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameChallenge;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -141,11 +142,14 @@ public class GameChallengesView extends GameView {
     nextChallenge();
   }
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> map,
-      Observable<Map<String, TribeGuest>> mapInvited,
+  @Override public void start(Game game,
+      Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs,
+      Observable<Map<String, TribeGuest>> map, Observable<Map<String, TribeGuest>> mapInvited,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    super.start(game, map, mapInvited, liveViewsObservable, userId);
+    super.start(game, masterMapObs, map, mapInvited, liveViewsObservable, userId);
     gameChallenge = (GameChallenge) game;
+    currentMasterId = userId;
+    game.setCurrentMaster(peerMap.get(userId));
     Timber.d("start");
   }
 

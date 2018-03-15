@@ -1,6 +1,9 @@
 package com.tribe.tribelivesdk.model;
 
+import com.tribe.tribelivesdk.game.GameManager;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -13,11 +16,13 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   public static final String DISPLAY_NAME = "display_name";
   public static final String PICTURE = "picture";
   public static final String USERNAME = "username";
+  public static final String TROPHY = "trophy";
 
   private String id;
   private String displayName;
   private String userName;
   private String picture;
+  private String trophy;
   private boolean isInvite;
   private List<String> memberPics;
   private boolean canRemove;
@@ -31,13 +36,14 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   }
 
   public TribeGuest(String id, String displayName, String picture, boolean isInvite,
-      boolean canRemove, String userName) {
+      boolean canRemove, String userName, String trophy) {
     this.id = id;
     this.displayName = displayName;
     this.picture = picture;
     this.isInvite = isInvite;
     this.canRemove = canRemove;
     this.userName = userName;
+    this.trophy = trophy;
   }
 
   public boolean isAnonymous() {
@@ -117,7 +123,7 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   }
 
   public boolean canPlayGames(String gameId) {
-    return true;
+    return Arrays.asList(GameManager.playableGames).contains(gameId);
   }
 
   public void setScoreValue(int scoreValue) {
@@ -128,7 +134,6 @@ public class TribeGuest extends GroupJoiner implements Serializable {
     return scoreValue;
   }
 
-
   public void setRankingValue(int rankingValue) {
     this.rankingValue = rankingValue;
   }
@@ -136,17 +141,36 @@ public class TribeGuest extends GroupJoiner implements Serializable {
   public int getRankingValue() {
     return rankingValue;
   }
+
+  public String getTrophy() {
+    return trophy;
+  }
+
+  public void setTrophy(String trophy) {
+    this.trophy = trophy;
+  }
+
+  public Hashtable<Object, Object> asCoronaUser() {
+    Hashtable<Object, Object> data = new Hashtable<>();
+    data.put("id", id);
+    data.put("displayName", displayName);
+    if (trophy != null && !trophy.equals("")) data.put("trophy", trophy);
+    if (picture != null && !picture.equals("")) data.put("picture", picture);
+    if (userName != null && !userName.equals("")) data.put("username", userName);
+    return data;
+  }
+
   @Override public String toString() {
-    return "TribeGuest{"
-        + "id='"
-        + id
-        + '\''
-        + ", displayName='"
-        + displayName
-        + '\''
-        + ", userName='"
-        + userName
-        + '\''
-        + '}';
-      }
+    return "TribeGuest{" +
+        "id='" +
+        id +
+        '\'' +
+        ", displayName='" +
+        displayName +
+        '\'' +
+        ", userName='" +
+        userName +
+        '\'' +
+        '}';
+  }
 }

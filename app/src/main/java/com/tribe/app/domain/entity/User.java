@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -438,6 +439,15 @@ public class User
     guest.setPicture(getProfilePicture());
     guest.setUserName(getUsername());
     return guest;
+  }
+
+  public Hashtable<Object, Object> asCoronaUser() {
+    Hashtable<Object, Object> data = new Hashtable<>();
+    data.put("id", id);
+    data.put("displayName", display_name);
+    if (picture != null && !picture.equals("")) data.put("picture", picture);
+    if (username != null && !username.equals("")) data.put("username", username);
+    return data;
   }
 
   @Override public boolean equals(Object o) {

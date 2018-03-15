@@ -1,11 +1,14 @@
 package com.tribe.app.data.cache;
 
 import android.content.Context;
+import android.util.Pair;
+import com.tribe.app.data.realm.GameFileRealm;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
+import com.tribe.app.presentation.utils.FileUtils;
 import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmResults;
@@ -14,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by tiago on 01/27/2017.
@@ -21,13 +26,15 @@ import javax.inject.Inject;
 public class GameCacheImpl implements GameCache {
 
   private Context context;
+  private Realm mainRealm;
   private Map<String, List<TriviaQuestion>> mapTrivia;
   private Map<String, BattleMusicPlaylist> mapBattleMusic;
 
-  @Inject public GameCacheImpl(Context context) {
+  @Inject public GameCacheImpl(Context context, Realm realm) {
     this.context = context;
     mapTrivia = new HashMap<>();
     mapBattleMusic = new HashMap<>();
+    mainRealm = realm;
   }
 
   @Override public void putGames(List<GameRealm> gameRealmList) {
@@ -36,6 +43,7 @@ public class GameCacheImpl implements GameCache {
     try {
       obsRealm.executeTransaction(realm1 -> {
         realm1.delete(GameRealm.class);
+        realm1.delete(GameFileRealm.class);
 
         for (GameRealm gameRealm : gameRealmList) {
           if (gameRealm.getFriendLeader() != null) {
@@ -43,6 +51,25 @@ public class GameCacheImpl implements GameCache {
             gameRealm.getFriendLeaderScoreUser().setValue(gameRealm.getFriendLeader().getValue());
             gameRealm.getFriendLeaderScoreUser()
                 .setRanking(gameRealm.getFriendLeader().getRanking());
+          }
+
+          if (gameRealm.get__typename().equals(GameRealm.GAME_CORONA)) {
+            GameFileRealm gameFileRealm =
+                realm1.where(GameFileRealm.class).equalTo("gameId", gameRealm.getId()).findFirst();
+
+            gameRealm.setUrl("https://static.tribe.pm/games/corona/aliens-attack-dev.zip?t=10");
+
+            if (gameFileRealm == null || !gameFileRealm.getUrl().equals(gameRealm.getUrl())) {
+              if (gameFileRealm != null) {
+                gameFileRealm.deleteFromRealm();
+                FileUtils.delete(context, gameFileRealm.getUrl(), FileUtils.ZIP);
+              }
+
+              gameFileRealm = realm1.createObject(GameFileRealm.class, gameRealm.getUrl());
+              gameFileRealm.setDownloadStatus(GameFileRealm.STATUS_PENDING);
+              gameFileRealm.setGameId(gameRealm.getId());
+              realm1.insert(gameFileRealm);
+            }
           }
         }
 
@@ -191,5 +218,95 @@ public class GameCacheImpl implements GameCache {
 
   @Override public Map<String, BattleMusicPlaylist> getBattleMusicData() {
     return mapBattleMusic;
+  }
+
+  @Override public Observable<List<GameFileRealm>> getFilesToDownload() {
+    return mainRealm.where(GameFileRealm.class)
+        .equalTo("downloadStatus", GameFileRealm.STATUS_TO_DOWNLOAD)
+        .findAll()
+        .asObservable()
+        .filter(gameFileRealmList -> gameFileRealmList.isLoaded())
+        .map(gameFileRealmList -> mainRealm.copyFromRealm(gameFileRealmList))
+        .unsubscribeOn(AndroidSchedulers.mainThread());
+  }
+
+  @Override public void updateGameFiles(Map<String, List<Pair<String, Object>>> updateList) {
+    Realm newRealm = Realm.getDefaultInstance();
+
+    try {
+      newRealm.executeTransaction(realm -> {
+        for (String key : updateList.keySet()) {
+          GameFileRealm gameFileRealm =
+              newRealm.where(GameFileRealm.class).equalTo("url", key).findFirst();
+          if (gameFileRealm != null) {
+            updateSingleGameFile(gameFileRealm, updateList.get(key));
+          }
+        }
+      });
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    } finally {
+      newRealm.close();
+    }
+  }
+
+  @Override public void updateGameFiles(String url, List<Pair<String, Object>> updateList) {
+    Realm newRealm = Realm.getDefaultInstance();
+
+    try {
+      newRealm.executeTransaction(realm -> {
+        GameFileRealm gameFileRealm =
+            newRealm.where(GameFileRealm.class).equalTo("url", url).findFirst();
+        if (gameFileRealm != null) {
+          updateSingleGameFile(gameFileRealm, updateList);
+        }
+      });
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    } finally {
+      newRealm.close();
+    }
+  }
+
+  private void updateSingleGameFile(GameFileRealm gameFileRealm,
+      List<Pair<String, Object>> pairList) {
+    for (Pair<String, Object> pair : pairList) {
+      if (pair.first.equals(GameFileRealm.DOWNLOAD_STATUS)) {
+        gameFileRealm.setDownloadStatus((String) pair.second);
+      } else if (pair.first.equals(GameFileRealm.PATH)) {
+        gameFileRealm.setPath((String) pair.second);
+      } else if (pair.first.equals(GameFileRealm.PROGRESS)) {
+        gameFileRealm.setProgress(((Long) pair.second).intValue());
+      } else if (pair.first.equals(GameFileRealm.TOTAL_SIZE)) {
+        gameFileRealm.setTotalSize(((Long) pair.second).intValue());
+      }
+    }
+  }
+
+  @Override public GameFileRealm getGameFile(String url) {
+    Realm newRealm = Realm.getDefaultInstance();
+
+    try {
+      GameFileRealm gameFileRealm =
+          newRealm.where(GameFileRealm.class).equalTo("url", url).findFirst();
+      if (gameFileRealm != null) {
+        return newRealm.copyFromRealm(gameFileRealm);
+      }
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    } finally {
+      newRealm.close();
+    }
+
+    return null;
+  }
+
+  @Override public Observable<GameFileRealm> getGameFileObs(String url) {
+    return mainRealm.where(GameFileRealm.class)
+        .equalTo("url", url)
+        .findAll()
+        .asObservable()
+        .map(gameFileRealmList -> mainRealm.copyFromRealm(gameFileRealmList.get(0)))
+        .unsubscribeOn(AndroidSchedulers.mainThread());
   }
 }

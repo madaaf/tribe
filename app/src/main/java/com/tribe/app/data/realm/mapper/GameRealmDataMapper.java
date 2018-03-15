@@ -71,7 +71,7 @@ import javax.inject.Singleton;
       if (gameRealm.getFriendLeaderScoreUser() != null) {
         TribeGuest guest = new TribeGuest(gameRealm.getFriendLeaderScoreUser().getId(),
             gameRealm.getFriendLeaderScoreUser().getDisplay_name(),
-            gameRealm.getFriendLeaderScoreUser().getPicture(), false, false, null);
+            gameRealm.getFriendLeaderScoreUser().getPicture(), false, false, null, null);
         guest.setScoreValue(gameRealm.getFriendLeaderScoreUser().getValue());
         guest.setRankingValue(gameRealm.getFriendLeaderScoreUser().getRanking());
         game.setFriendLeader(guest);

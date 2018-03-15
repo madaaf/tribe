@@ -66,6 +66,8 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
+import static com.tribe.app.presentation.navigation.Navigator.FROM_GAMESTORE;
+
 public class GameStoreActivity extends GameActivity implements AppStateListener {
 
   private static final String FROM_AUTH = "FROM_AUTH";
@@ -173,6 +175,8 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
+    //startService(DownloadGamesService.
+    //    getCallingIntent(this));
   }
 
   private void displayFakeSupportNotif() {
@@ -203,18 +207,19 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     }
 
     stopService();
+    //stopDownloadService();
     super.onDestroy();
   }
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == Navigator.FROM_GAMESTORE && data != null) {
+    if (requestCode == FROM_GAMESTORE && data != null) {
       String gameId = data.getStringExtra(GameStoreActivity.GAME_ID);
       boolean callRoulette = data.getBooleanExtra(GameMembersActivity.CALL_ROULETTE, false);
       Shortcut shortcut = (Shortcut) data.getSerializableExtra(GameMembersActivity.SHORTCUT);
 
       if (callRoulette) {
-        navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, gameId);
+        navigator.navigateToNewCall(this, LiveActivity.SOURCE_CALL_ROULETTE, gameId);
       } else if (shortcut != null) {
         navigator.navigateToLive(this, shortcut, LiveActivity.SOURCE_SHORTCUT_ITEM, gameId, null);
       }
@@ -228,6 +233,11 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     Intent i = new Intent(this, WSService.class);
     stopService(i);
   }
+
+  //private void stopDownloadService() {
+  //  Intent i = new Intent(this, DownloadGamesService.class);
+  //  stopService(i);
+  //}
 
   private void initAppStateMonitor() {
     appStateMonitor = RxAppStateMonitor.create(getApplication());

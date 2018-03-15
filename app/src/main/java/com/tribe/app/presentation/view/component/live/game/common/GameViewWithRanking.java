@@ -13,10 +13,10 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,11 +38,8 @@ public abstract class GameViewWithRanking extends GameView {
   protected static final String CONTEXT_KEY = "context";
 
   // VARIABLES
-  protected Map<TribeGuest, RankingStatus> mapStatuses;
   protected Map<String, RankingStatus> mapStatusesById;
-  protected Map<TribeGuest, Integer> mapRanking;
   protected Map<String, Integer> mapRankingById;
-  protected String previousSortedHash;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptionsSession = new CompositeSubscription();
@@ -72,9 +69,7 @@ public abstract class GameViewWithRanking extends GameView {
 
   protected void initView(Context context) {
     super.initView(context);
-    mapStatuses = new HashMap<>();
     mapStatusesById = new HashMap<>();
-    mapRanking = new HashMap<>();
     mapRankingById = new HashMap<>();
   }
 
@@ -89,7 +84,7 @@ public abstract class GameViewWithRanking extends GameView {
         .subscribe(pair -> receiveMessage(pair.first, pair.second)));
   }
 
-  protected void receiveMessage(TribeSession tribeSession, JSONObject jsonObject) {
+  @Override protected void receiveMessage(TribeSession tribeSession, JSONObject jsonObject) {
     if (jsonObject.has(game.getId())) {
       try {
         JSONObject message = jsonObject.getJSONObject(game.getId());
@@ -110,14 +105,11 @@ public abstract class GameViewWithRanking extends GameView {
   }
 
   protected void setStatus(RankingStatus ranking, String userId) {
-    TribeGuest tribeGuest = peerMap.get(userId);
-    mapStatuses.put(tribeGuest, ranking);
     mapStatusesById.put(userId, ranking);
     updateLiveScores();
   }
 
   protected void resetStatuses() {
-    mapStatuses.clear();
     mapStatusesById.clear();
     updateLiveScores();
   }
@@ -127,7 +119,6 @@ public abstract class GameViewWithRanking extends GameView {
 
     for (String tribeGuestId : scores.keySet()) {
       if (scores.containsKey(tribeGuestId) && peerMap.containsKey(tribeGuestId)) {
-        mapRanking.put(peerMap.get(tribeGuestId), scores.get(tribeGuestId));
         mapRankingById.put(tribeGuestId, scores.get(tribeGuestId));
       }
     }
@@ -137,33 +128,8 @@ public abstract class GameViewWithRanking extends GameView {
     updateLiveScores();
   }
 
-  protected void resetLiveScores() {
-    for (LiveStreamView view : liveViewsMap.values()) {
-      view.updateScoreWithEmoji(0, null);
-    }
-  }
-
   protected void updateLiveScores() {
-    Collection<Integer> rankings = mapRanking.values();
-    int maxRanking = rankings != null && rankings.size() > 0 ? Collections.max(rankings) : 0;
-    int minRanking = rankings != null && rankings.size() > 0 ? Collections.min(rankings) : 0;
-
-    for (String userId : liveViewsMap.keySet()) {
-      LiveStreamView liveStreamView = liveViewsMap.get(userId);
-      if (mapRankingById.get(userId) != null) {
-        int newScore = mapRankingById.get(userId);
-        int oldScore = liveStreamView.getScore();
-        String statusText =
-            mapStatusesById.containsKey(userId) ? mapStatusesById.get(userId).getEmoji() : "";
-        String emojiText =
-            (newScore > 0 && newScore == maxRanking ? EmojiParser.demojizedText(":crown:")
-                : ((newScore == minRanking ? EmojiParser.demojizedText(":poop:") : "")));
-        liveStreamView.updateScoreWithEmoji(newScore, statusText + emojiText);
-        if (newScore != oldScore) liveStreamView.bounceView();
-      } else {
-        liveStreamView.updateScoreWithEmoji(0, null);
-      }
-    }
+    updateLiveScores(mapRankingById, mapStatusesById);
   }
 
   protected void setScore(String userId, int score, boolean shouldBroadcast) {
@@ -175,14 +141,13 @@ public abstract class GameViewWithRanking extends GameView {
     }
 
     TribeGuest tribeGuest = null;
-    for (TribeGuest trg : mapRanking.keySet()) {
+    for (TribeGuest trg : peerMap.values()) {
       if (trg.getId().equals(userId)) {
         tribeGuest = trg;
       }
     }
 
     if (tribeGuest != null) {
-      mapRanking.put(tribeGuest, score);
       mapRankingById.put(tribeGuest.getId(), score);
     }
   }
@@ -200,7 +165,7 @@ public abstract class GameViewWithRanking extends GameView {
     }
 
     TribeGuest tribeGuest = null;
-    for (TribeGuest trg : mapRanking.keySet()) {
+    for (TribeGuest trg : peerMap.values()) {
       if (trg.getId().equals(userId)) {
         tribeGuest = trg;
       }
@@ -208,11 +173,10 @@ public abstract class GameViewWithRanking extends GameView {
 
     if (tribeGuest != null) {
       int newValue = 1;
-      if (mapRanking.get(tribeGuest) != null) {
-        newValue = mapRanking.get(tribeGuest) + points;
+      if (mapRankingById.get(tribeGuest.getId()) != null) {
+        newValue = mapRankingById.get(tribeGuest.getId()) + points;
       }
 
-      mapRanking.put(tribeGuest, newValue);
       mapRankingById.put(tribeGuest.getId(), newValue);
     }
   }
@@ -273,17 +237,21 @@ public abstract class GameViewWithRanking extends GameView {
    * PUBLIC
    */
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> map,
+  @Override public void start(Game game, Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs, Observable<Map<String, TribeGuest>> map,
       Observable<Map<String, TribeGuest>> mapInvited,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    super.start(game, map, mapInvited, liveViewsObservable, userId);
+    super.start(game, masterMapObs, map, mapInvited, liveViewsObservable, userId);
 
     game.getContextMap().put(SCORES_KEY, new HashMap<String, Integer>());
 
     subscriptionsSession.add(peerMapObservable.debounce(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(mapGuest -> {
-          Set<TribeGuest> rankedPlayers = mapRanking.keySet();
+          Set<TribeGuest> rankedPlayers = new HashSet<>();
+          for (String id : mapRankingById.keySet()) {
+            if (peerMap.containsKey(id)) rankedPlayers.add(peerMap.get(id));
+          }
+
           List<TribeGuest> playerList = new ArrayList<>();
 
           for (TribeGuest guest : peerMap.values()) {
@@ -304,9 +272,7 @@ public abstract class GameViewWithRanking extends GameView {
           }
 
           for (TribeGuest tribeGuest : leftPlayerList) {
-            mapRanking.remove(tribeGuest);
             mapRankingById.remove(tribeGuest.getId());
-            mapStatuses.remove(tribeGuest);
             mapStatusesById.remove(tribeGuest.getId());
           }
 

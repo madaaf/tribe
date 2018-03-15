@@ -34,6 +34,7 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import rx.subscriptions.CompositeSubscription;
@@ -43,7 +44,7 @@ import rx.subscriptions.CompositeSubscription;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-  protected static boolean isFristLeaveRoom = false;
+  protected static boolean isFirstLeaveRoom = false;
 
   private Context context;
 
@@ -94,26 +95,26 @@ public abstract class BaseActivity extends AppCompatActivity {
   }
 
   private void displayChallengerNotifications() {
-    if (challengeNotificationsPref != null
-        && challengeNotificationsPref.get() != null
-        && !challengeNotificationsPref.get().isEmpty()) {
+    if (challengeNotificationsPref != null &&
+        challengeNotificationsPref.get() != null &&
+        !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
-    } else if (isFristLeaveRoom) {
-      isFristLeaveRoom = false;
+    } else if (isFirstLeaveRoom) {
+      isFirstLeaveRoom = false;
       List<NotificationModel> list = new ArrayList<>();
       NotifView view = new NotifView(getBaseContext());
-      NotificationModel a = NotificationUtils.getFbNotificationModel(this);
+      NotificationModel a = NotificationUtils.getFbNotificationModel(this, null);
       list.add(a);
       view.show(this, list);
     }
   }
 
   private void connectToFacebook() {
-    if (isFristLeaveRoom) {
+    if (isFirstLeaveRoom) {
       displayPopups();
-      isFristLeaveRoom = false;
+      isFirstLeaveRoom = false;
     }
   }
 
@@ -121,9 +122,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     List<NotificationModel> list = new ArrayList<>();
     NotifView view = new NotifView(getBaseContext());
 
-    NotificationModel a = NotificationUtils.getFbNotificationModel(this);
+    NotificationModel a = NotificationUtils.getFbNotificationModel(this, null);
     list.add(a);
-    if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
+    Date now = new Date();
+    if ((user.getProfilePicture() == null ||
+        user.getProfilePicture().isEmpty() ||
+        user.getProfilePicture().equals("http://no")) &&
+        (user.getCreatedAt() != null && (now.getTime() - user.getCreatedAt().getTime()) > 24 * 60 * 60 * 1000)) {
       NotificationModel b = NotificationUtils.getAvatarNotificationModel(this);
       list.add(b);
     }

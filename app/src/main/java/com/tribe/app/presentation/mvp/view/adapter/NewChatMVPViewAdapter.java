@@ -50,4 +50,8 @@ public class NewChatMVPViewAdapter implements NewChatMVPView, ShortcutMVPView {
   @Override public void onLoadFBContactsInvite(List<Contact> contactList) {
 
   }
+
+  @Override public void onLoadFBContactsInviteFailed() {
+
+  }
 }

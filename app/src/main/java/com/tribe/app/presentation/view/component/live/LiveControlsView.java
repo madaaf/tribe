@@ -158,7 +158,7 @@ public class LiveControlsView extends FrameLayout {
   private PublishSubject<Boolean> onGameMenuOpened = PublishSubject.create();
   private PublishSubject<Game> onResetScores = PublishSubject.create();
   private PublishSubject<Void> openGameStore = PublishSubject.create();
-  private PublishSubject<Game> onLeaderboard = PublishSubject.create();
+  private PublishSubject<Game> onOpenLeaderboard = PublishSubject.create();
 
   private Subscription timerSubscription;
 
@@ -526,7 +526,7 @@ public class LiveControlsView extends FrameLayout {
               } else if (labelType.getTypeDef().equals(LabelType.GAME_PLAY_ANOTHER)) {
                 onStopGame.onNext(game);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_LEADERBOARD)) {
-                onLeaderboard.onNext(game);
+                onOpenLeaderboard.onNext(game);
               } else if (labelType.getTypeDef().equals(LabelType.GAME_STOP)) {
                 onStopGame.onNext(game);
               }
@@ -706,7 +706,6 @@ public class LiveControlsView extends FrameLayout {
   }
 
   public void startGame(Game game) {
-    gameManager.setCurrentGame(game);
     onStartGame.onNext(game);
     subscriptions.add(Observable.timer(400, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -717,6 +716,8 @@ public class LiveControlsView extends FrameLayout {
     if (currentGameView == null) {
       currentGameView = addGameToView(viewFrom, game);
     }
+
+    filterManager.suspendFilter();
   }
 
   public void stopGame() {
@@ -724,6 +725,8 @@ public class LiveControlsView extends FrameLayout {
       layoutContainerParamLive.removeView(currentGameView);
       currentGameView = null;
     }
+
+    filterManager.resumeFilter();
 
     gameManager.stop();
     showGameControls();
@@ -831,7 +834,7 @@ public class LiveControlsView extends FrameLayout {
         .observeOn(AndroidSchedulers.mainThread());
   }
 
-  public Observable<Game> onLeaderboard() {
-    return onLeaderboard;
+  public Observable<Game> onOpenLeaderboard() {
+    return onOpenLeaderboard;
   }
 }

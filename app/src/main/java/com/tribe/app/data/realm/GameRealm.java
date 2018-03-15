@@ -14,6 +14,7 @@ public class GameRealm extends RealmObject {
 
   public static final String GAME_NATIVE = "GameNative";
   public static final String GAME_WEBV1 = "GameWebV1";
+  public static final String GAME_CORONA = "GameCorona";
 
   @PrimaryKey private String id;
 

@@ -97,17 +97,18 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
       @NonNull RecyclerView.ViewHolder holder) {
     LeaderboardUserViewHolder vh = (LeaderboardUserViewHolder) holder;
     Score score = items.get(position);
-    score.setRanking(position + 1);
+    int ranking = position + 4;
+    score.setRanking(ranking);
     vh.viewAvatar.load(score.getUser().getProfilePicture());
 
-    vh.txtRanking.setRanking(position + 3);
+    vh.txtRanking.setRanking(ranking);
     vh.txtRanking.setTextColor(Color.parseColor("#" + score.getGame().getPrimary_color()));
 
     vh.txtName.setText(score.getUser().getDisplayName());
     vh.txtScore.setScore(score.getValue());
 
-    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
-        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null &&
+        score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
 
     if (score.getUser().getId().equals(user.getId())) {
       emo = EmojiParser.demojizedText(context.getString(R.string.poke_emoji_own));
@@ -138,7 +139,7 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
 
     vh.pokeEmoji.setOnClickListener(v -> {
       if (stateManager.shouldDisplay(StateManager.FIRST_POKE)) {
-        NotificationUtils.displayUplaodAvatarNotification(context, score);
+        NotificationUtils.displayPokeNotificationModel(context, score);
         stateManager.addTutorialKey(StateManager.FIRST_POKE);
         vh.pokeEmoji.setText(
             EmojiParser.demojizedText(context.getString(R.string.poke_emoji_disabled)));

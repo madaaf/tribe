@@ -50,9 +50,11 @@ public class Game {
   public static final String GAME_SUPPORT = "GAME_SUPPORT";
   public static final String GAME_LOGO = "GAME_LOGO";
   public static final String GAME_BIRD_RUSH = "birdRush";
+  public static final String GAME_INVADERS_CORONA = "lab-aliens-attack-corona";
 
   public static final String TYPE_NAME_WEBV1 = "GameWebV1";
   public static final String TYPE_NAME_NATIVE = "GameNative";
+  public static final String TYPE_NAME_CORONA = "GameCorona";
 
   // VARIABLE
   protected Context context;
@@ -71,7 +73,8 @@ public class Game {
   protected String __typename;
   protected String url;
   protected boolean localFrameDifferent = false, hasView = false, isOverLive = false, isWeb = false,
-      isUserAction = false, needsLandscape = false, isNotOverLiveWithScores = false;
+      isCorona = false, isUserAction = false, needsLandscape = false, isNotOverLiveWithScores =
+      false;
   protected List<TribeGuest> peerList;
   protected List<String> dataList;
   protected String previousGuestId = null;
@@ -98,9 +101,17 @@ public class Game {
     this.isOverLive = id.equals(GAME_INVADERS) ||
         id.equals(GAME_SPEED_RACER) ||
         id.equals(GAME_SLICE_FRUIT) ||
-        id.equals(GAME_BIRD_RUSH);
+        id.equals(GAME_BIRD_RUSH) ||
+        id.equals(GAME_INVADERS_CORONA);
     this.isNotOverLiveWithScores = id.equals(GAME_TRIVIA) || id.equals(GAME_BATTLE_MUSIC);
     this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
+
+    if (__typename != null) {
+      this.isCorona = __typename.equals(TYPE_NAME_CORONA);
+    } else {
+      this.isCorona = id.equals(GAME_INVADERS_CORONA);
+    }
+
     this.needsLandscape = id.equals(GAME_SLICE_FRUIT);
     this.peerList = new ArrayList<>();
     this.dataList = new ArrayList<>();
@@ -129,6 +140,10 @@ public class Game {
 
   public boolean isWeb() {
     return isWeb;
+  }
+
+  public boolean isCorona() {
+    return isCorona;
   }
 
   public boolean needsLandscape() {
@@ -300,6 +315,8 @@ public class Game {
   }
 
   protected TribeGuest getNextGuest() {
+    if (peerList == null || peerList.size() == 0) return null;
+
     Collections.sort(peerList, (o1, o2) -> o1.getId().compareTo(o2.getId()));
     TribeGuest tribeGuest;
 

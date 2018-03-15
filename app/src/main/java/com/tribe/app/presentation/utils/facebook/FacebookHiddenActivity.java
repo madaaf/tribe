@@ -68,6 +68,7 @@ public class FacebookHiddenActivity extends BaseActivity {
         @Override public void onError(FacebookException exception) {
           Toast.makeText(FacebookHiddenActivity.this, exception.getMessage(), Toast.LENGTH_LONG)
               .show();
+          rxFacebook.onLogin(null);
           finish();
         }
       });

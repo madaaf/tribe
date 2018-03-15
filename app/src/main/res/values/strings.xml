@@ -247,7 +247,7 @@
 	<string name="onboarding_new_version_popup_done">Let\'s go!</string>
 	
 	<!-- Onboarding Phone -->
-	<string name="onboarding_baseline">Have fun, together.</string>
+	<string name="onboarding_baseline">Live battle your friends!</string>
 	<string name="onboarding_enter_options">Enter with</string>
 	<string name="onboarding_option_facebook">Facebook</string>
 	<string name="onboarding_option_phone_number">Phone number</string>
@@ -469,7 +469,7 @@
 	<string name="profile_remove_title">Delete your account :skull: :skull:</string>
 	<string name="profile_remove_message">Are you sure you want to delete your account?</string>
 	<string name="profile_remove_confirm">Confirm</string>
-	<string name="profile_calls_length_suffix">\ncalling friends on tribe!</string>
+	<string name="profile_calls_length_suffix">\nplaying with friends on tribe!</string>
 	<string name="profile_calls_length_mins">%1$d mins</string>
 	<string name="profile_calls_length_min">%1$d min</string>
 	<string name="profile_change_phone">Change phone number :telephone:</string>
@@ -989,6 +989,10 @@
 	<string name="leaderboard_friend_is_best">%1$s is the best!</string>
 	<string name="leaderboard_section_trophies">TROPHIES</string>
 	<string name="leaderboard_section_games">GAMES</string>
+	<string name="leaderboard_address_book_title">Connect Address Book</string>
+	<string name="leaderboard_address_book_subtitle">Tap to see more friends scores!</string>
+	<string name="leaderboard_facebook_title">Connect Facebook</string>
+	<string name="leaderboard_facebook_subtitle">Tap to see more friends scores!</string>
 	
 	<!-- Hang Up -->
 	<string name="hang_up_title">TAP TO HANG UP</string>
@@ -1065,7 +1069,7 @@
 	<string name="trophy_requirement_day_usage_description">open Tribe %1$d days in a row</string>
 	<string name="trophy_requirement_games_played_description">try %1$d games</string>
 	<string name="trophy_requirement_multiplayer_sessions_description">%1$d multiplayer sessions</string>
-	<string name="trophy_requirement_best_scores_description">be the best at %1$d games</string>
+	<string name="trophy_requirement_best_scores_description">be the best at %1$d game(s)</string>
 	<string name="trophy_requirement_last_separator">and</string>
 	<string name="trophy_noob_description">You\'re in the race. Check out the other trophies to get started!</string>
 	

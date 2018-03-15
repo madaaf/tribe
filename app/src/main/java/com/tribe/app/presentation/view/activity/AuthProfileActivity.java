@@ -132,7 +132,6 @@ public class AuthProfileActivity extends BaseActivity implements ProfileInfoMVPV
       Bundle bundleBis = new Bundle();
       bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
-
       addressBook.set(true);
     });
   }

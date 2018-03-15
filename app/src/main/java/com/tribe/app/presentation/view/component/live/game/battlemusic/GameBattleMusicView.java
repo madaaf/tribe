@@ -35,6 +35,7 @@ import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.JsonUtils;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -226,12 +227,12 @@ public class GameBattleMusicView extends GameViewWithRanking {
   }
 
   private void nextTrack() {
-    Collection<Integer> rankings = mapRanking.values();
+    Collection<Integer> rankings = mapRankingById.values();
     List<String> leadersDisplayName = new ArrayList<>();
     int maxRanking = rankings != null && rankings.size() > 0 ? Collections.max(rankings) : 0;
-    for (TribeGuest tribeGuest : mapRanking.keySet()) {
-      if (mapRanking.get(tribeGuest) == maxRanking) {
-        leadersDisplayName.add(tribeGuest.getDisplayName());
+    for (String id : mapRankingById.keySet()) {
+      if (mapRankingById.get(id) == maxRanking) {
+        leadersDisplayName.add(peerMap.get(id).getDisplayName());
       }
     }
 
@@ -634,10 +635,13 @@ public class GameBattleMusicView extends GameViewWithRanking {
 
   }
 
-  @Override public void start(Game game, Observable<Map<String, TribeGuest>> mapObservable,
+  @Override public void start(Game game,
+      Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs,
+      Observable<Map<String, TribeGuest>> mapObservable,
       Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
-    super.start(game, mapObservable, mapInvitedObservable, liveViewsObservable, userId);
+    super.start(game, masterMapObs, mapObservable, mapInvitedObservable, liveViewsObservable,
+        userId);
 
     currentMasterId = userId;
 

@@ -20,8 +20,10 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.modules.ActivityModule;
+import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
+import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -29,12 +31,16 @@ import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import com.tribe.tribelivesdk.model.TribeSession;
+import com.tribe.tribelivesdk.util.ObservableRxHashMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+import org.json.JSONObject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -65,16 +71,20 @@ public abstract class GameView extends FrameLayout {
   protected String currentMasterId;
   protected boolean landscapeMode = false;
   protected TextViewFont txtViewLandscape;
+  protected String previousSortedHash;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
   protected CompositeSubscription subscriptionsRoom = new CompositeSubscription();
+  protected Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
   protected Observable<Map<String, TribeGuest>> peerMapObservable;
   protected Observable<Map<String, TribeGuest>> invitedMapObservable;
   protected PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
   protected PublishSubject<Game> onRestart = PublishSubject.create();
   protected PublishSubject<Game> onStop = PublishSubject.create();
   protected PublishSubject<Void> onPlayOtherGame = PublishSubject.create();
+  protected PublishSubject<GameCoronaView> onRevive = PublishSubject.create();
+  protected PublishSubject<Game> onOpenLeaderboard = PublishSubject.create();
 
   public GameView(@NonNull Context context) {
     super(context);
@@ -185,14 +195,49 @@ public abstract class GameView extends FrameLayout {
     void call();
   }
 
+  protected void resetLiveScores() {
+    for (LiveStreamView view : liveViewsMap.values()) {
+      view.updateScoreWithEmoji(0, null);
+    }
+  }
+
+  protected void updateLiveScores(Map<String, Integer> scores,
+      Map<String, GameViewWithRanking.RankingStatus> statuses) {
+    Collection<Integer> rankings = scores.values();
+    int maxRanking = rankings != null && rankings.size() > 0 ? Collections.max(rankings) : 0;
+    int minRanking = rankings != null && rankings.size() > 0 ? Collections.min(rankings) : 0;
+
+    for (String userId : liveViewsMap.keySet()) {
+      LiveStreamView liveStreamView = liveViewsMap.get(userId);
+      if (scores.get(userId) != null) {
+        int newScore = scores.get(userId);
+        int oldScore = liveStreamView.getScore();
+        String statusText =
+            statuses != null && statuses.containsKey(userId) ? statuses.get(userId).getEmoji() : "";
+        String emojiText =
+            (newScore > 0 && newScore == maxRanking ? EmojiParser.demojizedText(":crown:")
+                : ((newScore == minRanking ? EmojiParser.demojizedText(":poop:") : "")));
+        liveStreamView.updateScoreWithEmoji(newScore, statusText + emojiText);
+        if (newScore != oldScore) liveStreamView.bounceView();
+      } else {
+        liveStreamView.updateScoreWithEmoji(0, null);
+      }
+    }
+  }
+
+  protected void receiveMessage(TribeSession tribeSession, JSONObject jsonObject) {
+
+  }
+
   /**
    * PUBLIC
    */
 
   public abstract void setNextGame();
 
-  public void start(Game game, Observable<Map<String, TribeGuest>> map,
-      Observable<Map<String, TribeGuest>> mapInvited,
+  public void start(Game game,
+      Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs,
+      Observable<Map<String, TribeGuest>> map, Observable<Map<String, TribeGuest>> mapInvited,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     this.game = game;
     this.peerMapObservable = map;
@@ -249,6 +294,7 @@ public abstract class GameView extends FrameLayout {
     if (userId.equals(currentMasterId)) {
       subscriptions.add(generateNewMasterId().subscribe(newMasterId -> {
         currentMasterId = newMasterId;
+        game.setCurrentMaster(peerMap.get(userId));
 
         if (newMasterId.equals(currentUser.getId())) {
           takeOverGame();
@@ -265,6 +311,10 @@ public abstract class GameView extends FrameLayout {
     return onAddScore;
   }
 
+  public Observable<GameCoronaView> onRevive() {
+    return onRevive;
+  }
+
   public Observable<Game> onRestart() {
     return onRestart;
   }
@@ -275,5 +325,9 @@ public abstract class GameView extends FrameLayout {
 
   public Observable<Void> onPlayOtherGame() {
     return onPlayOtherGame;
+  }
+
+  public Observable<Game> onOpenLeaderboard() {
+    return onOpenLeaderboard;
   }
 }
