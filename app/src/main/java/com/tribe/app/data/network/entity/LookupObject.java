@@ -74,4 +74,22 @@ public class LookupObject {
     return commonFriendsNameList;
   }
 
+  @Override public String toString() {
+    return "LookupObject{"
+        + "phone='"
+        + phone
+        + '\''
+        + ", userId='"
+        + userId
+        + '\''
+        + ", howManyFriends="
+        + howManyFriends
+        + ", lastName='"
+        + lastName
+        + '\''
+        + ", firstName='"
+        + firstName
+        + '\''
+        + '}';
+  }
 }

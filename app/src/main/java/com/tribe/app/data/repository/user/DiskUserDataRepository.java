@@ -1,7 +1,10 @@
 package com.tribe.app.data.repository.user;
 
+import android.content.Context;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.data.network.entity.LookupFbObject;
+import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
@@ -213,6 +216,10 @@ import rx.Observable;
     return userDataStore.contacts()
         .map(collection -> contactRealmDataMapper.transform(
             new ArrayList<ContactInterface>(collection)));
+  }
+
+  @Override public Observable<List<LookupFbObject>> contactsFbId(Context context) {
+    return null;
   }
 
   @Override public Observable<List<Contact>> contactsFB() {

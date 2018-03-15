@@ -36,6 +36,8 @@ import com.tribe.app.data.network.deserializer.HowManyFriendsDeserializer;
 import com.tribe.app.data.network.deserializer.InstallsDeserializer;
 import com.tribe.app.data.network.deserializer.InvitesListDeserializer;
 import com.tribe.app.data.network.deserializer.LookupFBDeserializer;
+import com.tribe.app.data.network.deserializer.LookupFbObjectDeserializer;
+import com.tribe.app.data.network.deserializer.LookupObjectDeserializer;
 import com.tribe.app.data.network.deserializer.NewInstallDeserializer;
 import com.tribe.app.data.network.deserializer.RemoveMessageDeserializer;
 import com.tribe.app.data.network.deserializer.RoomDeserializer;
@@ -52,6 +54,8 @@ import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.entity.BookRoomLinkEntity;
 import com.tribe.app.data.network.entity.GameDataEntity;
 import com.tribe.app.data.network.entity.LookupFBResult;
+import com.tribe.app.data.network.entity.LookupFbObject;
+import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.network.entity.RefreshEntity;
 import com.tribe.app.data.network.entity.RemoveMessageEntity;
 import com.tribe.app.data.network.entity.RoomLinkEntity;
@@ -179,6 +183,8 @@ import timber.log.Timber;
         .registerTypeAdapter(new TypeToken<UserRealm>() {
         }.getType(), new TribeUserDeserializer(utcSimpleDate))
         .registerTypeAdapter(AccessToken.class, new TribeAccessTokenDeserializer())
+        .registerTypeAdapter(LookupFbObject.class, new LookupFbObjectDeserializer()) // SOEF
+        .registerTypeAdapter(LookupObject.class, new LookupObjectDeserializer()) // SOEF
         .registerTypeAdapter(Installation.class, new NewInstallDeserializer<>())
         .registerTypeAdapter(MessageRealm.class, new CreateMessageDeserializer())
         .registerTypeAdapter(Date.class,
@@ -431,9 +437,9 @@ import timber.log.Timber;
           clearLock();
         }
 
-        if (responseRefresh != null &&
-            responseRefresh.isSuccessful() &&
-            responseRefresh.body() != null) {
+        if (responseRefresh != null
+            && responseRefresh.isSuccessful()
+            && responseRefresh.body() != null) {
           AccessToken newAccessToken = responseRefresh.body();
           Timber.d("New access_token : " + newAccessToken.getAccessToken());
           Timber.d("New refresh_token : " + newAccessToken.getRefreshToken());
@@ -518,10 +524,10 @@ import timber.log.Timber;
 
     @Override public okhttp3.Response intercept(Chain chain) throws IOException {
 
-      if (tribeAuthorizer != null &&
-          tribeAuthorizer.getAccessToken() != null &&
-          tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null &&
-          tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
+      if (tribeAuthorizer != null
+          && tribeAuthorizer.getAccessToken() != null
+          && tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null
+          && tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
 
         Timber.d(
             "The token has expired, we know it locally, so we automatically launch a refresh before hitting the backend.");
@@ -605,16 +611,15 @@ import timber.log.Timber;
 
       List<String> customAnnotations = original.headers("@");
       if (customAnnotations.contains("UseUserToken")) {
-        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType() +
-            " " +
-            tribeAuthorizer.getAccessToken().getAccessToken());
+        requestBuilder.header("Authorization",
+            tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken()
+                .getAccessToken());
 
         TribeApiUtils.appendTribeHeaders(context, tribeAuthorizer.getAccessToken().getUserId(),
             requestBuilder);
       } else {
-        byte[] data = (tribeAuthorizer.getApiClient() +
-            ":" +
-            DateUtils.unifyDate(tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
+        byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
+            tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
         requestBuilder.header("Authorization", "Basic " + base64);

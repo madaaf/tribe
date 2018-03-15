@@ -8,7 +8,6 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
-import android.webkit.ValueCallback;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -20,10 +19,12 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.tribe.app.R;
+import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.presentation.utils.EmojiParser;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -32,6 +33,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
@@ -53,9 +56,11 @@ import timber.log.Timber;
   private PublishSubject<Boolean> notifyFriendsSubject;
   private Observable<List<ContactFBRealm>> friendListObservable;
   private Observable<List<ContactFBRealm>> friendInvitableListObservable;
+  private Observable<List<String>> fbIdsListObservable;
   private Observable<FacebookEntity> facebookEntityObservable;
   private LoginResult loginResult;
   private int countHandle = 0;
+
 
   @Inject public RxFacebook(Context context) {
     this.context = context;

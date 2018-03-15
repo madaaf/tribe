@@ -28,7 +28,6 @@ import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.mvp.view.adapter.UserMVPViewAdapter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.EmojiParser;
-import com.tribe.app.presentation.utils.Extras;
 import com.tribe.app.presentation.utils.IntentUtils;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -145,13 +144,14 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   private void initParams(Intent intent) {
     if (intent != null && intent.hasExtra(FROM_AUTH)) {
       boolean fromExtra = (Boolean) intent.getSerializableExtra(FROM_AUTH);
-      if (fromExtra){
+      if (fromExtra) {
         displayFakeSupportNotif();
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
       }
-
     }
   }
+
+  private Activity context;
 
   @Override protected void onStart() {
     super.onStart();
@@ -175,8 +175,20 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
+<<<<<<< HEAD
     //startService(DownloadGamesService.
     //    getCallingIntent(this));
+=======
+
+    context = this;
+  //  this.runOnUiThread(() -> userPresenter.getContactsFbId(context));
+    ArrayList<String> li = new ArrayList<>();
+    li.add("10154396462508081");
+    li.add("10153748473475981");
+    li.add(
+        "AVlid3m7E2H78g6OoON9Lt2uSQAp3fUTvLScdCkxrj-Y_M0OTmMRVT5feX3eTSeKNtdzZmJOlNVGsipJsWkGDgOVJ2ZJYpzbRNEYC7bjgs_qIg");
+    //rxFacebook.contactsFbId(context, li).subscribe(aVoid -> {Timber.e("ok soef " + aVoid.toString());});
+>>>>>>> tmp
   }
 
   private void displayFakeSupportNotif() {
@@ -288,113 +300,119 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
   @Override protected void initSubscriptions() {
     super.initSubscriptions();
 
-    subscriptions.add(onUser.onBackpressureBuffer().subscribeOn(singleThreadExecutor).observeOn(AndroidSchedulers.mainThread()).map(user -> {
-      boolean hasLive = false, hasNewMessage = false;
-      List<HomeAdapterInterface> items = new ArrayList<>();
-      for (Recipient recipient : user.getRecipientList()) {
-        if (recipient instanceof Invite) {
-          Invite invite = (Invite) recipient;
-          hasLive = true;
-          if (!roomIdsDigest.contains(invite.getRoom().getId())) {
-            roomIdsDigest.add(invite.getRoom().getId());
-            items.add(recipient);
-          }
-        } else if (recipient instanceof Shortcut) {
-          Shortcut shortcut = (Shortcut) recipient;
-          if (!hasNewMessage) hasNewMessage = !recipient.isRead();
-          if (shortcut.isSingle()) {
-            User member = shortcut.getSingleFriend();
-            if (member.isPlayingAGame()) {
-              if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
-                  member.getId())) {
-                userIdsDigest.add(member.getId());
-                items.add(shortcut);
+    subscriptions.add(onUser.onBackpressureBuffer()
+        .subscribeOn(singleThreadExecutor)
+        .observeOn(AndroidSchedulers.mainThread())
+        .map(user -> {
+          boolean hasLive = false, hasNewMessage = false;
+          List<HomeAdapterInterface> items = new ArrayList<>();
+          for (Recipient recipient : user.getRecipientList()) {
+            if (recipient instanceof Invite) {
+              Invite invite = (Invite) recipient;
+              hasLive = true;
+              if (!roomIdsDigest.contains(invite.getRoom().getId())) {
+                roomIdsDigest.add(invite.getRoom().getId());
+                items.add(recipient);
+              }
+            } else if (recipient instanceof Shortcut) {
+              Shortcut shortcut = (Shortcut) recipient;
+              if (!hasNewMessage) hasNewMessage = !recipient.isRead();
+              if (shortcut.isSingle()) {
+                User member = shortcut.getSingleFriend();
+                if (member.isPlayingAGame()) {
+                  if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
+                      member.getId())) {
+                    userIdsDigest.add(member.getId());
+                    items.add(shortcut);
+                  }
+                }
               }
             }
           }
-        }
-      }
 
-      if (!NotifView.isDisplayed()) {
-        List<NotificationModel> notificationModelList = new ArrayList<>();
+          if (!NotifView.isDisplayed()) {
+            List<NotificationModel> notificationModelList = new ArrayList<>();
 
-        if (items.size() > 0 && shouldDisplayDigest) {
-          PopupDigest popupDigest =
-              (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
-          popupDigest.setItems(items);
+            if (items.size() > 0 && shouldDisplayDigest) {
+              PopupDigest popupDigest =
+                  (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
+              popupDigest.setItems(items);
 
-          PopupManager popupManager = PopupManager.create(new PopupManager.Builder().activity(this)
-              .dimBackground(false)
-              .listener(new PopupDigestListener() {
-                @Override public void onClick(Recipient recipient) {
-                  String userAsk = null;
+              PopupManager popupManager = PopupManager.create(
+                  new PopupManager.Builder().activity(this)
+                      .dimBackground(false)
+                      .listener(new PopupDigestListener() {
+                        @Override public void onClick(Recipient recipient) {
+                          String userAsk = null;
 
-                  if (recipient instanceof Shortcut) {
-                    User user = ((Shortcut) recipient).getSingleFriend();
-                    if (user != null) userAsk = user.getId();
-                  }
+                          if (recipient instanceof Shortcut) {
+                            User user = ((Shortcut) recipient).getSingleFriend();
+                            if (user != null) userAsk = user.getId();
+                          }
 
-                  navigator.navigateToLive(GameStoreActivity.this, recipient,
-                      recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
-                          : LiveActivity.SOURCE_GRID, null, userAsk);
-                  if (notifView != null) notifView.dispose();
-                }
+                          navigator.navigateToLive(GameStoreActivity.this, recipient,
+                              recipient instanceof Invite ? LiveActivity.SOURCE_DRAGGED_AS_GUEST
+                                  : LiveActivity.SOURCE_GRID, null, userAsk);
+                          if (notifView != null) notifView.dispose();
+                        }
 
-                @Override public void onClickMore() {
-                  onClickHome();
-                }
-              })
-              .view(popupDigest));
+                        @Override public void onClickMore() {
+                          onClickHome();
+                        }
+                      })
+                      .view(popupDigest));
 
-          notificationModelList.add(
-              new NotificationModel.Builder().view(popupManager.getView()).build());
-        } else {
-          shouldDisplayDigest = true;
-        }
+              notificationModelList.add(
+                  new NotificationModel.Builder().view(popupManager.getView()).build());
+            } else {
+              shouldDisplayDigest = true;
+            }
 
-        if (usersChallenge != null && usersChallenge.size() > 0) {
-          notificationModelList.addAll(
-              NotificationUtils.getChallengeNotification(usersChallenge, GameStoreActivity.this,
-                  stateManager, user, challengeNotificationsPref));
-          usersChallenge = null;
-        }
+            if (usersChallenge != null && usersChallenge.size() > 0) {
+              notificationModelList.addAll(
+                  NotificationUtils.getChallengeNotification(usersChallenge, GameStoreActivity.this,
+                      stateManager, user, challengeNotificationsPref));
+              usersChallenge = null;
+            }
 
-        if (notificationModelList.size() > 0) {
-          if (notifView != null) {
-            notifView.dispose();
-            notifView = null;
+            if (notificationModelList.size() > 0) {
+              if (notifView != null) {
+                notifView.dispose();
+                notifView = null;
+              }
+
+              notifView = new NotifView(this);
+              notifView.show(this, notificationModelList);
+            }
           }
 
-          notifView = new NotifView(this);
-          notifView.show(this, notificationModelList);
-        }
-      }
-
-      if (hasLive) {
-        return layoutCall;
-      } else if (hasNewMessage) {
-        return btnNewMessage;
-      } else {
-        return btnFriends;
-      }
-    }).observeOn(AndroidSchedulers.mainThread()).subscribe(view -> {
-      if (view == layoutCall) {
-        layoutCall.setVisibility(View.VISIBLE);
-        layoutPulse.start();
-        btnFriends.setVisibility(View.GONE);
-        btnNewMessage.setVisibility(View.GONE);
-      } else if (view == btnFriends) {
-        layoutCall.setVisibility(View.GONE);
-        layoutPulse.stop();
-        btnFriends.setVisibility(View.VISIBLE);
-        btnNewMessage.setVisibility(View.GONE);
-      } else if (view == btnNewMessage) {
-        layoutCall.setVisibility(View.GONE);
-        layoutPulse.stop();
-        btnFriends.setVisibility(View.GONE);
-        btnNewMessage.setVisibility(View.VISIBLE);
-      }
-    }));
+          if (hasLive) {
+            return layoutCall;
+          } else if (hasNewMessage) {
+            return btnNewMessage;
+          } else {
+            return btnFriends;
+          }
+        })
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(view -> {
+          if (view == layoutCall) {
+            layoutCall.setVisibility(View.VISIBLE);
+            layoutPulse.start();
+            btnFriends.setVisibility(View.GONE);
+            btnNewMessage.setVisibility(View.GONE);
+          } else if (view == btnFriends) {
+            layoutCall.setVisibility(View.GONE);
+            layoutPulse.stop();
+            btnFriends.setVisibility(View.VISIBLE);
+            btnNewMessage.setVisibility(View.GONE);
+          } else if (view == btnNewMessage) {
+            layoutCall.setVisibility(View.GONE);
+            layoutPulse.stop();
+            btnFriends.setVisibility(View.GONE);
+            btnNewMessage.setVisibility(View.VISIBLE);
+          }
+        }));
   }
 
   @Override protected void onGameSelected(Game game) {

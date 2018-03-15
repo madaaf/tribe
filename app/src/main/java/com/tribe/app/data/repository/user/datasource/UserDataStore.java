@@ -1,8 +1,11 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import android.content.Context;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.data.network.entity.LookupFbObject;
+import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
@@ -84,6 +87,7 @@ public interface UserDataStore {
    */
   Observable<List<ContactInterface>> contacts();
 
+  Observable<List<LookupFbObject>> contactsFbId(Context context);
   /**
    * Get an {@link Observable} which will emit a {@link List <ContactInterface>} containing infos
    * about the contacts from Facebook.
