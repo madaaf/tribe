@@ -104,7 +104,8 @@ public class Game {
         id.equals(GAME_SLICE_FRUIT) ||
         id.equals(GAME_BIRD_RUSH) ||
         id.equals(GAME_INVADERS_CORONA);
-    this.isNotOverLiveWithScores = id.equals(GAME_TRIVIA) || id.equals(GAME_BATTLE_MUSIC);
+    this.isNotOverLiveWithScores =
+        id.equals(GAME_TRIVIA) || id.equals(GAME_BATTLE_MUSIC) || id.equals(GAME_COOL_CAMS);
     this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
 
     if (__typename != null) {

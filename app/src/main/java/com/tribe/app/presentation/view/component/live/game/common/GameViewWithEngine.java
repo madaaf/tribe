@@ -96,10 +96,6 @@ public abstract class GameViewWithEngine extends GameViewWithRanking {
 
   protected abstract String getStyleFont();
 
-  protected long startGameTimestamp() {
-    return System.currentTimeMillis() + 5 * 1000;
-  }
-
   protected void becomePlayer() {
     Timber.d("becomePlayer");
     if (subscriptionsSession != null) subscriptionsSession.clear();

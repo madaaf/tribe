@@ -277,7 +277,6 @@
   <color name="trivia.answer.3">#00FFE9</color>
   <color name="trivia.answer.4">#FEBE00</color>
 
-
   <!-- Trophies -->
   <color name="trophy.noob.primary">@color/blue.new</color>
   <color name="trophy.expert.primary">#F988FF</color>
@@ -295,5 +294,9 @@
   <color name="trophy.use.secondary">#3DE9DA</color>
 
   <color name="yellow.poke">#FCBF00</color>
+
+  <!-- Cool Cams -->
+  <color name="coolcams.top">#B3F644BD</color>
+  <color name="coolcams.bottom">#33F9C751</color>
 
 </resources>

@@ -133,7 +133,7 @@ public class CircularProgressBar extends View {
    * @param roundedCorners true if you want rounded corners of false otherwise.
    */
   public void useRoundedCorners(boolean roundedCorners) {
-    roundedCorners = roundedCorners;
+    this.roundedCorners = roundedCorners;
     invalidate();
   }
 }

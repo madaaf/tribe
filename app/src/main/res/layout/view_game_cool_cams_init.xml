@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutConstraint"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+  <View
+      android:id="@+id/viewGradientBg"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:alpha="0"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtCoolCamsInstructions"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="50dp"
+      android:alpha="0"
+      android:gravity="center"
+      android:lines="2"
+      android:text="@string/game_coolcams_lets_go"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      style="@style/CoolCam"
+      />
+
+  <ImageView
+      android:id="@+id/imgCoolCamsTop"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="50dp"
+      android:src="@drawable/img_cool_cams_top"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <ImageView
+      android:id="@+id/imgCoolCamsBottom"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="50dp"
+      android:src="@drawable/img_cool_cams_bottom"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <ImageView
+      android:id="@+id/imgShadow"
+      android:layout_width="40dp"
+      android:layout_height="40dp"
+      android:scaleType="fitXY"
+      android:src="@drawable/img_shadow_coolcams"
+      app:layout_constraintBottom_toBottomOf="@+id/progressBarBg"
+      app:layout_constraintEnd_toEndOf="@+id/progressBarBg"
+      app:layout_constraintStart_toStartOf="@+id/progressBarBg"
+      app:layout_constraintTop_toTopOf="@+id/progressBarBg"
+      />
+
+  <View
+      android:id="@+id/viewBgBlack"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toBottomOf="@+id/progressBarBg"
+      app:layout_constraintEnd_toEndOf="@+id/progressBarBg"
+      app:layout_constraintStart_toStartOf="@+id/progressBarBg"
+      app:layout_constraintTop_toTopOf="@+id/progressBarBg"
+      />
+
+  <com.tribe.app.presentation.view.widget.CircularProgressBar
+      android:id="@+id/progressBarBg"
+      android:layout_width="34dp"
+      android:layout_height="34dp"
+      android:layout_marginEnd="68dp"
+      android:layout_marginTop="13dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      />
+
+  <com.tribe.app.presentation.view.widget.CircularProgressBar
+      android:id="@+id/progressBarTotal"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:layout_margin="6dp"
+      app:layout_constraintBottom_toBottomOf="@id/progressBarBg"
+      app:layout_constraintEnd_toEndOf="@id/progressBarBg"
+      app:layout_constraintStart_toStartOf="@id/progressBarBg"
+      app:layout_constraintTop_toTopOf="@id/progressBarBg"
+      />
+
+  <com.tribe.app.presentation.view.widget.CircularProgressBar
+      android:id="@+id/progressBarRound"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toBottomOf="@id/progressBarBg"
+      app:layout_constraintEnd_toEndOf="@id/progressBarBg"
+      app:layout_constraintStart_toStartOf="@id/progressBarBg"
+      app:layout_constraintTop_toTopOf="@id/progressBarBg"
+      />
+
+</android.support.constraint.ConstraintLayout>

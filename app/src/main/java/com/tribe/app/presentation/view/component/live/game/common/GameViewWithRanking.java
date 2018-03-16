@@ -233,6 +233,10 @@ public abstract class GameViewWithRanking extends GameView {
     }
   }
 
+  protected long startGameTimestamp() {
+    return System.currentTimeMillis() + 5 * 1000;
+  }
+
   /**
    * PUBLIC
    */
