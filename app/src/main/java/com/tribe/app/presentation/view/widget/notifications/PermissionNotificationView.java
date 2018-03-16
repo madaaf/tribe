@@ -64,7 +64,11 @@ public class PermissionNotificationView extends LifeNotification {
     microEnabledState = PermissionUtils.hasPermissionsMicroOnly(rxPermissions);
   }
 
+  boolean onClickCamera = false;
+  boolean onClickMicro = false;
+
   @OnClick(R.id.btnAction1) void onClickCameraEnable() {
+    onClickCamera = true;
     if (!cameraEnabledState) {
       cameraEnabledState = true;
     }
@@ -91,6 +95,7 @@ public class PermissionNotificationView extends LifeNotification {
   }
 
   @OnClick(R.id.btnAction2) void onClickMicroEnable() {
+    onClickMicro = true;
     if (!microEnabledState) {
       microEnabledState = true;
     }
@@ -118,13 +123,17 @@ public class PermissionNotificationView extends LifeNotification {
   }
 
   private void finish() {
-    if (PermissionUtils.hasPermissionsCameraOnly(rxPermissions)
-        && PermissionUtils.hasPermissionsMicroOnly(rxPermissions)) {
-      hideView();
-
-      Handler mHandler = new Handler();
-      mHandler.postDelayed(() -> onAcceptedPermission.onNext(true), 300);
+    Handler mHandler = new Handler();
+    if (onClickMicro && onClickMicro) {
+      if (PermissionUtils.hasPermissionsCameraOnly(rxPermissions)
+          && PermissionUtils.hasPermissionsMicroOnly(rxPermissions)) {
+        hideView();
+        mHandler.postDelayed(() -> onAcceptedPermission.onNext(true), 300);
+      }else {
+        mHandler.postDelayed(() -> onAcceptedPermission.onNext(false), 300);
+      }
     }
+   /* */
   }
 
   private void initBtn1(Boolean cameraEnabled) {

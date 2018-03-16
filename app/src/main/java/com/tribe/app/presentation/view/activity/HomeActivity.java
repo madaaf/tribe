@@ -569,7 +569,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
         })
         .subscribe());
 
-    subscriptions.add(homeGridAdapter.onClick() // TODO MADA
+    subscriptions.add(homeGridAdapter.onClick()
         .map(view -> homeGridAdapter.getItemAtPosition(
             recyclerViewFriends.getChildLayoutPosition(view))).subscribe(item -> {
           Recipient recipient = (Recipient) item;
