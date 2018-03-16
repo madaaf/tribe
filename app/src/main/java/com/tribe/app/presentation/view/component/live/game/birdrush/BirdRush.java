@@ -28,6 +28,7 @@ public class BirdRush {
   private int txtWidth = 0;
   private Paint paint;
   private RectF rectF;
+  private ScreenUtils screenUtils;
 
   private Integer[] birdsImage = new Integer[] {
       R.drawable.game_bird1, R.drawable.game_bird2, R.drawable.game_bird3, R.drawable.game_bird4,
@@ -49,6 +50,7 @@ public class BirdRush {
     this.tribeGuest = guest;
     this.y = screenUtils.getHeightPx() / 2;
     this.currentUserId = currentUserId;
+    this.screenUtils = screenUtils;
   }
 
   public int getRotation() {
@@ -134,9 +136,9 @@ public class BirdRush {
     paint.setTextSize(25);
     paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
     Rect bounds = new Rect();
-    String text = this.getName();
-    paint.getTextBounds(text, 0, text.length(), bounds);
-    this.txtWidth = bounds.width();
+    String name = (getName().length() > 10) ? getName().substring(0, 10).concat("...") : getName();
+    paint.getTextBounds(name, 0, name.length(), bounds);
+    this.txtWidth = bounds.width()+ screenUtils.dpToPx(5);
     return paint;
   }
 

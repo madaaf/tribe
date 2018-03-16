@@ -289,7 +289,12 @@ public class GameBirdRushBackground extends View {
             paint // Paint
         );
         paint.setColor(Color.WHITE);
-        canvas.drawText(birdRush.getName().toUpperCase(), nameXPos, nameYPos + screenUtils.dpToPx(16), paint);
+        String name =
+            (birdRush.getName().length() > 10) ? birdRush.getName().substring(0, 10).concat("...")
+                : birdRush.getName();
+
+        canvas.drawText(name.toUpperCase(), nameXPos,
+            nameYPos + screenUtils.dpToPx(16), paint);
       }
     }
   }
