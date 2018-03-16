@@ -17,7 +17,6 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupEntity;
-import com.tribe.app.data.network.entity.LookupFbObject;
 import com.tribe.app.data.network.entity.LookupHolder;
 import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.network.entity.RegisterEntity;
@@ -350,8 +349,7 @@ public class CloudUserDataStore implements UserDataStore {
         });
   }
 
-  @Override
-  public Observable<List<LookupFbObject>> contactsFbId(Context c, ArrayList<String> fbIds) {
+  @Override public Observable<List<LookupObject>> contactsFbId(Context c, List<String> fbIds) {
     return rxFacebook.contactsFbId(c, fbIds).flatMap(fbIdList -> {
       List<LookupEntity> lookupEntityList = new ArrayList<>();
       for (String fbId : fbIdList) {
@@ -389,11 +387,11 @@ public class CloudUserDataStore implements UserDataStore {
 
       List<ContactInterface> phones = new ArrayList<>();
       List<ContactInterface> fbIds = new ArrayList<>();
+      List<LookupEntity> lookupPhones = new ArrayList<>();
+      List<String> fbIdsList = new ArrayList<>();
 
       UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
 
-      List<LookupEntity> lookupPhones = new ArrayList<>();
-      ArrayList<String> ok = new ArrayList<>();
       if (contactList.size() > 0) {
         for (ContactInterface contactI : contactList) {
           if (contactI instanceof ContactABRealm) {
@@ -416,7 +414,7 @@ public class CloudUserDataStore implements UserDataStore {
           } else if (contactI instanceof ContactFBRealm) {
             ContactFBRealm contactFBRealm = (ContactFBRealm) contactI;
             fbIds.add(contactFBRealm);
-            ok.add(contactFBRealm.getId());
+            fbIdsList.add(contactFBRealm.getId());
           }
         }
       }
@@ -457,26 +455,10 @@ public class CloudUserDataStore implements UserDataStore {
       return Observable.zip(lookupApi.lookup(regionCode, lookupPhones).doOnNext(lookupObjects -> {
             PreferencesUtils.saveLookupAsJson(lookupObjects, lookupResult);
           }), StringUtils.isEmpty(fbRequests) ? Observable.just(null)
-              : tribeApi.lookupFacebook(reqLookup), contactsFbId(context, ok),
+              : tribeApi.lookupFacebook(reqLookup), contactsFbId(context, fbIdsList),
           (lookupObjects, lookupFBResult, lookFbupObjects) -> {
             LookupHolder lookupHolder = new LookupHolder();
             lookupHolder.setContactPhoneList(phones);
-            lookupHolder.setLookupObjectList(lookupObjects);
-
-            List<String> friendsDisplayName = new ArrayList<>(); // SOEF
-
-            for (LookupObject lookupObject : lookupObjects) {
-              if (lookupObject != null && lookupObject.getCommonFriends() != null) {
-                for (ShortcutRealm sh : currentUser.getShortcuts()) {
-                  for (UserRealm u : sh.getMembers()) {
-                    if (lookupObject.getCommonFriends().contains(u.getId())) {
-                      friendsDisplayName.add(u.getDisplayName());
-                      lookupObject.addFriendsDisplayName(u.getDisplayName());
-                    }
-                  }
-                }
-              }
-            }
 
             if (lookupFBResult != null && lookupFBResult.getLookup() != null) {
               for (int i = 0; i < lookupFBResult.getLookup().size(); i++) {
@@ -491,21 +473,15 @@ public class CloudUserDataStore implements UserDataStore {
                 }
               }
             }
-            for (int i = 0; i < fbIds.size(); i++) {
-              ContactInterface contactFBRealm = fbIds.get(i);
-              if (contactFBRealm instanceof ContactFBRealm) {
-                ((ContactFBRealm) contactFBRealm).setHowManyFriends(
-                    lookFbupObjects.get(i).getHowManyFriends());
-                ((ContactFBRealm) contactFBRealm).setId(lookFbupObjects.get(i).getN());
-              }
-            }
 
-            for (LookupFbObject lookupObject : lookFbupObjects) {
-              if (lookupObject != null && lookupObject.getCommonFriends() != null) {
+            for (LookupObject lookupObject : lookupObjects) {
+              if (lookupObject != null
+                  && lookupObject.getCommonFriends() != null
+                  && !lookupObject.getCommonFriends().isEmpty()) {
                 for (ShortcutRealm sh : currentUser.getShortcuts()) {
                   for (UserRealm u : sh.getMembers()) {
-                    if (lookupObject.getCommonFriends().contains(u.getId())) {
-                      friendsDisplayName.add(u.getDisplayName());
+                    if (lookupObject.getcommonFriendsNameList() == null
+                        || !lookupObject.getcommonFriendsNameList().contains(u.getDisplayName())) {
                       lookupObject.addFriendsDisplayName(u.getDisplayName());
                     }
                   }
@@ -513,10 +489,40 @@ public class CloudUserDataStore implements UserDataStore {
               }
             }
 
-            lookupHolder.setContactFBList(fbIds);
-            Timber.e("SOEF ");
-            List<UserRealm> list2 = lookupFBResult.getLookup();
+            for (LookupObject lookupObject : lookFbupObjects) {
+              if (lookupObject != null
+                  && lookupObject.getCommonFriends() != null
+                  && !lookupObject.getCommonFriends().isEmpty()) {
 
+                for (String communFriendId : lookupObject.getCommonFriends()) {
+                  for (ShortcutRealm sh : currentUser.getShortcuts()) {
+                    for (UserRealm u : sh.getMembers()) {
+                      if (communFriendId.equals(u.getId())) {
+                        if (lookupObject.getcommonFriendsNameList() == null
+                            || !lookupObject.getcommonFriendsNameList()
+                            .contains(u.getDisplayName())) {
+                          lookupObject.addFriendsDisplayName(u.getDisplayName());
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            for (int i = 0; i < fbIds.size(); i++) {
+              ContactInterface contactFBRealm = fbIds.get(i);
+              if (contactFBRealm instanceof ContactFBRealm) {
+                ((ContactFBRealm) contactFBRealm).setHowManyFriends(
+                    lookFbupObjects.get(i).getHowManyFriends());
+                ((ContactFBRealm) contactFBRealm).setId(lookFbupObjects.get(i).getFbId());
+                ((ContactFBRealm) contactFBRealm).setCommonFriendsNameList(
+                    lookFbupObjects.get(i).getcommonFriendsNameList());
+              }
+            }
+
+            lookupHolder.setLookupObjectList(lookupObjects);
+            lookupHolder.setContactFBList(fbIds);
             return lookupHolder;
           });
     }, (contactList, lookupHolder) -> lookupHolder).flatMap(lookupHolder -> {
@@ -569,7 +575,7 @@ public class CloudUserDataStore implements UserDataStore {
               ci.setHowManyFriends(lookupObject.getHowManyFriends());
             }
             ci.setCommonFriendsNameList(lookupObject.getcommonFriendsNameList());
-            ci.setCommonFriends(lookupObject.getCommonFriends());
+            ci.setCommonFriends(lookupObject.getCommonFriends());//SOEF
             // ci.setCommonFbFriends(lookupObject.getCommonFriends());
             ci.setPhone(lookupObject.getPhone());
           }
@@ -602,7 +608,7 @@ public class CloudUserDataStore implements UserDataStore {
     SearchResultRealm searchResultInit = new SearchResultRealm();
     searchResultInit.setUsername(username);
     contactCache.insertSearchResult(searchResultInit);
-    // SOEF
+
     return this.tribeApi.findByUsername(context.getString(R.string.lookup_username, username,
         context.getString(R.string.userfragment_infos))).doOnError(throwable -> {
       SearchResultRealm searchResultRealmRet = new SearchResultRealm();

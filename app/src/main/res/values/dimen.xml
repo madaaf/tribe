@@ -58,6 +58,7 @@
   <dimen name="live_notification_item_height_small">40dp</dimen>
   <dimen name="action_button_height">35dp</dimen>
   <dimen name="item_base_list_height">65dp</dimen>
+  <dimen name="item_base_contact_list_height">85dp</dimen>
   <dimen name="view_share_profile_height">82dp</dimen>
   <dimen name="view_profile_info_height">146dp</dimen>
   <dimen name="authentication_dialog_width">300dp</dimen>

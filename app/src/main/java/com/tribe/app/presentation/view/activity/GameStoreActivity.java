@@ -151,8 +151,6 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     }
   }
 
-  private Activity context;
-
   @Override protected void onStart() {
     super.onStart();
     gamePresenter.onViewAttached(gameMVPViewAdapter);
@@ -175,15 +173,6 @@ public class GameStoreActivity extends GameActivity implements AppStateListener 
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
-<<<<<<< HEAD
-    //startService(DownloadGamesService.
-    //    getCallingIntent(this));
-=======
-
-    context = this;
-    //this.runOnUiThread(() -> userPresenter.getContactsFbId(context));
-    //rxFacebook.contactsFbId(context, li).subscribe(aVoid -> {Timber.e("ok soef " + aVoid.toString());});
->>>>>>> tmp
   }
 
   private void displayFakeSupportNotif() {

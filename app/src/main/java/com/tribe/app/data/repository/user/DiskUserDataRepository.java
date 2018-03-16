@@ -1,10 +1,7 @@
 package com.tribe.app.data.repository.user;
 
-import android.content.Context;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.LoginEntity;
-import com.tribe.app.data.network.entity.LookupFbObject;
-import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;

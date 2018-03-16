@@ -7,7 +7,7 @@ import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
-import com.tribe.app.data.network.entity.LookupFbObject;
+import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
@@ -111,7 +111,7 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
   }
 
   @Override
-  public Observable<List<LookupFbObject>> contactsFbId(Context context, ArrayList<String> fbIds) {
+  public Observable<List<LookupObject>> contactsFbId(Context context, List<String> fbIds) {
     return null;
   }
 

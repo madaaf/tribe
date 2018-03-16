@@ -4,11 +4,8 @@ package com.tribe.app.domain.interactor.user;
  * Created by tiago on 04/05/2016.
  */
 
-import android.content.Context;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.LoginEntity;
-import com.tribe.app.data.network.entity.LookupFbObject;
-import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
@@ -18,8 +15,6 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import rx.Observable;

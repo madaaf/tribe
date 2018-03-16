@@ -15,12 +15,14 @@ import com.tokenautocomplete.CustomTypefaceSpan;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.ContactToInviteViewHolder;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 01/02/2017.
@@ -78,6 +80,10 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
     vh.txtName.setText(contact.getName());
     if (contact.getHowManyFriends() > 0) {
       vh.txtDetails.setVisibility(View.VISIBLE);
+
+      if(contact instanceof ContactFB){
+        Timber.e("SOEF ");
+      }
 
       StringBuilder friendsList = new StringBuilder();
       String m1 = context.getString(R.string.contacts_section_addressbook_friends_in_app_prefix);

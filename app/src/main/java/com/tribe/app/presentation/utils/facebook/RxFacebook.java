@@ -133,6 +133,7 @@ import timber.log.Timber;
     }
   }
 
+
   public Observable<Boolean> notifyFriends(Context context, ArrayList<String> toIds) {
     notifyFriendsSubject = PublishSubject.create();
     AccessToken a = FacebookUtils.accessToken();

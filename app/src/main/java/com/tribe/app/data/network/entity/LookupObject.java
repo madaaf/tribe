@@ -12,6 +12,7 @@ import java.util.List;
 public class LookupObject {
 
   @SerializedName("n") private String phone;
+  @SerializedName("fb") private String fbId;
   @SerializedName("u") private String userId;
   @SerializedName("f") private int howManyFriends = 0;
   @SerializedName("ln") private String lastName;
@@ -25,6 +26,14 @@ public class LookupObject {
 
   public List<String> getCommonFriends() {
     return commonFriends;
+  }
+
+  public String getFbId() {
+    return fbId;
+  }
+
+  public void setFbId(String fbId) {
+    this.fbId = fbId;
   }
 
   public void setCommonFriends(List<String> commonFriends) {
