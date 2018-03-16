@@ -575,8 +575,7 @@ public class CloudUserDataStore implements UserDataStore {
               ci.setHowManyFriends(lookupObject.getHowManyFriends());
             }
             ci.setCommonFriendsNameList(lookupObject.getcommonFriendsNameList());
-            ci.setCommonFriends(lookupObject.getCommonFriends());//SOEF
-            // ci.setCommonFbFriends(lookupObject.getCommonFriends());
+            ci.setCommonFriends(lookupObject.getCommonFriends());
             ci.setPhone(lookupObject.getPhone());
           }
         }

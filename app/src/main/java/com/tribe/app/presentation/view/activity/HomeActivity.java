@@ -98,6 +98,7 @@ import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationVie
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -610,6 +611,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
             ContactFB contactFB = (ContactFB) o;
             contactFBList.add(contactFB.getId());
 
+
+
             subscriptions.add(DialogFactory.dialog(this, contactFB.getDisplayName(),
                 getString(R.string.facebook_invite_popup_message),
                 EmojiParser.demojizedText(getString(R.string.facebook_invite_popup_validate)),
@@ -670,6 +673,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
           }
 
           finalList.addAll(contactsInvite);
+
+          Collections.sort(contactsFBInvite, (o1, o2) -> ((Integer) o2.getHowManyFriends()).compareTo(o1.getHowManyFriends()));
           finalList.addAll(contactsFBInvite);
           List<HomeAdapterInterface> refactordList = new ArrayList<>();
 

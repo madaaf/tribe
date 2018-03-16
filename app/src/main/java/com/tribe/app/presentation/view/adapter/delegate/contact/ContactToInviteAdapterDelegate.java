@@ -81,10 +81,6 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
     if (contact.getHowManyFriends() > 0) {
       vh.txtDetails.setVisibility(View.VISIBLE);
 
-      if(contact instanceof ContactFB){
-        Timber.e("SOEF ");
-      }
-
       StringBuilder friendsList = new StringBuilder();
       String m1 = context.getString(R.string.contacts_section_addressbook_friends_in_app_prefix);
       String m2 = context.getString(R.string.contacts_section_addressbook_friends_in_app_friends,
