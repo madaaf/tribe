@@ -160,7 +160,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(19)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(20)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -470,7 +470,11 @@ public class AndroidApplication extends Application {
                   .addField("progress", int.class)
                   .addField("totalSize", int.class);
             }
-                     if (schema.get("StringRealm") == null) {
+            oldVersion++;
+          }
+
+          if (oldVersion == 19) {
+            if (schema.get("StringRealm") == null) {
               schema.create("StringRealm").addField("content", String.class);
             }
 

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.IntDef;
 import android.support.annotation.RequiresApi;
-import android.support.constraint.solver.ArrayRow;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -131,14 +130,9 @@ import timber.log.Timber;
     }
   }
 
-<<<<<<< HEAD
-
-  public Observable<Boolean> notifyFriends(Context context, ArrayList<String> toIds) {
-    notifyFriendsSubject = PublishSubject.create();
-=======
   public void getContactsFbIdList(Subscriber subscriber, Context c, List<String> toIds) {
     if (!FacebookUtils.isLoggedIn()) {
-      subscriber.onNext(new ArrayList<>());
+      subscriber.onNext(null);
       subscriber.onCompleted();
       return;
     }
@@ -206,8 +200,8 @@ import timber.log.Timber;
     return fbIdsListObservable;
   }
 
-  public void notifyFriends(Context context, ArrayList<String> toIds) {
->>>>>>> fix when account is not linked to fb
+  public Observable<Boolean> notifyFriends(Context context, ArrayList<String> toIds) {
+    notifyFriendsSubject = PublishSubject.create();
     AccessToken a = FacebookUtils.accessToken();
     String separator = "%2C";
     String to = "";

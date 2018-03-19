@@ -15,14 +15,12 @@ import com.tokenautocomplete.CustomTypefaceSpan;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
-import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.view.adapter.delegate.RxAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.viewholder.ContactToInviteViewHolder;
 import java.util.List;
 import rx.Observable;
 import rx.subjects.PublishSubject;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 01/02/2017.
@@ -90,7 +88,8 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
 
       String m = m1 + " " + m2 + " " + m3 + " ";
       Boolean haveCommonFriend =
-          contact.getcommonFriendsNameList() != null && !contact.getcommonFriendsNameList().isEmpty();
+          contact.getcommonFriendsNameList() != null && !contact.getcommonFriendsNameList()
+              .isEmpty();
       if (haveCommonFriend) {
         for (int i = 0; i < contact.getcommonFriendsNameList().size(); i++) {
           String name = contact.getcommonFriendsNameList().get(i);
