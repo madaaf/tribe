@@ -157,7 +157,9 @@ public class LiveStatusNameView extends FrameLayout {
 
     txtName.setCustomFont(getContext(), FontUtils.PROXIMA_BOLD);
 
-    onOpenView.onNext(live.nbInRoom() > 2 ? LiveContainer.OPEN_FULL : LiveContainer.OPEN_PARTIAL);
+    if (live != null) {
+      onOpenView.onNext(live.nbInRoom() > 2 ? LiveContainer.OPEN_FULL : LiveContainer.OPEN_PARTIAL);
+    }
   }
 
   public void closeView() {
