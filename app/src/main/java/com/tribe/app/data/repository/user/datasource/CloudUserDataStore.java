@@ -352,8 +352,10 @@ public class CloudUserDataStore implements UserDataStore {
   @Override public Observable<List<LookupObject>> contactsFbId(Context c, List<String> fbIds) {
     return rxFacebook.contactsFbId(c, fbIds).flatMap(fbIdList -> {
       List<LookupEntity> lookupEntityList = new ArrayList<>();
-      for (String fbId : fbIdList) {
-        lookupEntityList.add(new LookupEntity(fbId));
+      if (fbIdList != null) {
+        for (String fbId : fbIdList) {
+          lookupEntityList.add(new LookupEntity(fbId));
+        }
       }
       return lookupApi.lookupFb(Locale.getDefault().getCountry(), lookupEntityList);
     });
@@ -489,35 +491,37 @@ public class CloudUserDataStore implements UserDataStore {
               }
             }
 
-            for (LookupObject lookupObject : lookFbupObjects) {
-              if (lookupObject != null
-                  && lookupObject.getCommonFriends() != null
-                  && !lookupObject.getCommonFriends().isEmpty()) {
+            if (lookFbupObjects != null) {
+              for (LookupObject lookupObject : lookFbupObjects) {
+                if (lookupObject != null && lookupObject.getCommonFriends() != null && !lookupObject
+                    .getCommonFriends()
+                    .isEmpty()) {
 
-                for (String communFriendId : lookupObject.getCommonFriends()) {
-                  for (ShortcutRealm sh : currentUser.getShortcuts()) {
-                    for (UserRealm u : sh.getMembers()) {
-                      if (communFriendId.equals(u.getId())) {
-                        if (lookupObject.getcommonFriendsNameList() == null
-                            || !lookupObject.getcommonFriendsNameList()
-                            .contains(u.getDisplayName())) {
-                          lookupObject.addFriendsDisplayName(u.getDisplayName());
+                  for (String communFriendId : lookupObject.getCommonFriends()) {
+                    for (ShortcutRealm sh : currentUser.getShortcuts()) {
+                      for (UserRealm u : sh.getMembers()) {
+                        if (communFriendId.equals(u.getId())) {
+                          if (lookupObject.getcommonFriendsNameList() == null
+                              || !lookupObject.getcommonFriendsNameList()
+                              .contains(u.getDisplayName())) {
+                            lookupObject.addFriendsDisplayName(u.getDisplayName());
+                          }
                         }
                       }
                     }
                   }
                 }
               }
-            }
 
-            for (int i = 0; i < fbIds.size(); i++) {
-              ContactInterface contactFBRealm = fbIds.get(i);
-              if (contactFBRealm instanceof ContactFBRealm) {
-                ((ContactFBRealm) contactFBRealm).setHowManyFriends(
-                    lookFbupObjects.get(i).getHowManyFriends());
-                ((ContactFBRealm) contactFBRealm).setId(lookFbupObjects.get(i).getFbId());
-                ((ContactFBRealm) contactFBRealm).setCommonFriendsNameList(
-                    lookFbupObjects.get(i).getcommonFriendsNameList());
+              for (int i = 0; i < fbIds.size(); i++) {
+                ContactInterface contactFBRealm = fbIds.get(i);
+                if (contactFBRealm instanceof ContactFBRealm) {
+                  ((ContactFBRealm) contactFBRealm).setHowManyFriends(
+                      lookFbupObjects.get(i).getHowManyFriends());
+                  ((ContactFBRealm) contactFBRealm).setId(lookFbupObjects.get(i).getFbId());
+                  ((ContactFBRealm) contactFBRealm).setCommonFriendsNameList(
+                      lookFbupObjects.get(i).getcommonFriendsNameList());
+                }
               }
             }
 

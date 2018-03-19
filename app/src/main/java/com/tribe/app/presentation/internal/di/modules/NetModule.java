@@ -335,7 +335,7 @@ import timber.log.Timber;
         new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
     httpClientBuilder.authenticator(authenticator);
 
-    //if (BuildConfig.DEBUG) {
+    //if (BuildConfig.DEBUG) { // TODO SOEF TO UPDATE
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
       loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
       httpClientBuilder.addInterceptor(loggingInterceptor);

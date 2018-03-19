@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.annotation.IntDef;
 import android.support.annotation.RequiresApi;
+import android.support.constraint.solver.ArrayRow;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -19,7 +20,6 @@ import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.tribe.app.R;
-import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.presentation.utils.EmojiParser;
@@ -34,7 +34,6 @@ import org.json.JSONObject;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
@@ -60,7 +59,6 @@ import timber.log.Timber;
   private Observable<FacebookEntity> facebookEntityObservable;
   private LoginResult loginResult;
   private int countHandle = 0;
-
 
   @Inject public RxFacebook(Context context) {
     this.context = context;
@@ -133,9 +131,83 @@ import timber.log.Timber;
     }
   }
 
+<<<<<<< HEAD
 
   public Observable<Boolean> notifyFriends(Context context, ArrayList<String> toIds) {
     notifyFriendsSubject = PublishSubject.create();
+=======
+  public void getContactsFbIdList(Subscriber subscriber, Context c, List<String> toIds) {
+    if (!FacebookUtils.isLoggedIn()) {
+      subscriber.onNext(new ArrayList<>());
+      subscriber.onCompleted();
+      return;
+    }
+    AccessToken a = FacebookUtils.accessToken();
+    String separator = "%2C";
+    String to = "";
+    for (int i = 0; i < toIds.size(); i++) {
+      String id = toIds.get(i);
+      if (i != toIds.size() - 1) {
+        to += id + separator;
+      } else {
+        to += id;
+      }
+    }
+    String url = "https://m.facebook.com/v2.9/dialog/apprequests?access_token="
+        + a.getToken()
+        + "&app_id="
+        + a.getApplicationId()
+        + "&to="
+        + to
+        + "&sdk=android-4.23.0&redirect_uri=fbconnect%3A%2F%2Fsuccess&message=Welcome&display=touch";
+
+    WebView webView = new WebView(c);
+    webView.setWebViewClient(new WebViewClient() {
+      @Override public void onReceivedError(WebView view, WebResourceRequest request,
+          WebResourceError error) {
+        super.onReceivedError(view, request, error);
+        Timber.e("error on notify all facebook friends");
+      }
+
+      @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
+      public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+        String cookies = CookieManager.getInstance().getCookie(url);
+        Timber.d("Facebook cookies :" + cookies);
+
+        view.evaluateJavascript(
+            "(function() { return ('<html>'+document.getElementsByClassName('_5q1p')[0].innerHTML+'</html>'); })();",
+            html -> {
+              Log.d("HTML", html);
+              String ok = html.substring(html.indexOf("name=\\\"to\\\""));
+              String start = "value=\\\"";
+              String end = "\\\">";
+              String ok2 = ok.substring(ok.indexOf(start) + start.length(), ok.indexOf(end));
+              Timber.e("SOEF " + html);
+
+              List<String> fbIdList = new ArrayList<>(Arrays.asList(ok2.split(",")));
+
+              subscriber.onNext(fbIdList);
+              subscriber.onCompleted();
+            });
+      }
+    });
+    webView.getSettings().setJavaScriptEnabled(true);
+    webView.loadUrl(url);
+    webView.setVisibility(View.VISIBLE);
+  }
+
+  public Observable<List<String>> contactsFbId(Context c, List<String> toIds) {
+    fbIdsListObservable = Observable.create((Subscriber<? super List<String>> subscriber) -> {
+      getContactsFbIdList(subscriber, c, toIds);
+    })
+        .subscribeOn(AndroidSchedulers.mainThread())
+        .doOnError(throwable -> Timber.e("error getContactsFbIdList " + throwable.getMessage()));
+    return fbIdsListObservable;
+  }
+
+  public void notifyFriends(Context context, ArrayList<String> toIds) {
+>>>>>>> fix when account is not linked to fb
     AccessToken a = FacebookUtils.accessToken();
     String separator = "%2C";
     String to = "";

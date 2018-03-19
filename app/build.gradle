@@ -137,7 +137,7 @@ android {
       jniDebuggable = false
     }
 
-    release {
+    release { // TODO SOEF TO UPDATE
       debuggable true
       minifyEnabled false
       shrinkResources false
