@@ -27,6 +27,8 @@ import timber.log.Timber;
 public class VisionAPIManager {
 
   private static final float THRESHOLD_FACE_WIDTH = 20;
+  private static final float EYE_CLOSED_THRESHOLD = 0.4f;
+  private static final float SMILE_THRESHOLD = 0.4f;
 
   private static VisionAPIManager instance;
 
@@ -48,12 +50,16 @@ public class VisionAPIManager {
   private Face face;
   private PointF leftEye, rightEye;
   private float previousFaceWidth, newFaceWidth;
+  private Frame lastFrame = null;
   private com.google.android.gms.vision.Frame inputFrame;
   private Map<Integer, PointF> previousProportions = new HashMap<>();
+  private boolean rightEyeOpen = false, leftEyeOpen = false, smiling = false;
+  private boolean previousLeftOpen = true, previousRightOpen = true, previousSmiling = true;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
   private PublishSubject<Float> onFaceWidthChange = PublishSubject.create();
+  private PublishSubject<Frame> onComputeFaceDone = PublishSubject.create();
 
   public VisionAPIManager(Context context) {
     this.context = context;
@@ -73,7 +79,7 @@ public class VisionAPIManager {
     }
 
     faceDetector = new FaceDetector.Builder(context).setTrackingEnabled(true)
-        .setLandmarkType(FaceDetector.ALL_LANDMARKS)
+        .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
         .setMode(FaceDetector.FAST_MODE)
         .setProminentFaceOnly(isFrontFacing)
         .setMinFaceSize(isFrontFacing ? 0.35f : 0.15f)
@@ -145,6 +151,36 @@ public class VisionAPIManager {
       newFaceWidth = face.getWidth();
 
       if (faceWidthChanged()) onFaceWidthChange.onNext(newFaceWidth);
+
+      float leftOpenScore = face.getIsLeftEyeOpenProbability();
+      if (leftOpenScore == Face.UNCOMPUTED_PROBABILITY) {
+        leftEyeOpen = previousLeftOpen;
+      } else {
+        leftEyeOpen = (leftOpenScore > EYE_CLOSED_THRESHOLD);
+        previousLeftOpen = leftEyeOpen;
+      }
+
+      float rightOpenScore = face.getIsRightEyeOpenProbability();
+      if (rightOpenScore == Face.UNCOMPUTED_PROBABILITY) {
+        rightEyeOpen = previousRightOpen;
+      } else {
+        rightEyeOpen = (rightOpenScore > EYE_CLOSED_THRESHOLD);
+        previousRightOpen = rightEyeOpen;
+      }
+
+      float smilingScore = face.getIsSmilingProbability();
+      if (smilingScore == Face.UNCOMPUTED_PROBABILITY) {
+        smiling = previousSmiling;
+      } else {
+        smiling = (smilingScore > SMILE_THRESHOLD);
+        previousSmiling = smiling;
+      }
+
+      onComputeFaceDone.onNext(lastFrame);
+
+      //Timber.d("Left eye open : " + leftEyeOpen);
+      //Timber.d("Right eye open : " + rightEyeOpen);
+      //Timber.d("Smiling : " + smiling);
     }
   }
 
@@ -183,9 +219,8 @@ public class VisionAPIManager {
   ////////////////
 
   public void initFrameSizeChangeObs(Observable<Frame> obs) {
-    subscriptions.add(obs.onBackpressureDrop().subscribe(frame -> {
-      initFaceTracker(frame.isFrontCamera());
-    }));
+    subscriptions.add(
+        obs.onBackpressureDrop().subscribe(frame -> initFaceTracker(frame.isFrontCamera())));
   }
 
   public void initFrameSubscription(Observable<Frame> obs) {
@@ -201,10 +236,11 @@ public class VisionAPIManager {
 
           return frame;
         })
-        .filter(frame1 -> (t0 - timeToDetect >= 5) && isFaceTrackerEnabled && !isReleased)
+        .filter(frame1 -> (t0 - timeToDetect >= 250) && isFaceTrackerEnabled && !isReleased)
         .flatMap(frame -> Observable.just(frame)
             .observeOn(Schedulers.from(frameExecutor))
             .map(frame1 -> {
+              lastFrame = frame1;
               inputFrame = new com.google.android.gms.vision.Frame.Builder().setImageData(
                   ByteBuffer.wrap(frame.getData()), frame.getWidth(), frame.getHeight(),
                   ImageFormat.NV21)
@@ -242,8 +278,32 @@ public class VisionAPIManager {
     return rightEye;
   }
 
+  public boolean isSmiling() {
+    return smiling;
+  }
+
+  public boolean isLeftEyeOpen() {
+    return leftEyeOpen;
+  }
+
+  public boolean isRightEyeOpen() {
+    return rightEyeOpen;
+  }
+
+  public PointF findXYForPostIt() {
+    if (face == null || (leftEye == null && rightEye == null)) return null;
+
+    if (leftEye != null && rightEye != null) {
+      return new PointF((leftEye.x + rightEye.x) / 2, (leftEye.y + rightEye.y) / 2);
+    }
+
+    return new PointF(face.getPosition().x + face.getWidth() / 2,
+        face.getPosition().y + face.getHeight() / 2);
+  }
+
   public void stopCapture() {
     firstFrame = true;
+    lastFrame = null;
     dispose();
   }
 
@@ -259,5 +319,9 @@ public class VisionAPIManager {
 
   public Observable<Float> onFaceWidthChange() {
     return onFaceWidthChange;
+  }
+
+  public Observable<Frame> onComputeFaceDone() {
+    return onComputeFaceDone;
   }
 }

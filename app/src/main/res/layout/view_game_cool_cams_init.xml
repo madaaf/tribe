@@ -18,8 +18,6 @@
       android:id="@+id/txtCoolCamsInstructions"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_marginTop="50dp"
-      android:alpha="0"
       android:gravity="center"
       android:lines="2"
       android:text="@string/game_coolcams_lets_go"

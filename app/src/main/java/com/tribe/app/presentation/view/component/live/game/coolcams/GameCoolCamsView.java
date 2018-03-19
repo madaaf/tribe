@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import butterknife.BindView;
@@ -47,7 +48,6 @@ import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 14/03/2018.
@@ -137,6 +137,9 @@ public class GameCoolCamsView extends GameViewWithRanking {
     unbinder = ButterKnife.bind(this);
 
     setClickable(true);
+
+    txtCoolCamsInstructions.setTranslationY(screenUtils.dpToPx(50));
+    txtCoolCamsInstructions.setAlpha(0f);
 
     gameMVPViewAdapter = new GameMVPViewAdapter() {
 
@@ -257,13 +260,27 @@ public class GameCoolCamsView extends GameViewWithRanking {
 
     long delayBeforeGame = Math.max(0, timestamp - new Date().getTime());
 
+    int delayOneThird = (int) (delayBeforeGame / 3);
     if (delayBeforeGame > 1000) {
-      showTitle((int) (delayBeforeGame / 3), finished -> {
+      showTitle(delayOneThird, finished -> {
         if (finished) {
-          Timber.d("DONE");
+          showInstructions(delayOneThird, finished1 -> {
+            if (finished1) {
+              hideLabels(delayOneThird, null);
+            }
+          });
         }
       });
     }
+
+    subscriptionsGame.add(Observable.timer(delayBeforeGame, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> launchGame(steps, stepDuration, stepResultDuration)));
+  }
+
+  private void launchGame(List<CoolCamsModel.CoolCamsStepsEnum> steps, double stepDuration,
+      double stepResultDuration) {
+    liveViewsMap.get(currentUser.getId()).setStep(steps.get(0));
   }
 
   private void showTitle(int duration, CompletionListener completionListener) {
@@ -271,13 +288,49 @@ public class GameCoolCamsView extends GameViewWithRanking {
 
     ConstraintSet constraintSet = new ConstraintSet();
     constraintSet.clone(getContext(), R.layout.view_game_cool_cams_title_only);
-    animateLayoutWithConstraintSet(constraintSet, true, null);
+    animateLayoutWithConstraintSet(constraintSet, true, () -> subscriptionsGame.add(
+        Observable.timer(duration, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> {
+              if (completionListener != null) completionListener.finished(true);
+            })));
+  }
 
-    subscriptionsSession.add(Observable.timer(duration, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> {
-          if (completionListener != null) completionListener.finished(true);
-        }));
+  private void showInstructions(int duration, CompletionListener completionListener) {
+    AnimationUtils.fadeIn(txtCoolCamsInstructions, DURATION);
+    txtCoolCamsInstructions.animate()
+        .translationY(0)
+        .setDuration(DURATION >> 1)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    ConstraintSet constraintSet = new ConstraintSet();
+    constraintSet.clone(getContext(), R.layout.view_game_cool_cams_instructions_only);
+    animateLayoutWithConstraintSet(constraintSet, true, () -> subscriptionsGame.add(
+        Observable.timer(duration, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> {
+              if (completionListener != null) completionListener.finished(true);
+            })));
+  }
+
+  private void hideLabels(int duration, CompletionListener completionListener) {
+    AnimationUtils.fadeOut(viewGradientBg, DURATION);
+    AnimationUtils.fadeOut(txtCoolCamsInstructions, DURATION >> 1);
+    txtCoolCamsInstructions.animate()
+        .translationY(screenUtils.dpToPx(50))
+        .setDuration(DURATION >> 1)
+        .setInterpolator(new DecelerateInterpolator())
+        .start();
+
+    ConstraintSet constraintSet = new ConstraintSet();
+    constraintSet.clone(getContext(), R.layout.view_game_cool_cams_init);
+    animateLayoutWithConstraintSet(constraintSet, true, () -> subscriptionsGame.add(
+        Observable.timer(duration, TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> {
+              if (completionListener != null) completionListener.finished(true);
+            })));
   }
 
   private void animateLayoutWithConstraintSet(ConstraintSet constraintSet, boolean animated,
@@ -350,14 +403,20 @@ public class GameCoolCamsView extends GameViewWithRanking {
     currentMasterId = userId;
     game.setCurrentMaster(peerMap.get(currentMasterId));
 
-    if (currentMasterId.equals(currentUser.getId())) broadcastNewGame();
+    if (currentMasterId.equals(currentUser.getId())) {
+      subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> broadcastNewGame()));
+    }
   }
 
   @Override public void stop() {
+    for (LiveStreamView lsv : liveViewsMap.values()) lsv.setStep(null);
     super.stop();
   }
 
   @Override public void dispose() {
+    subscriptionsGame.clear();
     super.dispose();
   }
 

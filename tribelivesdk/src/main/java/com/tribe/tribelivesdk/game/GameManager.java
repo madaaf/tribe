@@ -217,7 +217,9 @@ import rx.subscriptions.CompositeSubscription;
   }
 
   public boolean isFacialRecognitionNeeded() {
-    return currentGame != null && currentGame.getId().equals(Game.GAME_POST_IT);
+    return currentGame != null &&
+        (currentGame.getId().equals(Game.GAME_POST_IT) ||
+            currentGame.getId().equals(Game.GAME_COOL_CAMS));
   }
 
   public void dispose() {

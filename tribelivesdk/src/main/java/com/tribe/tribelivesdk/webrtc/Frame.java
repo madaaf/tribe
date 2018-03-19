@@ -83,4 +83,12 @@ public class Frame {
     System.arraycopy(data, 0, argbIn, 0, data.length);
     return new Frame(argbIn, width, height, rotation, timestamp, frontCamera);
   }
+
+  public int rotatedWidth() {
+    return this.rotation % 180 == 0 ? this.width : this.height;
+  }
+
+  public int rotatedHeight() {
+    return this.rotation % 180 == 0 ? this.height : this.width;
+  }
 }

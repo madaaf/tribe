@@ -4,26 +4,33 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.support.annotation.IntDef;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.util.Pair;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
+import com.tribe.app.domain.entity.coolcams.CoolCamsModel;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.tribelivesdk.facetracking.VisionAPIManager;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscription;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 10/12/17.
@@ -50,12 +57,17 @@ public abstract class LiveStreamView extends LinearLayout {
 
   @BindView(R.id.txtEmoji) TextViewFont txtEmoji;
 
+  @BindView(R.id.imgCoolCams) ImageView imgCoolCams;
+
   // VARIABLES
   protected Unbinder unbinder;
   protected int score;
+  protected VisionAPIManager visionAPIManager;
+  protected float widthScaleFactor, heightScaleFactor;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
+  protected Subscription visionSubscription;
   protected PublishSubject<Pair<Integer, String>> onScoreChange = PublishSubject.create();
 
   public LiveStreamView(Context context) {
@@ -76,6 +88,8 @@ public abstract class LiveStreamView extends LinearLayout {
   protected abstract void init();
 
   protected void endInit() {
+    visionAPIManager = VisionAPIManager.getInstance(getContext());
+
     setOrientation(HORIZONTAL);
     layoutStream.setCardBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
     layoutStream.setPreventCornerOverlap(false);
@@ -86,6 +100,7 @@ public abstract class LiveStreamView extends LinearLayout {
 
   public void dispose() {
     subscriptions.clear();
+    if (visionSubscription != null) visionSubscription.unsubscribe();
   }
 
   public void setStyle(@StreamType int type) {
@@ -147,6 +162,84 @@ public abstract class LiveStreamView extends LinearLayout {
 
   public int getScore() {
     return score;
+  }
+
+  public void setStep(CoolCamsModel.CoolCamsStepsEnum step) {
+    if (step != null) {
+      if (visionSubscription == null) {
+        visionSubscription = visionAPIManager.onComputeFaceDone().subscribe(frame -> {
+          Timber.d("Compute Face");
+          widthScaleFactor = (float) getMeasuredWidth() / (float) frame.rotatedWidth();
+          heightScaleFactor = (float) getMeasuredHeight() / (float) frame.rotatedHeight();
+
+          //Timber.d("getMeasuredWidth : " + getMeasuredWidth());
+          //Timber.d("getMeasuredHeight : " + getMeasuredHeight());
+          //Timber.d("rotatedWidth : " + frame.rotatedWidth());
+          //Timber.d("rotatedHeight : " + frame.rotatedHeight());
+          //Timber.d("widthScaleFactor : " + widthScaleFactor);
+          //Timber.d("heightScaleFactor : " + heightScaleFactor);
+
+          PointF middleEyesPosition = visionAPIManager.findXYForPostIt();
+
+          if (middleEyesPosition != null) {
+            PointF middleEyesTranslatedPosition =
+                new PointF(translateX(middleEyesPosition.x, frame.isFrontCamera()),
+                    translateY(middleEyesPosition.y));
+
+            Timber.d("x : " +
+                middleEyesTranslatedPosition.x +
+                " / y : " +
+                middleEyesTranslatedPosition.y);
+          }
+        });
+      }
+
+      imgCoolCams.setImageResource(step.getIcon());
+      imgCoolCams.setVisibility(View.VISIBLE);
+    } else {
+      if (visionSubscription != null) {
+        visionSubscription.unsubscribe();
+        visionSubscription = null;
+      }
+
+      imgCoolCams.setImageDrawable(null);
+      imgCoolCams.setVisibility(View.GONE);
+    }
+  }
+
+  /**
+   * Adjusts a horizontal value of the supplied value from the preview scale to the view
+   * scale.
+   */
+  public float scaleX(float horizontal) {
+    return horizontal * widthScaleFactor;
+  }
+
+  /**
+   * Adjusts a vertical value of the supplied value from the preview scale to the view scale.
+   */
+  public float scaleY(float vertical) {
+    return vertical * heightScaleFactor;
+  }
+
+  /**
+   * Adjusts the x coordinate from the preview's coordinate system to the view coordinate
+   * system.
+   */
+  public float translateX(float x, boolean isFrontFacing) {
+    if (isFrontFacing) {
+      return getMeasuredWidth() - scaleX(x);
+    } else {
+      return scaleX(x);
+    }
+  }
+
+  /**
+   * Adjusts the y coordinate from the preview's coordinate system to the view coordinate
+   * system.
+   */
+  public float translateY(float y) {
+    return scaleY(y);
   }
 
   /////////////////
