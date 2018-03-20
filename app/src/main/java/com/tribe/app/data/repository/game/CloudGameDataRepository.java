@@ -48,9 +48,9 @@ import timber.log.Timber;
         .doOnError(throwable -> Timber.e(throwable));
   }
 
-  @Override public Observable<List<Score>> getGameLeaderBoard(String gameId) {
+  @Override public Observable<List<Score>> getGameLeaderBoard(String gameId, List<String> usersId) {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
-    return gameDataStore.getGameLeaderBoard(gameId)
+    return gameDataStore.getGameLeaderBoard(gameId, usersId)
         .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
   }
 

@@ -47,9 +47,9 @@ import rx.Observable;
     return gameDataStore.getGames().map(gameRealm -> gameRealmDataMapper.transform(gameRealm));
   }
 
-  @Override public Observable<List<Score>> getGameLeaderBoard(String gameId) {
+  @Override public Observable<List<Score>> getGameLeaderBoard(String gameId, List<String> usersId) {
     GameDataStore gameDataStore = dataStoreFactory.createDiskDataStore();
-    return gameDataStore.getGameLeaderBoard(gameId)
+    return gameDataStore.getGameLeaderBoard(gameId, usersId)
         .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
   }
 

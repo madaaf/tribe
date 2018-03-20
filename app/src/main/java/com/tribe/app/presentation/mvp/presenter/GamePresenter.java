@@ -113,13 +113,13 @@ public class GamePresenter implements Presenter {
     gameManager = GameManager.getInstance(gameMVPView.context());
   }
 
-  public void loadGameLeaderboard(String gameId) {
+  public void loadGameLeaderboard(String gameId, List<String> usersId) {
     if (cloudGameLeaderboardSubscriber != null) {
       cloudGameLeaderboardSubscriber.unsubscribe();
     }
 
     cloudGameLeaderboardSubscriber = new GameLeaderboardSubscriber(true);
-    cloudGameLeaderboard.setup(gameId);
+    cloudGameLeaderboard.setup(gameId, usersId);
     cloudGameLeaderboard.execute(cloudGameLeaderboardSubscriber);
   }
 

@@ -244,7 +244,11 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
       @Override public void onLookupContacts(List<Contact> contactList) {
         super.onLookupContacts(contactList);
-        gamePresenter.loadGameLeaderboard(gameId);
+        List<String> usersId = new ArrayList<>();
+        for(Contact contact: contactList){
+          usersId.add(contact.getId());
+        }
+        gamePresenter.loadGameLeaderboard(gameId, usersId);
         Timber.e("SOEF " + contactList.size());
         addressBook.set(true);
         //adapter.removeItem(LEADERBOARD_ITEM_ADDRESS_BOOK);
@@ -420,7 +424,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
     adapter.setItems(items);
 
-    gamePresenter.loadGameLeaderboard(gameId);
+    gamePresenter.loadGameLeaderboard(gameId, null);
 
     appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
       float range = (float) -appBarLayout.getTotalScrollRange();

@@ -33,7 +33,7 @@ public class DiskGameDataStore implements GameDataStore {
     return Observable.just(gameCache.getGames());
   }
 
-  @Override public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId) {
+  @Override public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, List<String> usersId) {
     return Observable.just(gameCache.getGameLeaderboard(gameId));
   }
 

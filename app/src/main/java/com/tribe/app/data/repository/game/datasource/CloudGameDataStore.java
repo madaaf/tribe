@@ -29,6 +29,7 @@ import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +116,8 @@ public class CloudGameDataStore implements GameDataStore {
         .doOnError(Throwable::printStackTrace);
   }
 
-  @Override public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, List<String> usersId) {
+  @Override
+  public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, List<String> usersId) {
     List<ShortcutRealm> singleShortcuts = userCache.singleShortcutsNoObs();
     String[] userIds = new String[singleShortcuts.size() + 1];
 
@@ -126,8 +128,15 @@ public class CloudGameDataStore implements GameDataStore {
 
     userIds[singleShortcuts.size()] = accessToken.getUserId();
 
+    List<String> both = new ArrayList<>(Arrays.asList(userIds));
+   if(usersId!=null) both.addAll(usersId);
+
+    String[] list = new String[both.size()];
+    list = both.toArray(list);
+
+
     String body =
-        context.getString(R.string.game_leaderboard, gameId, JsonUtils.arrayToJson(userIds));
+        context.getString(R.string.game_leaderboard, gameId, JsonUtils.arrayToJson(list));
     final String request = context.getString(R.string.query, body);
 
     return this.tribeApi.getLeaderboard(request).doOnNext(scoreRealmList -> {

@@ -4,6 +4,7 @@ import com.tribe.app.data.repository.game.CloudGameDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
+import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 
@@ -14,6 +15,7 @@ public class GetCloudGameLeaderboard extends UseCase {
 
   private GameRepository gameRepository;
   private String gameId;
+  private List<String> usersId;
 
   @Inject public GetCloudGameLeaderboard(CloudGameDataRepository gameRepository,
       ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
@@ -21,11 +23,12 @@ public class GetCloudGameLeaderboard extends UseCase {
     this.gameRepository = gameRepository;
   }
 
-  public void setup(String gameId) {
+  public void setup(String gameId, List<String> usersId) {
     this.gameId = gameId;
+    this.usersId = usersId;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.gameRepository.getGameLeaderBoard(gameId);
+    return this.gameRepository.getGameLeaderBoard(gameId, usersId);
   }
 }

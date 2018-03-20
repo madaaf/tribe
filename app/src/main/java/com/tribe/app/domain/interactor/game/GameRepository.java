@@ -22,7 +22,7 @@ public interface GameRepository {
 
   Observable<List<Game>> getGames();
 
-  Observable<List<Score>> getGameLeaderBoard(String gameId);
+  Observable<List<Score>> getGameLeaderBoard(String gameId, List<String> usersId);
 
   Observable<List<Score>> getUserLeaderboard(String userId);
 
