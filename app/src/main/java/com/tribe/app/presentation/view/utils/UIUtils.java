@@ -132,6 +132,12 @@ public class UIUtils {
     v.setLayoutParams(params);
   }
 
+  public static void changeTopMarginOfView(View v, int margin) {
+    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+    params.topMargin = margin;
+    v.setLayoutParams(params);
+  }
+
   public static void changeRightMarginOfView(View v, int margin) {
     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
     params.rightMargin = margin;

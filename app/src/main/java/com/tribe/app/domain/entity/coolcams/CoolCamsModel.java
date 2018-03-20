@@ -1,6 +1,7 @@
 package com.tribe.app.domain.entity.coolcams;
 
 import com.tribe.app.R;
+import com.tribe.app.presentation.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -63,6 +64,14 @@ public class CoolCamsModel {
       return step;
     }
 
+    public static CoolCamsStepsEnum getStepById(String stepId) {
+      for (CoolCamsStepsEnum coolCamEnum : getSteps()) {
+        if (coolCamEnum.step.equals(stepId)) return coolCamEnum;
+      }
+
+      return null;
+    }
+
     public static List<CoolCamsStepsEnum> getSteps() {
       return new ArrayList<>(EnumSet.allOf(CoolCamsStepsEnum.class));
     }
@@ -122,8 +131,48 @@ public class CoolCamsModel {
     }
   }
 
-  public enum CoolCamsStatus {
-    NONE, STEP
+  public enum CoolCamsStatusEnum {
+    NONE, STEP, WON, LOST;
+
+    private CoolCamsStepsEnum step;
+
+    CoolCamsStatusEnum() {
+    }
+
+    public String getCode() {
+      if (this.equals(STEP)) {
+        return "step";
+      } else if (this.equals(WON)) {
+        return "won";
+      } else if (this.equals(LOST)) {
+        return "lost";
+      }
+
+      return "none";
+    }
+
+    public void setStep(CoolCamsStepsEnum step) {
+      this.step = step;
+    }
+
+    public CoolCamsStepsEnum getStep() {
+      return step;
+    }
+
+    public static CoolCamsStatusEnum with(String code, String stepId) {
+      if (StringUtils.isEmpty(code)) return null;
+
+      if (code.equals("step")) {
+        STEP.setStep(CoolCamsStepsEnum.getStepById(stepId));
+        return STEP;
+      } else if (code.equals("won")) {
+        return WON;
+      } else if (code.equals("lost")) {
+        return LOST;
+      }
+
+      return NONE;
+    }
   }
 }
 

@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.live.game.coolcams;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -47,6 +48,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -56,25 +58,23 @@ import rx.subscriptions.CompositeSubscription;
 public class GameCoolCamsView extends GameViewWithRanking {
 
   private static final int DURATION = 500;
+  private static final float OVERSHOOT = 0.45f;
 
   private static final String ACTION_POSITION = "position";
   private static final String ACTION_NEW_GAME = "newGame";
   private static final String ACTION_USER_GAME_OVER = "userGameOver";
   private static final String ACTION_GAME_OVER = "gameOver";
 
-  private static final String STEPS_IDS_KEY = "position";
-  private static final String STEP_DURATION = "position";
-  private static final String STEP_RESULT_DURATION = "position";
-  private static final String TIMESTAMP_KEY = "position";
-  private static final String STATUS_CODE_KEY = "position";
-  private static final String STEP_ID_KEY = "position";
+  private static final String STEPS_IDS_KEY = "stepsIds";
+  private static final String STEP_DURATION = "stepDuration";
+  private static final String STEP_RESULT_DURATION = "stepResultDuration";
+  private static final String TIMESTAMP_KEY = "timestamp";
+  private static final String STATUS_CODE_KEY = "statusCode";
+  private static final String STEP_ID_KEY = "stepId";
 
   private static final String X_KEY = "x";
   private static final String Y_KEY = "y";
 
-  private static final String ACTION_STOP_TRACK = "stopTrack";
-  private static final String ACTION_PLAY_TRACK = "playTrack";
-  private static final String TRACK_KEY = "track";
   private static final String WINNERS_KEY = "winners";
 
   @Inject GamePresenter gamePresenter;
@@ -97,12 +97,15 @@ public class GameCoolCamsView extends GameViewWithRanking {
 
   @BindView(R.id.viewGradientBg) View viewGradientBg;
 
+  @BindView(R.id.txtSessionTime) TextViewFont txtSessionTime;
+
   // VARIABLES
   private GameMVPViewAdapter gameMVPViewAdapter;
   private Set<String> playingIds;
 
   // SUBSCRIPTIONS
   private CompositeSubscription subscriptionsGame = new CompositeSubscription();
+  private PublishSubject<CoolCamsModel.CoolCamsStatusEnum> onStatusChange = PublishSubject.create();
 
   public GameCoolCamsView(@NonNull Context context) {
     super(context);
@@ -159,12 +162,10 @@ public class GameCoolCamsView extends GameViewWithRanking {
     progressBarBg.useRoundedCorners(false);
     progressBarBg.setProgressColor(ContextCompat.getColor(getContext(), R.color.white_opacity_50));
     progressBarBg.setProgressWidth(screenUtils.dpToPx(3));
-    progressBarBg.setProgress(100);
 
     progressBarRound.useRoundedCorners(false);
     progressBarRound.setProgressColor(Color.WHITE);
     progressBarRound.setProgressWidth(screenUtils.dpToPx(3));
-    progressBarRound.setProgress(50);
 
     progressBarTotal.getViewTreeObserver()
         .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -173,7 +174,6 @@ public class GameCoolCamsView extends GameViewWithRanking {
             progressBarTotal.useRoundedCorners(false);
             progressBarTotal.setProgressColor(Color.WHITE);
             progressBarTotal.setProgressWidth(progressBarTotal.getMeasuredWidth() >> 1);
-            progressBarTotal.setProgress(20);
           }
         });
   }
@@ -206,6 +206,21 @@ public class GameCoolCamsView extends GameViewWithRanking {
     if (jsonObject.has(game.getId())) {
       try {
         JSONObject message = jsonObject.getJSONObject(game.getId());
+        if (message.has(ACTION_KEY)) {
+          String actionKey = message.getString(ACTION_KEY);
+          if (actionKey.equals(ACTION_POSITION)) {
+            if (message.has(STEP_ID_KEY)) {
+              liveViewsMap.get(tribeSession.getUserId())
+                  .setStep(
+                      CoolCamsModel.CoolCamsStepsEnum.getStepById(message.getString(STEP_ID_KEY)));
+            }
+
+            if (message.has(X_KEY) && message.has(Y_KEY)) {
+              liveViewsMap.get(tribeSession.getUserId())
+                  .updatePositionRatioOfSticker(message.getDouble(X_KEY), message.getDouble(Y_KEY));
+            }
+          }
+        }
       } catch (JSONException ex) {
         ex.printStackTrace();
       }
@@ -223,7 +238,7 @@ public class GameCoolCamsView extends GameViewWithRanking {
 
   private void broadcastNewGame() {
     long timestamp = startGameTimestamp();
-    List<CoolCamsModel.CoolCamsStepsEnum> steps = CoolCamsModel.CoolCamsStepsEnum.generateGame(4);
+    List<CoolCamsModel.CoolCamsStepsEnum> steps = CoolCamsModel.CoolCamsStepsEnum.generateGame(12);
     double stepDuration = 5.0D;
     double stepResultDuration = 1.0D;
 
@@ -246,10 +261,6 @@ public class GameCoolCamsView extends GameViewWithRanking {
             }
           }
         }));
-  }
-
-  private void broadcastNewSong() {
-
   }
 
   private void newGame(long timestamp, List<CoolCamsModel.CoolCamsStepsEnum> steps,
@@ -280,7 +291,35 @@ public class GameCoolCamsView extends GameViewWithRanking {
 
   private void launchGame(List<CoolCamsModel.CoolCamsStepsEnum> steps, double stepDuration,
       double stepResultDuration) {
-    liveViewsMap.get(currentUser.getId()).setStep(steps.get(0));
+    if (steps == null || steps.size() == 0) return;
+    CoolCamsModel.CoolCamsStepsEnum step = steps.remove(0);
+
+    PointF previousOrigin = null;
+    CoolCamsModel.CoolCamsStatusEnum status = null;
+
+    Date statusSince = new Date();
+
+    String userId = currentUser.getId();
+    int roundScore = 0;
+
+    double remainingDuration = (stepDuration + stepResultDuration) * steps.size();
+    txtSessionTime.setText("" + (int) remainingDuration);
+    txtSessionTime.animate()
+        .scaleX(1)
+        .scaleY(1)
+        .setDuration(DURATION)
+        .setInterpolator(new OvershootInterpolator())
+        .start();
+
+    subscriptionsGame.add(Observable.interval(1, TimeUnit.SECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          double time = remainingDuration - new Long(aLong).doubleValue();
+          txtSessionTime.setText("" + (int) time);
+        }));
+
+    progressBarTotal.setProgress(progressBarTotal.getProgress() + (100 / steps.size()));
+    progressBarRound.setProgress(100, (int) stepDuration * 1000, 0, null, null);
   }
 
   private void showTitle(int duration, CompletionListener completionListener) {

@@ -9,6 +9,15 @@
       android:visibility="gone"
       >
 
+    <ImageView
+        android:id="@+id/imgCoolCams"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/picto_coolcams_emoji_0"
+        android:visibility="gone"
+        />
+
     <com.tribe.app.presentation.view.component.live.LivePeerOverlayView
         android:id="@+id/viewPeerOverlay"
         android:layout_width="match_parent"

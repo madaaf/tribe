@@ -25,7 +25,7 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
-      style="@style/CoolCam"
+      style="@style/CoolCam.Medium"
       />
 
   <ImageView
@@ -101,6 +101,21 @@
       app:layout_constraintEnd_toEndOf="@id/progressBarBg"
       app:layout_constraintStart_toStartOf="@id/progressBarBg"
       app:layout_constraintTop_toTopOf="@id/progressBarBg"
+      />
+
+  <com.tribe.app.presentation.view.widget.TextViewFont
+      android:id="@+id/txtSessionTime"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="10dp"
+      android:gravity="center"
+      android:lines="1"
+      android:scaleX="0"
+      android:scaleY="0"
+      app:layout_constraintBottom_toBottomOf="@id/progressBarBg"
+      app:layout_constraintEnd_toStartOf="@id/progressBarBg"
+      app:layout_constraintTop_toTopOf="@id/progressBarBg"
+      style="@style/CoolCam.Big"
       />
 
 </android.support.constraint.ConstraintLayout>

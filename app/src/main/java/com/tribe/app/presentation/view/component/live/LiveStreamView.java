@@ -25,6 +25,8 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.facetracking.VisionAPIManager;
+import com.tribe.tribelivesdk.view.PeerView;
+import com.tribe.tribelivesdk.view.TextureViewRenderer;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.Subscription;
@@ -87,6 +89,8 @@ public abstract class LiveStreamView extends LinearLayout {
 
   protected abstract void init();
 
+  protected abstract PeerView getPeerView();
+
   protected void endInit() {
     visionAPIManager = VisionAPIManager.getInstance(getContext());
 
@@ -97,6 +101,45 @@ public abstract class LiveStreamView extends LinearLayout {
     layoutStream.setCardElevation(0);
     layoutStream.setRadius(0);
   }
+
+  /**
+   * Adjusts a horizontal value of the supplied value from the preview scale to the view
+   * scale.
+   */
+  protected float scaleX(float horizontal) {
+    return horizontal * widthScaleFactor;
+  }
+
+  /**
+   * Adjusts a vertical value of the supplied value from the preview scale to the view scale.
+   */
+  protected float scaleY(float vertical) {
+    return vertical * heightScaleFactor;
+  }
+
+  /**
+   * Adjusts the x coordinate from the preview's coordinate system to the view coordinate
+   * system.
+   */
+  protected float translateX(float x, boolean isFrontFacing) {
+    if (isFrontFacing) {
+      return getMeasuredWidth() - scaleX(x);
+    } else {
+      return scaleX(x);
+    }
+  }
+
+  /**
+   * Adjusts the y coordinate from the preview's coordinate system to the view coordinate
+   * system.
+   */
+  protected float translateY(float y) {
+    return scaleY(y);
+  }
+
+  /**
+   * PUBLIC
+   */
 
   public void dispose() {
     subscriptions.clear();
@@ -166,34 +209,7 @@ public abstract class LiveStreamView extends LinearLayout {
 
   public void setStep(CoolCamsModel.CoolCamsStepsEnum step) {
     if (step != null) {
-      if (visionSubscription == null) {
-        visionSubscription = visionAPIManager.onComputeFaceDone().subscribe(frame -> {
-          Timber.d("Compute Face");
-          widthScaleFactor = (float) getMeasuredWidth() / (float) frame.rotatedWidth();
-          heightScaleFactor = (float) getMeasuredHeight() / (float) frame.rotatedHeight();
-
-          //Timber.d("getMeasuredWidth : " + getMeasuredWidth());
-          //Timber.d("getMeasuredHeight : " + getMeasuredHeight());
-          //Timber.d("rotatedWidth : " + frame.rotatedWidth());
-          //Timber.d("rotatedHeight : " + frame.rotatedHeight());
-          //Timber.d("widthScaleFactor : " + widthScaleFactor);
-          //Timber.d("heightScaleFactor : " + heightScaleFactor);
-
-          PointF middleEyesPosition = visionAPIManager.findXYForPostIt();
-
-          if (middleEyesPosition != null) {
-            PointF middleEyesTranslatedPosition =
-                new PointF(translateX(middleEyesPosition.x, frame.isFrontCamera()),
-                    translateY(middleEyesPosition.y));
-
-            Timber.d("x : " +
-                middleEyesTranslatedPosition.x +
-                " / y : " +
-                middleEyesTranslatedPosition.y);
-          }
-        });
-      }
-
+      Timber.d("Setting stepId to : " + step.getStep());
       imgCoolCams.setImageResource(step.getIcon());
       imgCoolCams.setVisibility(View.VISIBLE);
     } else {
@@ -207,39 +223,32 @@ public abstract class LiveStreamView extends LinearLayout {
     }
   }
 
-  /**
-   * Adjusts a horizontal value of the supplied value from the preview scale to the view
-   * scale.
-   */
-  public float scaleX(float horizontal) {
-    return horizontal * widthScaleFactor;
+  public void updatePositionOfSticker(PointF pointF) {
+    UIUtils.changeLeftMarginOfView(imgCoolCams,
+        (int) pointF.x - (imgCoolCams.getMeasuredWidth() >> 1));
+    UIUtils.changeTopMarginOfView(imgCoolCams,
+        (int) pointF.y - (imgCoolCams.getMeasuredHeight() >> 1));
   }
 
-  /**
-   * Adjusts a vertical value of the supplied value from the preview scale to the view scale.
-   */
-  public float scaleY(float vertical) {
-    return vertical * heightScaleFactor;
-  }
+  public void updatePositionRatioOfSticker(double xRatio, double yRatio) {
+    TextureViewRenderer renderer = getPeerView().getTextureViewRenderer();
+    PointF pointF = new PointF(renderer.getFrameWidth() * (float) xRatio,
+        renderer.getFrameHeight() * (float) yRatio);
 
-  /**
-   * Adjusts the x coordinate from the preview's coordinate system to the view coordinate
-   * system.
-   */
-  public float translateX(float x, boolean isFrontFacing) {
-    if (isFrontFacing) {
-      return getMeasuredWidth() - scaleX(x);
+    widthScaleFactor = (float) getMeasuredWidth() / (float) renderer.getFrameWidth();
+    heightScaleFactor = (float) getMeasuredHeight() / (float) renderer.getFrameHeight();
+
+    PointF pointEnd;
+
+    if (pointF != null) {
+      pointEnd = new PointF(translateX(pointF.x, !getPeerView().isMirror()), translateY(pointF.y));
     } else {
-      return scaleX(x);
+      pointEnd = new PointF();
+      pointEnd.x = getMeasuredWidth() >> 1;
+      pointEnd.y = getMeasuredHeight() >> 1;
     }
-  }
 
-  /**
-   * Adjusts the y coordinate from the preview's coordinate system to the view coordinate
-   * system.
-   */
-  public float translateY(float y) {
-    return scaleY(y);
+    updatePositionOfSticker(pointEnd);
   }
 
   /////////////////

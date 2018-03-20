@@ -290,7 +290,7 @@ public class VisionAPIManager {
     return rightEyeOpen;
   }
 
-  public PointF findXYForPostIt() {
+  public PointF findXYMiddleEye() {
     if (face == null || (leftEye == null && rightEye == null)) return null;
 
     if (leftEye != null && rightEye != null) {

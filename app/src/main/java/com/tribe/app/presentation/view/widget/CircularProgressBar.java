@@ -26,6 +26,7 @@ public class CircularProgressBar extends View {
   private boolean roundedCorners = true;
   private int progressColor = Color.BLACK;
   private ValueAnimator animator = null;
+  private int progress = 0;
 
   private final Paint paint;
 
@@ -81,8 +82,13 @@ public class CircularProgressBar extends View {
   }
 
   public void setProgress(int progress) {
+    this.progress = progress;
     sweepAngle = calcSweepAngleFromProgress(progress);
     invalidate();
+  }
+
+  public int getProgress() {
+    return progress;
   }
 
   /**
