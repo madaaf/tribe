@@ -35,7 +35,9 @@ import butterknife.OnClick;
 import butterknife.OnLongClick;
 import com.bumptech.glide.Glide;
 import com.f2prateek.rx.preferences.Preference;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.PokeTiming;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Score;
@@ -44,7 +46,10 @@ import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.utils.EmojiParser;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.preferences.AddressBook;
 import com.tribe.app.presentation.utils.preferences.PokeUserGame;
 import com.tribe.app.presentation.utils.preferences.PreferencesUtils;
 import com.tribe.app.presentation.view.ShortcutUtil;
@@ -70,8 +75,12 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 import static com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate.maxWaitingTimeSeconde;
+import static com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter.LEADERBOARD_ADDRESS;
+import static com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter.LEADERBOARD_ITEM_ADDRESS_BOOK;
+import static com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter.LEADERBOARD_ITEM_FACEBOOK;
 
 public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
@@ -95,6 +104,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   @Inject StateManager stateManager;
 
   @Inject SoundManager soundManager;
+
+  @Inject @AddressBook Preference<Boolean> addressBook;
 
   @BindView(R.id.imgBackgroundGradient) View imgBackgroundGradient;
 
@@ -163,6 +174,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   private String gameId;
   private Game game;
   private List<EmojiPoke> emojis = new ArrayList<>();
+  private RxPermissions rxPermissions;
 
   // RESOURCES
 
@@ -191,6 +203,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     gameManager = GameManager.getInstance(this);
     game = gameManager.getGameById(getIntent().getStringExtra(GAME_ID));
     items = new ArrayList<>();
+    rxPermissions = new RxPermissions(this);
 
     initDependencyInjector();
     initPresenter();
@@ -217,6 +230,27 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   protected void initPresenter() {
     gameMVPViewAdapter = new GameMVPViewAdapter() {
+      @Override public void successFacebookLogin() {
+        super.successFacebookLogin();
+        Timber.e("SOEF successFacebookLogin");
+        // adapter.removeItem(LEADERBOARD_ITEM_FACEBOOK); // TODO SOEF
+        adapter.notifyDataSetChanged();
+      }
+
+      @Override public void errorFacebookLogin() {
+        super.errorFacebookLogin();
+        Timber.e("SOEF errorFacebookLogin");
+      }
+
+      @Override public void onLookupContacts(List<Contact> contactList) {
+        super.onLookupContacts(contactList);
+        gamePresenter.loadGameLeaderboard(gameId);
+        Timber.e("SOEF " + contactList.size());
+        addressBook.set(true);
+        //adapter.removeItem(LEADERBOARD_ITEM_ADDRESS_BOOK);
+        adapter.notifyDataSetChanged();
+      }
+
       @Override public void onGameLeaderboard(List<Score> scoreList, boolean cloud) {
         if (scoreList == null) return;
 
@@ -258,7 +292,20 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
         items.addAll(scoreList);
 
-        if (items.size() == 0) {
+        if (!FacebookUtils.isLoggedIn()) {
+          Score score = new Score(); // TODO SOEF
+          score.setId(LEADERBOARD_ITEM_FACEBOOK);
+          items.add(score);
+        }
+
+        if (true) {
+          // if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
+          Score score = new Score(); // TODO SOEF
+          score.setId(LEADERBOARD_ITEM_ADDRESS_BOOK);
+          items.add(score);
+        }
+
+        if (items.size() < 3) {
           for (int i = 0; i < 10; i++) {
             Score score = new Score();
             score.setGame(game);
@@ -336,14 +383,31 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       setClickPokeAnimation(score, score.getTextView());
     }));
 
-    subscriptions.add(adapter.onClick().subscribe(score -> {
-      if (score.getUser().getId().equals(user.getId())) {
-        navigator.shareGenericText(
-            getString(R.string.poke_share_score, score.getGame().getId(), score.getRanking()),
-            this);
+    subscriptions.add(adapter.onClick().subscribe(score -> { // TODO SOEF
+
+      if (score.getId().startsWith(LEADERBOARD_ADDRESS)) {
+        if (score.getId().equals(LEADERBOARD_ITEM_ADDRESS_BOOK)) {
+          rxPermissions.request(PermissionUtils.PERMISSIONS_CONTACTS).subscribe(hasPermission -> {
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(TagManagerUtils.USER_ADDRESS_BOOK_ENABLED, hasPermission);
+            tagManager.setProperty(bundle);
+
+            if (hasPermission) {
+              gamePresenter.lookupContacts();
+            }
+          });
+        } else if (score.getId().equals(LEADERBOARD_ITEM_FACEBOOK)) {
+          gamePresenter.loginFacebook();
+        }
       } else {
-        Recipient recipient = ShortcutUtil.getRecipientFromId(score.getUser().getId(), user);
-        navigator.navigateToChat(this, recipient, null, null, false);
+        if (score.getUser().getId().equals(user.getId())) {
+          navigator.shareGenericText(
+              getString(R.string.poke_share_score, score.getGame().getId(), score.getRanking()),
+              this);
+        } else {
+          Recipient recipient = ShortcutUtil.getRecipientFromId(score.getUser().getId(), user);
+          navigator.navigateToChat(this, recipient, null, null, false);
+        }
       }
     }));
 
@@ -504,8 +568,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     bundle.putInt(TagManagerUtils.RANK, score.getRanking());
     tagManager.trackEvent(TagManagerUtils.Poke, bundle);
 
-    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null &&
-        score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
+        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
 
     if (isAbove) {
       soundManager.playSound(SoundManager.POKE_LAUGH, SoundManager.SOUND_LOW);

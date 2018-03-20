@@ -13,4 +13,5 @@ public abstract class RxAdapterDelegate<T> implements AdapterDelegate<T> {
   public void releaseSubscriptions() {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
   }
+
 }

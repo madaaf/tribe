@@ -114,6 +114,7 @@ import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutEmptyInvite
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.ShortcutInviteFullAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.grid.UserRoomAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardAddressBookAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardUserAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.newchat.ShortcutNewChatAdapterDelegate;
@@ -214,6 +215,8 @@ public interface ApplicationComponent {
   void inject(LegacyMediaPlayer legacyMediaPlayer);
 
   void inject(SearchResultGridAdapterDelegate searchResultGridAdapterDelegate);
+
+  void inject(LeaderboardAddressBookAdapterDelegate leaderboardAddressBookAdapterDelegate);
 
   void inject(TopBarContainer topBarContainer);
 

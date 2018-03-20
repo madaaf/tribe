@@ -115,7 +115,7 @@ public class CloudGameDataStore implements GameDataStore {
         .doOnError(Throwable::printStackTrace);
   }
 
-  @Override public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId) {
+  @Override public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, List<String> usersId) {
     List<ShortcutRealm> singleShortcuts = userCache.singleShortcutsNoObs();
     String[] userIds = new String[singleShortcuts.size() + 1];
 
