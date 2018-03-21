@@ -6,6 +6,7 @@ import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.realm.GameFileRealm;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class DiskGameDataStore implements GameDataStore {
     return Observable.just(gameCache.getGames());
   }
 
-  @Override public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, List<String> usersId) {
+  @Override public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, List<Contact> usersId) {
     return Observable.just(gameCache.getGameLeaderboard(gameId));
   }
 

@@ -248,7 +248,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         for (Contact contact : contactList) {
           usersId.add(contact.getId());
         }
-        gamePresenter.loadGameLeaderboard(gameId, usersId);
+        gamePresenter.loadGameLeaderboard(gameId, contactList);
         Timber.e("SOEF " + contactList.size());
         addressBook.set(true);
         //adapter.removeItem(LEADERBOARD_ITEM_ADDRESS_BOOK);
@@ -303,7 +303,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         }
 
         if (true) {
-          // if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
+        //if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
           Score score = new Score(); // TODO SOEF
           score.setId(LEADERBOARD_ITEM_ADDRESS_BOOK);
           items.add(score);

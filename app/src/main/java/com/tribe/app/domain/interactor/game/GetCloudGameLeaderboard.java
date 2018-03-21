@@ -1,6 +1,7 @@
 package com.tribe.app.domain.interactor.game;
 
 import com.tribe.app.data.repository.game.CloudGameDataRepository;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
 import com.tribe.app.domain.interactor.common.UseCase;
@@ -15,7 +16,7 @@ public class GetCloudGameLeaderboard extends UseCase {
 
   private GameRepository gameRepository;
   private String gameId;
-  private List<String> usersId;
+  private List<Contact> usersId;
 
   @Inject public GetCloudGameLeaderboard(CloudGameDataRepository gameRepository,
       ThreadExecutor threadExecutor, PostExecutionThread postExecutionThread) {
@@ -23,7 +24,7 @@ public class GetCloudGameLeaderboard extends UseCase {
     this.gameRepository = gameRepository;
   }
 
-  public void setup(String gameId, List<String> usersId) {
+  public void setup(String gameId, List<Contact> usersId) {
     this.gameId = gameId;
     this.usersId = usersId;
   }

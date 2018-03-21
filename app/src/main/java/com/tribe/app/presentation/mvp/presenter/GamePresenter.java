@@ -113,7 +113,7 @@ public class GamePresenter implements Presenter {
     gameManager = GameManager.getInstance(gameMVPView.context());
   }
 
-  public void loadGameLeaderboard(String gameId, List<String> usersId) {
+  public void loadGameLeaderboard(String gameId, List<Contact> usersId) {
     if (cloudGameLeaderboardSubscriber != null) {
       cloudGameLeaderboardSubscriber.unsubscribe();
     }
@@ -140,7 +140,6 @@ public class GamePresenter implements Presenter {
     }
 
     @Override public void onNext(List<Contact> contactList) {
-      Timber.e("SOEF");
       gameMVPView.onLookupContacts(contactList);
     }
   }

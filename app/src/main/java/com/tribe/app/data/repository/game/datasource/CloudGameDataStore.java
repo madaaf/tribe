@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ContactCache;
-import com.tribe.app.data.cache.ContactCacheImpl;
 import com.tribe.app.data.cache.GameCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.FileApi;
@@ -24,6 +23,7 @@ import com.tribe.app.data.realm.ScoreRealm;
 import com.tribe.app.data.realm.ScoreUserRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaCategoryEnum;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import rx.Observable;
-import timber.log.Timber;
 
 public class CloudGameDataStore implements GameDataStore {
 
@@ -124,7 +123,7 @@ public class CloudGameDataStore implements GameDataStore {
   }
 
   @Override
-  public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, List<String> usersId) {
+  public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, List<Contact> usersId) {
     List<Object> contactInterfaces = new ArrayList<>();
 
     List<ShortcutRealm> singleShortcuts = userCache.singleShortcutsNoObs();
@@ -140,7 +139,12 @@ public class CloudGameDataStore implements GameDataStore {
     contactInterfaces.add(accessToken.getUserId());
 
     List<String> finalList = new ArrayList<>(Arrays.asList(userIds));
-    if (usersId != null) finalList.addAll(usersId);
+    if (usersId != null) {
+      for (Contact c : usersId) {
+        finalList.add(c.getId());
+        contactInterfaces.add(c);
+      }
+    }
 
     List<ContactABRealm> contactsAddressBookList = contactCache.getContactsAddressBook();
     if (contactsAddressBookList != null) {
@@ -149,7 +153,6 @@ public class CloudGameDataStore implements GameDataStore {
         contactInterfaces.add(contactABRealm);
       }
     }
-
 
     List<ContactFBRealm> contactsFacebookList = contactCache.getContactsFacebook();
     if (contactsFacebookList != null) {
@@ -166,10 +169,6 @@ public class CloudGameDataStore implements GameDataStore {
     final String request = context.getString(R.string.query, body);
 
     return this.tribeApi.getLeaderboard(request).doOnNext(scoreRealmList -> {
-      if (usersId != null) Timber.e("SOEF " + usersId.size());
-      if (contactInterfaces != null) Timber.e("SOEF " + contactInterfaces.size());
-      Timber.e("SOEF 2" + finalList.size());
-
       int i = 0;
       ScoreUserRealm scoreUserRealm;
       for (ScoreRealm scoreRealm : scoreRealmList) {

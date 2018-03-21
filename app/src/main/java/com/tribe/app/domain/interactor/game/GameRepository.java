@@ -5,6 +5,7 @@ package com.tribe.app.domain.interactor.game;
  */
 
 import com.tribe.app.data.network.entity.AddScoreEntity;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
@@ -22,7 +23,7 @@ public interface GameRepository {
 
   Observable<List<Game>> getGames();
 
-  Observable<List<Score>> getGameLeaderBoard(String gameId, List<String> usersId);
+  Observable<List<Score>> getGameLeaderBoard(String gameId, List<Contact> usersId);
 
   Observable<List<Score>> getUserLeaderboard(String userId);
 

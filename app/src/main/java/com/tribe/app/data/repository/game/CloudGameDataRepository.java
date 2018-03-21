@@ -5,6 +5,7 @@ import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ScoreRealmDataMapper;
 import com.tribe.app.data.repository.game.datasource.GameDataStore;
 import com.tribe.app.data.repository.game.datasource.GameDataStoreFactory;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
@@ -48,7 +49,7 @@ import timber.log.Timber;
         .doOnError(throwable -> Timber.e(throwable));
   }
 
-  @Override public Observable<List<Score>> getGameLeaderBoard(String gameId, List<String> usersId) {
+  @Override public Observable<List<Score>> getGameLeaderBoard(String gameId, List<Contact> usersId) {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
     return gameDataStore.getGameLeaderBoard(gameId, usersId)
         .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));
