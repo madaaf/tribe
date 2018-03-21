@@ -80,6 +80,7 @@ public class LeaderboardAddressBookAdapterDelegate extends RxAdapterDelegate<Lis
       vh.logo.setImageResource(R.drawable.com_facebook_button_icon_white);
     }
 
+    score.setPosition(position);
     vh.itemView.setOnClickListener(v -> onClick.onNext(score));
   }
 

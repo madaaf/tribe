@@ -14,6 +14,7 @@ public class Score {
   private String emoticon;
   private int ranking = 0;
   private int value = 0;
+  private int position;
   private User user;
   private Game game;
   private TextView textView;
@@ -106,6 +107,14 @@ public class Score {
 
   public boolean isWaiting() {
     return isWaiting;
+  }
+
+  public int getPosition() {
+    return position;
+  }
+
+  public void setPosition(int position) {
+    this.position = position;
   }
 
   @Override public String toString() {

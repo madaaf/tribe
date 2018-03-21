@@ -75,7 +75,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 import static com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate.maxWaitingTimeSeconde;
 import static com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter.LEADERBOARD_ADDRESS;
@@ -232,14 +231,12 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     gameMVPViewAdapter = new GameMVPViewAdapter() {
       @Override public void successFacebookLogin() {
         super.successFacebookLogin();
-        Timber.e("SOEF successFacebookLogin");
-        // adapter.removeItem(LEADERBOARD_ITEM_FACEBOOK); // TODO SOEF
+        gamePresenter.lookupContacts();
         adapter.notifyDataSetChanged();
       }
 
       @Override public void errorFacebookLogin() {
         super.errorFacebookLogin();
-        Timber.e("SOEF errorFacebookLogin");
       }
 
       @Override public void onLookupContacts(List<Contact> contactList) {
@@ -249,9 +246,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
           usersId.add(contact.getId());
         }
         gamePresenter.loadGameLeaderboard(gameId, contactList);
-        Timber.e("SOEF " + contactList.size());
         addressBook.set(true);
-        //adapter.removeItem(LEADERBOARD_ITEM_ADDRESS_BOOK);
         adapter.notifyDataSetChanged();
       }
 
@@ -264,7 +259,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         ConstraintSet set = new ConstraintSet();
         set.clone(getApplicationContext(), R.layout.activity_game_leaderboards_final);
         animateLayoutWithConstraintSet(set, null);
-        // SOEF
+
         for (Score score : scoreList) {
           // We add the current user if user == null, it means it's the current user's score
           if (score.getUser() == null) score.setUser(getCurrentUser());
@@ -297,14 +292,13 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         items.addAll(scoreList);
 
         if (!FacebookUtils.isLoggedIn()) {
-          Score score = new Score(); // TODO SOEF
+          Score score = new Score();
           score.setId(LEADERBOARD_ITEM_FACEBOOK);
           items.add(score);
         }
 
-        if (true) {
-        //if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
-          Score score = new Score(); // TODO SOEF
+        if (!PermissionUtils.hasPermissionsContact(rxPermissions)) {
+          Score score = new Score();
           score.setId(LEADERBOARD_ITEM_ADDRESS_BOOK);
           items.add(score);
         }
@@ -387,7 +381,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       setClickPokeAnimation(score, score.getTextView());
     }));
 
-    subscriptions.add(adapter.onClick().subscribe(score -> { // TODO SOEF
+    subscriptions.add(adapter.onClick().subscribe(score -> {
 
       if (score.getId().startsWith(LEADERBOARD_ADDRESS)) {
         if (score.getId().equals(LEADERBOARD_ITEM_ADDRESS_BOOK)) {

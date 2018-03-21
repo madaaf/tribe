@@ -165,7 +165,6 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     searchPresenter.onViewAttached(this);
-    //lookupContacts();// TODO SOEF DELETE
   }
 
   @Override protected void onDetachedFromWindow() {

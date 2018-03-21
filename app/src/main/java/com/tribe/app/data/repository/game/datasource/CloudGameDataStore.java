@@ -141,8 +141,8 @@ public class CloudGameDataStore implements GameDataStore {
     List<String> finalList = new ArrayList<>(Arrays.asList(userIds));
     if (usersId != null) {
       for (Contact c : usersId) {
-        finalList.add(c.getId());
-        contactInterfaces.add(c);
+       // finalList.add(c.getId());
+      //  contactInterfaces.add(c);
       }
     }
 

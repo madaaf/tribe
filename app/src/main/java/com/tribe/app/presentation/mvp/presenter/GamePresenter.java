@@ -21,6 +21,7 @@ import com.tribe.app.domain.interactor.game.GetGameFile;
 import com.tribe.app.domain.interactor.game.GetGamesData;
 import com.tribe.app.domain.interactor.game.GetTriviaData;
 import com.tribe.app.domain.interactor.game.GetUserBestScore;
+import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
@@ -58,7 +59,8 @@ public class GamePresenter implements Presenter {
   private GetGameFile getGameFile;
   private GetGameData getGameData;
   private GetUserBestScore getUserBestScore;
-  private UseCase synchroContactList;
+  private SynchroContactList synchroContactList;
+
 
   // SUBSCRIBERS
   private GameLeaderboardSubscriber cloudGameLeaderboardSubscriber;
@@ -75,7 +77,7 @@ public class GamePresenter implements Presenter {
       GetCloudFriendsScores cloudFriendsScores, GetTriviaData getTriviaData,
       GetBattleMusicData getBattleMusicData, GetCloudGames getGames, GetGamesData getGamesData,
       GetGameFile getGameFile, GetGameData getGameData, GetUserBestScore getUserBestScore,
-      RxFacebook rxFacebook,  @Named("synchroContactList") UseCase synchroContactList) {
+      RxFacebook rxFacebook,  SynchroContactList synchroContactList) {
     this.cloudGameLeaderboard = cloudGameLeaderboard;
     this.diskGameLeaderboard = diskGameLeaderboard;
     this.cloudUserLeaderboard = cloudUserLeaderboard;

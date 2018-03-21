@@ -76,6 +76,11 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
       recyclerView.addOnScrollListener(scrollListener);
     }
     setHasStableIds(true);
+
+    subscriptions.add(leaderboardAddressBookAdapterDelegate.onClick().subscribe(score -> {
+      items.remove(score);
+      notifyItemRemoved(score.getPosition());
+    }));
   }
 
   @Override public long getItemId(int position) {
@@ -176,7 +181,6 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
   public Observable<Boolean> onLoadMore() {
     return onLoadMore;
   }
-
 
   public void removeItem(String id) {
     for (Object item : items) {
