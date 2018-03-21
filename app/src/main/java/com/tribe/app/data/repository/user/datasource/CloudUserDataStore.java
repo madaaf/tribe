@@ -476,15 +476,18 @@ public class CloudUserDataStore implements UserDataStore {
               }
             }
 
-            for (LookupObject lookupObject : lookupObjects) {
-              if (lookupObject != null
-                  && lookupObject.getCommonFriends() != null
-                  && !lookupObject.getCommonFriends().isEmpty()) {
-                for (ShortcutRealm sh : currentUser.getShortcuts()) {
-                  for (UserRealm u : sh.getMembers()) {
-                    if (lookupObject.getcommonFriendsNameList() == null
-                        || !lookupObject.getcommonFriendsNameList().contains(u.getDisplayName())) {
-                      lookupObject.addFriendsDisplayName(u.getDisplayName());
+            if (lookupObjects != null) {
+              for (LookupObject lookupObject : lookupObjects) {
+                if (lookupObject != null && lookupObject.getCommonFriends() != null && !lookupObject
+                    .getCommonFriends()
+                    .isEmpty()) {
+                  for (ShortcutRealm sh : currentUser.getShortcuts()) {
+                    for (UserRealm u : sh.getMembers()) {
+                      if (lookupObject.getcommonFriendsNameList() == null
+                          || !lookupObject.getcommonFriendsNameList()
+                          .contains(u.getDisplayName())) {
+                        lookupObject.addFriendsDisplayName(u.getDisplayName());
+                      }
                     }
                   }
                 }
@@ -555,35 +558,36 @@ public class CloudUserDataStore implements UserDataStore {
             context.getString(R.string.userfragment_infos)));
       }
     }, (lookupHolder, lookupUsers) -> {
-      if (lookupHolder != null && lookupUsers != null && lookupHolder.getLookupObjectList() != null) {
+      if (lookupHolder != null) {
         List<LookupObject> listLookup = lookupHolder.getLookupObjectList();
-        for (int i = 0; i < listLookup.size(); i++) {
-          LookupObject lookupObject = listLookup.get(i);
-          if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
-            for (UserRealm user : lookupUsers) {
-              if (user != null && lookupObject.getUserId().equals(user.getId())) {
-                lookupObject.setUserRealm(user);
+        if (listLookup != null) {
+          for (int i = 0; i < listLookup.size(); i++) {
+            LookupObject lookupObject = listLookup.get(i);
+            if (lookupObject != null && !StringUtils.isEmpty(lookupObject.getUserId())) {
+              for (UserRealm user : lookupUsers) {
+                if (user != null && lookupObject.getUserId().equals(user.getId())) {
+                  lookupObject.setUserRealm(user);
+                }
               }
             }
-          }
 
-          if (lookupObject != null) {
-            ContactInterface ci = lookupHolder.getContactPhoneList().get(i);
+            if (lookupObject != null) {
+              ContactInterface ci = lookupHolder.getContactPhoneList().get(i);
 
-            if (lookupObject.getUserRealm() != null) {
-              ci.addUser(lookupObject.getUserRealm());
-              if (!ci.isNew() && lastSync.get() != null && lastSync.get() > 0) {
-                ci.setNew(lookupObject.getUserRealm().getCreatedAt().getTime() > lastSync.get());
+              if (lookupObject.getUserRealm() != null) {
+                ci.addUser(lookupObject.getUserRealm());
+                if (!ci.isNew() && lastSync.get() != null && lastSync.get() > 0) {
+                  ci.setNew(lookupObject.getUserRealm().getCreatedAt().getTime() > lastSync.get());
+                }
+              } else {
+                ci.setHowManyFriends(lookupObject.getHowManyFriends());
               }
-            } else {
-              ci.setHowManyFriends(lookupObject.getHowManyFriends());
+              ci.setCommonFriendsNameList(lookupObject.getcommonFriendsNameList());
+              ci.setCommonFriends(lookupObject.getCommonFriends());
+              ci.setPhone(lookupObject.getPhone());
             }
-            ci.setCommonFriendsNameList(lookupObject.getcommonFriendsNameList());
-            ci.setCommonFriends(lookupObject.getCommonFriends());
-            ci.setPhone(lookupObject.getPhone());
           }
         }
-
         return lookupHolder.getContactAllList();
       }
 

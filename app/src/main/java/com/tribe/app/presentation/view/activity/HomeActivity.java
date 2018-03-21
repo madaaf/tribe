@@ -498,8 +498,9 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
               return new Triplet<LabelType, Shortcut, HomeAdapterInterface>(labelType, shortcut,
                   recipient);
             }))
-        .filter(pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) ||
-            pair.first.getTypeDef().equals(LabelType.BLOCK_HIDE))
+        .filter(
+            pair -> pair.first.getTypeDef().equals(LabelType.CUSTOMIZE) || pair.first.getTypeDef()
+                .equals(LabelType.BLOCK_HIDE))
         .flatMap(pair -> {
           if (pair.first.getTypeDef().equals(LabelType.CUSTOMIZE)) {
             return DialogFactory.showBottomSheetForCustomizeShortcut(this);
@@ -572,7 +573,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
     subscriptions.add(homeGridAdapter.onClick()
         .map(view -> homeGridAdapter.getItemAtPosition(
-            recyclerViewFriends.getChildLayoutPosition(view))).subscribe(item -> {
+            recyclerViewFriends.getChildLayoutPosition(view)))
+        .subscribe(item -> {
           Recipient recipient = (Recipient) item;
           boolean displayPermissionNotif = notificationContainerView.
               showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);
@@ -608,8 +610,6 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
             ArrayList<String> contactFBList = new ArrayList<>();
             ContactFB contactFB = (ContactFB) o;
             contactFBList.add(contactFB.getId());
-
-
 
             subscriptions.add(DialogFactory.dialog(this, contactFB.getDisplayName(),
                 getString(R.string.facebook_invite_popup_message),
@@ -672,7 +672,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
           finalList.addAll(contactsInvite);
 
-          Collections.sort(contactsFBInvite, (o1, o2) -> ((Integer) o2.getHowManyFriends()).compareTo(o1.getHowManyFriends()));
+          Collections.sort(contactsFBInvite,
+              (o1, o2) -> ((Integer) o2.getHowManyFriends()).compareTo(o1.getHowManyFriends()));
           finalList.addAll(contactsFBInvite);
           List<HomeAdapterInterface> refactordList = new ArrayList<>();
 
@@ -839,6 +840,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   @Override public void successFacebookLogin() {
     homeGridPresenter.updateUserFacebook(getCurrentUser().getId(),
         AccessToken.getCurrentAccessToken().getToken());
+    homeGridPresenter.lookupContacts();
     syncContacts();
   }
 
@@ -946,8 +948,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
               .filter(aBoolean -> aBoolean)
               .subscribe());
       isBannedUser = true;
-    } else if (user.getRandom_banned_until() != null &&
-        !dateUtils.isBefore(user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
+    } else if (user.getRandom_banned_until() != null && !dateUtils.isBefore(
+        user.getRandom_banned_until(), dateUtils.getUTCTimeAsDate())) {
 
       subscriptions.add(
           DialogFactory.dialog(this, getString(R.string.error_just_banned_temporary_title),
@@ -1065,8 +1067,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   }
 
   private void popupAccessFacebookContact() {
-    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION) &&
-        !FacebookUtils.isLoggedIn()) {
+    if (stateManager.shouldDisplay(StateManager.FACEBOOK_CONTACT_PERMISSION)
+        && !FacebookUtils.isLoggedIn()) {
       subscriptions.add(DialogFactory.dialog(context(),
           EmojiParser.demojizedText(context().getString(R.string.permission_facebook_popup_title)),
           EmojiParser.demojizedText(
@@ -1099,9 +1101,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
     if (requestCode == Navigator.FROM_PROFILE) {
       topBarContainer.reloadUserUI();
-    } else if (requestCode == Navigator.FROM_CHAT &&
-        data != null &&
-        data.hasExtra(ChatActivity.EXTRA_SHORTCUT_ID)) {
+    } else if (requestCode == Navigator.FROM_CHAT && data != null && data.hasExtra(
+        ChatActivity.EXTRA_SHORTCUT_ID)) {
       homeGridPresenter.updateShortcutLeaveOnlineUntil(
           data.getStringExtra(ChatActivity.EXTRA_SHORTCUT_ID));
     } else if (requestCode == Navigator.FROM_NEW_GAME && data != null) {
@@ -1122,19 +1123,16 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       //        }
       //      }
       //    }));
-    } else if (requestCode == Navigator.FROM_LIVE &&
-        data != null &&
-        data.hasExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
+    } else if (requestCode == Navigator.FROM_LIVE && data != null && data.hasExtra(
+        LiveActivity.USER_IDS_FOR_NEW_SHORTCUT)) {
       HashSet<String> userIds =
           (HashSet<String>) data.getSerializableExtra(LiveActivity.USER_IDS_FOR_NEW_SHORTCUT);
       homeGridPresenter.createShortcut(userIds.toArray(new String[userIds.size()]));
-    } else if (requestCode == Navigator.FROM_LIVE &&
-        data != null &&
-        data.hasExtra(LiveActivity.LAUNCH_SEARCH)) {
+    } else if (requestCode == Navigator.FROM_LIVE && data != null && data.hasExtra(
+        LiveActivity.LAUNCH_SEARCH)) {
       topBarContainer.openSearch();
-    } else if (requestCode == Navigator.FROM_LIVE &&
-        data != null &&
-        data.hasExtra(LiveActivity.LAUNCH_DICE)) {
+    } else if (requestCode == Navigator.FROM_LIVE && data != null && data.hasExtra(
+        LiveActivity.LAUNCH_DICE)) {
       navigateToNewCall(LiveActivity.SOURCE_CALL_ROULETTE, null);
     } else if (data != null) {
       if (data.hasExtra(NotificationPayload.CLICK_ACTION_DECLINE)) {
@@ -1180,10 +1178,10 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
     return new SectionCallback() {
       @Override public boolean isSection(int position) {
         if (position < 0 || position > recipientList.size() - 1) return false;
-        return position == 0 ||
-            recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE &&
-                recipientList.get(position).getHomeSectionType() !=
-                    recipientList.get(position - 1).getHomeSectionType();
+        return position == 0
+            || recipientList.get(position).getHomeSectionType() != BaseSectionItemDecoration.NONE
+            && recipientList.get(position).getHomeSectionType() != recipientList.get(position - 1)
+            .getHomeSectionType();
       }
 
       @Override public int getSectionType(int position) {
@@ -1239,10 +1237,10 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       NotificationPayload notificationPayload =
           (NotificationPayload) intent.getSerializableExtra(BroadcastUtils.NOTIFICATION_PAYLOAD);
 
-      if (notificationPayload != null &&
-          !StringUtils.isEmpty(notificationPayload.getUserId()) &&
-          notificationPayload.getUserId().equals(Shortcut.SUPPORT) &&
-          supportShortcut != null) {
+      if (notificationPayload != null
+          && !StringUtils.isEmpty(notificationPayload.getUserId())
+          && notificationPayload.getUserId().equals(Shortcut.SUPPORT)
+          && supportShortcut != null) {
 
         supportShortcut.setRead(false);
         supportShortcut.setSingle(true);

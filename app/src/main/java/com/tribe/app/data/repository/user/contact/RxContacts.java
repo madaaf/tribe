@@ -55,7 +55,9 @@ import timber.log.Timber;
       contactsObservable =
           Observable.create((Subscriber<? super List<ContactABRealm>> subscriber) -> {
             //emit(null, withPhones, sorter, filter, subscriber);
-            emitFast(subscriber);
+            subscriber.onNext(new ArrayList<ContactABRealm>());
+            subscriber.onCompleted();
+           // emitFast(subscriber);
           }).onBackpressureBuffer().serialize();
     }
 
