@@ -245,7 +245,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       @Override public void onLookupContacts(List<Contact> contactList) {
         super.onLookupContacts(contactList);
         List<String> usersId = new ArrayList<>();
-        for(Contact contact: contactList){
+        for (Contact contact : contactList) {
           usersId.add(contact.getId());
         }
         gamePresenter.loadGameLeaderboard(gameId, usersId);
@@ -264,7 +264,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         ConstraintSet set = new ConstraintSet();
         set.clone(getApplicationContext(), R.layout.activity_game_leaderboards_final);
         animateLayoutWithConstraintSet(set, null);
-
+        // SOEF
         for (Score score : scoreList) {
           // We add the current user if user == null, it means it's the current user's score
           if (score.getUser() == null) score.setUser(getCurrentUser());

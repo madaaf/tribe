@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.tribe.app.R;
+import com.tribe.app.data.cache.ContactCache;
+import com.tribe.app.data.cache.ContactCacheImpl;
 import com.tribe.app.data.cache.GameCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.FileApi;
@@ -14,6 +16,8 @@ import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.network.entity.AddScoreEntity;
 import com.tribe.app.data.network.entity.CategoryEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ContactABRealm;
+import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.GameFileRealm;
 import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.ScoreRealm;
@@ -34,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import rx.Observable;
+import timber.log.Timber;
 
 public class CloudGameDataStore implements GameDataStore {
 
@@ -45,11 +50,12 @@ public class CloudGameDataStore implements GameDataStore {
   private final Gson gson;
   private final GameCache gameCache;
   private final UserCache userCache;
+  private final ContactCache contactCache;
   private final AccessToken accessToken;
 
   public CloudGameDataStore(Context context, TribeApi tribeApi, FileApi fileApi,
       OpentdbApi opentdbApi, Preference<String> gameData, GameCache gameCache, UserCache userCache,
-      AccessToken accessToken) {
+      AccessToken accessToken, ContactCache contactCache) {
     this.context = context;
     this.tribeApi = tribeApi;
     this.fileApi = fileApi;
@@ -59,6 +65,7 @@ public class CloudGameDataStore implements GameDataStore {
     this.gameCache = gameCache;
     this.userCache = userCache;
     this.accessToken = accessToken;
+    this.contactCache = contactCache;
   }
 
   @Override public Observable<Void> synchronizeGamesData() {
@@ -118,28 +125,51 @@ public class CloudGameDataStore implements GameDataStore {
 
   @Override
   public Observable<List<ScoreRealm>> getGameLeaderBoard(String gameId, List<String> usersId) {
+    List<Object> contactInterfaces = new ArrayList<>();
+
     List<ShortcutRealm> singleShortcuts = userCache.singleShortcutsNoObs();
     String[] userIds = new String[singleShortcuts.size() + 1];
 
     for (int i = 0; i < singleShortcuts.size(); i++) {
       ShortcutRealm shortcutRealm = singleShortcuts.get(i);
       userIds[i] = shortcutRealm.getSingleFriend().getId();
+      contactInterfaces.add(shortcutRealm.getSingleFriend());
     }
 
     userIds[singleShortcuts.size()] = accessToken.getUserId();
+    contactInterfaces.add(accessToken.getUserId());
 
-    List<String> both = new ArrayList<>(Arrays.asList(userIds));
-   if(usersId!=null) both.addAll(usersId);
+    List<String> finalList = new ArrayList<>(Arrays.asList(userIds));
+    if (usersId != null) finalList.addAll(usersId);
 
-    String[] list = new String[both.size()];
-    list = both.toArray(list);
+    List<ContactABRealm> contactsAddressBookList = contactCache.getContactsAddressBook();
+    if (contactsAddressBookList != null) {
+      for (ContactABRealm contactABRealm : contactsAddressBookList) {
+        finalList.add(contactABRealm.getId());
+        contactInterfaces.add(contactABRealm);
+      }
+    }
 
 
-    String body =
-        context.getString(R.string.game_leaderboard, gameId, JsonUtils.arrayToJson(list));
+    List<ContactFBRealm> contactsFacebookList = contactCache.getContactsFacebook();
+    if (contactsFacebookList != null) {
+      for (ContactFBRealm contactFBRealm : contactsFacebookList) {
+        finalList.add(contactFBRealm.getId());
+        contactInterfaces.add(contactFBRealm);
+      }
+    }
+
+    String[] list = new String[finalList.size()];
+    list = finalList.toArray(list);
+
+    String body = context.getString(R.string.game_leaderboard, gameId, JsonUtils.arrayToJson(list));
     final String request = context.getString(R.string.query, body);
 
     return this.tribeApi.getLeaderboard(request).doOnNext(scoreRealmList -> {
+      if (usersId != null) Timber.e("SOEF " + usersId.size());
+      if (contactInterfaces != null) Timber.e("SOEF " + contactInterfaces.size());
+      Timber.e("SOEF 2" + finalList.size());
+
       int i = 0;
       ScoreUserRealm scoreUserRealm;
       for (ScoreRealm scoreRealm : scoreRealmList) {
@@ -151,6 +181,23 @@ public class CloudGameDataStore implements GameDataStore {
           scoreRealm.setUser(scoreUserRealm);
         }
         i++;
+      }
+
+      for (int j = 0; j < contactInterfaces.size(); j++) {
+        Object o = contactInterfaces.get(j);
+        if (o instanceof ContactABRealm) {
+          ContactABRealm c = (ContactABRealm) o;
+          ScoreUserRealm scoreUser =
+              new ScoreUserRealm(c.getId(), c.getName(), c.getFirstName(), "");
+          scoreRealmList.get(j).setUser(scoreUser);
+        }
+
+        if (o instanceof ContactFBRealm) {
+          ContactFBRealm c = (ContactFBRealm) o;
+          ScoreUserRealm scoreUser =
+              new ScoreUserRealm(c.getId(), c.getName(), c.getName(), c.getProfilePicture());
+          scoreRealmList.get(j).setUser(scoreUser);
+        }
       }
 
       gameCache.updateLeaderboard(gameId, scoreRealmList);
