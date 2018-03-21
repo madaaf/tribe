@@ -335,12 +335,12 @@ import timber.log.Timber;
         new TribeTokenExpirationInterceptor(tribeAuthorizer, authenticator));
     httpClientBuilder.authenticator(authenticator);
 
-    //if (BuildConfig.DEBUG) { // TODO SOEF TO UPDATE
+    if (BuildConfig.DEBUG) {
       HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
       loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
       httpClientBuilder.addInterceptor(loggingInterceptor);
       httpClientBuilder.addNetworkInterceptor(new StethoInterceptor());
-    //}
+    }
 
     return new Retrofit.Builder().baseUrl(BuildConfig.TRIBE_LOOKUP)
         .addConverterFactory(GsonConverterFactory.create(gson))

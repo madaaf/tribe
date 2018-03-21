@@ -173,13 +173,12 @@ import timber.log.Timber;
             "(function() { return ('<html>'+document.getElementsByClassName('_5q1p')[0].innerHTML+'</html>'); })();",
             html -> {
               Log.d("HTML", html);
-              String ok = html.substring(html.indexOf("name=\\\"to\\\""));
+              String initialContent = html.substring(html.indexOf("name=\\\"to\\\""));
               String start = "value=\\\"";
               String end = "\\\">";
-              String ok2 = ok.substring(ok.indexOf(start) + start.length(), ok.indexOf(end));
-              Timber.e("SOEF " + html);
+              String finalContent = initialContent.substring(initialContent.indexOf(start) + start.length(), initialContent.indexOf(end));
 
-              List<String> fbIdList = new ArrayList<>(Arrays.asList(ok2.split(",")));
+              List<String> fbIdList = new ArrayList<>(Arrays.asList(finalContent.split(",")));
 
               subscriber.onNext(fbIdList);
               subscriber.onCompleted();
