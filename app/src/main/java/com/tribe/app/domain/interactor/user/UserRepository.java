@@ -15,7 +15,6 @@ import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.SearchResult;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import rx.Observable;

@@ -13,7 +13,6 @@ import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.UserMVPView;
-import com.tribe.app.presentation.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;

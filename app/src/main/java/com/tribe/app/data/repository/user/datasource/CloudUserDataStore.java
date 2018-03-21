@@ -238,9 +238,8 @@ public class CloudUserDataStore implements UserDataStore {
       this.installation.setId("");
       return createOrUpdateInstall(token);
     }).flatMap(installationRecent -> {
-      if (installationRecent == null &&
-          this.installation != null &&
-          !StringUtils.isEmpty(this.installation.getId())) {
+      if (installationRecent == null && this.installation != null && !StringUtils.isEmpty(
+          this.installation.getId())) {
         this.installation.setToken("");
         this.installation.setId("");
         return createInstallation(token, this.installation);
@@ -263,14 +262,14 @@ public class CloudUserDataStore implements UserDataStore {
       if (value.first.equals(UserRealm.TROPHY)) {
         userInputBuilder.append(value.first + ": " + value.second);
         userInputBuilder.append(",");
-      } else if (value.first.equals(UserRealm.TRIBE_SAVE) ||
-          value.first.equals(UserRealm.INVISIBLE_MODE) ||
-          value.first.equals(UserRealm.PUSH_NOTIF) ||
-          value.first.equals(UserRealm.MUTE_ONLINE_NOTIF)) {
+      } else if (value.first.equals(UserRealm.TRIBE_SAVE)
+          || value.first.equals(UserRealm.INVISIBLE_MODE)
+          || value.first.equals(UserRealm.PUSH_NOTIF)
+          || value.first.equals(UserRealm.MUTE_ONLINE_NOTIF)) {
         userInputBuilder.append(value.first + ": " + Boolean.valueOf(value.second));
         userInputBuilder.append(",");
-      } else if (!value.first.equals(UserRealm.FBID) ||
-          (!StringUtils.isEmpty(value.second) && !value.second.equals("null"))) {
+      } else if (!value.first.equals(UserRealm.FBID) || (!StringUtils.isEmpty(value.second)
+          && !value.second.equals("null"))) {
         userInputBuilder.append(value.first + ": \"" + value.second + "\"");
         userInputBuilder.append(",");
       }
@@ -350,6 +349,18 @@ public class CloudUserDataStore implements UserDataStore {
         });
   }
 
+  @Override public Observable<List<LookupObject>> contactsFbId(Context c, List<String> fbIds) {
+    return rxFacebook.contactsFbId(c, fbIds).flatMap(fbIdList -> {
+      List<LookupEntity> lookupEntityList = new ArrayList<>();
+      if (fbIdList != null) {
+        for (String fbId : fbIdList) {
+          lookupEntityList.add(new LookupEntity(fbId));
+        }
+      }
+      return lookupApi.lookupFb(Locale.getDefault().getCountry(), lookupEntityList);
+    });
+  }
+
   @Override public Observable<List<ContactInterface>> contacts() {
     return Observable.zip(rxContacts.getContacts(), rxFacebook.requestFriends(),
         rxFacebook.requestInvitableFriends(), this.tribeApi.getUserInfos(
@@ -372,17 +383,16 @@ public class CloudUserDataStore implements UserDataStore {
           }
 
           contactCache.updateFromDB(contactList);
-
           return contactList;
         }).flatMap(contactList -> {
       if (contactList == null || contactList.size() == 0) return Observable.just(null);
 
       List<ContactInterface> phones = new ArrayList<>();
       List<ContactInterface> fbIds = new ArrayList<>();
+      List<LookupEntity> lookupPhones = new ArrayList<>();
+      List<String> fbIdsList = new ArrayList<>();
 
       UserRealm currentUser = userCache.userInfosNoObs(accessToken.getUserId());
-
-      List<LookupEntity> lookupPhones = new ArrayList<>();
 
       if (contactList.size() > 0) {
         for (ContactInterface contactI : contactList) {
@@ -406,6 +416,7 @@ public class CloudUserDataStore implements UserDataStore {
           } else if (contactI instanceof ContactFBRealm) {
             ContactFBRealm contactFBRealm = (ContactFBRealm) contactI;
             fbIds.add(contactFBRealm);
+            fbIdsList.add(contactFBRealm.getId());
           }
         }
       }
@@ -443,14 +454,13 @@ public class CloudUserDataStore implements UserDataStore {
       String reqLookup = context.getString(R.string.lookup, buffer.toString(),
           context.getString(R.string.userfragment_infos));
 
-      return Observable.zip(lookupApi.lookup(regionCode, lookupPhones)
-              .doOnNext(
-                  lookupObjects -> PreferencesUtils.saveLookupAsJson(lookupObjects, lookupResult)),
-          StringUtils.isEmpty(fbRequests) ? Observable.just(null)
-              : tribeApi.lookupFacebook(reqLookup), (lookupObjects, lookupFBResult) -> {
+      return Observable.zip(lookupApi.lookup(regionCode, lookupPhones).doOnNext(lookupObjects -> {
+            PreferencesUtils.saveLookupAsJson(lookupObjects, lookupResult);
+          }), StringUtils.isEmpty(fbRequests) ? Observable.just(null)
+              : tribeApi.lookupFacebook(reqLookup), contactsFbId(context, fbIdsList),
+          (lookupObjects, lookupFBResult, lookFbupObjects) -> {
             LookupHolder lookupHolder = new LookupHolder();
             lookupHolder.setContactPhoneList(phones);
-            lookupHolder.setLookupObjectList(lookupObjects);
 
             if (lookupFBResult != null && lookupFBResult.getLookup() != null) {
               for (int i = 0; i < lookupFBResult.getLookup().size(); i++) {
@@ -466,8 +476,57 @@ public class CloudUserDataStore implements UserDataStore {
               }
             }
 
-            lookupHolder.setContactFBList(fbIds);
+            for (LookupObject lookupObject : lookupObjects) {
+              if (lookupObject != null
+                  && lookupObject.getCommonFriends() != null
+                  && !lookupObject.getCommonFriends().isEmpty()) {
+                for (ShortcutRealm sh : currentUser.getShortcuts()) {
+                  for (UserRealm u : sh.getMembers()) {
+                    if (lookupObject.getcommonFriendsNameList() == null
+                        || !lookupObject.getcommonFriendsNameList().contains(u.getDisplayName())) {
+                      lookupObject.addFriendsDisplayName(u.getDisplayName());
+                    }
+                  }
+                }
+              }
+            }
 
+            if (lookFbupObjects != null) {
+              for (LookupObject lookupObject : lookFbupObjects) {
+                if (lookupObject != null && lookupObject.getCommonFriends() != null && !lookupObject
+                    .getCommonFriends()
+                    .isEmpty()) {
+
+                  for (String communFriendId : lookupObject.getCommonFriends()) {
+                    for (ShortcutRealm sh : currentUser.getShortcuts()) {
+                      for (UserRealm u : sh.getMembers()) {
+                        if (communFriendId.equals(u.getId())) {
+                          if (lookupObject.getcommonFriendsNameList() == null
+                              || !lookupObject.getcommonFriendsNameList()
+                              .contains(u.getDisplayName())) {
+                            lookupObject.addFriendsDisplayName(u.getDisplayName());
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+
+              for (int i = 0; i < fbIds.size(); i++) {
+                ContactInterface contactFBRealm = fbIds.get(i);
+                if (contactFBRealm instanceof ContactFBRealm) {
+                  ((ContactFBRealm) contactFBRealm).setHowManyFriends(
+                      lookFbupObjects.get(i).getHowManyFriends());
+                  ((ContactFBRealm) contactFBRealm).setId(lookFbupObjects.get(i).getFbId());
+                  ((ContactFBRealm) contactFBRealm).setCommonFriendsNameList(
+                      lookFbupObjects.get(i).getcommonFriendsNameList());
+                }
+              }
+            }
+
+            lookupHolder.setLookupObjectList(lookupObjects);
+            lookupHolder.setContactFBList(fbIds);
             return lookupHolder;
           });
     }, (contactList, lookupHolder) -> lookupHolder).flatMap(lookupHolder -> {
@@ -476,9 +535,9 @@ public class CloudUserDataStore implements UserDataStore {
       if (lookupHolder != null && lookupHolder.getLookupObjectList() != null) {
         Set<String> userIdSet = new HashSet<>();
         for (LookupObject lookupObject : lookupHolder.getLookupObjectList()) {
-          if (lookupObject != null &&
-              !StringUtils.isEmpty(lookupObject.getUserId()) &&
-              lookupObject.getHowManyFriends() == 0) {
+          if (lookupObject != null
+              && !StringUtils.isEmpty(lookupObject.getUserId())
+              && lookupObject.getHowManyFriends() == 0) {
             if (!userIdSet.contains(lookupObject.getUserId())) {
               resultLookupUserIds.append("\"" + lookupObject.getUserId() + "\"");
               resultLookupUserIds.append(",");
@@ -519,7 +578,8 @@ public class CloudUserDataStore implements UserDataStore {
             } else {
               ci.setHowManyFriends(lookupObject.getHowManyFriends());
             }
-
+            ci.setCommonFriendsNameList(lookupObject.getcommonFriendsNameList());
+            ci.setCommonFriends(lookupObject.getCommonFriends());
             ci.setPhone(lookupObject.getPhone());
           }
         }
@@ -714,11 +774,11 @@ public class CloudUserDataStore implements UserDataStore {
 
   @Override public Observable<String> getHeadDeepLink(String url) {
     return tribeApi.getHeadDeepLink(url).flatMap(response -> {
-      if (response != null &&
-          response.raw() != null &&
-          response.raw().priorResponse() != null &&
-          response.raw().priorResponse().networkResponse() != null &&
-          response.raw().priorResponse().networkResponse().request() != null) {
+      if (response != null
+          && response.raw() != null
+          && response.raw().priorResponse() != null
+          && response.raw().priorResponse().networkResponse() != null
+          && response.raw().priorResponse().networkResponse().request() != null) {
         String result = response.raw().priorResponse().networkResponse().request().url().toString();
         return Observable.just(result);
       }
@@ -771,11 +831,9 @@ public class CloudUserDataStore implements UserDataStore {
 
     String body = context.getString(R.string.createShortcut, params);
 
-    final String request = context.getString(R.string.mutation, body) +
-        "\n" +
-        context.getString(R.string.shortcutFragment_infos) +
-        "\n" +
-        context.getString(R.string.userfragment_infos_light);
+    final String request = context.getString(R.string.mutation, body) + "\n" + context.getString(
+        R.string.shortcutFragment_infos) + "\n" + context.getString(
+        R.string.userfragment_infos_light);
     return this.tribeApi.createShortcut(request).doOnNext(shortcutRealm -> {
       if (shortcutRealm != null) {
         userCache.addShortcut(shortcutRealm);
@@ -821,11 +879,10 @@ public class CloudUserDataStore implements UserDataStore {
       if (!StringUtils.isEmpty(shortcutInput)) {
         String requestBody = context.getString(R.string.updateShortcut, shortcutId, shortcutInput);
 
-        final String request = context.getString(R.string.mutation, requestBody) +
-            "\n" +
-            context.getString(R.string.shortcutFragment_infos) +
-            "\n" +
-            context.getString(R.string.userfragment_infos_light);
+        final String request =
+            context.getString(R.string.mutation, requestBody) + "\n" + context.getString(
+                R.string.shortcutFragment_infos) + "\n" + context.getString(
+                R.string.userfragment_infos_light);
 
         return this.tribeApi.updateShortcut(request)
             .doOnNext(shortcutRealm -> userCache.updateShortcut(shortcutRealm));
@@ -835,11 +892,10 @@ public class CloudUserDataStore implements UserDataStore {
     } else {
       String requestBody = context.getString(R.string.updateShortcut, shortcutId, shortcutInput);
 
-      final String request = context.getString(R.string.mutation, requestBody) +
-          "\n" +
-          context.getString(R.string.shortcutFragment_infos) +
-          "\n" +
-          context.getString(R.string.userfragment_infos_light);
+      final String request =
+          context.getString(R.string.mutation, requestBody) + "\n" + context.getString(
+              R.string.shortcutFragment_infos) + "\n" + context.getString(
+              R.string.userfragment_infos_light);
 
       RequestBody query = RequestBody.create(MediaType.parse("text/plain"), request);
 

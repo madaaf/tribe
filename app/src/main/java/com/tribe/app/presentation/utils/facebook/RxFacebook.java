@@ -23,6 +23,7 @@ import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
 import com.tribe.app.presentation.utils.EmojiParser;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -31,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
@@ -52,6 +54,7 @@ import timber.log.Timber;
   private PublishSubject<Boolean> notifyFriendsSubject;
   private Observable<List<ContactFBRealm>> friendListObservable;
   private Observable<List<ContactFBRealm>> friendInvitableListObservable;
+  private Observable<List<String>> fbIdsListObservable;
   private Observable<FacebookEntity> facebookEntityObservable;
   private LoginResult loginResult;
   private int countHandle = 0;
@@ -125,6 +128,76 @@ import timber.log.Timber;
         subscriber.onCompleted();
       }
     }
+  }
+
+  public void getContactsFbIdList(Subscriber subscriber, Context c, List<String> toIds) {
+    if (!FacebookUtils.isLoggedIn()) {
+      subscriber.onNext(null);
+      subscriber.onCompleted();
+      return;
+    }
+    AccessToken a = FacebookUtils.accessToken();
+    String separator = "%2C";
+    String to = "";
+    for (int i = 0; i < toIds.size(); i++) {
+      String id = toIds.get(i);
+      if (i != toIds.size() - 1) {
+        to += id + separator;
+      } else {
+        to += id;
+      }
+    }
+    String url = "https://m.facebook.com/v2.9/dialog/apprequests?access_token="
+        + a.getToken()
+        + "&app_id="
+        + a.getApplicationId()
+        + "&to="
+        + to
+        + "&sdk=android-4.23.0&redirect_uri=fbconnect%3A%2F%2Fsuccess&message=Welcome&display=touch";
+
+    WebView webView = new WebView(c);
+    webView.setWebViewClient(new WebViewClient() {
+      @Override public void onReceivedError(WebView view, WebResourceRequest request,
+          WebResourceError error) {
+        super.onReceivedError(view, request, error);
+        Timber.e("error on notify all facebook friends");
+      }
+
+      @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
+      public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+        String cookies = CookieManager.getInstance().getCookie(url);
+        Timber.d("Facebook cookies :" + cookies);
+
+        view.evaluateJavascript(
+            "(function() { return ('<html>'+document.getElementsByClassName('_5q1p')[0].innerHTML+'</html>'); })();",
+            html -> {
+              Log.d("HTML", html);
+              String ok = html.substring(html.indexOf("name=\\\"to\\\""));
+              String start = "value=\\\"";
+              String end = "\\\">";
+              String ok2 = ok.substring(ok.indexOf(start) + start.length(), ok.indexOf(end));
+              Timber.e("SOEF " + html);
+
+              List<String> fbIdList = new ArrayList<>(Arrays.asList(ok2.split(",")));
+
+              subscriber.onNext(fbIdList);
+              subscriber.onCompleted();
+            });
+      }
+    });
+    webView.getSettings().setJavaScriptEnabled(true);
+    webView.loadUrl(url);
+    webView.setVisibility(View.VISIBLE);
+  }
+
+  public Observable<List<String>> contactsFbId(Context c, List<String> toIds) {
+    fbIdsListObservable = Observable.create((Subscriber<? super List<String>> subscriber) -> {
+      getContactsFbIdList(subscriber, c, toIds);
+    })
+        .subscribeOn(AndroidSchedulers.mainThread())
+        .doOnError(throwable -> Timber.e("error getContactsFbIdList " + throwable.getMessage()));
+    return fbIdsListObservable;
   }
 
   public Observable<Boolean> notifyFriends(Context context, ArrayList<String> toIds) {

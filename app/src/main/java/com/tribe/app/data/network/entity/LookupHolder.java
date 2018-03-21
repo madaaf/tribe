@@ -2,6 +2,7 @@ package com.tribe.app.data.network.entity;
 
 import com.tribe.app.data.realm.ContactInterface;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**

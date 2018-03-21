@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/item_base_list_height"
+    android:layout_height="@dimen/item_base_contact_list_height"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
     android:background="@android:color/white"
     >
 
@@ -9,6 +11,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center_vertical"
+      android:layout_marginEnd="40dp"
       android:layout_marginStart="@dimen/horizontal_margin"
       android:orientation="vertical"
       >
@@ -19,7 +22,7 @@
         android:layout_centerVertical="true"
         android:ellipsize="end"
         android:lines="1"
-        style="@style/BiggerTitle.1.Black"
+        style="@style/BiggerTitle.2.Black"
         />
 
     <com.tribe.app.presentation.view.widget.TextViewFont
@@ -27,7 +30,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:maxLines="1"
+        android:layout_marginEnd="10dp"
+        android:ellipsize="end"
+        android:lineSpacingExtra="10dp"
+        android:maxLines="2"
         style="@style/BiggerBody.One.Black40"
 
         />

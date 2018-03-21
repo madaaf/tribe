@@ -28,6 +28,7 @@ import com.facebook.accountkit.ui.AccountKitConfiguration;
 import com.facebook.accountkit.ui.LoginType;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
+import com.tribe.app.data.network.entity.LookupEntity;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.ContactAB;
@@ -71,6 +72,7 @@ import com.tribe.app.presentation.view.widget.TextViewFont;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -165,6 +167,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   @Override protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     searchPresenter.onViewAttached(this);
+    lookupContacts();// TODO SOEF DELETE
   }
 
   @Override protected void onDetachedFromWindow() {

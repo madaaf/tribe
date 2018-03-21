@@ -1,8 +1,10 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import android.content.Context;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
 import com.tribe.app.data.realm.ContactInterface;
@@ -14,6 +16,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.User;
+import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
 
@@ -83,6 +86,8 @@ public interface UserDataStore {
    * about the contacts from address book.
    */
   Observable<List<ContactInterface>> contacts();
+
+  Observable<List<LookupObject>> contactsFbId(Context context, List<String> fbIds);
 
   /**
    * Get an {@link Observable} which will emit a {@link List <ContactInterface>} containing infos

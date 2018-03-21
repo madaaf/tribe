@@ -789,7 +789,7 @@
 	
 	<!-- Roll the dice -->
 	<string name="roll_the_dice_live_tutorial">Relancer le dé !</string>
-	<string name="roll_the_dice_live_status_searching">Recherche de nouvelles personnes...</string>
+	<string name="roll_the_dice_live_status_searching">Recherche de joueurs...</string>
 	<string name="roll_the_dice_live_description">Jouez à un jeu dès que\nquelqu\'un vous rejoint !</string>
 	<string name="roll_the_dice_invite_title">Lance le dé !</string>
 	<string name="roll_the_dice_invite_subtitle">Nlles rencontres</string>
@@ -989,6 +989,7 @@
 	<string name="leaderboard_friend_is_best">%1$s est le(la) meilleur(e) !</string>
 	<string name="leaderboard_section_trophies">TROPHÉES</string>
 	<string name="leaderboard_section_games">JEUX</string>
+	<string name="leaderboard_play_button">JOUER</string>
 	<string name="leaderboard_address_book_title">Connecter votre carnet d\'adresses</string>
 	<string name="leaderboard_address_book_subtitle">Tappez pour voir plus de scores !</string>
 	<string name="leaderboard_facebook_title">Connecter Facebook</string>

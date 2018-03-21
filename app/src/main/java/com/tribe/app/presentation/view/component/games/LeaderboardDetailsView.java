@@ -110,7 +110,7 @@ public class LeaderboardDetailsView extends FrameLayout {
     //
     //  @Override public void onPageSelected(int position) {
     //    if (position == 0) {
-    //      setFriends();
+    //      setCommonFriends();
     //    } else {
     //      setOverall();
     //    }
@@ -162,7 +162,7 @@ public class LeaderboardDetailsView extends FrameLayout {
   //  viewPager.setCurrentItem(1, true);
   //}
 
-  /*private void setFriends() {
+  /*private void setCommonFriends() {
     if (tabFriends.isActive()) return;
 
     hideGameCard();

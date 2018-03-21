@@ -12,4 +12,7 @@ public interface LookupApi {
 
   @POST("/v2/lookup/{country_code}") Observable<List<LookupObject>> lookup(
       @Path("country_code") String countryCode, @Body List<LookupEntity> phoneList);
+
+  @POST("/v2/lookup/{country_code}") Observable<List<LookupObject>> lookupFb(
+      @Path("country_code") String countryCode, @Body List<LookupEntity> fbIds);
 }
