@@ -14,6 +14,7 @@ import android.support.transition.TransitionListenerAdapter;
 import android.support.transition.TransitionManager;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
@@ -26,16 +27,22 @@ import com.tribe.app.domain.entity.coolcams.CoolCamsModel;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
+import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.CircularProgressBar;
 import com.tribe.app.presentation.view.widget.TextViewFont;
+import com.tribe.tribelivesdk.facetracking.VisionAPIManager;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.util.JsonUtils;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -47,9 +54,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 14/03/2018.
@@ -100,11 +109,20 @@ public class GameCoolCamsView extends GameViewWithRanking {
   @BindView(R.id.txtSessionTime) TextViewFont txtSessionTime;
 
   // VARIABLES
+  protected VisionAPIManager visionAPIManager;
+  private List<CoolCamsModel.CoolCamsFeatureEnum> featuresDetected;
   private GameMVPViewAdapter gameMVPViewAdapter;
   private Set<String> playingIds;
+  private CoolCamsModel.CoolCamsStatusEnum currentStatus;
+  private PointF previousOrigin = null;
+  private CoolCamsModel.CoolCamsStatusEnum previousStatus = null;
+  private Date statusSince = new Date();
+  private int roundScore = 0;
+  private double remainingDuration;
 
   // SUBSCRIPTIONS
   private CompositeSubscription subscriptionsGame = new CompositeSubscription();
+  protected Subscription visionSubscription;
   private PublishSubject<CoolCamsModel.CoolCamsStatusEnum> onStatusChange = PublishSubject.create();
 
   public GameCoolCamsView(@NonNull Context context) {
@@ -139,14 +157,16 @@ public class GameCoolCamsView extends GameViewWithRanking {
     inflater.inflate(R.layout.view_game_cool_cams_init, this, true);
     unbinder = ButterKnife.bind(this);
 
+    featuresDetected = new ArrayList<>();
+    visionAPIManager = VisionAPIManager.getInstance(context);
+    gameMVPViewAdapter = new GameMVPViewAdapter() {
+
+    };
+
     setClickable(true);
 
     txtCoolCamsInstructions.setTranslationY(screenUtils.dpToPx(50));
     txtCoolCamsInstructions.setAlpha(0f);
-
-    gameMVPViewAdapter = new GameMVPViewAdapter() {
-
-    };
 
     GradientDrawable background = new GradientDrawable();
     background.setShape(GradientDrawable.OVAL);
@@ -208,17 +228,30 @@ public class GameCoolCamsView extends GameViewWithRanking {
         JSONObject message = jsonObject.getJSONObject(game.getId());
         if (message.has(ACTION_KEY)) {
           String actionKey = message.getString(ACTION_KEY);
-          if (actionKey.equals(ACTION_POSITION)) {
-            if (message.has(STEP_ID_KEY)) {
-              liveViewsMap.get(tribeSession.getUserId())
-                  .setStep(
-                      CoolCamsModel.CoolCamsStepsEnum.getStepById(message.getString(STEP_ID_KEY)));
-            }
 
+          if (actionKey.equals(ACTION_POSITION)) {
             if (message.has(X_KEY) && message.has(Y_KEY)) {
               liveViewsMap.get(tribeSession.getUserId())
-                  .updatePositionRatioOfSticker(message.getDouble(X_KEY), message.getDouble(Y_KEY));
+                  .updatePositionRatioOfSticker(message.getDouble(X_KEY), message.getDouble(Y_KEY),
+                      CoolCamsModel.CoolCamsStatusEnum.with(message.getString(STATUS_CODE_KEY),
+                          message.getString(STEP_ID_KEY)));
+            } else {
+              liveViewsMap.get(tribeSession.getUserId()).updatePositionOfSticker(null, null);
             }
+          } else if (actionKey.equals(ACTION_NEW_GAME)) {
+            long timestamp = message.getLong(TIMESTAMP_KEY);
+            JSONArray array = message.getJSONArray(STEPS_IDS_KEY);
+            List<CoolCamsModel.CoolCamsStepsEnum> stepsEnums = new ArrayList<>();
+            for (int i = 0; i < array.length(); i++) {
+              stepsEnums.add(CoolCamsModel.CoolCamsStepsEnum.getStepById(array.getString(i)));
+            }
+            double stepDuration = message.getDouble(STEP_DURATION);
+            double stepResultDuration = message.getDouble(STEP_RESULT_DURATION);
+            newGame(timestamp, stepsEnums, stepDuration, stepResultDuration);
+          } else if (actionKey.equals(ACTION_GAME_OVER)) {
+            gameOver(message.getJSONArray(WINNERS_KEY));
+          } else if (actionKey.equals(ACTION_USER_GAME_OVER)) {
+            userGameOver(tribeSession.getUserId());
           }
         }
       } catch (JSONException ex) {
@@ -233,7 +266,99 @@ public class GameCoolCamsView extends GameViewWithRanking {
     super.userLeft(userId);
 
     playingIds.remove(userId);
-    //userGameOver(userId);
+    userGameOver(userId);
+  }
+
+  private void userGameOver(String userId) {
+    if (!StringUtils.isEmpty(userId)) {
+      playingIds.remove(userId);
+      liveViewsMap.get(userId).updatePositionOfSticker(null, null);
+    } else if (!StringUtils.isEmpty(currentUser.getId())) {
+      playingIds.remove(currentUser.getId());
+      liveViewsMap.get(currentUser.getId()).updatePositionOfSticker(null, null);
+    }
+
+    if (playingIds.isEmpty() && currentMasterId.equals(currentUser.getId())) {
+      Collection<Integer> rankings = mapRankingById.values();
+      List<String> winnersIds = new ArrayList<>();
+      int maxRanking = rankings != null && rankings.size() > 0 ? Collections.max(rankings) : 0;
+      for (String id : mapRankingById.keySet()) {
+        if (mapRankingById.get(id) == maxRanking) {
+          winnersIds.add(id);
+        }
+      }
+
+      if (winnersIds.size() > 0) {
+        JSONArray winnersIdsArray = new JSONArray();
+        for (String winnerId : winnersIds) {
+          winnersIdsArray.put(winnerId);
+        }
+
+        gameOver(winnersIdsArray);
+        broadcast(getGameOverPayload(winnersIdsArray));
+      } else {
+        gameOver(null);
+        broadcast(getGameOverPayload(null));
+      }
+    }
+  }
+
+  private void gameOver(JSONArray winnersIds) {
+    subscriptionsGame.clear();
+    visionSubscription.unsubscribe();
+    visionSubscription = null;
+
+    if (winnersIds != null && winnersIds.length() > 0) {
+      List<TribeGuest> winners = new ArrayList<>();
+
+      for (int i = 0; i < winnersIds.length(); i++) {
+        try {
+          winners.add(peerMap.get(winnersIds.getString(i)));
+
+          if (winners.size() == 0) {
+            launchNewGameIfMaster();
+          } else {
+            String message;
+
+            if (winners.size() == 1) {
+              TribeGuest winner = winners.get(0);
+              if (winner.getId().equals(currentUser.getId())) {
+                message = getContext().getString(R.string.game_coolcams_you_won);
+              } else {
+                message = getContext().getString(R.string.game_coolcams_someone_won,
+                    winner.getDisplayName());
+              }
+            } else {
+              String winnersConcat = "";
+
+              for (int j = 0; j < winners.size(); j++) {
+                winnersConcat += winners.get(j).getDisplayName();
+
+                if (i < winners.size() - 1) winnersConcat += ", ";
+              }
+
+              message = getResources().getString(R.string.game_coolcams_someone_won_plural,
+                  winnersConcat);
+            }
+
+            showInstructions(message, 1000,
+                finished -> hideLabels(1000, finished1 -> launchNewGameIfMaster()));
+          }
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+
+  private void launchNewGameIfMaster() {
+    subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          if (currentMasterId.equals(currentUser.getId())) {
+            broadcastNewGame();
+          }
+        }));
   }
 
   private void broadcastNewGame() {
@@ -275,11 +400,12 @@ public class GameCoolCamsView extends GameViewWithRanking {
     if (delayBeforeGame > 1000) {
       showTitle(delayOneThird, finished -> {
         if (finished) {
-          showInstructions(delayOneThird, finished1 -> {
-            if (finished1) {
-              hideLabels(delayOneThird, null);
-            }
-          });
+          showInstructions(getContext().getString(R.string.game_coolcams_lets_go), delayOneThird,
+              finished1 -> {
+                if (finished1) {
+                  hideLabels(delayOneThird, null);
+                }
+              });
         }
       });
     }
@@ -292,17 +418,15 @@ public class GameCoolCamsView extends GameViewWithRanking {
   private void launchGame(List<CoolCamsModel.CoolCamsStepsEnum> steps, double stepDuration,
       double stepResultDuration) {
     if (steps == null || steps.size() == 0) return;
+
     CoolCamsModel.CoolCamsStepsEnum step = steps.remove(0);
 
-    PointF previousOrigin = null;
-    CoolCamsModel.CoolCamsStatusEnum status = null;
+    previousOrigin = null;
+    previousStatus = null;
+    statusSince = new Date();
+    roundScore = 0;
+    remainingDuration = (stepDuration + stepResultDuration) * (steps.size() + 1);
 
-    Date statusSince = new Date();
-
-    String userId = currentUser.getId();
-    int roundScore = 0;
-
-    double remainingDuration = (stepDuration + stepResultDuration) * steps.size();
     txtSessionTime.setText("" + (int) remainingDuration);
     txtSessionTime.animate()
         .scaleX(1)
@@ -314,12 +438,134 @@ public class GameCoolCamsView extends GameViewWithRanking {
     subscriptionsGame.add(Observable.interval(1, TimeUnit.SECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          double time = remainingDuration - new Long(aLong).doubleValue();
-          txtSessionTime.setText("" + (int) time);
+          remainingDuration -= 1;
+          txtSessionTime.setText("" + remainingDuration);
         }));
 
-    progressBarTotal.setProgress(progressBarTotal.getProgress() + (100 / steps.size()));
-    progressBarRound.setProgress(100, (int) stepDuration * 1000, 0, null, null);
+    int duration = (int) (stepDuration * 1000);
+    progressBarTotal.setProgress(progressBarTotal.getProgress() + (100 / steps.size()), duration, 0,
+        null, null);
+    progressBarRound.setProgress(100, duration, 0, null, null);
+
+    subscriptionsGame.add(onStatusChange.subscribe(coolCamsStatusEnum -> {
+      currentStatus = coolCamsStatusEnum;
+
+      if (currentStatus.equals(CoolCamsModel.CoolCamsStatusEnum.STEP)) {
+        progressBarRound.stop();
+        progressBarRound.setProgress(100, (int) (stepDuration * 1000), 0, null, null);
+        progressBarTotal.setProgress(progressBarTotal.getProgress() + (100 / steps.size()),
+            duration, 0, null, null);
+
+        subscriptionsGame.add(Observable.timer((int) (stepDuration * 1000), TimeUnit.MILLISECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> {
+              progressBarRound.stop();
+
+              if (currentStatus.equals(CoolCamsModel.CoolCamsStatusEnum.STEP) ||
+                  currentStatus.equals(CoolCamsModel.CoolCamsStatusEnum.LOST)) {
+                soundManager.playSound(SoundManager.TRIVIA_LOST, SoundManager.SOUND_MID);
+                onStatusChange.onNext(CoolCamsModel.CoolCamsStatusEnum.LOST);
+              }
+
+              subscriptionsGame.add(
+                  Observable.timer((int) (stepResultDuration * 1000), TimeUnit.MILLISECONDS)
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .subscribe(aLong2 -> {
+                        progressBarRound.stop();
+                        progressBarRound.setProgress(0);
+
+                        if (steps.size() > 0) {
+                          CoolCamsModel.CoolCamsStepsEnum nextStep = steps.remove(0);
+                          onStatusChange.onNext(CoolCamsModel.CoolCamsStatusEnum.with(
+                              CoolCamsModel.CoolCamsStatusEnum.STEP.getCode(), nextStep.getStep()));
+                        } else {
+                          onAddScore.onNext(Pair.create(game.getId(), roundScore));
+                          broadcast(getUserGameOverPayload());
+                          userGameOver(null);
+                          subscriptionsGame.clear();
+                        }
+                      }));
+            }));
+      }
+    }));
+
+    onStatusChange.onNext(
+        CoolCamsModel.CoolCamsStatusEnum.with(CoolCamsModel.CoolCamsStatusEnum.STEP.getCode(),
+            step.getStep()));
+
+    if (visionSubscription != null) {
+      visionSubscription.unsubscribe();
+      visionSubscription = null;
+    }
+
+    visionSubscription = visionAPIManager.onComputeFaceDone()
+        .onBackpressureDrop()
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(frame -> {
+          featuresDetected.clear();
+
+          if (visionAPIManager.getFace() == null) {
+            featuresDetected.add(CoolCamsModel.CoolCamsFeatureEnum.NO_FACE);
+          }
+
+          if ((!visionAPIManager.isLeftEyeOpen() && visionAPIManager.isRightEyeOpen()) ||
+              (visionAPIManager.isLeftEyeOpen() && !visionAPIManager.isRightEyeOpen())) {
+            featuresDetected.add(CoolCamsModel.CoolCamsFeatureEnum.ONE_EYE_CLOSED);
+          } else if (!visionAPIManager.isLeftEyeOpen() && !visionAPIManager.isLeftEyeOpen()) {
+            featuresDetected.add(CoolCamsModel.CoolCamsFeatureEnum.TWO_EYES_CLOSED);
+          }
+
+          if (visionAPIManager.isSmiling()) {
+            featuresDetected.add(CoolCamsModel.CoolCamsFeatureEnum.HAS_SMILE);
+          }
+
+          if (currentStatus.equals(CoolCamsModel.CoolCamsStatusEnum.STEP) &&
+              currentStatus.getStep() != null) {
+            if ((new Date().getTime() - statusSince.getTime()) / 1000 > 1) {
+              Timber.d("Features needed : " + currentStatus.getStep().getFeatures());
+              Timber.d("Features done : " + featuresDetected);
+
+              boolean equals = currentStatus.getStep().getFeatures().equals(featuresDetected);
+              Timber.d("Equals : " + equals);
+              if (equals) {
+                statusSince = new Date();
+                onStatusChange.onNext(CoolCamsModel.CoolCamsStatusEnum.WON);
+                roundScore++;
+                addPoints(1, currentUser.getId(), true);
+                soundManager.playSound(SoundManager.TRIVIA_WON, SoundManager.SOUND_MID);
+              }
+            }
+          } else if (currentStatus.equals(CoolCamsModel.CoolCamsStatusEnum.WON) ||
+              currentStatus.equals(CoolCamsModel.CoolCamsStatusEnum.LOST)) {
+            if ((new Date().getTime() - statusSince.getTime()) / 1000 > 1) {
+              statusSince = new Date();
+            }
+          }
+
+          PointF origin = visionAPIManager.findXYMiddleEye();
+
+          if (previousOrigin == null ||
+              previousOrigin != origin ||
+              previousStatus == null ||
+              !currentStatus.getCode().equals(previousStatus.getCode())) {
+            previousOrigin = origin;
+            previousStatus = currentStatus;
+
+            Pair<Double, Double> positionRatio = liveViewsMap.get(currentUser.getId())
+                .computeFrameAndFacePosition(frame, origin, currentStatus);
+
+            if (positionRatio == null) {
+              broadcast(getEmptyOriginPayload());
+            } else {
+              broadcast(getOriginPayload(currentStatus, positionRatio.first, positionRatio.second));
+            }
+          } else if (previousOrigin != null) {
+            previousOrigin = null;
+            liveViewsMap.get(currentUser.getId())
+                .computeFrameAndFacePosition(frame, null, currentStatus);
+            broadcast(getEmptyOriginPayload());
+          }
+        });
   }
 
   private void showTitle(int duration, CompletionListener completionListener) {
@@ -335,7 +581,9 @@ public class GameCoolCamsView extends GameViewWithRanking {
             })));
   }
 
-  private void showInstructions(int duration, CompletionListener completionListener) {
+  private void showInstructions(String text, int duration, CompletionListener completionListener) {
+    txtCoolCamsInstructions.setText(text);
+
     AnimationUtils.fadeIn(txtCoolCamsInstructions, DURATION);
     txtCoolCamsInstructions.animate()
         .translationY(0)
@@ -422,6 +670,47 @@ public class GameCoolCamsView extends GameViewWithRanking {
     return obj;
   }
 
+  private JSONObject getUserGameOverPayload() {
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_USER_GAME_OVER);
+    JsonUtils.jsonPut(obj, this.game.getId(), game);
+    return obj;
+  }
+
+  private JSONObject getGameOverPayload(JSONArray jsonArray) {
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_GAME_OVER);
+    if (jsonArray != null) JsonUtils.jsonPut(game, WINNERS_KEY, jsonArray);
+    JsonUtils.jsonPut(obj, this.game.getId(), game);
+    return obj;
+  }
+
+  private JSONObject getOriginPayload(CoolCamsModel.CoolCamsStatusEnum status, double x, double y) {
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_POSITION);
+    JsonUtils.jsonPut(game, X_KEY, x);
+    JsonUtils.jsonPut(game, Y_KEY, y);
+    JsonUtils.jsonPut(game, STATUS_CODE_KEY, status.getCode());
+
+    if (status.equals(CoolCamsModel.CoolCamsStatusEnum.STEP)) {
+      JsonUtils.jsonPut(game, STEP_ID_KEY, status.getStep().getStep());
+    }
+
+    JsonUtils.jsonPut(obj, this.game.getId(), game);
+    return obj;
+  }
+
+  private JSONObject getEmptyOriginPayload() {
+    JSONObject obj = new JSONObject();
+    JSONObject game = new JSONObject();
+    JsonUtils.jsonPut(game, ACTION_KEY, ACTION_POSITION);
+    JsonUtils.jsonPut(obj, this.game.getId(), game);
+    return obj;
+  }
+
   /**
    * PUBLIC
    */
@@ -450,7 +739,13 @@ public class GameCoolCamsView extends GameViewWithRanking {
   }
 
   @Override public void stop() {
-    for (LiveStreamView lsv : liveViewsMap.values()) lsv.setStep(null);
+    if (visionSubscription != null) {
+      visionSubscription.unsubscribe();
+      visionSubscription = null;
+    }
+
+    for (LiveStreamView str : liveViewsMap.values()) str.updatePositionOfSticker(null, null);
+
     super.stop();
   }
 

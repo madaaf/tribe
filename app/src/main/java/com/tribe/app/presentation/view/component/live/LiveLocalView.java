@@ -29,6 +29,8 @@ import com.tribe.tribelivesdk.model.TribePeerMediaConfiguration;
 import com.tribe.tribelivesdk.model.TribeSession;
 import com.tribe.tribelivesdk.view.LocalPeerView;
 import com.tribe.tribelivesdk.view.PeerView;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -284,37 +286,6 @@ public class LiveLocalView extends LiveStreamView {
 
   public View getLayoutStream() {
     return layoutStream;
-  }
-
-  @Override public void setStep(CoolCamsModel.CoolCamsStepsEnum step) {
-    super.setStep(step);
-    if (visionSubscription == null) {
-      visionSubscription = visionAPIManager.onComputeFaceDone()
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(frame -> {
-            widthScaleFactor = (float) getMeasuredWidth() / (float) frame.rotatedWidth();
-            heightScaleFactor = (float) getMeasuredHeight() / (float) frame.rotatedHeight();
-
-            PointF middleEyesPosition = visionAPIManager.findXYMiddleEye();
-            PointF middleEyesTranslatedPosition;
-
-            if (middleEyesPosition != null) {
-              middleEyesTranslatedPosition =
-                  new PointF(translateX(middleEyesPosition.x, frame.isFrontCamera()),
-                      translateY(middleEyesPosition.y));
-              middleEyesTranslatedPosition.x =
-                  (int) middleEyesTranslatedPosition.x - screenUtils.dpToPx(25);
-              middleEyesTranslatedPosition.y =
-                  (int) middleEyesTranslatedPosition.y - screenUtils.dpToPx(50);
-            } else {
-              middleEyesTranslatedPosition = new PointF();
-              middleEyesTranslatedPosition.x = getMeasuredWidth() >> 1;
-              middleEyesTranslatedPosition.y = getMeasuredHeight() >> 1;
-            }
-
-            updatePositionOfSticker(middleEyesTranslatedPosition);
-          });
-    }
   }
 
   //////////////////

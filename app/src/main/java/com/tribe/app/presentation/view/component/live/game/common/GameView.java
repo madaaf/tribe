@@ -218,7 +218,7 @@ public abstract class GameView extends FrameLayout {
             (newScore > 0 && newScore == maxRanking ? EmojiParser.demojizedText(":crown:")
                 : ((newScore == minRanking ? EmojiParser.demojizedText(":poop:") : "")));
         liveStreamView.updateScoreWithEmoji(newScore, statusText + emojiText);
-        if (newScore != oldScore) liveStreamView.bounceView();
+        if (newScore != oldScore && game.isOverLive()) liveStreamView.bounceView();
       } else {
         liveStreamView.updateScoreWithEmoji(0, null);
       }

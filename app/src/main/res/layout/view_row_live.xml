@@ -9,14 +9,44 @@
       android:visibility="gone"
       >
 
-    <ImageView
-        android:id="@+id/imgCoolCams"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/picto_coolcams_emoji_0"
+    <FrameLayout
+        android:id="@+id/layoutCoolCams"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:visibility="gone"
-        />
+        >
+
+      <ImageView
+          android:id="@+id/imgCoolCamsWonBg"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_coolcams_won_bg"
+          android:visibility="gone"
+          />
+
+      <ImageView
+          android:id="@+id/imgCoolCamsWon"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_marginStart="50dp"
+          android:scaleType="fitXY"
+          android:src="@drawable/picto_coolcams_won"
+          android:visibility="gone"
+          />
+
+      <ImageView
+          android:id="@+id/imgCoolCams"
+          android:layout_width="60dp"
+          android:layout_height="60dp"
+          android:layout_gravity="center"
+          android:scaleType="fitXY"
+          android:src="@drawable/picto_coolcams_emoji_0"
+          android:visibility="gone"
+          />
+    </FrameLayout>
 
     <com.tribe.app.presentation.view.component.live.LivePeerOverlayView
         android:id="@+id/viewPeerOverlay"
@@ -57,8 +87,8 @@
       android:layout_marginStart="@dimen/horizontal_margin_smaller"
       android:gravity="center"
       android:maxLines="1"
-      android:visibility="gone"
       android:text="\uD83D\uDCA9"
+      android:visibility="gone"
       style="@style/Headline.White.2"
       />
 </merge>

@@ -11,8 +11,11 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import butterknife.BindView;
@@ -20,19 +23,19 @@ import butterknife.Unbinder;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.entity.coolcams.CoolCamsModel;
+import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
-import com.tribe.tribelivesdk.facetracking.VisionAPIManager;
 import com.tribe.tribelivesdk.view.PeerView;
 import com.tribe.tribelivesdk.view.TextureViewRenderer;
+import com.tribe.tribelivesdk.webrtc.Frame;
+import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
-import rx.Subscription;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 10/12/17.
@@ -59,18 +62,24 @@ public abstract class LiveStreamView extends LinearLayout {
 
   @BindView(R.id.txtEmoji) TextViewFont txtEmoji;
 
+  @BindView(R.id.layoutCoolCams) FrameLayout layoutCoolCams;
+
+  @BindView(R.id.imgCoolCamsWon) ImageView imgCoolCamsWon;
+
+  @BindView(R.id.imgCoolCamsWonBg) ImageView imgCoolCamsWonBg;
+
   @BindView(R.id.imgCoolCams) ImageView imgCoolCams;
 
   // VARIABLES
   protected Unbinder unbinder;
   protected int score;
-  protected VisionAPIManager visionAPIManager;
   protected float widthScaleFactor, heightScaleFactor;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
-  protected Subscription visionSubscription;
   protected PublishSubject<Pair<Integer, String>> onScoreChange = PublishSubject.create();
+  protected PublishSubject<List<CoolCamsModel.CoolCamsFeatureEnum>> onFeaturesDetected =
+      PublishSubject.create();
 
   public LiveStreamView(Context context) {
     super(context);
@@ -92,8 +101,6 @@ public abstract class LiveStreamView extends LinearLayout {
   protected abstract PeerView getPeerView();
 
   protected void endInit() {
-    visionAPIManager = VisionAPIManager.getInstance(getContext());
-
     setOrientation(HORIZONTAL);
     layoutStream.setCardBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
     layoutStream.setPreventCornerOverlap(false);
@@ -143,7 +150,6 @@ public abstract class LiveStreamView extends LinearLayout {
 
   public void dispose() {
     subscriptions.clear();
-    if (visionSubscription != null) visionSubscription.unsubscribe();
   }
 
   public void setStyle(@StreamType int type) {
@@ -207,30 +213,74 @@ public abstract class LiveStreamView extends LinearLayout {
     return score;
   }
 
-  public void setStep(CoolCamsModel.CoolCamsStepsEnum step) {
-    if (step != null) {
-      Timber.d("Setting stepId to : " + step.getStep());
-      imgCoolCams.setImageResource(step.getIcon());
-      imgCoolCams.setVisibility(View.VISIBLE);
+  public Pair<Double, Double> computeFrameAndFacePosition(Frame frame, PointF middleEyesPosition,
+      CoolCamsModel.CoolCamsStatusEnum statusEnum) {
+    widthScaleFactor = (float) getMeasuredWidth() / (float) frame.rotatedWidth();
+    heightScaleFactor = (float) getMeasuredHeight() / (float) frame.rotatedHeight();
+
+    PointF middleEyesTranslatedPosition = null;
+
+    if (middleEyesPosition != null) {
+      middleEyesTranslatedPosition =
+          new PointF(translateX(middleEyesPosition.x, frame.isFrontCamera()),
+              translateY(middleEyesPosition.y));
+      middleEyesTranslatedPosition.x =
+          (int) middleEyesTranslatedPosition.x - screenUtils.dpToPx(25);
+      middleEyesTranslatedPosition.y =
+          (int) middleEyesTranslatedPosition.y - screenUtils.dpToPx(50);
+
+      updatePositionOfSticker(middleEyesTranslatedPosition, statusEnum);
+
+      return Pair.create(middleEyesPosition.x / (double) frame.rotatedWidth(),
+          middleEyesPosition.y / (double) frame.rotatedHeight());
+    }
+
+    updatePositionOfSticker(middleEyesTranslatedPosition, statusEnum);
+    return null;
+  }
+
+  public void updatePositionOfSticker(PointF pointF, CoolCamsModel.CoolCamsStatusEnum status) {
+    if (pointF == null || status == null) {
+      layoutCoolCams.setVisibility(View.GONE);
     } else {
-      if (visionSubscription != null) {
-        visionSubscription.unsubscribe();
-        visionSubscription = null;
+      layoutCoolCams.setVisibility(View.VISIBLE);
+
+      if (status.equals(CoolCamsModel.CoolCamsStatusEnum.STEP) ||
+          status.equals(CoolCamsModel.CoolCamsStatusEnum.LOST)) {
+        if (status.equals(CoolCamsModel.CoolCamsStatusEnum.LOST)) {
+          imgCoolCams.setImageResource(R.drawable.picto_coolcams_lost);
+        } else {
+          imgCoolCams.setImageResource(status.getStep().getIcon());
+        }
+
+        imgCoolCams.setVisibility(View.VISIBLE);
+        imgCoolCamsWon.setVisibility(View.GONE);
+        imgCoolCamsWonBg.setVisibility(View.GONE);
+        imgCoolCamsWonBg.clearAnimation();
+      } else {
+        imgCoolCamsWon.setVisibility(View.VISIBLE);
+        imgCoolCamsWonBg.setVisibility(View.VISIBLE);
+        imgCoolCams.setVisibility(View.GONE);
+
+        RotateAnimation rotate = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f,
+            Animation.RELATIVE_TO_SELF, 0.5f);
+        rotate.setDuration(10000);
+        rotate.setRepeatCount(Animation.INFINITE);
+        rotate.setFillAfter(true);
+        imgCoolCamsWonBg.startAnimation(rotate);
       }
 
-      imgCoolCams.setImageDrawable(null);
-      imgCoolCams.setVisibility(View.GONE);
+      AnimationUtils.animateLeftMargin(layoutCoolCams,
+          (int) pointF.x - (layoutCoolCams.getMeasuredWidth() >> 1), 300,
+          new DecelerateInterpolator());
+      AnimationUtils.animateTopMargin(layoutCoolCams,
+          (int) pointF.y - (layoutCoolCams.getMeasuredHeight() >> 1), 300,
+          new DecelerateInterpolator());
     }
   }
 
-  public void updatePositionOfSticker(PointF pointF) {
-    UIUtils.changeLeftMarginOfView(imgCoolCams,
-        (int) pointF.x - (imgCoolCams.getMeasuredWidth() >> 1));
-    UIUtils.changeTopMarginOfView(imgCoolCams,
-        (int) pointF.y - (imgCoolCams.getMeasuredHeight() >> 1));
-  }
-
-  public void updatePositionRatioOfSticker(double xRatio, double yRatio) {
+  public void updatePositionRatioOfSticker(double xRatio, double yRatio,
+      CoolCamsModel.CoolCamsStatusEnum statusEnum) {
     TextureViewRenderer renderer = getPeerView().getTextureViewRenderer();
     PointF pointF = new PointF(renderer.getFrameWidth() * (float) xRatio,
         renderer.getFrameHeight() * (float) yRatio);
@@ -248,7 +298,7 @@ public abstract class LiveStreamView extends LinearLayout {
       pointEnd.y = getMeasuredHeight() >> 1;
     }
 
-    updatePositionOfSticker(pointEnd);
+    updatePositionOfSticker(pointEnd, statusEnum);
   }
 
   /////////////////
@@ -257,5 +307,9 @@ public abstract class LiveStreamView extends LinearLayout {
 
   public Observable<Pair<Integer, String>> onScoreChange() {
     return onScoreChange;
+  }
+
+  public Observable<List<CoolCamsModel.CoolCamsFeatureEnum>> onFeaturesDetected() {
+    return onFeaturesDetected;
   }
 }

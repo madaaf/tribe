@@ -27,7 +27,7 @@ import timber.log.Timber;
 public class VisionAPIManager {
 
   private static final float THRESHOLD_FACE_WIDTH = 20;
-  private static final float EYE_CLOSED_THRESHOLD = 0.4f;
+  private static final float EYE_CLOSED_THRESHOLD = 0.5f;
   private static final float SMILE_THRESHOLD = 0.4f;
 
   private static VisionAPIManager instance;
@@ -132,6 +132,7 @@ public class VisionAPIManager {
       Timber.d("onMissing : " + detectionResults);
       VisionAPIManager.this.face = null;
       VisionAPIManager.this.rightEye = VisionAPIManager.this.leftEye = null;
+      onComputeFaceDone.onNext(lastFrame);
     }
 
     @Override public void onDone() {
@@ -177,10 +178,6 @@ public class VisionAPIManager {
       }
 
       onComputeFaceDone.onNext(lastFrame);
-
-      //Timber.d("Left eye open : " + leftEyeOpen);
-      //Timber.d("Right eye open : " + rightEyeOpen);
-      //Timber.d("Smiling : " + smiling);
     }
   }
 
@@ -297,8 +294,7 @@ public class VisionAPIManager {
       return new PointF((leftEye.x + rightEye.x) / 2, (leftEye.y + rightEye.y) / 2);
     }
 
-    return new PointF(face.getPosition().x + face.getWidth() / 2,
-        face.getPosition().y + face.getHeight() / 2);
+    return null;
   }
 
   public void stopCapture() {
