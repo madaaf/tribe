@@ -589,12 +589,10 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
     subscriptions.add(homeGridAdapter.onClickFb().subscribe(aVoid -> {
       homeGridPresenter.loginFacebook();
-      Timber.e("onClickFb");
       popupAccessFacebookContact();
     }));
 
     subscriptions.add(homeGridAdapter.onClickAddressBook().subscribe(aVoid -> {
-      Timber.e("onClickAddressBook");
       syncContacts();
     }));
 
