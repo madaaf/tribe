@@ -82,6 +82,25 @@ public class LeaderboardAddressBookAdapterDelegate extends RxAdapterDelegate<Lis
 
     score.setPosition(position);
     vh.itemView.setOnClickListener(v -> onClick.onNext(score));
+
+
+    if (position == 0) {
+      vh.imgConnectTop.setVisibility(View.GONE);
+    } else {
+      vh.imgConnectTop.setVisibility(View.VISIBLE);
+    }
+
+    if (position == items.size() - 1) {
+      vh.imgConnectBottom.setVisibility(View.GONE);
+    } else {
+      vh.imgConnectBottom.setVisibility(View.VISIBLE);
+    }
+
+    if (position % 2 == 0) {
+      vh.itemView.setBackgroundResource(android.R.color.transparent);
+    } else {
+      vh.itemView.setBackgroundResource(R.color.black_opacity_5);
+    }
   }
 
   @Override
@@ -95,6 +114,8 @@ public class LeaderboardAddressBookAdapterDelegate extends RxAdapterDelegate<Lis
     @BindView(R.id.txtName) TextViewFont txtName;
     @BindView(R.id.txtDetails) TextViewFont txtDetails;
     @BindView(R.id.logo) ImageView logo;
+    @BindView(R.id.imgConnectTop) ImageView imgConnectTop;
+    @BindView(R.id.imgConnectBottom) ImageView imgConnectBottom;
 
     public LeaderboardUserViewHolder(View itemView) {
       super(itemView);
