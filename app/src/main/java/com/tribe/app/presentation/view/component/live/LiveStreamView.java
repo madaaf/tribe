@@ -74,6 +74,7 @@ public abstract class LiveStreamView extends LinearLayout {
   protected Unbinder unbinder;
   protected int score;
   protected float widthScaleFactor, heightScaleFactor;
+  protected CoolCamsModel.CoolCamsStatusEnum previousStatus;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -142,6 +143,15 @@ public abstract class LiveStreamView extends LinearLayout {
    */
   protected float translateY(float y) {
     return scaleY(y);
+  }
+
+  private void scaleView(View v, boolean up, android.animation.AnimatorListenerAdapter listener) {
+    v.animate()
+        .scaleX(up ? 1 : 0)
+        .scaleY(up ? 1 : 0)
+        .setDuration(150)
+        .setListener(listener)
+        .start();
   }
 
   /**
@@ -247,20 +257,61 @@ public abstract class LiveStreamView extends LinearLayout {
 
       if (status.equals(CoolCamsModel.CoolCamsStatusEnum.STEP) ||
           status.equals(CoolCamsModel.CoolCamsStatusEnum.LOST)) {
+        int img = 0;
         if (status.equals(CoolCamsModel.CoolCamsStatusEnum.LOST)) {
-          imgCoolCams.setImageResource(R.drawable.picto_coolcams_lost);
+          img = R.drawable.picto_coolcams_lost;
         } else {
-          imgCoolCams.setImageResource(status.getStep().getIcon());
+          img = status.getStep().getIcon();
+        }
+
+        final int res = img;
+
+        if (previousStatus == null || !previousStatus.equals(status)) {
+          if (previousStatus != null &&
+              previousStatus.equals(CoolCamsModel.CoolCamsStatusEnum.WON)) {
+            scaleView(imgCoolCamsWon, false, new AnimatorListenerAdapter() {
+              @Override public void onAnimationEnd(Animator animation) {
+                animation.cancel();
+                imgCoolCams.setImageResource(res);
+                scaleView(imgCoolCams, true, null);
+                imgCoolCamsWon.setVisibility(View.GONE);
+                imgCoolCamsWonBg.setVisibility(View.GONE);
+              }
+            });
+
+            scaleView(imgCoolCamsWonBg, false, null);
+          } else {
+            scaleView(imgCoolCams, false, new AnimatorListenerAdapter() {
+              @Override public void onAnimationEnd(Animator animation) {
+                animation.cancel();
+                imgCoolCams.setImageResource(res);
+                scaleView(imgCoolCams, true, null);
+              }
+            });
+          }
+        } else {
+          imgCoolCams.setImageResource(res);
         }
 
         imgCoolCams.setVisibility(View.VISIBLE);
-        imgCoolCamsWon.setVisibility(View.GONE);
-        imgCoolCamsWonBg.setVisibility(View.GONE);
+
         imgCoolCamsWonBg.clearAnimation();
       } else {
-        imgCoolCamsWon.setVisibility(View.VISIBLE);
-        imgCoolCamsWonBg.setVisibility(View.VISIBLE);
-        imgCoolCams.setVisibility(View.GONE);
+        if (previousStatus == null || !previousStatus.equals(status)) {
+          scaleView(imgCoolCams, false, null);
+          imgCoolCamsWonBg.setScaleX(0);
+          imgCoolCamsWonBg.setScaleY(0);
+          imgCoolCamsWon.setScaleX(0);
+          imgCoolCamsWon.setScaleY(0);
+          imgCoolCamsWon.setVisibility(View.VISIBLE);
+          imgCoolCamsWonBg.setVisibility(View.VISIBLE);
+          scaleView(imgCoolCamsWon, true, null);
+          scaleView(imgCoolCamsWonBg, true, null);
+        } else {
+          imgCoolCamsWon.setVisibility(View.VISIBLE);
+          imgCoolCamsWonBg.setVisibility(View.VISIBLE);
+          imgCoolCams.setVisibility(View.GONE);
+        }
 
         RotateAnimation rotate = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f,
             Animation.RELATIVE_TO_SELF, 0.5f);
@@ -277,6 +328,8 @@ public abstract class LiveStreamView extends LinearLayout {
           (int) pointF.y - (layoutCoolCams.getMeasuredHeight() >> 1), 300,
           new DecelerateInterpolator());
     }
+
+    previousStatus = status;
   }
 
   public void updatePositionRatioOfSticker(double xRatio, double yRatio,

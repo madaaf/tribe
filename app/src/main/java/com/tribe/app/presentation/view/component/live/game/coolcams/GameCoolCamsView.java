@@ -18,6 +18,7 @@ import android.util.Pair;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import butterknife.BindView;
@@ -68,6 +69,7 @@ public class GameCoolCamsView extends GameViewWithRanking {
 
   private static final int DURATION = 500;
   private static final float OVERSHOOT = 0.45f;
+  private static final int NB_STEPS = 4;
 
   private static final String ACTION_POSITION = "position";
   private static final String ACTION_NEW_GAME = "newGame";
@@ -307,6 +309,8 @@ public class GameCoolCamsView extends GameViewWithRanking {
     subscriptionsGame.clear();
     visionSubscription.unsubscribe();
     visionSubscription = null;
+    progressBarRound.setProgress(0);
+    progressBarTotal.setProgress(0);
 
     if (winnersIds != null && winnersIds.length() > 0) {
       List<TribeGuest> winners = new ArrayList<>();
@@ -348,6 +352,8 @@ public class GameCoolCamsView extends GameViewWithRanking {
           e.printStackTrace();
         }
       }
+    } else {
+      launchNewGameIfMaster();
     }
   }
 
@@ -363,7 +369,8 @@ public class GameCoolCamsView extends GameViewWithRanking {
 
   private void broadcastNewGame() {
     long timestamp = startGameTimestamp();
-    List<CoolCamsModel.CoolCamsStepsEnum> steps = CoolCamsModel.CoolCamsStepsEnum.generateGame(12);
+    List<CoolCamsModel.CoolCamsStepsEnum> steps =
+        CoolCamsModel.CoolCamsStepsEnum.generateGame(NB_STEPS);
     double stepDuration = 5.0D;
     double stepResultDuration = 1.0D;
 
@@ -427,7 +434,7 @@ public class GameCoolCamsView extends GameViewWithRanking {
     roundScore = 0;
     remainingDuration = (stepDuration + stepResultDuration) * (steps.size() + 1);
 
-    txtSessionTime.setText("" + (int) remainingDuration);
+    txtSessionTime.setText("" + Math.round(remainingDuration));
     txtSessionTime.animate()
         .scaleX(1)
         .scaleY(1)
@@ -439,22 +446,19 @@ public class GameCoolCamsView extends GameViewWithRanking {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           remainingDuration -= 1;
-          txtSessionTime.setText("" + remainingDuration);
+          txtSessionTime.setText("" + Math.round(remainingDuration));
         }));
-
-    int duration = (int) (stepDuration * 1000);
-    progressBarTotal.setProgress(progressBarTotal.getProgress() + (100 / steps.size()), duration, 0,
-        null, null);
-    progressBarRound.setProgress(100, duration, 0, null, null);
 
     subscriptionsGame.add(onStatusChange.subscribe(coolCamsStatusEnum -> {
       currentStatus = coolCamsStatusEnum;
 
       if (currentStatus.equals(CoolCamsModel.CoolCamsStatusEnum.STEP)) {
+        int duration = (int) (stepDuration * 1000);
+
         progressBarRound.stop();
-        progressBarRound.setProgress(100, (int) (stepDuration * 1000), 0, null, null);
-        progressBarTotal.setProgress(progressBarTotal.getProgress() + (100 / steps.size()),
-            duration, 0, null, null);
+        progressBarRound.setProgress(100, duration, 0, new LinearInterpolator(), null, null);
+        progressBarTotal.setProgress(progressBarTotal.getProgress() + (100 / NB_STEPS), duration, 0,
+            new LinearInterpolator(), null, null);
 
         subscriptionsGame.add(Observable.timer((int) (stepDuration * 1000), TimeUnit.MILLISECONDS)
             .observeOn(AndroidSchedulers.mainThread())
@@ -726,6 +730,9 @@ public class GameCoolCamsView extends GameViewWithRanking {
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     super.start(game, masterMapObs, mapObservable, mapInvitedObservable, liveViewsObservable,
         userId);
+
+    soundManager.playSound(SoundManager.COOL_CAMS_SOUNDTRACK, SoundManager.SOUND_MID);
+
     playingIds = new HashSet<>();
 
     currentMasterId = userId;
@@ -743,6 +750,8 @@ public class GameCoolCamsView extends GameViewWithRanking {
       visionSubscription.unsubscribe();
       visionSubscription = null;
     }
+
+    soundManager.cancelMediaPlayer();
 
     for (LiveStreamView str : liveViewsMap.values()) str.updatePositionOfSticker(null, null);
 

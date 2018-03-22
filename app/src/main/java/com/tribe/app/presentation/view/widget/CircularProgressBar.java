@@ -10,7 +10,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 
 public class CircularProgressBar extends View {
 
@@ -96,11 +96,13 @@ public class CircularProgressBar extends View {
    *
    * @param progress progress between 0 and 100.
    */
-  public void setProgress(int progress, int duration, int delay,
+  public void setProgress(int progress, int duration, int delay, Interpolator interpolator,
       AnimatorListenerAdapter listenerAdapter,
       ValueAnimator.AnimatorUpdateListener animatorUpdateListener) {
+    this.progress = progress;
+
     animator = ValueAnimator.ofFloat(sweepAngle, calcSweepAngleFromProgress(progress));
-    animator.setInterpolator(new DecelerateInterpolator());
+    animator.setInterpolator(interpolator);
     animator.setDuration(duration);
     animator.setStartDelay(delay);
     animator.addUpdateListener(valueAnimator -> {
