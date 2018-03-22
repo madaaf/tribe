@@ -146,6 +146,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @BindView(R.id.txtNameSecond) TextViewFont txtNameSecond;
 
+  @BindView(R.id.playBtn) TextViewFont playBtn;
+
   @BindView(R.id.txtRankingSecond) TextViewRanking txtRankingSecond;
 
   @BindView(R.id.txtScoreSecond) TextViewScore txtScoreSecond;
@@ -363,6 +365,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         Color.parseColor("#" + game.getSecondary_color())
     });
 
+    playBtn.setTextColor(Color.parseColor("#" + game.getPrimary_color()));
     ViewCompat.setBackground(imgBackgroundGradient, gd);
 
     recyclerView.getViewTreeObserver()
@@ -676,6 +679,17 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @OnLongClick(R.id.avatarThird) boolean onLongClickAvatarThird() {
     return setClickPokeAnimation(podiumList.get(2), avatarThird);
+  }
+
+  @OnClick(R.id.playBtn) void onClickPlayBtn() {
+    playBtn.setAlpha(0.5f);
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.HOME);
+    bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.LAUNCHED);
+    bundle.putString(TagManagerUtils.NAME, game.getId());
+    tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
+
+    navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
   }
 
   /**
