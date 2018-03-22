@@ -11,8 +11,10 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.FrameLayout;
@@ -75,6 +77,7 @@ public abstract class LiveStreamView extends LinearLayout {
   protected int score;
   protected float widthScaleFactor, heightScaleFactor;
   protected CoolCamsModel.CoolCamsStatusEnum previousStatus;
+  protected RotateAnimation rotateAnimation;
 
   // OBSERVABLES
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -160,6 +163,8 @@ public abstract class LiveStreamView extends LinearLayout {
 
   public void dispose() {
     subscriptions.clear();
+    rotateAnimation.cancel();
+    imgCoolCamsWonBg.clearAnimation();
   }
 
   public void setStyle(@StreamType int type) {
@@ -235,9 +240,9 @@ public abstract class LiveStreamView extends LinearLayout {
           new PointF(translateX(middleEyesPosition.x, frame.isFrontCamera()),
               translateY(middleEyesPosition.y));
       middleEyesTranslatedPosition.x =
-          (int) middleEyesTranslatedPosition.x - screenUtils.dpToPx(25);
+          (int) middleEyesTranslatedPosition.x;
       middleEyesTranslatedPosition.y =
-          (int) middleEyesTranslatedPosition.y - screenUtils.dpToPx(50);
+          (int) middleEyesTranslatedPosition.y;
 
       updatePositionOfSticker(middleEyesTranslatedPosition, statusEnum);
 
@@ -251,7 +256,8 @@ public abstract class LiveStreamView extends LinearLayout {
 
   public void updatePositionOfSticker(PointF pointF, CoolCamsModel.CoolCamsStatusEnum status) {
     if (pointF == null || status == null) {
-      layoutCoolCams.setVisibility(View.GONE);
+      previousStatus = null;
+      layoutCoolCams.setVisibility(View.INVISIBLE);
     } else {
       layoutCoolCams.setVisibility(View.VISIBLE);
 
@@ -274,8 +280,8 @@ public abstract class LiveStreamView extends LinearLayout {
                 animation.cancel();
                 imgCoolCams.setImageResource(res);
                 scaleView(imgCoolCams, true, null);
-                imgCoolCamsWon.setVisibility(View.GONE);
-                imgCoolCamsWonBg.setVisibility(View.GONE);
+                imgCoolCamsWon.setVisibility(View.INVISIBLE);
+                imgCoolCamsWonBg.setVisibility(View.INVISIBLE);
               }
             });
 
@@ -289,14 +295,15 @@ public abstract class LiveStreamView extends LinearLayout {
               }
             });
           }
+
+          if (rotateAnimation != null) rotateAnimation.cancel();
+          imgCoolCamsWonBg.clearAnimation();
+          imgCoolCams.setVisibility(View.VISIBLE);
         } else {
           imgCoolCams.setImageResource(res);
         }
 
-        imgCoolCams.setVisibility(View.VISIBLE);
-
-        imgCoolCamsWonBg.clearAnimation();
-      } else {
+      } else if (status.equals(CoolCamsModel.CoolCamsStatusEnum.WON)) {
         if (previousStatus == null || !previousStatus.equals(status)) {
           scaleView(imgCoolCams, false, null);
           imgCoolCamsWonBg.setScaleX(0);
@@ -307,18 +314,28 @@ public abstract class LiveStreamView extends LinearLayout {
           imgCoolCamsWonBg.setVisibility(View.VISIBLE);
           scaleView(imgCoolCamsWon, true, null);
           scaleView(imgCoolCamsWonBg, true, null);
-        } else {
-          imgCoolCamsWon.setVisibility(View.VISIBLE);
-          imgCoolCamsWonBg.setVisibility(View.VISIBLE);
-          imgCoolCams.setVisibility(View.GONE);
-        }
 
-        RotateAnimation rotate = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f,
-            Animation.RELATIVE_TO_SELF, 0.5f);
-        rotate.setDuration(10000);
-        rotate.setRepeatCount(Animation.INFINITE);
-        rotate.setFillAfter(true);
-        imgCoolCamsWonBg.startAnimation(rotate);
+          imgCoolCamsWonBg.getViewTreeObserver()
+              .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override public void onGlobalLayout() {
+                  imgCoolCamsWonBg.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                  imgCoolCamsWonBg.setPivotX(imgCoolCamsWonBg.getMeasuredWidth() >> 1);
+                  imgCoolCamsWonBg.setPivotY(imgCoolCamsWonBg.getMeasuredHeight() >> 1);
+
+                  if (rotateAnimation != null) rotateAnimation.cancel();
+
+                  rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f,
+                      Animation.RELATIVE_TO_SELF, 0.5f);
+                  rotateAnimation.setDuration(2500);
+                  rotateAnimation.setRepeatCount(Animation.INFINITE);
+                  rotateAnimation.setInterpolator(new LinearInterpolator());
+                  rotateAnimation.setRepeatMode(Animation.RESTART);
+                  rotateAnimation.setFillAfter(true);
+                  imgCoolCamsWonBg.startAnimation(rotateAnimation);
+                  imgCoolCamsWonBg.setVisibility(View.GONE);
+                }
+              });
+        }
       }
 
       AnimationUtils.animateLeftMargin(layoutCoolCams,

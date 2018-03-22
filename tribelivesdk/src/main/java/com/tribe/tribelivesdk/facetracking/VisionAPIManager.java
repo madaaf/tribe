@@ -10,6 +10,7 @@ import com.google.android.gms.vision.face.FaceDetector;
 import com.google.android.gms.vision.face.Landmark;
 import com.google.android.gms.vision.face.LargestFaceFocusingProcessor;
 import com.tribe.tribelivesdk.back.FrameExecutor;
+import com.tribe.tribelivesdk.game.GameManager;
 import com.tribe.tribelivesdk.webrtc.Frame;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ public class VisionAPIManager {
 
   // VARIABLES
   private Context context;
+  private GameManager gameManager;
   private FrameExecutor frameExecutor;
   private boolean firstFrame = true, isReleased = false;
   private long t0, timeToDetect;
@@ -55,6 +57,7 @@ public class VisionAPIManager {
   private Map<Integer, PointF> previousProportions = new HashMap<>();
   private boolean rightEyeOpen = false, leftEyeOpen = false, smiling = false;
   private boolean previousLeftOpen = true, previousRightOpen = true, previousSmiling = true;
+  private float eulerY;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -64,6 +67,7 @@ public class VisionAPIManager {
   public VisionAPIManager(Context context) {
     this.context = context;
     this.frameExecutor = new FrameExecutor();
+    this.gameManager = new GameManager(context);
 
     initFaceTracker(true);
   }
@@ -80,7 +84,10 @@ public class VisionAPIManager {
 
     faceDetector = new FaceDetector.Builder(context).setTrackingEnabled(true)
         .setClassificationType(FaceDetector.ALL_CLASSIFICATIONS)
-        .setMode(FaceDetector.FAST_MODE)
+        //.setMode(gameManager.getCurrentGame() != null &&
+        //    gameManager.getCurrentGame().getId().equals(Game.GAME_COOL_CAMS)
+        //    ? FaceDetector.ACCURATE_MODE : FaceDetector.FAST_MODE)
+        .setMode(FaceDetector.ACCURATE_MODE)
         .setProminentFaceOnly(isFrontFacing)
         .setMinFaceSize(isFrontFacing ? 0.35f : 0.15f)
         .build();
@@ -123,20 +130,20 @@ public class VisionAPIManager {
     }
 
     @Override public void onUpdate(FaceDetector.Detections<Face> detectionResults, Face face) {
-      Timber.d("onUpdate : " + face);
+      //Timber.d("onUpdate : " + face);
       VisionAPIManager.this.face = face;
       computeFace(face);
     }
 
     @Override public void onMissing(FaceDetector.Detections<Face> detectionResults) {
-      Timber.d("onMissing : " + detectionResults);
+      //Timber.d("onMissing : " + detectionResults);
       VisionAPIManager.this.face = null;
       VisionAPIManager.this.rightEye = VisionAPIManager.this.leftEye = null;
       onComputeFaceDone.onNext(lastFrame);
     }
 
     @Override public void onDone() {
-      Timber.d("onDone");
+      //Timber.d("onDone");
       newFaceWidth = previousFaceWidth = 0;
     }
   }
@@ -176,6 +183,8 @@ public class VisionAPIManager {
         smiling = (smilingScore > SMILE_THRESHOLD);
         previousSmiling = smiling;
       }
+
+      eulerY = face.getEulerY();
 
       onComputeFaceDone.onNext(lastFrame);
     }
@@ -285,6 +294,10 @@ public class VisionAPIManager {
 
   public boolean isRightEyeOpen() {
     return rightEyeOpen;
+  }
+
+  public float getEulerY() {
+    return eulerY;
   }
 
   public PointF findXYMiddleEye() {

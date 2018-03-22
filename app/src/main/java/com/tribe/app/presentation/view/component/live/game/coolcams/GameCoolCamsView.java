@@ -69,7 +69,7 @@ public class GameCoolCamsView extends GameViewWithRanking {
 
   private static final int DURATION = 500;
   private static final float OVERSHOOT = 0.45f;
-  private static final int NB_STEPS = 4;
+  private static final int NB_STEPS = 12;
 
   private static final String ACTION_POSITION = "position";
   private static final String ACTION_NEW_GAME = "newGame";
@@ -236,12 +236,14 @@ public class GameCoolCamsView extends GameViewWithRanking {
               liveViewsMap.get(tribeSession.getUserId())
                   .updatePositionRatioOfSticker(message.getDouble(X_KEY), message.getDouble(Y_KEY),
                       CoolCamsModel.CoolCamsStatusEnum.with(message.getString(STATUS_CODE_KEY),
-                          message.getString(STEP_ID_KEY)));
+                          message.has(STEP_ID_KEY) ? message.getString(STEP_ID_KEY) : ""));
             } else {
               liveViewsMap.get(tribeSession.getUserId()).updatePositionOfSticker(null, null);
             }
           } else if (actionKey.equals(ACTION_NEW_GAME)) {
-            long timestamp = message.getLong(TIMESTAMP_KEY);
+            long timestamp = message.getLong(TIMESTAMP_KEY) * 1000;
+            Date date = new Date();
+            date.setTime(timestamp);
             JSONArray array = message.getJSONArray(STEPS_IDS_KEY);
             List<CoolCamsModel.CoolCamsStepsEnum> stepsEnums = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
@@ -311,6 +313,8 @@ public class GameCoolCamsView extends GameViewWithRanking {
     visionSubscription = null;
     progressBarRound.setProgress(0);
     progressBarTotal.setProgress(0);
+
+    for (LiveStreamView lvs : liveViewsMap.values()) lvs.updatePositionOfSticker(null, null);
 
     if (winnersIds != null && winnersIds.length() > 0) {
       List<TribeGuest> winners = new ArrayList<>();
@@ -389,7 +393,7 @@ public class GameCoolCamsView extends GameViewWithRanking {
             if (trg.canPlayGames(game.getId())) playingIds.add(trg.getId());
 
             if (currentMasterId.equals(currentUser.getId())) {
-              sendTo(trg.getId(), message);
+              sendTo(trg.getId(), getNewGamePayload(steps, timestamp, stepDuration, stepResultDuration));
             }
           }
         }));
@@ -523,6 +527,10 @@ public class GameCoolCamsView extends GameViewWithRanking {
             featuresDetected.add(CoolCamsModel.CoolCamsFeatureEnum.HAS_SMILE);
           }
 
+          if (Math.abs(visionAPIManager.getEulerY()) >= 15) {
+            featuresDetected.add(CoolCamsModel.CoolCamsFeatureEnum.HAS_ANGLE);
+          }
+
           if (currentStatus.equals(CoolCamsModel.CoolCamsStatusEnum.STEP) &&
               currentStatus.getStep() != null) {
             if ((new Date().getTime() - statusSince.getTime()) / 1000 > 1) {
@@ -530,7 +538,7 @@ public class GameCoolCamsView extends GameViewWithRanking {
               Timber.d("Features done : " + featuresDetected);
 
               boolean equals = currentStatus.getStep().getFeatures().equals(featuresDetected);
-              Timber.d("Equals : " + equals);
+              Timber.d("Are features completed : " + equals);
               if (equals) {
                 statusSince = new Date();
                 onStatusChange.onNext(CoolCamsModel.CoolCamsStatusEnum.WON);
@@ -561,7 +569,9 @@ public class GameCoolCamsView extends GameViewWithRanking {
             if (positionRatio == null) {
               broadcast(getEmptyOriginPayload());
             } else {
-              broadcast(getOriginPayload(currentStatus, positionRatio.first, positionRatio.second));
+              broadcast(getOriginPayload(currentStatus,
+                  frame.isFrontCamera() ? 1 - positionRatio.first : positionRatio.first,
+                  positionRatio.second));
             }
           } else if (previousOrigin != null) {
             previousOrigin = null;
@@ -739,9 +749,12 @@ public class GameCoolCamsView extends GameViewWithRanking {
     game.setCurrentMaster(peerMap.get(currentMasterId));
 
     if (currentMasterId.equals(currentUser.getId())) {
-      subscriptions.add(Observable.timer(1, TimeUnit.SECONDS)
-          .observeOn(AndroidSchedulers.mainThread())
-          .subscribe(aLong -> broadcastNewGame()));
+      layoutConstraint.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override public void onGlobalLayout() {
+          layoutConstraint.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+          broadcastNewGame();
+        }
+      });
     }
   }
 
