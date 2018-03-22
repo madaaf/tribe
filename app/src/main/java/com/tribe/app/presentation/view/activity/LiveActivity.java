@@ -441,6 +441,10 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
     boolean displayPermissionNotif = notificationContainerView.
         showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);
 
+    notificationContainerView.onDismissPopup().subscribe(isDismiss -> {
+      finish();
+    });
+
     if (displayPermissionNotif) {
       notificationContainerView.onAcceptedPermission().subscribe(permissionGranted -> {
         if (permissionGranted) {

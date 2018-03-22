@@ -222,6 +222,11 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     gamePresenter.onViewDetached();
   }
 
+  @Override protected void onResume() {
+    super.onResume();
+    playBtn.setAlpha(1f);
+  }
+
   @Override protected void onDestroy() {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     super.onDestroy();
