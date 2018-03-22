@@ -20,7 +20,6 @@ import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Score;
-import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.presenter.NewChatPresenter;
@@ -145,8 +144,11 @@ public class GameCoronaView extends GameView {
         Timber.d("Notify FB friends");
         subscriptionsRoom.add(rxFacebook.notifyFriends(context, array).subscribe(aBoolean -> {
           Timber.d("Notify FB answer : " + aBoolean);
-          if (aBoolean) successRevive();
-          else errorRevive();
+          if (aBoolean) {
+            successRevive();
+          } else {
+            errorRevive();
+          }
         }));
       }
 
@@ -308,6 +310,8 @@ public class GameCoronaView extends GameView {
         }
       } else {
         mainHandler.post(() -> {
+          if (game == null) return;
+
           if (event.equals("gameLoaded")) {
             startGame();
           } else if (event.equals("saveScore")) {
@@ -320,20 +324,20 @@ public class GameCoronaView extends GameView {
             //      .subscribe(aLong -> sendSuccessRevive()));
             //} else {
             Timber.d("Revive");
-              if (!FacebookUtils.isLoggedIn()) {
-                Timber.d("Ask FB login");
-                subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-                  if (loginResult != null) {
-                    Timber.d("Load contacts");
-                    newChatPresenter.loadFBContactsInvite(null);
-                  } else {
-                    errorRevive();
-                  }
-                }));
-              } else {
-                Timber.d("Load contacts");
-                newChatPresenter.loadFBContactsInvite(null);
-              }
+            if (!FacebookUtils.isLoggedIn()) {
+              Timber.d("Ask FB login");
+              subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
+                if (loginResult != null) {
+                  Timber.d("Load contacts");
+                  newChatPresenter.loadFBContactsInvite(null);
+                } else {
+                  errorRevive();
+                }
+              }));
+            } else {
+              Timber.d("Load contacts");
+              newChatPresenter.loadFBContactsInvite(null);
+            }
             //}
           } else if (event.equals("scoresUpdated")) {
             mapScores.clear();
@@ -358,6 +362,7 @@ public class GameCoronaView extends GameView {
             for (String key : scores.keySet()) {
               contextScores.put(key, scores.get(key).intValue());
             }
+
             game.getContextMap().put(SCORES_KEY, contextScores);
 
             JSONObject jsonObject = getCompleteContextPayload(SCORES_KEY, game.getContextMap());

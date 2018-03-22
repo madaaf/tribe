@@ -46,8 +46,7 @@ public class TextureViewRenderer extends TextureView
   // Callback for reporting renderer events. Read-only after initilization so no lock required.
   private RendererCommon.RendererEvents rendererEvents;
   private boolean isFirstFrameRendered;
-  private int rotatedFrameWidth;
-  private int rotatedFrameHeight;
+  private int rotatedFrameWidth, rotatedFrameHeight, frameWidth, frameHeight;
   private int frameRotation;
   // Accessed only on the main thread.
   private boolean enableFixedSize;
@@ -102,6 +101,8 @@ public class TextureViewRenderer extends TextureView
     synchronized (layoutLock) {
       rotatedFrameWidth = 0;
       rotatedFrameHeight = 0;
+      frameHeight = 0;
+      frameWidth = 0;
       frameRotation = 0;
     }
     eglRenderer.init(sharedContext, configAttributes, drawer);
@@ -315,6 +316,8 @@ public class TextureViewRenderer extends TextureView
         }
         rotatedFrameWidth = frame.rotatedWidth();
         rotatedFrameHeight = frame.rotatedHeight();
+        frameWidth = frame.width;
+        frameHeight = frame.height;
         frameRotation = frame.rotationDegree;
         post(() -> {
           updateSurfaceSize();
@@ -387,5 +390,29 @@ public class TextureViewRenderer extends TextureView
     lastFreezeCheck = System.currentTimeMillis();
 
     return isFreeze;
+  }
+
+  public int getRotatedFrameWidth() {
+    return rotatedFrameWidth;
+  }
+
+  public int getRotatedFrameHeight() {
+    return rotatedFrameHeight;
+  }
+
+  public int getSurfaceWidth() {
+    return surfaceWidth;
+  }
+
+  public int getSurfaceHeight() {
+    return surfaceHeight;
+  }
+
+  public int getFrameHeight() {
+    return frameHeight;
+  }
+
+  public int getFrameWidth() {
+    return frameWidth;
   }
 }

@@ -8,6 +8,45 @@
       android:layout_gravity="center"
       >
 
+    <FrameLayout
+        android:id="@+id/layoutCoolCams"
+        android:layout_width="180dp"
+        android:layout_height="100dp"
+        android:visibility="invisible"
+        >
+
+      <ImageView
+          android:id="@+id/imgCoolCamsWonBg"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_coolcams_won_bg"
+          android:visibility="invisible"
+          />
+
+      <ImageView
+          android:id="@+id/imgCoolCamsWon"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_marginStart="60dp"
+          android:scaleType="fitXY"
+          android:src="@drawable/picto_coolcams_won"
+          android:visibility="invisible"
+          />
+
+      <ImageView
+          android:id="@+id/imgCoolCams"
+          android:layout_width="70dp"
+          android:layout_height="70dp"
+          android:layout_gravity="center"
+          android:scaleType="fitXY"
+          android:src="@drawable/picto_coolcams_emoji_0"
+          android:visibility="invisible"
+          />
+    </FrameLayout>
+
     <com.tribe.app.presentation.view.component.live.LivePeerOverlayView
         android:id="@+id/viewPeerOverlay"
         android:layout_width="match_parent"

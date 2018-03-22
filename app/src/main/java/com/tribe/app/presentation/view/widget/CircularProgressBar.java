@@ -10,7 +10,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 
 public class CircularProgressBar extends View {
 
@@ -26,6 +26,7 @@ public class CircularProgressBar extends View {
   private boolean roundedCorners = true;
   private int progressColor = Color.BLACK;
   private ValueAnimator animator = null;
+  private int progress = 0;
 
   private final Paint paint;
 
@@ -81,8 +82,13 @@ public class CircularProgressBar extends View {
   }
 
   public void setProgress(int progress) {
+    this.progress = progress;
     sweepAngle = calcSweepAngleFromProgress(progress);
     invalidate();
+  }
+
+  public int getProgress() {
+    return progress;
   }
 
   /**
@@ -90,11 +96,13 @@ public class CircularProgressBar extends View {
    *
    * @param progress progress between 0 and 100.
    */
-  public void setProgress(int progress, int duration, int delay,
+  public void setProgress(int progress, int duration, int delay, Interpolator interpolator,
       AnimatorListenerAdapter listenerAdapter,
       ValueAnimator.AnimatorUpdateListener animatorUpdateListener) {
+    this.progress = progress;
+
     animator = ValueAnimator.ofFloat(sweepAngle, calcSweepAngleFromProgress(progress));
-    animator.setInterpolator(new DecelerateInterpolator());
+    animator.setInterpolator(interpolator);
     animator.setDuration(duration);
     animator.setStartDelay(delay);
     animator.addUpdateListener(valueAnimator -> {
@@ -133,7 +141,7 @@ public class CircularProgressBar extends View {
    * @param roundedCorners true if you want rounded corners of false otherwise.
    */
   public void useRoundedCorners(boolean roundedCorners) {
-    roundedCorners = roundedCorners;
+    this.roundedCorners = roundedCorners;
     invalidate();
   }
 }

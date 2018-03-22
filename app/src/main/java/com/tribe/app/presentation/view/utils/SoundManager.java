@@ -44,6 +44,7 @@ import rx.android.schedulers.AndroidSchedulers;
   public static final int GAME_PLAYER_LOST = 19;
   public static final int POKE_LAUGH = 20;
   public static final int POKE_JEALOUS = 21;
+  public static final int COOL_CAMS_SOUNDTRACK = 22;
 
   // VARIABLES
   private Context context;
@@ -99,6 +100,7 @@ import rx.android.schedulers.AndroidSchedulers;
     addSound(GAME_PLAYER_LOST, R.raw.game_player_lost);
     addSound(POKE_LAUGH, R.raw.poke_laugh);
     addSound(POKE_JEALOUS, R.raw.poke_jealous);
+    addSound(COOL_CAMS_SOUNDTRACK, R.raw.coolcams_soundtrack);
   }
 
   public void addSound(int index, int soundID) {
@@ -112,12 +114,13 @@ import rx.android.schedulers.AndroidSchedulers;
   public void playSound(int index, float volumeRate) {
     if (index == NO_SOUND) {
       cancelMediaPlayer();
-    } else if (index == WAITING_FRIEND
-        || index == CALL_RING
-        || index == ALIENS_ATTACK_SOUNDTRACK
-        || index == BIRD_RUSH_SOUNDTRACK
-        || index == TRIVIA_SOUNDTRACK
-        || index == TRIVIA_SOUNDTRACK_ANSWER) {
+    } else if (index == WAITING_FRIEND ||
+        index == CALL_RING ||
+        index == ALIENS_ATTACK_SOUNDTRACK ||
+        index == BIRD_RUSH_SOUNDTRACK ||
+        index == TRIVIA_SOUNDTRACK ||
+        index == TRIVIA_SOUNDTRACK_ANSWER ||
+        index == COOL_CAMS_SOUNDTRACK) {
       if (mediaPlayer != null) cancelMediaPlayer();
 
       mediaPlayer = MediaPlayer.create(context, soundsRawIds.get(index));
