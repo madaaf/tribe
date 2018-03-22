@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.user.datasource;
 
 import android.content.Context;
 import android.util.Pair;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;

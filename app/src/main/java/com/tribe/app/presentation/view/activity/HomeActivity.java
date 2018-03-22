@@ -661,7 +661,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
               if (!addedUsers.contains(user.getId())) finalList.add(user);
             }
           }
-
+          
           if (!FacebookUtils.isLoggedIn()) {
             finalList.add(new Contact(Contact.FACEBOOK_ID));
           }
@@ -1054,10 +1054,10 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       tagManager.setProperty(bundle);
 
       Bundle bundleBis = new Bundle();
-      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, hasPermission);
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
       if (hasPermission) {
-        addressBook.set(true);
+        addressBook.set(hasPermission);
         homeGridPresenter.lookupContacts();
         searchView.refactorActions();
       } else {

@@ -5,6 +5,7 @@ package com.tribe.app.domain.interactor.user;
  */
 
 import android.util.Pair;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;

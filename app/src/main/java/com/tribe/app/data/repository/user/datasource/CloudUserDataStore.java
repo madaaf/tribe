@@ -6,6 +6,7 @@ import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
 import com.f2prateek.rx.preferences.Preference;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.R;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.LiveCache;
@@ -38,6 +39,7 @@ import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.utils.FileUtils;
+import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.app.presentation.utils.preferences.LastSync;
@@ -362,11 +364,11 @@ public class CloudUserDataStore implements UserDataStore {
   }
 
   @Override public Observable<List<ContactInterface>> contacts() {
-    return Observable.zip(rxContacts.getContacts(), rxFacebook.requestFriends(),
-        rxFacebook.requestInvitableFriends(), this.tribeApi.getUserInfos(
-            context.getString(R.string.user_infos_sync,
-                context.getString(R.string.userfragment_infos),
-                context.getString(R.string.shortcutFragment_infos))).doOnNext(saveToCacheUser),
+    return Observable.zip(rxContacts.getContacts(),
+        rxFacebook.requestFriends(), rxFacebook.requestInvitableFriends(),
+        this.tribeApi.getUserInfos(context.getString(R.string.user_infos_sync,
+            context.getString(R.string.userfragment_infos),
+            context.getString(R.string.shortcutFragment_infos))).doOnNext(saveToCacheUser),
         (contactABRealmList, contactFBRealmList, contactFBInvitableRealmList, userRealm) -> {
           List<ContactInterface> contactList = new ArrayList<>();
 

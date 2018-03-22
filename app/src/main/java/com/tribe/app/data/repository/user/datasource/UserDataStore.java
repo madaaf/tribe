@@ -16,7 +16,6 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.User;
-import java.util.ArrayList;
 import java.util.List;
 import rx.Observable;
 

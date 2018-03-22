@@ -3,6 +3,7 @@ package com.tribe.app.presentation.mvp.presenter;
 import android.content.Context;
 import android.util.Pair;
 import com.f2prateek.rx.preferences.Preference;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;

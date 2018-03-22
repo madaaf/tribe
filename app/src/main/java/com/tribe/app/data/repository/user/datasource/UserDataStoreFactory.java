@@ -11,7 +11,6 @@ import com.tribe.app.data.network.LookupApi;
 import com.tribe.app.data.network.TribeApi;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.Installation;
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.data.realm.mapper.UserRealmDataMapper;
 import com.tribe.app.data.repository.user.contact.RxContacts;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
@@ -49,9 +48,9 @@ import javax.inject.Singleton;
   @Inject public UserDataStoreFactory(Context context, UserCache userCache, LiveCache liveCache,
       ContactCache contactCache, RxContacts rxContacts, RxFacebook rxFacebook, TribeApi tribeApi,
       LoginApi loginApi, LookupApi lookupApi, GrowthApi growthApi, AccessToken accessToken,
-      Installation installation,
-      @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate, @LastSync Preference<Long> lastSync,
-      PhoneUtils phoneUtils, @LookupResult Preference<String> lookupResult, UserRealmDataMapper userRealmDataMapper) {
+      Installation installation, @Named("utcSimpleDate") SimpleDateFormat utcSimpleDate,
+      @LastSync Preference<Long> lastSync, PhoneUtils phoneUtils,
+      @LookupResult Preference<String> lookupResult, UserRealmDataMapper userRealmDataMapper) {
 
     if (context == null || userCache == null) {
       throw new IllegalArgumentException("Constructor parameters cannot be null!");

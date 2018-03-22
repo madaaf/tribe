@@ -2,7 +2,7 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import android.content.Context;
 import com.birbit.android.jobqueue.JobManager;
-import com.f2prateek.rx.preferences.Preference;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.ShortcutRealm;
@@ -26,6 +26,7 @@ import com.tribe.app.domain.interactor.user.GetDiskFBContactInviteList;
 import com.tribe.app.domain.interactor.user.GetDiskUserInfos;
 import com.tribe.app.domain.interactor.user.SendInvitations;
 import com.tribe.app.domain.interactor.user.SendToken;
+import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.presentation.exception.ErrorMessageFactory;
 import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
@@ -33,9 +34,9 @@ import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
-import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -61,7 +62,7 @@ public class HomePresenter implements Presenter {
   private UseCase cloudUserInfos;
   private UpdateUserFacebook updateUserFacebook;
   private RxFacebook rxFacebook;
-  private UseCase synchroContactList;
+  private SynchroContactList synchroContactList;
   private GetDiskContactOnAppList getDiskContactOnAppList;
   private GetDiskContactInviteList getDiskContactInviteList;
   private GetDiskFBContactInviteList getDiskFBContactInviteList;
@@ -88,13 +89,12 @@ public class HomePresenter implements Presenter {
       @Named("diskUserInfos") GetDiskUserInfos diskUserInfos,
       @Named("sendToken") SendToken sendToken, @Named("cloudUserInfos") UseCase cloudUserInfos,
       UpdateUserFacebook updateUserFacebook, RxFacebook rxFacebook,
-      @Named("synchroContactList") UseCase synchroContactList,
-      GetDiskContactOnAppList getDiskContactOnAppList,
+      SynchroContactList synchroContactList, GetDiskContactOnAppList getDiskContactOnAppList,
       GetDiskContactInviteList getDiskContactInviteList, DeclineInvite declineInvite,
       SendInvitations sendInvitations, CreateRoom createRoom,
       GetDiskFBContactInviteList getDiskFBContactInviteList, GetGamesData getGamesData,
       GetCloudGames getGames, CreateShortcut createShortcut) {
-     
+
     this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
     this.diskUserInfosUsecase = diskUserInfos;
@@ -283,6 +283,7 @@ public class HomePresenter implements Presenter {
 
     @Override public void onError(Throwable e) {
       e.printStackTrace();
+      Timber.e("on error lookup contact " + e.getMessage());
       homeGridView.onSyncError();
     }
 
