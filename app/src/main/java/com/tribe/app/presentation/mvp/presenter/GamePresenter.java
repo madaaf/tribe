@@ -1,11 +1,13 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import com.f2prateek.rx.preferences.Preference;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
+import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.game.GetBattleMusicData;
 import com.tribe.app.domain.interactor.game.GetCloudFriendsScores;
 import com.tribe.app.domain.interactor.game.GetCloudGameLeaderboard;
@@ -14,18 +16,22 @@ import com.tribe.app.domain.interactor.game.GetCloudUserLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskFriendsScores;
 import com.tribe.app.domain.interactor.game.GetDiskGameLeaderboard;
 import com.tribe.app.domain.interactor.game.GetDiskUserLeaderboard;
-import com.tribe.app.domain.interactor.game.GetGameFile;
 import com.tribe.app.domain.interactor.game.GetGameData;
+import com.tribe.app.domain.interactor.game.GetGameFile;
 import com.tribe.app.domain.interactor.game.GetGamesData;
 import com.tribe.app.domain.interactor.game.GetTriviaData;
 import com.tribe.app.domain.interactor.game.GetUserBestScore;
+import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.presentation.mvp.view.GameMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
+import com.tribe.app.presentation.utils.facebook.FacebookUtils;
+import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
+import javax.inject.Named;
 import timber.log.Timber;
 
 public class GamePresenter implements Presenter {
@@ -48,10 +54,13 @@ public class GamePresenter implements Presenter {
   private GetDiskFriendsScores diskFriendsScores;
   private GetTriviaData getTriviaData;
   private GetBattleMusicData getBattleMusicData;
+  private RxFacebook rxFacebook;
   private GetGamesData getGamesData;
   private GetGameFile getGameFile;
   private GetGameData getGameData;
   private GetUserBestScore getUserBestScore;
+  private SynchroContactList synchroContactList;
+
 
   // SUBSCRIBERS
   private GameLeaderboardSubscriber cloudGameLeaderboardSubscriber;
@@ -59,6 +68,7 @@ public class GamePresenter implements Presenter {
   private UserLeaderboardSubscriber cloudUserLeaderboardSubscriber;
   private UserLeaderboardSubscriber diskUserLeaderboardSubscriber;
   private FriendsScoreSubscriber diskFriendsScoreSubscriber;
+  private LookupContactsSubscriber lookupContactsSubscriber;
   private FriendsScoreSubscriber cloudFriendsScoreSubscriber;
 
   @Inject public GamePresenter(GetCloudGameLeaderboard cloudGameLeaderboard,
@@ -66,7 +76,8 @@ public class GamePresenter implements Presenter {
       GetDiskUserLeaderboard diskUserLeaderboard, GetDiskFriendsScores diskFriendsScores,
       GetCloudFriendsScores cloudFriendsScores, GetTriviaData getTriviaData,
       GetBattleMusicData getBattleMusicData, GetCloudGames getGames, GetGamesData getGamesData,
-      GetGameFile getGameFile, GetGameData getGameData, GetUserBestScore getUserBestScore) {
+      GetGameFile getGameFile, GetGameData getGameData, GetUserBestScore getUserBestScore,
+      RxFacebook rxFacebook,  SynchroContactList synchroContactList) {
     this.cloudGameLeaderboard = cloudGameLeaderboard;
     this.diskGameLeaderboard = diskGameLeaderboard;
     this.cloudUserLeaderboard = cloudUserLeaderboard;
@@ -80,6 +91,8 @@ public class GamePresenter implements Presenter {
     this.getGameFile = getGameFile;
     this.getGameData = getGameData;
     this.getUserBestScore = getUserBestScore;
+    this.rxFacebook = rxFacebook;
+    this.synchroContactList = synchroContactList;
   }
 
   @Override public void onViewDetached() {
@@ -102,16 +115,50 @@ public class GamePresenter implements Presenter {
     gameManager = GameManager.getInstance(gameMVPView.context());
   }
 
-  public void loadGameLeaderboard(String gameId) {
+  public void loadGameLeaderboard(String gameId, List<Contact> usersId) {
     if (cloudGameLeaderboardSubscriber != null) {
       cloudGameLeaderboardSubscriber.unsubscribe();
     }
 
     cloudGameLeaderboardSubscriber = new GameLeaderboardSubscriber(true);
-    cloudGameLeaderboard.setup(gameId);
+    cloudGameLeaderboard.setup(gameId, usersId);
     cloudGameLeaderboard.execute(cloudGameLeaderboardSubscriber);
   }
 
+  public void lookupContacts() {
+    if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
+    lookupContactsSubscriber = new LookupContactsSubscriber();
+    synchroContactList.execute(lookupContactsSubscriber);
+  }
+
+  private class LookupContactsSubscriber extends DefaultSubscriber<List<Contact>> {
+
+    @Override public void onCompleted() {
+    }
+
+    @Override public void onError(Throwable e) {
+      e.printStackTrace();
+      gameMVPView.onLookupContactsError(e.getMessage());
+    }
+
+    @Override public void onNext(List<Contact> contactList) {
+      gameMVPView.onLookupContacts(contactList);
+    }
+  }
+
+  public void loginFacebook() {
+    if (!FacebookUtils.isLoggedIn()) {
+      rxFacebook.requestLogin().subscribe(loginResult -> {
+        if (FacebookUtils.isLoggedIn()) {
+          gameMVPView.successFacebookLogin();
+        } else {
+          gameMVPView.errorFacebookLogin();
+        }
+      });
+    } else {
+      gameMVPView.successFacebookLogin();
+    }
+  }
   private final class GameLeaderboardSubscriber extends DefaultSubscriber<List<Score>> {
 
     private boolean cloud;

@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.view;
 
 import android.content.Context;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.GameFile;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
@@ -33,4 +34,12 @@ public interface GameMVPView extends MVPView {
   void onGameData(List<String> data);
 
   void onUserBestScore(Score score);
+
+  void onLookupContacts(List<Contact> contactList);
+
+  void successFacebookLogin();
+
+  void errorFacebookLogin();
+
+  void onLookupContactsError(String message);
 }

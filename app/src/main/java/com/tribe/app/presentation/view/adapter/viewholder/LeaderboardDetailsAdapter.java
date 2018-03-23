@@ -3,11 +3,11 @@ package com.tribe.app.presentation.view.adapter.viewholder;
 import android.content.Context;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.presentation.view.adapter.RxAdapterDelegatesManager;
 import com.tribe.app.presentation.view.adapter.delegate.common.LoadMoreAdapterDelegate;
+import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardAddressBookAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsEmptyAdapterDelegate;
 import com.tribe.app.presentation.view.adapter.helper.EndlessRecyclerViewScrollListener;
@@ -24,12 +24,16 @@ import rx.subscriptions.CompositeSubscription;
  * Created by tiago on 11/20/2017.
  */
 public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
+  public static String LEADERBOARD_ADDRESS = "LEADERBOARD_";
+  public static String LEADERBOARD_ITEM_FACEBOOK = LEADERBOARD_ADDRESS + "ITEM_FACEBOOK_ITEM";
+  public static String LEADERBOARD_ITEM_ADDRESS_BOOK = LEADERBOARD_ADDRESS + "ITEM_ADDRESS_BOOK";
 
   // DELEGATES
   private RxAdapterDelegatesManager delegatesManager;
   private LeaderboardDetailsAdapterDelegate leaderboardDetailsAdapterDelegate;
   private LeaderboardDetailsEmptyAdapterDelegate leaderboardDetailsEmptyAdapterDelegate;
   private LoadMoreAdapterDelegate loadMoreAdapterDelegate;
+  private LeaderboardAddressBookAdapterDelegate leaderboardAddressBookAdapterDelegate;
 
   // VARIABLES
   private List<Object> items;
@@ -55,6 +59,9 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
     loadMoreAdapterDelegate = new LoadMoreAdapterDelegate(context);
     delegatesManager.addDelegate(loadMoreAdapterDelegate);
 
+    leaderboardAddressBookAdapterDelegate = new LeaderboardAddressBookAdapterDelegate(context);
+    delegatesManager.addDelegate(leaderboardAddressBookAdapterDelegate);
+
     if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
       final LinearLayoutManager linearLayoutManager =
           (LinearLayoutManager) recyclerView.getLayoutManager();
@@ -69,6 +76,11 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
       recyclerView.addOnScrollListener(scrollListener);
     }
     setHasStableIds(true);
+
+    subscriptions.add(leaderboardAddressBookAdapterDelegate.onClick().subscribe(score -> {
+      items.remove(score);
+      notifyItemRemoved(score.getPosition());
+    }));
   }
 
   @Override public long getItemId(int position) {
@@ -157,17 +169,26 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
    * OBSERVABLES
    */
 
-
-
   public Observable<Score> onClickPoke() {
     return leaderboardDetailsAdapterDelegate.onClickPoke();
   }
 
-  public Observable<Score> onClick(){
-    return leaderboardDetailsAdapterDelegate.onClick();
+  public Observable<Score> onClick() {
+    return Observable.merge(leaderboardDetailsAdapterDelegate.onClick(),
+        leaderboardAddressBookAdapterDelegate.onClick());
   }
 
   public Observable<Boolean> onLoadMore() {
     return onLoadMore;
+  }
+
+  public void removeItem(String id) {
+    for (Object item : items) {
+      if (item instanceof Score) {
+        if (((Score) item).getId().equals(id)) {
+          items.remove(item);
+        }
+      }
+    }
   }
 }

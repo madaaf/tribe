@@ -10,12 +10,14 @@ import io.realm.Case;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import io.realm.exceptions.RealmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 /**
  * Created by tiago on 06/05/2016.
@@ -117,6 +119,40 @@ public class ContactCacheImpl implements ContactCache {
         .asObservable()
         .filter(contactABRealms -> contactABRealms.isLoaded())
         .map(contactABRealms -> realm.copyFromRealm(contactABRealms));
+  }
+
+  @Override public List<ContactABRealm> getContactsAddressBook() {
+    Realm realmNew = Realm.getDefaultInstance();
+    List<ContactABRealm> returnResults = new ArrayList<>();
+    try {
+      RealmResults<ContactABRealm> contactRealmListResuls = realmNew.where(ContactABRealm.class)
+          .findAll();
+      if (contactRealmListResuls != null) {
+        returnResults.addAll(realmNew.copyFromRealm(contactRealmListResuls));
+      }
+    } catch (RealmException ex) {
+      Timber.e(ex);
+    } finally {
+      realmNew.close();
+    }
+    return returnResults;
+  }
+
+  @Override public List<ContactFBRealm> getContactsFacebook() {
+    Realm realmNew = Realm.getDefaultInstance();
+    List<ContactFBRealm> returnResults = new ArrayList<>();
+    try {
+      RealmResults<ContactFBRealm> contactRealmListResuls = realmNew.where(ContactFBRealm.class)
+          .findAll();
+      if (contactRealmListResuls != null) {
+        returnResults.addAll(realmNew.copyFromRealm(contactRealmListResuls));
+      }
+    } catch (RealmException ex) {
+      Timber.e(ex);
+    } finally {
+      realmNew.close();
+    }
+    return returnResults;
   }
 
   @Override public Observable<List<ContactFBRealm>> contactsFB() {

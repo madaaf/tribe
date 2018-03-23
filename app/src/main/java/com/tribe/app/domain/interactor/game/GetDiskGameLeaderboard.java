@@ -25,6 +25,6 @@ public class GetDiskGameLeaderboard extends UseCaseDisk {
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.gameRepository.getGameLeaderBoard(gameId);
+    return this.gameRepository.getGameLeaderBoard(gameId, null);
   }
 }
