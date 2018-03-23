@@ -52,7 +52,7 @@ public class ContactToInviteAdapterDelegate extends RxAdapterDelegate<List<Objec
   @NonNull @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent) {
     ContactToInviteViewHolder vh = new ContactToInviteViewHolder(
         layoutInflater.inflate(R.layout.item_contact_to_invite, parent, false));
-    vh.btnInvite.setOnClickListener(view -> onInvite.onNext(vh.itemView));
+    vh.itemView.setOnClickListener(view -> onInvite.onNext(vh.itemView));
     return vh;
   }
 
