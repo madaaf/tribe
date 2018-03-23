@@ -19,6 +19,7 @@ import com.tribe.app.BuildConfig;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
@@ -54,8 +55,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
 import timber.log.Timber;
+
+import static com.tribe.app.presentation.utils.facebook.RxFacebook.MAX_FRIEND_INVITE;
+import static com.tribe.app.presentation.utils.facebook.RxFacebook.MAX_SIZE_PAGINATION;
 
 /**
  * Created by tiago on 11/13/2017.
@@ -134,13 +137,8 @@ public class GameCoronaView extends GameView {
     };
 
     newChatMVPViewAdapter = new NewChatMVPViewAdapter() {
-      @Override public void onLoadFBContactsInvite(List<Contact> contactList) {
-        Timber.d("onLoadFBContactsInvite");
-        ArrayList<String> array = new ArrayList<>();
-        for (Contact c : contactList) {
-          array.add(c.getId());
-        }
 
+      private void notifyFriend(Context context, ArrayList<String> array) {
         Timber.d("Notify FB friends");
         subscriptionsRoom.add(rxFacebook.notifyFriends(context, array).subscribe(aBoolean -> {
           Timber.d("Notify FB answer : " + aBoolean);
@@ -150,6 +148,34 @@ public class GameCoronaView extends GameView {
             errorRevive();
           }
         }));
+      }
+
+      @Override public void onLoadFBContactsFbInvite(List<ContactFB> contactList) {
+        super.onLoadFBContactsFbInvite(contactList);
+        Timber.d("onLoadFBContactsInvite");
+        ArrayList<String> array = new ArrayList<>();
+        for (Contact c : contactList) {
+          array.add(c.getId());
+        }
+
+        //int MAX_SIZE_PAGINATION = 25;
+        int rest = array.size() % MAX_SIZE_PAGINATION;
+        int nbrOfArray = array.size() / MAX_SIZE_PAGINATION;
+        if (rest == 0) {
+          for (int i = 0; i < nbrOfArray; i++) {
+            ArrayList<String> splitArray = splitList((i * MAX_SIZE_PAGINATION),
+                (i * MAX_SIZE_PAGINATION) + MAX_SIZE_PAGINATION, array);
+            notifyFriend(context, splitArray);
+          }
+        } else {
+          for (int i = 0; i < nbrOfArray; i++) {
+            ArrayList<String> splitArray = splitList((i * MAX_SIZE_PAGINATION),
+                (i * MAX_SIZE_PAGINATION) + MAX_SIZE_PAGINATION, array);
+            notifyFriend(context, splitArray);
+          }
+          ArrayList<String> splitArray = splitList(nbrOfArray, nbrOfArray + rest, array);
+          notifyFriend(context, splitArray);
+        }
       }
 
       @Override public void onLoadFBContactsInviteFailed() {
@@ -163,6 +189,16 @@ public class GameCoronaView extends GameView {
     coronaView.setZOrderMediaOverlay(true);
 
     //gamePresenter.getGameFile(game.getUrl());
+  }
+
+  private ArrayList<String> splitList(int startIndex, int endIndex, ArrayList<String> list) {
+    ArrayList<String> array = new ArrayList<>();
+    for (int i = 0; i < list.size(); i++) {
+      if (i >= startIndex && i < endIndex) {
+        array.add(list.get(i));
+      }
+    }
+    return array;
   }
 
   @Override protected void initView(Context context) {
@@ -258,8 +294,8 @@ public class GameCoronaView extends GameView {
         }));
 
     subscriptions.add(masterMapObs.subscribe(rxHashMapAction -> {
-      if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD) &&
-          rxHashMapAction.item.canPlayGames(game.getId())) {
+      if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD)
+          && rxHashMapAction.item.canPlayGames(game.getId())) {
         Hashtable<Object, Object> userJoinedTable = new Hashtable<>();
         userJoinedTable.put("name", "userJoined");
         userJoinedTable.put("user", rxHashMapAction.item.asCoronaUser());
@@ -329,14 +365,14 @@ public class GameCoronaView extends GameView {
               subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
                 if (loginResult != null) {
                   Timber.d("Load contacts");
-                  newChatPresenter.loadFBContactsInvite(null);
+                  newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
                 } else {
                   errorRevive();
                 }
               }));
             } else {
               Timber.d("Load contacts");
-              newChatPresenter.loadFBContactsInvite(null);
+              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
             }
             //}
           } else if (event.equals("scoresUpdated")) {

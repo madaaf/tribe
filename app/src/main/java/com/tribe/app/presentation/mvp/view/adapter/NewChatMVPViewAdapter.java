@@ -1,6 +1,7 @@
 package com.tribe.app.presentation.mvp.view.adapter;
 
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.presentation.mvp.view.NewChatMVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
@@ -47,7 +48,8 @@ public class NewChatMVPViewAdapter implements NewChatMVPView, ShortcutMVPView {
 
   }
 
-  @Override public void onLoadFBContactsInvite(List<Contact> contactList) {
+
+  @Override public void onLoadFBContactsFbInvite(List<ContactFB> contactList) {
 
   }
 

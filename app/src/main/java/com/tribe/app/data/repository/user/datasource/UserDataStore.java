@@ -7,6 +7,7 @@ import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
+import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.PinRealm;
@@ -85,6 +86,8 @@ public interface UserDataStore {
    * about the contacts from address book.
    */
   Observable<List<ContactInterface>> contacts();
+
+  Observable<List<ContactFBRealm>> requestInvitableFriends(int nbr);
 
   Observable<List<LookupObject>> contactsFbId(Context context, List<String> fbIds);
 

@@ -29,6 +29,7 @@ import butterknife.Unbinder;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.LabelType;
 import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.Shortcut;
@@ -59,6 +60,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
+
+import static com.tribe.app.presentation.utils.facebook.RxFacebook.MAX_FRIEND_INVITE;
+import static com.tribe.app.presentation.utils.facebook.RxFacebook.MAX_SIZE_PAGINATION;
 
 /**
  * Created by madaaflak on 09/02/2018.
@@ -149,11 +153,11 @@ public class NotifView extends FrameLayout {
         case NotificationModel.POPUP_FACEBOOK:
           if (!FacebookUtils.isLoggedIn()) {
             subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-              newChatPresenter.loadFBContactsInvite(notificationModel.getListener());
+              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
               hideNextNotif();
             }));
           } else {
-            newChatPresenter.loadFBContactsInvite(notificationModel.getListener());
+            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
             hideNextNotif();
           }
           break;
@@ -229,19 +233,46 @@ public class NotifView extends FrameLayout {
 
     newChatMVPViewAdapter = new NewChatMVPViewAdapter() {
       @Override public void onShortcutCreatedSuccess(Shortcut shortcut) {
-        Timber.d("onShortcutCreatedSuccess" + shortcut.getId());
+        Timber.d("onShortcutCreatedSuccess " + shortcut.getId());
       }
 
-      @Override public void onLoadFBContactsInvite(List<Contact> contactList) {
-        Timber.d("onShortcutCreatedSuccess" + contactList.size());
+      @Override public void onLoadFBContactsFbInvite(List<ContactFB> contactList) {
+        super.onLoadFBContactsFbInvite(contactList);
+        Timber.d("onLoadFBContactsFbInvite " + contactList.size());
         tagNotifyFbFriend();
         ArrayList<String> array = new ArrayList<>();
         for (Contact c : contactList) {
           array.add(c.getId());
         }
-        rxFacebook.notifyFriends(context, array);
+        int rest = array.size() % MAX_SIZE_PAGINATION;
+        int nbrOfArray = array.size() / MAX_SIZE_PAGINATION;
+        if (rest == 0) {
+          for (int i = 0; i < nbrOfArray; i++) {
+            ArrayList<String> splitArray = splitList((i * MAX_SIZE_PAGINATION),
+                (i * MAX_SIZE_PAGINATION) + MAX_SIZE_PAGINATION, array);
+            rxFacebook.notifyFriends(context, splitArray);
+          }
+        } else {
+          for (int i = 0; i < nbrOfArray; i++) {
+            ArrayList<String> splitArray = splitList((i * MAX_SIZE_PAGINATION),
+                (i * MAX_SIZE_PAGINATION) + MAX_SIZE_PAGINATION, array);
+            rxFacebook.notifyFriends(context, splitArray);
+          }
+          ArrayList<String> splitArray = splitList(nbrOfArray, nbrOfArray + rest, array);
+          rxFacebook.notifyFriends(context, splitArray);
+        }
       }
     };
+  }
+
+  private ArrayList<String> splitList(int startIndex, int endIndex, ArrayList<String> list) {
+    ArrayList<String> array = new ArrayList<>();
+    for (int i = 0; i < list.size(); i++) {
+      if (i >= startIndex && i < endIndex) {
+        array.add(list.get(i));
+      }
+    }
+    return array;
   }
 
   private void animateView() {
@@ -383,7 +414,18 @@ public class NotifView extends FrameLayout {
 
   private class TapGestureListener implements GestureDetector.OnGestureListener {
 
+    private void next() {
+      if (pager.getCurrentItem() == data.size() - 1) {
+        hideView();
+        tagCancelAction();
+        onDismiss.onNext(null);
+      } else {
+        pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
+      }
+    }
+
     @Override public boolean onDown(MotionEvent e) {
+      //  next();
       return false;
     }
 
@@ -392,14 +434,7 @@ public class NotifView extends FrameLayout {
     }
 
     @Override public boolean onSingleTapUp(MotionEvent e) {
-      if (pager.getCurrentItem() == data.size() - 1) {
-        hideView();
-        tagCancelAction();
-        onDismiss.onNext(null);
-      } else {
-        pager.setCurrentItem(pageListener.getPositionViewPage() + 1);
-      }
-
+      next();
       return true;
     }
 
