@@ -11,10 +11,27 @@ local model = require 'model'
 local exports = {}
 
 exports.isVolumeEnabled = true
+exports.shouldHandleSoundNatively = false
+
+local function play(sound, params)
+	if shouldHandleSoundNatively then
+		return Runtime:dispatchEvent({ name='coronaView', event='playSound', sound=sound, params=params })
+	else
+		return audio.play(sound, params)
+	end
+end
+
+local function stop(sound)
+	if shouldHandleSoundNatively then
+		Runtime:dispatchEvent({ name='coronaView', event='stopSound' })
+	else
+		audio.stop(sound)
+	end
+end
 
 local function playSoundIfEnabled(sound, params) 
 	if exports.isVolumeEnabled then
-		return audio.play(sound, params)
+		return play(sound, params)
 	else 
 		return nil
 	end
@@ -29,20 +46,39 @@ local function soundPath(path)
 end
 
 exports.load = function()
-	loadedSounds = {
-		alienKilled = audio.loadSound(soundPath("alien_killed")),
-		playerLost  = audio.loadSound(soundPath("player_lost")),
-		playerWon   = audio.loadSound(soundPath("player_won")),
-		watch       = audio.loadSound(soundPath("watch")),
-	}
-	loadedStreams = {
-		audio.loadStream(soundPath("soundtrack_0")),
-		audio.loadStream(soundPath("soundtrack_1")),
-		audio.loadStream(soundPath("soundtrack_2")),
-	}
+	if system.getInfo("platform") == "android" then
+		shouldHandleSoundNatively = false
+		loadedSounds = {
+			alienKilled = audio.loadSound(soundPath("alien_killed")),
+			playerLost  = audio.loadSound(soundPath("player_lost")),
+			playerWon   = audio.loadSound(soundPath("player_won")),
+			watch       = audio.loadSound(soundPath("watch")),
+		}
+		loadedStreams = {
+			audio.loadStream(soundPath("soundtrack_0")),
+			audio.loadStream(soundPath("soundtrack_1")),
+			audio.loadStream(soundPath("soundtrack_2")),
+		}
+	else
+		shouldHandleSoundNatively = true
+		loadedSounds = {
+			alienKilled = soundPath("alien_killed"),
+			playerLost  = soundPath("player_lost"),
+			playerWon   = soundPath("player_won"),
+			watch       = soundPath("watch"),
+		}
+		loadedStreams = {
+			soundPath("soundtrack_0"),
+			soundPath("soundtrack_1"),
+			soundPath("soundtrack_2"),
+		}
+	end
 end
 
 exports.dispose = function()
+	if shouldHandleSoundNatively then
+		return
+	end
 	for i,s in ipairs(loadedSounds) do
 		audio.stop(s)
 		audio.dispose(s)
@@ -54,15 +90,13 @@ exports.dispose = function()
 end
 
 exports.playSoundtrack = function(score)
-	log('playSoundtrack')
-	
 	if exports.isVolumeEnabled then
 
 		local level = model.levelByScore(score)
 		if not (currentSoundtrackIndex == level.soundtrack) then
 			
 			if playingSoundtrack then
-				audio.stop(playingSoundtrack)
+				stop(playingSoundtrack)
 			end
 
 			if not isSimulator then
@@ -75,13 +109,10 @@ exports.playSoundtrack = function(score)
 end
 
 exports.stopSoundtrack = function()
-	log('stopSoundtrack')
-
 	if playingSoundtrack then
-		audio.stop(playingSoundtrack)
+		stop(playingSoundtrack)
 		playingSoundtrack = nil
 	end
-
 	currentSoundtrackIndex = nil
 end
 

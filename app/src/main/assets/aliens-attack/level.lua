@@ -42,6 +42,17 @@ local function isMaster()
 	return myUserId == masterUserId
 end
 
+local function createAlien(occurrence)
+	log('level - createAlien')
+
+	local level = model.levelByScore(occurrence)
+	local alien = aliens.create(occurrence, level)
+
+	messenger.broadcastPopAlien(alien, occurrence)
+
+	createAlienTimer = timer.performWithDelay(level.popInterval() * 1000, function () createAlien(occurrence + 1) end)
+end
+
 local function broadcastUpdatedScores() 
 	log('level - broadcastUpdatedScores')
 
@@ -87,6 +98,31 @@ end
 
 local function getDelayUntilTimestamp(timestamp)
 	return math.max(0, timestamp - os.time()) * 1000
+end
+
+---------------------------------------------------------------------------------
+
+local function takeOverGame()
+	log('level - takeOverGame')
+
+	broadcastUpdatedScores()
+
+	if next(playingIds) == nil then
+		messenger.broadcastGameOver(nil)
+	else
+		createAlien(previousOccurrence)
+	end
+end
+
+local function reelectNewMaster()
+	log('level - reelectNewMaster')
+
+	table.sort(playersIds)
+	masterUserId = playersIds[1]
+	
+	if isMaster() then
+		takeOverGame()
+	end
 end
 
 ---------------------------------------------------------------------------------
@@ -149,6 +185,11 @@ local function userLeft(event)
 	
 	local userId = event.userId
 	
+	local index = table.indexOf(playersIds, userId)
+	if index then
+		table.remove(playersIds, index)
+	end
+
 	playingIds[userId]    = nil
 	playersById[userId]   = nil
 	playersScores[userId] = nil
@@ -183,32 +224,6 @@ local function addPointsToScore(points)
 	sounds.playSoundtrack(score)
 
 	broadcastUpdatedScores()
-end
-
----------------------------------------------------------------------------------
-
-local function reelectNewMaster()
-	log('level - reelectNewMaster')
-
-	table.sort(playersIds)
-
-	masterUser = playersById[playersIds[0]]
-	
-	if isMaster() then
-		takeOverGame()
-	end
-end
-
-local function takeOverGame()
-	log('level - takeOverGame')
-
-	broadcastUpdatedScores()
-
-	if next(playingIds) == nil then
-		messenger.broadcastGameOver(nil)
-	else
-		createAlien(previousOccurrence)
-	end
 end
 
 ---------------------------------------------------------------------------------
@@ -323,17 +338,6 @@ function scene:cancelRevive()
 end
 
 ---------------------------------------------------------------------------------
-
-local function createAlien(occurrence)
-	log('level - createAlien')
-
-	local level = model.levelByScore(occurrence)
-	local alien = aliens.create(occurrence, level)
-
-	messenger.broadcastPopAlien(alien, occurrence)
-
-	createAlienTimer = timer.performWithDelay(level.popInterval() * 1000, function () createAlien(occurrence + 1) end)
-end
 
 local function newGame(fromUserId, timestamp, playersIds)
 	log('level - newGame')

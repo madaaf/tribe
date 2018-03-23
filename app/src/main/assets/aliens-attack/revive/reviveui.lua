@@ -19,9 +19,9 @@ local spaceTitleMessage 	= 15
 local messageHeight 		= 35
 local spaceMessageFacebook 	= 10
 local facebookHeight 		= 80
-local spaceFacebookSkip 	= 10
-local skipHeight	 		= 32
-local spaceBottom 			= 120 + animationYDelta
+local spaceFacebookSkip 	= -10
+local skipHeight	 		= 80
+local spaceBottom 			= 100 + animationYDelta
 
 local function fadeInAndMoveUp(target, delay, params)
 	transition.to(target, { y = animationYDelta, time = animationsDuration, delay = delay, transition = easing.outBack, delta = true, onComplete = params.onComplete })
@@ -106,24 +106,24 @@ exports.showFacebookButton = function (sceneGroup, facebookButtonEvent, params)
     local options = {
         frames =
         {
-            { x=0, y=0, width=50, height=40 },
-            { x=50, y=0, width=180, height=40 },
-            { x=230, y=0, width=50, height=40 },
-            { x=0, y=40, width=50, height=1 },
-            { x=50, y=40, width=180, height=1 },
-            { x=230, y=40, width=50, height=1 },
-            { x=0, y=41, width=50, height=39 },
-            { x=50, y=41, width=180, height=39 },
-            { x=230, y=41, width=50, height=39 },
-            { x=0, y=0, width=50, height=40 },
-            { x=50, y=0, width=180, height=40 },
-            { x=230, y=0, width=50, height=40 },
-            { x=0, y=40, width=50, height=1 },
-            { x=50, y=40, width=180, height=1 },
-            { x=230, y=40, width=50, height=1 },
-            { x=0, y=41, width=50, height=39 },
-            { x=50, y=41, width=180, height=39 },
-            { x=230, y=41, width=50, height=39 },
+            { x=0,      y=0,    width=50,   height=40 },
+            { x=50,     y=0,    width=180,  height=40 },
+            { x=230,    y=0,    width=50,   height=40 },
+            { x=0,      y=40,   width=50,   height=1 },
+            { x=50,     y=40,   width=180,  height=1 },
+            { x=230,    y=40,   width=50,   height=1 },
+            { x=0,      y=41,   width=50,   height=39 },
+            { x=50,     y=41,   width=180,  height=39 },
+            { x=230,    y=41,   width=50,   height=39 },
+            { x=0,      y=0,    width=50,   height=40 },
+            { x=50,     y=0,    width=180,  height=40 },
+            { x=230,    y=0,    width=50,   height=40 },
+            { x=0,      y=40,   width=50,   height=1 },
+            { x=50,     y=40,   width=180,  height=1 },
+            { x=230,    y=40,   width=50,   height=1 },
+            { x=0,      y=41,   width=50,   height=39 },
+            { x=50,     y=41,   width=180,  height=39 },
+            { x=230,    y=41,   width=50,   height=39 },
         },
         sheetContentWidth = 280,
         sheetContentHeight = facebookHeight
@@ -194,24 +194,24 @@ exports.showSkipButton = function (sceneGroup, skipButtonEvent, params)
     local options = {
         frames =
         {
-            { x=0, y=0, width=30, height=16 },
-            { x=30, y=0, width=68, height=16 },
-            { x=98, y=0, width=30, height=16 },
-            { x=0, y=16, width=30, height=1 },
-            { x=30, y=16, width=68, height=1 },
-            { x=98, y=16, width=30, height=1 },
-            { x=0, y=17, width=30, height=15 },
-            { x=30, y=17, width=68, height=15 },
-            { x=98, y=17, width=30, height=15 },
-            { x=0, y=0, width=30, height=16 },
-            { x=30, y=0, width=68, height=16 },
-            { x=98, y=0, width=30, height=16 },
-            { x=0, y=16, width=30, height=1 },
-            { x=30, y=16, width=68, height=1 },
-            { x=98, y=16, width=30, height=1 },
-            { x=0, y=17, width=30, height=15 },
-            { x=30, y=17, width=68, height=15 },
-            { x=98, y=17, width=30, height=15 },
+            { x=0,      y=0,    width=30,   height=40 },
+            { x=30,     y=0,    width=68,   height=40 },
+            { x=98,     y=0,    width=30,   height=40 },
+            { x=0,      y=40,   width=30,   height=1 },
+            { x=30,     y=40,   width=68,   height=1 },
+            { x=98,     y=40,   width=30,   height=1 },
+            { x=0,      y=41,   width=30,   height=39 },
+            { x=30,     y=41,   width=68,   height=39 },
+            { x=98,     y=41,   width=30,   height=39 },
+            { x=0,      y=0,    width=30,   height=40 },
+            { x=30,     y=0,    width=68,   height=40 },
+            { x=98,     y=0,    width=30,   height=40 },
+            { x=0,      y=40,   width=30,   height=1 },
+            { x=30,     y=40,   width=68,   height=1 },
+            { x=98,     y=40,   width=30,   height=1 },
+            { x=0,      y=41,   width=30,   height=39 },
+            { x=30,     y=41,   width=68,   height=39 },
+            { x=98,     y=41,   width=30,   height=39 },
         },
         sheetContentWidth = 128,
         sheetContentHeight = skipHeight
