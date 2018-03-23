@@ -38,22 +38,13 @@
       android:visibility="visible"
       />
 
-  <LinearLayout
-      android:id="@+id/layoutScoresOverLive"
+  <com.tribe.app.presentation.view.component.live.LiveScoresView
+      android:id="@+id/viewScoresOverLive"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_margin="@dimen/horizontal_margin"
       android:orientation="vertical"
       android:visibility="gone"
-      >
-
-    <com.tribe.app.presentation.view.component.live.LiveRowViewAddFriend
-        android:id="@+id/viewLiveAddFriend"
-        android:layout_width="@dimen/avatar_size_smaller"
-        android:layout_height="@dimen/avatar_size_smaller"
-        android:layout_marginTop="7.5dp"
-        />
-  </LinearLayout>
+      />
 
   <com.tribe.app.presentation.view.component.live.LiveRingingView
       android:id="@+id/viewRinging"

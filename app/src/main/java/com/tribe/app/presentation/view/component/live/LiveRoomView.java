@@ -33,11 +33,13 @@ import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
 import rx.Observable;
+import rx.Subscription;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -89,6 +91,7 @@ public class LiveRoomView extends FrameLayout {
   private List<Guideline> guidelineInUse = new ArrayList<>();
   private int type = TYPE_GRID;
   private Map<String, LiveStreamView> mapViews;
+  private Map<String, Subscription> mapViewsScoreChangeSubscription;
 
   @BindView(R.id.layoutConstraint) ConstraintLayout constraintLayout;
 
@@ -116,9 +119,13 @@ public class LiveRoomView extends FrameLayout {
     mapViews.clear();
     mapViews.put(currentUser.getId(), viewLiveLocal);
     onViews.onNext(mapViews);
+    mapViewsScoreChangeSubscription.put(currentUser.getId(),
+        viewLiveLocal.onScoreChange().subscribe(pair -> refactorConstraintsOnChilds()));
   }
 
   public void dispose() {
+    for (Subscription subscription : mapViewsScoreChangeSubscription.values()) subscription.unsubscribe();
+    mapViewsScoreChangeSubscription.clear();
     mapViews.clear();
   }
 
@@ -135,7 +142,10 @@ public class LiveRoomView extends FrameLayout {
     }
 
     mapViews = new HashMap<>();
+    mapViewsScoreChangeSubscription = new HashMap<>();
     mapViews.put(currentUser.getId(), viewLiveLocal);
+    mapViewsScoreChangeSubscription.put(currentUser.getId(),
+        viewLiveLocal.onScoreChange().subscribe(pair -> refactorConstraintsOnChilds()));
     onViews.onNext(mapViews);
 
     liveRowViewAddFriend = new LiveRowViewAddFriend(getContext());
@@ -362,6 +372,8 @@ public class LiveRoomView extends FrameLayout {
 
     mapViews.remove(userId);
     onViews.onNext(mapViews);
+    mapViewsScoreChangeSubscription.get(userId).unsubscribe();
+    mapViewsScoreChangeSubscription.remove(userId);
 
     if (view != null) {
       constraintLayout.removeView(view);
@@ -404,6 +416,8 @@ public class LiveRoomView extends FrameLayout {
     }
     mapViews.put(userId, view);
     onViews.onNext(mapViews);
+    mapViewsScoreChangeSubscription.put(userId,
+        view.onScoreChange().subscribe(pair -> refactorConstraintsOnChilds()));
     int childCount = getNBLiveViews();
     manageGuidelines(childCount);
     addViewToContainer(childCount, view);
@@ -497,7 +511,6 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void refactorConstraintsOnChilds() {
-    int childCount = constraintLayout.getChildCount();
     int liveViewsCount = getNBLiveViews();
     int lastStream = 0;
 
@@ -507,13 +520,14 @@ public class LiveRoomView extends FrameLayout {
     LiveStreamView v = null;
     int liveStreamCount = -1;
 
-    for (int i = 0; i < childCount; i++) {
-      if (constraintLayout.getChildAt(i) instanceof LiveStreamView) {
-        v = (LiveStreamView) constraintLayout.getChildAt(i);
-        liveStreamCount++;
-      } else {
-        v = null;
-      }
+    List<LiveStreamView> views = new ArrayList<>(mapViews.values());
+    if (type == TYPE_LIST) {
+      Collections.sort(views, (o1, o2) -> new Integer(o2.getScore()).compareTo(o1.getScore()));
+    }
+
+    for (int i = 0; i < views.size(); i++) {
+      v = views.get(i);
+      liveStreamCount++;
 
       if (v != null) {
         if (type == TYPE_GRID) {
@@ -1174,7 +1188,7 @@ public class LiveRoomView extends FrameLayout {
               break;
 
             default:
-              View previous = constraintLayout.getChildAt(lastStream);
+              View previous = views.get(lastStream);
               set.connect(v.getId(), ConstraintSet.TOP, previous.getId(), ConstraintSet.BOTTOM,
                   screenUtils.dpToPx(20));
               break;
@@ -1186,7 +1200,7 @@ public class LiveRoomView extends FrameLayout {
     }
 
     if (type == TYPE_LIST) {
-      View previous = constraintLayout.getChildAt(lastStream);
+      View previous = views.get(lastStream);
       set.connect(liveRowViewAddFriend.getId(), ConstraintSet.TOP, previous.getId(),
           ConstraintSet.BOTTOM, screenUtils.dpToPx(20));
       set.connect(liveRowViewAddFriend.getId(), ConstraintSet.START, constraintLayout.getId(),

@@ -39,6 +39,7 @@ import com.tribe.app.presentation.view.component.live.LiveLowConnectionView;
 import com.tribe.app.presentation.view.component.live.LivePeerOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveRingingView;
 import com.tribe.app.presentation.view.component.live.LiveRoomView;
+import com.tribe.app.presentation.view.component.live.LiveScoresView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
@@ -209,6 +210,8 @@ import dagger.Component;
   void inject(LeaderboardPage leaderboardPage);
 
   void inject(PopupDigest popupDigest);
+
+  void inject(LiveScoresView liveScoresView);
 
   /**
    * GAMES

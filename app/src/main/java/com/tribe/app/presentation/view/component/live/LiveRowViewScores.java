@@ -15,6 +15,8 @@ import com.tribe.app.R;
 import com.tribe.app.presentation.view.utils.RoundedCornersTransformation;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.tribelivesdk.model.TribeGuest;
+import rx.Observable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -31,12 +33,14 @@ public class LiveRowViewScores extends LinearLayout {
   // VARIABLES
   private Unbinder unbinder;
   private TribeGuest guest;
+  private int score = 0;
 
   // RESOURCES
   private int avatarSize, roundedCorners;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Void> onScoreChange = PublishSubject.create();
 
   public LiveRowViewScores(Context context) {
     super(context);
@@ -79,6 +83,7 @@ public class LiveRowViewScores extends LinearLayout {
   }
 
   public void updateScores(Pair<Integer, String> pair) {
+    this.score = pair.first;
     this.txtEmoji.setText(pair.second);
     this.txtScore.setText("" + pair.first);
   }
@@ -100,5 +105,17 @@ public class LiveRowViewScores extends LinearLayout {
 
   public TribeGuest getGuest() {
     return guest;
+  }
+
+  public int getScore() {
+    return score;
+  }
+
+  /**
+   * OBSERVABLES
+   */
+
+  public Observable<Void> onScoreChange() {
+    return onScoreChange;
   }
 }

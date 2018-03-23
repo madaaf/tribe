@@ -4,8 +4,8 @@
 
   <ImageView
       android:id="@+id/viewAvatar"
-      android:layout_width="@dimen/avatar_size_smaller"
-      android:layout_height="@dimen/avatar_size_smaller"
+      android:layout_width="45dp"
+      android:layout_height="45dp"
       android:elevation="5dp"
       android:scaleType="centerCrop"
       />
