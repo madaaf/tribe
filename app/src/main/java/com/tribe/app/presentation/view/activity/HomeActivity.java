@@ -661,7 +661,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
               if (!addedUsers.contains(user.getId())) finalList.add(user);
             }
           }
-          
+
           if (!FacebookUtils.isLoggedIn()) {
             finalList.add(new Contact(Contact.FACEBOOK_ID));
           }
@@ -1058,11 +1058,9 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
       if (hasPermission) {
         addressBook.set(hasPermission);
-        homeGridPresenter.lookupContacts();
-        searchView.refactorActions();
-      } else {
-        topBarContainer.onSyncError();
       }
+      homeGridPresenter.lookupContacts();
+      searchView.refactorActions();
     });
   }
 
