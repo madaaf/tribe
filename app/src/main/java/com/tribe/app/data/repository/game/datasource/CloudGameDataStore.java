@@ -219,6 +219,7 @@ public class CloudGameDataStore implements GameDataStore {
   }
 
   @Override public Observable<AddScoreEntity> addScore(String gameId, Integer score) {
+    if (score == 0) return Observable.just(null);
     String body = context.getString(R.string.addScore, gameId, "" + score);
     final String request = context.getString(R.string.mutation, body);
     return this.tribeApi.addScore(request);
