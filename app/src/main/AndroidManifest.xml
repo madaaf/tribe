@@ -139,6 +139,12 @@
         android:label="@string/app_name"
         android:screenOrientation="portrait"/>
 
+
+    <activity
+        android:name=".presentation.view.activity.GamePagerActivity"
+        android:label="@string/app_name"
+        android:screenOrientation="portrait"/>
+
     <activity
         android:name=".presentation.view.activity.GameStoreActivity"
         android:configChanges="orientation|keyboardHidden|screenSize"
