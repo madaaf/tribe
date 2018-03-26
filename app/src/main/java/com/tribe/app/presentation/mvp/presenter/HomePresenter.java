@@ -2,7 +2,6 @@ package com.tribe.app.presentation.mvp.presenter;
 
 import android.content.Context;
 import com.birbit.android.jobqueue.JobManager;
-import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.ShortcutRealm;
@@ -34,6 +33,7 @@ import com.tribe.app.presentation.mvp.view.HomeGridMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.delegate.contact.UserToAddAdapterDelegate;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
@@ -426,8 +426,10 @@ public class HomePresenter implements Presenter {
       String... userIds) {
     if (createShortcutSubscriber != null) createShortcutSubscriber.unsubscribe();
     createShortcutSubscriber = new CreateShortcutSubscriber(vh);
-    createShortcut.setup(userIds);
-    createShortcut.execute(createShortcutSubscriber);
+    if (ShortcutUtil.isNotSupport(userIds)) {
+      createShortcut.setup(userIds);
+      createShortcut.execute(createShortcutSubscriber);
+    }
   }
 
   public void muteShortcut(String shortcutId, boolean mute) {
