@@ -256,7 +256,8 @@ public class GameManagerView extends FrameLayout {
       subscriptionsGame.add(gameDrawView.onNextDraw()
           .map(aBoolean -> gameManager.getCurrentGame())
           .subscribe(onRestartGame));
-    } else if (game.getId().equals(Game.GAME_INVADERS)) {
+    } else if (game.getId().equals(Game.GAME_INVADERS) ||
+        game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
       GameCoronaView gameCoronaView = new GameCoronaView(getContext(), game);
       subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
       subscriptionsGame.add(gameCoronaView.onRevive().subscribe(onRevive));

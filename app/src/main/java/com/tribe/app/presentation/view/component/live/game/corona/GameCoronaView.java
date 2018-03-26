@@ -54,7 +54,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 /**
@@ -161,6 +160,11 @@ public class GameCoronaView extends GameView {
 
     coronaView.init(game.getId());
     coronaView.setZOrderMediaOverlay(true);
+
+    if (game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
+      layoutProgress.setVisibility(View.GONE);
+      coronaView.resume();
+    }
 
     //gamePresenter.getGameFile(game.getUrl());
   }

@@ -1,0 +1,3 @@
+[submodule "app/src/main/assets/lab-battleroyale"]
+	path = app/src/main/assets/lab-battleroyale
+	url = https://github.com/heytribe/corona-battleroyale.git
