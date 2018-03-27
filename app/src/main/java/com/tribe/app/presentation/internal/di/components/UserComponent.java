@@ -12,7 +12,7 @@ import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
-import com.tribe.app.presentation.view.activity.GameDetailsActivity;
+import com.tribe.app.presentation.view.activity.GameDetailsView;
 import com.tribe.app.presentation.view.activity.GameMembersActivity;
 import com.tribe.app.presentation.view.activity.GamePagerActivity;
 import com.tribe.app.presentation.view.activity.GameStoreActivity;
@@ -23,7 +23,6 @@ import com.tribe.app.presentation.view.activity.NewGameActivity;
 import com.tribe.app.presentation.view.activity.ProfileActivity;
 import com.tribe.app.presentation.view.activity.VideoActivity;
 import com.tribe.app.presentation.view.activity.ViewStackActivity;
-import com.tribe.app.presentation.view.adapter.Test;
 import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate;
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionTokenView;
@@ -114,8 +113,6 @@ import dagger.Component;
   void inject(NotificationContainerView notificationContainerView);
 
   void inject(ScreenshotView screenshotView);
-
-  void inject(Test test);
 
   void inject(FacebookHiddenActivity facebookHiddenActivity);
 
@@ -251,7 +248,7 @@ import dagger.Component;
 
   void inject(LeaderboardDetailsView leaderboardDetailsView);
 
-  void inject(GameDetailsActivity gameDetailsActivity);
+  void inject(GameDetailsView gameDetailsView);
 
   void inject(NewGameActivity newGameActivity);
 

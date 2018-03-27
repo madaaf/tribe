@@ -15,6 +15,7 @@ import com.jenzz.appstate.AppStateListener;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
+import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.adapter.GamePagerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
@@ -56,7 +57,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     pageListener = new PageListener(dotsContainer);
     viewpager.addOnPageChangeListener(pageListener);
     viewpager.setAdapter(adapter);
-    changePagerScroller();
     recyclerViewGames.setVisibility(View.GONE);
 
     onGames.onNext(gameManager.getGames());
@@ -135,6 +135,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   public static class PageListener extends ViewPager.SimpleOnPageChangeListener {
+
     private LinearLayout dotsContainer;
     private int positionViewPager;
 
@@ -163,6 +164,10 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     }
   }
 
+  private Game getCurrentGame() {
+    return gameManager.getGames().get(pageListener.getPositionViewPage());
+  }
+
   /**
    * ONCLICK
    */
@@ -173,5 +178,19 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   @OnClick(R.id.btnLeaderboards) void onClickLeaderboards() {
     navigator.navigateToLeaderboards(this, getCurrentUser());
+  }
+
+  @OnClick(R.id.btnMulti) void voidOnClickBtnMulti() {
+    navigator.navigateToGameMembers(this, getCurrentGame().getId());
+  }
+
+  @OnClick(R.id.btnSingle) void voidOnClickBtnSingle() {
+    Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.HOME);
+    bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.LAUNCHED);
+    bundle.putString(TagManagerUtils.NAME, getCurrentGame().getId());
+    tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
+
+    navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, getCurrentGame().getId());
   }
 }

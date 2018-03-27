@@ -5,7 +5,7 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.tribe.app.presentation.view.activity.GameDetailsActivity;
+import com.tribe.app.presentation.view.activity.GameDetailsView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
@@ -46,9 +46,8 @@ public class GamePagerAdapter extends PagerAdapter {
   }
 
   @Override public Object instantiateItem(ViewGroup container, int position) {
-    //View itemView = mLayoutInflater.inflate(R.layout.item_game_pager, container, false);
     Game game = (Game) gamesList.get(position);
-    GameDetailsActivity test = new GameDetailsActivity(context, game);
+    GameDetailsView test = new GameDetailsView(context, game);
     container.addView(test);
     return test;
   }

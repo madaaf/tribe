@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -19,7 +18,6 @@ import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -43,7 +41,6 @@ import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.utils.analytics.TagManager;
-import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -61,7 +58,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-public class GameDetailsActivity extends FrameLayout {
+public class GameDetailsView extends FrameLayout {
 
   private static final int DURATION_MOVING = 2500;
   private static final int DURATION = 400;
@@ -88,12 +85,12 @@ public class GameDetailsActivity extends FrameLayout {
   @BindView(R.id.txtMyScoreRanking) TextViewRanking txtMyScoreRanking;
   @BindView(R.id.txtMyScoreScore) TextViewScore txtMyScoreScore;
   @BindView(R.id.txtMyScoreName) TextViewFont txtMyScoreName;
-  @BindView(R.id.btnMulti) View btnMulti;
   @BindView(R.id.leaderbordContainer) View leaderbordContainer;
   @BindView(R.id.leaderbordLabel) TextViewFont leaderbordLabel;
   @BindView(R.id.leaderbordPictoStart) ImageView leaderbordPictoStart;
   @BindView(R.id.leaderbordPictoEnd) ImageView leaderbordPictoEnd;
   @BindView(R.id.leaderbordSeparator) View leaderbordSeparator;
+  @BindView(R.id.fakeBtnSingle) View fakeBtnSingle;
 
   // VARIABLES
   private UserComponent userComponent;
@@ -109,14 +106,14 @@ public class GameDetailsActivity extends FrameLayout {
   // OBSERVABLES
   private CompositeSubscription subscriptions;
 
-  public GameDetailsActivity(@NonNull Context context, Game game) {
+  public GameDetailsView(@NonNull Context context, Game game) {
     super(context);
     this.game = game;
     this.context = context;
     initView(context);
   }
 
-  public GameDetailsActivity(@NonNull Context context, @Nullable AttributeSet attrs) {
+  public GameDetailsView(@NonNull Context context, @Nullable AttributeSet attrs) {
     super(context, attrs);
     initView(context);
   }
@@ -128,17 +125,6 @@ public class GameDetailsActivity extends FrameLayout {
     ButterKnife.bind(this);
 
     initDependencyInjector();
-
-    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) btnMulti.getLayoutParams();
-
-    if (true) {
-      // if (hasSoftKeys()) {
-      params.bottomMargin = screenUtils.dpToPx(50);
-    } else {
-      params.bottomMargin = screenUtils.dpToPx(15);
-    }
-
-    btnMulti.setLayoutParams(params);
 
     gameManager = GameManager.getInstance(context);
     mapAnimator = new HashMap<>();
@@ -289,13 +275,14 @@ public class GameDetailsActivity extends FrameLayout {
   private void showButtons() {
     ConstraintSet set = new ConstraintSet();
     set.clone(layoutConstraint);
-    set.connect(R.id.btnSingle, ConstraintSet.BOTTOM, R.id.btnMulti, ConstraintSet.TOP);
+   /*  set.connect(R.id.btnSingle, ConstraintSet.BOTTOM, R.id.btnMulti, ConstraintSet.TOP);
     set.clear(R.id.btnSingle, ConstraintSet.TOP);
     set.connect(R.id.btnMulti, ConstraintSet.BOTTOM, layoutConstraint.getId(),
         ConstraintSet.BOTTOM);
     set.clear(R.id.btnMulti, ConstraintSet.TOP);
     set.setAlpha(R.id.btnSingle, 1);
-    set.setAlpha(R.id.btnMulti, 1);
+    set.setAlpha(R.id.btnMulti, 1);*/
+
     animateLayoutWithConstraintSet(set, new TransitionListenerAdapter() {
       @Override public void onTransitionEnd(@NonNull Transition transition) {
         if (game.hasScores()) showScores();
@@ -369,23 +356,6 @@ public class GameDetailsActivity extends FrameLayout {
   /**
    * ONCLICK
    */
-
-
-  @OnClick(R.id.btnSingle) void openLive() {
-
-    Bundle bundle = new Bundle();
-    bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.HOME);
-    bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.LAUNCHED);
-    bundle.putString(TagManagerUtils.NAME, game.getId());
-    tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
-
-    navigator.navigateToNewCall((Activity) context, LiveActivity.SOURCE_HOME, game.getId());
-    //navigator.navigateToCorona(this, game.getId(), FROM_GAME_DETAILS);
-  }
-
-  @OnClick(R.id.btnMulti) void openGameMembers() {
-    navigator.navigateToGameMembers((Activity) context, game.getId());
-  }
 
   @OnClick(R.id.leaderbordContainer) void onClickLeaderbordLabel() {
     navigator.navigateToGameLeaderboard((Activity) context, game.getId());

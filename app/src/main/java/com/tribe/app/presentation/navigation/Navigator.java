@@ -29,7 +29,6 @@ import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.BaseActivity;
 import com.tribe.app.presentation.view.activity.CoronaGameActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
-import com.tribe.app.presentation.view.activity.GameDetailsActivity;
 import com.tribe.app.presentation.view.activity.GameLeaderboardActivity;
 import com.tribe.app.presentation.view.activity.GameMembersActivity;
 import com.tribe.app.presentation.view.activity.GamePagerActivity;

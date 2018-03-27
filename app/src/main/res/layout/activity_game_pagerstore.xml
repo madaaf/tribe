@@ -112,17 +112,96 @@
         />
   </FrameLayout>
 
-
-  <LinearLayout
-      android:id="@+id/dotsContainer"
+  <android.support.constraint.ConstraintLayout
+      android:id="@+id/layoutConstraint"
       android:layout_width="match_parent"
-      android:layout_height="40dp"
-      android:layout_gravity="bottom"
-      android:layout_marginBottom="30dp"
-      android:background="@color/blue.newg"
-      android:gravity="center"
-      android:orientation="horizontal"
-      />
+      android:layout_height="match_parent"
+      >
+
+
+    <FrameLayout
+        android:id="@+id/btnMulti"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:alpha="1"
+        android:background="@drawable/bg_game_btn"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toTopOf="@id/dotsContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+
+      <ImageView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_marginBottom="2dp"
+          android:layout_marginStart="2dp"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_multiplayer"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:gravity="center"
+          android:text="@string/gamemode_multi_title"
+          android:textAllCaps="true"
+          style="@style/BiggerTitle.2.Black"
+          />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/btnSingle"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:alpha="1"
+        android:background="@drawable/bg_game_btn"
+        android:elevation="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/btnMulti"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+
+      <ImageView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_marginBottom="2dp"
+          android:layout_marginStart="2dp"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_solo_training"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="@string/gamemode_alone_title"
+          android:textAllCaps="true"
+          style="@style/BiggerTitle.2.Black"
+          />
+    </FrameLayout>
+
+
+    <LinearLayout
+        android:id="@+id/dotsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+  </android.support.constraint.ConstraintLayout>
 
 
 </FrameLayout>
