@@ -91,6 +91,10 @@ public class GameWebView extends GameViewWithEngine {
     webView.addJavascriptInterface(new WebViewGameInterface(), "androidInterface");
   }
 
+  @Override protected void initGameMasterManagerSubscriptions() {
+
+  }
+
   @Override protected int getSoundtrack() {
     return -1;
   }

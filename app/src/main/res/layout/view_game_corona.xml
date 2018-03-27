@@ -9,6 +9,13 @@
       android:layout_gravity="center"
       />
 
+  <View
+      android:id="@+id/view"
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:background="@color/red"
+      />
+
   <FrameLayout
       android:id="@+id/layoutProgress"
       android:layout_width="match_parent"

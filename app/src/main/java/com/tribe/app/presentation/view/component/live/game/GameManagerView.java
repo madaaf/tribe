@@ -30,6 +30,7 @@ import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
 import com.tribe.app.presentation.view.component.live.game.coolcams.GameCoolCamsView;
 import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
+import com.tribe.app.presentation.view.component.live.game.gamemaster.GameMasterManagerFactory;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
@@ -65,6 +66,7 @@ public class GameManagerView extends FrameLayout {
   private GameManager gameManager;
   private GameView currentGameView;
   private WebRTCRoom webRTCRoom;
+  private GameMasterManagerFactory.GameMasterManager gameMasterManager;
   private Map<String, TribeGuest> peerMap;
   private Map<String, TribeGuest> invitedMap;
   private Game currentGame;
@@ -302,6 +304,7 @@ public class GameManagerView extends FrameLayout {
     }
 
     gameView.setWebRTCRoom(webRTCRoom);
+    gameView.setGameMasterManager(gameMasterManager);
     game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));
     gameView.start(game, masterMapObs, onPeerMapChange, onInvitedMapChange, onLiveViewsChange,
@@ -317,6 +320,10 @@ public class GameManagerView extends FrameLayout {
 
   public void setWebRTCRoom(WebRTCRoom webRTCRoom) {
     this.webRTCRoom = webRTCRoom;
+  }
+
+  public void setGameMasterManager(GameMasterManagerFactory.GameMasterManager gameMasterManager) {
+    this.gameMasterManager = gameMasterManager;
   }
 
   public void disposeGame() {
@@ -335,6 +342,8 @@ public class GameManagerView extends FrameLayout {
     mapGameData.clear();
     onPeerMapChange = BehaviorSubject.create();
     onInvitedMapChange = BehaviorSubject.create();
+    webRTCRoom = null;
+    gameMasterManager = null;
     disposeGame();
   }
 
