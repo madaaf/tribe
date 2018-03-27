@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.MotionEvent;
+import android.view.Gravity;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import butterknife.BindView;
+import butterknife.OnClick;
 import com.jenzz.appstate.AppStateListener;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
@@ -15,7 +18,6 @@ import com.tribe.app.presentation.internal.di.components.UserComponent;
 import com.tribe.app.presentation.view.adapter.GamePagerAdapter;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
-import com.tribe.app.presentation.view.widget.game.GameViewPager;
 import com.tribe.tribelivesdk.game.Game;
 import java.lang.reflect.Field;
 import javax.inject.Inject;
@@ -28,12 +30,15 @@ import timber.log.Timber;
 public class GamePagerActivity extends GameActivity implements AppStateListener {
 
   private static final String FROM_AUTH = "FROM_AUTH";
+  private final static String DOTS_TAG_MARKER = "DOTS_TAG_MARKER_";
 
   // VARIABLES
   private UserComponent userComponent;
   private GamePagerAdapter adapter;
+  private PageListener pageListener;
 
   @BindView(R.id.pager) ViewPager viewpager;
+  @BindView(R.id.dotsContainer) LinearLayout dotsContainer;
 
   @Inject ScreenUtils screenUtils;
 
@@ -47,7 +52,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     super.onCreate(savedInstanceState);
 
     adapter = new GamePagerAdapter(this, gameManager.getGames(), screenUtils);
-    Timber.e("SOEF SIZE " + gameManager.getGames().size());
+    initDots(gameManager.getGames().size());
+    pageListener = new PageListener(dotsContainer);
+    viewpager.addOnPageChangeListener(pageListener);
     viewpager.setAdapter(adapter);
     changePagerScroller();
     recyclerViewGames.setVisibility(View.GONE);
@@ -103,5 +110,68 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
         .applicationComponent(getApplicationComponent())
         .build()
         .inject(this);
+  }
+
+  private void initDots(int dotsNbr) {
+    int sizeDot = getResources().getDimensionPixelSize(R.dimen.waiting_view_dot_size);
+    for (int i = 0; i < dotsNbr; i++) {
+      View v = new View(this);
+      v.setTag(DOTS_TAG_MARKER + i);
+      FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot * 2, sizeDot);
+      lp.setMargins(0, 0, 15, 0);
+      lp.gravity = Gravity.CENTER;
+      v.setLayoutParams(lp);
+      dotsContainer.addView(v);
+      if (i == 0) {
+        v.setBackgroundResource(R.drawable.shape_oval_white);
+        v.setScaleX(1.2f);
+        v.setScaleY(1.2f);
+      } else {
+        v.setBackgroundResource(R.drawable.shape_oval_white50);
+        v.setScaleX(1f);
+        v.setScaleY(1f);
+      }
+    }
+  }
+
+  public static class PageListener extends ViewPager.SimpleOnPageChangeListener {
+    private LinearLayout dotsContainer;
+    private int positionViewPager;
+
+    public PageListener(LinearLayout dotsContainer) {
+      this.dotsContainer = dotsContainer;
+    }
+
+    public int getPositionViewPage() {
+      return positionViewPager;
+    }
+
+    public void onPageSelected(int position) {
+      this.positionViewPager = position;
+      positionViewPager = position;
+      for (int i = 0; i < dotsContainer.getChildCount(); i++) {
+        View v = dotsContainer.getChildAt(i);
+        if (v.getTag().toString().startsWith(DOTS_TAG_MARKER + position)) {
+          v.setBackgroundResource(R.drawable.shape_oval_white);
+          v.animate().scaleX(1.2f).scaleY(1.2f).setDuration(100).start();
+        } else {
+          v.setBackgroundResource(R.drawable.shape_oval_white50);
+          v.setScaleX(1f);
+          v.setScaleY(1f);
+        }
+      }
+    }
+  }
+
+  /**
+   * ONCLICK
+   */
+
+  @OnClick({ R.id.btnFriends, R.id.imgLive, R.id.btnNewMessage }) void onClickHome() {
+    navigator.navigateToHome(this);
+  }
+
+  @OnClick(R.id.btnLeaderboards) void onClickLeaderboards() {
+    navigator.navigateToLeaderboards(this, getCurrentUser());
   }
 }

@@ -3,12 +3,11 @@ package com.tribe.app.presentation.view.activity;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.transition.ChangeBounds;
@@ -17,24 +16,33 @@ import android.support.transition.TransitionListenerAdapter;
 import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
+import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
@@ -53,23 +61,16 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
-
-public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
+public class GameDetailsActivity extends FrameLayout {
 
   private static final int DURATION_MOVING = 2500;
   private static final int DURATION = 400;
-
   public static final String GAME_ID = "game_id";
 
-  public static Intent getCallingIntent(Activity activity, String gameId) {
-    Intent intent = new Intent(activity, GameDetailsActivity.class);
-    intent.putExtra(GAME_ID, gameId);
-    return intent;
-  }
-
   @Inject ScreenUtils screenUtils;
-
+  @Inject TagManager tagManager;
+  @Inject User user;
+  @Inject Navigator navigator;
   @Inject GamePresenter gamePresenter;
 
   @BindView(R.id.imgBackgroundGradient) View imgBackgroundGradient;
@@ -99,35 +100,39 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
   private GameManager gameManager;
   private GameMVPViewAdapter gameMVPViewAdapter;
   private Game game;
+  private Context context;
   private Map<String, ValueAnimator> mapAnimator;
-
+  protected LayoutInflater inflater;
+  protected Unbinder unbinder;
   // RESOURCES
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
 
-  @Override protected void onCreate(Bundle savedInstanceState) {
-    getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+  public GameDetailsActivity(@NonNull Context context, Game game) {
+    super(context);
+    this.game = game;
+    this.context = context;
+    initView(context);
+  }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      getWindow().setStatusBarColor(Color.TRANSPARENT);
-    }
+  public GameDetailsActivity(@NonNull Context context, @Nullable AttributeSet attrs) {
+    super(context, attrs);
+    initView(context);
+  }
 
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_game_details);
-
+  private void initView(Context context) {
+    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    inflater.inflate(R.layout.activity_game_details, this, true);
+    unbinder = ButterKnife.bind(this);
     ButterKnife.bind(this);
 
     initDependencyInjector();
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      layoutConstraint.setPadding(0, getStatusBarHeight(), 0, 0);
-    }
-
     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) btnMulti.getLayoutParams();
 
-    if (hasSoftKeys()) {
+    if (true) {
+      // if (hasSoftKeys()) {
       params.bottomMargin = screenUtils.dpToPx(50);
     } else {
       params.bottomMargin = screenUtils.dpToPx(15);
@@ -135,8 +140,7 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
 
     btnMulti.setLayoutParams(params);
 
-    gameManager = GameManager.getInstance(this);
-    game = gameManager.getGameById(getIntent().getStringExtra(GAME_ID));
+    gameManager = GameManager.getInstance(context);
     mapAnimator = new HashMap<>();
 
     initPresenter();
@@ -144,35 +148,24 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     initUI();
   }
 
-  @Override protected void onStart() {
-    super.onStart();
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
     gamePresenter.onViewAttached(gameMVPViewAdapter);
   }
 
-  @Override protected void onStop() {
-    super.onStop();
-    gamePresenter.onViewDetached();
-  }
-
-  @Override protected void onDestroy() {
-    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+  @Override protected void onDetachedFromWindow() {
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
     imgRays.clearAnimation();
+    clearAnimation();
     for (ValueAnimator animator : mapAnimator.values()) animator.cancel();
-    super.onDestroy();
-  }
-
-  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == FROM_GAME_DETAILS && resultCode == RESULT_OK && data != null) {
-      setResult(RESULT_OK, data);
-      finish();
-    }
+    gamePresenter.onViewDetached();
+    super.onDetachedFromWindow();
   }
 
   private void initPresenter() {
     gameMVPViewAdapter = new GameMVPViewAdapter() {
       @Override public Context context() {
-        return GameDetailsActivity.this;
+        return context;
       }
     };
   }
@@ -184,15 +177,15 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
   private void initUI() {
     txtBaseline.setText(game.getBaseline());
 
-    new GlideUtils.GameImageBuilder(this, screenUtils).url(game.getIcon())
+    new GlideUtils.GameImageBuilder(context, screenUtils).url(game.getIcon())
         .hasBorder(false)
         .hasPlaceholder(true)
         .rounded(true)
         .target(imgIcon)
         .load();
 
-    Glide.with(this).load(game.getLogo()).into(imgLogo);
-    Glide.with(this).load(game.getBackground()).into(imgBackgroundLogo);
+    Glide.with(context).load(game.getLogo()).into(imgLogo);
+    Glide.with(context).load(game.getBackground()).into(imgBackgroundLogo);
 
     GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TR_BL, new int[] {
         Color.parseColor("#" + game.getPrimary_color()),
@@ -213,7 +206,7 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
         imageView = imgAnimation3;
       }
 
-      Glide.with(this).load(url).into(imageView);
+      Glide.with(context).load(url).into(imageView);
     }
 
     animateImg(imgAnimation1, true);
@@ -234,29 +227,32 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> showButtons()));
 
-    Score score = getCurrentUser().getScoreForGame(game.getId());
+    Score score = user.getScoreForGame(game.getId());
     if (score == null) {
       score = new Score();
       score.setValue(0);
     }
 
-    txtMyScoreName.setText(getCurrentUser().getDisplayName());
+    txtMyScoreName.setText(user.getDisplayName());
     txtMyScoreScore.setScore(score.getValue());
     txtMyScoreRanking.setRanking(score.getRanking());
-    avatarMyScore.load(getCurrentUser().getProfilePicture());
+    avatarMyScore.load(user.getProfilePicture());
   }
 
-  private void initDependencyInjector() {
-    this.userComponent = DaggerUserComponent.builder()
-        .applicationComponent(getApplicationComponent())
-        .activityModule(getActivityModule())
-        .build();
-
+  protected void initDependencyInjector() {
     DaggerUserComponent.builder()
         .activityModule(getActivityModule())
         .applicationComponent(getApplicationComponent())
         .build()
         .inject(this);
+  }
+
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
+
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
   }
 
   private void animateRays() {
@@ -374,9 +370,6 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
    * ONCLICK
    */
 
-  @OnClick(R.id.btnClose) void close() {
-    finish();
-  }
 
   @OnClick(R.id.btnSingle) void openLive() {
 
@@ -386,28 +379,15 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     bundle.putString(TagManagerUtils.NAME, game.getId());
     tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
 
-    navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
+    navigator.navigateToNewCall((Activity) context, LiveActivity.SOURCE_HOME, game.getId());
     //navigator.navigateToCorona(this, game.getId(), FROM_GAME_DETAILS);
   }
 
   @OnClick(R.id.btnMulti) void openGameMembers() {
-    navigator.navigateToGameMembers(this, game.getId());
+    navigator.navigateToGameMembers((Activity) context, game.getId());
   }
 
   @OnClick(R.id.leaderbordContainer) void onClickLeaderbordLabel() {
-    navigator.navigateToGameLeaderboard(this, game.getId());
+    navigator.navigateToGameLeaderboard((Activity) context, game.getId());
   }
-
-  /**
-   * PUBLIC
-   */
-
-  @Override public void finish() {
-    super.finish();
-    overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
-  }
-
-  /**
-   * OBSERVABLES
-   */
 }

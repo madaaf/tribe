@@ -180,11 +180,11 @@ public class Navigator {
   }
 
   public void navigateToGameDetails(Activity activity, String gameId) {
-    if (activity != null) {
+   /* if (activity != null) {
       Intent intent = GameDetailsActivity.getCallingIntent(activity, gameId);
       activity.startActivityForResult(intent, FROM_GAMESTORE);
       activity.overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-    }
+    }*/
   }
 
   public void navigateToCoronaActivity(Activity activity) {
