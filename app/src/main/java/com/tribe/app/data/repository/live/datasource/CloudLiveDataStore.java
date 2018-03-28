@@ -126,6 +126,8 @@ public class CloudLiveDataStore implements LiveDataStore {
   }
 
   @Override public Observable<Void> deleteRoom(String roomId) {
+    if (StringUtils.isEmpty(roomId)) return Observable.just(null);
+
     final String request =
         context.getString(R.string.mutation, context.getString(R.string.removeRoom, roomId));
 

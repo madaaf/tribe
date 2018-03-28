@@ -52,7 +52,7 @@ public abstract class LiveStreamView extends LinearLayout {
   public static final int TYPE_EMBED = 2;
 
   public static final int MAX_HEIGHT_LIST = 45;
-  public static final int MAX_HEIGHT_EMBED = 70;
+  public static final int MAX_HEIGHT_EMBED = 75;
 
   @Inject protected ScreenUtils screenUtils;
 
