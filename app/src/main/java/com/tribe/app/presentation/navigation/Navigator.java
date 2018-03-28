@@ -322,8 +322,7 @@ public class Navigator {
 
   public void navigateToGameStoreLogin(Activity activity, Uri deeplink, boolean fromAuth) {
     if (activity != null) {
-      // Intent intent = GameStoreActivity.getCallingIntent(activity, fromAuth);
-      Intent intent = GamePagerActivity.getCallingIntent(activity, fromAuth); // SOEF
+      Intent intent = GamePagerActivity.getCallingIntent(activity, fromAuth);
       if (deeplink != null) {
         intent.setData(deeplink);
       }

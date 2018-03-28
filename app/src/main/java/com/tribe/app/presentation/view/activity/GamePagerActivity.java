@@ -134,18 +134,23 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     return intent;
   }
 
+  private void initViewPager() {
+    adapter = new GamePagerAdapter(this);
+    pageListener = new PageListener(dotsContainer, this);
+    viewpager.addOnPageChangeListener(pageListener);
+    viewpager.setAdapter(adapter);
+    initDots(gameManager.getGames().size());
+  }
+
   @Override protected void onCreate(Bundle savedInstanceState) {
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     super.onCreate(savedInstanceState);
 
-    adapter = new GamePagerAdapter(this, gameManager.getGames(), screenUtils);
-    initDots(gameManager.getGames().size());
-    pageListener = new PageListener(dotsContainer, this);
-    viewpager.addOnPageChangeListener(pageListener);
-    viewpager.setAdapter(adapter);
+    initViewPager();
 
-    if (gameManager.getGames() != null) {
+    if (gameManager.getGames() != null && !gameManager.getGames().isEmpty()) {
       initUI();
+      adapter.setItems(gameManager.getGames());
     } else {
       gameMVPViewAdapter = new GameMVPViewAdapter() {
         @Override public Context context() {
@@ -154,6 +159,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
         @Override public void onGameList(List<Game> gameList) {
           gameManager.addGames(gameList);
+          adapter.setItems(gameList);
           initUI();
         }
       };
@@ -608,6 +614,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private void initDots(int dotsNbr) {
+    dotsContainer.removeAllViews();
     int sizeDot = getResources().getDimensionPixelSize(R.dimen.waiting_view_dot_size);
     for (int i = 0; i < dotsNbr; i++) {
       View v = new View(this);
@@ -635,22 +642,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     private int positionViewPager;
     private Context context;
 
-    private void setAnim(View v, float positionOffset, float xTrans, float yTrans) {
-      if (positionOffset != 0f) {
-        v.clearAnimation();
-        v.setAlpha(1 - positionOffset);
-        //  v.setTranslationX(xTrans);
-        //  v.setTranslationY(yTrans);
-        v.setScaleX(1 + positionOffset);
-        v.setScaleY(1 + positionOffset);
-      } else {
-        initUI();
-        resetView(imgAnimation1);
-        resetView(imgAnimation2);
-        resetView(imgAnimation3);
-      }
-    }
-
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
       super.onPageScrolled(position, positionOffset, positionOffsetPixels);
@@ -659,7 +650,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       setAnim(imgAnimation2, positionOffset, positionOffset * 200, (1 - positionOffset) * 200);
       setAnim(imgAnimation1, positionOffset, (1 - positionOffset) * 200,
           (1 - positionOffset) * 200);
-      Timber.e("SOEF onPageScrolled : " + positionOffset + " " + positionOffsetPixels);
     }
 
     public PageListener(LinearLayout dotsContainer, Context context) {
@@ -682,10 +672,10 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     }
 
     public void onPageSelected(int position) {
-      Timber.w("SOEF onPageSelected : " + position);
-
       this.positionViewPager = position;
       positionViewPager = position;
+      GameDetailsView gameDetailsView =  adapter.getItemAtPosition(position);
+      gameDetailsView.onCurrentViewVisible();
       for (int i = 0; i < dotsContainer.getChildCount(); i++) {
         View v = dotsContainer.getChildAt(i);
         if (v.getTag().toString().startsWith(DOTS_TAG_MARKER + position)) {
@@ -696,6 +686,22 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
           v.setScaleX(1f);
           v.setScaleY(1f);
         }
+      }
+    }
+
+    private void setAnim(View v, float positionOffset, float xTrans, float yTrans) {
+      if (positionOffset != 0f) {
+        v.clearAnimation();
+        v.setAlpha(1 - positionOffset);
+        //  v.setTranslationX(xTrans);
+        //  v.setTranslationY(yTrans);
+        v.setScaleX(1 + positionOffset);
+        v.setScaleY(1 + positionOffset);
+      } else {
+        initUI();
+        resetView(imgAnimation1);
+        resetView(imgAnimation2);
+        resetView(imgAnimation3);
       }
     }
   }

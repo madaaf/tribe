@@ -53,6 +53,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class GameDetailsView extends FrameLayout {
 
@@ -72,10 +73,6 @@ public class GameDetailsView extends FrameLayout {
   @BindView(R.id.txtBaseline) TextViewFont txtBaseline;
   @BindView(R.id.imgRays) ImageView imgRays;
   @BindView(R.id.layoutConstraint) ConstraintLayout layoutConstraint;
-  /*
-  @BindView(R.id.imgAnimation1) ImageView imgAnimation1;
-  @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
-  @BindView(R.id.imgAnimation3) ImageView imgAnimation3;*/
   @BindView(R.id.cardAvatarMyScore) CardView cardAvatarMyScore;
   @BindView(R.id.avatarMyScore) NewAvatarView avatarMyScore;
   @BindView(R.id.txtMyScoreRanking) TextViewRanking txtMyScoreRanking;
@@ -240,8 +237,6 @@ public class GameDetailsView extends FrameLayout {
     imgRays.startAnimation(rotate);
   }
 
-
-
   private void showButtons() {
     ConstraintSet set = new ConstraintSet();
     set.clone(layoutConstraint);
@@ -255,7 +250,7 @@ public class GameDetailsView extends FrameLayout {
 
     animateLayoutWithConstraintSet(set, new TransitionListenerAdapter() {
       @Override public void onTransitionEnd(@NonNull Transition transition) {
-        if (game.hasScores()) showScores();
+
       }
     });
   }
@@ -270,6 +265,18 @@ public class GameDetailsView extends FrameLayout {
     animateViewEntry(leaderbordPictoStart);
     animateViewEntry(leaderbordPictoEnd);
     animateViewEntry(leaderbordSeparator);
+  }
+
+  private void hideScores() {
+    hideViewEntry(cardAvatarMyScore);
+    hideViewEntry(txtMyScoreName);
+    hideViewEntry(txtMyScoreRanking);
+    hideViewEntry(txtMyScoreScore);
+    hideViewEntry(leaderbordContainer);
+    hideViewEntry(leaderbordLabel);
+    hideViewEntry(leaderbordPictoStart);
+    hideViewEntry(leaderbordPictoEnd);
+    hideViewEntry(leaderbordSeparator);
   }
 
   private void animateLayoutWithConstraintSet(ConstraintSet constraintSet,
@@ -293,11 +300,17 @@ public class GameDetailsView extends FrameLayout {
   private void animateViewEntry(View v) {
     v.setTranslationY(screenUtils.dpToPx(50));
     v.animate()
+        .alpha(1)
         .translationY(0)
         .setDuration(DURATION)
         .setInterpolator(new OvershootInterpolator(0.45f))
         .start();
     showView(v);
+  }
+
+  private void hideViewEntry(View v) {
+    v.clearAnimation();
+    v.setAlpha(0);
   }
 
   /**
@@ -306,5 +319,15 @@ public class GameDetailsView extends FrameLayout {
 
   @OnClick(R.id.leaderbordContainer) void onClickLeaderbordLabel() {
     navigator.navigateToGameLeaderboard((Activity) context, game.getId());
+  }
+
+  public void onCurrentViewVisible() {
+    //if (game.hasScores())
+    hideScores();
+    subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          showScores();
+        }));
   }
 }
