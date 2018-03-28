@@ -62,6 +62,7 @@ public abstract class GameActivity extends BaseBroadcastReceiverActivity {
     initUI();
   }
 
+
   @Override protected void onStart() {
     super.onStart();
   }
@@ -89,6 +90,9 @@ public abstract class GameActivity extends BaseBroadcastReceiverActivity {
 
       gameAdapter.setItems(items);
     }));
+
+
+
   }
 
   private void initUI() {

@@ -201,6 +201,84 @@
         app:layout_constraintBottom_toBottomOf="parent"
         />
 
+
+    <FrameLayout
+        android:id="@+id/cardIcon"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="76dp"
+        android:clipChildren="false"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="23dp"
+        android:scaleType="centerInside"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardIcon"
+        />
+
+
+    <ImageView
+        android:id="@+id/imgAnimation1"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="50dp"
+        android:scaleType="centerInside"
+        android:scaleX="1"
+        android:scaleY="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imgLogo"
+        />
+
+    <ImageView
+        android:id="@+id/imgAnimation2"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="50dp"
+        android:scaleType="centerInside"
+        android:scaleX="1"
+        android:scaleY="1"
+        app:layout_constraintBottom_toBottomOf="@id/imgLogo"
+        app:layout_constraintStart_toEndOf="@id/imgLogo"
+        />
+
+    <ImageView
+        android:id="@+id/imgAnimation3"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="50dp"
+        android:scaleType="centerInside"
+        android:scaleX="1"
+        android:scaleY="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/test"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/icon_game_slice_fruit"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+
+        />
   </android.support.constraint.ConstraintLayout>
 
 

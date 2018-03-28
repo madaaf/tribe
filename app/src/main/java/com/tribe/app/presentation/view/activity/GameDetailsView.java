@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -49,9 +48,6 @@ import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -60,7 +56,6 @@ import rx.subscriptions.CompositeSubscription;
 
 public class GameDetailsView extends FrameLayout {
 
-  private static final int DURATION_MOVING = 2500;
   private static final int DURATION = 400;
   public static final String GAME_ID = "game_id";
 
@@ -77,9 +72,10 @@ public class GameDetailsView extends FrameLayout {
   @BindView(R.id.txtBaseline) TextViewFont txtBaseline;
   @BindView(R.id.imgRays) ImageView imgRays;
   @BindView(R.id.layoutConstraint) ConstraintLayout layoutConstraint;
+  /*
   @BindView(R.id.imgAnimation1) ImageView imgAnimation1;
   @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
-  @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
+  @BindView(R.id.imgAnimation3) ImageView imgAnimation3;*/
   @BindView(R.id.cardAvatarMyScore) CardView cardAvatarMyScore;
   @BindView(R.id.avatarMyScore) NewAvatarView avatarMyScore;
   @BindView(R.id.txtMyScoreRanking) TextViewRanking txtMyScoreRanking;
@@ -90,7 +86,6 @@ public class GameDetailsView extends FrameLayout {
   @BindView(R.id.leaderbordPictoStart) ImageView leaderbordPictoStart;
   @BindView(R.id.leaderbordPictoEnd) ImageView leaderbordPictoEnd;
   @BindView(R.id.leaderbordSeparator) View leaderbordSeparator;
-  @BindView(R.id.fakeBtnSingle) View fakeBtnSingle;
 
   // VARIABLES
   private UserComponent userComponent;
@@ -98,7 +93,7 @@ public class GameDetailsView extends FrameLayout {
   private GameMVPViewAdapter gameMVPViewAdapter;
   private Game game;
   private Context context;
-  private Map<String, ValueAnimator> mapAnimator;
+
   protected LayoutInflater inflater;
   protected Unbinder unbinder;
   // RESOURCES
@@ -126,9 +121,11 @@ public class GameDetailsView extends FrameLayout {
 
     initDependencyInjector();
 
-    gameManager = GameManager.getInstance(context);
-    mapAnimator = new HashMap<>();
+    init();
+  }
 
+  private void init() {
+    gameManager = GameManager.getInstance(context);
     initPresenter();
     initSubscriptions();
     initUI();
@@ -143,7 +140,6 @@ public class GameDetailsView extends FrameLayout {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
     imgRays.clearAnimation();
     clearAnimation();
-    for (ValueAnimator animator : mapAnimator.values()) animator.cancel();
     gamePresenter.onViewDetached();
     super.onDetachedFromWindow();
   }
@@ -160,7 +156,23 @@ public class GameDetailsView extends FrameLayout {
     subscriptions = new CompositeSubscription();
   }
 
+  private void resetView(View v) {
+    v.setAlpha(0f);
+    v.setTranslationX(0);
+    v.setTranslationY(0);
+    v.clearAnimation();
+  }
+
+  private void initLeaderbord() {
+    resetView(leaderbordContainer);
+    resetView(leaderbordLabel);
+    resetView(leaderbordPictoStart);
+    resetView(leaderbordPictoEnd);
+    resetView(leaderbordSeparator);
+  }
+
   private void initUI() {
+    initLeaderbord();
     txtBaseline.setText(game.getBaseline());
 
     new GlideUtils.GameImageBuilder(context, screenUtils).url(game.getIcon())
@@ -180,32 +192,9 @@ public class GameDetailsView extends FrameLayout {
 
     ViewCompat.setBackground(imgBackgroundGradient, gd);
 
-    for (int i = 0; i < game.getAnimation_icons().size(); i++) {
-      String url = game.getAnimation_icons().get(i);
-      ImageView imageView = null;
-
-      if (i == 0) {
-        imageView = imgAnimation1;
-      } else if (i == 1) {
-        imageView = imgAnimation2;
-      } else if (i == 2) {
-        imageView = imgAnimation3;
-      }
-
-      Glide.with(context).load(url).into(imageView);
-    }
-
-    animateImg(imgAnimation1, true);
-    animateImg(imgAnimation1, false);
-    animateImg(imgAnimation2, true);
-    animateImg(imgAnimation2, false);
-    animateImg(imgAnimation3, true);
-    animateImg(imgAnimation3, false);
-
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          showImgAnimations();
           animateRays();
         }));
 
@@ -251,37 +240,18 @@ public class GameDetailsView extends FrameLayout {
     imgRays.startAnimation(rotate);
   }
 
-  private void showImgAnimations() {
-    imgAnimation1.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-    imgAnimation2.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-    imgAnimation3.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-  }
+
 
   private void showButtons() {
     ConstraintSet set = new ConstraintSet();
     set.clone(layoutConstraint);
-   /*  set.connect(R.id.btnSingle, ConstraintSet.BOTTOM, R.id.btnMulti, ConstraintSet.TOP);
+    set.connect(R.id.btnSingle, ConstraintSet.BOTTOM, R.id.btnMulti, ConstraintSet.TOP);
     set.clear(R.id.btnSingle, ConstraintSet.TOP);
     set.connect(R.id.btnMulti, ConstraintSet.BOTTOM, layoutConstraint.getId(),
         ConstraintSet.BOTTOM);
     set.clear(R.id.btnMulti, ConstraintSet.TOP);
     set.setAlpha(R.id.btnSingle, 1);
-    set.setAlpha(R.id.btnMulti, 1);*/
+    set.setAlpha(R.id.btnMulti, 1);
 
     animateLayoutWithConstraintSet(set, new TransitionListenerAdapter() {
       @Override public void onTransitionEnd(@NonNull Transition transition) {
@@ -328,29 +298,6 @@ public class GameDetailsView extends FrameLayout {
         .setInterpolator(new OvershootInterpolator(0.45f))
         .start();
     showView(v);
-  }
-
-  private void animateImg(ImageView imgAnimation, boolean isX) {
-    int rdm = new Random().nextInt(50) - 25;
-
-    ValueAnimator animator = mapAnimator.get(imgAnimation.getId());
-    if (animator != null) {
-      animator.cancel();
-    }
-
-    animator = ValueAnimator.ofInt(0, screenUtils.dpToPx(rdm));
-    animator.setDuration(DURATION_MOVING);
-    animator.setRepeatCount(ValueAnimator.INFINITE);
-    animator.setRepeatMode(ValueAnimator.REVERSE);
-    animator.addUpdateListener(animation -> {
-      int translation = (int) animation.getAnimatedValue();
-      if (isX) {
-        imgAnimation.setTranslationX(translation);
-      } else {
-        imgAnimation.setTranslationY(translation);
-      }
-    });
-    animator.start();
   }
 
   /**
