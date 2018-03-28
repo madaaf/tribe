@@ -496,6 +496,9 @@ public class LiveView extends FrameLayout {
         Observable.merge(viewControlsLive.onStopGame(), viewGameManager.onStopGame(), onStopGame));
     gameManager.initUIControlsResetGame(viewControlsLive.onResetScores());
 
+    viewRoom.initMapSizeChangedObs(viewGameManager.onMapSizeChanged());
+    viewRoom.initXYOffsetChangedObs(viewGameManager.onXYOffsetChanged());
+
     persistentSubscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
       startGameStats(game.getId());
       displayStartGameNotification(game.getTitle(), user.getDisplayName());

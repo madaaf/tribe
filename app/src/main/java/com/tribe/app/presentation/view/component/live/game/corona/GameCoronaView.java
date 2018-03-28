@@ -36,7 +36,6 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.RemoteConfigManager;
-import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -80,28 +79,23 @@ public class GameCoronaView extends GameView {
   @BindView(R.id.layoutProgress) FrameLayout layoutProgress;
   @BindView(R.id.viewProgress) View viewProgress;
   @BindView(R.id.cardViewProgress) CardView cardViewProgress;
-  @BindView(R.id.layoutMap) FrameLayout layoutMap;
-  @BindView(R.id.view) View view;
-  @BindView(R.id.viewOther) View viewOther;
 
   // VARIABLES
-  private Handler mainHandler;
-  private GameMVPViewAdapter gameMVPViewAdapter;
-  private NewChatMVPViewAdapter newChatMVPViewAdapter;
-  private RemoteConfigManager remoteConfigManager;
-  private Map<String, Integer> mapScores = new HashMap<>();
-  private Score bestScore = null;
-  private double ratioWidth = 0.0D, ratioHeight = 0.0D;
-  private double displayWidth = 0.0D;
-  private double displayHeight = 0.0D;
-  private double mapWidth = 0.0D;
-  private double ratioMapCoronaToMapNative = 0.0D;
+  protected Handler mainHandler;
+  protected GameMVPViewAdapter gameMVPViewAdapter;
+  protected NewChatMVPViewAdapter newChatMVPViewAdapter;
+  protected RemoteConfigManager remoteConfigManager;
+  protected Map<String, Integer> mapScores = new HashMap<>();
+  protected Score bestScore = null;
 
   // OBSERVABLES
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
 
   public GameCoronaView(@NonNull Context context, Game game) {
     super(context);
+
+    setClipChildren(false);
+    setClipToPadding(false);
 
     //FileUtils.getGameUnzippedDir(context).delete();
     //
@@ -170,11 +164,6 @@ public class GameCoronaView extends GameView {
     coronaView.init(game.getId());
     coronaView.setZOrderMediaOverlay(true);
 
-    if (game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
-      layoutProgress.setVisibility(View.GONE);
-      coronaView.resume();
-    }
-
     //gamePresenter.getGameFile(game.getUrl());
   }
 
@@ -211,14 +200,7 @@ public class GameCoronaView extends GameView {
   }
 
   @Override protected void initGameMasterManagerSubscriptions() {
-    if (gameMasterManager == null) return;
-    subscriptionsRoom.add(gameMasterManager.onMessage().subscribe(s -> {
-      Timber.d("Sending event to Corona : " + s);
-      Hashtable<Object, Object> message = new Hashtable<>();
-      message.put("name", "gameMaster");
-      message.put("string", s);
-      coronaView.sendEvent(message);
-    }));
+
   }
 
   @Override protected void initDependencyInjector() {
@@ -333,137 +315,71 @@ public class GameCoronaView extends GameView {
           gamePresenter.getUserBestScore(game.getId());
         }
       } else {
-        mainHandler.post(() -> {
-          if (game == null) return;
-
-          if (event.equals("gameLoaded")) {
-            startGame();
-          } else if (event.equals("saveScore")) {
-            onAddScore.onNext(
-                Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
-          } else if (event.equals("revive")) {
-            if (BuildConfig.DEBUG) {
-              subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
-                  .observeOn(AndroidSchedulers.mainThread())
-                  .subscribe(aLong -> sendSuccessRevive()));
-            } else {
-              Timber.d("Revive");
-              if (!FacebookUtils.isLoggedIn()) {
-                Timber.d("Ask FB login");
-                subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-                  if (loginResult != null) {
-                    Timber.d("Load contacts");
-                    newChatPresenter.loadFBContactsInvite(null);
-                  } else {
-                    errorRevive();
-                  }
-                }));
-              } else {
-                Timber.d("Load contacts");
-                newChatPresenter.loadFBContactsInvite(null);
-              }
-            }
-          } else if (event.equals("scoresUpdated")) {
-            mapScores.clear();
-            Hashtable<String, Double> scores = (Hashtable<String, Double>) hashtable.get("scores");
-            for (String id : scores.keySet()) mapScores.put(id, scores.get(id).intValue());
-            updateLiveScores(mapScores, null);
-          } else if (event.equals("broadcastMessage")) {
-            sendMessage((JSONObject) getBroadcastPayload(
-                (Hashtable<Object, Object>) hashtable.get("message"), false), null);
-          } else if (event.equals("sendMessage")) {
-            sendMessage((JSONObject) getBroadcastPayload(
-                (Hashtable<Object, Object>) hashtable.get("message"), false),
-                hashtable.get("to").toString());
-          } else if (event.equals("showGameLeaderboard")) {
-            onOpenLeaderboard.onNext(game);
-          } else if (event.equals("contextGame")) {
-            Hashtable<String, Double> scores =
-                (Hashtable<String, Double>) ((Hashtable<Object, Object>) hashtable.get(CONTEXT_KEY))
-                    .get(SCORES_KEY);
-            Map<String, Integer> contextScores = new HashMap<>();
-            for (String key : scores.keySet()) {
-              contextScores.put(key, scores.get(key).intValue());
-            }
-
-            game.getContextMap().put(SCORES_KEY, contextScores);
-
-            JSONObject jsonObject = getCompleteContextPayload(SCORES_KEY, game.getContextMap());
-            webRTCRoom.sendToPeers(jsonObject, true);
-          } else if (event.equals("gameMaster")) {
-            String message = hashtable.get("string").toString();
-            //Timber.d("Sending to gameMaster : " + message);
-            gameMasterManager.send(message);
-          } else if (event.equals("usersPositions")) {
-            Double x = null;
-            Double y = null;
-            String userId = null;
-            Hashtable<String, Hashtable<String, Object>> data =
-                ((Hashtable<String, Hashtable<String, Object>>) hashtable.get("data"));
-
-            for (Hashtable<String, Object> userPositionTable : data.values()) {
-              x = (Double) userPositionTable.get("x");
-              y = (Double) userPositionTable.get("y");
-              userId = userPositionTable.get("userId").toString();
-
-              if (userId.equals(currentUser.getId())) {
-                //Timber.d("x : " + x + ", y : " + y);
-
-                Double originXCorona = displayWidth * 0.5 - mapWidth * x;
-                Double originYCorona = displayHeight * 0.5 - mapWidth * y;
-
-                //Timber.d("originXCorona : " + originXCorona + ", originYCorona : " + originYCorona);
-
-                Double originXNative = originXCorona * ratioMapCoronaToMapNative + 150;
-                Double originYNative = originYCorona * ratioMapCoronaToMapNative + 350;
-
-                //Timber.d("originXNative : " + originXNative + ", originYNative : " + originYNative);
-
-                UIUtils.changeLeftMarginOfView(view,
-                    (int) Math.round((layoutMap.getMeasuredWidth() * x)));
-                UIUtils.changeTopMarginOfView(view,
-                    (int) Math.round((layoutMap.getMeasuredHeight() * y)));
-
-                layoutMap.setTranslationX(originXNative.intValue());
-                layoutMap.setTranslationY(originYNative.intValue());
-              } else {
-                //Timber.d("User id : " + userId + " x : " + x + ", y : " + y);
-                UIUtils.changeLeftMarginOfView(viewOther, (int) Math.round(
-                    (layoutMap.getMeasuredWidth() * x) - (viewOther.getMeasuredWidth() >> 1)));
-                UIUtils.changeTopMarginOfView(viewOther, (int) Math.round(
-                    (layoutMap.getMeasuredHeight() * y) - (viewOther.getMeasuredHeight() >> 1)));
-              }
-            }
-          } else if (event.equals("mapSize")) {
-            displayWidth = (Double) hashtable.get("displayWidth");
-            displayHeight = (Double) hashtable.get("displayHeight");
-            mapWidth = (Double) hashtable.get("mapWidth");
-            Timber.d("displayWidth : " +
-                displayWidth +
-                ", displayHeight : " +
-                displayHeight +
-                ", width : " +
-                coronaView.getMeasuredWidth() +
-                ", height : " +
-                coronaView.getMeasuredHeight());
-
-            ratioWidth = mapWidth / displayWidth;
-            ratioHeight = mapWidth / displayHeight;
-            Timber.d("ratioWidth : " + ratioWidth + ", ratioHeight : " + ratioHeight);
-            //int size = (int) ((mapWidth / displayWidth) * coronaView.getMeasuredWidth());
-            double sizeWidth = (double) (mapWidth * ratioWidth);
-            ratioMapCoronaToMapNative = sizeWidth / mapWidth;
-            Timber.d("sizeWidth : " +
-                sizeWidth +
-                ", ratioMapCoronaToMapNative : " +
-                ratioMapCoronaToMapNative);
-            UIUtils.changeWidthHeightOfView(layoutMap, (int) sizeWidth, (int) sizeWidth);
-          }
-        });
+        mainHandler.post(() -> handleCoronaMessage(event, hashtable));
       }
 
       return null;
     });
+  }
+
+  protected void handleCoronaMessage(String event, Hashtable<Object, Object> hashtable) {
+    if (game == null) return;
+
+    if (event.equals("gameLoaded")) {
+      startGame();
+    } else if (event.equals("saveScore")) {
+      onAddScore.onNext(Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
+    } else if (event.equals("revive")) {
+      if (BuildConfig.DEBUG) {
+        subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> sendSuccessRevive()));
+      } else {
+        Timber.d("Revive");
+        if (!FacebookUtils.isLoggedIn()) {
+          Timber.d("Ask FB login");
+          subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
+            if (loginResult != null) {
+              Timber.d("Load contacts");
+              newChatPresenter.loadFBContactsInvite(null);
+            } else {
+              errorRevive();
+            }
+          }));
+        } else {
+          Timber.d("Load contacts");
+          newChatPresenter.loadFBContactsInvite(null);
+        }
+      }
+    } else if (event.equals("scoresUpdated")) {
+      mapScores.clear();
+      Hashtable<String, Double> scores = (Hashtable<String, Double>) hashtable.get("scores");
+      for (String id : scores.keySet()) mapScores.put(id, scores.get(id).intValue());
+      updateLiveScores(mapScores, null);
+    } else if (event.equals("broadcastMessage")) {
+      sendMessage(
+          (JSONObject) getBroadcastPayload((Hashtable<Object, Object>) hashtable.get("message"),
+              false), null);
+    } else if (event.equals("sendMessage")) {
+      sendMessage(
+          (JSONObject) getBroadcastPayload((Hashtable<Object, Object>) hashtable.get("message"),
+              false), hashtable.get("to").toString());
+    } else if (event.equals("showGameLeaderboard")) {
+      onOpenLeaderboard.onNext(game);
+    } else if (event.equals("contextGame")) {
+      Hashtable<String, Double> scores =
+          (Hashtable<String, Double>) ((Hashtable<Object, Object>) hashtable.get(CONTEXT_KEY)).get(
+              SCORES_KEY);
+      Map<String, Integer> contextScores = new HashMap<>();
+      for (String key : scores.keySet()) {
+        contextScores.put(key, scores.get(key).intValue());
+      }
+
+      game.getContextMap().put(SCORES_KEY, contextScores);
+
+      JSONObject jsonObject = getCompleteContextPayload(SCORES_KEY, game.getContextMap());
+      webRTCRoom.sendToPeers(jsonObject, true);
+    }
   }
 
   @Override protected void receiveMessage(TribeSession tribeSession, JSONObject jsonObject) {

@@ -57,7 +57,7 @@ public class GameMasterManagerFactory {
     }
 
     public void connect(String sessionId) {
-      headers.put(WebSocketConnection.TRIBE_SESSION_ID, "12351");
+      headers.put(WebSocketConnection.TRIBE_SESSION_ID, "123451");
       webSocketConnection.setHeaders(headers);
 
       subscriptions.add(

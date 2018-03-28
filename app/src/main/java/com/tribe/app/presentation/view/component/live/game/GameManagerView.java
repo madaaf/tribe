@@ -29,6 +29,7 @@ import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRush
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
 import com.tribe.app.presentation.view.component.live.game.coolcams.GameCoolCamsView;
+import com.tribe.app.presentation.view.component.live.game.corona.GameBattleRoyaleCoronaView;
 import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.component.live.game.gamemaster.GameMasterManagerFactory;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
@@ -86,6 +87,8 @@ public class GameManagerView extends FrameLayout {
   private PublishSubject<Game> onOpenLeaderboard = PublishSubject.create();
   private PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
   private PublishSubject<GameCoronaView> onRevive = PublishSubject.create();
+  private PublishSubject<Pair<Integer, Integer>> onMapSizeChanged = PublishSubject.create();
+  private PublishSubject<Pair<Integer, Integer>> onXYOffsetChanged = PublishSubject.create();
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
 
   public GameManagerView(@NonNull Context context) {
@@ -260,7 +263,17 @@ public class GameManagerView extends FrameLayout {
           .subscribe(onRestartGame));
     } else if (game.getId().equals(Game.GAME_INVADERS) ||
         game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
-      GameCoronaView gameCoronaView = new GameCoronaView(getContext(), game);
+      GameCoronaView gameCoronaView;
+      if (game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
+        GameBattleRoyaleCoronaView gameBattleRoyaleCoronaView =
+            new GameBattleRoyaleCoronaView(getContext(), game);
+        gameBattleRoyaleCoronaView.onMapSizeChanged().subscribe(onMapSizeChanged);
+        gameBattleRoyaleCoronaView.onXYOffsetChanged().subscribe(onXYOffsetChanged);
+        gameCoronaView = gameBattleRoyaleCoronaView;
+      } else {
+        gameCoronaView = new GameCoronaView(getContext(), game);
+      }
+
       subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
       subscriptionsGame.add(gameCoronaView.onRevive().subscribe(onRevive));
       subscriptionsGame.add(gameCoronaView.onOpenLeaderboard().subscribe(onOpenLeaderboard));
@@ -373,5 +386,13 @@ public class GameManagerView extends FrameLayout {
 
   public Observable<Game> onOpenLeaderboard() {
     return onOpenLeaderboard;
+  }
+
+  public Observable<Pair<Integer, Integer>> onMapSizeChanged() {
+    return onMapSizeChanged;
+  }
+
+  public Observable<Pair<Integer, Integer>> onXYOffsetChanged() {
+    return onXYOffsetChanged;
   }
 }

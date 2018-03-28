@@ -90,6 +90,7 @@ public abstract class LiveStreamView extends LinearLayout {
   protected PublishSubject<Pair<Integer, String>> onScoreChange = PublishSubject.create();
   protected PublishSubject<List<CoolCamsModel.CoolCamsFeatureEnum>> onFeaturesDetected =
       PublishSubject.create();
+  protected PublishSubject<Pair<Integer, Integer>> onUpdateXYOffset = PublishSubject.create();
 
   public LiveStreamView(Context context) {
     super(context);
@@ -390,6 +391,11 @@ public abstract class LiveStreamView extends LinearLayout {
     updatePositionOfSticker(pointEnd, statusEnum);
   }
 
+  public void updateXYOffset(int left, int top) {
+    bgBattleRoyale.setVisibility(View.GONE);
+    onUpdateXYOffset.onNext(Pair.create(left, top));
+  }
+
   /////////////////
   // OBSERVABLES //
   /////////////////
@@ -400,5 +406,9 @@ public abstract class LiveStreamView extends LinearLayout {
 
   public Observable<List<CoolCamsModel.CoolCamsFeatureEnum>> onFeaturesDetected() {
     return onFeaturesDetected;
+  }
+
+  public Observable<Pair<Integer, Integer>> onUpdateXYOffset() {
+    return onUpdateXYOffset;
   }
 }
