@@ -18,6 +18,7 @@ import com.tribe.tribelivesdk.game.GameFooter;
 import com.tribe.tribelivesdk.game.GameManager;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -32,7 +33,7 @@ public abstract class GameActivity extends BaseBroadcastReceiverActivity {
 
   @Inject GamePresenter gamePresenter;
 
-  @BindView(R.id.recyclerViewGames) RecyclerView recyclerViewGames;
+  @Nullable @BindView(R.id.recyclerViewGames) RecyclerView recyclerViewGames;
 
   // VARIABLES
   protected GamesLayoutManager layoutManager;
@@ -62,7 +63,6 @@ public abstract class GameActivity extends BaseBroadcastReceiverActivity {
     initUI();
   }
 
-
   @Override protected void onStart() {
     super.onStart();
   }
@@ -90,23 +90,23 @@ public abstract class GameActivity extends BaseBroadcastReceiverActivity {
 
       gameAdapter.setItems(items);
     }));
-
-
-
   }
 
   private void initUI() {
     layoutManager = new GamesLayoutManager(this);
-    recyclerViewGames.setLayoutManager(layoutManager);
-    recyclerViewGames.setItemAnimator(null);
-    recyclerViewGames.setAdapter(gameAdapter);
-    recyclerViewGames.addItemDecoration(
-        new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.grey_divider),
-            screenUtils.dpToPx(0.5f)));
+    if (recyclerViewGames != null) {
+      recyclerViewGames.setLayoutManager(layoutManager);
+      recyclerViewGames.setItemAnimator(null);
+      recyclerViewGames.setAdapter(gameAdapter);
+      recyclerViewGames.addItemDecoration(
+          new BaseListDividerDecoration(this, ContextCompat.getColor(this, R.color.grey_divider),
+              screenUtils.dpToPx(0.5f)));
 
-    subscriptions.add(gameAdapter.onClick()
-        .map(view -> gameAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view)))
-        .subscribe(game -> onGameSelected(game)));
+      subscriptions.add(gameAdapter.onClick()
+          .map(
+              view -> gameAdapter.getItemAtPosition(recyclerViewGames.getChildLayoutPosition(view)))
+          .subscribe(game -> onGameSelected(game)));
+    }
   }
 
   private void addFooterItem() {
@@ -119,16 +119,4 @@ public abstract class GameActivity extends BaseBroadcastReceiverActivity {
   protected abstract int getContentView();
 
   protected abstract void initDependencyInjector();
-
-  /**
-   * ONCLICK
-   */
-
-  /**
-   * PUBLIC
-   */
-
-  /**
-   * OBSERVABLES
-   */
 }

@@ -138,26 +138,11 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     super.onCreate(savedInstanceState);
 
-    if (getIntent().getData() != null) {
-      Intent newIntent = IntentUtils.getLiveIntentFromURI(this, getIntent().getData(),
-          LiveActivity.SOURCE_DEEPLINK);
-      if (newIntent != null) navigator.navigateToIntent(this, newIntent);
-    }
-
-    userIdsDigest = new ArrayList<>();
-    roomIdsDigest = new ArrayList<>();
-    usersChallenge = new ArrayList<>();
-
-    rxPermissions = new RxPermissions(this);
-
     adapter = new GamePagerAdapter(this, gameManager.getGames(), screenUtils);
     initDots(gameManager.getGames().size());
     pageListener = new PageListener(dotsContainer, this);
     viewpager.addOnPageChangeListener(pageListener);
     viewpager.setAdapter(adapter);
-    recyclerViewGames.setVisibility(View.GONE);
-
-    onGames.onNext(gameManager.getGames());
 
     if (gameManager.getGames() != null) {
       initUI();
@@ -169,7 +154,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
         @Override public void onGameList(List<Game> gameList) {
           gameManager.addGames(gameList);
-          onGames.onNext(gameList);
           initUI();
         }
       };
@@ -318,9 +302,22 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
         tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_HomeScreen);
       }
     }
+
+    if (getIntent().getData() != null) {
+      Intent newIntent = IntentUtils.getLiveIntentFromURI(this, getIntent().getData(),
+          LiveActivity.SOURCE_DEEPLINK);
+      if (newIntent != null) navigator.navigateToIntent(this, newIntent);
+    }
+
+    userIdsDigest = new ArrayList<>();
+    roomIdsDigest = new ArrayList<>();
+    usersChallenge = new ArrayList<>();
+
+    rxPermissions = new RxPermissions(this);
   }
 
   private void initUI() {
+    onGames.onNext(gameManager.getGames());
     mapAnimator = new HashMap<>();
 
     for (int i = 0; i < getCurrentGame().getAnimation_icons().size(); i++) {
