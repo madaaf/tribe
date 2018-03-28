@@ -80,7 +80,9 @@ public class GameCoronaView extends GameView {
   @BindView(R.id.layoutProgress) FrameLayout layoutProgress;
   @BindView(R.id.viewProgress) View viewProgress;
   @BindView(R.id.cardViewProgress) CardView cardViewProgress;
+  @BindView(R.id.layoutMap) FrameLayout layoutMap;
   @BindView(R.id.view) View view;
+  @BindView(R.id.viewOther) View viewOther;
 
   // VARIABLES
   private Handler mainHandler;
@@ -89,6 +91,11 @@ public class GameCoronaView extends GameView {
   private RemoteConfigManager remoteConfigManager;
   private Map<String, Integer> mapScores = new HashMap<>();
   private Score bestScore = null;
+  private double ratioWidth = 0.0D, ratioHeight = 0.0D;
+  private double displayWidth = 0.0D;
+  private double displayHeight = 0.0D;
+  private double mapWidth = 0.0D;
+  private double ratioMapCoronaToMapNative = 0.0D;
 
   // OBSERVABLES
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
@@ -387,14 +394,70 @@ public class GameCoronaView extends GameView {
             String message = hashtable.get("string").toString();
             //Timber.d("Sending to gameMaster : " + message);
             gameMasterManager.send(message);
-          } else if (event.equals("userPosition")) {
-            double x = (Double) hashtable.get("x");
-            double y = (Double) hashtable.get("y");
-            Timber.d("x : " + x + ", y : " + y);
-            UIUtils.changeLeftMarginOfView(view, (int) Math.round(
-                (coronaView.getMeasuredWidth() * x) - (view.getMeasuredWidth() >> 1)));
-            UIUtils.changeTopMarginOfView(view, (int) Math.round(
-                (coronaView.getMeasuredHeight() * y) - (view.getMeasuredHeight() >> 1)));
+          } else if (event.equals("usersPositions")) {
+            Double x = null;
+            Double y = null;
+            String userId = null;
+            Hashtable<String, Hashtable<String, Object>> data =
+                ((Hashtable<String, Hashtable<String, Object>>) hashtable.get("data"));
+
+            for (Hashtable<String, Object> userPositionTable : data.values()) {
+              x = (Double) userPositionTable.get("x");
+              y = (Double) userPositionTable.get("y");
+              userId = userPositionTable.get("userId").toString();
+
+              if (userId.equals(currentUser.getId())) {
+                //Timber.d("x : " + x + ", y : " + y);
+
+                Double originXCorona = displayWidth * 0.5 - mapWidth * x;
+                Double originYCorona = displayHeight * 0.5 - mapWidth * y;
+
+                //Timber.d("originXCorona : " + originXCorona + ", originYCorona : " + originYCorona);
+
+                Double originXNative = originXCorona * ratioMapCoronaToMapNative + 150;
+                Double originYNative = originYCorona * ratioMapCoronaToMapNative + 350;
+
+                //Timber.d("originXNative : " + originXNative + ", originYNative : " + originYNative);
+
+                UIUtils.changeLeftMarginOfView(view,
+                    (int) Math.round((layoutMap.getMeasuredWidth() * x)));
+                UIUtils.changeTopMarginOfView(view,
+                    (int) Math.round((layoutMap.getMeasuredHeight() * y)));
+
+                layoutMap.setTranslationX(originXNative.intValue());
+                layoutMap.setTranslationY(originYNative.intValue());
+              } else {
+                //Timber.d("User id : " + userId + " x : " + x + ", y : " + y);
+                UIUtils.changeLeftMarginOfView(viewOther, (int) Math.round(
+                    (layoutMap.getMeasuredWidth() * x) - (viewOther.getMeasuredWidth() >> 1)));
+                UIUtils.changeTopMarginOfView(viewOther, (int) Math.round(
+                    (layoutMap.getMeasuredHeight() * y) - (viewOther.getMeasuredHeight() >> 1)));
+              }
+            }
+          } else if (event.equals("mapSize")) {
+            displayWidth = (Double) hashtable.get("displayWidth");
+            displayHeight = (Double) hashtable.get("displayHeight");
+            mapWidth = (Double) hashtable.get("mapWidth");
+            Timber.d("displayWidth : " +
+                displayWidth +
+                ", displayHeight : " +
+                displayHeight +
+                ", width : " +
+                coronaView.getMeasuredWidth() +
+                ", height : " +
+                coronaView.getMeasuredHeight());
+
+            ratioWidth = mapWidth / displayWidth;
+            ratioHeight = mapWidth / displayHeight;
+            Timber.d("ratioWidth : " + ratioWidth + ", ratioHeight : " + ratioHeight);
+            //int size = (int) ((mapWidth / displayWidth) * coronaView.getMeasuredWidth());
+            double sizeWidth = (double) (mapWidth * ratioWidth);
+            ratioMapCoronaToMapNative = sizeWidth / mapWidth;
+            Timber.d("sizeWidth : " +
+                sizeWidth +
+                ", ratioMapCoronaToMapNative : " +
+                ratioMapCoronaToMapNative);
+            UIUtils.changeWidthHeightOfView(layoutMap, (int) sizeWidth, (int) sizeWidth);
           }
         });
       }

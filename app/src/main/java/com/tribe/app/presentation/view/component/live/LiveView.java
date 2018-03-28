@@ -1164,8 +1164,8 @@ public class LiveView extends FrameLayout {
       viewScoresOverLive.setVisibility(View.GONE);
     }
 
-    if (game.isOverLive()) {
-      viewRoom.setType(LiveRoomView.TYPE_LIST);
+    if (game.isOverLive() || game.isOverLiveEmbed()) {
+      viewRoom.setType(game.isOverLiveEmbed() ? LiveRoomView.TYPE_EMBED : LiveRoomView.TYPE_LIST);
       if (viewGameManager.getParent() == null) {
         viewGameManager.setBackgroundColor(Color.BLACK);
         addViewGameManagerAtPosition(indexOfViewRoom);

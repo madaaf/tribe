@@ -59,7 +59,6 @@ public class GameMasterManagerFactory {
     public void connect(String sessionId) {
       headers.put(WebSocketConnection.TRIBE_SESSION_ID, "12351");
       webSocketConnection.setHeaders(headers);
-      webSocketConnection.setShouldReconnect(false);
 
       subscriptions.add(
           webSocketConnection.onConnectError().subscribe(s -> Timber.d("onConnectError : " + s)));
@@ -73,6 +72,7 @@ public class GameMasterManagerFactory {
       subscriptions.add(webSocketConnection.onError().subscribe(s -> Timber.d("onError : " + s)));
 
       webSocketConnection.connect(BuildConfig.TRIBE_GAME_MASTER_WSS);
+      webSocketConnection.setShouldReconnect(false);
     }
 
     public void disconnect() {

@@ -44,13 +44,15 @@ import rx.subscriptions.CompositeSubscription;
  */
 public abstract class LiveStreamView extends LinearLayout {
 
-  @IntDef({ TYPE_GRID, TYPE_LIST }) public @interface StreamType {
+  @IntDef({ TYPE_GRID, TYPE_LIST, TYPE_EMBED }) public @interface StreamType {
   }
 
   public static final int TYPE_GRID = 0;
   public static final int TYPE_LIST = 1;
+  public static final int TYPE_EMBED = 2;
 
   public static final int MAX_HEIGHT_LIST = 45;
+  public static final int MAX_HEIGHT_EMBED = 70;
 
   @Inject protected ScreenUtils screenUtils;
 
@@ -71,6 +73,10 @@ public abstract class LiveStreamView extends LinearLayout {
   @BindView(R.id.imgCoolCamsWonBg) ImageView imgCoolCamsWonBg;
 
   @BindView(R.id.imgCoolCams) ImageView imgCoolCams;
+
+  @BindView(R.id.bgBattleRoyale) ImageView bgBattleRoyale;
+
+  @BindView(R.id.layoutMasterStream) FrameLayout layoutMasterStream;
 
   // VARIABLES
   protected Unbinder unbinder;
@@ -167,15 +173,31 @@ public abstract class LiveStreamView extends LinearLayout {
     imgCoolCamsWonBg.clearAnimation();
   }
 
-  public void setStyle(@StreamType int type) {
-    if (type == TYPE_LIST) {
+  public void setStyle(@LiveRoomView.RoomUIType int type) {
+    if (type == TYPE_EMBED) {
+      bgBattleRoyale.setVisibility(View.VISIBLE);
+      layoutStream.setRadius(screenUtils.dpToPx((float) MAX_HEIGHT_LIST / 2f));
+      UIUtils.changeWidthHeightOfView(layoutMasterStream, screenUtils.dpToPx(MAX_HEIGHT_EMBED),
+          screenUtils.dpToPx(MAX_HEIGHT_EMBED));
+      UIUtils.changeWidthHeightOfView(layoutStream, screenUtils.dpToPx(MAX_HEIGHT_LIST),
+          screenUtils.dpToPx(MAX_HEIGHT_LIST));
+      txtScore.setVisibility(GONE);
+      txtEmoji.setVisibility(GONE);
+    } else if (type == TYPE_LIST) {
+      bgBattleRoyale.setVisibility(View.GONE);
       layoutStream.setRadius(screenUtils.dpToPx(5));
-      UIUtils.changeWidthOfView(layoutStream, screenUtils.dpToPx(MAX_HEIGHT_LIST));
+      UIUtils.changeWidthHeightOfView(layoutMasterStream, screenUtils.dpToPx(MAX_HEIGHT_LIST),
+          screenUtils.dpToPx(MAX_HEIGHT_LIST));
       txtScore.setVisibility(VISIBLE);
       txtEmoji.setVisibility(VISIBLE);
     } else {
+      bgBattleRoyale.setVisibility(View.GONE);
       layoutStream.setRadius(0);
-      UIUtils.changeWidthOfView(layoutStream, ViewGroup.LayoutParams.MATCH_PARENT);
+      getPeerView().setPadding(0, 0, 0, 0);
+      UIUtils.changeWidthHeightOfView(layoutStream, ViewGroup.LayoutParams.MATCH_PARENT,
+          ViewGroup.LayoutParams.MATCH_PARENT);
+      UIUtils.changeWidthHeightOfView(layoutMasterStream, ViewGroup.LayoutParams.MATCH_PARENT,
+          ViewGroup.LayoutParams.MATCH_PARENT);
       txtScore.setVisibility(GONE);
       txtEmoji.setVisibility(GONE);
     }
@@ -239,10 +261,8 @@ public abstract class LiveStreamView extends LinearLayout {
       middleEyesTranslatedPosition =
           new PointF(translateX(middleEyesPosition.x, frame.isFrontCamera()),
               translateY(middleEyesPosition.y));
-      middleEyesTranslatedPosition.x =
-          (int) middleEyesTranslatedPosition.x;
-      middleEyesTranslatedPosition.y =
-          (int) middleEyesTranslatedPosition.y;
+      middleEyesTranslatedPosition.x = (int) middleEyesTranslatedPosition.x;
+      middleEyesTranslatedPosition.y = (int) middleEyesTranslatedPosition.y;
 
       updatePositionOfSticker(middleEyesTranslatedPosition, statusEnum);
 
@@ -302,7 +322,6 @@ public abstract class LiveStreamView extends LinearLayout {
         } else {
           imgCoolCams.setImageResource(res);
         }
-
       } else if (status.equals(CoolCamsModel.CoolCamsStatusEnum.WON)) {
         if (previousStatus == null || !previousStatus.equals(status)) {
           scaleView(imgCoolCams, false, null);

@@ -963,7 +963,7 @@
 	<string name="new_game_cancelled">Votre sélection (%1$s) a été annulée car un jeu est déjà en cours.</string>
 	
 	<!-- Game -->
-	<string name="game_loading">Chargement de %1$s</string>
+	<string name="game_loading">Chargement du jeu...</string>
 	<string name="game_rotate_landscape">Tournez en mode Paysage</string>
 	<string name="game_rotate_portrait">Tournez en mode portrait</string>
 	<string name="game_unavailable">Le jeu en cours n\'est pas disponible sur votre téléphone.</string>

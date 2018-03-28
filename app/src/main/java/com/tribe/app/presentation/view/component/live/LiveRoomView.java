@@ -48,11 +48,12 @@ import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_
 
 public class LiveRoomView extends FrameLayout {
 
-  @IntDef({ TYPE_GRID, TYPE_LIST }) public @interface RoomUIType {
+  @IntDef({ TYPE_GRID, TYPE_LIST, TYPE_EMBED }) public @interface RoomUIType {
   }
 
   public static final int TYPE_GRID = 0;
   public static final int TYPE_LIST = 1;
+  public static final int TYPE_EMBED = 2;
 
   private static final int GUIDELINE_HALF_HEIGHT = View.generateViewId();
   private static final int GUIDELINE_HALF_WIDTH = View.generateViewId();
@@ -124,7 +125,8 @@ public class LiveRoomView extends FrameLayout {
   }
 
   public void dispose() {
-    for (Subscription subscription : mapViewsScoreChangeSubscription.values()) subscription.unsubscribe();
+    for (Subscription subscription : mapViewsScoreChangeSubscription.values())
+      subscription.unsubscribe();
     mapViewsScoreChangeSubscription.clear();
     mapViews.clear();
   }
@@ -396,13 +398,17 @@ public class LiveRoomView extends FrameLayout {
     if (type == TYPE_GRID) {
       setBackgroundColor(Color.BLACK);
       constraintLayout.removeView(liveRowViewAddFriend);
-    } else if (type == TYPE_LIST) {
+    } else if (type == TYPE_LIST || type == TYPE_EMBED) {
       translation = (getMeasuredHeight() >> 1) - screenUtils.dpToPx(60);
       setBackgroundColor(Color.TRANSPARENT);
-      MarginLayoutParams params =
-          new MarginLayoutParams(screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST),
-              screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
-      constraintLayout.addView(liveRowViewAddFriend, params);
+      if (type == TYPE_LIST) {
+        MarginLayoutParams params =
+            new MarginLayoutParams(screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST),
+                screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
+        constraintLayout.addView(liveRowViewAddFriend, params);
+      } else {
+        constraintLayout.removeView(liveRowViewAddFriend);
+      }
     }
 
     diceView.translateDice(translation, true);
@@ -533,7 +539,7 @@ public class LiveRoomView extends FrameLayout {
         if (type == TYPE_GRID) {
           set.clear(v.getId());
           set.setElevation(v.getId(), 0);
-          v.setStyle(LiveStreamView.TYPE_GRID);
+          v.setStyle(type);
 
           if (landscapeMode) {
             switch (liveStreamCount) {
@@ -1177,9 +1183,11 @@ public class LiveRoomView extends FrameLayout {
           set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START,
               screenUtils.dpToPx(20));
           set.constrainWidth(v.getId(), screenUtils.dpToPx(150));
-          set.constrainHeight(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
+          set.constrainHeight(v.getId(), screenUtils.dpToPx(
+              type == TYPE_EMBED ? LiveStreamView.MAX_HEIGHT_EMBED
+                  : LiveStreamView.MAX_HEIGHT_LIST));
           set.setElevation(v.getId(), screenUtils.dpToPx(10));
-          v.setStyle(LiveStreamView.TYPE_LIST);
+          v.setStyle(type);
 
           switch (i) {
             case 0:
