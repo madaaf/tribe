@@ -15,7 +15,6 @@ import com.tribe.app.presentation.view.activity.DebugActivity;
 import com.tribe.app.presentation.view.activity.GameDetailsView;
 import com.tribe.app.presentation.view.activity.GameMembersActivity;
 import com.tribe.app.presentation.view.activity.GamePagerActivity;
-import com.tribe.app.presentation.view.activity.GameStoreActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
@@ -239,8 +238,6 @@ import dagger.Component;
   void inject(GameCoolCamsView gameCoolCamsView);
 
   void inject(GameEngine gameEngine);
-
-  void inject(GameStoreActivity newGameActivity);
 
   void inject(GamePagerActivity gamePagerActivity);
 
