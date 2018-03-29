@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -180,8 +179,6 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   @BindView(R.id.nativeDialogsView) PopupContainerView popupContainerView;
 
   @BindView(R.id.txtSyncedContacts) TextViewFont txtSyncedContacts;
-
-  @BindView(R.id.test) FrameLayout test;
 
   // OBSERVABLES
   private UserComponent userComponent;

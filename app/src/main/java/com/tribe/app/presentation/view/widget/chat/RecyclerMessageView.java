@@ -316,7 +316,7 @@ public class RecyclerMessageView extends IChat {
               .flatMap(labelType -> {
                 if (labelType != null) {
                   if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_UNSEND)) {
-                    messagePresenter.removeMessage(m);
+                    if (!m.getId().equals(Message.PENDING)) messagePresenter.removeMessage(m);
                   } else if (labelType.getTypeDef().equals(LabelType.MESSAGE_OPTION_COPY)) {
                     copyToClipboard(m.getMessageContent());
                   }

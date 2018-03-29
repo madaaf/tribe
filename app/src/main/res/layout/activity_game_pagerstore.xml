@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+  <android.support.v4.view.ViewPager
+      android:id="@+id/pager"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      />
+
+
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="52dp"
+      android:animateLayoutChanges="true"
+      >
+
+    <ImageView
+        android:id="@+id/btnNewMessage"
+        android:layout_width="@dimen/nav_icon_size"
+        android:layout_height="@dimen/nav_icon_size"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginStart="@dimen/horizontal_margin_smaller"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_new_chat_top_bar_border"
+        android:visibility="gone"
+        />
+
+    <FrameLayout
+        android:id="@+id/layoutCall"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        >
+      <com.tribe.app.presentation.view.widget.PulseLayout
+          android:id="@+id/layoutPulse"
+          android:layout_width="100dp"
+          android:layout_height="100dp"
+          android:layout_gravity="center_vertical|start"
+          android:layout_marginStart="-25dp"
+          app:pulseColor="@color/red"
+          app:pulseCount="3"
+          app:pulseDuration="3000"
+          />
+
+      <ImageView
+          android:id="@+id/imgLive"
+          android:layout_width="@dimen/nav_icon_size"
+          android:layout_height="@dimen/nav_icon_size"
+          android:layout_gravity="center_vertical"
+          android:clickable="true"
+          android:foreground="@drawable/selectable_button_oval_light"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_live_active_border"
+          />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/btnFriends"
+        android:layout_width="@dimen/nav_icon_size"
+        android:layout_height="@dimen/nav_icon_size"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginStart="@dimen/horizontal_margin_smaller"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_friends_white"
+        android:visibility="visible"
+        />
+
+    <ImageView
+        android:id="@+id/btnLeaderboards"
+        android:layout_width="@dimen/nav_icon_size"
+        android:layout_height="@dimen/nav_icon_size"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="@dimen/horizontal_margin_smaller"
+        android:clickable="true"
+        android:foreground="@drawable/selectable_button_oval"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_leaderboards_white"
+        />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:scaleType="centerInside"
+        android:src="@drawable/picto_tribe_logo_white"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_gravity="bottom"
+        android:background="@color/white.opacity.50"
+        />
+  </FrameLayout>
+
+  <android.support.constraint.ConstraintLayout
+      android:id="@+id/layoutConstraint"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      >
+
+
+    <FrameLayout
+        android:id="@+id/btnMulti"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:alpha="1"
+        android:background="@drawable/bg_game_btn"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toTopOf="@id/dotsContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+
+      <ImageView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_marginBottom="2dp"
+          android:layout_marginStart="2dp"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_multiplayer"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:gravity="center"
+          android:text="@string/gamemode_multi_title"
+          android:textAllCaps="true"
+          style="@style/BiggerTitle.2.Black"
+          />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/btnSingle"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_marginEnd="@dimen/horizontal_margin_small"
+        android:layout_marginStart="@dimen/horizontal_margin_small"
+        android:alpha="1"
+        android:background="@drawable/bg_game_btn"
+        android:elevation="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/btnMulti"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        >
+
+      <ImageView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_marginBottom="2dp"
+          android:layout_marginStart="2dp"
+          android:scaleType="centerInside"
+          android:src="@drawable/picto_solo_training"
+          />
+
+      <com.tribe.app.presentation.view.widget.TextViewFont
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="@string/gamemode_alone_title"
+          android:textAllCaps="true"
+          style="@style/BiggerTitle.2.Black"
+          />
+    </FrameLayout>
+
+
+    <LinearLayout
+        android:id="@+id/dotsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+
+    <FrameLayout
+        android:id="@+id/cardIcon"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="76dp"
+        android:clipChildren="false"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="23dp"
+        android:scaleType="centerInside"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardIcon"
+        />
+
+
+    <ImageView
+        android:id="@+id/imgAnimation1"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="50dp"
+        android:scaleType="centerInside"
+        android:scaleX="1"
+        android:scaleY="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imgLogo"
+        />
+
+    <ImageView
+        android:id="@+id/imgAnimation2"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="50dp"
+        android:scaleType="centerInside"
+        android:scaleX="1"
+        android:scaleY="1"
+        app:layout_constraintBottom_toBottomOf="@id/imgLogo"
+        app:layout_constraintStart_toEndOf="@id/imgLogo"
+        />
+
+    <ImageView
+        android:id="@+id/imgAnimation3"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="20dp"
+        android:scaleType="centerInside"
+        android:scaleX="1"
+        android:scaleY="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/test"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/icon_game_slice_fruit"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+
+        />
+
+
+  </android.support.constraint.ConstraintLayout>
+
+
+</FrameLayout>

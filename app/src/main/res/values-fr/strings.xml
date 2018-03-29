@@ -773,7 +773,7 @@
 	<string name="game_trivia_category_world">Monde</string>
 	<string name="game_trivia_category_games">Jeux vidéo</string>
 	<string name="game_trivia_category_all">Tout en même temps!</string>
-	<string name="game_coolcams_lets_go">Mimic as much\nemojis as possible!</string>
+	<string name="game_coolcams_lets_go">Imite le plus\nd\'emojis possible !</string>
 	<string name="game_coolcams_you_won">Tu as gagné !</string>
 	<string name="game_coolcams_someone_won">%1$s a gagné !</string>
 	<string name="game_coolcams_someone_won_plural">%1$s ont gagné !</string>
@@ -963,7 +963,7 @@
 	<string name="new_game_cancelled">Votre sélection (%1$s) a été annulée car un jeu est déjà en cours.</string>
 	
 	<!-- Game -->
-	<string name="game_loading">Chargement de %1$s</string>
+	<string name="game_loading">Chargement du jeu...</string>
 	<string name="game_rotate_landscape">Tournez en mode Paysage</string>
 	<string name="game_rotate_portrait">Tournez en mode portrait</string>
 	<string name="game_unavailable">Le jeu en cours n\'est pas disponible sur votre téléphone.</string>
