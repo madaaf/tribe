@@ -963,7 +963,7 @@
 	<string name="new_game_cancelled">Your game selection (%1$s) has been cancelled because there is already another game in the room.</string>
 	
 	<!-- Game -->
-	<string name="game_loading">Loading %1$s</string>
+	<string name="game_loading">Loading game...</string>
 	<string name="game_rotate_landscape">Rotate to Landscape mode</string>
 	<string name="game_rotate_portrait">Rotate to Portrait mode</string>
 	<string name="game_unavailable">The game played is not available on your phone.</string>

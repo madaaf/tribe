@@ -51,7 +51,7 @@ public class Game {
   public static final String GAME_LOGO = "GAME_LOGO";
   public static final String GAME_BIRD_RUSH = "birdRush";
   public static final String GAME_INVADERS_CORONA = "lab-aliens-attack-corona";
-  public static final String GAME_COOL_CAMS = "lab-coolcams";
+  public static final String GAME_COOL_CAMS = "coolcams";
 
   public static final String TYPE_NAME_WEBV1 = "GameWebV1";
   public static final String TYPE_NAME_NATIVE = "GameNative";
