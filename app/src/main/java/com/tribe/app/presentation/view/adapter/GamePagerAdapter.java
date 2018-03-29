@@ -62,6 +62,9 @@ public class GamePagerAdapter extends PagerAdapter {
   }
 
   public GameDetailsView getItemAtPosition(int position) {
-    return viewList.get(gamesList.get(position).getId());
+    if(viewList!=null && !viewList.isEmpty() && gamesList!=null && !gamesList.isEmpty() && gamesList.get(position)!=null){
+      return viewList.get(gamesList.get(position).getId());
+    }
+   return null;
   }
 }

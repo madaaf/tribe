@@ -692,6 +692,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
           imgAnimation3.setScaleY(1 + positionOffset);
           imgAnimation3.setAlpha(1 - positionOffset);
 
+          // imgAnimation3.setTranslationX(xTrans);
+          // imgAnimation3.setTranslationX(yTrans);
+
           imgAnimation2.setScaleX(1 + positionOffset);
           imgAnimation2.setScaleY(1 + positionOffset);
           imgAnimation2.setAlpha(1 - positionOffset);
@@ -706,51 +709,35 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       }
     }
 
+    private void ok(View v, float translationX, float translationY) {
+      v.setAlpha(0f);
+      v.setScaleX(2f);
+      v.setScaleY(2f);
+
+      v.setTranslationX(translationX);
+      v.setTranslationY(translationY);
+
+      v.animate()
+          .setDuration(500)
+          .scaleX(1)
+          .scaleY(1)
+          .alpha(1)
+          .translationX(0)
+          .translationY(0)
+          .start();
+    }
+
     @Override public void onPageScrollStateChanged(int state) {
       Timber.d("SOEF onPageScrollStateChanged " + state);
       statePager = state;
       if (state == 0f) {
-        imgAnimation3.setAlpha(0f);
-        imgAnimation3.setScaleX(0);
-        imgAnimation3.setScaleY(0);
-
-        imgAnimation2.setAlpha(0f);
-        imgAnimation2.setScaleX(0);
-        imgAnimation2.setScaleY(0);
-
-        imgAnimation1.setAlpha(0f);
-        imgAnimation1.setScaleX(0);
-        imgAnimation1.setScaleY(0);
-
         firstValue = 0f;
         xTrans = 0f;
         yTrans = 0f;
-        imgAnimation3.animate()
-            .setDuration(1000)
-            .scaleX(1)
-            .scaleY(1)
-            .alpha(1)
-            .translationX(0)
-            .translationY(0)
-            .start();
 
-        imgAnimation2.animate()
-            .setDuration(1000)
-            .scaleX(1)
-            .scaleY(1)
-            .alpha(1)
-            .translationX(0)
-            .translationY(0)
-            .start();
-
-        imgAnimation1.animate()
-            .setDuration(1000)
-            .scaleX(1)
-            .scaleY(1)
-            .alpha(1)
-            .translationX(0)
-            .translationY(0)
-            .start();
+        ok(imgAnimation3, screenUtils.dpToPx(200), screenUtils.dpToPx(200));
+        ok(imgAnimation2, screenUtils.dpToPx(200), -screenUtils.dpToPx(100));
+        ok(imgAnimation1, -screenUtils.dpToPx(200), -screenUtils.dpToPx(100));
       }
     }
 
@@ -759,7 +746,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       this.positionViewPager = position;
       positionViewPager = position;
       GameDetailsView gameDetailsView = adapter.getItemAtPosition(position);
-      gameDetailsView.onCurrentViewVisible();
+      if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
       for (int i = 0; i < dotsContainer.getChildCount(); i++) {
         View v = dotsContainer.getChildAt(i);
         if (v.getTag().toString().startsWith(DOTS_TAG_MARKER + position)) {
