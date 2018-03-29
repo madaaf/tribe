@@ -84,6 +84,8 @@ import static com.tribe.app.presentation.navigation.Navigator.FROM_GAMESTORE;
 
 public class GamePagerActivity extends GameActivity implements AppStateListener {
 
+  private static final float DOT_MAX_SIZE = 1.5f;
+
   private static final int DURATION = 400;
   private static final int DURATION_MOVING = 2500;
   private static final long TWENTY_FOUR_HOURS = 86400000;
@@ -610,7 +612,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   private void initDots(int dotsNbr) {
     dotsContainer.removeAllViews();
-    int sizeDot = getResources().getDimensionPixelSize(R.dimen.view_dice_dot_size);
+    int sizeDot = getResources().getDimensionPixelSize(R.dimen.vertical_margin_smaller);
     for (int i = 0; i < dotsNbr; i++) {
       AvatarView v = new AvatarView(this);
       v.load(gameManager.getGames().get(i).getIcon());
@@ -618,14 +620,14 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       v.setTag(DOTS_TAG_MARKER + i);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
-      lp.setMargins(0, 0, 20, 0);
+      lp.setMargins(0, 0, screenUtils.dpToPx(20), 0);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
       dotsContainer.addView(v);
       if (i == 0) {
         //v.setBackgroundResource(R.drawable.shape_oval_white);
-        v.setScaleX(2f);
-        v.setScaleY(2f);
+        v.setScaleX(DOT_MAX_SIZE);
+        v.setScaleY(DOT_MAX_SIZE);
       } else {
         //v.setBackgroundResource(R.drawable.shape_oval_white50);
         v.setScaleX(1f);
@@ -714,7 +716,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     }
 
     @Override public void onPageScrollStateChanged(int state) {
-      Timber.d("SOEF onPageScrollStateChanged " + state);
+      //Timber.d("SOEF onPageScrollStateChanged " + state);
       statePager = state;
       if (state == 0f) {
         firstValue = 0f;
@@ -728,7 +730,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     }
 
     public void onPageSelected(int position) {
-      Timber.w("SOEF onPageSelected " + position);
+      //Timber.w("SOEF onPageSelected " + position);
       this.positionViewPager = position;
       positionViewPager = position;
       GameDetailsView gameDetailsView = adapter.getItemAtPosition(position);
@@ -736,10 +738,10 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       for (int i = 0; i < dotsContainer.getChildCount(); i++) {
         View v = dotsContainer.getChildAt(i);
         if (v.getTag().toString().startsWith(DOTS_TAG_MARKER + position)) {
-          v.setBackgroundResource(R.drawable.shape_oval_white);
-          v.animate().scaleX(1.2f).scaleY(1.2f).setDuration(100).start();
+          // v.setBackgroundResource(R.drawable.shape_oval_white);
+          v.animate().scaleX(DOT_MAX_SIZE).scaleY(DOT_MAX_SIZE).setDuration(100).start();
         } else {
-          v.setBackgroundResource(R.drawable.shape_oval_white50);
+          // v.setBackgroundResource(R.drawable.shape_oval_white50);
           v.setScaleX(1f);
           v.setScaleY(1f);
         }

@@ -53,7 +53,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class GameDetailsView extends FrameLayout {
 
@@ -80,6 +79,7 @@ public class GameDetailsView extends FrameLayout {
   @BindView(R.id.txtMyScoreName) TextViewFont txtMyScoreName;
   @BindView(R.id.leaderbordContainer) View leaderbordContainer;
   @BindView(R.id.leaderbordLabel) TextViewFont leaderbordLabel;
+  @BindView(R.id.playsCounter) TextViewFont playsCounter;
   @BindView(R.id.leaderbordPictoStart) ImageView leaderbordPictoStart;
   @BindView(R.id.leaderbordPictoEnd) ImageView leaderbordPictoEnd;
   @BindView(R.id.leaderbordSeparator) View leaderbordSeparator;
@@ -171,7 +171,9 @@ public class GameDetailsView extends FrameLayout {
   private void initUI() {
     initLeaderbord();
     txtBaseline.setText(game.getBaseline());
-
+    playsCounter.setText(
+        context.getString(R.string.new_game_plays, String.valueOf(game.getPlays_count()))
+            .toUpperCase());
     new GlideUtils.GameImageBuilder(context, screenUtils).url(game.getIcon())
         .hasBorder(false)
         .hasPlaceholder(true)
