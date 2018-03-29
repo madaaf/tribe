@@ -612,7 +612,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   private void initDots(int dotsNbr) {
     dotsContainer.removeAllViews();
-    int sizeDot = getResources().getDimensionPixelSize(R.dimen.vertical_margin_smaller);
+    int sizeDot = getResources().getDimensionPixelSize(R.dimen.vertical_margin_small);
     for (int i = 0; i < dotsNbr; i++) {
       AvatarView v = new AvatarView(this);
       v.load(gameManager.getGames().get(i).getIcon());
@@ -620,7 +620,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       v.setTag(DOTS_TAG_MARKER + i);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
-      lp.setMargins(0, 0, screenUtils.dpToPx(20), 0);
+      lp.setMargins(0, 0, screenUtils.dpToPx(15), 0);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
       dotsContainer.addView(v);
