@@ -9,7 +9,6 @@ import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -54,13 +53,11 @@ import com.tribe.app.presentation.view.popup.listener.PopupDigestListener;
 import com.tribe.app.presentation.view.popup.view.PopupDigest;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
-import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -142,15 +139,14 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     pageListener = new PageListener(dotsContainer, this);
     viewpager.addOnPageChangeListener(pageListener);
     viewpager.setAdapter(adapter);
-    initDots(gameManager.getGames().size());
   }
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     super.onCreate(savedInstanceState);
+    mapAnimator = new HashMap<>();
 
     initViewPager();
-
     if (gameManager.getGames() != null && !gameManager.getGames().isEmpty()) {
       initUI();
       adapter.setItems(gameManager.getGames());
@@ -328,8 +324,10 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   private void initUI() {
     onGames.onNext(gameManager.getGames());
-    mapAnimator = new HashMap<>();
     setAnimImageAnimation();
+    initDots(gameManager.getGames().size());
+    GameDetailsView gameDetailsView = adapter.getItemAtPosition(0);
+    if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
   }
 
   private void setAnimImageAnimation() {
@@ -391,7 +389,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     animator.setRepeatCount(ValueAnimator.INFINITE);
     animator.setRepeatMode(ValueAnimator.REVERSE);
     animator.addUpdateListener(animation -> {
-      Timber.e("SOEF ANIMATRION " + animation.getAnimatedValue());
       int translation = (int) animation.getAnimatedValue();
       if (isX) {
         imgAnimation.setTranslationX(translation);
@@ -401,19 +398,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     });
     animator.start();
     mapAnimator.put(id, animator);
-  }
-
-  private void changePagerScroller() {
-    try {
-      Field mScroller = null;
-      mScroller = ViewPager.class.getDeclaredField("mScroller");
-      mScroller.setAccessible(true);
-      ViewPagerScroller scroller =
-          new ViewPagerScroller(viewpager.getContext(), new OvershootInterpolator(1.3f));
-      mScroller.set(viewpager, scroller);
-    } catch (Exception e) {
-      Timber.e("error of change scroller " + e);
-    }
   }
 
   @Override protected void onGameSelected(Game game) {
@@ -669,7 +653,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
       super.onPageScrolled(position, positionOffset, positionOffsetPixels);
 
-      for (ValueAnimator animator : mapAnimator.values()) animator.cancel();
+      if (mapAnimator != null) {
+        for (ValueAnimator animator : mapAnimator.values()) animator.cancel();
+      }
       imgAnimation3.clearAnimation();
       imgAnimation2.clearAnimation();
       imgAnimation1.clearAnimation();
