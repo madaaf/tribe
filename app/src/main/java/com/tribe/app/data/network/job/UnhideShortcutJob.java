@@ -9,6 +9,7 @@ import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.UpdateShortcut;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
@@ -36,15 +37,16 @@ public class UnhideShortcutJob extends BaseJob {
   }
 
   @Override public void onRun() throws Throwable {
-    shortcutRealm.setStatus(ShortcutRealm.DEFAULT);
-    userCache.updateShortcut(shortcutRealm);
+    if (ShortcutUtil.isNotSupport(shortcutRealm.getId())) {
+      shortcutRealm.setStatus(ShortcutRealm.DEFAULT);
+      userCache.updateShortcut(shortcutRealm);
 
-    List<Pair<String, String>> values = new ArrayList<>();
-    values.add(new Pair<>(ShortcutRealm.STATUS, ShortcutRealm.DEFAULT));
-
-    if (values.size() > 0) {
-      updateShortcut.setup(shortcutRealm.getId(), values);
-      updateShortcut.execute(new DefaultSubscriber());
+      List<Pair<String, String>> values = new ArrayList<>();
+      values.add(new Pair<>(ShortcutRealm.STATUS, ShortcutRealm.DEFAULT));
+      if (values.size() > 0) {
+        updateShortcut.setup(shortcutRealm.getId(), values);
+        updateShortcut.execute(new DefaultSubscriber());
+      }
     }
   }
 

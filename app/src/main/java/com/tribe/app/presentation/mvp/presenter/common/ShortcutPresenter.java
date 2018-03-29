@@ -139,10 +139,12 @@ public class ShortcutPresenter implements Presenter {
 
   private void updateShortcut(String shortcutId, List<Pair<String, String>> values,
       BaseListViewHolder viewHolder) {
-    if (updateShortcutSubscriber != null) updateShortcutSubscriber.unsubscribe();
-    updateShortcutSubscriber = new UpdateShortcutSubscriber(viewHolder);
-    updateShortcut.setup(shortcutId, values);
-    updateShortcut.execute(updateShortcutSubscriber);
+    if (ShortcutUtil.isNotSupport(shortcutId)) {
+      if (updateShortcutSubscriber != null) updateShortcutSubscriber.unsubscribe();
+      updateShortcutSubscriber = new UpdateShortcutSubscriber(viewHolder);
+      updateShortcut.setup(shortcutId, values);
+      updateShortcut.execute(updateShortcutSubscriber);
+    }
   }
 
   private class UpdateShortcutSubscriber extends DefaultSubscriber<Shortcut> {

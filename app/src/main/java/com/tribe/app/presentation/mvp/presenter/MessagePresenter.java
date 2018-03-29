@@ -225,8 +225,10 @@ public class MessagePresenter implements Presenter {
   }
 
   private void updateShortcut(String shortcutId, List<Pair<String, String>> values) {
-    updateShortcut.setup(shortcutId, values);
-    updateShortcut.execute(new UpdateShortcutSubscriber());
+    if (ShortcutUtil.isNotSupport(shortcutId)) {
+      updateShortcut.setup(shortcutId, values);
+      updateShortcut.execute(new UpdateShortcutSubscriber());
+    }
   }
 
   private class UpdateShortcutSubscriber extends DefaultSubscriber<Shortcut> {
