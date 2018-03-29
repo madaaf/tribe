@@ -149,6 +149,11 @@ public class GameManagerView extends FrameLayout {
 
           if (currentGameView == null) {
             addGameView(computeGameView(currentGame, sessionGamePair.first.getUserId()));
+
+            if (currentGame.getId().equals(Game.GAME_BATTLE_ROYALE)) {
+              gameMasterManager.send(">battleroyale");
+            }
+
             return;
           }
 
@@ -181,6 +186,8 @@ public class GameManagerView extends FrameLayout {
             currentGameView.stop();
             removeView(currentGameView);
           }
+
+          gameMasterManager.send(">");
 
           currentGameView = null;
           currentGame = null;

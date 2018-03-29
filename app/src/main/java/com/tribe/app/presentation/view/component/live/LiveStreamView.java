@@ -189,6 +189,8 @@ public abstract class LiveStreamView extends LinearLayout {
       layoutStream.setRadius(screenUtils.dpToPx(5));
       UIUtils.changeWidthHeightOfView(layoutMasterStream, screenUtils.dpToPx(MAX_HEIGHT_LIST),
           screenUtils.dpToPx(MAX_HEIGHT_LIST));
+      UIUtils.changeWidthHeightOfView(layoutStream, screenUtils.dpToPx(MAX_HEIGHT_LIST),
+          screenUtils.dpToPx(MAX_HEIGHT_LIST));
       txtScore.setVisibility(VISIBLE);
       txtEmoji.setVisibility(VISIBLE);
     } else {
@@ -393,6 +395,8 @@ public abstract class LiveStreamView extends LinearLayout {
 
   public void updateXYOffset(int left, int top) {
     bgBattleRoyale.setVisibility(View.GONE);
+    UIUtils.changeWidthHeightOfView(layoutMasterStream, screenUtils.dpToPx(MAX_HEIGHT_LIST),
+        screenUtils.dpToPx(MAX_HEIGHT_LIST));
     onUpdateXYOffset.onNext(Pair.create(left, top));
   }
 

@@ -322,7 +322,7 @@ public class LiveView extends FrameLayout {
     if (callGameAverageSubscription != null) callGameAverageSubscription.unsubscribe();
     if (callGameDurationSubscription != null) callGameDurationSubscription.unsubscribe();
     viewScoresOverLive.dispose();
-    gameMasterManager.disconnect();
+    if (gameMasterManager != null) gameMasterManager.disconnect();
 
     if (!isJump) {
       viewLocalLive.dispose();

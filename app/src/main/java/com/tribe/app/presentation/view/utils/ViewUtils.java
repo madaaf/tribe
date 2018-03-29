@@ -35,6 +35,10 @@ public class ViewUtils {
     child.getLocationOnScreen(location);
     Rect rect = new Rect(location[0], location[1], location[0] + child.getWidth(),
         location[1] + child.getHeight());
+    return isInRect(rect, x, y);
+  }
+
+  public static boolean isInRect(Rect rect, int x, int y) {
     return rect.contains(x, y);
   }
 }

@@ -3,7 +3,12 @@ package com.tribe.app.presentation.view.component.live;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.support.annotation.IntDef;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -164,6 +169,7 @@ public class LiveRoomView extends FrameLayout {
   }
 
   private void init() {
+    setWillNotDraw(false);
     initDependencyInjector();
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_room, this);
@@ -437,8 +443,8 @@ public class LiveRoomView extends FrameLayout {
       constraintLayout.removeView(liveRowViewAddFriend);
       UIUtils.changeLeftMarginOfView(constraintLayout, 0);
       UIUtils.changeTopMarginOfView(constraintLayout, 0);
-      UIUtils.changeWidthHeightOfView(constraintLayout, ViewGroup.LayoutParams.MATCH_PARENT,
-          ViewGroup.LayoutParams.MATCH_PARENT);
+      UIUtils.changeWidthHeightOfView(constraintLayout, this.getMeasuredWidth(),
+          this.getMeasuredHeight());
     } else if (type == TYPE_LIST || type == TYPE_EMBED) {
       translation = (getMeasuredHeight() >> 1) - screenUtils.dpToPx(60);
       setBackgroundColor(Color.TRANSPARENT);
@@ -1282,6 +1288,8 @@ public class LiveRoomView extends FrameLayout {
     constraintSet.clone(constraintLayout);
     constraintSet.setMargin(v.getId(), ConstraintSet.START, left);
     constraintSet.setMargin(v.getId(), ConstraintSet.TOP, top);
+    constraintSet.constrainWidth(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
+    constraintSet.constrainHeight(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
     constraintSet.applyTo(constraintLayout);
   }
 

@@ -57,14 +57,16 @@ public class GameMasterManagerFactory {
     }
 
     public void connect(String sessionId) {
-      headers.put(WebSocketConnection.TRIBE_SESSION_ID, "123451");
+      headers.put(WebSocketConnection.TRIBE_SESSION_ID, sessionId);
       webSocketConnection.setHeaders(headers);
 
       subscriptions.add(
           webSocketConnection.onConnectError().subscribe(s -> Timber.d("onConnectError : " + s)));
 
       subscriptions.add(
-          webSocketConnection.onMessage().subscribe(s -> Timber.d("onMessage : " + s)));
+          webSocketConnection.onMessage().subscribe(s -> {
+            //Timber.d("onMessage : " + s);
+          }));
 
       subscriptions.add(
           webSocketConnection.onStateChanged().subscribe(s -> Timber.d("onStateChanged : " + s)));
@@ -86,9 +88,7 @@ public class GameMasterManagerFactory {
     }
 
     public void send(String msg) {
-      if (webSocketConnection.getState().equals(WebSocketConnection.STATE_CONNECTED)) {
-        webSocketConnection.send(msg);
-      }
+      webSocketConnection.send(msg);
     }
 
     /**
