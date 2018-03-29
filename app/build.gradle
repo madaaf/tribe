@@ -105,7 +105,7 @@ android {
 
   buildTypes {
     debug {
-//      generateStrings()
+      generateStrings()
 
       signingConfig signingConfigs.debug
       testCoverageEnabled false
@@ -186,12 +186,12 @@ android {
     }
   }
 }
-/*
+
 def generateStrings() {
   exec {
     commandLine './generate_strings'
   }
-}*/
+}
 
 repositories {
   maven { url 'https://zendesk.jfrog.io/zendesk/repo' }

@@ -56,6 +56,7 @@ import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.app.presentation.view.widget.PulseLayout;
+import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
@@ -625,21 +626,24 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   private void initDots(int dotsNbr) {
     dotsContainer.removeAllViews();
-    int sizeDot = getResources().getDimensionPixelSize(R.dimen.waiting_view_dot_size);
+    int sizeDot = getResources().getDimensionPixelSize(R.dimen.view_dice_dot_size);
     for (int i = 0; i < dotsNbr; i++) {
-      View v = new View(this);
+      AvatarView v = new AvatarView(this);
+      v.load(gameManager.getGames().get(i).getIcon());
+      //GlideUtils.Builder(context).url("").size(sizeDot).target(v).hasPlaceholder(false).load();
+
       v.setTag(DOTS_TAG_MARKER + i);
-      FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot * 2, sizeDot);
-      lp.setMargins(0, 0, 15, 0);
+      FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
+      lp.setMargins(0, 0, 20, 0);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
       dotsContainer.addView(v);
       if (i == 0) {
-        v.setBackgroundResource(R.drawable.shape_oval_white);
-        v.setScaleX(1.2f);
-        v.setScaleY(1.2f);
+        //v.setBackgroundResource(R.drawable.shape_oval_white);
+        v.setScaleX(2f);
+        v.setScaleY(2f);
       } else {
-        v.setBackgroundResource(R.drawable.shape_oval_white50);
+        //v.setBackgroundResource(R.drawable.shape_oval_white50);
         v.setScaleX(1f);
         v.setScaleY(1f);
       }

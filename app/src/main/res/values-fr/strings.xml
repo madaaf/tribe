@@ -773,7 +773,7 @@
 	<string name="game_trivia_category_world">Monde</string>
 	<string name="game_trivia_category_games">Jeux vidéo</string>
 	<string name="game_trivia_category_all">Tout en même temps!</string>
-	<string name="game_coolcams_lets_go">Mimic as much\nemojis as possible!</string>
+	<string name="game_coolcams_lets_go">Imite le plus\nd\'emojis possible !</string>
 	<string name="game_coolcams_you_won">Tu as gagné !</string>
 	<string name="game_coolcams_someone_won">%1$s a gagné !</string>
 	<string name="game_coolcams_someone_won_plural">%1$s ont gagné !</string>
