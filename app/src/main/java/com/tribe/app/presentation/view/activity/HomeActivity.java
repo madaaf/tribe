@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -98,6 +97,7 @@ import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationVie
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
 import com.tribe.app.presentation.view.widget.notifications.RatingNotificationView;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -179,8 +179,6 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   @BindView(R.id.nativeDialogsView) PopupContainerView popupContainerView;
 
   @BindView(R.id.txtSyncedContacts) TextViewFont txtSyncedContacts;
-
-  @BindView(R.id.test) FrameLayout test;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -570,9 +568,10 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
         })
         .subscribe());
 
-    subscriptions.add(homeGridAdapter.onClick() // TODO MADA
+    subscriptions.add(homeGridAdapter.onClick()
         .map(view -> homeGridAdapter.getItemAtPosition(
-            recyclerViewFriends.getChildLayoutPosition(view))).subscribe(item -> {
+            recyclerViewFriends.getChildLayoutPosition(view)))
+        .subscribe(item -> {
           Recipient recipient = (Recipient) item;
           boolean displayPermissionNotif = notificationContainerView.
               showNotification(null, NotificationContainerView.DISPLAY_PERMISSION_NOTIF);
@@ -589,12 +588,10 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
     subscriptions.add(homeGridAdapter.onClickFb().subscribe(aVoid -> {
       homeGridPresenter.loginFacebook();
-      Timber.e("onClickFb");
       popupAccessFacebookContact();
     }));
 
     subscriptions.add(homeGridAdapter.onClickAddressBook().subscribe(aVoid -> {
-      Timber.e("onClickAddressBook");
       syncContacts();
     }));
 
@@ -671,6 +668,9 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
           }
 
           finalList.addAll(contactsInvite);
+
+          Collections.sort(contactsFBInvite,
+              (o1, o2) -> ((Integer) o2.getHowManyFriends()).compareTo(o1.getHowManyFriends()));
           finalList.addAll(contactsFBInvite);
           List<HomeAdapterInterface> refactordList = new ArrayList<>();
 
@@ -837,6 +837,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   @Override public void successFacebookLogin() {
     homeGridPresenter.updateUserFacebook(getCurrentUser().getId(),
         AccessToken.getCurrentAccessToken().getToken());
+    homeGridPresenter.lookupContacts();
     syncContacts();
   }
 
@@ -1050,15 +1051,13 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       tagManager.setProperty(bundle);
 
       Bundle bundleBis = new Bundle();
-      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, true);
+      bundleBis.putBoolean(TagManagerUtils.ACCEPTED, hasPermission);
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
       if (hasPermission) {
-        addressBook.set(true);
-        homeGridPresenter.lookupContacts();
-        searchView.refactorActions();
-      } else {
-        topBarContainer.onSyncError();
+        addressBook.set(hasPermission);
       }
+      homeGridPresenter.lookupContacts();
+      searchView.refactorActions();
     });
   }
 

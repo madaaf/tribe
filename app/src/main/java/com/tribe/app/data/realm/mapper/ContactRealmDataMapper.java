@@ -44,6 +44,7 @@ import javax.inject.Singleton;
       contact.setName(contactABRealm.getName());
       contact.setUserList(userRealmDataMapper.transform(contactABRealm.getUsers(), true));
       contact.setHowManyFriends(contactABRealm.getHowManyFriends());
+      contact.setcommonFriendsNameList(contactABRealm.getcommonFriendsNameList());
       contact.setNew(contactABRealm.isNew());
       return contact;
     } else {
@@ -52,6 +53,7 @@ import javax.inject.Singleton;
       contact.setName(contactFBRealm.getName());
       contact.setUserList(userRealmDataMapper.transform(contactFBRealm.getUserList(), true));
       contact.setHowManyFriends(contactFBRealm.getHowManyFriends());
+      contact.setcommonFriendsNameList(contactFBRealm.getcommonFriendsNameList());
       contact.setNew(contactFBRealm.isNew());
       return contact;
     }
@@ -74,6 +76,7 @@ import javax.inject.Singleton;
       contactABRealm.setName(contactAB.getName());
       contactABRealm.setUserList(userRealmDataMapper.transformList(contactAB.getUserList(), true));
       contactABRealm.setHowManyFriends(contactAB.getHowManyFriends());
+      contactABRealm.setCommonFriendsNameList(contactAB.getcommonFriendsNameList());
       return contactABRealm;
     } else {
       ContactFB contactFB = (ContactFB) contact;
@@ -82,6 +85,7 @@ import javax.inject.Singleton;
       contactFBRealm.setName(contactFB.getName());
       contactFBRealm.setUserList(userRealmDataMapper.transformList(contactFB.getUserList(), true));
       contactFBRealm.setHowManyFriends(contactFB.getHowManyFriends());
+      contactFBRealm.setCommonFriendsNameList(contactFB.getcommonFriendsNameList());
       return contactFBRealm;
     }
   }

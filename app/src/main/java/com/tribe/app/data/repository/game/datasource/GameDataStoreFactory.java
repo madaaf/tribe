@@ -2,6 +2,7 @@ package com.tribe.app.data.repository.game.datasource;
 
 import android.content.Context;
 import com.f2prateek.rx.preferences.Preference;
+import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.GameCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.FileApi;
@@ -22,10 +23,11 @@ import javax.inject.Singleton;
   private final GameCache gameCache;
   private final AccessToken accessToken;
   private final UserCache userCache;
+  private final ContactCache contactCache;
 
   @Inject public GameDataStoreFactory(Context context, TribeApi tribeApi, FileApi fileApi,
       OpentdbApi opentdbApi, @GameData Preference<String> gameData, GameCache gameCache,
-      UserCache userCache, AccessToken accessToken) {
+      UserCache userCache, AccessToken accessToken, ContactCache contactCache) {
     if (context == null) {
       throw new IllegalArgumentException("Constructor parameters cannot be null!");
     }
@@ -38,11 +40,12 @@ import javax.inject.Singleton;
     this.gameCache = gameCache;
     this.accessToken = accessToken;
     this.userCache = userCache;
+    this.contactCache = contactCache;
   }
 
   public GameDataStore createCloudDataStore() {
     return new CloudGameDataStore(context, tribeApi, fileApi, opentdbApi, gameData, gameCache,
-        userCache, accessToken);
+        userCache, accessToken, contactCache);
   }
 
   public GameDataStore createDiskDataStore() {

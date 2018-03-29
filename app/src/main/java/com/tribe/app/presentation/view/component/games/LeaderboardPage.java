@@ -194,7 +194,7 @@ public class LeaderboardPage extends LinearLayout {
     subscriptions.add(scoreObs.subscribe(score -> {
       items.clear();
       adapter.clear();
-      gamePresenter.loadGameLeaderboard(selectedGame.getId());
+      gamePresenter.loadGameLeaderboard(selectedGame.getId(), null);
     }));
   }
 

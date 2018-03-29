@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -130,9 +129,7 @@ public class LiveView extends FrameLayout {
 
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
-  @BindView(R.id.layoutScoresOverLive) LinearLayout layoutScoresOverLive;
-
-  @BindView(R.id.viewLiveAddFriend) LiveRowViewAddFriend viewLiveAddFriend;
+  @BindView(R.id.viewScoresOverLive) LiveScoresView viewScoresOverLive;
 
   @BindView(R.id.viewControlsLive) LiveControlsView viewControlsLive;
 
@@ -320,6 +317,7 @@ public class LiveView extends FrameLayout {
     mapScoreViews.clear();
     if (callGameAverageSubscription != null) callGameAverageSubscription.unsubscribe();
     if (callGameDurationSubscription != null) callGameDurationSubscription.unsubscribe();
+    viewScoresOverLive.dispose();
 
     if (!isJump) {
       viewLocalLive.dispose();
@@ -328,7 +326,6 @@ public class LiveView extends FrameLayout {
       viewRoom.dispose();
     } else {
       viewRoom.jump();
-      layoutScoresOverLive.removeAllViews();
       init();
       initSubscriptions();
       initLiveScores();
@@ -414,10 +411,7 @@ public class LiveView extends FrameLayout {
   private void initLiveScores() {
     LiveRowViewScores rowViewScore = new LiveRowViewScores(getContext());
     rowViewScore.setGuest(user.asTribeGuest());
-    LinearLayout.LayoutParams params =
-        new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT);
-    layoutScoresOverLive.addView(rowViewScore, layoutScoresOverLive.getChildCount() - 1, params);
+    viewScoresOverLive.add(rowViewScore);
     mapScoreViews.put(rowViewScore.getGuest().getId(), rowViewScore);
     persistentSubscriptions.add(viewLocalLive.onScoreChange()
         .subscribe(
@@ -542,7 +536,7 @@ public class LiveView extends FrameLayout {
     }));
 
     persistentSubscriptions.add(
-        Observable.merge(viewRoom.onClickAddFriend(), viewLiveAddFriend.onClick())
+        Observable.merge(viewRoom.onClickAddFriend(), viewScoresOverLive.onClick())
             .subscribe(aVoid -> onOpenInvite.onNext(LiveContainer.OPEN_PARTIAL)));
   }
 
@@ -775,7 +769,7 @@ public class LiveView extends FrameLayout {
     viewRinging.applyTranslationX(value);
     viewDarkOverlay.setTranslationX(value);
     viewGameManager.setTranslationX(value);
-    layoutScoresOverLive.setTranslationX(value);
+    viewScoresOverLive.setTranslationX(value);
 
     if (right) {
       viewShadowRight.setTranslationX(value);
@@ -954,12 +948,7 @@ public class LiveView extends FrameLayout {
 
         LiveRowViewScores liveRowViewScores = new LiveRowViewScores(getContext());
         liveRowViewScores.setGuest(liveRowView.getGuest());
-        LinearLayout.LayoutParams params =
-            new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, screenUtils.dpToPx(7.5f), 0, 0);
-        layoutScoresOverLive.addView(liveRowViewScores, layoutScoresOverLive.getChildCount() - 1,
-            params);
+        viewScoresOverLive.add(liveRowViewScores);
         mapScoreViews.put(liveRowView.getGuest().getId(), liveRowViewScores);
       }
 
@@ -990,7 +979,7 @@ public class LiveView extends FrameLayout {
       viewRoom.removeView(liveRowView);
 
       LiveRowViewScores liveRowViewScores = mapScoreViews.remove(userId);
-      layoutScoresOverLive.removeView(liveRowViewScores);
+      viewScoresOverLive.remove(liveRowViewScores);
     }
 
     tribeGuestMap.remove(userId, true);
@@ -1160,10 +1149,10 @@ public class LiveView extends FrameLayout {
     int indexOfViewRoom = indexOfChild(viewRoom);
 
     if (game.isNotOverLiveWithScores()) {
-      layoutScoresOverLive.setVisibility(View.VISIBLE);
+      viewScoresOverLive.setVisibility(View.VISIBLE);
       for (LiveRowViewScores lrvs : mapScoreViews.values()) lrvs.show();
     } else {
-      layoutScoresOverLive.setVisibility(View.GONE);
+      viewScoresOverLive.setVisibility(View.GONE);
     }
 
     if (game.isOverLive()) {
@@ -1196,7 +1185,7 @@ public class LiveView extends FrameLayout {
   }
 
   private void stopGame() {
-    layoutScoresOverLive.setVisibility(View.GONE);
+    viewScoresOverLive.setVisibility(View.GONE);
     endGameStats();
     onTouchEnabled.onNext(true);
     gameManager.setCurrentGame(null);
@@ -1462,7 +1451,8 @@ public class LiveView extends FrameLayout {
   }
 
   public Observable<Game> onOpenLeaderboard() {
-    return Observable.merge(viewControlsLive.onOpenLeaderboard(), viewGameManager.onOpenLeaderboard());
+    return Observable.merge(viewControlsLive.onOpenLeaderboard(),
+        viewGameManager.onOpenLeaderboard());
   }
 
   public Observable<Void> onSwipeUp() {

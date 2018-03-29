@@ -1,6 +1,7 @@
 package com.tribe.app.data.repository.user;
 
 import android.util.Pair;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactInterface;
@@ -12,6 +13,7 @@ import com.tribe.app.data.repository.user.datasource.DiskUserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
@@ -213,6 +215,10 @@ import rx.Observable;
     return userDataStore.contacts()
         .map(collection -> contactRealmDataMapper.transform(
             new ArrayList<ContactInterface>(collection)));
+  }
+
+  @Override public Observable<List<ContactFB>> requestInvitableFriends(int nbr) {
+    return null;
   }
 
   @Override public Observable<List<Contact>> contactsFB() {

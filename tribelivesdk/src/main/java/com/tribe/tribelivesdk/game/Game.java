@@ -51,6 +51,7 @@ public class Game {
   public static final String GAME_LOGO = "GAME_LOGO";
   public static final String GAME_BIRD_RUSH = "birdRush";
   public static final String GAME_INVADERS_CORONA = "lab-aliens-attack-corona";
+  public static final String GAME_COOL_CAMS = "coolcams";
 
   public static final String TYPE_NAME_WEBV1 = "GameWebV1";
   public static final String TYPE_NAME_NATIVE = "GameNative";
@@ -98,12 +99,11 @@ public class Game {
     this.id = id;
     this.localFrameDifferent = id.equals(GAME_POST_IT);
     this.hasView = !id.equals(GAME_POST_IT);
-    this.isOverLive = id.equals(GAME_INVADERS) ||
-        id.equals(GAME_SPEED_RACER) ||
-        id.equals(GAME_SLICE_FRUIT) ||
-        id.equals(GAME_BIRD_RUSH) ||
-        id.equals(GAME_INVADERS_CORONA);
-    this.isNotOverLiveWithScores = id.equals(GAME_TRIVIA) || id.equals(GAME_BATTLE_MUSIC);
+    this.isOverLive =
+        id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT) || id
+            .equals(GAME_BIRD_RUSH) || id.equals(GAME_INVADERS_CORONA);
+    this.isNotOverLiveWithScores =
+        id.equals(GAME_TRIVIA) || id.equals(GAME_BATTLE_MUSIC) || id.equals(GAME_COOL_CAMS);
     this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
 
     if (__typename != null) {
@@ -416,4 +416,5 @@ public class Game {
   public Observable<TribeI420Frame> onLocalFrame() {
     return onLocalFrame;
   }
+
 }

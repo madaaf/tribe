@@ -284,7 +284,11 @@
   </style>
 
   <style name="Title.1" parent="@style/Title">
-    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
+    <item name="customFont">ProximaNovaSoftProximaNovaSoft
+
+
+
+      -Medium.ttf</item>
   </style>
 
   <style name="Title.2" parent="@style/Title">
@@ -638,6 +642,19 @@
 
   <style name="Title24.2.White" parent="Title24.2">
     <item name="android:textColor">@android:color/white</item>
+  </style>
+
+  <style name="CoolCam">
+    <item name="customFont">Mario-Heavy.otf</item>
+    <item name="android:textColor">@android:color/white</item>
+  </style>
+
+  <style name="CoolCam.Medium" parent="CoolCam">
+    <item name="android:textSize">20sp</item>
+  </style>
+
+  <style name="CoolCam.Big" parent="CoolCam">
+    <item name="android:textSize">24sp</item>
   </style>
 
   <!--Alerter-->

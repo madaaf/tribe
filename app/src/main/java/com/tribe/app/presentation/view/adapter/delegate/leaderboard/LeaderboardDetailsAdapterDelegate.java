@@ -39,6 +39,8 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.subjects.PublishSubject;
 
+import static com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter.LEADERBOARD_ADDRESS;
+
 /**
  * Created by tiago on 12/08/17.
  */
@@ -76,7 +78,8 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
   @Override public boolean isForViewType(@NonNull List<Score> items, int position) {
     if (items.get(position) instanceof Score) {
       Score score = items.get(position);
-      return score.getId() != null && !score.getId().equals(Score.ID_PROGRESS);
+      return score.getId() != null && !score.getId().equals(Score.ID_PROGRESS) && !score.getId()
+          .startsWith(LEADERBOARD_ADDRESS);
     }
 
     return false;
@@ -107,8 +110,8 @@ public class LeaderboardDetailsAdapterDelegate extends RxAdapterDelegate<List<Sc
     vh.txtName.setText(score.getUser().getDisplayName());
     vh.txtScore.setScore(score.getValue());
 
-    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null &&
-        score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
+        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
 
     if (score.getUser().getId().equals(user.getId())) {
       emo = EmojiParser.demojizedText(context.getString(R.string.poke_emoji_own));

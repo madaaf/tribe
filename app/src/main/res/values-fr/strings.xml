@@ -773,7 +773,7 @@
 	<string name="game_trivia_category_world">Monde</string>
 	<string name="game_trivia_category_games">Jeux vidéo</string>
 	<string name="game_trivia_category_all">Tout en même temps!</string>
-	<string name="game_coolcams_lets_go">Mimic as much\nemojis as possible!</string>
+	<string name="game_coolcams_lets_go">Imite le plus\nd\'emojis possible !</string>
 	<string name="game_coolcams_you_won">Tu as gagné !</string>
 	<string name="game_coolcams_someone_won">%1$s a gagné !</string>
 	<string name="game_coolcams_someone_won_plural">%1$s ont gagné !</string>
@@ -789,7 +789,7 @@
 	
 	<!-- Roll the dice -->
 	<string name="roll_the_dice_live_tutorial">Relancer le dé !</string>
-	<string name="roll_the_dice_live_status_searching">Recherche de nouvelles personnes...</string>
+	<string name="roll_the_dice_live_status_searching">Recherche de joueurs...</string>
 	<string name="roll_the_dice_live_description">Jouez à un jeu dès que\nquelqu\'un vous rejoint !</string>
 	<string name="roll_the_dice_invite_title">Lance le dé !</string>
 	<string name="roll_the_dice_invite_subtitle">Nlles rencontres</string>
@@ -963,7 +963,7 @@
 	<string name="new_game_cancelled">Votre sélection (%1$s) a été annulée car un jeu est déjà en cours.</string>
 	
 	<!-- Game -->
-	<string name="game_loading">Chargement de %1$s</string>
+	<string name="game_loading">Chargement du jeu...</string>
 	<string name="game_rotate_landscape">Tournez en mode Paysage</string>
 	<string name="game_rotate_portrait">Tournez en mode portrait</string>
 	<string name="game_unavailable">Le jeu en cours n\'est pas disponible sur votre téléphone.</string>
@@ -989,6 +989,7 @@
 	<string name="leaderboard_friend_is_best">%1$s est le(la) meilleur(e) !</string>
 	<string name="leaderboard_section_trophies">TROPHÉES</string>
 	<string name="leaderboard_section_games">JEUX</string>
+	<string name="leaderboard_play_button">JOUER</string>
 	<string name="leaderboard_address_book_title">Connecter votre carnet d\'adresses</string>
 	<string name="leaderboard_address_book_subtitle">Tappez pour voir plus de scores !</string>
 	<string name="leaderboard_facebook_title">Connecter Facebook</string>
@@ -1095,4 +1096,14 @@
 	<string name="invited_to_join_popup_subtitle">Avec %1$s</string>
 	<string name="invited_to_join_popup_no_game_selected">PAS DE JEU SÉLÉCTIONNÉ</string>
 	<string name="invited_to_join_popup_action_later">PLUS TARD</string>
+	
+	<!-- Rematch Menu -->
+	<string name="rematch_menu_title">Rematch</string>
+	<string name="rematch_menu_action_this_game">With this game</string>
+	<string name="rematch_menu_action_another_game">With another game</string>
+	
+	<!-- Report Tutorial Popup -->
+	<string name="report_tutorial_popup_title">Tap on any player to report his behavior</string>
+	<string name="report_tutorial_popup_subtitle">We\'re here to have fun together. Anyone that is not shoudn\'t be here.</string>
+	<string name="report_tutorial_popup_action_done">GOT IT!</string>
 </resources>

@@ -177,7 +177,7 @@ public abstract class PeerView extends ViewGroup {
     setScalingType(DEFAULT_SCALING_TYPE);
   }
 
-  protected final TextureViewRenderer getTextureViewRenderer() {
+  public final TextureViewRenderer getTextureViewRenderer() {
     return textureViewRenderer;
   }
 
@@ -365,6 +365,10 @@ public abstract class PeerView extends ViewGroup {
 
   public VideoRenderer getRemoteRenderer() {
     return remoteRenderer;
+  }
+
+  public boolean isMirror() {
+    return mirror;
   }
 
   public void dispose() {

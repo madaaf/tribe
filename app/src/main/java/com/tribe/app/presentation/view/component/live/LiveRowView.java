@@ -76,6 +76,10 @@ public class LiveRowView extends LiveStreamView {
     endInit();
   }
 
+  @Override protected PeerView getPeerView() {
+    return remotePeerView;
+  }
+
   public void guestAppear() {
     setAddBtn(guest);
   }

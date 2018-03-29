@@ -25,4 +25,8 @@ public interface ContactInterface {
   void setNew(boolean isNew);
 
   boolean isNew();
+
+  void setCommonFriends(List<String> friends);
+
+  void setCommonFriendsNameList(List<String> commonFriendsNameList);
 }

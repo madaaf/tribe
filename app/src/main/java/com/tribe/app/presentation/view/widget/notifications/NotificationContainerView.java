@@ -88,6 +88,7 @@ public class NotificationContainerView extends FrameLayout {
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
+  private PublishSubject<Boolean> onDismissPopup = PublishSubject.create();
   private PublishSubject<Boolean> onAcceptedPermission = PublishSubject.create();
   private PublishSubject<Void> onSendInvitations = PublishSubject.create();
   private PublishSubject<String> onFacebookSuccess = PublishSubject.create();
@@ -154,8 +155,8 @@ public class NotificationContainerView extends FrameLayout {
 
   private boolean displayPermissionNotification() {
     RxPermissions rxPermissions = new RxPermissions((Activity) getContext());
-    if (!PermissionUtils.hasPermissionsCameraOnly(rxPermissions) ||
-        !PermissionUtils.hasPermissionsMicroOnly(rxPermissions)) {
+    if (!PermissionUtils.hasPermissionsCameraOnly(rxPermissions)
+        || !PermissionUtils.hasPermissionsMicroOnly(rxPermissions)) {
       viewToDisplay = new PermissionNotificationView(context);
       addViewInContainer(viewToDisplay);
       animateView();
@@ -274,8 +275,8 @@ public class NotificationContainerView extends FrameLayout {
     Bundle extra = data.getExtras();
     boolean displayEnjoyingTribeView = false;
 
-    if (numberOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_COUNT &&
-        minutesOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_MINUTES) {
+    if (numberOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_COUNT
+        && minutesOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_MINUTES) {
       displayEnjoyingTribeView = true;
       numberOfCalls.set(0);
       minutesOfCalls.set(0f);
@@ -307,6 +308,10 @@ public class NotificationContainerView extends FrameLayout {
     return onAcceptedPermission;
   }
 
+  public Observable<Boolean> onDismissPopup() {
+    return onDismissPopup;
+  }
+
   public Observable<Void> onSendInvitations() {
     return onSendInvitations;
   }
@@ -322,6 +327,7 @@ public class NotificationContainerView extends FrameLayout {
   private class TapGestureListener implements GestureDetector.OnGestureListener {
 
     @Override public boolean onDown(MotionEvent e) {
+      onDismissPopup.onNext(true);
       hideView();
       return true;
     }

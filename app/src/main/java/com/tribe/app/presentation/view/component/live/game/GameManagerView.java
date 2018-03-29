@@ -28,6 +28,7 @@ import com.tribe.app.presentation.view.component.live.game.battlemusic.GameBattl
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
+import com.tribe.app.presentation.view.component.live.game.coolcams.GameCoolCamsView;
 import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
@@ -283,6 +284,10 @@ public class GameManagerView extends FrameLayout {
       GameBirdRushView gameBirdRushView = new GameBirdRushView(getContext());
       subscriptionsGame.add(gameBirdRushView.onAddScore().subscribe(onAddScore));
       gameView = gameBirdRushView;
+    } else if (game.getId().equals(Game.GAME_COOL_CAMS)) {
+      GameCoolCamsView gameCoolCamsView = new GameCoolCamsView(getContext());
+      subscriptionsGame.add(gameCoolCamsView.onAddScore().subscribe(onAddScore));
+      gameView = gameCoolCamsView;
     } else if (game.isWeb()) {
       GameWebView gameWebView = new GameWebView(getContext());
       subscriptionsGame.add(gameWebView.onAddScore().subscribe(onAddScore));

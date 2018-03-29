@@ -256,10 +256,10 @@ public class ChatCacheImpl implements ChatCache {
       localIds = JsonUtils.arrayToJson(userIds);
     }
 
-    RealmResults<MessageRealm> ok =
+    RealmResults<MessageRealm> list =
         realm.where(MessageRealm.class).equalTo("localId", localIds).findAll();
 
-    return ok.asObservable()
+    return list.asObservable()
         .filter(RealmResults::isLoaded)
         .map(singleShortcutList -> realm.copyFromRealm(singleShortcutList))
         .unsubscribeOn(AndroidSchedulers.mainThread());

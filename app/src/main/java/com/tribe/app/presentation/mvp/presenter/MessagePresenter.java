@@ -30,6 +30,7 @@ import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
 import com.tribe.app.presentation.mvp.view.ChatMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.PictureMVPView;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.app.presentation.view.widget.chat.model.Message;
 import java.util.ArrayList;
@@ -224,8 +225,10 @@ public class MessagePresenter implements Presenter {
   }
 
   private void updateShortcut(String shortcutId, List<Pair<String, String>> values) {
-    updateShortcut.setup(shortcutId, values);
-    updateShortcut.execute(new UpdateShortcutSubscriber());
+    if (ShortcutUtil.isNotSupport(shortcutId)) {
+      updateShortcut.setup(shortcutId, values);
+      updateShortcut.execute(new UpdateShortcutSubscriber());
+    }
   }
 
   private class UpdateShortcutSubscriber extends DefaultSubscriber<Shortcut> {
@@ -465,8 +468,10 @@ public class MessagePresenter implements Presenter {
   }
 
   public void createShortcut(boolean onQuickChat, String... userIds) {
-    createShortcut.setup(userIds);
-    createShortcut.execute(new ShortcutForUserIdsSubscriber(onQuickChat, userIds));
+    if (ShortcutUtil.isNotSupport(userIds)) {
+      createShortcut.setup(userIds);
+      createShortcut.execute(new ShortcutForUserIdsSubscriber(onQuickChat, userIds));
+    }
   }
 
   public void updateShortcutForUserIds(String... userIds) {

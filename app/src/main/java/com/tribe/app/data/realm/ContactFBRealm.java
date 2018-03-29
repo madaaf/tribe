@@ -3,6 +3,7 @@ package com.tribe.app.data.realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +19,8 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
   private int howManyFriends = 0;
   private boolean isNew = false;
   private boolean hasApp = false;
+  private RealmList<StringRealm> commonFriends;
+  private RealmList<StringRealm> commonFriendsNameList;
 
   @Override public String getId() {
     return id;
@@ -51,6 +54,28 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
     return isNew;
   }
 
+  @Override public void setCommonFriends(List<String> list) {
+    this.commonFriends = new RealmList<>();
+    if (list != null) {
+      for (String friend : list) {
+        StringRealm stringRealm = new StringRealm();
+        stringRealm.setContent(friend);
+        commonFriends.add(stringRealm);
+      }
+    }
+  }
+
+  @Override public void setCommonFriendsNameList(List<String> list) {
+    this.commonFriendsNameList = new RealmList<>();
+    if (list != null) {
+      for (String friend : list) {
+        StringRealm stringRealm = new StringRealm();
+        stringRealm.setContent(friend);
+        commonFriendsNameList.add(stringRealm);
+      }
+    }
+  }
+
   @Override public void setNew(boolean aNew) {
     isNew = aNew;
   }
@@ -63,6 +88,15 @@ public class ContactFBRealm extends RealmObject implements ContactInterface {
     return howManyFriends;
   }
 
+  public List<String> getcommonFriendsNameList() {
+    List<String> list = new ArrayList<>();
+    if (commonFriendsNameList != null) {
+      for (StringRealm stringRealm : commonFriendsNameList) {
+        list.add(stringRealm.getContent());
+      }
+    }
+    return list;
+  }
   @Override public void setHowManyFriends(int howManyFriends) {
     this.howManyFriends = howManyFriends;
   }

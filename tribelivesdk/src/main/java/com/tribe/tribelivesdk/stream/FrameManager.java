@@ -32,6 +32,7 @@ public class FrameManager {
   private byte[] argb, yuvOut;
   private boolean firstFrame, processing = false;
   private int previousWidth = 0, previousHeight = 0, previousRotation = 0;
+  private boolean subscribed = false;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -77,20 +78,21 @@ public class FrameManager {
 
   public void initFrameSubscription(Observable<Frame> onFrame) {
     //ulseeManager.initFrameSubscription(onFrame);
-    if (gameManager.isFacialRecognitionNeeded()) {
-      visionAPIManager.initFrameSubscription(onFrame);
-      visionAPIManager.initFrameSizeChangeObs(onFrameSizeChange);
-    }
-
     subscriptions.add(onFrame.onBackpressureDrop()
         .filter(frame -> !processing)
         .observeOn(Schedulers.computation())
         .map(frame1 -> {
+          if (gameManager.isFacialRecognitionNeeded() && !subscribed) {
+            subscribed = true;
+            visionAPIManager.initFrameSubscription(onFrame);
+            visionAPIManager.initFrameSizeChangeObs(onFrameSizeChange);
+          }
+
           processing = true;
-          if (firstFrame
-              || previousWidth != frame1.getWidth()
-              || previousHeight != frame1.getHeight()
-              || previousRotation != frame1.getRotation()) {
+          if (firstFrame ||
+              previousWidth != frame1.getWidth() ||
+              previousHeight != frame1.getHeight() ||
+              previousRotation != frame1.getRotation()) {
             argb = new byte[frame1.getWidth() * frame1.getHeight() * 4];
             yuvOut = new byte[frame1.getData().length];
 
@@ -143,6 +145,7 @@ public class FrameManager {
   }
 
   public void dispose() {
+    subscribed = false;
     filterManager.dispose();
     gameManager.dispose();
     visionAPIManager.dispose();
@@ -154,6 +157,7 @@ public class FrameManager {
 
   public void stopCapture() {
     firstFrame = true;
+    subscribed = false;
     subscriptions.clear();
     //ulseeManager.stopCapture();
     visionAPIManager.stopCapture();

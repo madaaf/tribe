@@ -12,9 +12,9 @@ import com.tribe.app.presentation.view.activity.AuthActivity;
 import com.tribe.app.presentation.view.activity.AuthProfileActivity;
 import com.tribe.app.presentation.view.activity.CountryActivity;
 import com.tribe.app.presentation.view.activity.DebugActivity;
-import com.tribe.app.presentation.view.activity.GameDetailsActivity;
+import com.tribe.app.presentation.view.activity.GameDetailsView;
 import com.tribe.app.presentation.view.activity.GameMembersActivity;
-import com.tribe.app.presentation.view.activity.GameStoreActivity;
+import com.tribe.app.presentation.view.activity.GamePagerActivity;
 import com.tribe.app.presentation.view.activity.HomeActivity;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.activity.MissedCallDetailActivity;
@@ -39,6 +39,7 @@ import com.tribe.app.presentation.view.component.live.LiveLowConnectionView;
 import com.tribe.app.presentation.view.component.live.LivePeerOverlayView;
 import com.tribe.app.presentation.view.component.live.LiveRingingView;
 import com.tribe.app.presentation.view.component.live.LiveRoomView;
+import com.tribe.app.presentation.view.component.live.LiveScoresView;
 import com.tribe.app.presentation.view.component.live.LiveStatusNameView;
 import com.tribe.app.presentation.view.component.live.LiveWaveView;
 import com.tribe.app.presentation.view.component.live.ScreenshotView;
@@ -51,6 +52,7 @@ import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRush
 import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRushView;
 import com.tribe.app.presentation.view.component.live.game.common.GameEngine;
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
+import com.tribe.app.presentation.view.component.live.game.coolcams.GameCoolCamsView;
 import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.onboarding.AccessView;
@@ -209,6 +211,8 @@ import dagger.Component;
 
   void inject(PopupDigest popupDigest);
 
+  void inject(LiveScoresView liveScoresView);
+
   /**
    * GAMES
    */
@@ -231,15 +235,17 @@ import dagger.Component;
 
   void inject(GameBirdRushBackground gameBirdRushBackground);
 
+  void inject(GameCoolCamsView gameCoolCamsView);
+
   void inject(GameEngine gameEngine);
 
-  void inject(GameStoreActivity newGameActivity);
+  void inject(GamePagerActivity gamePagerActivity);
 
   void inject(LeaderboardMainView leaderboardMainView);
 
   void inject(LeaderboardDetailsView leaderboardDetailsView);
 
-  void inject(GameDetailsActivity gameDetailsActivity);
+  void inject(GameDetailsView gameDetailsView);
 
   void inject(NewGameActivity newGameActivity);
 

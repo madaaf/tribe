@@ -1,5 +1,6 @@
 package com.tribe.app.domain.interactor.user;
 
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
@@ -18,6 +19,7 @@ public class GetDiskContactList extends UseCaseDisk {
     super(postExecutionThread);
     this.userRepository = userRepository;
   }
+
 
   @Override protected Observable buildUseCaseObservable() {
     return this.userRepository.contacts();

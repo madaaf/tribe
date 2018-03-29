@@ -14,6 +14,7 @@ import com.tribe.app.data.repository.user.datasource.CloudUserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStore;
 import com.tribe.app.data.repository.user.datasource.UserDataStoreFactory;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
@@ -157,6 +158,21 @@ import rx.Observable;
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.contacts().map(collection -> {
       return this.contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection));
+    });
+  }
+
+  @Override public Observable<List<ContactFB>> requestInvitableFriends(int nbr) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+    return userDataStore.requestInvitableFriends(nbr).map(collection -> {
+      List<Contact> contactList =
+          this.contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection));
+      List<ContactFB> list = new ArrayList<>();
+      for (Contact c : contactList) {
+        if (c instanceof ContactFB) {
+          list.add((ContactFB) c);
+        }
+      }
+      return list;
     });
   }
 

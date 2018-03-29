@@ -95,9 +95,9 @@ public abstract class BaseActivity extends AppCompatActivity {
   }
 
   private void displayChallengerNotifications() {
-    if (challengeNotificationsPref != null &&
-        challengeNotificationsPref.get() != null &&
-        !challengeNotificationsPref.get().isEmpty()) {
+    if (challengeNotificationsPref != null
+        && challengeNotificationsPref.get() != null
+        && !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
@@ -109,6 +109,14 @@ public abstract class BaseActivity extends AppCompatActivity {
       list.add(a);
       view.show(this, list);
     }
+
+    List<NotificationModel> list = new ArrayList<>();
+    NotifView view = new NotifView(getBaseContext());
+    NotificationModel a = NotificationUtils.getFbNotificationModel(this, null);
+    list.add(a);
+    list.add(a);
+    list.add(a);
+   // view.show(this, list);
   }
 
   private void connectToFacebook() {
@@ -125,10 +133,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     NotificationModel a = NotificationUtils.getFbNotificationModel(this, null);
     list.add(a);
     Date now = new Date();
-    if ((user.getProfilePicture() == null ||
-        user.getProfilePicture().isEmpty() ||
-        user.getProfilePicture().equals("http://no")) &&
-        (user.getCreatedAt() != null && (now.getTime() - user.getCreatedAt().getTime()) > 24 * 60 * 60 * 1000)) {
+    if ((user.getProfilePicture() == null
+        || user.getProfilePicture().isEmpty()
+        || user.getProfilePicture().equals("http://no")) && (user.getCreatedAt() != null
+        && (now.getTime() - user.getCreatedAt().getTime()) > 24 * 60 * 60 * 1000)) {
       NotificationModel b = NotificationUtils.getAvatarNotificationModel(this);
       list.add(b);
     }

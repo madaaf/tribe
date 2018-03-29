@@ -789,7 +789,7 @@
 	
 	<!-- Roll the dice -->
 	<string name="roll_the_dice_live_tutorial">Re-roll the dice!</string>
-	<string name="roll_the_dice_live_status_searching">Matching with new people...</string>
+	<string name="roll_the_dice_live_status_searching">Matching with new players...</string>
 	<string name="roll_the_dice_live_description">Play games as soon as\nsomeone joins!</string>
 	<string name="roll_the_dice_invite_title">Roll the dice!</string>
 	<string name="roll_the_dice_invite_subtitle">Make friends!</string>
@@ -963,7 +963,7 @@
 	<string name="new_game_cancelled">Your game selection (%1$s) has been cancelled because there is already another game in the room.</string>
 	
 	<!-- Game -->
-	<string name="game_loading">Loading %1$s</string>
+	<string name="game_loading">Loading game...</string>
 	<string name="game_rotate_landscape">Rotate to Landscape mode</string>
 	<string name="game_rotate_portrait">Rotate to Portrait mode</string>
 	<string name="game_unavailable">The game played is not available on your phone.</string>
@@ -989,6 +989,7 @@
 	<string name="leaderboard_friend_is_best">%1$s is the best!</string>
 	<string name="leaderboard_section_trophies">TROPHIES</string>
 	<string name="leaderboard_section_games">GAMES</string>
+	<string name="leaderboard_play_button">PLAY</string>
 	<string name="leaderboard_address_book_title">Connect Address Book</string>
 	<string name="leaderboard_address_book_subtitle">Tap to see more friends scores!</string>
 	<string name="leaderboard_facebook_title">Connect Facebook</string>
@@ -1095,4 +1096,14 @@
 	<string name="invited_to_join_popup_subtitle">With %1$s</string>
 	<string name="invited_to_join_popup_no_game_selected">NO GAME SELECTED YET</string>
 	<string name="invited_to_join_popup_action_later">LATER</string>
+	
+	<!-- Rematch Menu -->
+	<string name="rematch_menu_title">Rematch</string>
+	<string name="rematch_menu_action_this_game">With this game</string>
+	<string name="rematch_menu_action_another_game">With another game</string>
+	
+	<!-- Report Tutorial Popup -->
+	<string name="report_tutorial_popup_title">Tap on any player to report his behavior</string>
+	<string name="report_tutorial_popup_subtitle">We\'re here to have fun together. Anyone that is not shoudn\'t be here.</string>
+	<string name="report_tutorial_popup_action_done">GOT IT!</string>
 </resources>

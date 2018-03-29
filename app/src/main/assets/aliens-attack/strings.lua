@@ -6,6 +6,7 @@ local strings = {
 		someone_won = '%s WON!',
 		you_lost = 'YOU LOST',
 		someone_lost = '%s LOST!',
+		game_over = 'GAME OVER!',
 		pending_instructions = 'IT WILL RESTART WHEN\nSOMEONE WINS',
 		waiting_instructions = 'IT WILL RESTART WHEN\nSOMEONE JOINS'
 	},
@@ -16,6 +17,7 @@ local strings = {
 		someone_won = '%s A GAGNÉ !',
 		you_lost = 'TU AS PERDU',
 		someone_lost = '%s A PERDU !',
+		game_over = 'GAME OVER!',
 		pending_instructions = 'LE JEU VA REDEMARRER QUAND\nUN JOUEUR GAGNE',
 		waiting_instructions = 'LE JEU VA REDEMARRER QUAND\nUN JOUEUR ARRIVE'
 	}

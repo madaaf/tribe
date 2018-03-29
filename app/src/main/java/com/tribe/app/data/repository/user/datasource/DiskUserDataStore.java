@@ -1,13 +1,17 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import android.content.Context;
 import android.util.Pair;
+import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.cache.ContactCache;
 import com.tribe.app.data.cache.LiveCache;
 import com.tribe.app.data.cache.UserCache;
 import com.tribe.app.data.network.entity.LinkIdResult;
 import com.tribe.app.data.network.entity.LoginEntity;
+import com.tribe.app.data.network.entity.LookupObject;
 import com.tribe.app.data.realm.AccessToken;
 import com.tribe.app.data.realm.ContactABRealm;
+import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.ContactInterface;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.data.realm.PinRealm;
@@ -106,6 +110,15 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
 
   @Override public Observable<List<ContactInterface>> contacts() {
     return contactCache.contacts().map(contactABRealms -> new ArrayList<>(contactABRealms));
+  }
+
+  @Override public Observable<List<ContactFBRealm>> requestInvitableFriends(int nbr) {
+    return null;
+  }
+
+  @Override
+  public Observable<List<LookupObject>> contactsFbId(Context context, List<String> fbIds) {
+    return null;
   }
 
   @Override public Observable<List<ContactInterface>> contactsFB() {
@@ -257,8 +270,8 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     Map<String, Boolean> onlineMap = liveCache.getOnlineMap();
     if (shortcutRealm != null) {
       shortcutRealm.computeMembersOnline(onlineMap);
-      shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId()) ||
-          shortcutRealm.isUniqueMemberOnline());
+      shortcutRealm.setOnline(liveCache.getOnlineMap().containsKey(shortcutRealm.getId())
+          || shortcutRealm.isUniqueMemberOnline());
     }
   }
 

@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -148,7 +149,7 @@ public class GameBattleMusicPlayView extends FrameLayout {
     progressBarPlay.setProgress(
         (int) ((float) 100 / (float) audioPlayer.getDuration() * audioPlayer.getPosition()));
     progressBarPlay.setProgress(100, (int) (audioPlayer.getDuration() - audioPlayer.getPosition()),
-        0, null, null);
+        0, new DecelerateInterpolator(), null, null);
   }
 
   private void stopProgress() {
