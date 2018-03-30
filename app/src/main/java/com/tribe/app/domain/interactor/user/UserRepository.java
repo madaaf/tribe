@@ -5,11 +5,12 @@ package com.tribe.app.domain.interactor.user;
  */
 
 import android.util.Pair;
-import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
+import com.tribe.app.data.realm.ContactFBRealm;
 import com.tribe.app.data.realm.Installation;
 import com.tribe.app.domain.entity.Contact;
+import com.tribe.app.domain.entity.ContactFB;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Pin;
 import com.tribe.app.domain.entity.Recipient;
@@ -88,6 +89,8 @@ public interface UserRepository {
    * com.tribe.app.data.repository.user.datasource.CloudUserDataStore}
    */
   Observable<List<Contact>> contacts();
+
+  Observable<List<ContactFB>> requestInvitableFriends(int nbr);
 
   /**
    * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos

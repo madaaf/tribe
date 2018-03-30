@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -180,8 +179,6 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   @BindView(R.id.nativeDialogsView) PopupContainerView popupContainerView;
 
   @BindView(R.id.txtSyncedContacts) TextViewFont txtSyncedContacts;
-
-  @BindView(R.id.test) FrameLayout test;
 
   // OBSERVABLES
   private UserComponent userComponent;
@@ -661,7 +658,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
               if (!addedUsers.contains(user.getId())) finalList.add(user);
             }
           }
-          
+
           if (!FacebookUtils.isLoggedIn()) {
             finalList.add(new Contact(Contact.FACEBOOK_ID));
           }
@@ -1058,11 +1055,9 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       tagManager.trackEvent(TagManagerUtils.KPI_Onboarding_SystemContacts, bundleBis);
       if (hasPermission) {
         addressBook.set(hasPermission);
-        homeGridPresenter.lookupContacts();
-        searchView.refactorActions();
-      } else {
-        topBarContainer.onSyncError();
       }
+      homeGridPresenter.lookupContacts();
+      searchView.refactorActions();
     });
   }
 

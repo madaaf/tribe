@@ -40,6 +40,8 @@ import timber.log.Timber;
 
   public static final String TAG = "RxFacebook";
 
+  public static final int MAX_FRIEND_INVITE = 200;
+  public static final int MAX_SIZE_PAGINATION = 25;
   public static final int FACEBOOK_LOGIN = 0;
   public static final int FACEBOOK_GET_FRIENDS = 1;
   public static final int FACEBOOK_GAME_REQUEST = 2;
@@ -106,11 +108,11 @@ import timber.log.Timber;
     return friendListObservable;
   }
 
-  public Observable<List<ContactFBRealm>> requestInvitableFriends() {
+  public Observable<List<ContactFBRealm>> requestInvitableFriends(int nbr) {
     if (friendInvitableListObservable == null) {
       friendInvitableListObservable =
           Observable.create((Subscriber<? super List<ContactFBRealm>> subscriber) -> {
-            emitFriendsInvitable(subscriber);
+            emitFriendsInvitable(subscriber, nbr);
           }).onBackpressureBuffer().serialize();
     }
 
@@ -160,7 +162,6 @@ import timber.log.Timber;
       @Override public void onReceivedError(WebView view, WebResourceRequest request,
           WebResourceError error) {
         super.onReceivedError(view, request, error);
-        Timber.e("error on notify all facebook friends");
       }
 
       @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
@@ -176,7 +177,9 @@ import timber.log.Timber;
               String initialContent = html.substring(html.indexOf("name=\\\"to\\\""));
               String start = "value=\\\"";
               String end = "\\\">";
-              String finalContent = initialContent.substring(initialContent.indexOf(start) + start.length(), initialContent.indexOf(end));
+              String finalContent =
+                  initialContent.substring(initialContent.indexOf(start) + start.length(),
+                      initialContent.indexOf(end));
 
               List<String> fbIdList = new ArrayList<>(Arrays.asList(finalContent.split(",")));
 
@@ -221,13 +224,17 @@ import timber.log.Timber;
         + "&sdk=android-4.23.0&redirect_uri=fbconnect%3A%2F%2Fsuccess&message=Welcome&display=touch";
 
     WebView webView = new WebView(context);
+    String finalTo = to;
     webView.setWebViewClient(new WebViewClient() {
       @Override public void onReceivedError(WebView view, WebResourceRequest request,
           WebResourceError error) {
         super.onReceivedError(view, request, error);
-        Timber.e("error on notify all facebook friends");
         notifyFriendsSubject.onNext(false);
         notifyFriendsSubject.onCompleted();
+      }
+
+      @Override public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+        return true;
       }
 
       @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
@@ -257,11 +264,12 @@ import timber.log.Timber;
     return notifyFriendsSubject;
   }
 
-  public void emitFriendsInvitable(Subscriber subscriber) {
+  public void emitFriendsInvitable(Subscriber subscriber, int nbr) {
     if (FacebookUtils.isLoggedIn()) {
       new GraphRequest(AccessToken.getCurrentAccessToken(), "/"
           + AccessToken.getCurrentAccessToken().getUserId()
-          + "/invitable_friends?fields=id,name&limit=20", null, HttpMethod.GET,
+          + "/invitable_friends?fields=id,name&limit="
+          + nbr, null, HttpMethod.GET,
           response -> handleFriendList(response, subscriber, false)).executeAsync();
     } else {
       if (!subscriber.isUnsubscribed()) {

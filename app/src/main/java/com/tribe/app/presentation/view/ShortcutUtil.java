@@ -44,6 +44,10 @@ public class ShortcutUtil {
     return notificationShortcut;
   }
 
+  public static boolean isNotSupport(String... userIds){
+    return userIds != null &&  userIds.length > 0 && !userIds[0].equals(Shortcut.SUPPORT);
+  }
+
   public static boolean equalShortcutMembers(List<User> one, List<User> two, User user) {
     if ((one == null) || (two == null) || (user == null)) {
       return false;

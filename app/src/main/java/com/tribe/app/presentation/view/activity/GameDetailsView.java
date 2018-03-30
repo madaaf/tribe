@@ -1,14 +1,11 @@
 package com.tribe.app.presentation.view.activity;
 
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.transition.ChangeBounds;
@@ -17,25 +14,32 @@ import android.support.transition.TransitionListenerAdapter;
 import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.RotateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import com.bumptech.glide.Glide;
 import com.tribe.app.R;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.User;
+import com.tribe.app.presentation.AndroidApplication;
+import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.internal.di.components.UserComponent;
+import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
-import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
+import com.tribe.app.presentation.navigation.Navigator;
+import com.tribe.app.presentation.utils.analytics.TagManager;
 import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -44,32 +48,21 @@ import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
+public class GameDetailsView extends FrameLayout {
 
-public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
-
-  private static final int DURATION_MOVING = 2500;
   private static final int DURATION = 400;
-
   public static final String GAME_ID = "game_id";
 
-  public static Intent getCallingIntent(Activity activity, String gameId) {
-    Intent intent = new Intent(activity, GameDetailsActivity.class);
-    intent.putExtra(GAME_ID, gameId);
-    return intent;
-  }
-
   @Inject ScreenUtils screenUtils;
-
+  @Inject TagManager tagManager;
+  @Inject User user;
+  @Inject Navigator navigator;
   @Inject GamePresenter gamePresenter;
 
   @BindView(R.id.imgBackgroundGradient) View imgBackgroundGradient;
@@ -79,100 +72,79 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
   @BindView(R.id.txtBaseline) TextViewFont txtBaseline;
   @BindView(R.id.imgRays) ImageView imgRays;
   @BindView(R.id.layoutConstraint) ConstraintLayout layoutConstraint;
-  @BindView(R.id.imgAnimation1) ImageView imgAnimation1;
-  @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
-  @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
   @BindView(R.id.cardAvatarMyScore) CardView cardAvatarMyScore;
   @BindView(R.id.avatarMyScore) NewAvatarView avatarMyScore;
   @BindView(R.id.txtMyScoreRanking) TextViewRanking txtMyScoreRanking;
   @BindView(R.id.txtMyScoreScore) TextViewScore txtMyScoreScore;
   @BindView(R.id.txtMyScoreName) TextViewFont txtMyScoreName;
-  @BindView(R.id.btnMulti) View btnMulti;
   @BindView(R.id.leaderbordContainer) View leaderbordContainer;
   @BindView(R.id.leaderbordLabel) TextViewFont leaderbordLabel;
-  @BindView(R.id.leaderbordPictoStart) ImageView leaderbordPictoStart;
-  @BindView(R.id.leaderbordPictoEnd) ImageView leaderbordPictoEnd;
-  @BindView(R.id.leaderbordSeparator) View leaderbordSeparator;
+  @BindView(R.id.playsCounter) TextViewFont playsCounter;
+ // @BindView(R.id.leaderbordPictoStart) ImageView leaderbordPictoStart;
+//  @BindView(R.id.leaderbordPictoEnd) ImageView leaderbordPictoEnd;
+ // @BindView(R.id.leaderbordSeparator) View leaderbordSeparator;
 
   // VARIABLES
   private UserComponent userComponent;
   private GameManager gameManager;
   private GameMVPViewAdapter gameMVPViewAdapter;
   private Game game;
-  private Map<String, ValueAnimator> mapAnimator;
+  private Context context;
 
+  protected LayoutInflater inflater;
+  protected Unbinder unbinder;
   // RESOURCES
 
   // OBSERVABLES
   private CompositeSubscription subscriptions;
 
-  @Override protected void onCreate(Bundle savedInstanceState) {
-    getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+  public GameDetailsView(@NonNull Context context, Game game) {
+    super(context);
+    this.game = game;
+    this.context = context;
+    initView(context);
+  }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      getWindow().setStatusBarColor(Color.TRANSPARENT);
-    }
+  public GameDetailsView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    super(context, attrs);
+    initView(context);
+  }
 
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_game_details);
-
+  private void initView(Context context) {
+    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    inflater.inflate(R.layout.activity_game_details, this, true);
+    unbinder = ButterKnife.bind(this);
     ButterKnife.bind(this);
 
     initDependencyInjector();
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      layoutConstraint.setPadding(0, getStatusBarHeight(), 0, 0);
-    }
+    init();
+  }
 
-    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) btnMulti.getLayoutParams();
-
-    if (hasSoftKeys()) {
-      params.bottomMargin = screenUtils.dpToPx(50);
-    } else {
-      params.bottomMargin = screenUtils.dpToPx(15);
-    }
-
-    btnMulti.setLayoutParams(params);
-
-    gameManager = GameManager.getInstance(this);
-    game = gameManager.getGameById(getIntent().getStringExtra(GAME_ID));
-    mapAnimator = new HashMap<>();
-
+  private void init() {
+    gameManager = GameManager.getInstance(context);
     initPresenter();
     initSubscriptions();
     initUI();
   }
 
-  @Override protected void onStart() {
-    super.onStart();
+  @Override protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
     gamePresenter.onViewAttached(gameMVPViewAdapter);
   }
 
-  @Override protected void onStop() {
-    super.onStop();
-    gamePresenter.onViewDetached();
-  }
-
-  @Override protected void onDestroy() {
-    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
+  @Override protected void onDetachedFromWindow() {
+    if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.clear();
     imgRays.clearAnimation();
-    for (ValueAnimator animator : mapAnimator.values()) animator.cancel();
-    super.onDestroy();
-  }
-
-  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == FROM_GAME_DETAILS && resultCode == RESULT_OK && data != null) {
-      setResult(RESULT_OK, data);
-      finish();
-    }
+    clearAnimation();
+    gamePresenter.onViewDetached();
+    super.onDetachedFromWindow();
   }
 
   private void initPresenter() {
     gameMVPViewAdapter = new GameMVPViewAdapter() {
       @Override public Context context() {
-        return GameDetailsActivity.this;
+        return context;
       }
     };
   }
@@ -181,18 +153,36 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     subscriptions = new CompositeSubscription();
   }
 
-  private void initUI() {
-    txtBaseline.setText(game.getBaseline());
+  private void resetView(View v) {
+    v.setAlpha(0f);
+    v.setTranslationX(0);
+    v.setTranslationY(0);
+    v.clearAnimation();
+  }
 
-    new GlideUtils.GameImageBuilder(this, screenUtils).url(game.getIcon())
+  private void initLeaderbord() {
+    resetView(leaderbordContainer);
+    resetView(leaderbordLabel);
+   // resetView(leaderbordPictoStart);
+   // resetView(leaderbordPictoEnd);
+   // resetView(leaderbordSeparator);
+  }
+
+  private void initUI() {
+    initLeaderbord();
+    txtBaseline.setText(game.getBaseline().toUpperCase());
+    playsCounter.setText(
+        context.getString(R.string.new_game_plays, String.valueOf(game.getPlays_count()))
+            .toUpperCase());
+    new GlideUtils.GameImageBuilder(context, screenUtils).url(game.getIcon())
         .hasBorder(false)
         .hasPlaceholder(true)
         .rounded(true)
         .target(imgIcon)
         .load();
 
-    Glide.with(this).load(game.getLogo()).into(imgLogo);
-    Glide.with(this).load(game.getBackground()).into(imgBackgroundLogo);
+    Glide.with(context).load(game.getLogo()).into(imgLogo);
+    Glide.with(context).load(game.getBackground()).into(imgBackgroundLogo);
 
     GradientDrawable gd = new GradientDrawable(GradientDrawable.Orientation.TR_BL, new int[] {
         Color.parseColor("#" + game.getPrimary_color()),
@@ -201,32 +191,9 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
 
     ViewCompat.setBackground(imgBackgroundGradient, gd);
 
-    for (int i = 0; i < game.getAnimation_icons().size(); i++) {
-      String url = game.getAnimation_icons().get(i);
-      ImageView imageView = null;
-
-      if (i == 0) {
-        imageView = imgAnimation1;
-      } else if (i == 1) {
-        imageView = imgAnimation2;
-      } else if (i == 2) {
-        imageView = imgAnimation3;
-      }
-
-      Glide.with(this).load(url).into(imageView);
-    }
-
-    animateImg(imgAnimation1, true);
-    animateImg(imgAnimation1, false);
-    animateImg(imgAnimation2, true);
-    animateImg(imgAnimation2, false);
-    animateImg(imgAnimation3, true);
-    animateImg(imgAnimation3, false);
-
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          showImgAnimations();
           animateRays();
         }));
 
@@ -234,29 +201,32 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> showButtons()));
 
-    Score score = getCurrentUser().getScoreForGame(game.getId());
+    Score score = user.getScoreForGame(game.getId());
     if (score == null) {
       score = new Score();
       score.setValue(0);
     }
 
-    txtMyScoreName.setText(getCurrentUser().getDisplayName());
+    txtMyScoreName.setText(user.getDisplayName());
     txtMyScoreScore.setScore(score.getValue());
     txtMyScoreRanking.setRanking(score.getRanking());
-    avatarMyScore.load(getCurrentUser().getProfilePicture());
+    avatarMyScore.load(user.getProfilePicture());
   }
 
-  private void initDependencyInjector() {
-    this.userComponent = DaggerUserComponent.builder()
-        .applicationComponent(getApplicationComponent())
-        .activityModule(getActivityModule())
-        .build();
-
+  protected void initDependencyInjector() {
     DaggerUserComponent.builder()
         .activityModule(getActivityModule())
         .applicationComponent(getApplicationComponent())
         .build()
         .inject(this);
+  }
+
+  protected ApplicationComponent getApplicationComponent() {
+    return ((AndroidApplication) ((Activity) getContext()).getApplication()).getApplicationComponent();
+  }
+
+  protected ActivityModule getActivityModule() {
+    return new ActivityModule(((Activity) getContext()));
   }
 
   private void animateRays() {
@@ -269,27 +239,6 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     imgRays.startAnimation(rotate);
   }
 
-  private void showImgAnimations() {
-    imgAnimation1.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-    imgAnimation2.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-    imgAnimation3.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-  }
-
   private void showButtons() {
     ConstraintSet set = new ConstraintSet();
     set.clone(layoutConstraint);
@@ -300,9 +249,10 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     set.clear(R.id.btnMulti, ConstraintSet.TOP);
     set.setAlpha(R.id.btnSingle, 1);
     set.setAlpha(R.id.btnMulti, 1);
+
     animateLayoutWithConstraintSet(set, new TransitionListenerAdapter() {
       @Override public void onTransitionEnd(@NonNull Transition transition) {
-        if (game.hasScores()) showScores();
+
       }
     });
   }
@@ -314,9 +264,21 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     animateViewEntry(txtMyScoreScore);
     animateViewEntry(leaderbordContainer);
     animateViewEntry(leaderbordLabel);
-    animateViewEntry(leaderbordPictoStart);
-    animateViewEntry(leaderbordPictoEnd);
-    animateViewEntry(leaderbordSeparator);
+   // animateViewEntry(leaderbordPictoStart);
+   // animateViewEntry(leaderbordPictoEnd);
+    //animateViewEntry(leaderbordSeparator);
+  }
+
+  private void hideScores() {
+    hideViewEntry(cardAvatarMyScore);
+    hideViewEntry(txtMyScoreName);
+    hideViewEntry(txtMyScoreRanking);
+    hideViewEntry(txtMyScoreScore);
+    hideViewEntry(leaderbordContainer);
+    hideViewEntry(leaderbordLabel);
+  //  hideViewEntry(leaderbordPictoStart);
+  //  hideViewEntry(leaderbordPictoEnd);
+  //  hideViewEntry(leaderbordSeparator);
   }
 
   private void animateLayoutWithConstraintSet(ConstraintSet constraintSet,
@@ -340,6 +302,7 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
   private void animateViewEntry(View v) {
     v.setTranslationY(screenUtils.dpToPx(50));
     v.animate()
+        .alpha(1)
         .translationY(0)
         .setDuration(DURATION)
         .setInterpolator(new OvershootInterpolator(0.45f))
@@ -347,67 +310,26 @@ public class GameDetailsActivity extends BaseBroadcastReceiverActivity {
     showView(v);
   }
 
-  private void animateImg(ImageView imgAnimation, boolean isX) {
-    int rdm = new Random().nextInt(50) - 25;
-
-    ValueAnimator animator = mapAnimator.get(imgAnimation.getId());
-    if (animator != null) {
-      animator.cancel();
-    }
-
-    animator = ValueAnimator.ofInt(0, screenUtils.dpToPx(rdm));
-    animator.setDuration(DURATION_MOVING);
-    animator.setRepeatCount(ValueAnimator.INFINITE);
-    animator.setRepeatMode(ValueAnimator.REVERSE);
-    animator.addUpdateListener(animation -> {
-      int translation = (int) animation.getAnimatedValue();
-      if (isX) {
-        imgAnimation.setTranslationX(translation);
-      } else {
-        imgAnimation.setTranslationY(translation);
-      }
-    });
-    animator.start();
+  private void hideViewEntry(View v) {
+    v.clearAnimation();
+    v.setAlpha(0);
   }
 
   /**
    * ONCLICK
    */
 
-  @OnClick(R.id.btnClose) void close() {
-    finish();
-  }
-
-  @OnClick(R.id.btnSingle) void openLive() {
-
-    Bundle bundle = new Bundle();
-    bundle.putString(TagManagerUtils.SOURCE, TagManagerUtils.HOME);
-    bundle.putString(TagManagerUtils.ACTION, TagManagerUtils.LAUNCHED);
-    bundle.putString(TagManagerUtils.NAME, game.getId());
-    tagManager.trackEvent(TagManagerUtils.NewGame, bundle);
-
-    navigator.navigateToNewCall(this, LiveActivity.SOURCE_HOME, game.getId());
-    //navigator.navigateToCorona(this, game.getId(), FROM_GAME_DETAILS);
-  }
-
-  @OnClick(R.id.btnMulti) void openGameMembers() {
-    navigator.navigateToGameMembers(this, game.getId());
-  }
-
   @OnClick(R.id.leaderbordContainer) void onClickLeaderbordLabel() {
-    navigator.navigateToGameLeaderboard(this, game.getId());
+    navigator.navigateToGameLeaderboard((Activity) context, game.getId());
   }
 
-  /**
-   * PUBLIC
-   */
-
-  @Override public void finish() {
-    super.finish();
-    overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
+  public void onCurrentViewVisible() {
+    //if (game.hasScores())
+    hideScores();
+    subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(aLong -> {
+          showScores();
+        }));
   }
-
-  /**
-   * OBSERVABLES
-   */
 }

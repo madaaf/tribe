@@ -14,6 +14,7 @@ import com.tribe.app.domain.interactor.user.UpdateShortcut;
 import com.tribe.app.presentation.mvp.presenter.Presenter;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.ShortcutMVPView;
+import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.viewholder.BaseListViewHolder;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,8 +73,10 @@ public class ShortcutPresenter implements Presenter {
   public void createShortcut(String... userIds) {
     if (createShortcutSubscriber != null) createShortcutSubscriber.unsubscribe();
     createShortcutSubscriber = new CreateShortcutSubscriber();
-    createShortcut.setup(userIds);
-    createShortcut.execute(createShortcutSubscriber);
+    if (ShortcutUtil.isNotSupport(userIds)) {
+      createShortcut.setup(userIds);
+      createShortcut.execute(createShortcutSubscriber);
+    }
   }
 
   private class CreateShortcutSubscriber extends DefaultSubscriber<Shortcut> {
@@ -136,10 +139,12 @@ public class ShortcutPresenter implements Presenter {
 
   private void updateShortcut(String shortcutId, List<Pair<String, String>> values,
       BaseListViewHolder viewHolder) {
-    if (updateShortcutSubscriber != null) updateShortcutSubscriber.unsubscribe();
-    updateShortcutSubscriber = new UpdateShortcutSubscriber(viewHolder);
-    updateShortcut.setup(shortcutId, values);
-    updateShortcut.execute(updateShortcutSubscriber);
+    if (ShortcutUtil.isNotSupport(shortcutId)) {
+      if (updateShortcutSubscriber != null) updateShortcutSubscriber.unsubscribe();
+      updateShortcutSubscriber = new UpdateShortcutSubscriber(viewHolder);
+      updateShortcut.setup(shortcutId, values);
+      updateShortcut.execute(updateShortcutSubscriber);
+    }
   }
 
   private class UpdateShortcutSubscriber extends DefaultSubscriber<Shortcut> {
