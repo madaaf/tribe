@@ -542,7 +542,7 @@ public class LiveRoomView extends FrameLayout {
     int liveStreamCount = -1;
 
     List<LiveStreamView> views = new ArrayList<>(mapViews.values());
-    if (type == TYPE_LIST) {
+    if (type == TYPE_LIST || type == TYPE_EMBED) {
       Collections.sort(views, (o1, o2) -> new Integer(o2.getScore()).compareTo(o1.getScore()));
     } else {
       views.clear();
