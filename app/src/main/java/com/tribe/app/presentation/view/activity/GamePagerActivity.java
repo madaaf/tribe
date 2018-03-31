@@ -77,6 +77,7 @@ import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 import static com.tribe.app.presentation.navigation.Navigator.FROM_GAMESTORE;
+import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
 
 /**
  * Created by madaaflak on 26/03/2018.
@@ -269,7 +270,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == FROM_GAMESTORE && data != null) {
+    if (requestCode == FROM_GAME_DETAILS && data != null) {
       String gameId = data.getStringExtra(GamePagerActivity.GAME_ID);
       boolean callRoulette = data.getBooleanExtra(GameMembersActivity.CALL_ROULETTE, false);
       Shortcut shortcut = (Shortcut) data.getSerializableExtra(GameMembersActivity.SHORTCUT);

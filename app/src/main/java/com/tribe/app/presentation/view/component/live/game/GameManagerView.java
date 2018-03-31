@@ -87,8 +87,6 @@ public class GameManagerView extends FrameLayout {
   private PublishSubject<Game> onOpenLeaderboard = PublishSubject.create();
   private PublishSubject<Pair<String, Integer>> onAddScore = PublishSubject.create();
   private PublishSubject<GameCoronaView> onRevive = PublishSubject.create();
-  private PublishSubject<Pair<Integer, Integer>> onMapSizeChanged = PublishSubject.create();
-  private PublishSubject<Pair<Integer, Integer>> onXYOffsetChanged = PublishSubject.create();
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
 
   public GameManagerView(@NonNull Context context) {
@@ -140,6 +138,11 @@ public class GameManagerView extends FrameLayout {
   }
 
   private void initSubscriptions() {
+    subscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
+      if (game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
+        gameMasterManager.send(">battleroyale");
+      }
+    }));
     subscriptions.add(Observable.merge(gameManager.onCurrentUserStartGame()
         .map(game -> Pair.create(new TribeSession(TribeSession.PUBLISHER_ID, currentUser.getId()),
             game)), gameManager.onRemoteUserStartGame())
@@ -149,11 +152,6 @@ public class GameManagerView extends FrameLayout {
 
           if (currentGameView == null) {
             addGameView(computeGameView(currentGame, sessionGamePair.first.getUserId()));
-
-            if (currentGame.getId().equals(Game.GAME_BATTLE_ROYALE)) {
-              gameMasterManager.send(">battleroyale");
-            }
-
             return;
           }
 
@@ -183,11 +181,10 @@ public class GameManagerView extends FrameLayout {
         .filter(game -> game.hasView())
         .subscribe(game -> {
           if (currentGameView != null) {
+            gameMasterManager.send(">");
             currentGameView.stop();
             removeView(currentGameView);
           }
-
-          gameMasterManager.send(">");
 
           currentGameView = null;
           currentGame = null;
@@ -274,8 +271,6 @@ public class GameManagerView extends FrameLayout {
       if (game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
         GameBattleRoyaleCoronaView gameBattleRoyaleCoronaView =
             new GameBattleRoyaleCoronaView(getContext(), game);
-        gameBattleRoyaleCoronaView.onMapSizeChanged().subscribe(onMapSizeChanged);
-        gameBattleRoyaleCoronaView.onXYOffsetChanged().subscribe(onXYOffsetChanged);
         gameCoronaView = gameBattleRoyaleCoronaView;
       } else {
         gameCoronaView = new GameCoronaView(getContext(), game);
@@ -393,13 +388,5 @@ public class GameManagerView extends FrameLayout {
 
   public Observable<Game> onOpenLeaderboard() {
     return onOpenLeaderboard;
-  }
-
-  public Observable<Pair<Integer, Integer>> onMapSizeChanged() {
-    return onMapSizeChanged;
-  }
-
-  public Observable<Pair<Integer, Integer>> onXYOffsetChanged() {
-    return onXYOffsetChanged;
   }
 }

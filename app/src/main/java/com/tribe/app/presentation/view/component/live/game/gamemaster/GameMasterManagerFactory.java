@@ -63,10 +63,9 @@ public class GameMasterManagerFactory {
       subscriptions.add(
           webSocketConnection.onConnectError().subscribe(s -> Timber.d("onConnectError : " + s)));
 
-      subscriptions.add(
-          webSocketConnection.onMessage().subscribe(s -> {
-            //Timber.d("onMessage : " + s);
-          }));
+      subscriptions.add(webSocketConnection.onMessage().subscribe(s -> {
+        //Timber.d("onMessage : " + s);
+      }));
 
       subscriptions.add(
           webSocketConnection.onStateChanged().subscribe(s -> Timber.d("onStateChanged : " + s)));
@@ -88,6 +87,7 @@ public class GameMasterManagerFactory {
     }
 
     public void send(String msg) {
+      //Timber.d("sending : " + msg);
       webSocketConnection.send(msg);
     }
 

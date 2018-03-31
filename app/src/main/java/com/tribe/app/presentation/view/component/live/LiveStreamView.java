@@ -74,10 +74,6 @@ public abstract class LiveStreamView extends LinearLayout {
 
   @BindView(R.id.imgCoolCams) ImageView imgCoolCams;
 
-  @BindView(R.id.bgBattleRoyale) ImageView bgBattleRoyale;
-
-  @BindView(R.id.layoutMasterStream) FrameLayout layoutMasterStream;
-
   // VARIABLES
   protected Unbinder unbinder;
   protected int score;
@@ -175,31 +171,17 @@ public abstract class LiveStreamView extends LinearLayout {
   }
 
   public void setStyle(@LiveRoomView.RoomUIType int type) {
-    if (type == TYPE_EMBED) {
-      bgBattleRoyale.setVisibility(View.VISIBLE);
-      layoutStream.setRadius(screenUtils.dpToPx((float) MAX_HEIGHT_LIST / 2f));
-      UIUtils.changeWidthHeightOfView(layoutMasterStream, screenUtils.dpToPx(MAX_HEIGHT_EMBED),
-          screenUtils.dpToPx(MAX_HEIGHT_EMBED));
-      UIUtils.changeWidthHeightOfView(layoutStream, screenUtils.dpToPx(MAX_HEIGHT_LIST),
-          screenUtils.dpToPx(MAX_HEIGHT_LIST));
-      txtScore.setVisibility(GONE);
-      txtEmoji.setVisibility(GONE);
-    } else if (type == TYPE_LIST) {
-      bgBattleRoyale.setVisibility(View.GONE);
+    if (type == TYPE_EMBED || type == TYPE_LIST) {
       layoutStream.setRadius(screenUtils.dpToPx(5));
-      UIUtils.changeWidthHeightOfView(layoutMasterStream, screenUtils.dpToPx(MAX_HEIGHT_LIST),
-          screenUtils.dpToPx(MAX_HEIGHT_LIST));
       UIUtils.changeWidthHeightOfView(layoutStream, screenUtils.dpToPx(MAX_HEIGHT_LIST),
           screenUtils.dpToPx(MAX_HEIGHT_LIST));
-      txtScore.setVisibility(VISIBLE);
-      txtEmoji.setVisibility(VISIBLE);
+      int visibility = type == TYPE_EMBED ? GONE : VISIBLE;
+      txtScore.setVisibility(visibility);
+      txtEmoji.setVisibility(visibility);
     } else {
-      bgBattleRoyale.setVisibility(View.GONE);
       layoutStream.setRadius(0);
       getPeerView().setPadding(0, 0, 0, 0);
       UIUtils.changeWidthHeightOfView(layoutStream, ViewGroup.LayoutParams.MATCH_PARENT,
-          ViewGroup.LayoutParams.MATCH_PARENT);
-      UIUtils.changeWidthHeightOfView(layoutMasterStream, ViewGroup.LayoutParams.MATCH_PARENT,
           ViewGroup.LayoutParams.MATCH_PARENT);
       txtScore.setVisibility(GONE);
       txtEmoji.setVisibility(GONE);
@@ -391,13 +373,6 @@ public abstract class LiveStreamView extends LinearLayout {
     }
 
     updatePositionOfSticker(pointEnd, statusEnum);
-  }
-
-  public void updateXYOffset(int left, int top) {
-    bgBattleRoyale.setVisibility(View.GONE);
-    UIUtils.changeWidthHeightOfView(layoutMasterStream, screenUtils.dpToPx(MAX_HEIGHT_LIST),
-        screenUtils.dpToPx(MAX_HEIGHT_LIST));
-    onUpdateXYOffset.onNext(Pair.create(left, top));
   }
 
   /////////////////

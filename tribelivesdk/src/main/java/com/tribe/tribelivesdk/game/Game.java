@@ -424,5 +424,4 @@ public class Game {
   public Observable<TribeI420Frame> onLocalFrame() {
     return onLocalFrame;
   }
-
 }

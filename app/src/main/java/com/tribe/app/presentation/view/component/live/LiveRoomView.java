@@ -3,12 +3,7 @@ package com.tribe.app.presentation.view.component.live;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
 import android.support.annotation.IntDef;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -17,7 +12,6 @@ import android.support.transition.AutoTransition;
 import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -121,30 +115,6 @@ public class LiveRoomView extends FrameLayout {
   public LiveRoomView(Context context, AttributeSet attrs) {
     super(context, attrs);
     init();
-  }
-
-  public void initMapSizeChangedObs(Observable<Pair<Integer, Integer>> obs) {
-    subscriptions.add(obs.subscribe(pair -> {
-      if (pair == null) {
-        UIUtils.changeWidthHeightOfView(constraintLayout, ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT);
-        UIUtils.changeLeftMarginOfView(constraintLayout, 0);
-        UIUtils.changeTopMarginOfView(constraintLayout, 0);
-        setClipChildren(true);
-        setClipToPadding(true);
-      } else {
-        UIUtils.changeWidthHeightOfView(constraintLayout, pair.first, pair.second);
-        setClipChildren(false);
-        setClipToPadding(false);
-      }
-    }));
-  }
-
-  public void initXYOffsetChangedObs(Observable<Pair<Integer, Integer>> obs) {
-    subscriptions.add(obs.subscribe(pair -> {
-      UIUtils.changeLeftMarginOfView(constraintLayout, pair.first);
-      UIUtils.changeTopMarginOfView(constraintLayout, pair.second);
-    }));
   }
 
   public void jump() {
@@ -448,14 +418,10 @@ public class LiveRoomView extends FrameLayout {
     } else if (type == TYPE_LIST || type == TYPE_EMBED) {
       translation = (getMeasuredHeight() >> 1) - screenUtils.dpToPx(60);
       setBackgroundColor(Color.TRANSPARENT);
-      if (type == TYPE_LIST) {
-        MarginLayoutParams params =
-            new MarginLayoutParams(screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST),
-                screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
-        constraintLayout.addView(liveRowViewAddFriend, params);
-      } else {
-        constraintLayout.removeView(liveRowViewAddFriend);
-      }
+      MarginLayoutParams params =
+          new MarginLayoutParams(screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST),
+              screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
+      constraintLayout.addView(liveRowViewAddFriend, params);
     }
 
     diceView.translateDice(translation, true);
@@ -1236,33 +1202,24 @@ public class LiveRoomView extends FrameLayout {
         } else {
           set.clear(v.getId());
 
-          if (type == TYPE_EMBED) {
-            set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                ConstraintSet.START);
-            set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP);
-            set.constrainWidth(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_EMBED));
-            set.constrainHeight(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_EMBED));
-            v.setStyle(type);
-          } else {
-            set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(),
-                ConstraintSet.START, screenUtils.dpToPx(20));
-            set.constrainWidth(v.getId(), screenUtils.dpToPx(150));
-            set.constrainHeight(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
-            set.setElevation(v.getId(), screenUtils.dpToPx(10));
-            v.setStyle(type);
+          set.connect(v.getId(), ConstraintSet.START, constraintLayout.getId(), ConstraintSet.START,
+              screenUtils.dpToPx(20));
+          set.constrainWidth(v.getId(), screenUtils.dpToPx(150));
+          set.constrainHeight(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
+          set.setElevation(v.getId(), screenUtils.dpToPx(10));
+          v.setStyle(type);
 
-            switch (i) {
-              case 0:
-                set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(),
-                    ConstraintSet.TOP, screenUtils.dpToPx(20));
-                break;
+          switch (i) {
+            case 0:
+              set.connect(v.getId(), ConstraintSet.TOP, constraintLayout.getId(), ConstraintSet.TOP,
+                  screenUtils.dpToPx(20));
+              break;
 
-              default:
-                View previous = views.get(lastStream);
-                set.connect(v.getId(), ConstraintSet.TOP, previous.getId(), ConstraintSet.BOTTOM,
-                    screenUtils.dpToPx(20));
-                break;
-            }
+            default:
+              View previous = views.get(lastStream);
+              set.connect(v.getId(), ConstraintSet.TOP, previous.getId(), ConstraintSet.BOTTOM,
+                  screenUtils.dpToPx(20));
+              break;
           }
 
           lastStream = i;
@@ -1270,7 +1227,7 @@ public class LiveRoomView extends FrameLayout {
       }
     }
 
-    if (type == TYPE_LIST) {
+    if (type == TYPE_LIST || type == TYPE_EMBED) {
       View previous = views.get(lastStream);
       set.connect(liveRowViewAddFriend.getId(), ConstraintSet.TOP, previous.getId(),
           ConstraintSet.BOTTOM, screenUtils.dpToPx(20));

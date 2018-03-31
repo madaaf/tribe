@@ -301,8 +301,8 @@ public class GameCoronaView extends GameView {
         }));
 
     subscriptions.add(masterMapObs.subscribe(rxHashMapAction -> {
-      if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD)
-          && rxHashMapAction.item.canPlayGames(game.getId())) {
+      if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD) &&
+          rxHashMapAction.item.canPlayGames(game.getId())) {
         Hashtable<Object, Object> userJoinedTable = new Hashtable<>();
         userJoinedTable.put("name", "userJoined");
         userJoinedTable.put("user", rxHashMapAction.item.asCoronaUser());
@@ -352,7 +352,6 @@ public class GameCoronaView extends GameView {
           gamePresenter.getUserBestScore(game.getId());
         }
       } else {
-<<<<<<< HEAD
         mainHandler.post(() -> handleCoronaMessage(event, hashtable));
       }
 
@@ -368,25 +367,27 @@ public class GameCoronaView extends GameView {
     } else if (event.equals("saveScore")) {
       onAddScore.onNext(Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
     } else if (event.equals("revive")) {
-      //if (BuildConfig.DEBUG) {
-      //  subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
-      //      .observeOn(AndroidSchedulers.mainThread())
-      //      .subscribe(aLong -> sendSuccessRevive()));
-      //} else {
       Timber.d("Revive");
-      if (!FacebookUtils.isLoggedIn()) {
-        Timber.d("Ask FB login");
-        subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-          if (loginResult != null) {
-            Timber.d("Load contacts");
-            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
-          } else {
-            errorRevive();
-          }
-        }));
+
+      if (BuildConfig.DEBUG) {
+        subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> sendSuccessRevive()));
       } else {
-        Timber.d("Load contacts");
-        newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
+        if (!FacebookUtils.isLoggedIn()) {
+          Timber.d("Ask FB login");
+          subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
+            if (loginResult != null) {
+              Timber.d("Load contacts");
+              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
+            } else {
+              errorRevive();
+            }
+          }));
+        } else {
+          Timber.d("Load contacts");
+          newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
+        }
       }
     } else if (event.equals("scoresUpdated")) {
       mapScores.clear();
