@@ -77,6 +77,7 @@ import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 import static com.tribe.app.presentation.navigation.Navigator.FROM_GAMESTORE;
+import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
 
 /**
  * Created by madaaflak on 26/03/2018.
@@ -212,8 +213,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       if (calendarPreviousDate.before(calendarYesterday)) {
         nbDays = 1;
-      } else if ((calendarPreviousDate.after(calendarYesterday) || calendarPreviousDate.equals(
-          calendarYesterday)) && calendarPreviousDate.before(calendarToday)) {
+      } else if ((calendarPreviousDate.after(calendarYesterday) ||
+          calendarPreviousDate.equals(calendarYesterday)) &&
+          calendarPreviousDate.before(calendarToday)) {
         nbDays += 1;
       }
     } else {
@@ -229,9 +231,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private void loadChallengeNotificationData() {
-    if (challengeNotificationsPref != null
-        && challengeNotificationsPref.get() != null
-        && !challengeNotificationsPref.get().isEmpty()) {
+    if (challengeNotificationsPref != null &&
+        challengeNotificationsPref.get() != null &&
+        !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
@@ -269,7 +271,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    if (requestCode == FROM_GAMESTORE && data != null) {
+    if (requestCode == FROM_GAME_DETAILS && data != null) {
       String gameId = data.getStringExtra(GamePagerActivity.GAME_ID);
       boolean callRoulette = data.getBooleanExtra(GameMembersActivity.CALL_ROULETTE, false);
       Shortcut shortcut = (Shortcut) data.getSerializableExtra(GameMembersActivity.SHORTCUT);
@@ -291,8 +293,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
-        PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
+        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync);
     }
 
@@ -333,6 +335,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private void setAnimImageAnimation() {
+    Game currentGame = getCurrentGame();
+    if (currentGame == null) return;
+
     for (int i = 0; i < getCurrentGame().getAnimation_icons().size(); i++) {
       String url = getCurrentGame().getAnimation_icons().get(i);
       ImageView imageView = null;
@@ -493,8 +498,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
               if (shortcut.isSingle()) {
                 User member = shortcut.getSingleFriend();
                 if (member.isPlayingAGame()) {
-                  if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
-                      member.getId())) {
+                  if (!userIdsDigest.contains(member.getId()) &&
+                      !roomIdsDigest.contains(member.getId())) {
                     userIdsDigest.add(member.getId());
                     items.add(shortcut);
                   }
@@ -731,7 +736,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
     public void onPageSelected(int position) {
       //Timber.w("SOEF onPageSelected " + position);
-      this.positionViewPager = position;
       positionViewPager = position;
       GameDetailsView gameDetailsView = adapter.getItemAtPosition(position);
       if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
@@ -750,6 +754,10 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private Game getCurrentGame() {
+    if (pageListener.getPositionViewPage() > gameManager.getGames().size()) {
+      return gameManager.getGames().get(0);
+    }
+
     return gameManager.getGames().get(pageListener.getPositionViewPage());
   }
 

@@ -90,6 +90,7 @@ import rx.subscriptions.CompositeSubscription;
     if (games != null) {
       for (Game game : games) {
         if (Arrays.asList(playableGames).contains(game.getId()) &&
+            game.isOnline() &&
             (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N ||
                 !game.isWeb()) &&
             (game.get__typename().equals(Game.TYPE_NAME_NATIVE) ||

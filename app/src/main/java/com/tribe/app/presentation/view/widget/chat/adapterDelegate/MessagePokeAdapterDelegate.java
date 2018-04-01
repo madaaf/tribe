@@ -68,6 +68,8 @@ public class MessagePokeAdapterDelegate extends BaseMessageAdapterDelegate {
     MessagePokeViewHolder vh = (MessagePokeViewHolder) holder;
     Game game = gameManager.getGameById(m.getGameId());
 
+    if (game == null) return;
+
     String message =
         context.getString(R.string.poke_chat_event_below, m.getAuthor().getDisplayName(),
             m.getGameId(), EmojiParser.demojizedText(m.getData()),

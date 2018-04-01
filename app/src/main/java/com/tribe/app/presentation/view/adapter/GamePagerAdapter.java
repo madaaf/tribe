@@ -57,14 +57,20 @@ public class GamePagerAdapter extends PagerAdapter {
   }
 
   public void setItems(List<Game> gamesList) {
-    this.gamesList = gamesList;
+    if (gamesList == null) return;
+    this.gamesList.clear();
+    this.gamesList.addAll(gamesList);
     notifyDataSetChanged();
   }
 
   public GameDetailsView getItemAtPosition(int position) {
-    if(viewList!=null && !viewList.isEmpty() && gamesList!=null && !gamesList.isEmpty() && gamesList.get(position)!=null){
+    if (viewList != null &&
+        !viewList.isEmpty() &&
+        gamesList != null &&
+        !gamesList.isEmpty() &&
+        gamesList.get(position) != null) {
       return viewList.get(gamesList.get(position).getId());
     }
-   return null;
+    return null;
   }
 }
