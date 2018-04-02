@@ -11,8 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -91,7 +89,7 @@ import static com.tribe.app.presentation.navigation.Navigator.FROM_GAMESTORE;
 
 public class GamePagerActivity extends GameActivity implements AppStateListener {
 
-  private static final float TRANS_IMAGE = 500f;
+  private static final float TRANS_IMAGE = 400f;
   private static final float DOT_MAX_SIZE = 1.5f;
 
   private static final int DURATION = 400;
@@ -127,11 +125,11 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
   @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
   @BindView(R.id.test) ImageView test;
-
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
   @BindView(R.id.layoutCall) FrameLayout layoutCall;
   @BindView(R.id.btnFriends) ImageView btnFriends;
   @BindView(R.id.btnNewMessage) ImageView btnNewMessage;
+  @BindView(R.id.topbar) FrameLayout topbar;
 
   @Inject ScreenUtils screenUtils;
 
@@ -157,8 +155,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       Field mScroller = null;
       mScroller = ViewPager.class.getDeclaredField("mScroller");
       mScroller.setAccessible(true);
-      ViewPagerScroller scroller =
-          new ViewPagerScroller(viewpager.getContext(), new OvershootInterpolator(), 300);
+      ViewPagerScroller scroller = new ViewPagerScroller(viewpager.getContext(), null, 300);
       mScroller.set(viewpager, scroller);
     } catch (Exception e) {
       Timber.e("error of change scroller " + e);
@@ -178,8 +175,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
     mapAnimator = new HashMap<>();
 
-    if (hasSoftKeys.get()) {
+    if (hasSoftKeys != null && hasSoftKeys.get()) {
       UIUtils.changeBottomMarginOfView(dotsContainer, screenUtils.dpToPx(30));
+      UIUtils.changeTopMarginOfView(topbar, screenUtils.dpToPx(20));
     }
 
     initViewPager();
@@ -628,23 +626,21 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   private void initDots(int dotsNbr) {
     dotsContainer.removeAllViews();
-    int sizeDot = getResources().getDimensionPixelSize(R.dimen.vertical_margin_small);
+    int sizeDot = getResources().getDimensionPixelSize(R.dimen.dots_pager_size);
     for (int i = 0; i < dotsNbr; i++) {
       AvatarView v = new AvatarView(this);
       v.load(gameManager.getGames().get(i).getIcon());
 
       v.setTag(DOTS_TAG_MARKER + i);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
-      lp.setMargins(0, 0, screenUtils.dpToPx(15), 0);
+      lp.setMargins(0, 0, screenUtils.dpToPx(10), 0);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
       dotsContainer.addView(v);
       if (i == 0) {
-        //v.setBackgroundResource(R.drawable.shape_oval_white);
         v.setScaleX(DOT_MAX_SIZE);
         v.setScaleY(DOT_MAX_SIZE);
       } else {
-        //v.setBackgroundResource(R.drawable.shape_oval_white50);
         v.setScaleX(1f);
         v.setScaleY(1f);
       }
@@ -668,20 +664,22 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     }
 
     private void slideNext(View v, float positionOffset, float transX, float transY) {
-      v.setScaleX(1 + positionOffset);
-      v.setScaleY(1 + positionOffset);
-      v.setAlpha(1 - (positionOffset * 2));
+      float scale = 1 + (positionOffset * 2);
+      v.setScaleX(scale);
+      v.setScaleY(scale);
+      v.setAlpha(1 - (positionOffset * 3));
 
       v.setTranslationX(transX);
       v.setTranslationY(transY);
     }
 
     private void slideBefore(View v, float positionOffset, float transX, float transY) {
-      v.setAlpha(positionOffset * 2);
+      float scale = 1 + ((1 - positionOffset) * 2);
+      v.setAlpha(positionOffset * 3);
       v.setTranslationX(transX);
       v.setTranslationY(transY);
-      v.setScaleX(1 + (1 - positionOffset));
-      v.setScaleY(1 + (1 - positionOffset));
+      v.setScaleX(scale);
+      v.setScaleY(scale);
     }
 
     private void onPageChangedAnim(View v, float translationX, float translationY) {

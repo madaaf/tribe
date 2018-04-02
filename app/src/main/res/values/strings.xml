@@ -1106,4 +1106,9 @@
 	<string name="report_tutorial_popup_title">Tap on any player to report his behavior</string>
 	<string name="report_tutorial_popup_subtitle">We\'re here to have fun together. Anyone that is not shoudn\'t be here.</string>
 	<string name="report_tutorial_popup_action_done">GOT IT!</string>
+	
+	<!-- Low Battery Popup -->
+	<string name="low_battery_popup_title">Disable the Low battery mode!</string>
+	<string name="low_battery_popup_subtitle">This mode will considerably slow down the game</string>
+	<string name="low_battery_popup_action_done">GOT IT!</string>
 </resources>

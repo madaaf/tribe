@@ -48,6 +48,7 @@ import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
+import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -71,6 +72,7 @@ public class GameDetailsView extends FrameLayout {
   @BindView(R.id.imgLogo) ImageView imgLogo;
   @BindView(R.id.txtBaseline) TextViewFont txtBaseline;
   @BindView(R.id.imgRays) ImageView imgRays;
+  @BindView(R.id.leaderbordArrow) ImageView leaderbordArrow;
   @BindView(R.id.layoutConstraint) ConstraintLayout layoutConstraint;
   @BindView(R.id.cardAvatarMyScore) CardView cardAvatarMyScore;
   @BindView(R.id.avatarMyScore) NewAvatarView avatarMyScore;
@@ -163,9 +165,11 @@ public class GameDetailsView extends FrameLayout {
   private void initUI() {
     initLeaderbord();
     txtBaseline.setText(game.getBaseline().toUpperCase());
-    playsCounter.setText(
-        context.getString(R.string.new_game_plays, String.valueOf(game.getPlays_count()))
-            .toUpperCase());
+
+    NumberFormat nf = NumberFormat.getInstance();
+    String nbr = nf.format(game.getPlays_count());
+
+    playsCounter.setText(context.getString(R.string.new_game_plays, nbr).toUpperCase());
     new GlideUtils.GameImageBuilder(context, screenUtils).url(game.getIcon())
         .hasBorder(false)
         .hasPlaceholder(true)
@@ -255,6 +259,7 @@ public class GameDetailsView extends FrameLayout {
     animateViewEntry(txtMyScoreRanking);
     animateViewEntry(txtMyScoreScore);
     animateViewEntry(leaderbordContainer);
+    animateViewEntry(leaderbordArrow);
   }
 
   private void hideScores() {
@@ -263,6 +268,7 @@ public class GameDetailsView extends FrameLayout {
     hideViewEntry(txtMyScoreRanking);
     hideViewEntry(txtMyScoreScore);
     hideViewEntry(leaderbordContainer);
+    hideViewEntry(leaderbordArrow);
   }
 
   private void animateLayoutWithConstraintSet(ConstraintSet constraintSet,
