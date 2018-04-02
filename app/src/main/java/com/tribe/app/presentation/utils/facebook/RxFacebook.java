@@ -174,17 +174,23 @@ import timber.log.Timber;
             "(function() { return ('<html>'+document.getElementsByClassName('_5q1p')[0].innerHTML+'</html>'); })();",
             html -> {
               Log.d("HTML", html);
-              String initialContent = html.substring(html.indexOf("name=\\\"to\\\""));
-              String start = "value=\\\"";
-              String end = "\\\">";
-              String finalContent =
-                  initialContent.substring(initialContent.indexOf(start) + start.length(),
-                      initialContent.indexOf(end));
+              int index = html.indexOf("name=\\\"to\\\"");
+              if (index != -1) {
+                String initialContent = html.substring(index);
+                String start = "value=\\\"";
+                String end = "\\\">";
+                String finalContent =
+                    initialContent.substring(initialContent.indexOf(start) + start.length(),
+                        initialContent.indexOf(end));
 
-              List<String> fbIdList = new ArrayList<>(Arrays.asList(finalContent.split(",")));
+                List<String> fbIdList = new ArrayList<>(Arrays.asList(finalContent.split(",")));
 
-              subscriber.onNext(fbIdList);
-              subscriber.onCompleted();
+                subscriber.onNext(fbIdList);
+                subscriber.onCompleted();
+              } else {
+                subscriber.onNext(new ArrayList<>());
+                subscriber.onCompleted();
+              }
             });
       }
     });
