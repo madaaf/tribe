@@ -110,7 +110,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @BindView(R.id.imgBackgroundLogo) ImageView imgBackgroundLogo;
 
-  @BindView(R.id.txtTitle) TextViewFont txtTitle;
+  @BindView(R.id.imgLogo) ImageView imgLogo;
 
   @BindView(R.id.recyclerViewLeaderboard) RecyclerView recyclerView;
 
@@ -361,7 +361,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   }
 
   private void initUI() {
-    txtTitle.setText(game.getTitle());
+    Glide.with(this).load(game.getLogo()).into(imgLogo);
 
     Glide.with(this).load(game.getBackground()).into(imgBackgroundLogo);
 
@@ -574,8 +574,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     bundle.putInt(TagManagerUtils.RANK, score.getRanking());
     tagManager.trackEvent(TagManagerUtils.Poke, bundle);
 
-    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
-        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null &&
+        score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
 
     if (isAbove) {
       soundManager.playSound(SoundManager.POKE_LAUGH, SoundManager.SOUND_LOW);
