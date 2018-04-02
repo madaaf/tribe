@@ -78,11 +78,7 @@ public class GameDetailsView extends FrameLayout {
   @BindView(R.id.txtMyScoreScore) TextViewScore txtMyScoreScore;
   @BindView(R.id.txtMyScoreName) TextViewFont txtMyScoreName;
   @BindView(R.id.leaderbordContainer) View leaderbordContainer;
-  @BindView(R.id.leaderbordLabel) TextViewFont leaderbordLabel;
   @BindView(R.id.playsCounter) TextViewFont playsCounter;
- // @BindView(R.id.leaderbordPictoStart) ImageView leaderbordPictoStart;
-//  @BindView(R.id.leaderbordPictoEnd) ImageView leaderbordPictoEnd;
- // @BindView(R.id.leaderbordSeparator) View leaderbordSeparator;
 
   // VARIABLES
   private UserComponent userComponent;
@@ -162,10 +158,6 @@ public class GameDetailsView extends FrameLayout {
 
   private void initLeaderbord() {
     resetView(leaderbordContainer);
-    resetView(leaderbordLabel);
-   // resetView(leaderbordPictoStart);
-   // resetView(leaderbordPictoEnd);
-   // resetView(leaderbordSeparator);
   }
 
   private void initUI() {
@@ -263,10 +255,6 @@ public class GameDetailsView extends FrameLayout {
     animateViewEntry(txtMyScoreRanking);
     animateViewEntry(txtMyScoreScore);
     animateViewEntry(leaderbordContainer);
-    animateViewEntry(leaderbordLabel);
-   // animateViewEntry(leaderbordPictoStart);
-   // animateViewEntry(leaderbordPictoEnd);
-    //animateViewEntry(leaderbordSeparator);
   }
 
   private void hideScores() {
@@ -275,10 +263,6 @@ public class GameDetailsView extends FrameLayout {
     hideViewEntry(txtMyScoreRanking);
     hideViewEntry(txtMyScoreScore);
     hideViewEntry(leaderbordContainer);
-    hideViewEntry(leaderbordLabel);
-  //  hideViewEntry(leaderbordPictoStart);
-  //  hideViewEntry(leaderbordPictoEnd);
-  //  hideViewEntry(leaderbordSeparator);
   }
 
   private void animateLayoutWithConstraintSet(ConstraintSet constraintSet,
@@ -324,9 +308,8 @@ public class GameDetailsView extends FrameLayout {
   }
 
   public void onCurrentViewVisible() {
-    //if (game.hasScores())
     hideScores();
-    subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
+    subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           showScores();
