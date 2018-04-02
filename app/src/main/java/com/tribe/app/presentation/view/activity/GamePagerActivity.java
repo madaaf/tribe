@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
@@ -53,6 +55,8 @@ import com.tribe.app.presentation.view.popup.listener.PopupDigestListener;
 import com.tribe.app.presentation.view.popup.view.PopupDigest;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
@@ -76,7 +80,6 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
-import static com.tribe.app.presentation.navigation.Navigator.FROM_GAMESTORE;
 import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
 
 /**
@@ -107,26 +110,26 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   private List<User> usersChallenge;
   private NotifView notifView;
   private boolean shouldDisplayDigest = true;
+  private int previousAnimationValue = 0;
 
   @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
   @Inject @LastSync Preference<Long> lastSync;
   @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
   @Inject @DaysOfUsage Preference<Integer> daysOfUsage;
   @Inject @PreviousDateUsage Preference<Long> previousDateUsage;
+  @Inject StateManager stateManager;
+  @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.pager) ViewPager viewpager;
+  @BindView(R.id.pager) CustomViewPager viewpager;
   @BindView(R.id.dotsContainer) LinearLayout dotsContainer;
   @BindView(R.id.imgAnimation1) ImageView imgAnimation1;
   @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
   @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
   @BindView(R.id.test) ImageView test;
-
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
   @BindView(R.id.layoutCall) FrameLayout layoutCall;
   @BindView(R.id.btnFriends) ImageView btnFriends;
   @BindView(R.id.btnNewMessage) ImageView btnNewMessage;
-
-  @Inject ScreenUtils screenUtils;
 
   // OBSERVABLES
   private PublishSubject<User> onUser = PublishSubject.create();
@@ -140,6 +143,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   private void initViewPager() {
     adapter = new GamePagerAdapter(this);
     pageListener = new PageListener(dotsContainer, this);
+    viewpager.setScrollDurationFactor(2);
     viewpager.addOnPageChangeListener(pageListener);
     viewpager.setAdapter(adapter);
   }
@@ -151,8 +155,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
     initViewPager();
     if (gameManager.getGames() != null && !gameManager.getGames().isEmpty()) {
-      initUI();
       adapter.setItems(gameManager.getGames());
+      initUI();
     } else {
       gameMVPViewAdapter = new GameMVPViewAdapter() {
         @Override public Context context() {
@@ -213,8 +217,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       if (calendarPreviousDate.before(calendarYesterday)) {
         nbDays = 1;
-      } else if ((calendarPreviousDate.after(calendarYesterday) || calendarPreviousDate.equals(
-          calendarYesterday)) && calendarPreviousDate.before(calendarToday)) {
+      } else if ((calendarPreviousDate.after(calendarYesterday) ||
+          calendarPreviousDate.equals(calendarYesterday)) &&
+          calendarPreviousDate.before(calendarToday)) {
         nbDays += 1;
       }
     } else {
@@ -230,9 +235,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private void loadChallengeNotificationData() {
-    if (challengeNotificationsPref != null
-        && challengeNotificationsPref.get() != null
-        && !challengeNotificationsPref.get().isEmpty()) {
+    if (challengeNotificationsPref != null &&
+        challengeNotificationsPref.get() != null &&
+        !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
@@ -292,8 +297,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
-        PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
+        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync);
     }
 
@@ -331,9 +336,39 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     initDots(gameManager.getGames().size());
     GameDetailsView gameDetailsView = adapter.getItemAtPosition(0);
     if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
+
+    if (stateManager.shouldDisplay(StateManager.FIRST_SWIPE_GAME_STORE) && adapter.getCount() > 0) {
+      subscriptions.add(Observable.timer(5, TimeUnit.SECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            if (viewpager.isFakeDragging()) return;
+            viewpager.beginFakeDrag();
+            previousAnimationValue = 0;
+            ValueAnimator animatorPeekViewPager =
+                ValueAnimator.ofInt(0, -screenUtils.dpToPx(30), 0);
+            animatorPeekViewPager.setDuration(1000);
+            animatorPeekViewPager.setInterpolator(new DecelerateInterpolator());
+            animatorPeekViewPager.addUpdateListener(animation -> {
+              int value = (int) animation.getAnimatedValue();
+              viewpager.fakeDragBy(-previousAnimationValue + value);
+              previousAnimationValue = value;
+            });
+            animatorPeekViewPager.addListener(new AnimatorListenerAdapter() {
+              @Override public void onAnimationEnd(Animator animation) {
+                animation.cancel();
+                stateManager.addTutorialKey(StateManager.FIRST_SWIPE_GAME_STORE);
+                viewpager.endFakeDrag();
+              }
+            });
+            animatorPeekViewPager.start();
+          }));
+    }
   }
 
   private void setAnimImageAnimation() {
+    Game currentGame = getCurrentGame();
+    if (currentGame == null) return;
+
     for (int i = 0; i < getCurrentGame().getAnimation_icons().size(); i++) {
       String url = getCurrentGame().getAnimation_icons().get(i);
       ImageView imageView = null;
@@ -494,8 +529,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
               if (shortcut.isSingle()) {
                 User member = shortcut.getSingleFriend();
                 if (member.isPlayingAGame()) {
-                  if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
-                      member.getId())) {
+                  if (!userIdsDigest.contains(member.getId()) &&
+                      !roomIdsDigest.contains(member.getId())) {
                     userIdsDigest.add(member.getId());
                     items.add(shortcut);
                   }
@@ -732,7 +767,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
     public void onPageSelected(int position) {
       //Timber.w("SOEF onPageSelected " + position);
-      this.positionViewPager = position;
       positionViewPager = position;
       GameDetailsView gameDetailsView = adapter.getItemAtPosition(position);
       if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
@@ -751,6 +785,10 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private Game getCurrentGame() {
+    if (pageListener.getPositionViewPage() > gameManager.getGames().size()) {
+      return gameManager.getGames().get(0);
+    }
+
     return gameManager.getGames().get(pageListener.getPositionViewPage());
   }
 
