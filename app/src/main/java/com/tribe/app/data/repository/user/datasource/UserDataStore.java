@@ -75,6 +75,8 @@ public interface UserDataStore {
    */
   Observable<UserRealm> updateUser(List<Pair<String, String>> values);
 
+  Observable<UserRealm> updateUserAge(List<Pair<String, String>> values);
+
   Observable<LinkIdResult> updateUserFacebook(String accessToken);
 
   Observable<LinkIdResult> updateUserPhoneNumber(String accessToken, String phoneNumber);

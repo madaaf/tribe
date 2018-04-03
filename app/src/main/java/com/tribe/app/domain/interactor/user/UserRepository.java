@@ -76,6 +76,8 @@ public interface UserRepository {
    */
   Observable<User> updateUser(List<Pair<String, String>> values);
 
+  Observable<User> updateUserAge(List<Pair<String, String>> values);
+
   Observable<User> updateUserFacebook(String userId, String accessToken);
 
   Observable<User> updateUserPhoneNumber(String userId, String accessToken, String phoneNumber);

@@ -134,6 +134,12 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
+  @Override public Observable<User> updateUserAge(List<Pair<String, String>> values) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+    return userDataStore.updateUserAge(values)
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
+  }
+
   @Override public Observable<User> updateUserFacebook(String userId, String accessToken) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.updateUserFacebook(accessToken)

@@ -1001,7 +1001,8 @@
 	<!-- Game Mode -->
 	<string name="gamemode_title">Game mode</string>
 	<string name="gamemode_alone_title">SOLO TRAINING</string>
-	<string name="gamemode_multi_title">MULTIPLAYER</string>
+	<string name="gamemode_multi_title">CHALLENGE FRIENDS</string>
+	<string name="gamemode_match_title">MATCH STRANGERS</string>
 	<string name="gamemode_leaderboard">LEADERBOARD</string>
 	
 	<!-- Hang Up Popup -->

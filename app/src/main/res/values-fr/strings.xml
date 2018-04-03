@@ -1002,6 +1002,7 @@
 	<string name="gamemode_title">Mode de jeu</string>
 	<string name="gamemode_alone_title">ENTRAINEMENT</string>
 	<string name="gamemode_multi_title">MULTIJOUEUR</string>
+	<string name="gamemode_match_title">RECHERCHER DES JOUEURS</string>
 	<string name="gamemode_leaderboard">CLASSEMENT</string>
 	
 	<!-- Hang Up Popup -->
