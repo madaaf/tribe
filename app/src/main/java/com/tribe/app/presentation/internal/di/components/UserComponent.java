@@ -26,7 +26,6 @@ import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardD
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionTokenView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
-import com.tribe.app.presentation.view.component.games.LeaderboardDetailsView;
 import com.tribe.app.presentation.view.component.games.LeaderboardMainView;
 import com.tribe.app.presentation.view.component.games.LeaderboardPage;
 import com.tribe.app.presentation.view.component.home.SearchView;
@@ -242,8 +241,6 @@ import dagger.Component;
   void inject(GamePagerActivity gamePagerActivity);
 
   void inject(LeaderboardMainView leaderboardMainView);
-
-  void inject(LeaderboardDetailsView leaderboardDetailsView);
 
   void inject(GameDetailsView gameDetailsView);
 

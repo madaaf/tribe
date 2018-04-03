@@ -74,8 +74,8 @@ import com.tribe.app.presentation.utils.preferences.MultiplayerSessions;
 import com.tribe.app.presentation.utils.preferences.NewContactsTooltip;
 import com.tribe.app.presentation.utils.preferences.NewWS;
 import com.tribe.app.presentation.utils.preferences.NumberOfCalls;
-import com.tribe.app.presentation.utils.preferences.PreviousDateUsage;
 import com.tribe.app.presentation.utils.preferences.PokeUserGame;
+import com.tribe.app.presentation.utils.preferences.PreviousDateUsage;
 import com.tribe.app.presentation.utils.preferences.RoutingMode;
 import com.tribe.app.presentation.utils.preferences.SelectedTrophy;
 import com.tribe.app.presentation.utils.preferences.SupportIsUsed;
@@ -122,7 +122,7 @@ import com.tribe.app.presentation.view.adapter.delegate.trophy.TrophyAdapterDele
 import com.tribe.app.presentation.view.component.ActionView;
 import com.tribe.app.presentation.view.component.VisualizerView;
 import com.tribe.app.presentation.view.component.common.ShortcutListView;
-import com.tribe.app.presentation.view.component.games.GameUserCardView;
+import com.tribe.app.presentation.view.component.games.LeaderboardUserView;
 import com.tribe.app.presentation.view.component.home.NewGameView;
 import com.tribe.app.presentation.view.component.home.TopBarContainer;
 import com.tribe.app.presentation.view.component.home.TopBarLogoView;
@@ -314,7 +314,7 @@ public interface ApplicationComponent {
 
   void inject(LeaderboardDetailsAdapterDelegate leaderboardDetailsAdapterDelegate);
 
-  void inject(GameUserCardView userGameCardView);
+  void inject(LeaderboardUserView leaderboardUserView);
 
   void inject(BaseNotifAdapterDelegate baseNotifAdapterDelegate);
 

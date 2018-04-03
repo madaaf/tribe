@@ -50,7 +50,7 @@ public class LeaderboardDetailsAdapter extends RecyclerView.Adapter {
     delegatesManager = new RxAdapterDelegatesManager();
 
     leaderboardDetailsAdapterDelegate =
-        new LeaderboardDetailsAdapterDelegate(context, stateManager);
+        new LeaderboardDetailsAdapterDelegate(context);
     delegatesManager.addDelegate(leaderboardDetailsAdapterDelegate);
 
     leaderboardDetailsEmptyAdapterDelegate = new LeaderboardDetailsEmptyAdapterDelegate(context);
