@@ -42,6 +42,8 @@
   <dimen name="icons_padding">3.75dp</dimen>
   <dimen name="section_button_vertical_padding">12dp</dimen>
 
+  <dimen name="dots_pager_size">12dp</dimen>
+
   <!-- HEIGHTS -->
   <dimen name="top_bar_height_small">50dp</dimen>
   <dimen name="top_bar_notification_height_small">35dp</dimen>

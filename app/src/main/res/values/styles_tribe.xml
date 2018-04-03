@@ -284,11 +284,7 @@
   </style>
 
   <style name="Title.1" parent="@style/Title">
-    <item name="customFont">ProximaNovaSoftProximaNovaSoft
-
-
-
-      -Medium.ttf</item>
+    <item name="customFont">ProximaNovaSoft-Medium.ttf</item>
   </style>
 
   <style name="Title.2" parent="@style/Title">
@@ -566,7 +562,7 @@
     <item name="android:textColor">@color/black.opacity.40</item>
   </style>
 
-  <style name="Text"/>
+  <style name="Text" />
 
   <style name="Text.Input">
     <item name="customFont">ProximaNovaSoft-Medium.ttf</item>

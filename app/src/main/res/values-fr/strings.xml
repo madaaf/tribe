@@ -1095,6 +1095,7 @@
 	<string name="invited_to_join_popup_title">%1$s t\'invite\nà rejoindre un défi !</string>
 	<string name="invited_to_join_popup_subtitle">Avec %1$s</string>
 	<string name="invited_to_join_popup_no_game_selected">PAS DE JEU SÉLÉCTIONNÉ</string>
+	<string name="invited_to_join_popup_action_accept">ACCEPTER</string>
 	<string name="invited_to_join_popup_action_later">PLUS TARD</string>
 	
 	<!-- Rematch Menu -->
@@ -1106,4 +1107,9 @@
 	<string name="report_tutorial_popup_title">Tap on any player to report his behavior</string>
 	<string name="report_tutorial_popup_subtitle">We\'re here to have fun together. Anyone that is not shoudn\'t be here.</string>
 	<string name="report_tutorial_popup_action_done">GOT IT!</string>
+	
+	<!-- Low Battery Popup -->
+	<string name="low_battery_popup_title">Disable the Low battery mode!</string>
+	<string name="low_battery_popup_subtitle">This mode will considerably slow down the game</string>
+	<string name="low_battery_popup_action_done">GOT IT!</string>
 </resources>

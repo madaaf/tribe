@@ -56,6 +56,7 @@ import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardDetailsLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter;
+import com.tribe.app.presentation.view.component.games.LeaderboardUserView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
@@ -76,7 +77,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate.maxWaitingTimeSeconde;
 import static com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter.LEADERBOARD_ADDRESS;
 import static com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter.LEADERBOARD_ITEM_ADDRESS_BOOK;
 import static com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter.LEADERBOARD_ITEM_FACEBOOK;
@@ -163,6 +163,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   @BindView(R.id.txtRankingThird) TextViewRanking txtRankingThird;
 
   @BindView(R.id.txtScoreThird) TextViewScore txtScoreThird;
+
+  @BindView(R.id.viewCurrentUserLeaderboard) LeaderboardUserView viewCurrentUserLeaderboard;
 
   @Inject @PokeUserGame Preference<String> pokeUserGame;
 
@@ -267,9 +269,16 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         set.clone(getApplicationContext(), R.layout.activity_game_leaderboards_final);
         animateLayoutWithConstraintSet(set, null);
 
+        int count = 0;
         for (Score score : scoreList) {
           // We add the current user if user == null, it means it's the current user's score
-          if (score.getUser() == null) score.setUser(getCurrentUser());
+          if (score.getUser() == null) {
+            score.setUser(getCurrentUser());
+            viewCurrentUserLeaderboard.initCell(score, count + 1);
+            viewCurrentUserLeaderboard.setBackgroundColor(
+                Color.parseColor("#" + game.getPrimary_color()));
+          }
+          count++;
         }
 
         Score first = scoreList.remove(0);
@@ -533,14 +542,14 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     List<PokeTiming> pokeTimingList = new ArrayList<>();
     pokeTimingList.add(pokeTiming);
     PreferencesUtils.savePlayloadPokeTimingAsJson(pokeTimingList, pokeUserGame,
-        maxWaitingTimeSeconde);
+        LeaderboardUserView.MAX_WAITING_TIME_SECONDS);
   }
 
   private Long getWaitingTime(Score score) {
     Long timeSecond = null;
     String id = score.getGame().getId() + "_" + score.getUser().getId();
-    List<PokeTiming> testList2 =
-        PreferencesUtils.getPlayloadPokeTimingList(pokeUserGame, maxWaitingTimeSeconde);
+    List<PokeTiming> testList2 = PreferencesUtils.getPlayloadPokeTimingList(pokeUserGame,
+        LeaderboardUserView.MAX_WAITING_TIME_SECONDS);
 
     for (PokeTiming p : testList2) {
       if (p.getId().equals(id)) {
@@ -559,7 +568,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     } else if (getWaitingTime(score) != null) {
       Long t = getWaitingTime(score);
       if (t != null) {
-        Long diff = maxWaitingTimeSeconde - t;
+        Long diff = LeaderboardUserView.MAX_WAITING_TIME_SECONDS - t;
         String waitingMessage = (diff < 60) ? getString(R.string.poke_delay_seconds, diff,
             score.getUser().getDisplayName())
             : getString(R.string.poke_delay_minutes, diff / 60, score.getUser().getDisplayName());

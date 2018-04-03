@@ -1244,7 +1244,10 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
       isFirstLeaveRoom = false;
     }
 
-    if (!viewLive.hasJoined() && room != null && !live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+    if (!viewLive.hasJoined() &&
+        room != null &&
+        !StringUtils.isEmpty(room.getId()) &&
+        !live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       livePresenter.deleteRoom(room.getId());
     }
 

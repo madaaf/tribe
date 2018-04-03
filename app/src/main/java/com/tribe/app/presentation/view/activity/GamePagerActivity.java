@@ -6,10 +6,13 @@ import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -57,11 +60,14 @@ import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
+import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -88,6 +94,7 @@ import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
 
 public class GamePagerActivity extends GameActivity implements AppStateListener {
 
+  private static final float TRANS_IMAGE = 400f;
   private static final float DOT_MAX_SIZE = 1.5f;
 
   private static final int DURATION = 400;
@@ -130,6 +137,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   @BindView(R.id.layoutCall) FrameLayout layoutCall;
   @BindView(R.id.btnFriends) ImageView btnFriends;
   @BindView(R.id.btnNewMessage) ImageView btnNewMessage;
+  @BindView(R.id.topbar) FrameLayout topbar;
 
   // OBSERVABLES
   private PublishSubject<User> onUser = PublishSubject.create();
@@ -146,12 +154,38 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     viewpager.setScrollDurationFactor(2);
     viewpager.addOnPageChangeListener(pageListener);
     viewpager.setAdapter(adapter);
+    changePagerScroller();
+  }
+
+  private void changePagerScroller() {
+    try {
+      Field mScroller = null;
+      mScroller = ViewPager.class.getDeclaredField("mScroller");
+      mScroller.setAccessible(true);
+      ViewPagerScroller scroller = new ViewPagerScroller(viewpager.getContext(), null, 300);
+      mScroller.set(viewpager, scroller);
+    } catch (Exception e) {
+      Timber.e("error of change scroller " + e);
+    }
   }
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     super.onCreate(savedInstanceState);
+
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      getWindow().setStatusBarColor(Color.TRANSPARENT);
+    }
+
     mapAnimator = new HashMap<>();
+
+    if (hasSoftKeys != null && hasSoftKeys.get()) {
+      UIUtils.changeBottomMarginOfView(dotsContainer, screenUtils.dpToPx(30));
+      UIUtils.changeTopMarginOfView(topbar, screenUtils.dpToPx(20));
+    }
 
     initViewPager();
     if (gameManager.getGames() != null && !gameManager.getGames().isEmpty()) {
@@ -365,10 +399,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     }
   }
 
-  private void setAnimImageAnimation() {
-    Game currentGame = getCurrentGame();
-    if (currentGame == null) return;
 
+  private void setImages() {
     for (int i = 0; i < getCurrentGame().getAnimation_icons().size(); i++) {
       String url = getCurrentGame().getAnimation_icons().get(i);
       ImageView imageView = null;
@@ -383,34 +415,16 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       Glide.with(this).load(url).into(imageView);
     }
+  }
 
+  private void setAnimImageAnimation() {
+    setImages();
     animateImg(imgAnimation1, true);
     animateImg(imgAnimation1, false);
     animateImg(imgAnimation2, true);
     animateImg(imgAnimation2, false);
     animateImg(imgAnimation3, true);
     animateImg(imgAnimation3, false);
-  }
-
-  private void showImgAnimations() {
-    imgAnimation1.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-    imgAnimation2.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-    imgAnimation3.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
   }
 
   private void animateImg(ImageView imgAnimation, boolean isX) {
@@ -648,24 +662,21 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   private void initDots(int dotsNbr) {
     dotsContainer.removeAllViews();
-    int sizeDot = getResources().getDimensionPixelSize(R.dimen.vertical_margin_small);
+    int sizeDot = getResources().getDimensionPixelSize(R.dimen.dots_pager_size);
     for (int i = 0; i < dotsNbr; i++) {
       AvatarView v = new AvatarView(this);
       v.load(gameManager.getGames().get(i).getIcon());
-      //GlideUtils.Builder(context).url("").size(sizeDot).target(v).hasPlaceholder(false).load();
 
       v.setTag(DOTS_TAG_MARKER + i);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
-      lp.setMargins(0, 0, screenUtils.dpToPx(15), 0);
+      lp.setMargins(0, 0, screenUtils.dpToPx(10), 0);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
       dotsContainer.addView(v);
       if (i == 0) {
-        //v.setBackgroundResource(R.drawable.shape_oval_white);
         v.setScaleX(DOT_MAX_SIZE);
         v.setScaleY(DOT_MAX_SIZE);
       } else {
-        //v.setBackgroundResource(R.drawable.shape_oval_white50);
         v.setScaleX(1f);
         v.setScaleY(1f);
       }
@@ -675,8 +686,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   public class PageListener extends ViewPager.SimpleOnPageChangeListener {
     private LinearLayout dotsContainer;
     private Context context;
-    private int positionViewPager, statePager;
-    private float firstValue = 0f, xTrans = 0, yTrans = 0;
+    private int positionViewPager = 0, statePager;
+    private float firstValue = 0f;
+    private boolean onPageChange = false;
 
     public PageListener(LinearLayout dotsContainer, Context context) {
       this.dotsContainer = dotsContainer;
@@ -687,53 +699,26 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       return positionViewPager;
     }
 
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-      super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+    private void slideNext(View v, float positionOffset, float transX, float transY) {
+      float scale = 1 + (positionOffset * 2);
+      v.setScaleX(scale);
+      v.setScaleY(scale);
+      v.setAlpha(1 - (positionOffset * 3));
 
-      if (mapAnimator != null) {
-        for (ValueAnimator animator : mapAnimator.values()) animator.cancel();
-      }
-      imgAnimation3.clearAnimation();
-      imgAnimation2.clearAnimation();
-      imgAnimation1.clearAnimation();
-      if (firstValue == 0f) {
-        firstValue = positionOffset;
-      }
-
-      if (positionOffset != 0f) {
-        xTrans += screenUtils.dpToPx(1);
-        yTrans += screenUtils.dpToPx(1);
-
-        if (firstValue > 0.5) {
-          imgAnimation3.setAlpha(positionOffset);
-          imgAnimation2.setAlpha(positionOffset);
-          imgAnimation1.setAlpha(positionOffset);
-          // Timber.e("SOEF LOL INVERSE " + positionOffset + " " + positionOffsetPixels + " " + position);
-        } else {
-          // slide normal  positionOffset :0 to 1
-          imgAnimation3.setScaleX(1 + positionOffset);
-          imgAnimation3.setScaleY(1 + positionOffset);
-          imgAnimation3.setAlpha(1 - positionOffset);
-
-          // imgAnimation3.setTranslationX(xTrans);
-          // imgAnimation3.setTranslationX(yTrans);
-
-          imgAnimation2.setScaleX(1 + positionOffset);
-          imgAnimation2.setScaleY(1 + positionOffset);
-          imgAnimation2.setAlpha(1 - positionOffset);
-
-          imgAnimation1.setScaleX(1 + positionOffset);
-          imgAnimation1.setScaleY(1 + positionOffset);
-          imgAnimation1.setAlpha(1 - positionOffset);
-          // Timber.e("SOEF LOL NORMAL " + imgAnimation3.getTranslationX() + " " + xTrans + " ");
-        }
-      } else {
-        setAnimImageAnimation();
-      }
+      v.setTranslationX(transX);
+      v.setTranslationY(transY);
     }
 
-    private void ok(View v, float translationX, float translationY) {
+    private void slideBefore(View v, float positionOffset, float transX, float transY) {
+      float scale = 1 + ((1 - positionOffset) * 2);
+      v.setAlpha(positionOffset * 3);
+      v.setTranslationX(transX);
+      v.setTranslationY(transY);
+      v.setScaleX(scale);
+      v.setScaleY(scale);
+    }
+
+    private void onPageChangedAnim(View v, float translationX, float translationY) {
       v.setAlpha(0f);
       v.setScaleX(2f);
       v.setScaleY(2f);
@@ -751,32 +736,79 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
           .start();
     }
 
-    @Override public void onPageScrollStateChanged(int state) {
-      //Timber.d("SOEF onPageScrollStateChanged " + state);
-      statePager = state;
-      if (state == 0f) {
-        firstValue = 0f;
-        xTrans = 0f;
-        yTrans = 0f;
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+      super.onPageScrolled(position, positionOffset, positionOffsetPixels);
 
-        ok(imgAnimation3, screenUtils.dpToPx(200), screenUtils.dpToPx(200));
-        ok(imgAnimation2, screenUtils.dpToPx(200), -screenUtils.dpToPx(100));
-        ok(imgAnimation1, -screenUtils.dpToPx(200), -screenUtils.dpToPx(100));
+      if (mapAnimator != null) {
+        for (ValueAnimator animator : mapAnimator.values()) animator.cancel();
+      }
+
+      if (firstValue == 0f) {
+        firstValue = positionOffset;
+      }
+
+      if (firstValue < 0.5 && positionOffset > 0.5 && statePager == 1) {
+        firstValue = 0f;
+      }
+
+      if (firstValue > 0.5 && positionOffset < 0.5 && statePager == 1) {
+        firstValue = 0f;
+      }
+
+      if (positionOffset != 0f) {
+
+        if (firstValue > 0.5) {
+          float trans = (1 - positionOffset) * screenUtils.dpToPx(TRANS_IMAGE);
+          slideBefore(imgAnimation3, positionOffset, trans, trans);
+          slideBefore(imgAnimation2, positionOffset, trans, -trans);
+          slideBefore(imgAnimation1, positionOffset, -trans, -trans);
+
+          if (positionOffset < 0.5f) {
+            firstValue = 0f;
+          }
+
+          if (positionOffset > 0.6) {
+            setImages();
+          }
+        } else {
+
+          float trans = positionOffset * screenUtils.dpToPx(TRANS_IMAGE);
+          slideNext(imgAnimation3, positionOffset, trans, trans);
+          slideNext(imgAnimation2, positionOffset, trans, -trans);
+          slideNext(imgAnimation1, positionOffset, -trans, -trans);
+
+          if (positionOffset < 0.5f) {
+            firstValue = 0f;
+          }
+          if (positionOffset > 0.3) {
+            setImages();
+          }
+        }
+      }
+    }
+
+    @Override public void onPageScrollStateChanged(int state) {
+      statePager = state;
+      if (state == 0f && onPageChange) {
+        firstValue = 0f;
+      }
+      if (state == 2f) {
+        onPageChange = false;
       }
     }
 
     public void onPageSelected(int position) {
-      //Timber.w("SOEF onPageSelected " + position);
+      onPageChange = true;
+      this.positionViewPager = position;
       positionViewPager = position;
       GameDetailsView gameDetailsView = adapter.getItemAtPosition(position);
       if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
       for (int i = 0; i < dotsContainer.getChildCount(); i++) {
         View v = dotsContainer.getChildAt(i);
         if (v.getTag().toString().startsWith(DOTS_TAG_MARKER + position)) {
-          // v.setBackgroundResource(R.drawable.shape_oval_white);
           v.animate().scaleX(DOT_MAX_SIZE).scaleY(DOT_MAX_SIZE).setDuration(100).start();
         } else {
-          // v.setBackgroundResource(R.drawable.shape_oval_white50);
           v.setScaleX(1f);
           v.setScaleY(1f);
         }

@@ -97,7 +97,9 @@ public class GameDrawView extends GameView {
 
     onNextDraw = PublishSubject.create();
 
-    subscriptions.add(adapter.onNextDraw().doOnNext(aBoolean -> Timber.d("onNextDraw adapter")).subscribe(onNextDraw));
+    subscriptions.add(adapter.onNextDraw()
+        .doOnNext(aBoolean -> Timber.d("onNextDraw adapter"))
+        .subscribe(onNextDraw));
 
     subscriptions.add(adapter.onCurrentGame().subscribe(game -> {
       GameDraw gameDraw = (GameDraw) game;
@@ -140,7 +142,7 @@ public class GameDrawView extends GameView {
       mScroller = ViewPager.class.getDeclaredField("mScroller");
       mScroller.setAccessible(true);
       ViewPagerScroller scroller =
-          new ViewPagerScroller(viewpager.getContext(), new OvershootInterpolator(1.3f));
+          new ViewPagerScroller(viewpager.getContext(), new OvershootInterpolator(1.3f), 1000);
       mScroller.set(viewpager, scroller);
     } catch (Exception e) {
       Timber.e("error of change scroller " + e);
@@ -262,8 +264,9 @@ public class GameDrawView extends GameView {
     nextDraw();
   }
 
-  @Override public void start(Game game, Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs, Observable<Map<String, TribeGuest>> map,
-      Observable<Map<String, TribeGuest>> mapInvited,
+  @Override public void start(Game game,
+      Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs,
+      Observable<Map<String, TribeGuest>> map, Observable<Map<String, TribeGuest>> mapInvited,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     super.start(game, masterMapObs, map, mapInvited, liveViewsObservable, userId);
     gameDraw = (GameDraw) game;

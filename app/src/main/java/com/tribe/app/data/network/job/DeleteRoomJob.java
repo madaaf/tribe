@@ -6,6 +6,7 @@ import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.live.DeleteRoom;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
+import com.tribe.app.presentation.utils.StringUtils;
 import javax.inject.Inject;
 
 /**
@@ -29,6 +30,7 @@ public class DeleteRoomJob extends BaseJob {
   }
 
   @Override public void onRun() throws Throwable {
+    if (StringUtils.isEmpty(roomId)) return;
     deleteRoom.setup(roomId);
     deleteRoom.execute(new DefaultSubscriber());
   }
