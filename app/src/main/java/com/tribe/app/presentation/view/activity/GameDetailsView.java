@@ -10,7 +10,6 @@ import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.transition.ChangeBounds;
 import android.support.transition.Transition;
-import android.support.transition.TransitionListenerAdapter;
 import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
@@ -54,6 +53,7 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class GameDetailsView extends FrameLayout {
 
@@ -163,7 +163,7 @@ public class GameDetailsView extends FrameLayout {
   }
 
   private void initUI() {
-    initLeaderbord();
+    //  initLeaderbord(); // SOEF
     txtBaseline.setText(game.getBaseline().toUpperCase());
 
     NumberFormat nf = NumberFormat.getInstance();
@@ -236,6 +236,7 @@ public class GameDetailsView extends FrameLayout {
   }
 
   private void showButtons() {
+    /*
     ConstraintSet set = new ConstraintSet();
     set.clone(layoutConstraint);
     set.connect(R.id.btnSingle, ConstraintSet.BOTTOM, R.id.btnMulti, ConstraintSet.TOP);
@@ -250,7 +251,7 @@ public class GameDetailsView extends FrameLayout {
       @Override public void onTransitionEnd(@NonNull Transition transition) {
 
       }
-    });
+    });*/
   }
 
   private void showScores() {
@@ -293,6 +294,7 @@ public class GameDetailsView extends FrameLayout {
     v.setTranslationY(screenUtils.dpToPx(50));
     v.animate()
         .alpha(1)
+        .withStartAction(() -> v.setAlpha(0f))
         .translationY(0)
         .setDuration(DURATION)
         .setInterpolator(new OvershootInterpolator(0.45f))
@@ -302,7 +304,7 @@ public class GameDetailsView extends FrameLayout {
 
   private void hideViewEntry(View v) {
     v.clearAnimation();
-    v.setAlpha(0);
+    v.setAlpha(0f);
   }
 
   /**
@@ -313,12 +315,55 @@ public class GameDetailsView extends FrameLayout {
     navigator.navigateToGameLeaderboard((Activity) context, game.getId());
   }
 
-  public void onCurrentViewVisible() {
+  public void onCurrentViewVisible() { // SOEF
     hideScores();
+    /*
     subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           showScores();
         }));
+        */
+  }
+
+  private void animLeaderbord(float positionOffset, float trans) {
+    cardAvatarMyScore.setAlpha(positionOffset);
+    txtMyScoreName.setAlpha(positionOffset);
+    txtMyScoreRanking.setAlpha(positionOffset);
+    txtMyScoreScore.setAlpha(positionOffset);
+    leaderbordContainer.setAlpha(positionOffset);
+    leaderbordArrow.setAlpha(positionOffset);
+
+    cardAvatarMyScore.setTranslationY(trans);
+    txtMyScoreName.setTranslationY(trans);
+    txtMyScoreRanking.setTranslationY(trans);
+    txtMyScoreScore.setTranslationY(trans);
+    leaderbordContainer.setTranslationY(trans);
+    leaderbordArrow.setTranslationY(trans);
+  }
+
+  public void slidePager(float positionOffset, boolean naturalSlide) {
+    if (naturalSlide) { // O to 1
+      float trans = positionOffset * screenUtils.dpToPx(200);
+      animLeaderbord(1 - positionOffset, trans);
+    } else {
+      float trans = (1 - positionOffset) * screenUtils.dpToPx(200);
+      animLeaderbord(positionOffset, trans);
+    }
+
+    Timber.e("SOEF " + positionOffset);
+  }
+
+  public void resetPager() {
+    /*
+    cardAvatarMyScore.setTranslationY(0);
+    txtMyScoreName.setTranslationY(0);
+    txtMyScoreRanking.setTranslationY(0);
+    txtMyScoreScore.setTranslationY(0);
+    leaderbordContainer.setTranslationY(0);
+    leaderbordArrow.setTranslationY(0);
+
+    */
+    hideScores();
   }
 }

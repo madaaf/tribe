@@ -1095,7 +1095,8 @@
 	<string name="invited_to_join_popup_title">%1$s invited\nyou to join a challenge!</string>
 	<string name="invited_to_join_popup_subtitle">With %1$s</string>
 	<string name="invited_to_join_popup_no_game_selected">NO GAME SELECTED YET</string>
-	<string name="invited_to_join_popup_action_later">LATER</string>
+	<string name="invited_to_join_popup_action_accept">JOIN NOW</string>
+	<string name="invited_to_join_popup_action_later">NOT NOW</string>
 	
 	<!-- Rematch Menu -->
 	<string name="rematch_menu_title">Rematch</string>

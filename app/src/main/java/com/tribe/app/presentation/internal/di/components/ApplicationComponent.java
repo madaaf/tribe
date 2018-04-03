@@ -160,6 +160,7 @@ import com.tribe.app.presentation.view.video.LegacyMediaPlayer;
 import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.IntroVideoView;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
+import com.tribe.app.presentation.view.widget.LoadingGameView;
 import com.tribe.app.presentation.view.widget.PlayerView;
 import com.tribe.app.presentation.view.widget.SyncView;
 import com.tribe.app.presentation.view.widget.TextViewRanking;
@@ -207,6 +208,8 @@ public interface ApplicationComponent {
   void inject(PlayerView playerView);
 
   void inject(NotifView notifView);
+
+  void inject(LoadingGameView loadingGameView);
 
   void inject(TribeFirebaseInstanceIDService instanceIDService);
 
