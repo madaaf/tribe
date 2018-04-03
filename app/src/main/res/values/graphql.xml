@@ -272,7 +272,7 @@
                 ...UserInfos
             }
         }
-
+        %3$s
     </string>
 
   <string name="user.mutate" translatable="false">

@@ -265,7 +265,7 @@ public class CloudUserDataStore implements UserDataStore {
         ageMin = Integer.parseInt(value.second);
       }
     }
-    ageMax = 12;
+
     String request = context.getString(R.string.user_mutate_age, ageMin, ageMax,
         context.getString(R.string.userfragment_infos));
     return this.tribeApi.updateUser(request);

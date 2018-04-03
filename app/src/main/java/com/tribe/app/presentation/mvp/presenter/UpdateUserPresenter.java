@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
-
 import com.facebook.AccessToken;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
@@ -16,12 +15,9 @@ import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 /**
  * Created by tiago on 09/20/16.
@@ -40,7 +36,8 @@ public abstract class UpdateUserPresenter implements Presenter {
   private LookupUsernameSubscriber lookupUsernameSubscriber;
 
   UpdateUserPresenter(UpdateUser updateUser, LookupUsername lookupUsername, RxFacebook rxFacebook,
-      UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber, UpdateUserAge updateUserAge) {
+      UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber,
+      UpdateUserAge updateUserAge) {
     this.lookupUsername = lookupUsername;
     this.updateUser = updateUser;
     this.rxFacebook = rxFacebook;
@@ -271,30 +268,17 @@ public abstract class UpdateUserPresenter implements Presenter {
 
     List<Pair<String, String>> values = new ArrayList<>();
     if (facebookEntity.getAgeRangeMin() != null) {
-      values.add(new Pair<>(UserRealm.AGE_RANGE_MIN, String.valueOf(facebookEntity.getAgeRangeMin())));
+      values.add(
+          new Pair<>(UserRealm.AGE_RANGE_MIN, String.valueOf(facebookEntity.getAgeRangeMin())));
     }
     if (facebookEntity.getAgeRangeMax() != null) {
-      values.add(new Pair<>(UserRealm.AGE_RANGE_MAX, String.valueOf(facebookEntity.getAgeRangeMax())));
+      values.add(
+          new Pair<>(UserRealm.AGE_RANGE_MAX, String.valueOf(facebookEntity.getAgeRangeMax())));
     }
 
     if (!values.isEmpty()) {
-      updateUser.prepare(values);
-      updateUser.execute(new DefaultSubscriber<User>(){
-        @Override public void onCompleted() {
-          super.onCompleted();
-          Timber.e("SPEG ");
-        }
-
-        @Override public void onError(Throwable e) {
-          super.onError(e);
-          Timber.e("SPEG "+ e.getMessage());
-        }
-
-        @Override public void onNext(User user) {
-          super.onNext(user);
-          Timber.e("SPEG "+ user.toString());
-        }
-      });
+      updateUserAge.prepare(values);
+      updateUserAge.execute(new DefaultSubscriber<User>());
     }
   }
 }
