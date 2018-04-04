@@ -9,8 +9,8 @@
     android:background="@android:color/transparent"
     android:clipChildren="false"
     app:cardBackgroundColor="@android:color/transparent"
-    app:cardElevation="5dp"
     app:cardCornerRadius="8dp"
+    app:cardElevation="5dp"
     app:cardPreventCornerOverlap="false"
     app:cardUseCompatPadding="true"
     >
@@ -29,6 +29,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
+        />
+
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="150dp"
+        android:layout_height="20dp"
+        android:scaleType="fitCenter"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/imgTop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imgTop"
         />
 
     <View
@@ -111,81 +123,33 @@
         app:layout_constraintTop_toTopOf="@id/txtGame"
         />
 
-    <View
-        android:id="@+id/separator2"
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:id="@+id/btnNegative"
         android:layout_width="0dp"
-        android:layout_height="0.5dp"
+        android:layout_height="60dp"
         android:layout_marginTop="@dimen/horizontal_margin"
-        android:background="@color/grey.light"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center"
+        android:text="@string/ask_to_join_popup_action_decline"
+        app:layout_constraintEnd_toStartOf="@+id/btnPositive"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtGame"
+        style="@style/Title.2.White"
         />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/txtTrophy"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/horizontal_margin"
-        android:layout_marginStart="@dimen/horizontal_margin"
-        android:gravity="center_vertical"
-        app:layout_constraintBottom_toTopOf="@+id/btnPositive"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/separator2"
-        style="@style/Headline.Circular.2.Black"
-        />
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/cardViewTrophy"
-        android:layout_width="37dp"
-        android:layout_height="37dp"
-        android:layout_marginEnd="@dimen/horizontal_margin"
-        android:clipChildren="false"
-        android:rotation="2"
-        app:cardBackgroundColor="@android:color/transparent"
-        app:cardElevation="5dp"
-        app:cardPreventCornerOverlap="false"
-        app:layout_constraintBottom_toBottomOf="@id/txtTrophy"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/txtTrophy"
-        >
-
-      <ImageView
-          android:id="@+id/imgIcon"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          />
-
-    </android.support.v7.widget.CardView>
 
     <com.tribe.app.presentation.view.widget.TextViewFont
         android:id="@+id/btnPositive"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_marginTop="@dimen/horizontal_margin"
         android:gravity="center"
         android:text="@string/ask_to_join_popup_action_accept"
-        app:layout_constraintEnd_toStartOf="@+id/btnNegative"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/txtTrophy"
-        style="@style/Title.2.White"
-        />
-
-    <com.tribe.app.presentation.view.widget.TextViewFont
-        android:id="@+id/btnNegative"
-        android:layout_width="0dp"
-        android:layout_height="60dp"
-        android:gravity="center"
-        android:text="@string/ask_to_join_popup_action_decline"
-        app:layout_constraintBottom_toBottomOf="@id/btnPositive"
+        app:layout_constraintBottom_toBottomOf="@id/btnNegative"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@id/btnPositive"
-        app:layout_constraintTop_toTopOf="@id/btnPositive"
+        app:layout_constraintStart_toEndOf="@id/btnNegative"
+        app:layout_constraintTop_toTopOf="@id/btnNegative"
         style="@style/Title.2.White"
         />
 

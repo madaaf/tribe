@@ -9,7 +9,6 @@ import android.support.constraint.ConstraintSet;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.TextViewCompat;
-import android.support.v7.widget.CardView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +25,6 @@ import com.tribe.app.presentation.AndroidApplication;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.popup.listener.PopupAskToJoinListener;
 import com.tribe.app.presentation.view.transformer.PositionedCropTransformation;
-import com.tribe.app.presentation.view.utils.GlideUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.TextViewScore;
@@ -54,6 +52,8 @@ public class PopupAskToJoin extends PopupView {
 
   @BindView(R.id.imgTop) ImageView imgTop;
 
+  @BindView(R.id.imgLogo) ImageView imgLogo;
+
   @BindView(R.id.viewNewAvatar) NewAvatarView newAvatarView;
 
   @BindView(R.id.btnPositive) TextViewFont btnPositive;
@@ -64,13 +64,7 @@ public class PopupAskToJoin extends PopupView {
 
   @BindView(R.id.txtGame) TextViewFont txtGame;
 
-  @BindView(R.id.cardViewTrophy) CardView cardViewTrophy;
-
-  @BindView(R.id.imgIcon) ImageView imgIcon;
-
   @BindView(R.id.txtTitle) TextViewFont txtTitle;
-
-  @BindView(R.id.txtTrophy) TextViewFont txtTrophy;
 
   @BindView(R.id.txtDesc) TextViewFont txtDesc;
 
@@ -228,6 +222,9 @@ public class PopupAskToJoin extends PopupView {
     if (game != null) {
       if (user != null) score = user.getScoreForGame(game.getId());
 
+      imgLogo.setVisibility(View.VISIBLE);
+      Glide.with(getContext()).load(game.getLogo()).into(imgLogo);
+
       Glide.with(getContext())
           .load(game.getBackground())
           .bitmapTransform(new PositionedCropTransformation(getContext(), 1, 0.7f))
@@ -249,14 +246,6 @@ public class PopupAskToJoin extends PopupView {
       }
     }
 
-    txtTrophy.setText(getContext().getString(R.string.ask_to_join_popup_level,
-        getContext().getString(trophyEnum.getTitle())));
-    new GlideUtils.TrophyImageBuilder(getContext(), screenUtils).drawableRes(trophyEnum.getIcon())
-        .cardView(cardViewTrophy)
-        .hasBorder(true)
-        .target(imgIcon)
-        .load();
-
     TextViewCompat.setTextAppearance(txtViewScore, R.style.Headline_Circular_2_Black);
     txtViewScore.setCustomFont(getContext(), FontUtils.CIRCULARSTD_BOLD);
     txtViewScore.setBackgroundResource(R.drawable.bg_pts_dark);
@@ -266,13 +255,13 @@ public class PopupAskToJoin extends PopupView {
     txtViewScore.setScore(score != null ? score.getValue() : 0);
 
     int radius = screenUtils.dpToPx(8);
-    float[] radiusMatrix = new float[] { 0, 0, 0, 0, 0, 0, radius, radius };
+    float[] radiusMatrix = new float[] { 0, 0, 0, 0, radius, radius, 0, 0 };
     GradientDrawable gradientDrawable = new GradientDrawable();
     gradientDrawable.setColor(ContextCompat.getColor(getContext(), R.color.blue_new));
     gradientDrawable.setCornerRadii(radiusMatrix);
     btnPositive.setBackground(gradientDrawable);
 
-    radiusMatrix = new float[] { 0, 0, 0, 0, radius, radius, 0, 0 };
+    radiusMatrix = new float[] { 0, 0, 0, 0, 0, 0, radius, radius };
     gradientDrawable = new GradientDrawable();
     gradientDrawable.setColor(ContextCompat.getColor(getContext(), R.color.grey_popup_digest));
     gradientDrawable.setCornerRadii(radiusMatrix);
