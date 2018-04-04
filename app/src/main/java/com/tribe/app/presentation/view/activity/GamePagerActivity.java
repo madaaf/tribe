@@ -94,7 +94,8 @@ import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
 
 public class GamePagerActivity extends GameActivity implements AppStateListener {
 
-  private static final float TRANS_IMAGE = 400f;
+  private static final int PAGER_SPEED = 600;
+  private static final float TRANS_IMAGE = 300f;
   private static final float DOT_MAX_SIZE = 1.5f;
 
   private static final int DURATION = 400;
@@ -165,7 +166,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       Field mScroller = null;
       mScroller = ViewPager.class.getDeclaredField("mScroller");
       mScroller.setAccessible(true);
-      ViewPagerScroller scroller = new ViewPagerScroller(viewpager.getContext(), null, 300);
+      ViewPagerScroller scroller = new ViewPagerScroller(viewpager.getContext(), null, PAGER_SPEED);
       mScroller.set(viewpager, scroller);
     } catch (Exception e) {
       Timber.e("error of change scroller " + e);
@@ -189,7 +190,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       UIUtils.changeBottomMarginOfView(dotsContainer, screenUtils.dpToPx(30));
       UIUtils.changeTopMarginOfView(topbar, screenUtils.dpToPx(20));
     }
-    Timber.e("SOEF " + btnMulti.getTop() + " " + btnSingle.getTop());
+
     initViewPager();
     if (gameManager.getGames() != null && !gameManager.getGames().isEmpty()) {
       adapter.setItems(gameManager.getGames());
@@ -671,7 +672,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       v.setTag(DOTS_TAG_MARKER + i);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
-      lp.setMargins(0, 0, screenUtils.dpToPx(30), 0);
+      lp.setMargins(0, 0, 30, 0);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
       dotsContainer.addView(v);
@@ -778,7 +779,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     }
 
     @Override public void onPageScrollStateChanged(int state) {
-      Timber.e("SOEF on PAGE CROLL " + state);
       statePager = state;
       if (state == 0f && onPageChange) {
         firstValue = 0f;
@@ -791,13 +791,12 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     }
 
     public void onPageSelected(int position) {
-      Timber.e("SOEF onPageSelected " + position);
       onPageChange = true;
       this.positionViewPager = position;
       positionViewPager = position;
       currentGameDetailsView = adapter.getItemAtPosition(position);
-      if (currentGameDetailsView != null) currentGameDetailsView.resetPager();
-      // if (currentGameDetailsView != null) currentGameDetailsView.onCurrentViewVisible();
+      //if (currentGameDetailsView != null) currentGameDetailsView.resetPager();
+      if (currentGameDetailsView != null) currentGameDetailsView.onCurrentViewVisible();
       for (int i = 0; i < dotsContainer.getChildCount(); i++) {
         View v = dotsContainer.getChildAt(i);
         if (v.getTag().toString().startsWith(DOTS_TAG_MARKER + position)) {

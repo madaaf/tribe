@@ -53,7 +53,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
-import timber.log.Timber;
 
 public class GameDetailsView extends FrameLayout {
 
@@ -151,19 +150,7 @@ public class GameDetailsView extends FrameLayout {
     subscriptions = new CompositeSubscription();
   }
 
-  private void resetView(View v) {
-    v.setAlpha(0f);
-    v.setTranslationX(0);
-    v.setTranslationY(0);
-    v.clearAnimation();
-  }
-
-  private void initLeaderbord() {
-    resetView(leaderbordContainer);
-  }
-
   private void initUI() {
-    //  initLeaderbord(); // SOEF
     txtBaseline.setText(game.getBaseline().toUpperCase());
 
     NumberFormat nf = NumberFormat.getInstance();
@@ -192,10 +179,6 @@ public class GameDetailsView extends FrameLayout {
         .subscribe(aLong -> {
           animateRays();
         }));
-
-    subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> showButtons()));
 
     Score score = user.getScoreForGame(game.getId());
     if (score == null) {
@@ -235,25 +218,6 @@ public class GameDetailsView extends FrameLayout {
     imgRays.startAnimation(rotate);
   }
 
-  private void showButtons() {
-    /*
-    ConstraintSet set = new ConstraintSet();
-    set.clone(layoutConstraint);
-    set.connect(R.id.btnSingle, ConstraintSet.BOTTOM, R.id.btnMulti, ConstraintSet.TOP);
-    set.clear(R.id.btnSingle, ConstraintSet.TOP);
-    set.connect(R.id.btnMulti, ConstraintSet.BOTTOM, layoutConstraint.getId(),
-        ConstraintSet.BOTTOM);
-    set.clear(R.id.btnMulti, ConstraintSet.TOP);
-    set.setAlpha(R.id.btnSingle, 1);
-    set.setAlpha(R.id.btnMulti, 1);
-
-    animateLayoutWithConstraintSet(set, new TransitionListenerAdapter() {
-      @Override public void onTransitionEnd(@NonNull Transition transition) {
-
-      }
-    });*/
-  }
-
   private void showScores() {
     animateViewEntry(cardAvatarMyScore);
     animateViewEntry(txtMyScoreName);
@@ -270,16 +234,6 @@ public class GameDetailsView extends FrameLayout {
     hideViewEntry(txtMyScoreScore);
     hideViewEntry(leaderbordContainer);
     hideViewEntry(leaderbordArrow);
-  }
-
-  private void animateLayoutWithConstraintSet(ConstraintSet constraintSet,
-      Transition.TransitionListener transitionListener) {
-    Transition transition = new ChangeBounds();
-    transition.setDuration(DURATION);
-    transition.setInterpolator(new OvershootInterpolator(0.45f));
-    if (transitionListener != null) transition.addListener(transitionListener);
-    TransitionManager.beginDelayedTransition(layoutConstraint, transition);
-    constraintSet.applyTo(layoutConstraint);
   }
 
   private void showView(View v) {
@@ -315,43 +269,51 @@ public class GameDetailsView extends FrameLayout {
     navigator.navigateToGameLeaderboard((Activity) context, game.getId());
   }
 
-  public void onCurrentViewVisible() { // SOEF
+  public void onCurrentViewVisible() {
     hideScores();
-    /*
     subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           showScores();
         }));
-        */
   }
 
-  private void animLeaderbord(float positionOffset, float trans) {
-    cardAvatarMyScore.setAlpha(positionOffset);
-    txtMyScoreName.setAlpha(positionOffset);
-    txtMyScoreRanking.setAlpha(positionOffset);
-    txtMyScoreScore.setAlpha(positionOffset);
-    leaderbordContainer.setAlpha(positionOffset);
-    leaderbordArrow.setAlpha(positionOffset);
+  private void animLeaderbord(float positionOffset, float trans, boolean naturalSlide) {
+    if (naturalSlide) {
+      cardAvatarMyScore.setAlpha(positionOffset);
+      txtMyScoreName.setAlpha(positionOffset);
+      txtMyScoreRanking.setAlpha(positionOffset);
+      txtMyScoreScore.setAlpha(positionOffset);
+      leaderbordContainer.setAlpha(positionOffset);
+      leaderbordArrow.setAlpha(positionOffset);
 
-    cardAvatarMyScore.setTranslationY(trans);
-    txtMyScoreName.setTranslationY(trans);
-    txtMyScoreRanking.setTranslationY(trans);
-    txtMyScoreScore.setTranslationY(trans);
-    leaderbordContainer.setTranslationY(trans);
-    leaderbordArrow.setTranslationY(trans);
+      cardAvatarMyScore.setTranslationY(trans);
+      txtMyScoreName.setTranslationY(trans);
+      txtMyScoreRanking.setTranslationY(trans);
+      txtMyScoreScore.setTranslationY(trans);
+      leaderbordContainer.setTranslationY(trans);
+      leaderbordArrow.setTranslationY(trans);
+    } else {
+
+      cardAvatarMyScore.setAlpha(0);
+      txtMyScoreName.setAlpha(0);
+      txtMyScoreRanking.setAlpha(0);
+      txtMyScoreScore.setAlpha(0);
+      leaderbordContainer.setAlpha(0);
+      leaderbordArrow.setAlpha(0f);
+    }
   }
 
   public void slidePager(float positionOffset, boolean naturalSlide) {
     if (naturalSlide) { // O to 1
       float trans = positionOffset * screenUtils.dpToPx(200);
-      animLeaderbord(1 - positionOffset, trans);
+      animLeaderbord(1 - positionOffset, trans, naturalSlide);
     } else {
       float trans = (1 - positionOffset) * screenUtils.dpToPx(200);
-      animLeaderbord(positionOffset, trans);
+      animLeaderbord(positionOffset, trans, naturalSlide);
     }
 
-    Timber.e("SOEF " + positionOffset);
+    //  Timber.e("SOEF " + positionOffset);
   }
 
   public void resetPager() {
