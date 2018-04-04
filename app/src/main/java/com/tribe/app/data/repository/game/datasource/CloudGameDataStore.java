@@ -141,24 +141,35 @@ public class CloudGameDataStore implements GameDataStore {
     List<String> finalList = new ArrayList<>(Arrays.asList(userIds));
     if (usersId != null) {
       for (Contact c : usersId) {
-       // finalList.add(c.getId());
-      //  contactInterfaces.add(c);
+        // finalList.add(c.getId());
+        //  contactInterfaces.add(c);
       }
     }
 
     List<ContactABRealm> contactsAddressBookList = contactCache.getContactsAddressBook();
     if (contactsAddressBookList != null) {
       for (ContactABRealm contactABRealm : contactsAddressBookList) {
-        finalList.add(contactABRealm.getId());
-        contactInterfaces.add(contactABRealm);
+        if (contactABRealm.getUsers() != null
+            && !contactABRealm.getUsers().isEmpty()
+            && contactABRealm.getUsers().get(0) != null) {
+          finalList.add(contactABRealm.getUsers().get(0).getId());
+          contactABRealm.setId(contactABRealm.getUsers().get(0).getId());
+          contactInterfaces.add(contactABRealm);
+        }
       }
     }
 
     List<ContactFBRealm> contactsFacebookList = contactCache.getContactsFacebook();
     if (contactsFacebookList != null) {
       for (ContactFBRealm contactFBRealm : contactsFacebookList) {
-        finalList.add(contactFBRealm.getId());
-        contactInterfaces.add(contactFBRealm);
+
+        if (contactFBRealm.getUsers() != null
+            && !contactFBRealm.getUsers().isEmpty()
+            && contactFBRealm.getUsers().get(0) != null) {
+          finalList.add(contactFBRealm.getUsers().get(0).getId());
+          contactFBRealm.setId(contactFBRealm.getUsers().get(0).getId());
+          contactInterfaces.add(contactFBRealm);
+        }
       }
     }
 
