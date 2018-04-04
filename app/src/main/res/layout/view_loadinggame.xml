@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+  <FrameLayout
+      android:id="@+id/diceBgView"
+      android:layout_width="200dp"
+      android:layout_height="200dp"
+      android:alpha="1"
+      android:background="@color/black.opacity.40"
+      />
+
+
+</merge>

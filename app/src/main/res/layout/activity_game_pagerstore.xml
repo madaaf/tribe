@@ -44,7 +44,6 @@
           android:layout_height="100dp"
           android:layout_gravity="center_vertical|start"
           android:layout_marginStart="-25dp"
-          android:background="@color/blue.new"
           app:pulseColor="@color/red"
           app:pulseCount="3"
           app:pulseDuration="3000"
@@ -274,4 +273,10 @@
   </android.support.constraint.ConstraintLayout>
 
 
+  <com.tribe.app.presentation.view.widget.LoadingGameView
+      android:layout_width="50dp"
+      android:layout_height="50dp"
+      android:gravity="center"
+      android:visibility="gone"
+      />
 </FrameLayout>
