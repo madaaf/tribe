@@ -743,11 +743,11 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
         .filter(labelType -> labelType.getTypeDef().equals(LabelType.CHANGE_PICTURE))
         .flatMap(pair -> DialogFactory.showBottomSheetForCamera(this), (pair, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA, true)
                 .subscribe(uri -> livePresenter.updateShortcutPicture(live.getShortcutId(),
                     uri.toString())));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY, true)
                 .subscribe(uri -> livePresenter.updateShortcutPicture(live.getShortcutId(),
                     uri.toString())));
           }

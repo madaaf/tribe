@@ -251,11 +251,11 @@ public class ProfileInfoView extends LinearLayout {
           return DialogFactory.showBottomSheetForCamera(getContext());
         }, ((aVoid, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA, true).subscribe(uri -> {
               loadUri(uri);
             }));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY, true).subscribe(uri -> {
               loadUri(uri);
             }));
           }
