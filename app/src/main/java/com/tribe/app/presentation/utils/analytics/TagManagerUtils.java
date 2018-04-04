@@ -51,6 +51,7 @@ public class TagManagerUtils {
   public static final String Revive = "Revive";
   public static final String Poke = "Poke";
   public static final String PopUp = "PopUp";
+  public static final String GameRequest = "GameRequest";
 
   /**
    * ERRORS
@@ -126,6 +127,9 @@ public class TagManagerUtils {
   public static final String SCORE = "score";
   public static final String RANK = "rank";
   public static final String TROPHY = "trophy";
+  public static final String USE_CASE = "useCase";
+  public static final String USE_CASE_REVIVE = "gameCoronaRevive";
+  public static final String USE_CASE_FACEBOOK = "inviteFacebookFriendsPopupTapInvite";
 
   public static final String tagGameCountSuffix = "_game_count";
   public static final String tagGameDurationSuffix = "_game_duration";

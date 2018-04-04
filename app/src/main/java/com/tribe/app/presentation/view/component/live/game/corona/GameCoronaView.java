@@ -556,6 +556,12 @@ public class GameCoronaView extends GameView {
 
   public void successRevive() {
     Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.GAME, game.getId());
+    bundle.putInt(TagManagerUtils.SCORE, mapScores.get(currentUser.getId()));
+    bundle.putString(TagManagerUtils.USE_CASE, TagManagerUtils.USE_CASE_REVIVE);
+    tagManager.trackEvent(TagManagerUtils.GameRequest, bundle);
+
+    bundle = new Bundle();
     bundle.putString(TagManagerUtils.NAME, game.getId());
     bundle.putInt(TagManagerUtils.SCORE, mapScores.get(currentUser.getId()));
     tagManager.trackEvent(TagManagerUtils.Revive, bundle);
