@@ -91,6 +91,7 @@ public class GameCoronaView extends GameView {
   private RemoteConfigManager remoteConfigManager;
   private Map<String, Integer> mapScores = new HashMap<>();
   private Score bestScore = null;
+  private int maxPaginationCall = 0, counterPagination = 0;
 
   // OBSERVABLES
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
@@ -140,12 +141,16 @@ public class GameCoronaView extends GameView {
 
       private void notifyFriend(Context context, ArrayList<String> array) {
         Timber.d("Notify FB friends");
+        counterPagination++;
         subscriptionsRoom.add(rxFacebook.notifyFriends(context, array).subscribe(aBoolean -> {
-          Timber.d("Notify FB answer : " + aBoolean);
-          if (aBoolean) {
-            successRevive();
-          } else {
-            errorRevive();
+          if (counterPagination >= maxPaginationCall) {
+            counterPagination = 0;
+            Timber.d("Notify FB answer : " + aBoolean);
+            if (aBoolean) {
+              successRevive();
+            } else {
+              errorRevive();
+            }
           }
         }));
       }
@@ -158,9 +163,10 @@ public class GameCoronaView extends GameView {
           array.add(c.getId());
         }
 
-        //int MAX_SIZE_PAGINATION = 25;
         int rest = array.size() % MAX_SIZE_PAGINATION;
         int nbrOfArray = array.size() / MAX_SIZE_PAGINATION;
+
+        maxPaginationCall = (rest == 0) ? nbrOfArray : nbrOfArray + 1;
         if (rest == 0) {
           for (int i = 0; i < nbrOfArray; i++) {
             ArrayList<String> splitArray = splitList((i * MAX_SIZE_PAGINATION),
