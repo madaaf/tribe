@@ -95,6 +95,10 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
+  @Override public Observable<UserRealm> updateUserAge(List<Pair<String, String>> values) {
+    return null;
+  }
+
   @Override public Observable<LinkIdResult> updateUserFacebook(String accessToken) {
     return null;
   }

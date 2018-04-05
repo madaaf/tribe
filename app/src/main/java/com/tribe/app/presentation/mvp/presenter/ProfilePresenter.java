@@ -9,6 +9,7 @@ import com.tribe.app.domain.interactor.live.DeclineInvite;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserAge;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
 import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
@@ -36,8 +37,8 @@ public class ProfilePresenter extends UpdateUserPresenter {
   @Inject ProfilePresenter(ShortcutPresenter shortcutPresenter, UpdateUser updateUser,
       LookupUsername lookupUsername, RxFacebook rxFacebook, RemoveInstall removeInstall,
       DeclineInvite declineInvite, CreateRoom createRoom, UpdateUserFacebook updateUserFacebook,
-      UpdateUserPhoneNumber updateUserPhoneNumber) {
-    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
+      UpdateUserPhoneNumber updateUserPhoneNumber,  UpdateUserAge updateUserAge) {
+    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber, updateUserAge);
     this.shortcutPresenter = shortcutPresenter;
     this.removeInstall = removeInstall;
     this.declineInvite = declineInvite;

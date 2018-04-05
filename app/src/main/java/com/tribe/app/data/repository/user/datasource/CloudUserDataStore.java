@@ -254,6 +254,23 @@ public class CloudUserDataStore implements UserDataStore {
         context.getString(R.string.install_remove, installation.getId()));
   }
 
+  @Override public Observable<UserRealm> updateUserAge(List<Pair<String, String>> values) {
+    Integer ageMax = null;
+    Integer ageMin = null;
+    for (Pair<String, String> value : values) {
+      if (value.first.equals(UserRealm.AGE_RANGE_MAX)) {
+        ageMax = Integer.parseInt(value.second);
+      }
+      if (value.first.equals(UserRealm.AGE_RANGE_MIN)) {
+        ageMin = Integer.parseInt(value.second);
+      }
+    }
+
+    String request = context.getString(R.string.user_mutate_age, ageMin, ageMax,
+        context.getString(R.string.userfragment_infos));
+    return this.tribeApi.updateUser(request);
+  }
+
   @Override public Observable<UserRealm> updateUser(List<Pair<String, String>> values) {
     String pictureUri = "";
     StringBuilder userInputBuilder = new StringBuilder();

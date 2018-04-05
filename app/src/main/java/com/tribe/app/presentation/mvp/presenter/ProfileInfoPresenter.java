@@ -10,6 +10,7 @@ import com.tribe.app.domain.interactor.user.DoRegister;
 import com.tribe.app.domain.interactor.user.GetCloudUserInfos;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserAge;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -37,8 +38,8 @@ public class ProfileInfoPresenter extends UpdateUserPresenter {
 
   @Inject public ProfileInfoPresenter(JobManager jobManager, RxFacebook rxFacebook,
                                       @Named("lookupByUsername") LookupUsername lookupUsername, DoRegister doRegister,
-                                      UpdateUser updateUser, GetCloudUserInfos cloudUserInfos, UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
-    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
+                                      UpdateUser updateUser, GetCloudUserInfos cloudUserInfos, UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber, UpdateUserAge updateUserAge) {
+    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber, updateUserAge);
     this.jobManager = jobManager;
     this.doRegister = doRegister;
     this.cloudUserInfos = cloudUserInfos;

@@ -59,9 +59,9 @@ import com.tribe.app.presentation.view.popup.view.PopupDigest;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
-import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
+import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
@@ -94,7 +94,8 @@ import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
 
 public class GamePagerActivity extends GameActivity implements AppStateListener {
 
-  private static final float TRANS_IMAGE = 400f;
+  private static final int PAGER_SPEED = 600;
+  private static final float TRANS_IMAGE = 300f;
   private static final float DOT_MAX_SIZE = 1.5f;
 
   private static final int DURATION = 400;
@@ -118,6 +119,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   private NotifView notifView;
   private boolean shouldDisplayDigest = true;
   private int previousAnimationValue = 0;
+  private GameDetailsView currentGameDetailsView;
 
   @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
   @Inject @LastSync Preference<Long> lastSync;
@@ -138,6 +140,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   @BindView(R.id.btnFriends) ImageView btnFriends;
   @BindView(R.id.btnNewMessage) ImageView btnNewMessage;
   @BindView(R.id.topbar) FrameLayout topbar;
+  @BindView(R.id.btnSingle) FrameLayout btnSingle;
+  @BindView(R.id.btnMulti) FrameLayout btnMulti;
 
   // OBSERVABLES
   private PublishSubject<User> onUser = PublishSubject.create();
@@ -162,7 +166,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       Field mScroller = null;
       mScroller = ViewPager.class.getDeclaredField("mScroller");
       mScroller.setAccessible(true);
-      ViewPagerScroller scroller = new ViewPagerScroller(viewpager.getContext(), null, 300);
+      ViewPagerScroller scroller = new ViewPagerScroller(viewpager.getContext(), null, PAGER_SPEED);
       mScroller.set(viewpager, scroller);
     } catch (Exception e) {
       Timber.e("error of change scroller " + e);
@@ -206,6 +210,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       gamePresenter.getGames();
     }
+
     initParams(getIntent());
     initAppStateMonitor();
     loadChallengeNotificationData();
@@ -221,8 +226,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          GameDetailsView gameDetailsView = adapter.getItemAtPosition(0);
-          if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
+          currentGameDetailsView = adapter.getItemAtPosition(0);
+          if (currentGameDetailsView != null) currentGameDetailsView.onCurrentViewVisible();
         }));
   }
 
@@ -251,9 +256,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       if (calendarPreviousDate.before(calendarYesterday)) {
         nbDays = 1;
-      } else if ((calendarPreviousDate.after(calendarYesterday) ||
-          calendarPreviousDate.equals(calendarYesterday)) &&
-          calendarPreviousDate.before(calendarToday)) {
+      } else if ((calendarPreviousDate.after(calendarYesterday) || calendarPreviousDate.equals(
+          calendarYesterday)) && calendarPreviousDate.before(calendarToday)) {
         nbDays += 1;
       }
     } else {
@@ -269,9 +273,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private void loadChallengeNotificationData() {
-    if (challengeNotificationsPref != null &&
-        challengeNotificationsPref.get() != null &&
-        !challengeNotificationsPref.get().isEmpty()) {
+    if (challengeNotificationsPref != null
+        && challengeNotificationsPref.get() != null
+        && !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
@@ -331,8 +335,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
-        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
+        PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync);
     }
 
@@ -398,7 +402,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
           }));
     }
   }
-
 
   private void setImages() {
     for (int i = 0; i < getCurrentGame().getAnimation_icons().size(); i++) {
@@ -543,8 +546,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
               if (shortcut.isSingle()) {
                 User member = shortcut.getSingleFriend();
                 if (member.isPlayingAGame()) {
-                  if (!userIdsDigest.contains(member.getId()) &&
-                      !roomIdsDigest.contains(member.getId())) {
+                  if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
+                      member.getId())) {
                     userIdsDigest.add(member.getId());
                     items.add(shortcut);
                   }
@@ -669,7 +672,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       v.setTag(DOTS_TAG_MARKER + i);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
-      lp.setMargins(0, 0, screenUtils.dpToPx(10), 0);
+      lp.setMargins(0, 0, 30, 0);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
       dotsContainer.addView(v);
@@ -718,24 +721,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       v.setScaleY(scale);
     }
 
-    private void onPageChangedAnim(View v, float translationX, float translationY) {
-      v.setAlpha(0f);
-      v.setScaleX(2f);
-      v.setScaleY(2f);
-
-      v.setTranslationX(translationX);
-      v.setTranslationY(translationY);
-
-      v.animate()
-          .setDuration(500)
-          .scaleX(1)
-          .scaleY(1)
-          .alpha(1)
-          .translationX(0)
-          .translationY(0)
-          .start();
-    }
-
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
       super.onPageScrolled(position, positionOffset, positionOffsetPixels);
@@ -756,9 +741,12 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
         firstValue = 0f;
       }
 
-      if (positionOffset != 0f) {
-
+      if (positionOffset != 0f) { // positionOffset from 1 to 0
         if (firstValue > 0.5) {
+
+          if (currentGameDetailsView != null) {
+            currentGameDetailsView.slidePager(positionOffset, false);
+          }
           float trans = (1 - positionOffset) * screenUtils.dpToPx(TRANS_IMAGE);
           slideBefore(imgAnimation3, positionOffset, trans, trans);
           slideBefore(imgAnimation2, positionOffset, trans, -trans);
@@ -771,8 +759,10 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
           if (positionOffset > 0.6) {
             setImages();
           }
-        } else {
-
+        } else {  // positionOffset from 0 to 1
+          if (currentGameDetailsView != null) {
+            currentGameDetailsView.slidePager(positionOffset, true);
+          }
           float trans = positionOffset * screenUtils.dpToPx(TRANS_IMAGE);
           slideNext(imgAnimation3, positionOffset, trans, trans);
           slideNext(imgAnimation2, positionOffset, trans, -trans);
@@ -792,6 +782,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       statePager = state;
       if (state == 0f && onPageChange) {
         firstValue = 0f;
+        //if (currentGameDetailsView != null) currentGameDetailsView.resetPager();
+        setAnimImageAnimation();
       }
       if (state == 2f) {
         onPageChange = false;
@@ -802,8 +794,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       onPageChange = true;
       this.positionViewPager = position;
       positionViewPager = position;
-      GameDetailsView gameDetailsView = adapter.getItemAtPosition(position);
-      if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
+      currentGameDetailsView = adapter.getItemAtPosition(position);
+      //if (currentGameDetailsView != null) currentGameDetailsView.resetPager();
+      if (currentGameDetailsView != null) currentGameDetailsView.onCurrentViewVisible();
       for (int i = 0; i < dotsContainer.getChildCount(); i++) {
         View v = dotsContainer.getChildAt(i);
         if (v.getTag().toString().startsWith(DOTS_TAG_MARKER + position)) {
@@ -817,7 +810,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private Game getCurrentGame() {
-    if (pageListener.getPositionViewPage() > gameManager.getGames().size()) {
+    if (pageListener.getPositionViewPage() > gameManager.getGames().size() - 1) {
       return gameManager.getGames().get(0);
     }
 

@@ -124,7 +124,7 @@ android {
       buildConfigField "String", "TRIBE_GROWTH", "\"https://growth.tribedev.pm\""
       buildConfigField "String", "TRIBE_STATIC", "\"https://static.tribe.pm\""
       buildConfigField "String", "TRIBE_WSS", "\"wss://api.tribedev.pm\""
-      buildConfigField "String", "TRIBE_GAME_MASTER_WSS", "\"ws://game.tribedev.pm\""
+      buildConfigField "String", "TRIBE_GAME_MASTER_WSS", "\"wss://game.tribedev.pm\""
       //buildConfigField "String", "TRIBE_GAME_MASTER_WSS", "\"ws://10.0.0.240:3000\""
       buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_debug}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url_debug}\""

@@ -264,7 +264,6 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
     super.onStart();
     tagManager.onStart(this);
     fullScreenNotificationState.set(new HashSet<>());
-
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       lookupContacts();
     }
@@ -555,11 +554,11 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
         .filter(pair -> pair.first.getTypeDef().equals(LabelType.CHANGE_PICTURE))
         .flatMap(pair -> DialogFactory.showBottomSheetForCamera(this), (pair, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA, true)
                 .subscribe(uri -> homeGridPresenter.updateShortcutPicture(pair.second.getId(),
                     uri.toString())));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY, true)
                 .subscribe(uri -> homeGridPresenter.updateShortcutPicture(pair.second.getId(),
                     uri.toString())));
           }

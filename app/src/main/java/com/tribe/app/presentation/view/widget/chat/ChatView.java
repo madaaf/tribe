@@ -562,12 +562,12 @@ public class ChatView extends IChat {
         .observeOn(AndroidSchedulers.mainThread())
         .flatMap(aVoid -> DialogFactory.showBottomSheetForCamera(context), ((aVoid, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA, false).subscribe(uri -> {
               sendMessageToAdapter(MESSAGE_IMAGE, null, uri, true);
               imageCount++;
             }));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY, false).subscribe(uri -> {
               sendMessageToAdapter(MESSAGE_IMAGE, null, uri, true);
               imageCount++;
             }));
@@ -1032,12 +1032,12 @@ public class ChatView extends IChat {
             .flatMap(pair -> DialogFactory.showBottomSheetForCamera(getContext()),
                 (pair, labelType) -> {
                   if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-                    subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+                    subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA, true).subscribe(uri -> {
                       sendEventEditGroupName();
                       messagePresenter.updateShortcutPicture(shortcut.getId(), uri.toString());
                     }));
                   } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-                    subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+                    subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY, true).subscribe(uri -> {
                       sendEventEditGroupName();
                       messagePresenter.updateShortcutPicture(shortcut.getId(), uri.toString());
                     }));

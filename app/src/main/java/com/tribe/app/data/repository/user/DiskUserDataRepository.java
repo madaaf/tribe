@@ -189,6 +189,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<User> updateUserAge(List<Pair<String, String>> values) {
+    return null;
+  }
+
   @Override public Observable<User> updateUserFacebook(String userId, String accessToken) {
     return null;
   }

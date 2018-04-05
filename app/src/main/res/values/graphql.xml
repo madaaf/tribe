@@ -147,6 +147,7 @@
         %2$s
   </string>
 
+
   <string name="userfragment.infos" translatable="false">
         fragment UserInfos on User {
             id
@@ -263,6 +264,16 @@
       }
     }
   </string>
+
+
+  <string name="user.mutate.age" translatable="false">
+        mutation {
+            updateUser(user: {age_range_min: %1$s, age_range_max: 12}) {
+                ...UserInfos
+            }
+        }
+        %3$s
+    </string>
 
   <string name="user.mutate" translatable="false">
         mutation {

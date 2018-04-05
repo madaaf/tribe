@@ -9,6 +9,7 @@ import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserAge;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -39,8 +40,8 @@ public class SettingsPresenter extends UpdateUserPresenter {
       RemoveInstall removeInstall, @Named("synchroContactList") UseCase synchroContactList,
       JobManager jobManager, @Named("diskContactList") UseCaseDisk getDiskContactList,
       @Named("diskFBContactList") UseCaseDisk getDiskFBContactList,
-      UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
-    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
+      UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber, UpdateUserAge updateUserAge) {
+    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber, updateUserAge);
     this.removeInstall = removeInstall;
     this.synchroContactList = synchroContactList;
     this.jobManager = jobManager;

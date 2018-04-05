@@ -15,6 +15,7 @@ import com.tribe.app.domain.interactor.user.GetDiskFBContactInviteList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.SearchLocally;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserAge;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
 import com.tribe.app.presentation.mvp.presenter.common.ShortcutPresenter;
@@ -64,8 +65,9 @@ public class SearchPresenter extends UpdateUserPresenter {
       UpdateUserFacebook updateUserFacebook, LookupUsername lookupUsername,
       GetDiskContactOnAppList getDiskContactOnAppList,
       GetDiskContactInviteList getDiskContactInviteList,
-      GetDiskFBContactInviteList getDiskFBContactInviteList) {
-    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
+      GetDiskFBContactInviteList getDiskFBContactInviteList, UpdateUserAge updateUserAge) {
+    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber,
+        updateUserAge);
     this.shortcutPresenter = shortcutPresenter;
     this.jobManager = jobManager;
     this.findByUsername = findByUsername;

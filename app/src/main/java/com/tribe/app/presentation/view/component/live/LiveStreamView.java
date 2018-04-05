@@ -175,9 +175,8 @@ public abstract class LiveStreamView extends LinearLayout {
       layoutStream.setRadius(screenUtils.dpToPx(5));
       UIUtils.changeWidthHeightOfView(layoutStream, screenUtils.dpToPx(MAX_HEIGHT_LIST),
           screenUtils.dpToPx(MAX_HEIGHT_LIST));
-      int visibility = type == TYPE_EMBED ? GONE : VISIBLE;
-      txtScore.setVisibility(visibility);
-      txtEmoji.setVisibility(visibility);
+      txtScore.setVisibility(type == TYPE_EMBED ? GONE : VISIBLE);
+      txtEmoji.setVisibility(VISIBLE);
     } else {
       layoutStream.setRadius(0);
       getPeerView().setPadding(0, 0, 0, 0);

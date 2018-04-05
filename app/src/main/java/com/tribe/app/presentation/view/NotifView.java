@@ -166,12 +166,12 @@ public class NotifView extends FrameLayout {
               DialogFactory.showBottomSheetForCamera(activity).subscribe(labelType -> {
                 hideView();
                 if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-                  subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
+                  subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA, true).subscribe(uri -> {
                     newChatPresenter.updateUser(currentUser.getId(), currentUser.getUsername(),
                         currentUser.getDisplayName(), uri.toString());
                   }));
                 } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-                  subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
+                  subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY, true).subscribe(uri -> {
                     newChatPresenter.updateUser(currentUser.getId(), currentUser.getUsername(),
                         currentUser.getDisplayName(), uri.toString());
                   }));

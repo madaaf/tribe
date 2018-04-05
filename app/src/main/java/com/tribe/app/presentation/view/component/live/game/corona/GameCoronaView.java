@@ -91,6 +91,7 @@ public class GameCoronaView extends GameView {
   protected RemoteConfigManager remoteConfigManager;
   protected Map<String, Integer> mapScores = new HashMap<>();
   protected Score bestScore = null;
+  private int maxPaginationCall = 0, counterPagination = 0;
 
   // OBSERVABLES
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
@@ -143,12 +144,16 @@ public class GameCoronaView extends GameView {
 
       private void notifyFriend(Context context, ArrayList<String> array) {
         Timber.d("Notify FB friends");
+        counterPagination++;
         subscriptionsRoom.add(rxFacebook.notifyFriends(context, array).subscribe(aBoolean -> {
-          Timber.d("Notify FB answer : " + aBoolean);
-          if (aBoolean) {
-            successRevive();
-          } else {
-            errorRevive();
+          if (counterPagination >= maxPaginationCall) {
+            counterPagination = 0;
+            Timber.d("Notify FB answer : " + aBoolean);
+            if (aBoolean) {
+              successRevive();
+            } else {
+              errorRevive();
+            }
           }
         }));
       }
@@ -161,9 +166,10 @@ public class GameCoronaView extends GameView {
           array.add(c.getId());
         }
 
-        //int MAX_SIZE_PAGINATION = 25;
         int rest = array.size() % MAX_SIZE_PAGINATION;
         int nbrOfArray = array.size() / MAX_SIZE_PAGINATION;
+
+        maxPaginationCall = (rest == 0) ? nbrOfArray : nbrOfArray + 1;
         if (rest == 0) {
           for (int i = 0; i < nbrOfArray; i++) {
             ArrayList<String> splitArray = splitList((i * MAX_SIZE_PAGINATION),
@@ -565,6 +571,12 @@ public class GameCoronaView extends GameView {
 
   public void successRevive() {
     Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.GAME, game.getId());
+    bundle.putInt(TagManagerUtils.SCORE, mapScores.get(currentUser.getId()));
+    bundle.putString(TagManagerUtils.USE_CASE, TagManagerUtils.USE_CASE_REVIVE);
+    tagManager.trackEvent(TagManagerUtils.GameRequest, bundle);
+
+    bundle = new Bundle();
     bundle.putString(TagManagerUtils.NAME, game.getId());
     bundle.putInt(TagManagerUtils.SCORE, mapScores.get(currentUser.getId()));
     tagManager.trackEvent(TagManagerUtils.Revive, bundle);

@@ -1,15 +1,10 @@
 package com.tribe.app.presentation.view.component.live.game.corona;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.support.annotation.NonNull;
-import android.util.Pair;
-import android.view.View;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.Hashtable;
-import rx.Observable;
-import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
 /**
@@ -41,8 +36,17 @@ public class GameBattleRoyaleCoronaView extends GameCoronaView {
     super.handleCoronaMessage(event, hashtable);
     if (event.equals("gameMaster")) {
       String message = hashtable.get("string").toString();
-      if (message.contains("#b")) Timber.d("Sending to gameMaster : " + message);
       gameMasterManager.send(message);
+    } else if (event.equals("statusesUpdated")) {
+      Hashtable<String, Object> statuses = (Hashtable<String, Object>) hashtable.get("statuses");
+      for (String key : liveViewsMap.keySet()) {
+        LiveStreamView v = liveViewsMap.get(key);
+        if (statuses.get(key) != null) {
+          v.updateScoreWithEmoji(0, (String) statuses.get(key));
+        } else {
+          v.updateScoreWithEmoji(0, "");
+        }
+      }
     }
   }
 

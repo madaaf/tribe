@@ -1,12 +1,9 @@
 package com.tribe.app.presentation.mvp.presenter;
 
-import android.util.Pair;
-
-import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
-import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserAge;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
 import com.tribe.app.presentation.mvp.view.FBInfoMVPView;
@@ -14,13 +11,7 @@ import com.tribe.app.presentation.mvp.view.MVPView;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
-
-import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -34,8 +25,10 @@ public class FacebookPresenter extends UpdateUserPresenter {
 
   protected CompositeSubscription subscriptions = new CompositeSubscription();
 
-  @Inject public FacebookPresenter(RxFacebook rxFacebook, UpdateUser updateUser, UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
-    super(updateUser, null, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
+  @Inject public FacebookPresenter(RxFacebook rxFacebook, UpdateUser updateUser,
+      UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber,
+      UpdateUserAge updateUserAge) {
+    super(updateUser, null, rxFacebook, updateUserFacebook, updateUserPhoneNumber, updateUserAge);
   }
 
   @Override public void onViewDetached() {
