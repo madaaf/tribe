@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.view.utils;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
@@ -146,7 +145,7 @@ import javax.inject.Singleton;
       return paletteFive.length;
     } else if (theme.get() == 5) return paletteSix.length;
 
-    return Color.BLACK;
+    return 0;
   }
 
   public static int getRandomColorExcluding(int excludeColor) {
