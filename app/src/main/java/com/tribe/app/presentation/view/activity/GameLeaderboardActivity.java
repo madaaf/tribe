@@ -41,10 +41,12 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.PokeTiming;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.mvp.view.adapter.MessageMVPViewAdapter;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -174,11 +176,13 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   private List<Score> items;
   private GameManager gameManager;
   private GameMVPViewAdapter gameMVPViewAdapter;
+  private MessageMVPViewAdapter messageMVPViewAdapter;
   private String gameId;
   private Game game;
   private List<EmojiPoke> emojis = new ArrayList<>();
   private RxPermissions rxPermissions;
-
+  private List<Score> podiumList = new ArrayList<>();
+  private Context context;
   // RESOURCES
 
   // OBSERVABLES
@@ -193,6 +197,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     }
 
     super.onCreate(savedInstanceState);
+    context = this;
     setContentView(R.layout.activity_game_leaderboards);
 
     ButterKnife.bind(this);
@@ -217,11 +222,13 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   @Override protected void onStart() {
     super.onStart();
     gamePresenter.onViewAttached(gameMVPViewAdapter);
+    messagePresenter.onViewAttached(messageMVPViewAdapter);
   }
 
   @Override protected void onStop() {
     super.onStop();
     gamePresenter.onViewDetached();
+    messagePresenter.onViewDetached();
   }
 
   @Override protected void onResume() {
@@ -234,9 +241,13 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     super.onDestroy();
   }
 
-  private List<Score> podiumList = new ArrayList<>();
-
   protected void initPresenter() {
+    messageMVPViewAdapter = new MessageMVPViewAdapter(this) {
+
+      @Override public void onShortcutUpdate(Shortcut shortcut) {
+        navigator.navigateToChat((Activity) context, shortcut, null, null, false);
+      }
+    };
     gameMVPViewAdapter = new GameMVPViewAdapter() {
       @Override public void successFacebookLogin() {
         super.successFacebookLogin();
@@ -583,8 +594,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     bundle.putInt(TagManagerUtils.RANK, score.getRanking());
     tagManager.trackEvent(TagManagerUtils.Poke, bundle);
 
-    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null &&
-        score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
+        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
 
     if (isAbove) {
       soundManager.playSound(SoundManager.POKE_LAUGH, SoundManager.SOUND_LOW);
@@ -667,7 +678,11 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
           getString(R.string.poke_share_score, score.getGame().getId(), score.getRanking()), this);
     } else {
       Recipient recipient = ShortcutUtil.getRecipientFromId(score.getUser().getId(), user);
-      navigator.navigateToChat(this, recipient, null, null, false);
+      if (recipient != null) {
+        navigator.navigateToChat(this, recipient, null, null, false);
+      } else {
+        messagePresenter.createShortcut(false, score.getUser().getId());
+      }
     }
   }
 
