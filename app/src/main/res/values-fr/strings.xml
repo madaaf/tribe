@@ -1002,6 +1002,7 @@
 	<string name="gamemode_title">Mode de jeu</string>
 	<string name="gamemode_alone_title">ENTRAINEMENT</string>
 	<string name="gamemode_multi_title">MULTIJOUEUR</string>
+	<string name="gamemode_match_title">RECHERCHER DES JOUEURS</string>
 	<string name="gamemode_leaderboard">CLASSEMENT</string>
 	
 	<!-- Hang Up Popup -->
@@ -1112,4 +1113,16 @@
 	<string name="low_battery_popup_title">Disable the Low battery mode!</string>
 	<string name="low_battery_popup_subtitle">This mode will considerably slow down the game</string>
 	<string name="low_battery_popup_action_done">GOT IT!</string>
+	
+	<!-- Mute Menu -->
+	<string name="mute_menu_mute_games">Mute game sounds</string>
+	<string name="mute_menu_mute_users">Mute all players</string>
+	<string name="mute_menu_mute_both">Mute both</string>
+	<string name="mute_menu_unmute_games">Unmute game sounds</string>
+	<string name="mute_menu_unmute_users">Unmute all players</string>
+	<string name="mute_menu_unmute_both">Unmute both</string>
+	
+	<!-- Play Menu -->
+	<string name="play_menu_action_match">Match strangers</string>
+	<string name="play_menu_action_pick_friends">Pick friends</string>
 </resources>
