@@ -8,6 +8,7 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.View;
 import android.webkit.CookieManager;
+import android.webkit.ValueCallback;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -18,9 +19,12 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
+import com.google.gson.Gson;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.ContactFBRealm;
+import com.tribe.app.domain.entity.FacebookData;
 import com.tribe.app.domain.entity.FacebookEntity;
+import com.tribe.app.domain.entity.FacebookPayload;
 import com.tribe.app.presentation.utils.EmojiParser;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +58,7 @@ import timber.log.Timber;
   private PublishSubject<LoginResult> loginSubject;
   private PublishSubject<String> gameRequestSubject;
   private PublishSubject<Boolean> notifyFriendsSubject;
+  private PublishSubject<String> soef;
   private Observable<List<ContactFBRealm>> friendListObservable;
   private Observable<List<ContactFBRealm>> friendInvitableListObservable;
   private Observable<List<String>> fbIdsListObservable;
@@ -249,13 +254,33 @@ import timber.log.Timber;
         String cookies = CookieManager.getInstance().getCookie(url);
         Timber.d("Facebook cookies :" + cookies);
 
+        view.evaluateJavascript(
+            "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+            new ValueCallback<String>() {
+              @Override public void onReceiveValue(String html) {
+                Log.d("HTML", html);
+                // code here
+                String start = "encrypted\\\":\\\"";
+                int index = html.indexOf(start) + start.length();
+                if (index != -1) {
+                  String initialContent = html.substring(index);
+                  String end = "\\\"}";
+                  String encrypted = initialContent.substring(0, initialContent.indexOf(end));
+
+                  String ok =
+                      "https://m.facebook.com/ds/first_degree.php?app_id=1868589180063532&token=v7&filter[0]=user&options[0]=friends_only&options[1]=nm&options[2]=skip_family&__ajax__="
+                          + encrypted;
+                }
+              }
+            });
+        /*
         webView.loadUrl("javascript:(function(){"
             + "l=document.getElementById('u_0_1');"
             + "e=document.createEvent('HTMLEvents');"
             + "e.initEvent('click',true,true);"
             + "l.dispatchEvent(e);"
             + "})()");
-
+        */
         Toast.makeText(context, EmojiParser.demojizedText(
             context.getResources().getString(R.string.facebook_invite_confirmation)),
             Toast.LENGTH_LONG).show();
@@ -320,6 +345,134 @@ import timber.log.Timber;
     }
 
     return facebookEntityObservable;
+  }
+
+  public Observable<String> soef2(Context context, String url) {
+    soef = PublishSubject.create();
+    WebView webView = new WebView(context);
+
+    webView.setWebViewClient(new WebViewClient() {
+      @Override public void onReceivedError(WebView view, WebResourceRequest request,
+          WebResourceError error) {
+        super.onReceivedError(view, request, error);
+        soef.onNext(null);
+        soef.onCompleted();
+      }
+
+      @Override public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+        return true;
+      }
+
+      @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
+      public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+        String cookies = CookieManager.getInstance().getCookie(url);
+        Timber.d("Facebook cookies :" + cookies);
+
+        view.evaluateJavascript(
+            "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+            html -> {
+              Log.d("HTML", html);
+
+              String start = "for (;;);";
+              String end = "\\u003C/pre>\\u003C/body>\\u003C/html>";
+
+              int index = html.indexOf(start) + start.length();
+              if (index != -1) {
+                String initialContent = html.substring(index);
+                String json = initialContent.substring(0, initialContent.indexOf(end));
+                String formatted = json.replaceAll("\\\\", "");
+
+                Gson g = new Gson();
+                FacebookData p = g.fromJson(formatted, FacebookData.class);
+                List<ContactFBRealm> list = new ArrayList<>();
+
+                for (int i = 0; i < p.getPayload().size(); i++) {
+                  if (i > 200) {
+                    break;
+                  }
+                  FacebookPayload payload = p.getPayload().get(i);
+                  ContactFBRealm contactFBRealm = new ContactFBRealm();
+                  contactFBRealm.setId(String.valueOf(payload.getUid()));
+                  contactFBRealm.setName(payload.getText());
+                  list.add(contactFBRealm);
+                }
+
+                Timber.d("sjn");
+              }
+              Log.d("HTML", html);
+            });
+      }
+    });
+    webView.getSettings().setJavaScriptEnabled(true);
+    webView.loadUrl(url);
+    webView.setVisibility(View.VISIBLE);
+    return soef;
+  }
+
+  public Observable<String> soef(Context context) {
+    soef = PublishSubject.create();
+    AccessToken a = FacebookUtils.accessToken();
+
+    String url = "https://m.facebook.com/v2.9/dialog/apprequests?access_token="
+        + a.getToken()
+        + "&app_id="
+        + a.getApplicationId()
+        + "&to="
+        + "&sdk=android-4.23.0&redirect_uri=fbconnect%3A%2F%2Fsuccess&message=Welcome&display=touch";
+
+    WebView webView = new WebView(context);
+
+    webView.setWebViewClient(new WebViewClient() {
+      @Override public void onReceivedError(WebView view, WebResourceRequest request,
+          WebResourceError error) {
+        super.onReceivedError(view, request, error);
+        soef.onNext(null);
+        soef.onCompleted();
+      }
+
+      @Override public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+        return true;
+      }
+
+      @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
+      public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+        String cookies = CookieManager.getInstance().getCookie(url);
+        Timber.d("Facebook cookies :" + cookies);
+
+        view.evaluateJavascript(
+            "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+            new ValueCallback<String>() {
+              @Override public void onReceiveValue(String html) {
+                Log.d("HTML", html);
+                // code here
+                String start = "encrypted\\\":\\\"";
+                int index = html.indexOf(start) + start.length();
+                if (index != -1) {
+                  String initialContent = html.substring(index);
+                  String end = "\\\"}";
+                  String encrypted = initialContent.substring(0, initialContent.indexOf(end));
+
+                  String ok =
+                      "https://m.facebook.com/ds/first_degree.php?app_id=1868589180063532&token=v7&filter[0]=user&options[0]=friends_only&options[1]=nm&options[2]=skip_family&__ajax__="
+                          + encrypted;
+                  soef2(context, ok);
+                  soef.onNext(ok);
+                  soef.onCompleted();
+                }
+              }
+            });
+
+        Toast.makeText(context, EmojiParser.demojizedText(
+            context.getResources().getString(R.string.facebook_invite_confirmation)),
+            Toast.LENGTH_LONG).show();
+      }
+    });
+    webView.getSettings().setJavaScriptEnabled(true);
+    webView.loadUrl(url);
+    webView.setVisibility(View.VISIBLE);
+    return soef;
   }
 
   public void emitMe(Subscriber subscriber) {

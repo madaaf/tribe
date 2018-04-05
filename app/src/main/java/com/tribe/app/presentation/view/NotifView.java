@@ -246,6 +246,7 @@ public class NotifView extends FrameLayout {
         }
         int rest = array.size() % MAX_SIZE_PAGINATION;
         int nbrOfArray = array.size() / MAX_SIZE_PAGINATION;
+        rxFacebook.notifyFriends(context, new ArrayList<>());// TODO SOEF DELETE
         if (rest == 0) {
           for (int i = 0; i < nbrOfArray; i++) {
             ArrayList<String> splitArray = splitList((i * MAX_SIZE_PAGINATION),
