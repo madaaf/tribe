@@ -38,7 +38,6 @@ public class GamePagerAdapter extends PagerAdapter {
   }
 
   @Override public int getItemPosition(@NonNull Object object) {
-    Game game = (Game) object;
     return super.getItemPosition(object);
   }
 
@@ -64,11 +63,11 @@ public class GamePagerAdapter extends PagerAdapter {
   }
 
   public GameDetailsView getItemAtPosition(int position) {
-    if (viewList != null &&
-        !viewList.isEmpty() &&
-        gamesList != null &&
-        !gamesList.isEmpty() &&
-        gamesList.get(position) != null) {
+    if (viewList != null
+        && !viewList.isEmpty()
+        && gamesList != null
+        && !gamesList.isEmpty()
+        && gamesList.get(position) != null) {
       return viewList.get(gamesList.get(position).getId());
     }
     return null;

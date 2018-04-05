@@ -7,10 +7,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.support.transition.ChangeBounds;
-import android.support.transition.Transition;
-import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
@@ -312,8 +308,6 @@ public class GameDetailsView extends FrameLayout {
       float trans = (1 - positionOffset) * screenUtils.dpToPx(200);
       animLeaderbord(positionOffset, trans, naturalSlide);
     }
-
-    //  Timber.e("SOEF " + positionOffset);
   }
 
   public void resetPager() {

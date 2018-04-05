@@ -810,7 +810,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private Game getCurrentGame() {
-    if (pageListener.getPositionViewPage() > gameManager.getGames().size()) {
+    if (pageListener.getPositionViewPage() > gameManager.getGames().size() - 1) {
       return gameManager.getGames().get(0);
     }
 
