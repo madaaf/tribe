@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.app.Activity;
+import android.content.Context;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.domain.entity.Contact;
@@ -14,6 +16,7 @@ import com.tribe.app.domain.interactor.user.GetDiskContactOnAppList;
 import com.tribe.app.domain.interactor.user.GetDiskFBContactInviteList;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.SearchLocally;
+import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UpdateUser;
 import com.tribe.app.domain.interactor.user.UpdateUserAge;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
@@ -44,7 +47,7 @@ public class SearchPresenter extends UpdateUserPresenter {
   private FindByUsername findByUsername;
   private DiskSearchResults searchResults;
   private SearchLocally searchLocally;
-  private UseCase synchroContactList;
+  private SynchroContactList synchroContactList;
   private GetDiskContactOnAppList getDiskContactOnAppList;
   private GetDiskContactInviteList getDiskContactInviteList;
   private GetDiskFBContactInviteList getDiskFBContactInviteList;
@@ -60,7 +63,7 @@ public class SearchPresenter extends UpdateUserPresenter {
   @Inject public SearchPresenter(ShortcutPresenter shortcutPresenter, JobManager jobManager,
       @Named("cloudFindByUsername") FindByUsername findByUsername,
       @Named("diskSearchResults") DiskSearchResults diskSearchResults, SearchLocally searchLocally,
-      @Named("synchroContactList") UseCase synchroContactList, RxFacebook rxFacebook,
+       SynchroContactList synchroContactList, RxFacebook rxFacebook,
       UpdateUser updateUser, UpdateUserPhoneNumber updateUserPhoneNumber,
       UpdateUserFacebook updateUserFacebook, LookupUsername lookupUsername,
       GetDiskContactOnAppList getDiskContactOnAppList,
@@ -155,9 +158,10 @@ public class SearchPresenter extends UpdateUserPresenter {
     }
   }
 
-  public void lookupContacts() {
+  public void lookupContacts(Activity c) {
     if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
     lookupContactsSubscriber = new LookupContactsSubscriber();
+    synchroContactList.setParams(c);
     synchroContactList.execute(lookupContactsSubscriber);
   }
 

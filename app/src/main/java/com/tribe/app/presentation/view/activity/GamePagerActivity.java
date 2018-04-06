@@ -337,7 +337,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
         PermissionUtils.PERMISSIONS_CONTACTS)) {
-      userPresenter.syncContacts(lastSync);
+      userPresenter.syncContacts(lastSync, this);
     }
 
     if (System.currentTimeMillis() - lastSyncGameData.get() > TWENTY_FOUR_HOURS) {

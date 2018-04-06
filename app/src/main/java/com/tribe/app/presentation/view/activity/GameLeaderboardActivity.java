@@ -256,7 +256,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     gameMVPViewAdapter = new GameMVPViewAdapter() {
       @Override public void successFacebookLogin() {
         super.successFacebookLogin();
-        gamePresenter.lookupContacts();
+        gamePresenter.lookupContacts((Activity) context);
         adapter.notifyDataSetChanged();
       }
 
@@ -434,7 +434,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
             tagManager.setProperty(bundle);
 
             if (hasPermission) {
-              gamePresenter.lookupContacts();
+              gamePresenter.lookupContacts((Activity) context);
             }
           });
         } else if (score.getId().equals(LEADERBOARD_ITEM_FACEBOOK)) {

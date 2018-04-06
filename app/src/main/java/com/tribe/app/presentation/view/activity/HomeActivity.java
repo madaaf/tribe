@@ -264,6 +264,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
     super.onStart();
     tagManager.onStart(this);
     fullScreenNotificationState.set(new HashSet<>());
+
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       lookupContacts();
     }
@@ -271,7 +272,6 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
   @Override protected void onRestart() {
     super.onRestart();
-
     // https://stackoverflow.com/questions/36634008/why-notificationmanagercompatcancelall-gets-securityexception
     try {
       notificationManager.cancelAll();
@@ -288,9 +288,8 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
   @Override protected void onResume() {
     super.onResume();
-
     if (finish) return;
-
+    syncContacts();
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
       shouldOverridePendingTransactions = false;
@@ -836,7 +835,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   @Override public void successFacebookLogin() {
     homeGridPresenter.updateUserFacebook(getCurrentUser().getId(),
         AccessToken.getCurrentAccessToken().getToken());
-    homeGridPresenter.lookupContacts();
+    homeGridPresenter.lookupContacts(this);
     syncContacts();
   }
 
@@ -1055,7 +1054,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       if (hasPermission) {
         addressBook.set(hasPermission);
       }
-      homeGridPresenter.lookupContacts();
+      homeGridPresenter.lookupContacts(this);
       searchView.refactorActions();
     });
   }

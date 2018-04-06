@@ -2,6 +2,7 @@ package com.tribe.app.presentation.view.component.live.game.corona;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -371,14 +372,14 @@ public class GameCoronaView extends GameView {
               subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
                 if (loginResult != null) {
                   Timber.d("Load contacts");
-                  newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
+                  newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
                 } else {
                   errorRevive();
                 }
               }));
             } else {
               Timber.d("Load contacts");
-              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
+              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
             }
             //}
           } else if (event.equals("scoresUpdated")) {
