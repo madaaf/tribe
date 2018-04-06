@@ -69,7 +69,7 @@ public class NewChatPresenter implements Presenter {
     updateUser.execute(updateUserSubscriber);
   }
 
-  public void getContactFbList(int number, Activity c) {
+  public void getContactFbList(int number, Context c) {
     if (getContactFbListeSubscriber != null) {
       getContactFbListeSubscriber.unsubscribe();
     }

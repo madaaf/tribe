@@ -216,14 +216,14 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Contact>> contacts(Activity c) {
+  @Override public Observable<List<Contact>> contacts(Context c) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
     return userDataStore.contacts(c)
         .map(collection -> contactRealmDataMapper.transform(
             new ArrayList<ContactInterface>(collection)));
   }
 
-  @Override public Observable<List<ContactFB>> requestInvitableFriends(Activity c, int nbr) {
+  @Override public Observable<List<ContactFB>> requestInvitableFriends(Context c, int nbr) {
     return null;
   }
 

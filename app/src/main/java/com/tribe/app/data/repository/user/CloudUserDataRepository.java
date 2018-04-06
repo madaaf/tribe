@@ -162,14 +162,14 @@ import rx.Observable;
     return userDataStore.incrUserTimeInCall(userId, timeInCall);
   }
 
-  @Override public Observable<List<Contact>> contacts(Activity c) {
+  @Override public Observable<List<Contact>> contacts(Context c) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.contacts(c).map(collection -> {
       return this.contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection));
     });
   }
 
-  @Override public Observable<List<ContactFB>> requestInvitableFriends(Activity context, int nbr) {
+  @Override public Observable<List<ContactFB>> requestInvitableFriends(Context context, int nbr) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.requestInvitableFriends(context, nbr).map(collection -> {
       List<Contact> contactList =

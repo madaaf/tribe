@@ -16,7 +16,7 @@ public class GetContactFbList extends UseCase {
 
   private UserRepository userRepository;
   private int number;
-  private Activity c;
+  private Context c;
 
   @Inject
   public GetContactFbList(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
@@ -25,7 +25,7 @@ public class GetContactFbList extends UseCase {
     this.userRepository = userRepository;
   }
 
-  public void setParams(int number, Activity c) {
+  public void setParams(int number, Context c) {
     this.number = number;
     this.c = c;
   }

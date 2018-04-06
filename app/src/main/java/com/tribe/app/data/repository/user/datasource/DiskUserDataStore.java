@@ -114,11 +114,11 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<List<ContactInterface>> contacts(Activity c) {
+  @Override public Observable<List<ContactInterface>> contacts(Context c) {
     return contactCache.contacts().map(contactABRealms -> new ArrayList<>(contactABRealms));
   }
 
-  @Override public Observable<List<ContactFBRealm>> requestInvitableFriends(Activity c, int nbr) {
+  @Override public Observable<List<ContactFBRealm>> requestInvitableFriends(Context c, int nbr) {
     return null;
   }
 

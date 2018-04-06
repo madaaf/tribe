@@ -1,6 +1,5 @@
 package com.tribe.app.presentation.utils.facebook;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -113,7 +112,7 @@ import timber.log.Timber;
     return friendListObservable;
   }
 
-  public Observable<List<ContactFBRealm>> requestInvitableFriends(Activity c, int nbr) {
+  public Observable<List<ContactFBRealm>> requestInvitableFriends(Context c, int nbr) {
     if (friendInvitableListObservable == null) {
       friendInvitableListObservable =
           Observable.create((Subscriber<? super List<ContactFBRealm>> subscriber) -> {
@@ -277,7 +276,7 @@ import timber.log.Timber;
     return notifyFriendsSubject;
   }
 
-  public void emitFriendsInvitable(Activity c, Subscriber subscriber, int nbr) {
+  public void emitFriendsInvitable(Context c, Subscriber subscriber, int nbr) {
     if (FacebookUtils.isLoggedIn()) {
 
       AccessToken a = FacebookUtils.accessToken();
@@ -304,8 +303,6 @@ import timber.log.Timber;
         @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
         public void onPageFinished(WebView view, String url) {
           super.onPageFinished(view, url);
-          String cookies = CookieManager.getInstance().getCookie(url);
-
           view.evaluateJavascript(
               "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
               html -> {
@@ -319,7 +316,7 @@ import timber.log.Timber;
 
                   String newUrl = "https://m.facebook.com/ds/first_degree.php?app_id="
                       + a.getApplicationId()
-                      + "&token=v7&filter[0]=user&options[0]=friends_only&options[1]=nm&options[2]=skip_family&__ajax__="
+                      + "&include_viewer=0&token=v7&filter[0]=user&options[0]=friends_only&options[1]=nm&options[2]=skip_family&__ajax__="
                       + encrypted;
                   getFbFriendsInvitable(subscriber, c, newUrl, nbr);
                 }

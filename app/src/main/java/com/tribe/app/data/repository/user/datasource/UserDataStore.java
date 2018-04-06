@@ -88,9 +88,9 @@ public interface UserDataStore {
    * Get an {@link Observable} which will emit a {@link List <ContactInterface>} containing infos
    * about the contacts from address book.
    */
-  Observable<List<ContactInterface>> contacts(Activity c);
+  Observable<List<ContactInterface>> contacts(Context c);
 
-  Observable<List<ContactFBRealm>> requestInvitableFriends(Activity c, int nbr);
+  Observable<List<ContactFBRealm>> requestInvitableFriends(Context c, int nbr);
 
   Observable<List<LookupObject>> contactsFbId(Context context, List<String> fbIds);
 

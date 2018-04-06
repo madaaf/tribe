@@ -272,7 +272,6 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
   @Override protected void onRestart() {
     super.onRestart();
-
     // https://stackoverflow.com/questions/36634008/why-notificationmanagercompatcancelall-gets-securityexception
     try {
       notificationManager.cancelAll();
@@ -290,7 +289,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   @Override protected void onResume() {
     super.onResume();
     if (finish) return;
-
+    syncContacts();
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
       shouldOverridePendingTransactions = false;

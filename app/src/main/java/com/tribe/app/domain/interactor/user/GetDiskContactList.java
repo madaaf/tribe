@@ -15,7 +15,7 @@ import rx.Observable;
 public class GetDiskContactList extends UseCaseDisk {
 
   private UserRepository userRepository;
-  private Activity c;
+  private Context c;
 
   @Inject public GetDiskContactList(DiskUserDataRepository userRepository,
       PostExecutionThread postExecutionThread) {
@@ -23,7 +23,7 @@ public class GetDiskContactList extends UseCaseDisk {
     this.userRepository = userRepository;
   }
 
-  private void setParams(Activity c){
+  private void setParams(Context c){
     this.c = c;
   }
   @Override protected Observable buildUseCaseObservable() {

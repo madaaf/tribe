@@ -1,6 +1,5 @@
 package com.tribe.app.data.repository.user.datasource;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
@@ -379,11 +378,11 @@ public class CloudUserDataStore implements UserDataStore {
     });
   }
 
-  public Observable<List<ContactFBRealm>> requestInvitableFriends(Activity c, int nbr) {
+  public Observable<List<ContactFBRealm>> requestInvitableFriends(Context c, int nbr) {
     return rxFacebook.requestInvitableFriends(c, nbr);
   }
 
-  @Override public Observable<List<ContactInterface>> contacts(Activity c) {
+  @Override public Observable<List<ContactInterface>> contacts(Context c) {
     return Observable.zip(rxContacts.getContacts(), rxFacebook.requestFriends(),
         rxFacebook.requestInvitableFriends(c, 20), this.tribeApi.getUserInfos(
             context.getString(R.string.user_infos_sync,
@@ -537,16 +536,17 @@ public class CloudUserDataStore implements UserDataStore {
                   }
                 }
               }
-              // TODO SOEF
-             /* for (int i = 0; i < fbIds.size(); i++) {
+
+              for (int i = 0; i < fbIds.size(); i++) {
                 ContactInterface contactFBRealm = fbIds.get(i);
                 if (contactFBRealm instanceof ContactFBRealm) {
-                  ((ContactFBRealm) contactFBRealm).setHowManyFriends(lookFbupObjects.get(i).getHowManyFriends());
-                  ((ContactFBRealm) contactFBRealm).setId(lookFbupObjects.get(i).getFbId());
+                  ((ContactFBRealm) contactFBRealm).setHowManyFriends(
+                      lookFbupObjects.get(i).getHowManyFriends());
+                  // ((ContactFBRealm) contactFBRealm).setId(lookFbupObjects.get(i).getFbId());
                   ((ContactFBRealm) contactFBRealm).setCommonFriendsNameList(
                       lookFbupObjects.get(i).getcommonFriendsNameList());
                 }
-              }*/
+              }
             }
 
             lookupHolder.setLookupObjectList(lookupObjects);

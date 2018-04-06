@@ -153,11 +153,11 @@ public class NotifView extends FrameLayout {
         case NotificationModel.POPUP_FACEBOOK:
           if (!FacebookUtils.isLoggedIn()) {
             subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
+              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, context);
               hideNextNotif();
             }));
           } else {
-            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
+            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, context);
             hideNextNotif();
           }
           break;

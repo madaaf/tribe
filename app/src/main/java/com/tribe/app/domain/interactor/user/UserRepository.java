@@ -92,9 +92,9 @@ public interface UserRepository {
    * If called in cloud mode it will make a synchronization of friendships see {@link
    * com.tribe.app.data.repository.user.datasource.CloudUserDataStore}
    */
-  Observable<List<Contact>> contacts(Activity c);
+  Observable<List<Contact>> contacts(Context c);
 
-  Observable<List<ContactFB>> requestInvitableFriends(Activity c, int nbr);
+  Observable<List<ContactFB>> requestInvitableFriends(Context c, int nbr);
 
   /**
    * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos
