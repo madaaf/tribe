@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
@@ -378,13 +379,13 @@ public class CloudUserDataStore implements UserDataStore {
     });
   }
 
-  public Observable<List<ContactFBRealm>> requestInvitableFriends(int nbr) {
-    return rxFacebook.requestInvitableFriends(nbr);
+  public Observable<List<ContactFBRealm>> requestInvitableFriends(Activity c, int nbr) {
+    return rxFacebook.requestInvitableFriends(c, nbr);
   }
 
-  @Override public Observable<List<ContactInterface>> contacts() {
+  @Override public Observable<List<ContactInterface>> contacts(Activity c) {
     return Observable.zip(rxContacts.getContacts(), rxFacebook.requestFriends(),
-        rxFacebook.requestInvitableFriends(20), this.tribeApi.getUserInfos(
+        rxFacebook.requestInvitableFriends(c, 20), this.tribeApi.getUserInfos(
             context.getString(R.string.user_infos_sync,
                 context.getString(R.string.userfragment_infos),
                 context.getString(R.string.shortcutFragment_infos))).doOnNext(saveToCacheUser),
@@ -536,17 +537,16 @@ public class CloudUserDataStore implements UserDataStore {
                   }
                 }
               }
-
-              for (int i = 0; i < fbIds.size(); i++) {
+              // TODO SOEF
+             /* for (int i = 0; i < fbIds.size(); i++) {
                 ContactInterface contactFBRealm = fbIds.get(i);
                 if (contactFBRealm instanceof ContactFBRealm) {
-                  ((ContactFBRealm) contactFBRealm).setHowManyFriends(
-                      lookFbupObjects.get(i).getHowManyFriends());
+                  ((ContactFBRealm) contactFBRealm).setHowManyFriends(lookFbupObjects.get(i).getHowManyFriends());
                   ((ContactFBRealm) contactFBRealm).setId(lookFbupObjects.get(i).getFbId());
                   ((ContactFBRealm) contactFBRealm).setCommonFriendsNameList(
                       lookFbupObjects.get(i).getcommonFriendsNameList());
                 }
-              }
+              }*/
             }
 
             lookupHolder.setLookupObjectList(lookupObjects);

@@ -153,11 +153,11 @@ public class NotifView extends FrameLayout {
         case NotificationModel.POPUP_FACEBOOK:
           if (!FacebookUtils.isLoggedIn()) {
             subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
+              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
               hideNextNotif();
             }));
           } else {
-            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
+            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
             hideNextNotif();
           }
           break;
@@ -246,7 +246,7 @@ public class NotifView extends FrameLayout {
         }
         int rest = array.size() % MAX_SIZE_PAGINATION;
         int nbrOfArray = array.size() / MAX_SIZE_PAGINATION;
-        rxFacebook.notifyFriends(context, new ArrayList<>());// TODO SOEF DELETE
+
         if (rest == 0) {
           for (int i = 0; i < nbrOfArray; i++) {
             ArrayList<String> splitArray = splitList((i * MAX_SIZE_PAGINATION),

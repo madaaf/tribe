@@ -352,11 +352,6 @@ import timber.log.Timber;
     return getCloudUserInfos;
   }
 
-  @Provides @Named("synchroContactList") UseCase provideSynchroContactList(
-      SynchroContactList synchroContactList) {
-    return synchroContactList;
-  }
-
   @Provides @Singleton JobManager provideJobManager() {
     Configuration.Builder builder = new Configuration.Builder(application).minConsumerCount(1)
         .maxConsumerCount(3)

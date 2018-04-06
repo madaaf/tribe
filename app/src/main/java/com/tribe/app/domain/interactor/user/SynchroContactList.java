@@ -1,5 +1,7 @@
 package com.tribe.app.domain.interactor.user;
 
+import android.app.Activity;
+import android.content.Context;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
@@ -13,6 +15,7 @@ import rx.Observable;
 public class SynchroContactList extends UseCase {
 
   private UserRepository userRepository;
+  private Activity c;
 
   @Inject
   public SynchroContactList(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
@@ -21,7 +24,11 @@ public class SynchroContactList extends UseCase {
     this.userRepository = userRepository;
   }
 
+  public void setParams(Activity c) {
+    this.c = c;
+  }
+
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.contacts();
+    return this.userRepository.contacts(c);
   }
 }

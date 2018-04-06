@@ -109,7 +109,6 @@ import javax.inject.Inject;
 import rx.Observable;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.plugins.RxJavaHooks;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -265,6 +264,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
     super.onStart();
     tagManager.onStart(this);
     fullScreenNotificationState.set(new HashSet<>());
+
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS) {
       lookupContacts();
     }
@@ -289,18 +289,6 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
   @Override protected void onResume() {
     super.onResume();
-    rxFacebook.soef(this).doOnNext(new Action1<String>() {
-      @Override public void call(String s) {
-        Timber.d("request " + s);
-      }
-    }).doOnError(new Action1<Throwable>() {
-      @Override public void call(Throwable throwable) {
-        Timber.d("request " + throwable.getMessage());
-      }
-    }).subscribe(request -> {
-      Timber.d("request " + request);
-    });
-
     if (finish) return;
 
     if (shouldOverridePendingTransactions) {
@@ -848,7 +836,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   @Override public void successFacebookLogin() {
     homeGridPresenter.updateUserFacebook(getCurrentUser().getId(),
         AccessToken.getCurrentAccessToken().getToken());
-    homeGridPresenter.lookupContacts();
+    homeGridPresenter.lookupContacts(this);
     syncContacts();
   }
 
@@ -1067,7 +1055,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       if (hasPermission) {
         addressBook.set(hasPermission);
       }
-      homeGridPresenter.lookupContacts();
+      homeGridPresenter.lookupContacts(this);
       searchView.refactorActions();
     });
   }

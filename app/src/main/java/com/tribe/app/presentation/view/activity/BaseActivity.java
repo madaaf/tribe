@@ -110,14 +110,6 @@ public abstract class BaseActivity extends AppCompatActivity {
       view.show(this, list);
     }
 
-    // TODO SOEF REMOVE
-    List<NotificationModel> list = new ArrayList<>();
-    NotifView view = new NotifView(getBaseContext());
-    NotificationModel a = NotificationUtils.getFbNotificationModel(this, null);
-    list.add(a);
-    list.add(a);
-    list.add(a);
-   // view.show(this, list);
   }
 
   private void connectToFacebook() {

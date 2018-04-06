@@ -4,6 +4,8 @@ package com.tribe.app.domain.interactor.user;
  * Created by tiago on 04/05/2016.
  */
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
@@ -90,9 +92,9 @@ public interface UserRepository {
    * If called in cloud mode it will make a synchronization of friendships see {@link
    * com.tribe.app.data.repository.user.datasource.CloudUserDataStore}
    */
-  Observable<List<Contact>> contacts();
+  Observable<List<Contact>> contacts(Activity c);
 
-  Observable<List<ContactFB>> requestInvitableFriends(int nbr);
+  Observable<List<ContactFB>> requestInvitableFriends(Activity c, int nbr);
 
   /**
    * Get an {@link Observable} which will emit a {@link List <Contact>} containing infos

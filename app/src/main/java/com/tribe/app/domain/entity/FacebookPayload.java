@@ -9,17 +9,17 @@ import java.io.Serializable;
 public class FacebookPayload implements Serializable {
 
   private String text;
-  private int uid;
+  private long uid;
 
   public String getText() {
     return text;
   }
 
-  public int getUid() {
+  public long getUid() {
     return uid;
   }
 
-  public void setUid(int uid) {
+  public void setUid(long uid) {
     this.uid = uid;
   }
 

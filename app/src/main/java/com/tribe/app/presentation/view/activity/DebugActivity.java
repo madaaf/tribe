@@ -132,7 +132,7 @@ public class DebugActivity extends BaseActivity implements DebugMVPView {
 
     subscriptions.add(viewActionSync.onClick().subscribe(aVoid -> {
       viewActionSync.setBody("Syncing...");
-      debugPresenter.lookupContacts();
+      debugPresenter.lookupContacts(this);
     }));
   }
 

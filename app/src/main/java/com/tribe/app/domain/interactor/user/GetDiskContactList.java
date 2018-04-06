@@ -1,5 +1,7 @@
 package com.tribe.app.domain.interactor.user;
 
+import android.app.Activity;
+import android.content.Context;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.repository.user.DiskUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
@@ -13,6 +15,7 @@ import rx.Observable;
 public class GetDiskContactList extends UseCaseDisk {
 
   private UserRepository userRepository;
+  private Activity c;
 
   @Inject public GetDiskContactList(DiskUserDataRepository userRepository,
       PostExecutionThread postExecutionThread) {
@@ -20,8 +23,10 @@ public class GetDiskContactList extends UseCaseDisk {
     this.userRepository = userRepository;
   }
 
-
+  private void setParams(Activity c){
+    this.c = c;
+  }
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.contacts();
+    return this.userRepository.contacts(c);
   }
 }

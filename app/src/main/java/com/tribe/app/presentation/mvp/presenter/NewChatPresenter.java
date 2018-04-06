@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Pair;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.ContactFB;
@@ -67,13 +69,13 @@ public class NewChatPresenter implements Presenter {
     updateUser.execute(updateUserSubscriber);
   }
 
-  public void getContactFbList(int number) {
+  public void getContactFbList(int number, Activity c) {
     if (getContactFbListeSubscriber != null) {
       getContactFbListeSubscriber.unsubscribe();
     }
 
     getContactFbListeSubscriber = new GetContactFbListeSubscriber();
-    getContactFbList.setParams(number);
+    getContactFbList.setParams(number, c);
     getContactFbList.execute(getContactFbListeSubscriber);
   }
 
