@@ -83,23 +83,25 @@ public class PictureActivity extends BaseActivity implements PictureMVPView, Sho
   }
 
   @Override public void successGetMessageImageFromDisk(List<Message> messages) {
-    Message currentmessage = null;
-    for (Message m : messages) {
-      Timber.i(m.toString());
-      if (m.getId().equals(messageId)) {
-        currentmessage = m;
+    if (!messages.isEmpty()) {
+      Message currentmessage = null;
+      for (Message m : messages) {
+        Timber.i(m.toString());
+        if (m.getId().equals(messageId)) {
+          currentmessage = m;
+        }
       }
-    }
-    int index = messages.indexOf(currentmessage);
-    List<Message> before = messages.subList(0, index);
-    List<Message> after = messages.subList(index, messages.size());
-    List<Message> renderList = new ArrayList<>();
-    renderList.addAll(after);
-    renderList.addAll(before);
+      int index = messages.indexOf(currentmessage);
+      List<Message> before = messages.subList(0, index);
+      List<Message> after = messages.subList(index, messages.size());
+      List<Message> renderList = new ArrayList<>();
+      renderList.addAll(after);
+      renderList.addAll(before);
 
-    this.messages = messages;
-    pagerAdapter = new PicturePagerAdapter(this, renderList);
-    viewPager.setAdapter(pagerAdapter);
+      this.messages = messages;
+      pagerAdapter = new PicturePagerAdapter(this, renderList);
+      viewPager.setAdapter(pagerAdapter);
+    }
   }
 
   @Override public void errorGetMessageImageFromDisk() {

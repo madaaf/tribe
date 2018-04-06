@@ -1,8 +1,11 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.app.Activity;
+import android.content.Context;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.presentation.mvp.view.DebugMVPView;
 import com.tribe.app.presentation.mvp.view.MVPView;
 import java.util.List;
@@ -15,12 +18,12 @@ public class DebugPresenter implements Presenter {
   private DebugMVPView debugView;
 
   // USECASES
-  private UseCase synchroContactList;
+  private SynchroContactList synchroContactList;
 
   // SUBSCRIBERS
   private LookupContactsSubscriber lookupContactsSubscriber;
 
-  @Inject public DebugPresenter(@Named("synchroContactList") UseCase synchroContactList) {
+  @Inject public DebugPresenter( SynchroContactList synchroContactList) {
     this.synchroContactList = synchroContactList;
   }
 
@@ -32,9 +35,10 @@ public class DebugPresenter implements Presenter {
     debugView = (DebugMVPView) v;
   }
 
-  public void lookupContacts() {
+  public void lookupContacts(Activity c) {
     if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
     lookupContactsSubscriber = new LookupContactsSubscriber();
+    synchroContactList.setParams(c);
     synchroContactList.execute(lookupContactsSubscriber);
   }
 

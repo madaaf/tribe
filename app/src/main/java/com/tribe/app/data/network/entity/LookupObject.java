@@ -36,9 +36,6 @@ public class LookupObject {
     this.fbId = fbId;
   }
 
-  public void setCommonFriends(List<String> commonFriends) {
-    this.commonFriends = commonFriends;
-  }
 
   public String getPhone() {
     return phone;

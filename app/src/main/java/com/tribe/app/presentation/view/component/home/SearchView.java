@@ -658,7 +658,7 @@ public class SearchView extends CustomFrameLayout implements SearchMVPView, Shor
   }
 
   private void sync() {
-    searchPresenter.lookupContacts();
+    searchPresenter.lookupContacts((Activity) context);
     onSyncContacts.onNext(null);
   }
 

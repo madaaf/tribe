@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.app.Activity;
+import android.content.Context;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.GameFile;
@@ -125,9 +127,10 @@ public class GamePresenter implements Presenter {
     cloudGameLeaderboard.execute(cloudGameLeaderboardSubscriber);
   }
 
-  public void lookupContacts() {
+  public void lookupContacts(Activity c) {
     if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
     lookupContactsSubscriber = new LookupContactsSubscriber();
+    synchroContactList.setParams(c);
     synchroContactList.execute(lookupContactsSubscriber);
   }
 

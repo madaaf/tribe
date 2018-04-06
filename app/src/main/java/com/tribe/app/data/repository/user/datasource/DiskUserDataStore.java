@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Pair;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -20,6 +21,7 @@ import com.tribe.app.data.realm.SearchResultRealm;
 import com.tribe.app.data.realm.ShortcutRealm;
 import com.tribe.app.data.realm.UserPlayingRealm;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.Invite;
 import com.tribe.app.domain.entity.Room;
 import com.tribe.app.domain.entity.User;
@@ -112,11 +114,11 @@ public class DiskUserDataStore implements UserDataStore, LiveDataStore {
     return null;
   }
 
-  @Override public Observable<List<ContactInterface>> contacts() {
+  @Override public Observable<List<ContactInterface>> contacts(Context c) {
     return contactCache.contacts().map(contactABRealms -> new ArrayList<>(contactABRealms));
   }
 
-  @Override public Observable<List<ContactFBRealm>> requestInvitableFriends(int nbr) {
+  @Override public Observable<List<ContactFBRealm>> requestInvitableFriends(Context c, int nbr) {
     return null;
   }
 

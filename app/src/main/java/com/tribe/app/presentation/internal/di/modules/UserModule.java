@@ -73,11 +73,6 @@ import javax.inject.Named;
     return removeInstall;
   }
 
-  @Provides @PerActivity @Named("synchroContactList") UseCase provideSynchroContactList(
-      SynchroContactList synchroContactList) {
-    return synchroContactList;
-  }
-
   @Provides @PerActivity @Named("diskContactList") UseCaseDisk provideGetContactList(
       GetDiskContactList getDiskContactList) {
     return getDiskContactList;
