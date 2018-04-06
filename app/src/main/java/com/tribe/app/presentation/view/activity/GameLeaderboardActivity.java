@@ -60,6 +60,7 @@ import com.tribe.app.presentation.view.component.games.LeaderboardUserView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.EmojiPoke;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.TextViewRanking;
@@ -165,6 +166,10 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   @BindView(R.id.txtScoreThird) TextViewScore txtScoreThird;
 
   @BindView(R.id.viewCurrentUserLeaderboard) LeaderboardUserView viewCurrentUserLeaderboard;
+
+  @BindView(R.id.layoutCurrentUserLeaderboard) LinearLayout layoutCurrentUserLeaderboard;
+
+  @BindView(R.id.viewShadow) View viewShadow;
 
   @Inject @PokeUserGame Preference<String> pokeUserGame;
 
@@ -275,8 +280,6 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
           if (score.getUser() == null) {
             score.setUser(getCurrentUser());
             viewCurrentUserLeaderboard.initCell(score, count + 1);
-            viewCurrentUserLeaderboard.setBackgroundColor(
-                Color.parseColor("#" + game.getPrimary_color()));
           }
           count++;
         }
@@ -393,6 +396,18 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     layoutManager = new LeaderboardDetailsLayoutManager(this);
     recyclerView.setLayoutManager(layoutManager);
     adapter = new LeaderboardDetailsAdapter(this, recyclerView, stateManager);
+
+    layoutCurrentUserLeaderboard.setBackgroundColor(
+        Color.parseColor("#" + game.getPrimary_color()));
+
+    if (hasSoftKeys()) {
+      int bottomMargin = screenUtils.dpToPx(120);
+      UIUtils.changeHeightOfView(layoutCurrentUserLeaderboard, bottomMargin);
+      UIUtils.changeBottomMarginOfView(viewShadow, bottomMargin);
+      UIUtils.changeBottomMarginOfView(recyclerView, bottomMargin);
+    } else {
+      UIUtils.changeBottomMarginOfView(viewShadow, screenUtils.dpToPx(100));
+    }
 
     subscriptions.add(adapter.onClickPoke().subscribe(score -> {
       setClickPokeAnimation(score, score.getTextView());
