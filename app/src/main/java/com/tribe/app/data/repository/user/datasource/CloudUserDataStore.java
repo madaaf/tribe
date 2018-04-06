@@ -536,15 +536,16 @@ public class CloudUserDataStore implements UserDataStore {
                   }
                 }
               }
-
-              for (int i = 0; i < fbIds.size(); i++) {
-                ContactInterface contactFBRealm = fbIds.get(i);
-                if (contactFBRealm instanceof ContactFBRealm) {
-                  ((ContactFBRealm) contactFBRealm).setHowManyFriends(
-                      lookFbupObjects.get(i).getHowManyFriends());
-                  // ((ContactFBRealm) contactFBRealm).setId(lookFbupObjects.get(i).getFbId());
-                  ((ContactFBRealm) contactFBRealm).setCommonFriendsNameList(
-                      lookFbupObjects.get(i).getcommonFriendsNameList());
+              if (fbIds.size() == lookFbupObjects.size()) {
+                for (int i = 0; i < fbIds.size(); i++) {
+                  ContactInterface contactFBRealm = fbIds.get(i);
+                  if (contactFBRealm instanceof ContactFBRealm) {
+                    ((ContactFBRealm) contactFBRealm).setHowManyFriends(
+                        lookFbupObjects.get(i).getHowManyFriends());
+                    // ((ContactFBRealm) contactFBRealm).setId(lookFbupObjects.get(i).getFbId());
+                    ((ContactFBRealm) contactFBRealm).setCommonFriendsNameList(
+                        lookFbupObjects.get(i).getcommonFriendsNameList());
+                  }
                 }
               }
             }

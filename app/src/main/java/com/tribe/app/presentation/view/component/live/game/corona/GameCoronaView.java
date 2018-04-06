@@ -8,10 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
 import android.util.Pair;
-import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +35,7 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.RemoteConfigManager;
+import com.tribe.app.presentation.view.widget.LoadingGameView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -82,8 +80,7 @@ public class GameCoronaView extends GameView {
 
   @BindView(R.id.coronaView) CoronaView coronaView;
   @BindView(R.id.layoutProgress) FrameLayout layoutProgress;
-  @BindView(R.id.viewProgress) View viewProgress;
-  @BindView(R.id.cardViewProgress) CardView cardViewProgress;
+  @BindView(R.id.loader) LoadingGameView loader;
 
   // VARIABLES
   private Handler mainHandler;
@@ -287,8 +284,7 @@ public class GameCoronaView extends GameView {
 
           coronaView.sendEvent(startGameTable);
 
-          AnimationUtils.animateWidth(viewProgress, viewProgress.getMeasuredWidth(),
-              cardViewProgress.getWidth(), 500, new DecelerateInterpolator());
+          loader.setAnim(0f, 90f);
 
           subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())
@@ -372,14 +368,14 @@ public class GameCoronaView extends GameView {
               subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
                 if (loginResult != null) {
                   Timber.d("Load contacts");
-                  newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
+                  newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity) context);
                 } else {
                   errorRevive();
                 }
               }));
             } else {
               Timber.d("Load contacts");
-              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
+              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity) context);
             }
             //}
           } else if (event.equals("scoresUpdated")) {
