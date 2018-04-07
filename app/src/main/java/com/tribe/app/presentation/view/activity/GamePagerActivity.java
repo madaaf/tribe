@@ -62,6 +62,7 @@ import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
+import com.tribe.app.presentation.view.widget.LoadingGameView;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
@@ -134,7 +135,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   @BindView(R.id.imgAnimation1) ImageView imgAnimation1;
   @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
   @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
-  @BindView(R.id.test) ImageView test;
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
   @BindView(R.id.layoutCall) FrameLayout layoutCall;
   @BindView(R.id.btnFriends) ImageView btnFriends;

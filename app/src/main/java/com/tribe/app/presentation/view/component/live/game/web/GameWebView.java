@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.webkit.ConsoleMessage;
@@ -32,7 +31,7 @@ import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
-import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.widget.LoadingGameView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.util.ObservableRxHashMap;
@@ -52,8 +51,7 @@ public class GameWebView extends GameViewWithEngine {
 
   @BindView(R.id.webView) WebView webView;
   @BindView(R.id.layoutProgress) FrameLayout layoutProgress;
-  @BindView(R.id.viewProgress) View viewProgress;
-  @BindView(R.id.cardViewProgress) CardView cardViewProgress;
+  @BindView(R.id.loader) LoadingGameView loader;
 
   // VARIABLES
   private boolean didRestartWhenReady = false, isResetingScores = false;
@@ -277,8 +275,7 @@ public class GameWebView extends GameViewWithEngine {
     }
 
     @JavascriptInterface public void gameLoadingProgress(float progress) {
-      mainHandler.post(() -> UIUtils.changeWidthOfView(viewProgress,
-          (int) (progress * cardViewProgress.getWidth())));
+      mainHandler.post(() -> loader.setAnim(0f, 90f));
     }
 
     @JavascriptInterface public void gameLoaded() {
