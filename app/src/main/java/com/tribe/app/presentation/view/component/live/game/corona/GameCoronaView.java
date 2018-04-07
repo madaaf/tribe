@@ -301,8 +301,8 @@ public class GameCoronaView extends GameView {
         }));
 
     subscriptions.add(masterMapObs.subscribe(rxHashMapAction -> {
-      if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD)
-          && rxHashMapAction.item.canPlayGames(game.getId())) {
+      if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD) &&
+          rxHashMapAction.item.canPlayGames(game.getId())) {
         Hashtable<Object, Object> userJoinedTable = new Hashtable<>();
         userJoinedTable.put("name", "userJoined");
         userJoinedTable.put("user", rxHashMapAction.item.asCoronaUser());
@@ -372,14 +372,14 @@ public class GameCoronaView extends GameView {
               subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
                 if (loginResult != null) {
                   Timber.d("Load contacts");
-                  newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
+                  newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity) context);
                 } else {
                   errorRevive();
                 }
               }));
             } else {
               Timber.d("Load contacts");
-              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
+              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity) context);
             }
             //}
           } else if (event.equals("scoresUpdated")) {
@@ -564,7 +564,6 @@ public class GameCoronaView extends GameView {
   public void successRevive() {
     Bundle bundle = new Bundle();
     bundle.putString(TagManagerUtils.GAME, game.getId());
-    bundle.putInt(TagManagerUtils.SCORE, mapScores.get(currentUser.getId()));
     bundle.putString(TagManagerUtils.USE_CASE, TagManagerUtils.USE_CASE_REVIVE);
     tagManager.trackEvent(TagManagerUtils.GameRequest, bundle);
 
