@@ -240,6 +240,10 @@ public class GameCoronaView extends GameView {
         .subscribe(pair -> receiveMessage(pair.first, pair.second)));
   }
 
+  @Override protected void initGameMasterManagerSubscriptions() {
+
+  }
+
   @Override protected void initDependencyInjector() {
     super.initDependencyInjector();
     DaggerUserComponent.builder()
@@ -352,70 +356,72 @@ public class GameCoronaView extends GameView {
           gamePresenter.getUserBestScore(game.getId());
         }
       } else {
-        mainHandler.post(() -> {
-          if (game == null) return;
-
-          if (event.equals("gameLoaded")) {
-            startGame();
-          } else if (event.equals("saveScore")) {
-            onAddScore.onNext(
-                Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
-          } else if (event.equals("revive")) {
-            //if (BuildConfig.DEBUG) {
-            //  subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
-            //      .observeOn(AndroidSchedulers.mainThread())
-            //      .subscribe(aLong -> sendSuccessRevive()));
-            //} else {
-            Timber.d("Revive");
-            if (!FacebookUtils.isLoggedIn()) {
-              Timber.d("Ask FB login");
-              subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-                if (loginResult != null) {
-                  Timber.d("Load contacts");
-                  newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
-                } else {
-                  errorRevive();
-                }
-              }));
-            } else {
-              Timber.d("Load contacts");
-              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
-            }
-            //}
-          } else if (event.equals("scoresUpdated")) {
-            mapScores.clear();
-            Hashtable<String, Double> scores = (Hashtable<String, Double>) hashtable.get("scores");
-            for (String id : scores.keySet()) mapScores.put(id, scores.get(id).intValue());
-            updateLiveScores(mapScores, null);
-          } else if (event.equals("broadcastMessage")) {
-            sendMessage((JSONObject) getBroadcastPayload(
-                (Hashtable<Object, Object>) hashtable.get("message"), false), null);
-          } else if (event.equals("sendMessage")) {
-            sendMessage((JSONObject) getBroadcastPayload(
-                (Hashtable<Object, Object>) hashtable.get("message"), false),
-                hashtable.get("to").toString());
-          } else if (event.equals("showGameLeaderboard")) {
-            onOpenLeaderboard.onNext(game);
-          } else if (event.equals("contextGame")) {
-            Timber.d("Hashtable : " + hashtable);
-            Hashtable<String, Double> scores =
-                (Hashtable<String, Double>) ((Hashtable<Object, Object>) hashtable.get(CONTEXT_KEY))
-                    .get(SCORES_KEY);
-            Map<String, Integer> contextScores = new HashMap<>();
-            for (String key : scores.keySet()) {
-              contextScores.put(key, scores.get(key).intValue());
-            }
-
-            game.getContextMap().put(SCORES_KEY, contextScores);
-
-            JSONObject jsonObject = getCompleteContextPayload(SCORES_KEY, game.getContextMap());
-            webRTCRoom.sendToPeers(jsonObject, true);
-          }
-        });
+        mainHandler.post(() -> handleCoronaMessage(event, hashtable));
       }
 
       return null;
     });
+  }
+
+  protected void handleCoronaMessage(String event, Hashtable<Object, Object> hashtable) {
+    if (game == null) return;
+
+    if (event.equals("gameLoaded")) {
+      startGame();
+    } else if (event.equals("saveScore")) {
+      onAddScore.onNext(
+          Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
+    } else if (event.equals("revive")) {
+      //if (BuildConfig.DEBUG) {
+      //  subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
+      //      .observeOn(AndroidSchedulers.mainThread())
+      //      .subscribe(aLong -> sendSuccessRevive()));
+      //} else {
+      Timber.d("Revive");
+      if (!FacebookUtils.isLoggedIn()) {
+        Timber.d("Ask FB login");
+        subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
+          if (loginResult != null) {
+            Timber.d("Load contacts");
+            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
+          } else {
+            errorRevive();
+          }
+        }));
+      } else {
+        Timber.d("Load contacts");
+        newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
+      }
+      //}
+    } else if (event.equals("scoresUpdated")) {
+      mapScores.clear();
+      Hashtable<String, Double> scores = (Hashtable<String, Double>) hashtable.get("scores");
+      for (String id : scores.keySet()) mapScores.put(id, scores.get(id).intValue());
+      updateLiveScores(mapScores, null);
+    } else if (event.equals("broadcastMessage")) {
+      sendMessage((JSONObject) getBroadcastPayload(
+          (Hashtable<Object, Object>) hashtable.get("message"), false), null);
+    } else if (event.equals("sendMessage")) {
+      sendMessage((JSONObject) getBroadcastPayload(
+          (Hashtable<Object, Object>) hashtable.get("message"), false),
+          hashtable.get("to").toString());
+    } else if (event.equals("showGameLeaderboard")) {
+      onOpenLeaderboard.onNext(game);
+    } else if (event.equals("contextGame")) {
+      Timber.d("Hashtable : " + hashtable);
+      Hashtable<String, Double> scores =
+          (Hashtable<String, Double>) ((Hashtable<Object, Object>) hashtable.get(CONTEXT_KEY))
+              .get(SCORES_KEY);
+      Map<String, Integer> contextScores = new HashMap<>();
+      for (String key : scores.keySet()) {
+        contextScores.put(key, scores.get(key).intValue());
+      }
+
+      game.getContextMap().put(SCORES_KEY, contextScores);
+
+      JSONObject jsonObject = getCompleteContextPayload(SCORES_KEY, game.getContextMap());
+      webRTCRoom.sendToPeers(jsonObject, true);
+    }
   }
 
   @Override protected void receiveMessage(TribeSession tribeSession, JSONObject jsonObject) {
