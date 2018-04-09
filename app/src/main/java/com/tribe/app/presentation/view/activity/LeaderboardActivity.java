@@ -32,6 +32,7 @@ import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecorati
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardUserLayoutManager;
 import com.tribe.app.presentation.view.adapter.manager.TrophyLayoutManager;
 import com.tribe.app.presentation.view.popup.PopupManager;
+import com.tribe.app.presentation.view.popup.view.PopupParentView;
 import com.tribe.app.presentation.view.popup.view.PopupTrophy;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.UIUtils;
@@ -234,7 +235,7 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
           PopupTrophy popupTrophy =
               new PopupTrophy.Builder(this, trophyEnum).bg(screenUtils.dpToPx(8)).build();
 
-          PopupManager popupManager = PopupManager.create(
+          PopupParentView popupParentView = PopupManager.create(
               new PopupManager.Builder().activity(this).dimBackground(false).view(popupTrophy));
           //.listener(new PopupTrophyListenerAdapter() {
           //  @Override public void onClick(TrophyEnum trophyEnum) {
@@ -248,9 +249,7 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
           //  }
           //})
 
-          notificationModelList.add(
-              new NotificationModel.Builder().view(popupManager.getView()).build());
-
+          notificationModelList.add(new NotificationModel.Builder().view(popupParentView).build());
           NotifView notifView = new NotifView(this);
           notifView.overrideBackground(popupTrophy.getBg());
           notifView.show(this, notificationModelList);

@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Pair;
-import android.widget.Toast;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.MessageRealm;
@@ -34,6 +33,7 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.popup.PopupManager;
 import com.tribe.app.presentation.view.popup.listener.PopupAskToJoinListenerAdapter;
 import com.tribe.app.presentation.view.popup.view.PopupAskToJoin;
+import com.tribe.app.presentation.view.popup.view.PopupParentView;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.widget.LiveNotificationView;
@@ -251,7 +251,7 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
 
     NotifView notifView = new NotifView(context);
 
-    PopupManager popupManager = PopupManager.create(
+    PopupParentView popupParentView = PopupManager.create(
         new PopupManager.Builder().activity(weakReferenceActivity.get())
             .dimBackground(false)
             .listener(new PopupAskToJoinListenerAdapter() {
@@ -308,7 +308,7 @@ public class TribeBroadcastReceiver extends BroadcastReceiver {
             })
             .view(popupAskToJoin));
 
-    notificationModelList.add(new NotificationModel.Builder().view(popupManager.getView()).build());
+    notificationModelList.add(new NotificationModel.Builder().view(popupParentView).build());
 
     notifView.show(weakReferenceActivity.get(), notificationModelList);
 

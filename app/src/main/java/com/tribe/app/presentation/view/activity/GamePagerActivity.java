@@ -56,13 +56,13 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.popup.PopupManager;
 import com.tribe.app.presentation.view.popup.listener.PopupDigestListener;
 import com.tribe.app.presentation.view.popup.view.PopupDigest;
+import com.tribe.app.presentation.view.popup.view.PopupParentView;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.StateManager;
 import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.utils.ViewPagerScroller;
 import com.tribe.app.presentation.view.widget.CustomViewPager;
-import com.tribe.app.presentation.view.widget.LoadingGameView;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
@@ -256,8 +256,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       if (calendarPreviousDate.before(calendarYesterday)) {
         nbDays = 1;
-      } else if ((calendarPreviousDate.after(calendarYesterday) || calendarPreviousDate.equals(
-          calendarYesterday)) && calendarPreviousDate.before(calendarToday)) {
+      } else if ((calendarPreviousDate.after(calendarYesterday) ||
+          calendarPreviousDate.equals(calendarYesterday)) &&
+          calendarPreviousDate.before(calendarToday)) {
         nbDays += 1;
       }
     } else {
@@ -273,9 +274,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private void loadChallengeNotificationData() {
-    if (challengeNotificationsPref != null
-        && challengeNotificationsPref.get() != null
-        && !challengeNotificationsPref.get().isEmpty()) {
+    if (challengeNotificationsPref != null &&
+        challengeNotificationsPref.get() != null &&
+        !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
@@ -335,8 +336,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
-        PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
+        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync, this);
     }
 
@@ -546,8 +547,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
               if (shortcut.isSingle()) {
                 User member = shortcut.getSingleFriend();
                 if (member.isPlayingAGame()) {
-                  if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
-                      member.getId())) {
+                  if (!userIdsDigest.contains(member.getId()) &&
+                      !roomIdsDigest.contains(member.getId())) {
                     userIdsDigest.add(member.getId());
                     items.add(shortcut);
                   }
@@ -564,7 +565,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
                   (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
               popupDigest.setItems(items);
 
-              PopupManager popupManager = PopupManager.create(
+              PopupParentView popupParentView = PopupManager.create(
                   new PopupManager.Builder().activity(this)
                       .dimBackground(false)
                       .listener(new PopupDigestListener() {
@@ -589,7 +590,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
                       .view(popupDigest));
 
               notificationModelList.add(
-                  new NotificationModel.Builder().view(popupManager.getView()).build());
+                  new NotificationModel.Builder().view(popupParentView).build());
             } else {
               shouldDisplayDigest = true;
             }
