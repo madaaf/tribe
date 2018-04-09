@@ -139,7 +139,7 @@ public class GameManagerView extends FrameLayout {
 
   private void initSubscriptions() {
     subscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
-      if (game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
+      if (game.getId().equals(Game.GAME_BATTLE_ROYALE) && gameMasterManager != null) {
         gameMasterManager.send(">battleroyale");
       }
     }));
@@ -181,7 +181,7 @@ public class GameManagerView extends FrameLayout {
         .filter(game -> game.hasView())
         .subscribe(game -> {
           if (currentGameView != null) {
-            gameMasterManager.send(">");
+            if (gameMasterManager != null) gameMasterManager.send(">");
             currentGameView.stop();
             removeView(currentGameView);
           }
