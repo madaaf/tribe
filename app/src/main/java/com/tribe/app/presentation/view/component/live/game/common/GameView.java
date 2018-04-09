@@ -24,6 +24,7 @@ import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.FontUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
+import com.tribe.app.presentation.view.component.live.game.gamemaster.GameMasterManagerFactory;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.widget.TextViewFont;
@@ -64,6 +65,7 @@ public abstract class GameView extends FrameLayout {
   protected Context context;
   protected GameManager gameManager;
   protected WebRTCRoom webRTCRoom;
+  protected GameMasterManagerFactory.GameMasterManager gameMasterManager;
   protected Game game;
   protected Map<String, TribeGuest> peerMap;
   protected Map<String, TribeGuest> invitedMap;
@@ -150,6 +152,8 @@ public abstract class GameView extends FrameLayout {
    */
 
   protected abstract void initWebRTCRoomSubscriptions();
+
+  protected abstract void initGameMasterManagerSubscriptions();
 
   private Observable<String> generateNewMasterId() {
     if (game != null) {
@@ -265,6 +269,7 @@ public abstract class GameView extends FrameLayout {
     }
 
     initWebRTCRoomSubscriptions();
+    initGameMasterManagerSubscriptions();
   }
 
   public void stop() {
@@ -275,6 +280,10 @@ public abstract class GameView extends FrameLayout {
 
   public void setWebRTCRoom(WebRTCRoom webRTCRoom) {
     this.webRTCRoom = webRTCRoom;
+  }
+
+  public void setGameMasterManager(GameMasterManagerFactory.GameMasterManager gameMasterManager) {
+    this.gameMasterManager = gameMasterManager;
   }
 
   public void dispose() {

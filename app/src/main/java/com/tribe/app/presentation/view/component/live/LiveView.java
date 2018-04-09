@@ -42,6 +42,7 @@ import com.tribe.app.presentation.utils.preferences.WebSocketUrlOverride;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.component.live.game.GameManagerView;
 import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
+import com.tribe.app.presentation.view.component.live.game.gamemaster.GameMasterManagerFactory;
 import com.tribe.app.presentation.view.utils.Degrees;
 import com.tribe.app.presentation.view.utils.DialogFactory;
 import com.tribe.app.presentation.view.utils.DoubleUtils;
@@ -127,6 +128,8 @@ public class LiveView extends FrameLayout {
 
   @Inject @MultiplayerSessions Preference<Integer> multiplayerSessions;
 
+  @Inject GameMasterManagerFactory gameMasterManagerFactory;
+
   @BindView(R.id.viewRoom) LiveRoomView viewRoom;
 
   @BindView(R.id.viewScoresOverLive) LiveScoresView viewScoresOverLive;
@@ -148,6 +151,7 @@ public class LiveView extends FrameLayout {
   // VARIABLES
   private Live live;
   private WebRTCRoom webRTCRoom;
+  private GameMasterManagerFactory.GameMasterManager gameMasterManager;
   private ObservableRxHashMap<String, LiveRowView> liveRowViewMap;
   private ObservableRxHashMap<String, TribeGuest> tribeGuestMap;
   private ObservableRxHashMap<String, TribeGuest> tribeInvitedMap;
@@ -318,6 +322,7 @@ public class LiveView extends FrameLayout {
     if (callGameAverageSubscription != null) callGameAverageSubscription.unsubscribe();
     if (callGameDurationSubscription != null) callGameDurationSubscription.unsubscribe();
     viewScoresOverLive.dispose();
+    if (gameMasterManager != null) gameMasterManager.disconnect();
 
     if (!isJump) {
       viewLocalLive.dispose();
@@ -717,6 +722,10 @@ public class LiveView extends FrameLayout {
     live.getRoom().update(room, false);
 
     webRTCRoom.connect(options);
+
+    gameMasterManager = gameMasterManagerFactory.newInstance();
+    gameMasterManager.connect(options.getRoomId());
+    viewGameManager.setGameMasterManager(gameMasterManager);
 
     if (!StringUtils.isEmpty(live.getGameId()) &&
         !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
@@ -1155,8 +1164,8 @@ public class LiveView extends FrameLayout {
       viewScoresOverLive.setVisibility(View.GONE);
     }
 
-    if (game.isOverLive()) {
-      viewRoom.setType(LiveRoomView.TYPE_LIST);
+    if (game.isOverLive() || game.isOverLiveEmbed()) {
+      viewRoom.setType(game.isOverLiveEmbed() ? LiveRoomView.TYPE_EMBED : LiveRoomView.TYPE_LIST);
       if (viewGameManager.getParent() == null) {
         viewGameManager.setBackgroundColor(Color.BLACK);
         addViewGameManagerAtPosition(indexOfViewRoom);

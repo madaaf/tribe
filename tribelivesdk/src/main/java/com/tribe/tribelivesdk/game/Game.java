@@ -51,6 +51,7 @@ public class Game {
   public static final String GAME_LOGO = "GAME_LOGO";
   public static final String GAME_BIRD_RUSH = "birdRush";
   public static final String GAME_INVADERS_CORONA = "lab-aliens-attack-corona";
+  public static final String GAME_BATTLE_ROYALE = "battleroyale";
   public static final String GAME_COOL_CAMS = "coolcams";
 
   public static final String TYPE_NAME_WEBV1 = "GameWebV1";
@@ -73,9 +74,9 @@ public class Game {
   protected int plays_count;
   protected String __typename;
   protected String url;
-  protected boolean localFrameDifferent = false, hasView = false, isOverLive = false, isWeb = false,
-      isCorona = false, isUserAction = false, needsLandscape = false, isNotOverLiveWithScores =
-      false;
+  protected boolean localFrameDifferent = false, hasView = false, isOverLive = false,
+      isOverLiveEmbed = false, isWeb = false, isCorona = false, isUserAction = false,
+      needsLandscape = false, isNotOverLiveWithScores = false;
   protected List<TribeGuest> peerList;
   protected List<String> dataList;
   protected String previousGuestId = null;
@@ -99,9 +100,12 @@ public class Game {
     this.id = id;
     this.localFrameDifferent = id.equals(GAME_POST_IT);
     this.hasView = !id.equals(GAME_POST_IT);
-    this.isOverLive =
-        id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT) || id
-            .equals(GAME_BIRD_RUSH) || id.equals(GAME_INVADERS_CORONA);
+    this.isOverLive = id.equals(GAME_INVADERS) ||
+        id.equals(GAME_SPEED_RACER) ||
+        id.equals(GAME_SLICE_FRUIT) ||
+        id.equals(GAME_BIRD_RUSH) ||
+        id.equals(GAME_INVADERS_CORONA);
+    this.isOverLiveEmbed = id.equals(GAME_BATTLE_ROYALE);
     this.isNotOverLiveWithScores =
         id.equals(GAME_TRIVIA) || id.equals(GAME_BATTLE_MUSIC) || id.equals(GAME_COOL_CAMS);
     this.isWeb = id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT);
@@ -109,7 +113,7 @@ public class Game {
     if (__typename != null) {
       this.isCorona = __typename.equals(TYPE_NAME_CORONA);
     } else {
-      this.isCorona = id.equals(GAME_INVADERS_CORONA);
+      this.isCorona = id.equals(GAME_INVADERS_CORONA) || id.equals(GAME_BATTLE_ROYALE);
     }
 
     this.needsLandscape = id.equals(GAME_SLICE_FRUIT);
@@ -132,6 +136,10 @@ public class Game {
 
   public boolean isOverLive() {
     return isOverLive;
+  }
+
+  public boolean isOverLiveEmbed() {
+    return isOverLiveEmbed;
   }
 
   public boolean isNotOverLiveWithScores() {
@@ -416,5 +424,4 @@ public class Game {
   public Observable<TribeI420Frame> onLocalFrame() {
     return onLocalFrame;
   }
-
 }

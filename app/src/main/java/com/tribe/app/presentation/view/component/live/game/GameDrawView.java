@@ -244,6 +244,10 @@ public class GameDrawView extends GameView {
         }));
   }
 
+  @Override protected void initGameMasterManagerSubscriptions() {
+
+  }
+
   @Override public void stop() {
     super.stop();
     gameDraw = null;

@@ -284,6 +284,10 @@ public class GameChallengesView extends GameView {
         }));
   }
 
+  @Override protected void initGameMasterManagerSubscriptions() {
+
+  }
+
   /**
    * OBSERVABLES
    */

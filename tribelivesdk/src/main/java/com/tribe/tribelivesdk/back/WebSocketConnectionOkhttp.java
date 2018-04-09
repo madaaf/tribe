@@ -107,7 +107,7 @@ public class WebSocketConnectionOkhttp extends WebSocketConnectionAbs {
       @Override public void onMessage(WebSocket webSocket, String text) {
         super.onMessage(webSocket, text);
         if (state == STATE_CONNECTED) {
-          Timber.d("On websocket text message : " + text);
+          //Timber.d("On websocket text message : " + text);
           onMessage.onNext(text);
         }
       }
@@ -193,7 +193,7 @@ public class WebSocketConnectionOkhttp extends WebSocketConnectionAbs {
       return;
     }
 
-    Timber.v("Sending : " + msg);
+    //Timber.v("Sending : " + msg);
     webSocket.send(msg);
   }
 

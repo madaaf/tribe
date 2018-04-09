@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
+
   <android.support.v7.widget.CardView
       android:id="@+id/layoutStream"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:orientation="horizontal"
-      android:visibility="gone"
       >
 
     <FrameLayout
         android:id="@+id/layoutCoolCams"
         android:layout_width="180dp"
         android:layout_height="100dp"
-        android:visibility="gone"
+        android:visibility="invisible"
         >
 
       <ImageView
@@ -23,7 +22,7 @@
           android:layout_gravity="center"
           android:scaleType="centerInside"
           android:src="@drawable/picto_coolcams_won_bg"
-          android:visibility="gone"
+          android:visibility="invisible"
           />
 
       <ImageView
@@ -34,7 +33,7 @@
           android:layout_marginStart="60dp"
           android:scaleType="fitXY"
           android:src="@drawable/picto_coolcams_won"
-          android:visibility="gone"
+          android:visibility="invisible"
           />
 
       <ImageView
@@ -44,7 +43,7 @@
           android:layout_gravity="center"
           android:scaleType="fitXY"
           android:src="@drawable/picto_coolcams_emoji_0"
-          android:visibility="gone"
+          android:visibility="invisible"
           />
     </FrameLayout>
 
@@ -52,7 +51,6 @@
         android:id="@+id/viewPeerOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
         android:visibility="gone"
         />
 

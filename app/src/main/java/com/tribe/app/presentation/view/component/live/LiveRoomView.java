@@ -30,6 +30,7 @@ import com.tribe.app.presentation.internal.di.modules.ActivityModule;
 import com.tribe.app.presentation.navigation.Navigator;
 import com.tribe.app.presentation.view.activity.LiveActivity;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.DiceView;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import java.util.ArrayList;
@@ -48,11 +49,12 @@ import static com.tribe.app.presentation.view.activity.LiveActivity.SOURCE_CALL_
 
 public class LiveRoomView extends FrameLayout {
 
-  @IntDef({ TYPE_GRID, TYPE_LIST }) public @interface RoomUIType {
+  @IntDef({ TYPE_GRID, TYPE_LIST, TYPE_EMBED }) public @interface RoomUIType {
   }
 
   public static final int TYPE_GRID = 0;
   public static final int TYPE_LIST = 1;
+  public static final int TYPE_EMBED = 2;
 
   private static final int GUIDELINE_HALF_HEIGHT = View.generateViewId();
   private static final int GUIDELINE_HALF_WIDTH = View.generateViewId();
@@ -92,6 +94,7 @@ public class LiveRoomView extends FrameLayout {
   private int type = TYPE_GRID;
   private Map<String, LiveStreamView> mapViews;
   private Map<String, Subscription> mapViewsScoreChangeSubscription;
+  private Map<String, Subscription> mapViewsOffsetXYSubscription;
 
   @BindView(R.id.layoutConstraint) ConstraintLayout constraintLayout;
 
@@ -121,15 +124,22 @@ public class LiveRoomView extends FrameLayout {
     onViews.onNext(mapViews);
     mapViewsScoreChangeSubscription.put(currentUser.getId(),
         viewLiveLocal.onScoreChange().subscribe(pair -> refactorConstraintsOnChilds()));
+    mapViewsOffsetXYSubscription.put(currentUser.getId(), viewLiveLocal.onUpdateXYOffset()
+        .subscribe(pair -> refactorXYOffsetOnChild(viewLiveLocal, pair.first, pair.second)));
   }
 
   public void dispose() {
-    for (Subscription subscription : mapViewsScoreChangeSubscription.values()) subscription.unsubscribe();
+    for (Subscription subscription : mapViewsScoreChangeSubscription.values())
+      subscription.unsubscribe();
     mapViewsScoreChangeSubscription.clear();
+    for (Subscription subscription : mapViewsOffsetXYSubscription.values())
+      subscription.unsubscribe();
+    mapViewsOffsetXYSubscription.clear();
     mapViews.clear();
   }
 
   private void init() {
+    setWillNotDraw(false);
     initDependencyInjector();
 
     LayoutInflater.from(getContext()).inflate(R.layout.view_room, this);
@@ -143,9 +153,12 @@ public class LiveRoomView extends FrameLayout {
 
     mapViews = new HashMap<>();
     mapViewsScoreChangeSubscription = new HashMap<>();
+    mapViewsOffsetXYSubscription = new HashMap<>();
     mapViews.put(currentUser.getId(), viewLiveLocal);
     mapViewsScoreChangeSubscription.put(currentUser.getId(),
         viewLiveLocal.onScoreChange().subscribe(pair -> refactorConstraintsOnChilds()));
+    mapViewsOffsetXYSubscription.put(currentUser.getId(), viewLiveLocal.onUpdateXYOffset()
+        .subscribe(pair -> refactorXYOffsetOnChild(viewLiveLocal, pair.first, pair.second)));
     onViews.onNext(mapViews);
 
     liveRowViewAddFriend = new LiveRowViewAddFriend(getContext());
@@ -374,6 +387,8 @@ public class LiveRoomView extends FrameLayout {
     onViews.onNext(mapViews);
     mapViewsScoreChangeSubscription.get(userId).unsubscribe();
     mapViewsScoreChangeSubscription.remove(userId);
+    mapViewsOffsetXYSubscription.get(userId).unsubscribe();
+    mapViewsOffsetXYSubscription.remove(userId);
 
     if (view != null) {
       constraintLayout.removeView(view);
@@ -396,7 +411,11 @@ public class LiveRoomView extends FrameLayout {
     if (type == TYPE_GRID) {
       setBackgroundColor(Color.BLACK);
       constraintLayout.removeView(liveRowViewAddFriend);
-    } else if (type == TYPE_LIST) {
+      UIUtils.changeLeftMarginOfView(constraintLayout, 0);
+      UIUtils.changeTopMarginOfView(constraintLayout, 0);
+      UIUtils.changeWidthHeightOfView(constraintLayout, this.getMeasuredWidth(),
+          this.getMeasuredHeight());
+    } else if (type == TYPE_LIST || type == TYPE_EMBED) {
       translation = (getMeasuredHeight() >> 1) - screenUtils.dpToPx(60);
       setBackgroundColor(Color.TRANSPARENT);
       MarginLayoutParams params =
@@ -418,6 +437,8 @@ public class LiveRoomView extends FrameLayout {
     onViews.onNext(mapViews);
     mapViewsScoreChangeSubscription.put(userId,
         view.onScoreChange().subscribe(pair -> refactorConstraintsOnChilds()));
+    mapViewsOffsetXYSubscription.put(userId, view.onUpdateXYOffset()
+        .subscribe(pair -> refactorXYOffsetOnChild(view, pair.first, pair.second)));
     int childCount = getNBLiveViews();
     manageGuidelines(childCount);
     addViewToContainer(childCount, view);
@@ -521,8 +542,15 @@ public class LiveRoomView extends FrameLayout {
     int liveStreamCount = -1;
 
     List<LiveStreamView> views = new ArrayList<>(mapViews.values());
-    if (type == TYPE_LIST) {
+    if (type == TYPE_LIST || type == TYPE_EMBED) {
       Collections.sort(views, (o1, o2) -> new Integer(o2.getScore()).compareTo(o1.getScore()));
+    } else {
+      views.clear();
+      for (int i = 0; i < constraintLayout.getChildCount(); i++) {
+        if (constraintLayout.getChildAt(i) instanceof LiveStreamView) {
+          views.add((LiveStreamView) constraintLayout.getChildAt(i));
+        }
+      }
     }
 
     for (int i = 0; i < views.size(); i++) {
@@ -533,7 +561,7 @@ public class LiveRoomView extends FrameLayout {
         if (type == TYPE_GRID) {
           set.clear(v.getId());
           set.setElevation(v.getId(), 0);
-          v.setStyle(LiveStreamView.TYPE_GRID);
+          v.setStyle(type);
 
           if (landscapeMode) {
             switch (liveStreamCount) {
@@ -1179,7 +1207,7 @@ public class LiveRoomView extends FrameLayout {
           set.constrainWidth(v.getId(), screenUtils.dpToPx(150));
           set.constrainHeight(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
           set.setElevation(v.getId(), screenUtils.dpToPx(10));
-          v.setStyle(LiveStreamView.TYPE_LIST);
+          v.setStyle(type);
 
           switch (i) {
             case 0:
@@ -1199,7 +1227,7 @@ public class LiveRoomView extends FrameLayout {
       }
     }
 
-    if (type == TYPE_LIST) {
+    if (type == TYPE_LIST || type == TYPE_EMBED) {
       View previous = views.get(lastStream);
       set.connect(liveRowViewAddFriend.getId(), ConstraintSet.TOP, previous.getId(),
           ConstraintSet.BOTTOM, screenUtils.dpToPx(20));
@@ -1210,6 +1238,16 @@ public class LiveRoomView extends FrameLayout {
     AutoTransition autoTransition = new AutoTransition();
     TransitionManager.beginDelayedTransition(constraintLayout, autoTransition);
     set.applyTo(constraintLayout);
+  }
+
+  private void refactorXYOffsetOnChild(View v, int left, int top) {
+    ConstraintSet constraintSet = new ConstraintSet();
+    constraintSet.clone(constraintLayout);
+    constraintSet.setMargin(v.getId(), ConstraintSet.START, left);
+    constraintSet.setMargin(v.getId(), ConstraintSet.TOP, top);
+    constraintSet.constrainWidth(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
+    constraintSet.constrainHeight(v.getId(), screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
+    constraintSet.applyTo(constraintLayout);
   }
 
   private void setAvatarPicto(LiveRowView liveRowView, int index) {

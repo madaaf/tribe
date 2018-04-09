@@ -106,7 +106,6 @@ android {
   buildTypes {
     debug {
       generateStrings()
-
       signingConfig signingConfigs.debug
       testCoverageEnabled false
       applicationIdSuffix = ".debug"
@@ -117,7 +116,6 @@ android {
       resValue "string", "web_host", "\"${tribe_web_host_debug}\""
       resValue "string", "branch_host", "\"${tribe_branch_host_debug}\""
       resValue "string", "deeplink_host", "\"${tribe_deeplink_host_debug}\""
-
       buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key_debug}\""
       buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key_debug}\""
       buildConfigField "String", "TRIBE_API", "\"https://api.tribedev.pm\""
@@ -126,17 +124,18 @@ android {
       buildConfigField "String", "TRIBE_GROWTH", "\"https://growth.tribedev.pm\""
       buildConfigField "String", "TRIBE_STATIC", "\"https://static.tribe.pm\""
       buildConfigField "String", "TRIBE_WSS", "\"wss://api.tribedev.pm\""
+      buildConfigField "String", "TRIBE_GAME_MASTER_WSS", "\"wss://game.tribedev.pm\""
+      //buildConfigField "String", "TRIBE_GAME_MASTER_WSS", "\"ws://10.0.0.240:3000\""
       buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_debug}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url_debug}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link_debug}\""
       buildConfigField "String", "MIXPANEL_GOOGLE_API", "\"${mixpanel_google_debug}\""
       buildConfigField "String", "TRIBE_ORIGIN", "\"${tribe_url_origin_debug}\""
       buildConfigField "String", "OPENTDB_URL", "\"${tribe_opentdb_url}\""
-
       debuggable = true
       jniDebuggable = false
+      zipAlignEnabled false
     }
-
     release {
       debuggable false
       minifyEnabled true
@@ -149,7 +148,6 @@ android {
       resValue "string", "web_host", "\"${tribe_web_host}\""
       resValue "string", "branch_host", "\"${tribe_branch_host}\""
       resValue "string", "deeplink_host", "\"${tribe_deeplink_host}\""
-
       buildConfigField "String", "TRIBE_PUBLIC_KEY", "\"${tribe_public_key}\""
       buildConfigField "String", "TRIBE_PRIVATE_KEY", "\"${tribe_private_key}\""
       buildConfigField "String", "TRIBE_API", "\"https://api2.tribe.pm\""
@@ -158,13 +156,13 @@ android {
       buildConfigField "String", "TRIBE_LOOKUP", "\"https://lookup.tribe.pm\""
       buildConfigField "String", "TRIBE_GROWTH", "\"https://growth.tribe.pm\""
       buildConfigField "String", "TRIBE_STATIC", "\"https://static.tribe.pm\""
+      buildConfigField "String", "TRIBE_GAME_MASTER_WSS", "\"ws://game.tribedev.pm\""
       buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_prod}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link}\""
       buildConfigField "String", "MIXPANEL_GOOGLE_API", "\"${mixpanel_google_prod}\""
       buildConfigField "String", "TRIBE_ORIGIN", "\"${tribe_url_origin}\""
       buildConfigField "String", "OPENTDB_URL", "\"${tribe_opentdb_url}\""
-
       proguardFiles getDefaultProguardFile('proguard-android.txt'),
           'proguard-google-play-services.pro',
           'proguard-dagger.pro',
@@ -201,7 +199,6 @@ dependencies {
   def presentationDependencies = rootProject.ext.presentationDependencies
   def presentationTestDependencies = rootProject.ext.presentationTestDependencies
   def developmentDependencies = rootProject.ext.developmentDependencies
-
   annotationProcessor presentationDependencies.daggerCompiler
   compile presentationDependencies.dagger
   annotationProcessor presentationDependencies.butterKnifeCompiler
@@ -247,28 +244,25 @@ dependencies {
   compile presentationDependencies.flexbox
   compile presentationDependencies.instacapture
   compile presentationDependencies.jodatime
-  compile "me.leolin:ShortcutBadger:1.1.18@aar"
+  compile 'me.leolin:ShortcutBadger:1.1.18@aar'
   compile presentationDependencies.constraintLayout
   compile presentationDependencies.AVLoadingIndicatorView
-  compile group: 'com.zendesk', name: 'sdk-providers', version: '1.11.0.1'
+  compile 'com.zendesk:sdk-providers:1.11.0.1'
   compile presentationDependencies.exoPlayer
   compile presentationDependencies.blurView
   //compile presentationDependencies.firebaseCore
-
   //androidTestCompile presentationTestDependencies.mockito
   //androidTestCompile presentationTestDependencies.dexmaker
   //androidTestCompile presentationTestDependencies.dexmakerMockito
   //androidTestCompile presentationTestDependencies.espresso
   //androidTestCompile presentationTestDependencies.androidAnnotations
   //androidTestCompile presentationTestDependencies.testingSupportLib
-
   // Development
   compile developmentDependencies.leakCanary
   compile developmentDependencies.stetho
   compile developmentDependencies.stethoOkHttp
   //compile developmentDependencies.androidDevMetrics
   //compile developmentDependencies.takt
-
   implementation project(':AdapterDelegates')
   implementation project(':tribelivesdk')
   implementation project(':ViewNavigator')
@@ -276,9 +270,8 @@ dependencies {
   compile('com.crashlytics.sdk.android:crashlytics:2.9.0@aar') {
     transitive = true;
   }
-
   // Corona
-  compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+  compile fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
   provided files('libs/Corona.jar')
   provided files('libs/JNLua.jar')
   provided files('libs/network.jar')

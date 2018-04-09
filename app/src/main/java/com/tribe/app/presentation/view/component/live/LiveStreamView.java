@@ -44,13 +44,15 @@ import rx.subscriptions.CompositeSubscription;
  */
 public abstract class LiveStreamView extends LinearLayout {
 
-  @IntDef({ TYPE_GRID, TYPE_LIST }) public @interface StreamType {
+  @IntDef({ TYPE_GRID, TYPE_LIST, TYPE_EMBED }) public @interface StreamType {
   }
 
   public static final int TYPE_GRID = 0;
   public static final int TYPE_LIST = 1;
+  public static final int TYPE_EMBED = 2;
 
   public static final int MAX_HEIGHT_LIST = 45;
+  public static final int MAX_HEIGHT_EMBED = 75;
 
   @Inject protected ScreenUtils screenUtils;
 
@@ -84,6 +86,7 @@ public abstract class LiveStreamView extends LinearLayout {
   protected PublishSubject<Pair<Integer, String>> onScoreChange = PublishSubject.create();
   protected PublishSubject<List<CoolCamsModel.CoolCamsFeatureEnum>> onFeaturesDetected =
       PublishSubject.create();
+  protected PublishSubject<Pair<Integer, Integer>> onUpdateXYOffset = PublishSubject.create();
 
   public LiveStreamView(Context context) {
     super(context);
@@ -167,15 +170,18 @@ public abstract class LiveStreamView extends LinearLayout {
     imgCoolCamsWonBg.clearAnimation();
   }
 
-  public void setStyle(@StreamType int type) {
-    if (type == TYPE_LIST) {
+  public void setStyle(@LiveRoomView.RoomUIType int type) {
+    if (type == TYPE_EMBED || type == TYPE_LIST) {
       layoutStream.setRadius(screenUtils.dpToPx(5));
-      UIUtils.changeWidthOfView(layoutStream, screenUtils.dpToPx(MAX_HEIGHT_LIST));
-      txtScore.setVisibility(VISIBLE);
+      UIUtils.changeWidthHeightOfView(layoutStream, screenUtils.dpToPx(MAX_HEIGHT_LIST),
+          screenUtils.dpToPx(MAX_HEIGHT_LIST));
+      txtScore.setVisibility(type == TYPE_EMBED ? GONE : VISIBLE);
       txtEmoji.setVisibility(VISIBLE);
     } else {
       layoutStream.setRadius(0);
-      UIUtils.changeWidthOfView(layoutStream, ViewGroup.LayoutParams.MATCH_PARENT);
+      getPeerView().setPadding(0, 0, 0, 0);
+      UIUtils.changeWidthHeightOfView(layoutStream, ViewGroup.LayoutParams.MATCH_PARENT,
+          ViewGroup.LayoutParams.MATCH_PARENT);
       txtScore.setVisibility(GONE);
       txtEmoji.setVisibility(GONE);
     }
@@ -239,10 +245,8 @@ public abstract class LiveStreamView extends LinearLayout {
       middleEyesTranslatedPosition =
           new PointF(translateX(middleEyesPosition.x, frame.isFrontCamera()),
               translateY(middleEyesPosition.y));
-      middleEyesTranslatedPosition.x =
-          (int) middleEyesTranslatedPosition.x;
-      middleEyesTranslatedPosition.y =
-          (int) middleEyesTranslatedPosition.y;
+      middleEyesTranslatedPosition.x = (int) middleEyesTranslatedPosition.x;
+      middleEyesTranslatedPosition.y = (int) middleEyesTranslatedPosition.y;
 
       updatePositionOfSticker(middleEyesTranslatedPosition, statusEnum);
 
@@ -302,7 +306,6 @@ public abstract class LiveStreamView extends LinearLayout {
         } else {
           imgCoolCams.setImageResource(res);
         }
-
       } else if (status.equals(CoolCamsModel.CoolCamsStatusEnum.WON)) {
         if (previousStatus == null || !previousStatus.equals(status)) {
           scaleView(imgCoolCams, false, null);
@@ -381,5 +384,9 @@ public abstract class LiveStreamView extends LinearLayout {
 
   public Observable<List<CoolCamsModel.CoolCamsFeatureEnum>> onFeaturesDetected() {
     return onFeaturesDetected;
+  }
+
+  public Observable<Pair<Integer, Integer>> onUpdateXYOffset() {
+    return onUpdateXYOffset;
   }
 }

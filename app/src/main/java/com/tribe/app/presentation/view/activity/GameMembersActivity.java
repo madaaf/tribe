@@ -128,9 +128,6 @@ public class GameMembersActivity extends BaseBroadcastReceiverActivity
         bundle.putInt(TagManagerUtils.MEMBERS, selectedIds.size());
         tagManager.trackEvent(TagManagerUtils.NewChat, bundle);
 
-        //navigator.navigateToLive(GameMembersActivity.this, shortcut,
-        //    LiveActivity.SOURCE_SHORTCUT_ITEM, TagManagerUtils.SECTION_SHORTCUT, game.getId());
-
         Intent intent = new Intent();
         intent.putExtra(SHORTCUT, shortcut);
         if (game != null) intent.putExtra(GAME_ID, game.getId());

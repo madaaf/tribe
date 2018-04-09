@@ -293,6 +293,7 @@ public class WebSocketConnection extends WebSocketConnectionAbs {
 
     shouldReconnect = false;
     subscriptions.clear();
+    pendingMessages.clear();
 
     if (webSocketClient != null && (state == STATE_CONNECTED || state == STATE_CONNECTING)) {
       Timber.d("Disconnecting");

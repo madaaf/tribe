@@ -130,6 +130,10 @@ public class GameBirdRushView extends GameViewWithEngine {
         }));
   }
 
+  @Override protected void initGameMasterManagerSubscriptions() {
+
+  }
+
   protected void setupGameLocally(String userId, Set<String> players, long timestamp) {
     super.setupGameLocally(userId, players, timestamp);
     viewBackground.stop();
