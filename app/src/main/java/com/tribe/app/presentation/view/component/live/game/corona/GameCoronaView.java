@@ -2,16 +2,12 @@ package com.tribe.app.presentation.view.component.live.game.corona;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
 import android.util.Pair;
-import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,6 +34,7 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.RemoteConfigManager;
+import com.tribe.app.presentation.view.widget.LoadingGameView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -82,8 +79,7 @@ public class GameCoronaView extends GameView {
 
   @BindView(R.id.coronaView) CoronaView coronaView;
   @BindView(R.id.layoutProgress) FrameLayout layoutProgress;
-  @BindView(R.id.viewProgress) View viewProgress;
-  @BindView(R.id.cardViewProgress) CardView cardViewProgress;
+  @BindView(R.id.loader) LoadingGameView loader;
 
   // VARIABLES
   private Handler mainHandler;
@@ -291,8 +287,7 @@ public class GameCoronaView extends GameView {
 
           coronaView.sendEvent(startGameTable);
 
-          AnimationUtils.animateWidth(viewProgress, viewProgress.getMeasuredWidth(),
-              cardViewProgress.getWidth(), 500, new DecelerateInterpolator());
+          loader.setAnim(0f, 90f);
 
           subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())
@@ -305,8 +300,8 @@ public class GameCoronaView extends GameView {
         }));
 
     subscriptions.add(masterMapObs.subscribe(rxHashMapAction -> {
-      if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD)
-          && rxHashMapAction.item.canPlayGames(game.getId())) {
+      if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD) &&
+          rxHashMapAction.item.canPlayGames(game.getId())) {
         Hashtable<Object, Object> userJoinedTable = new Hashtable<>();
         userJoinedTable.put("name", "userJoined");
         userJoinedTable.put("user", rxHashMapAction.item.asCoronaUser());
@@ -369,8 +364,7 @@ public class GameCoronaView extends GameView {
     if (event.equals("gameLoaded")) {
       startGame();
     } else if (event.equals("saveScore")) {
-      onAddScore.onNext(
-          Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
+      onAddScore.onNext(Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
     } else if (event.equals("revive")) {
       //if (BuildConfig.DEBUG) {
       //  subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
@@ -383,14 +377,14 @@ public class GameCoronaView extends GameView {
         subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
           if (loginResult != null) {
             Timber.d("Load contacts");
-            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
+            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, context);
           } else {
             errorRevive();
           }
         }));
       } else {
         Timber.d("Load contacts");
-        newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, (Activity)context);
+        newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, context);
       }
       //}
     } else if (event.equals("scoresUpdated")) {
@@ -399,19 +393,20 @@ public class GameCoronaView extends GameView {
       for (String id : scores.keySet()) mapScores.put(id, scores.get(id).intValue());
       updateLiveScores(mapScores, null);
     } else if (event.equals("broadcastMessage")) {
-      sendMessage((JSONObject) getBroadcastPayload(
-          (Hashtable<Object, Object>) hashtable.get("message"), false), null);
+      sendMessage(
+          (JSONObject) getBroadcastPayload((Hashtable<Object, Object>) hashtable.get("message"),
+              false), null);
     } else if (event.equals("sendMessage")) {
-      sendMessage((JSONObject) getBroadcastPayload(
-          (Hashtable<Object, Object>) hashtable.get("message"), false),
-          hashtable.get("to").toString());
+      sendMessage(
+          (JSONObject) getBroadcastPayload((Hashtable<Object, Object>) hashtable.get("message"),
+              false), hashtable.get("to").toString());
     } else if (event.equals("showGameLeaderboard")) {
       onOpenLeaderboard.onNext(game);
     } else if (event.equals("contextGame")) {
       Timber.d("Hashtable : " + hashtable);
       Hashtable<String, Double> scores =
-          (Hashtable<String, Double>) ((Hashtable<Object, Object>) hashtable.get(CONTEXT_KEY))
-              .get(SCORES_KEY);
+          (Hashtable<String, Double>) ((Hashtable<Object, Object>) hashtable.get(CONTEXT_KEY)).get(
+              SCORES_KEY);
       Map<String, Integer> contextScores = new HashMap<>();
       for (String key : scores.keySet()) {
         contextScores.put(key, scores.get(key).intValue());
