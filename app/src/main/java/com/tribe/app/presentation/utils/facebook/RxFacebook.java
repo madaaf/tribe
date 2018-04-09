@@ -399,25 +399,26 @@ import timber.log.Timber;
               int index = html.indexOf(start) + start.length();
               if (index != -1) {
                 String initialContent = html.substring(index);
-                String json = initialContent.substring(0, initialContent.indexOf(end));
-                String formatted = json.replaceAll("\\\\", "");
+                if (initialContent.contains(end)) {
+                  String json = initialContent.substring(0, initialContent.indexOf(end));
+                  String formatted = json.replaceAll("\\\\", "");
 
-                Gson g = new Gson();
-                FacebookData p = g.fromJson(formatted, FacebookData.class);
-                List<ContactFBRealm> list = new ArrayList<>();
-
-                for (int i = 0; i < p.getPayload().size(); i++) {
-                  if (i > nbr) {
-                    break;
+                  Gson g = new Gson();
+                  FacebookData p = g.fromJson(formatted, FacebookData.class);
+                  List<ContactFBRealm> list = new ArrayList<>();
+                  for (int i = 0; i < p.getPayload().size(); i++) {
+                    if (i > nbr) {
+                      break;
+                    }
+                    FacebookPayload payload = p.getPayload().get(i);
+                    ContactFBRealm contactFBRealm = new ContactFBRealm();
+                    contactFBRealm.setId(String.valueOf(payload.getUid()));
+                    contactFBRealm.setName(payload.getText());
+                    list.add(contactFBRealm);
                   }
-                  FacebookPayload payload = p.getPayload().get(i);
-                  ContactFBRealm contactFBRealm = new ContactFBRealm();
-                  contactFBRealm.setId(String.valueOf(payload.getUid()));
-                  contactFBRealm.setName(payload.getText());
-                  list.add(contactFBRealm);
+                  subscriber.onNext(list);
+                  subscriber.onCompleted();
                 }
-                subscriber.onNext(list);
-                subscriber.onCompleted();
               }
             });
       }
