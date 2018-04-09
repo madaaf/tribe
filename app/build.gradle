@@ -156,7 +156,7 @@ android {
       buildConfigField "String", "TRIBE_LOOKUP", "\"https://lookup.tribe.pm\""
       buildConfigField "String", "TRIBE_GROWTH", "\"https://growth.tribe.pm\""
       buildConfigField "String", "TRIBE_STATIC", "\"https://static.tribe.pm\""
-      buildConfigField "String", "TRIBE_GAME_MASTER_WSS", "\"ws://game.tribedev.pm\""
+      buildConfigField "String", "TRIBE_GAME_MASTER_WSS", "\"wss://game.tribe.pm\""
       buildConfigField "String", "MIXPANEL_TOKEN", "\"${mixpanel_prod}\""
       buildConfigField "String", "TRIBE_URL", "\"${tribe_url}\""
       buildConfigField "String", "TRIBE_DYNAMIC_LINK", "\"${tribe_dynamic_link}\""
