@@ -90,10 +90,12 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   private static final float OVERSHOOT = 1.25f;
 
   public static final String GAME_ID = "game_id";
+  public static final String FROM_LIVE = "from_live";
 
-  public static Intent getCallingIntent(Activity activity, String gameId) {
+  public static Intent getCallingIntent(Activity activity, String gameId, boolean fromLive) {
     Intent intent = new Intent(activity, GameLeaderboardActivity.class);
     intent.putExtra(GAME_ID, gameId);
+    intent.putExtra(FROM_LIVE, fromLive);
     return intent;
   }
 
@@ -182,6 +184,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   private GameManager gameManager;
   private GameMVPViewAdapter gameMVPViewAdapter;
   private MessageMVPViewAdapter messageMVPViewAdapter;
+  private boolean isFromLive = false;
   private String gameId;
   private Game game;
   private List<EmojiPoke> emojis = new ArrayList<>();
@@ -212,6 +215,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     }
 
     gameId = getIntent().getStringExtra(GAME_ID);
+    isFromLive = getIntent().getBooleanExtra(FROM_LIVE, false);
 
     gameManager = GameManager.getInstance(this);
     game = gameManager.getGameById(getIntent().getStringExtra(GAME_ID));
@@ -467,6 +471,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       float range = (float) -appBarLayout.getTotalScrollRange();
       layoutConstraint.setAlpha(1.0f - (float) verticalOffset / range);
     });
+
+    if (isFromLive) playBtn.setVisibility(View.GONE);
   }
 
   private void initDependencyInjector() {
@@ -609,8 +615,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     bundle.putInt(TagManagerUtils.RANK, score.getRanking());
     tagManager.trackEvent(TagManagerUtils.Poke, bundle);
 
-    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
-        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null &&
+        score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
 
     if (isAbove) {
       soundManager.playSound(SoundManager.POKE_LAUGH, SoundManager.SOUND_LOW);

@@ -196,7 +196,7 @@ public class Navigator {
 
   public void navigateToGameLeaderboard(Activity activity, String gameId) {
     if (activity != null) {
-      Intent intent = GameLeaderboardActivity.getCallingIntent(activity, gameId);
+      Intent intent = GameLeaderboardActivity.getCallingIntent(activity, gameId, activity instanceof LiveActivity);
       activity.startActivity(intent);
       activity.overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
     }
