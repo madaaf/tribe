@@ -241,7 +241,7 @@ dependencies {
   compile presentationDependencies.branchIo
   compile presentationDependencies.timber
   compile presentationDependencies.rxAppState
-  compile presentationDependencies.flexbox
+  //compile presentationDependencies.flexbox
   compile presentationDependencies.instacapture
   compile presentationDependencies.jodatime
   compile 'me.leolin:ShortcutBadger:1.1.18@aar'

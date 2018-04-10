@@ -1349,10 +1349,6 @@ public class LiveView extends FrameLayout {
     return onJoined;
   }
 
-  public Observable<Void> onNotify() {
-    return onNotify;
-  }
-
   public Observable<Void> onLeave() {
     return Observable.merge(onLeave, viewControlsLive.onLeave()
         .flatMap(aVoid -> DialogFactory.showBottomSheetForLeaving(getContext(),

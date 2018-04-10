@@ -98,11 +98,6 @@ public class NotificationUtils {
       // A friend entered live - 1o1
       LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
       liveNotificationView = builder.build();
-    } else if (notificationPayload.getClickAction().equals(NotificationPayload.CLICK_ACTION_BUZZ)) {
-      // A friend buzzing you in a group
-      LiveNotificationView.Builder builder = getCommonBuilder(context, notificationPayload);
-      builder.sound(SoundManager.WIZZ);
-      liveNotificationView = builder.build();
     } else if (notificationPayload.getClickAction()
         .equals(NotificationPayload.CLICK_ACTION_JOIN_CALL)) {
       // A joined a call you initiated via a link shared

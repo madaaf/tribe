@@ -710,13 +710,6 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
       }
     }).subscribe(tribeJoinRoom -> initRoomSubscription()));
 
-    subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
-      if (viewLive.getWebRTCRoom() != null && viewLive.getWebRTCRoom().getOptions() != null) {
-        soundManager.playSound(SoundManager.WIZZ, SoundManager.SOUND_MID);
-        livePresenter.buzzRoom(room.getId());
-      }
-    }));
-
     subscriptions.add(
         viewLive.onLeave().observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> leave()));
 

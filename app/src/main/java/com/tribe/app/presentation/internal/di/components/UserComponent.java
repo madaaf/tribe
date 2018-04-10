@@ -73,7 +73,6 @@ import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.PictureActivity;
 import com.tribe.app.presentation.view.widget.chat.RecyclerMessageView;
-import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
@@ -163,8 +162,6 @@ import dagger.Component;
   void inject(SearchView searchView);
 
   void inject(RatingNotificationView ratingNotificationView);
-
-  void inject(EnjoyingTribeNotificationView enjoyingTribeNotificationView);
 
   void inject(LiveLocalView liveLocalView);
 

@@ -22,29 +22,26 @@ import rx.android.schedulers.AndroidSchedulers;
   public static final float SOUND_LOW = 0.1f;
 
   public static final int NO_SOUND = -1;
-  public static final int CALL_RING = 0;
-  public static final int WAITING_FRIEND = 1;
-  public static final int FRIEND_ONLINE = 2;
-  public static final int JOIN_CALL = 3;
-  public static final int QUIT_CALL = 4;
-  public static final int WIZZ = 5;
-  public static final int ALIENS_ATTACK_KILLED = 6;
-  public static final int ALIENS_ATTACK_SOUNDTRACK = 7;
-  public static final int GAME_SCORE = 8;
-  public static final int TRIVIA_ANSWER_FIRST_WIN = 9;
-  public static final int TRIVIA_LOST = 10;
-  public static final int TRIVIA_SOUNDTRACK_ANSWER = 11;
-  public static final int TRIVIA_SOUNDTRACK = 12;
-  public static final int TRIVIA_WON = 13;
-  public static final int GAME_FRIEND_LEADER = 14;
-  public static final int GAME_CHALLENGING = 15;
-  public static final int BIRD_RUSH_SOUNDTRACK = 16;
-  public static final int BIRD_RUSH_TAP = 17;
-  public static final int BIRD_RUSH_OBSTACLE = 18;
-  public static final int GAME_PLAYER_LOST = 19;
-  public static final int POKE_LAUGH = 20;
-  public static final int POKE_JEALOUS = 21;
-  public static final int COOL_CAMS_SOUNDTRACK = 22;
+  public static final int FRIEND_ONLINE = 0;
+  public static final int JOIN_CALL = 1;
+  public static final int QUIT_CALL = 2;
+  public static final int ALIENS_ATTACK_KILLED = 3;
+  public static final int ALIENS_ATTACK_SOUNDTRACK = 4;
+  public static final int GAME_SCORE = 5;
+  public static final int TRIVIA_ANSWER_FIRST_WIN = 6;
+  public static final int TRIVIA_LOST = 7;
+  public static final int TRIVIA_SOUNDTRACK_ANSWER = 8;
+  public static final int TRIVIA_SOUNDTRACK = 9;
+  public static final int TRIVIA_WON = 10;
+  public static final int GAME_FRIEND_LEADER = 11;
+  public static final int GAME_CHALLENGING = 12;
+  public static final int BIRD_RUSH_SOUNDTRACK = 13;
+  public static final int BIRD_RUSH_TAP = 14;
+  public static final int BIRD_RUSH_OBSTACLE = 15;
+  public static final int GAME_PLAYER_LOST = 16;
+  public static final int POKE_LAUGH = 17;
+  public static final int POKE_JEALOUS = 18;
+  public static final int COOL_CAMS_SOUNDTRACK = 19;
 
   // VARIABLES
   private Context context;
@@ -78,12 +75,9 @@ import rx.android.schedulers.AndroidSchedulers;
     soundPoolMap = new HashMap<>();
     audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
-    addSound(CALL_RING, R.raw.call_ring);
-    addSound(WAITING_FRIEND, R.raw.waiting_friend);
     addSound(FRIEND_ONLINE, R.raw.friend_online);
     addSound(JOIN_CALL, R.raw.join_call);
     addSound(QUIT_CALL, R.raw.quit_call);
-    addSound(WIZZ, R.raw.wizz);
     addSound(ALIENS_ATTACK_KILLED, R.raw.aliens_attack_alien_killed);
     addSound(ALIENS_ATTACK_SOUNDTRACK, R.raw.aliens_attack_soundtrack);
     addSound(GAME_SCORE, R.raw.game_score);
@@ -114,9 +108,7 @@ import rx.android.schedulers.AndroidSchedulers;
   public void playSound(int index, float volumeRate) {
     if (index == NO_SOUND) {
       cancelMediaPlayer();
-    } else if (index == WAITING_FRIEND ||
-        index == CALL_RING ||
-        index == ALIENS_ATTACK_SOUNDTRACK ||
+    } else if (index == ALIENS_ATTACK_SOUNDTRACK ||
         index == BIRD_RUSH_SOUNDTRACK ||
         index == TRIVIA_SOUNDTRACK ||
         index == TRIVIA_SOUNDTRACK_ANSWER ||
