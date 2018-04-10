@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.util.Pair;
-
 import com.facebook.AccessToken;
 import com.tribe.app.data.realm.UserRealm;
 import com.tribe.app.domain.entity.FacebookEntity;
@@ -9,16 +8,15 @@ import com.tribe.app.domain.entity.User;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserAge;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
 import com.tribe.app.presentation.mvp.view.UpdateUserMVPView;
 import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -28,6 +26,7 @@ public abstract class UpdateUserPresenter implements Presenter {
 
   protected final LookupUsername lookupUsername;
   protected final UpdateUser updateUser;
+  protected final UpdateUserAge updateUserAge;
   protected final RxFacebook rxFacebook;
   protected final UpdateUserFacebook updateUserFacebook;
   protected final UpdateUserPhoneNumber updateUserPhoneNumber;
@@ -37,12 +36,14 @@ public abstract class UpdateUserPresenter implements Presenter {
   private LookupUsernameSubscriber lookupUsernameSubscriber;
 
   UpdateUserPresenter(UpdateUser updateUser, LookupUsername lookupUsername, RxFacebook rxFacebook,
-      UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
+      UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber,
+      UpdateUserAge updateUserAge) {
     this.lookupUsername = lookupUsername;
     this.updateUser = updateUser;
     this.rxFacebook = rxFacebook;
     this.updateUserFacebook = updateUserFacebook;
     this.updateUserPhoneNumber = updateUserPhoneNumber;
+    this.updateUserAge = updateUserAge;
   }
 
   @Override public void onViewDetached() {
@@ -50,6 +51,7 @@ public abstract class UpdateUserPresenter implements Presenter {
     lookupUsername.unsubscribe();
     updateUserFacebook.unsubscribe();
     updateUserPhoneNumber.unsubscribe();
+    updateUserAge.unsubscribe();
     if (lookupUsernameSubscriber != null) lookupUsernameSubscriber.unsubscribe();
     if (updateUserSubscriber != null) updateUserSubscriber.unsubscribe();
   }
@@ -266,15 +268,17 @@ public abstract class UpdateUserPresenter implements Presenter {
 
     List<Pair<String, String>> values = new ArrayList<>();
     if (facebookEntity.getAgeRangeMin() != null) {
-      values.add(new Pair<>(UserRealm.AGE_RANGE_MIN, String.valueOf(facebookEntity.getAgeRangeMin())));
+      values.add(
+          new Pair<>(UserRealm.AGE_RANGE_MIN, String.valueOf(facebookEntity.getAgeRangeMin())));
     }
     if (facebookEntity.getAgeRangeMax() != null) {
-      values.add(new Pair<>(UserRealm.AGE_RANGE_MAX, String.valueOf(facebookEntity.getAgeRangeMax())));
+      values.add(
+          new Pair<>(UserRealm.AGE_RANGE_MAX, String.valueOf(facebookEntity.getAgeRangeMax())));
     }
 
     if (!values.isEmpty()) {
-      updateUser.prepare(values);
-      updateUser.execute(new DefaultSubscriber<User>());
+      updateUserAge.prepare(values);
+      updateUserAge.execute(new DefaultSubscriber<User>());
     }
   }
 }

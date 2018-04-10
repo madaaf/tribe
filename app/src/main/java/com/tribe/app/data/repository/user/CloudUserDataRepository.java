@@ -1,5 +1,7 @@
 package com.tribe.app.data.repository.user;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.LoginEntity;
 import com.tribe.app.data.realm.AccessToken;
@@ -134,6 +136,12 @@ import rx.Observable;
         .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
   }
 
+  @Override public Observable<User> updateUserAge(List<Pair<String, String>> values) {
+    final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
+    return userDataStore.updateUserAge(values)
+        .map(userRealm -> this.userRealmDataMapper.transform(userRealm, true));
+  }
+
   @Override public Observable<User> updateUserFacebook(String userId, String accessToken) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
     return userDataStore.updateUserFacebook(accessToken)
@@ -154,16 +162,16 @@ import rx.Observable;
     return userDataStore.incrUserTimeInCall(userId, timeInCall);
   }
 
-  @Override public Observable<List<Contact>> contacts() {
+  @Override public Observable<List<Contact>> contacts(Context c) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.contacts().map(collection -> {
+    return userDataStore.contacts(c).map(collection -> {
       return this.contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection));
     });
   }
 
-  @Override public Observable<List<ContactFB>> requestInvitableFriends(int nbr) {
+  @Override public Observable<List<ContactFB>> requestInvitableFriends(Context context, int nbr) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createCloudDataStore();
-    return userDataStore.requestInvitableFriends(nbr).map(collection -> {
+    return userDataStore.requestInvitableFriends(context, nbr).map(collection -> {
       List<Contact> contactList =
           this.contactRealmDataMapper.transform(new ArrayList<ContactInterface>(collection));
       List<ContactFB> list = new ArrayList<>();

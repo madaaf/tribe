@@ -18,9 +18,12 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
+import com.google.gson.Gson;
 import com.tribe.app.R;
 import com.tribe.app.data.realm.ContactFBRealm;
+import com.tribe.app.domain.entity.FacebookData;
 import com.tribe.app.domain.entity.FacebookEntity;
+import com.tribe.app.domain.entity.FacebookPayload;
 import com.tribe.app.presentation.utils.EmojiParser;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,6 +57,7 @@ import timber.log.Timber;
   private PublishSubject<LoginResult> loginSubject;
   private PublishSubject<String> gameRequestSubject;
   private PublishSubject<Boolean> notifyFriendsSubject;
+
   private Observable<List<ContactFBRealm>> friendListObservable;
   private Observable<List<ContactFBRealm>> friendInvitableListObservable;
   private Observable<List<String>> fbIdsListObservable;
@@ -108,15 +112,27 @@ import timber.log.Timber;
     return friendListObservable;
   }
 
-  public Observable<List<ContactFBRealm>> requestInvitableFriends(int nbr) {
+  public Observable<List<ContactFBRealm>> requestInvitableFriends(Context c, int nbr) {
     if (friendInvitableListObservable == null) {
       friendInvitableListObservable =
           Observable.create((Subscriber<? super List<ContactFBRealm>> subscriber) -> {
-            emitFriendsInvitable(subscriber, nbr);
-          }).onBackpressureBuffer().serialize();
+            emitFriendsInvitable(c, subscriber, nbr);
+          })
+              .subscribeOn(AndroidSchedulers.mainThread())
+              .doOnError(
+                  throwable -> Timber.e("error requestInvitableFriends " + throwable.getMessage()));
     }
 
     return friendInvitableListObservable;
+  }
+
+  public Observable<List<String>> contactsFbId(Context c, List<String> toIds) {
+    fbIdsListObservable = Observable.create((Subscriber<? super List<String>> subscriber) -> {
+      getContactsFbIdList(subscriber, c, toIds);
+    })
+        .subscribeOn(AndroidSchedulers.mainThread())
+        .doOnError(throwable -> Timber.e("error getContactsFbIdList " + throwable.getMessage()));
+    return fbIdsListObservable;
   }
 
   public void emitFriends(Subscriber subscriber) {
@@ -173,33 +189,29 @@ import timber.log.Timber;
         view.evaluateJavascript(
             "(function() { return ('<html>'+document.getElementsByClassName('_5q1p')[0].innerHTML+'</html>'); })();",
             html -> {
-              Log.d("HTML", html);
-              String initialContent = html.substring(html.indexOf("name=\\\"to\\\""));
-              String start = "value=\\\"";
-              String end = "\\\">";
-              String finalContent =
-                  initialContent.substring(initialContent.indexOf(start) + start.length(),
-                      initialContent.indexOf(end));
+              int index = html.indexOf("name=\\\"to\\\"");
+              if (index != -1) {
+                String initialContent = html.substring(index);
+                String start = "value=\\\"";
+                String end = "\\\">";
+                String finalContent =
+                    initialContent.substring(initialContent.indexOf(start) + start.length(),
+                        initialContent.indexOf(end));
 
-              List<String> fbIdList = new ArrayList<>(Arrays.asList(finalContent.split(",")));
+                List<String> fbIdList = new ArrayList<>(Arrays.asList(finalContent.split(",")));
 
-              subscriber.onNext(fbIdList);
-              subscriber.onCompleted();
+                subscriber.onNext(fbIdList);
+                subscriber.onCompleted();
+              } else {
+                subscriber.onNext(new ArrayList<>());
+                subscriber.onCompleted();
+              }
             });
       }
     });
     webView.getSettings().setJavaScriptEnabled(true);
     webView.loadUrl(url);
     webView.setVisibility(View.VISIBLE);
-  }
-
-  public Observable<List<String>> contactsFbId(Context c, List<String> toIds) {
-    fbIdsListObservable = Observable.create((Subscriber<? super List<String>> subscriber) -> {
-      getContactsFbIdList(subscriber, c, toIds);
-    })
-        .subscribeOn(AndroidSchedulers.mainThread())
-        .doOnError(throwable -> Timber.e("error getContactsFbIdList " + throwable.getMessage()));
-    return fbIdsListObservable;
   }
 
   public Observable<Boolean> notifyFriends(Context context, ArrayList<String> toIds) {
@@ -264,13 +276,56 @@ import timber.log.Timber;
     return notifyFriendsSubject;
   }
 
-  public void emitFriendsInvitable(Subscriber subscriber, int nbr) {
+  public void emitFriendsInvitable(Context c, Subscriber subscriber, int nbr) {
     if (FacebookUtils.isLoggedIn()) {
-      new GraphRequest(AccessToken.getCurrentAccessToken(), "/"
-          + AccessToken.getCurrentAccessToken().getUserId()
-          + "/invitable_friends?fields=id,name&limit="
-          + nbr, null, HttpMethod.GET,
-          response -> handleFriendList(response, subscriber, false)).executeAsync();
+
+      AccessToken a = FacebookUtils.accessToken();
+
+      String url = "https://m.facebook.com/v2.9/dialog/apprequests?access_token="
+          + a.getToken()
+          + "&app_id="
+          + a.getApplicationId()
+          + "&to="
+          + "&sdk=android-4.23.0&redirect_uri=fbconnect%3A%2F%2Fsuccess&message=Welcome&display=touch";
+
+      WebView webView = new WebView(c);
+
+      webView.setWebViewClient(new WebViewClient() {
+        @Override public void onReceivedError(WebView view, WebResourceRequest request,
+            WebResourceError error) {
+          super.onReceivedError(view, request, error);
+        }
+
+        @Override public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+          return true;
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
+        public void onPageFinished(WebView view, String url) {
+          super.onPageFinished(view, url);
+          view.evaluateJavascript(
+              "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+              html -> {
+                // code here
+                String start = "encrypted\\\":\\\"";
+                int index = html.indexOf(start) + start.length();
+                if (index != -1) {
+                  String initialContent = html.substring(index);
+                  String end = "\\\"}";
+                  String encrypted = initialContent.substring(0, initialContent.indexOf(end));
+
+                  String newUrl = "https://m.facebook.com/ds/first_degree.php?app_id="
+                      + a.getApplicationId()
+                      + "&include_viewer=0&token=v7&filter[0]=user&options[0]=friends_only&options[1]=nm&options[2]=skip_family&__ajax__="
+                      + encrypted;
+                  getFbFriendsInvitable(subscriber, c, newUrl, nbr);
+                }
+              });
+        }
+      });
+      webView.getSettings().setJavaScriptEnabled(true);
+      webView.loadUrl(url);
+      webView.setVisibility(View.VISIBLE);
     } else {
       if (!subscriber.isUnsubscribed()) {
         subscriber.onNext(new ArrayList<>());
@@ -314,6 +369,63 @@ import timber.log.Timber;
     }
 
     return facebookEntityObservable;
+  }
+
+  public void getFbFriendsInvitable(Subscriber subscriber, Context context, String url, int nbr) {
+    WebView webView = new WebView(context);
+
+    webView.setWebViewClient(new WebViewClient() {
+      @Override public void onReceivedError(WebView view, WebResourceRequest request,
+          WebResourceError error) {
+        super.onReceivedError(view, request, error);
+        subscriber.onNext(null);
+        subscriber.onCompleted();
+      }
+
+      @Override public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+        return true;
+      }
+
+      @RequiresApi(api = Build.VERSION_CODES.KITKAT) @Override
+      public void onPageFinished(WebView view, String url) {
+        super.onPageFinished(view, url);
+
+        view.evaluateJavascript(
+            "(function() { return ('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>'); })();",
+            html -> {
+              String start = "for (;;);";
+              String end = "\\u003C/pre>\\u003C/body>\\u003C/html>";
+
+              int index = html.indexOf(start) + start.length();
+              if (index != -1) {
+                String initialContent = html.substring(index);
+                if (initialContent.contains(end)) {
+                  String json = initialContent.substring(0, initialContent.indexOf(end));
+                  String formatted = json.replaceAll("\\\\", "");
+
+                  Gson g = new Gson();
+                  FacebookData p = g.fromJson(formatted, FacebookData.class);
+                  List<ContactFBRealm> list = new ArrayList<>();
+                  for (int i = 0; i < p.getPayload().size(); i++) {
+                    if (i > nbr) {
+                      break;
+                    }
+                    FacebookPayload payload = p.getPayload().get(i);
+                    ContactFBRealm contactFBRealm = new ContactFBRealm();
+                    contactFBRealm.setId(String.valueOf(payload.getUid()));
+                    contactFBRealm.setName(payload.getText());
+                    list.add(contactFBRealm);
+                  }
+                  subscriber.onNext(list);
+                  subscriber.onCompleted();
+                }
+              }
+            });
+      }
+    });
+    webView.getSettings().setJavaScriptEnabled(true);
+    webView.loadUrl(url);
+    webView.setVisibility(View.VISIBLE);
   }
 
   public void emitMe(Subscriber subscriber) {

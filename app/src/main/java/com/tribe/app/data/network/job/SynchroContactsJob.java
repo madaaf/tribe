@@ -1,11 +1,14 @@
 package com.tribe.app.data.network.job;
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
 import com.tribe.app.domain.interactor.common.UseCase;
+import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.presentation.internal.di.components.ApplicationComponent;
 import java.util.List;
 import javax.inject.Inject;
@@ -17,14 +20,16 @@ import javax.inject.Named;
 public class SynchroContactsJob extends BaseJob {
 
   private static final String TAG = "SynchroContactsJob";
+  private Activity context;
 
-  @Inject @Named("synchroContactList") UseCase synchroContactList;
+  @Inject SynchroContactList synchroContactList;
 
-  public SynchroContactsJob() {
+  public SynchroContactsJob(Activity c) {
     super(new Params(Priority.LOW).delayInMs(1000)
         .requireNetwork()
         .singleInstanceBy(TAG)
         .groupBy(TAG));
+    this.context = c;
   }
 
   @Override public void onAdded() {
@@ -32,6 +37,7 @@ public class SynchroContactsJob extends BaseJob {
   }
 
   @Override public void onRun() throws Throwable {
+    synchroContactList.setParams(context);
     synchroContactList.execute(new ContactListSubscriber());
   }
 

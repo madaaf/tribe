@@ -29,7 +29,9 @@ import com.tribe.app.presentation.view.component.live.game.birdrush.GameBirdRush
 import com.tribe.app.presentation.view.component.live.game.common.GameView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithRanking;
 import com.tribe.app.presentation.view.component.live.game.coolcams.GameCoolCamsView;
+import com.tribe.app.presentation.view.component.live.game.corona.GameBattleRoyaleCoronaView;
 import com.tribe.app.presentation.view.component.live.game.corona.GameCoronaView;
+import com.tribe.app.presentation.view.component.live.game.gamemaster.GameMasterManagerFactory;
 import com.tribe.app.presentation.view.component.live.game.trivia.GameTriviaView;
 import com.tribe.app.presentation.view.component.live.game.web.GameWebView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
@@ -65,6 +67,7 @@ public class GameManagerView extends FrameLayout {
   private GameManager gameManager;
   private GameView currentGameView;
   private WebRTCRoom webRTCRoom;
+  private GameMasterManagerFactory.GameMasterManager gameMasterManager;
   private Map<String, TribeGuest> peerMap;
   private Map<String, TribeGuest> invitedMap;
   private Game currentGame;
@@ -135,6 +138,11 @@ public class GameManagerView extends FrameLayout {
   }
 
   private void initSubscriptions() {
+    subscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
+      if (game.getId().equals(Game.GAME_BATTLE_ROYALE) && gameMasterManager != null) {
+        gameMasterManager.send(">battleroyale");
+      }
+    }));
     subscriptions.add(Observable.merge(gameManager.onCurrentUserStartGame()
         .map(game -> Pair.create(new TribeSession(TribeSession.PUBLISHER_ID, currentUser.getId()),
             game)), gameManager.onRemoteUserStartGame())
@@ -173,6 +181,7 @@ public class GameManagerView extends FrameLayout {
         .filter(game -> game.hasView())
         .subscribe(game -> {
           if (currentGameView != null) {
+            if (gameMasterManager != null) gameMasterManager.send(">");
             currentGameView.stop();
             removeView(currentGameView);
           }
@@ -256,8 +265,17 @@ public class GameManagerView extends FrameLayout {
       subscriptionsGame.add(gameDrawView.onNextDraw()
           .map(aBoolean -> gameManager.getCurrentGame())
           .subscribe(onRestartGame));
-    } else if (game.getId().equals(Game.GAME_INVADERS)) {
-      GameCoronaView gameCoronaView = new GameCoronaView(getContext(), game);
+    } else if (game.getId().equals(Game.GAME_INVADERS) ||
+        game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
+      GameCoronaView gameCoronaView;
+      if (game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
+        GameBattleRoyaleCoronaView gameBattleRoyaleCoronaView =
+            new GameBattleRoyaleCoronaView(getContext(), game);
+        gameCoronaView = gameBattleRoyaleCoronaView;
+      } else {
+        gameCoronaView = new GameCoronaView(getContext(), game);
+      }
+
       subscriptionsGame.add(gameCoronaView.onAddScore().subscribe(onAddScore));
       subscriptionsGame.add(gameCoronaView.onRevive().subscribe(onRevive));
       subscriptionsGame.add(gameCoronaView.onOpenLeaderboard().subscribe(onOpenLeaderboard));
@@ -301,6 +319,7 @@ public class GameManagerView extends FrameLayout {
     }
 
     gameView.setWebRTCRoom(webRTCRoom);
+    gameView.setGameMasterManager(gameMasterManager);
     game.initPeerMapObservable(onPeerMapChange);
     game.setDataList(mapGameData.get(game.getId()));
     gameView.start(game, masterMapObs, onPeerMapChange, onInvitedMapChange, onLiveViewsChange,
@@ -316,6 +335,10 @@ public class GameManagerView extends FrameLayout {
 
   public void setWebRTCRoom(WebRTCRoom webRTCRoom) {
     this.webRTCRoom = webRTCRoom;
+  }
+
+  public void setGameMasterManager(GameMasterManagerFactory.GameMasterManager gameMasterManager) {
+    this.gameMasterManager = gameMasterManager;
   }
 
   public void disposeGame() {
@@ -334,6 +357,8 @@ public class GameManagerView extends FrameLayout {
     mapGameData.clear();
     onPeerMapChange = BehaviorSubject.create();
     onInvitedMapChange = BehaviorSubject.create();
+    webRTCRoom = null;
+    gameMasterManager = null;
     disposeGame();
   }
 

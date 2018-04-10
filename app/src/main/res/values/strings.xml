@@ -1001,7 +1001,8 @@
 	<!-- Game Mode -->
 	<string name="gamemode_title">Game mode</string>
 	<string name="gamemode_alone_title">SOLO TRAINING</string>
-	<string name="gamemode_multi_title">MULTIPLAYER</string>
+	<string name="gamemode_multi_title">CHALLENGE FRIENDS</string>
+	<string name="gamemode_match_title">MATCH STRANGERS</string>
 	<string name="gamemode_leaderboard">LEADERBOARD</string>
 	
 	<!-- Hang Up Popup -->
@@ -1095,7 +1096,8 @@
 	<string name="invited_to_join_popup_title">%1$s invited\nyou to join a challenge!</string>
 	<string name="invited_to_join_popup_subtitle">With %1$s</string>
 	<string name="invited_to_join_popup_no_game_selected">NO GAME SELECTED YET</string>
-	<string name="invited_to_join_popup_action_later">LATER</string>
+	<string name="invited_to_join_popup_action_accept">JOIN NOW</string>
+	<string name="invited_to_join_popup_action_later">NOT NOW</string>
 	
 	<!-- Rematch Menu -->
 	<string name="rematch_menu_title">Rematch</string>
@@ -1106,4 +1108,21 @@
 	<string name="report_tutorial_popup_title">Tap on any player to report his behavior</string>
 	<string name="report_tutorial_popup_subtitle">We\'re here to have fun together. Anyone that is not shoudn\'t be here.</string>
 	<string name="report_tutorial_popup_action_done">GOT IT!</string>
+	
+	<!-- Low Battery Popup -->
+	<string name="low_battery_popup_title">Disable the Low battery mode!</string>
+	<string name="low_battery_popup_subtitle">This mode will considerably slow down the game</string>
+	<string name="low_battery_popup_action_done">GOT IT!</string>
+	
+	<!-- Mute Menu -->
+	<string name="mute_menu_mute_games">Mute game sounds</string>
+	<string name="mute_menu_mute_users">Mute all players</string>
+	<string name="mute_menu_mute_both">Mute both</string>
+	<string name="mute_menu_unmute_games">Unmute game sounds</string>
+	<string name="mute_menu_unmute_users">Unmute all players</string>
+	<string name="mute_menu_unmute_both">Unmute both</string>
+	
+	<!-- Play Menu -->
+	<string name="play_menu_action_match">Match strangers</string>
+	<string name="play_menu_action_pick_friends">Pick friends</string>
 </resources>

@@ -137,8 +137,7 @@ public class LiveNotificationView extends FrameLayout implements Animation.Anima
     if (type == LIVE ||
         (!StringUtils.isEmpty(action) && action.equals(NotificationPayload.ACTION_JOINED))) {
       layoutDetails.setVisibility(View.VISIBLE);
-      viewPictoLive.setVisibility(View.VISIBLE);
-      viewPictoLive.setStatus(PictoLiveView.ACTIVE);
+      viewPictoLive.setVisibility(View.GONE);
     } else if (actionType.equals(NotificationPayload.CLICK_ACTION_MESSAGE) &&
         (StringUtils.isEmpty(action) ||
             (!action.equals(NotificationPayload.ACTION_LEFT) &&

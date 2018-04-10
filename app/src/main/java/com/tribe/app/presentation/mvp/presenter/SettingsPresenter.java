@@ -1,5 +1,7 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.app.Activity;
+import android.content.Context;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.User;
@@ -8,7 +10,9 @@ import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.common.UseCaseDisk;
 import com.tribe.app.domain.interactor.user.LookupUsername;
 import com.tribe.app.domain.interactor.user.RemoveInstall;
+import com.tribe.app.domain.interactor.user.SynchroContactList;
 import com.tribe.app.domain.interactor.user.UpdateUser;
+import com.tribe.app.domain.interactor.user.UpdateUserAge;
 import com.tribe.app.domain.interactor.user.UpdateUserFacebook;
 import com.tribe.app.domain.interactor.user.UpdateUserPhoneNumber;
 import com.tribe.app.presentation.mvp.view.MVPView;
@@ -27,7 +31,7 @@ public class SettingsPresenter extends UpdateUserPresenter {
   private SettingsMVPView settingsView;
 
   private final RemoveInstall removeInstall;
-  private final UseCase synchroContactList;
+  private final SynchroContactList synchroContactList;
   private UseCaseDisk getDiskContactList;
   private UseCaseDisk getDiskFBContactList;
   private JobManager jobManager;
@@ -36,11 +40,11 @@ public class SettingsPresenter extends UpdateUserPresenter {
 
   @Inject SettingsPresenter(UpdateUser updateUser,
       @Named("lookupByUsername") LookupUsername lookupUsername, RxFacebook rxFacebook,
-      RemoveInstall removeInstall, @Named("synchroContactList") UseCase synchroContactList,
+      RemoveInstall removeInstall,  SynchroContactList synchroContactList,
       JobManager jobManager, @Named("diskContactList") UseCaseDisk getDiskContactList,
       @Named("diskFBContactList") UseCaseDisk getDiskFBContactList,
-      UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber) {
-    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber);
+      UpdateUserFacebook updateUserFacebook, UpdateUserPhoneNumber updateUserPhoneNumber, UpdateUserAge updateUserAge) {
+    super(updateUser, lookupUsername, rxFacebook, updateUserFacebook, updateUserPhoneNumber, updateUserAge);
     this.removeInstall = removeInstall;
     this.synchroContactList = synchroContactList;
     this.jobManager = jobManager;
@@ -65,9 +69,10 @@ public class SettingsPresenter extends UpdateUserPresenter {
     removeInstall.execute(new RemoveInstallSubscriber());
   }
 
-  public void lookupContacts() {
+  public void lookupContacts(Activity c) {
     if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
     lookupContactsSubscriber = new LookupContactsSubscriber();
+    synchroContactList.setParams(c);
     synchroContactList.execute(lookupContactsSubscriber);
   }
 

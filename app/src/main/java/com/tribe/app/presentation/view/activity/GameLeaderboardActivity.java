@@ -41,10 +41,12 @@ import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.PokeTiming;
 import com.tribe.app.domain.entity.Recipient;
 import com.tribe.app.domain.entity.Score;
+import com.tribe.app.domain.entity.Shortcut;
 import com.tribe.app.domain.entity.User;
 import com.tribe.app.presentation.mvp.presenter.GamePresenter;
 import com.tribe.app.presentation.mvp.presenter.MessagePresenter;
 import com.tribe.app.presentation.mvp.view.adapter.GameMVPViewAdapter;
+import com.tribe.app.presentation.mvp.view.adapter.MessageMVPViewAdapter;
 import com.tribe.app.presentation.utils.EmojiParser;
 import com.tribe.app.presentation.utils.PermissionUtils;
 import com.tribe.app.presentation.utils.analytics.TagManagerUtils;
@@ -56,9 +58,11 @@ import com.tribe.app.presentation.view.ShortcutUtil;
 import com.tribe.app.presentation.view.adapter.decorator.BaseListDividerDecoration;
 import com.tribe.app.presentation.view.adapter.manager.LeaderboardDetailsLayoutManager;
 import com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter;
+import com.tribe.app.presentation.view.component.games.LeaderboardUserView;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
 import com.tribe.app.presentation.view.utils.SoundManager;
 import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.utils.UIUtils;
 import com.tribe.app.presentation.view.widget.EmojiPoke;
 import com.tribe.app.presentation.view.widget.TextViewFont;
 import com.tribe.app.presentation.view.widget.TextViewRanking;
@@ -76,7 +80,6 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
-import static com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardDetailsAdapterDelegate.maxWaitingTimeSeconde;
 import static com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter.LEADERBOARD_ADDRESS;
 import static com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter.LEADERBOARD_ITEM_ADDRESS_BOOK;
 import static com.tribe.app.presentation.view.adapter.viewholder.LeaderboardDetailsAdapter.LEADERBOARD_ITEM_FACEBOOK;
@@ -87,10 +90,12 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   private static final float OVERSHOOT = 1.25f;
 
   public static final String GAME_ID = "game_id";
+  public static final String FROM_LIVE = "from_live";
 
-  public static Intent getCallingIntent(Activity activity, String gameId) {
+  public static Intent getCallingIntent(Activity activity, String gameId, boolean fromLive) {
     Intent intent = new Intent(activity, GameLeaderboardActivity.class);
     intent.putExtra(GAME_ID, gameId);
+    intent.putExtra(FROM_LIVE, fromLive);
     return intent;
   }
 
@@ -110,7 +115,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @BindView(R.id.imgBackgroundLogo) ImageView imgBackgroundLogo;
 
-  @BindView(R.id.txtTitle) TextViewFont txtTitle;
+  @BindView(R.id.imgLogo) ImageView imgLogo;
 
   @BindView(R.id.recyclerViewLeaderboard) RecyclerView recyclerView;
 
@@ -164,6 +169,12 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
 
   @BindView(R.id.txtScoreThird) TextViewScore txtScoreThird;
 
+  @BindView(R.id.viewCurrentUserLeaderboard) LeaderboardUserView viewCurrentUserLeaderboard;
+
+  @BindView(R.id.layoutCurrentUserLeaderboard) LinearLayout layoutCurrentUserLeaderboard;
+
+  @BindView(R.id.viewShadow) View viewShadow;
+
   @Inject @PokeUserGame Preference<String> pokeUserGame;
 
   // VARIABLES
@@ -172,11 +183,14 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   private List<Score> items;
   private GameManager gameManager;
   private GameMVPViewAdapter gameMVPViewAdapter;
+  private MessageMVPViewAdapter messageMVPViewAdapter;
+  private boolean isFromLive = false;
   private String gameId;
   private Game game;
   private List<EmojiPoke> emojis = new ArrayList<>();
   private RxPermissions rxPermissions;
-
+  private List<Score> podiumList = new ArrayList<>();
+  private Context context;
   // RESOURCES
 
   // OBSERVABLES
@@ -191,6 +205,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     }
 
     super.onCreate(savedInstanceState);
+    context = this;
     setContentView(R.layout.activity_game_leaderboards);
 
     ButterKnife.bind(this);
@@ -200,6 +215,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     }
 
     gameId = getIntent().getStringExtra(GAME_ID);
+    isFromLive = getIntent().getBooleanExtra(FROM_LIVE, false);
 
     gameManager = GameManager.getInstance(this);
     game = gameManager.getGameById(getIntent().getStringExtra(GAME_ID));
@@ -215,11 +231,13 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   @Override protected void onStart() {
     super.onStart();
     gamePresenter.onViewAttached(gameMVPViewAdapter);
+    messagePresenter.onViewAttached(messageMVPViewAdapter);
   }
 
   @Override protected void onStop() {
     super.onStop();
     gamePresenter.onViewDetached();
+    messagePresenter.onViewDetached();
   }
 
   @Override protected void onResume() {
@@ -232,13 +250,17 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     super.onDestroy();
   }
 
-  private List<Score> podiumList = new ArrayList<>();
-
   protected void initPresenter() {
+    messageMVPViewAdapter = new MessageMVPViewAdapter(this) {
+
+      @Override public void onShortcutUpdate(Shortcut shortcut) {
+        navigator.navigateToChat((Activity) context, shortcut, null, null, false);
+      }
+    };
     gameMVPViewAdapter = new GameMVPViewAdapter() {
       @Override public void successFacebookLogin() {
         super.successFacebookLogin();
-        gamePresenter.lookupContacts();
+        gamePresenter.lookupContacts((Activity) context);
         adapter.notifyDataSetChanged();
       }
 
@@ -267,9 +289,14 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
         set.clone(getApplicationContext(), R.layout.activity_game_leaderboards_final);
         animateLayoutWithConstraintSet(set, null);
 
+        int count = 0;
         for (Score score : scoreList) {
           // We add the current user if user == null, it means it's the current user's score
-          if (score.getUser() == null) score.setUser(getCurrentUser());
+          if (score.getUser() == null) {
+            score.setUser(getCurrentUser());
+            viewCurrentUserLeaderboard.initCell(score, count + 1);
+          }
+          count++;
         }
 
         Score first = scoreList.remove(0);
@@ -361,7 +388,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
   }
 
   private void initUI() {
-    txtTitle.setText(game.getTitle());
+    Glide.with(this).load(game.getLogo()).into(imgLogo);
 
     Glide.with(this).load(game.getBackground()).into(imgBackgroundLogo);
 
@@ -385,6 +412,18 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     recyclerView.setLayoutManager(layoutManager);
     adapter = new LeaderboardDetailsAdapter(this, recyclerView, stateManager);
 
+    layoutCurrentUserLeaderboard.setBackgroundColor(
+        Color.parseColor("#" + game.getPrimary_color()));
+
+    if (hasSoftKeys()) {
+      int bottomMargin = screenUtils.dpToPx(120);
+      UIUtils.changeHeightOfView(layoutCurrentUserLeaderboard, bottomMargin);
+      UIUtils.changeBottomMarginOfView(viewShadow, bottomMargin);
+      UIUtils.changeBottomMarginOfView(recyclerView, bottomMargin);
+    } else {
+      UIUtils.changeBottomMarginOfView(viewShadow, screenUtils.dpToPx(100));
+    }
+
     subscriptions.add(adapter.onClickPoke().subscribe(score -> {
       setClickPokeAnimation(score, score.getTextView());
     }));
@@ -399,7 +438,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
             tagManager.setProperty(bundle);
 
             if (hasPermission) {
-              gamePresenter.lookupContacts();
+              gamePresenter.lookupContacts((Activity) context);
             }
           });
         } else if (score.getId().equals(LEADERBOARD_ITEM_FACEBOOK)) {
@@ -432,6 +471,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
       float range = (float) -appBarLayout.getTotalScrollRange();
       layoutConstraint.setAlpha(1.0f - (float) verticalOffset / range);
     });
+
+    if (isFromLive) playBtn.setVisibility(View.GONE);
   }
 
   private void initDependencyInjector() {
@@ -533,14 +574,14 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     List<PokeTiming> pokeTimingList = new ArrayList<>();
     pokeTimingList.add(pokeTiming);
     PreferencesUtils.savePlayloadPokeTimingAsJson(pokeTimingList, pokeUserGame,
-        maxWaitingTimeSeconde);
+        LeaderboardUserView.MAX_WAITING_TIME_SECONDS);
   }
 
   private Long getWaitingTime(Score score) {
     Long timeSecond = null;
     String id = score.getGame().getId() + "_" + score.getUser().getId();
-    List<PokeTiming> testList2 =
-        PreferencesUtils.getPlayloadPokeTimingList(pokeUserGame, maxWaitingTimeSeconde);
+    List<PokeTiming> testList2 = PreferencesUtils.getPlayloadPokeTimingList(pokeUserGame,
+        LeaderboardUserView.MAX_WAITING_TIME_SECONDS);
 
     for (PokeTiming p : testList2) {
       if (p.getId().equals(id)) {
@@ -559,7 +600,7 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     } else if (getWaitingTime(score) != null) {
       Long t = getWaitingTime(score);
       if (t != null) {
-        Long diff = maxWaitingTimeSeconde - t;
+        Long diff = LeaderboardUserView.MAX_WAITING_TIME_SECONDS - t;
         String waitingMessage = (diff < 60) ? getString(R.string.poke_delay_seconds, diff,
             score.getUser().getDisplayName())
             : getString(R.string.poke_delay_minutes, diff / 60, score.getUser().getDisplayName());
@@ -574,8 +615,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     bundle.putInt(TagManagerUtils.RANK, score.getRanking());
     tagManager.trackEvent(TagManagerUtils.Poke, bundle);
 
-    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
-        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null &&
+        score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
 
     if (isAbove) {
       soundManager.playSound(SoundManager.POKE_LAUGH, SoundManager.SOUND_LOW);
@@ -658,7 +699,11 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
           getString(R.string.poke_share_score, score.getGame().getId(), score.getRanking()), this);
     } else {
       Recipient recipient = ShortcutUtil.getRecipientFromId(score.getUser().getId(), user);
-      navigator.navigateToChat(this, recipient, null, null, false);
+      if (recipient != null) {
+        navigator.navigateToChat(this, recipient, null, null, false);
+      } else {
+        messagePresenter.createShortcut(false, score.getUser().getId());
+      }
     }
   }
 

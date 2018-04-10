@@ -87,6 +87,7 @@ public class NotifView extends FrameLayout {
   private NewChatMVPViewAdapter newChatMVPViewAdapter;
   private PageListener pageListener;
   private OnFinishEventListener listener;
+  private int maxPaginationCall = 0, counterPagination = 0;
 
   @BindView(R.id.pager) ViewPager pager;
   @BindView(R.id.txtDismiss) TextViewFont textDismiss;
@@ -153,11 +154,11 @@ public class NotifView extends FrameLayout {
         case NotificationModel.POPUP_FACEBOOK:
           if (!FacebookUtils.isLoggedIn()) {
             subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
+              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, context);
               hideNextNotif();
             }));
           } else {
-            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
+            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, context);
             hideNextNotif();
           }
           break;
@@ -166,15 +167,17 @@ public class NotifView extends FrameLayout {
               DialogFactory.showBottomSheetForCamera(activity).subscribe(labelType -> {
                 hideView();
                 if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-                  subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA).subscribe(uri -> {
-                    newChatPresenter.updateUser(currentUser.getId(), currentUser.getUsername(),
-                        currentUser.getDisplayName(), uri.toString());
-                  }));
+                  subscriptions.add(
+                      rxImagePicker.requestImage(Sources.CAMERA, true).subscribe(uri -> {
+                        newChatPresenter.updateUser(currentUser.getId(), currentUser.getUsername(),
+                            currentUser.getDisplayName(), uri.toString());
+                      }));
                 } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-                  subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY).subscribe(uri -> {
-                    newChatPresenter.updateUser(currentUser.getId(), currentUser.getUsername(),
-                        currentUser.getDisplayName(), uri.toString());
-                  }));
+                  subscriptions.add(
+                      rxImagePicker.requestImage(Sources.GALLERY, true).subscribe(uri -> {
+                        newChatPresenter.updateUser(currentUser.getId(), currentUser.getUsername(),
+                            currentUser.getDisplayName(), uri.toString());
+                      }));
                 }
               }));
           break;
@@ -236,6 +239,22 @@ public class NotifView extends FrameLayout {
         Timber.d("onShortcutCreatedSuccess " + shortcut.getId());
       }
 
+      private void notifyFriend(Context context, ArrayList<String> array) {
+        Timber.d("Notify FB friends");
+        counterPagination++;
+        subscriptions.add(rxFacebook.notifyFriends(context, array).subscribe(aBoolean -> {
+          if (counterPagination >= maxPaginationCall) {
+            counterPagination = 0;
+            Timber.d("Notify FB answer : " + aBoolean);
+            if (aBoolean) {
+              Bundle bundle = new Bundle();
+              bundle.putString(TagManagerUtils.USE_CASE, TagManagerUtils.USE_CASE_FACEBOOK);
+              tagManager.trackEvent(TagManagerUtils.GameRequest, bundle);
+            }
+          }
+        }));
+      }
+
       @Override public void onLoadFBContactsFbInvite(List<ContactFB> contactList) {
         super.onLoadFBContactsFbInvite(contactList);
         Timber.d("onLoadFBContactsFbInvite " + contactList.size());
@@ -246,20 +265,22 @@ public class NotifView extends FrameLayout {
         }
         int rest = array.size() % MAX_SIZE_PAGINATION;
         int nbrOfArray = array.size() / MAX_SIZE_PAGINATION;
+
+        maxPaginationCall = (rest == 0) ? nbrOfArray : nbrOfArray + 1;
         if (rest == 0) {
           for (int i = 0; i < nbrOfArray; i++) {
             ArrayList<String> splitArray = splitList((i * MAX_SIZE_PAGINATION),
                 (i * MAX_SIZE_PAGINATION) + MAX_SIZE_PAGINATION, array);
-            rxFacebook.notifyFriends(context, splitArray);
+            notifyFriend(context, splitArray);
           }
         } else {
           for (int i = 0; i < nbrOfArray; i++) {
             ArrayList<String> splitArray = splitList((i * MAX_SIZE_PAGINATION),
                 (i * MAX_SIZE_PAGINATION) + MAX_SIZE_PAGINATION, array);
-            rxFacebook.notifyFriends(context, splitArray);
+            notifyFriend(context, splitArray);
           }
           ArrayList<String> splitArray = splitList(nbrOfArray, nbrOfArray + rest, array);
-          rxFacebook.notifyFriends(context, splitArray);
+          notifyFriend(context, splitArray);
         }
       }
     };

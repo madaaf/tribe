@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     >
 
-  <android.support.v4.view.ViewPager
+  <com.tribe.app.presentation.view.widget.CustomViewPager
       android:id="@+id/pager"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
@@ -13,6 +13,7 @@
 
 
   <FrameLayout
+      android:id="@+id/topbar"
       android:layout_width="match_parent"
       android:layout_height="52dp"
       android:animateLayoutChanges="true"
@@ -230,9 +231,9 @@
 
     <ImageView
         android:id="@+id/imgAnimation2"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="50dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="50dp"
         android:scaleType="centerInside"
         android:scaleX="1"
         android:scaleY="1"
@@ -242,10 +243,10 @@
 
     <ImageView
         android:id="@+id/imgAnimation3"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginStart="100dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:scaleType="centerInside"
         android:scaleX="1"
         android:scaleY="1"
@@ -253,19 +254,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <ImageView
-        android:id="@+id/test"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/icon_game_slice_fruit"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-
         />
 
 

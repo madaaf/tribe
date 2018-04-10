@@ -3,12 +3,15 @@ package com.tribe.app.presentation.utils.mediapicker;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
 import com.tribe.app.R;
 import com.tribe.app.presentation.internal.di.components.DaggerUserComponent;
 import com.tribe.app.presentation.utils.PermissionUtils;
@@ -25,6 +28,7 @@ public class MediaHiddenActivity extends BaseActivity {
   private static final String KEY_CAMERA_PICTURE_URL = "cameraPictureUrl";
 
   public static final String IMAGE_SOURCE = "image_source";
+  public static final String IS_AVATAR = "IS_AVATAR";
 
   private static final int SELECT_PHOTO = 100;
   private static final int TAKE_PHOTO = 101;
@@ -34,6 +38,7 @@ public class MediaHiddenActivity extends BaseActivity {
   // VARIABLES
   private Uri cameraPictureUrl;
   private RxPermissions rxPermissions;
+  private boolean isAvatar = false;
 
   // OBSERVABLES
   private CompositeSubscription subscriptions = new CompositeSubscription();
@@ -110,6 +115,8 @@ public class MediaHiddenActivity extends BaseActivity {
   }
 
   private void handleIntent(Intent intent) {
+    if (intent != null && intent.hasExtra(IS_AVATAR)) isAvatar = true;
+
     subscriptions.add(
         rxPermissions.request(PermissionUtils.PERMISSIONS_CAMERA).subscribe(granted -> {
           Bundle bundle = new Bundle();
@@ -166,7 +173,22 @@ public class MediaHiddenActivity extends BaseActivity {
   }
 
   private void startCropImageActivity(Uri imageUri) {
-    CropImage.activity(imageUri).start(this);
+    CropImage.ActivityBuilder builder = CropImage.activity(imageUri)
+        .setGuidelines(CropImageView.Guidelines.ON)
+        .setOutputCompressFormat(Bitmap.CompressFormat.JPEG)
+        .setMultiTouchEnabled(true)
+        .setActivityMenuIconColor(Color.BLACK)
+        .setBorderLineColor(getResources().getColor(R.color.black_opacity_40))
+        .setBorderCornerColor(getResources().getColor(R.color.black_opacity_40));
+
+    if (isAvatar) {
+      builder.setRequestedSize(640, 640).setOutputCompressQuality(50).setAspectRatio(1, 1);
+    } else {
+      builder.setRequestedSize(1024, 1024, CropImageView.RequestSizeOptions.RESIZE_FIT);
+    }
+
+    builder.start(this);
+
     overridePendingTransition(R.anim.in_from_right, R.anim.activity_out_scale_down);
   }
 }

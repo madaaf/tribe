@@ -429,9 +429,9 @@ import timber.log.Timber;
           clearLock();
         }
 
-        if (responseRefresh != null
-            && responseRefresh.isSuccessful()
-            && responseRefresh.body() != null) {
+        if (responseRefresh != null &&
+            responseRefresh.isSuccessful() &&
+            responseRefresh.body() != null) {
           AccessToken newAccessToken = responseRefresh.body();
           Timber.d("New access_token : " + newAccessToken.getAccessToken());
           Timber.d("New refresh_token : " + newAccessToken.getRefreshToken());
@@ -516,10 +516,10 @@ import timber.log.Timber;
 
     @Override public okhttp3.Response intercept(Chain chain) throws IOException {
 
-      if (tribeAuthorizer != null
-          && tribeAuthorizer.getAccessToken() != null
-          && tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null
-          && tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
+      if (tribeAuthorizer != null &&
+          tribeAuthorizer.getAccessToken() != null &&
+          tribeAuthorizer.getAccessToken().getAccessExpiresAt() != null &&
+          tribeAuthorizer.getAccessToken().getAccessExpiresAt().before(new Date())) {
 
         Timber.d(
             "The token has expired, we know it locally, so we automatically launch a refresh before hitting the backend.");
@@ -603,15 +603,16 @@ import timber.log.Timber;
 
       List<String> customAnnotations = original.headers("@");
       if (customAnnotations.contains("UseUserToken")) {
-        requestBuilder.header("Authorization",
-            tribeAuthorizer.getAccessToken().getTokenType() + " " + tribeAuthorizer.getAccessToken()
-                .getAccessToken());
+        requestBuilder.header("Authorization", tribeAuthorizer.getAccessToken().getTokenType() +
+            " " +
+            tribeAuthorizer.getAccessToken().getAccessToken());
 
         TribeApiUtils.appendTribeHeaders(context, tribeAuthorizer.getAccessToken().getUserId(),
             requestBuilder);
       } else {
-        byte[] data = (tribeAuthorizer.getApiClient() + ":" + DateUtils.unifyDate(
-            tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
+        byte[] data = (tribeAuthorizer.getApiClient() +
+            ":" +
+            DateUtils.unifyDate(tribeAuthorizer.getApiSecret())).getBytes("UTF-8");
         String base64 = Base64.encodeToString(data, Base64.DEFAULT).replace("\n", "");
 
         requestBuilder.header("Authorization", "Basic " + base64);
@@ -692,5 +693,42 @@ import timber.log.Timber;
       socketFactory.setSSLContext(sslContext);
       return new WebSocketConnection(socketFactory);
     }
+  }
+
+  @Provides @Named("webSocketGameMaster") @PerApplication
+  WebSocketConnectionOkhttp provideWebSocketGameMaster() {
+    SSLContext sslContext = null;
+
+    try {
+      sslContext = SSLContext.getInstance("SSL");
+      sslContext.init(null, new TrustManager[] {
+          new X509TrustManager() {
+            public X509Certificate[] getAcceptedIssuers() {
+              Timber.d("getAcceptedIssuers =============");
+              return new X509Certificate[0];
+            }
+
+            public void checkClientTrusted(X509Certificate[] certs, String authType) {
+              Timber.d("checkClientTrusted =============");
+            }
+
+            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+              Timber.d("checkServerTrusted =============");
+            }
+          }
+      }, new SecureRandom());
+    } catch (KeyManagementException e) {
+      e.printStackTrace();
+    } catch (NoSuchAlgorithmException e) {
+      e.printStackTrace();
+    }
+
+    OkHttpClient.Builder builder = new OkHttpClient.Builder().connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(20, TimeUnit.SECONDS)
+        .writeTimeout(20, TimeUnit.SECONDS);
+
+    builder.pingInterval(5, TimeUnit.SECONDS);
+
+    return new WebSocketConnectionOkhttp(builder.build());
   }
 }

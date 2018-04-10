@@ -197,6 +197,10 @@ public class GameBattleMusicView extends GameViewWithRanking {
         }));
   }
 
+  @Override protected void initGameMasterManagerSubscriptions() {
+
+  }
+
   @Override protected void takeOverGame() {
     gamePresenter.getBattleMusicData();
   }

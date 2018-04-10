@@ -26,7 +26,6 @@ import com.tribe.app.presentation.view.adapter.delegate.leaderboard.LeaderboardD
 import com.tribe.app.presentation.view.component.ProfileInfoView;
 import com.tribe.app.presentation.view.component.chat.ShortcutCompletionTokenView;
 import com.tribe.app.presentation.view.component.common.LoadFriendsView;
-import com.tribe.app.presentation.view.component.games.LeaderboardDetailsView;
 import com.tribe.app.presentation.view.component.games.LeaderboardMainView;
 import com.tribe.app.presentation.view.component.games.LeaderboardPage;
 import com.tribe.app.presentation.view.component.home.SearchView;
@@ -74,7 +73,6 @@ import com.tribe.app.presentation.view.widget.chat.ChatActivity;
 import com.tribe.app.presentation.view.widget.chat.ChatView;
 import com.tribe.app.presentation.view.widget.chat.PictureActivity;
 import com.tribe.app.presentation.view.widget.chat.RecyclerMessageView;
-import com.tribe.app.presentation.view.widget.notifications.EnjoyingTribeNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.ErrorNotificationView;
 import com.tribe.app.presentation.view.widget.notifications.LifeNotification;
 import com.tribe.app.presentation.view.widget.notifications.NotificationContainerView;
@@ -165,8 +163,6 @@ import dagger.Component;
 
   void inject(RatingNotificationView ratingNotificationView);
 
-  void inject(EnjoyingTribeNotificationView enjoyingTribeNotificationView);
-
   void inject(LiveLocalView liveLocalView);
 
   void inject(LiveRoomView liveRoomView);
@@ -242,8 +238,6 @@ import dagger.Component;
   void inject(GamePagerActivity gamePagerActivity);
 
   void inject(LeaderboardMainView leaderboardMainView);
-
-  void inject(LeaderboardDetailsView leaderboardDetailsView);
 
   void inject(GameDetailsView gameDetailsView);
 

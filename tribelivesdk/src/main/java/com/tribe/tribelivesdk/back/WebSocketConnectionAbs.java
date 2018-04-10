@@ -30,6 +30,7 @@ public abstract class WebSocketConnectionAbs {
   public static final String USER_AGENT = "User-Agent";
   public static final String CONTENT_TYPE = "Content-Type";
   public static final String ORIGIN = "Origin";
+  public static final String TRIBE_SESSION_ID = "trb-sess-id";
 
   protected @WebSocketState String state;
   protected Map<String, String> headers;
@@ -80,7 +81,6 @@ public abstract class WebSocketConnectionAbs {
   private int generateInterval(int k) {
     return (int) (Math.random() * (Math.min(30, (Math.pow(2, k) - 1)) * 1000));
   }
-
 
   public void setHeaders(Map<String, String> headers) {
     this.headers = headers;

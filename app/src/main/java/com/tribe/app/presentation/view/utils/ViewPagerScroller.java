@@ -15,8 +15,9 @@ public class ViewPagerScroller extends Scroller {
     super(context);
   }
 
-  public ViewPagerScroller(Context context, Interpolator interpolator) {
+  public ViewPagerScroller(Context context, Interpolator interpolator, int mScrollDuration) {
     super(context, interpolator);
+    this.mScrollDuration = mScrollDuration;
   }
 
   @Override public void startScroll(int startX, int startY, int dx, int dy, int duration) {

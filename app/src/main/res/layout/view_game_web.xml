@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    >
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
   <WebView
       android:id="@+id/webView"
       android:layout_width="match_parent"
@@ -16,24 +14,13 @@
       android:layout_height="match_parent"
       >
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/cardViewProgress"
-        android:layout_width="150dp"
-        android:layout_height="5dp"
+    <com.tribe.app.presentation.view.widget.LoadingGameView
+        android:id="@+id/loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:elevation="0dp"
-        app:cardBackgroundColor="@color/white.opacity.10"
-        app:cardCornerRadius="2.5dp"
-        app:cardElevation="0dp"
-        app:cardMaxElevation="0dp"
-        >
-
-      <View
-          android:id="@+id/viewProgress"
-          android:layout_width="0dp"
-          android:layout_height="match_parent"
-          android:background="@android:color/white"
-          />
-    </android.support.v7.widget.CardView>
+        android:gravity="center"
+        android:visibility="visible"
+        />
   </FrameLayout>
 </merge>

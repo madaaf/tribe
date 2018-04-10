@@ -1,5 +1,6 @@
 package com.tribe.app.data.repository.user.datasource;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Pair;
 import com.tribe.app.data.network.entity.LinkIdResult;
@@ -75,6 +76,8 @@ public interface UserDataStore {
    */
   Observable<UserRealm> updateUser(List<Pair<String, String>> values);
 
+  Observable<UserRealm> updateUserAge(List<Pair<String, String>> values);
+
   Observable<LinkIdResult> updateUserFacebook(String accessToken);
 
   Observable<LinkIdResult> updateUserPhoneNumber(String accessToken, String phoneNumber);
@@ -85,9 +88,9 @@ public interface UserDataStore {
    * Get an {@link Observable} which will emit a {@link List <ContactInterface>} containing infos
    * about the contacts from address book.
    */
-  Observable<List<ContactInterface>> contacts();
+  Observable<List<ContactInterface>> contacts(Context c);
 
-  Observable<List<ContactFBRealm>> requestInvitableFriends(int nbr);
+  Observable<List<ContactFBRealm>> requestInvitableFriends(Context c, int nbr);
 
   Observable<List<LookupObject>> contactsFbId(Context context, List<String> fbIds);
 

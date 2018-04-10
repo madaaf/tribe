@@ -220,6 +220,10 @@ public class GameCoolCamsView extends GameViewWithRanking {
         }));
   }
 
+  @Override protected void initGameMasterManagerSubscriptions() {
+
+  }
+
   @Override protected void takeOverGame() {
 
   }

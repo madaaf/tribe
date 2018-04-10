@@ -60,20 +60,18 @@
           android:paddingStart="15dp"
           android:paddingTop="7dp"
           android:text="@string/leaderboard_play_button"
-          style="@style/BiggerTitle.2"
           android:textSize="14sp"
+          style="@style/BiggerTitle.2"
           />
 
-      <com.tribe.app.presentation.view.widget.TextViewFont
-          android:id="@+id/txtTitle"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+      <ImageView
+          android:id="@+id/imgLogo"
+          android:layout_width="150dp"
+          android:layout_height="20dp"
           android:layout_gravity="center"
-          android:shadowColor="@android:color/black"
-          android:shadowDx="2"
-          android:shadowDy="2"
-          android:textAllCaps="true"
-          style="@style/BiggerTitle.2.White"
+          android:layout_marginEnd="@dimen/horizontal_margin"
+          android:layout_marginStart="@dimen/horizontal_margin"
+          android:scaleType="fitStart"
           />
     </FrameLayout>
 
@@ -364,10 +362,32 @@
           android:id="@+id/recyclerViewLeaderboard"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
+          android:layout_marginBottom="90dp"
           app:layout_behavior="@string/appbar_scrolling_view_behavior"
           />
+
+      <View
+          android:id="@+id/viewShadow"
+          android:layout_width="match_parent"
+          android:layout_height="10dp"
+          android:background="@drawable/shadow_top"
+          android:layout_gravity="bottom"
+          />
+
+      <LinearLayout
+          android:id="@+id/layoutCurrentUserLeaderboard"
+          android:layout_width="match_parent"
+          android:layout_height="100dp"
+          android:layout_gravity="bottom"
+          android:orientation="vertical"
+          >
+
+        <com.tribe.app.presentation.view.component.games.LeaderboardUserView
+            android:id="@+id/viewCurrentUserLeaderboard"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            />
+      </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
-
   </LinearLayout>
-
 </FrameLayout>

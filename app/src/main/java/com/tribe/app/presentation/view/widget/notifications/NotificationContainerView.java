@@ -275,16 +275,6 @@ public class NotificationContainerView extends FrameLayout {
     Bundle extra = data.getExtras();
     boolean displayEnjoyingTribeView = false;
 
-    if (numberOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_COUNT
-        && minutesOfCalls.get() >= EnjoyingTribeNotificationView.MIN_USER_CALL_MINUTES) {
-      displayEnjoyingTribeView = true;
-      numberOfCalls.set(0);
-      minutesOfCalls.set(0f);
-    }
-
-    if (displayEnjoyingTribeView) {
-      viewToDisplay = new EnjoyingTribeNotificationView(context);
-    }
     return viewToDisplay;
   }
 

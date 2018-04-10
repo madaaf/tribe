@@ -7,10 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
 import android.util.Pair;
-import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,6 +34,7 @@ import com.tribe.app.presentation.view.utils.AnimationUtils;
 import com.tribe.app.presentation.view.utils.Constants;
 import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.utils.RemoteConfigManager;
+import com.tribe.app.presentation.view.widget.LoadingGameView;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -81,8 +79,7 @@ public class GameCoronaView extends GameView {
 
   @BindView(R.id.coronaView) CoronaView coronaView;
   @BindView(R.id.layoutProgress) FrameLayout layoutProgress;
-  @BindView(R.id.viewProgress) View viewProgress;
-  @BindView(R.id.cardViewProgress) CardView cardViewProgress;
+  @BindView(R.id.loader) LoadingGameView loader;
 
   // VARIABLES
   private Handler mainHandler;
@@ -91,6 +88,7 @@ public class GameCoronaView extends GameView {
   private RemoteConfigManager remoteConfigManager;
   private Map<String, Integer> mapScores = new HashMap<>();
   private Score bestScore = null;
+  private int maxPaginationCall = 0, counterPagination = 0;
 
   // OBSERVABLES
   private Observable<ObservableRxHashMap.RxHashMap<String, TribeGuest>> masterMapObs;
@@ -140,12 +138,16 @@ public class GameCoronaView extends GameView {
 
       private void notifyFriend(Context context, ArrayList<String> array) {
         Timber.d("Notify FB friends");
+        counterPagination++;
         subscriptionsRoom.add(rxFacebook.notifyFriends(context, array).subscribe(aBoolean -> {
-          Timber.d("Notify FB answer : " + aBoolean);
-          if (aBoolean) {
-            successRevive();
-          } else {
-            errorRevive();
+          if (counterPagination >= maxPaginationCall) {
+            counterPagination = 0;
+            Timber.d("Notify FB answer : " + aBoolean);
+            if (aBoolean) {
+              successRevive();
+            } else {
+              errorRevive();
+            }
           }
         }));
       }
@@ -158,9 +160,10 @@ public class GameCoronaView extends GameView {
           array.add(c.getId());
         }
 
-        //int MAX_SIZE_PAGINATION = 25;
         int rest = array.size() % MAX_SIZE_PAGINATION;
         int nbrOfArray = array.size() / MAX_SIZE_PAGINATION;
+
+        maxPaginationCall = (rest == 0) ? nbrOfArray : nbrOfArray + 1;
         if (rest == 0) {
           for (int i = 0; i < nbrOfArray; i++) {
             ArrayList<String> splitArray = splitList((i * MAX_SIZE_PAGINATION),
@@ -233,6 +236,10 @@ public class GameCoronaView extends GameView {
         .subscribe(pair -> receiveMessage(pair.first, pair.second)));
   }
 
+  @Override protected void initGameMasterManagerSubscriptions() {
+
+  }
+
   @Override protected void initDependencyInjector() {
     super.initDependencyInjector();
     DaggerUserComponent.builder()
@@ -280,8 +287,7 @@ public class GameCoronaView extends GameView {
 
           coronaView.sendEvent(startGameTable);
 
-          AnimationUtils.animateWidth(viewProgress, viewProgress.getMeasuredWidth(),
-              cardViewProgress.getWidth(), 500, new DecelerateInterpolator());
+          loader.setAnim(0f, 90f);
 
           subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
               .observeOn(AndroidSchedulers.mainThread())
@@ -294,8 +300,8 @@ public class GameCoronaView extends GameView {
         }));
 
     subscriptions.add(masterMapObs.subscribe(rxHashMapAction -> {
-      if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD)
-          && rxHashMapAction.item.canPlayGames(game.getId())) {
+      if (rxHashMapAction.changeType.equals(ObservableRxHashMap.ADD) &&
+          rxHashMapAction.item.canPlayGames(game.getId())) {
         Hashtable<Object, Object> userJoinedTable = new Hashtable<>();
         userJoinedTable.put("name", "userJoined");
         userJoinedTable.put("user", rxHashMapAction.item.asCoronaUser());
@@ -345,70 +351,72 @@ public class GameCoronaView extends GameView {
           gamePresenter.getUserBestScore(game.getId());
         }
       } else {
-        mainHandler.post(() -> {
-          if (game == null) return;
-
-          if (event.equals("gameLoaded")) {
-            startGame();
-          } else if (event.equals("saveScore")) {
-            onAddScore.onNext(
-                Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
-          } else if (event.equals("revive")) {
-            //if (BuildConfig.DEBUG) {
-            //  subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
-            //      .observeOn(AndroidSchedulers.mainThread())
-            //      .subscribe(aLong -> sendSuccessRevive()));
-            //} else {
-            Timber.d("Revive");
-            if (!FacebookUtils.isLoggedIn()) {
-              Timber.d("Ask FB login");
-              subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
-                if (loginResult != null) {
-                  Timber.d("Load contacts");
-                  newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
-                } else {
-                  errorRevive();
-                }
-              }));
-            } else {
-              Timber.d("Load contacts");
-              newChatPresenter.getContactFbList(MAX_FRIEND_INVITE);
-            }
-            //}
-          } else if (event.equals("scoresUpdated")) {
-            mapScores.clear();
-            Hashtable<String, Double> scores = (Hashtable<String, Double>) hashtable.get("scores");
-            for (String id : scores.keySet()) mapScores.put(id, scores.get(id).intValue());
-            updateLiveScores(mapScores, null);
-          } else if (event.equals("broadcastMessage")) {
-            sendMessage((JSONObject) getBroadcastPayload(
-                (Hashtable<Object, Object>) hashtable.get("message"), false), null);
-          } else if (event.equals("sendMessage")) {
-            sendMessage((JSONObject) getBroadcastPayload(
-                (Hashtable<Object, Object>) hashtable.get("message"), false),
-                hashtable.get("to").toString());
-          } else if (event.equals("showGameLeaderboard")) {
-            onOpenLeaderboard.onNext(game);
-          } else if (event.equals("contextGame")) {
-            Timber.d("Hashtable : " + hashtable);
-            Hashtable<String, Double> scores =
-                (Hashtable<String, Double>) ((Hashtable<Object, Object>) hashtable.get(CONTEXT_KEY))
-                    .get(SCORES_KEY);
-            Map<String, Integer> contextScores = new HashMap<>();
-            for (String key : scores.keySet()) {
-              contextScores.put(key, scores.get(key).intValue());
-            }
-
-            game.getContextMap().put(SCORES_KEY, contextScores);
-
-            JSONObject jsonObject = getCompleteContextPayload(SCORES_KEY, game.getContextMap());
-            webRTCRoom.sendToPeers(jsonObject, true);
-          }
-        });
+        mainHandler.post(() -> handleCoronaMessage(event, hashtable));
       }
 
       return null;
     });
+  }
+
+  protected void handleCoronaMessage(String event, Hashtable<Object, Object> hashtable) {
+    if (game == null) return;
+
+    if (event.equals("gameLoaded")) {
+      startGame();
+    } else if (event.equals("saveScore")) {
+      onAddScore.onNext(Pair.create(game.getId(), ((Double) hashtable.get("score")).intValue()));
+    } else if (event.equals("revive")) {
+      //if (BuildConfig.DEBUG) {
+      //  subscriptionsRoom.add(Observable.timer(1, TimeUnit.SECONDS)
+      //      .observeOn(AndroidSchedulers.mainThread())
+      //      .subscribe(aLong -> sendSuccessRevive()));
+      //} else {
+      Timber.d("Revive");
+      if (!FacebookUtils.isLoggedIn()) {
+        Timber.d("Ask FB login");
+        subscriptions.add(rxFacebook.requestLogin().subscribe(loginResult -> {
+          if (loginResult != null) {
+            Timber.d("Load contacts");
+            newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, context);
+          } else {
+            errorRevive();
+          }
+        }));
+      } else {
+        Timber.d("Load contacts");
+        newChatPresenter.getContactFbList(MAX_FRIEND_INVITE, context);
+      }
+      //}
+    } else if (event.equals("scoresUpdated")) {
+      mapScores.clear();
+      Hashtable<String, Double> scores = (Hashtable<String, Double>) hashtable.get("scores");
+      for (String id : scores.keySet()) mapScores.put(id, scores.get(id).intValue());
+      updateLiveScores(mapScores, null);
+    } else if (event.equals("broadcastMessage")) {
+      sendMessage(
+          (JSONObject) getBroadcastPayload((Hashtable<Object, Object>) hashtable.get("message"),
+              false), null);
+    } else if (event.equals("sendMessage")) {
+      sendMessage(
+          (JSONObject) getBroadcastPayload((Hashtable<Object, Object>) hashtable.get("message"),
+              false), hashtable.get("to").toString());
+    } else if (event.equals("showGameLeaderboard")) {
+      onOpenLeaderboard.onNext(game);
+    } else if (event.equals("contextGame")) {
+      Timber.d("Hashtable : " + hashtable);
+      Hashtable<String, Double> scores =
+          (Hashtable<String, Double>) ((Hashtable<Object, Object>) hashtable.get(CONTEXT_KEY)).get(
+              SCORES_KEY);
+      Map<String, Integer> contextScores = new HashMap<>();
+      for (String key : scores.keySet()) {
+        contextScores.put(key, scores.get(key).intValue());
+      }
+
+      game.getContextMap().put(SCORES_KEY, contextScores);
+
+      JSONObject jsonObject = getCompleteContextPayload(SCORES_KEY, game.getContextMap());
+      webRTCRoom.sendToPeers(jsonObject, true);
+    }
   }
 
   @Override protected void receiveMessage(TribeSession tribeSession, JSONObject jsonObject) {
@@ -556,6 +564,12 @@ public class GameCoronaView extends GameView {
 
   public void successRevive() {
     Bundle bundle = new Bundle();
+    bundle.putString(TagManagerUtils.GAME, game.getId());
+    bundle.putInt(TagManagerUtils.SCORE, mapScores.get(currentUser.getId()));
+    bundle.putString(TagManagerUtils.USE_CASE, TagManagerUtils.USE_CASE_REVIVE);
+    tagManager.trackEvent(TagManagerUtils.GameRequest, bundle);
+
+    bundle = new Bundle();
     bundle.putString(TagManagerUtils.NAME, game.getId());
     bundle.putInt(TagManagerUtils.SCORE, mapScores.get(currentUser.getId()));
     tagManager.trackEvent(TagManagerUtils.Revive, bundle);

@@ -2,6 +2,7 @@ package com.tribe.app.domain.entity;
 
 import com.tribe.app.R;
 import com.tribe.app.data.realm.UserRealm;
+import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.utils.TrophiesManager;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -159,6 +160,9 @@ public enum TrophyEnum {
 
   public boolean isUnlockedByUser() {
     String currentTrophy = TrophiesManager.getInstance(null).getCurrentUser().getTrophy();
+
+    if (StringUtils.isEmpty(currentTrophy)) return false;
+    
     List<TrophyEnum> trophies = getTrophies();
 
     if (trophies.indexOf(getTrophyEnum(currentTrophy)) >= trophies.indexOf(this)) {

@@ -22,9 +22,9 @@ import rx.subjects.PublishSubject;
     return publishSubject;
   }
 
-  public Observable<Uri> requestImage(Sources imageSource) {
+  public Observable<Uri> requestImage(Sources imageSource, boolean isAvatar) {
     publishSubject = PublishSubject.create();
-    startImagePickHiddenActivity(imageSource.ordinal());
+    startImagePickHiddenActivity(imageSource.ordinal(), isAvatar);
     return publishSubject;
   }
 
@@ -37,10 +37,11 @@ import rx.subjects.PublishSubject;
     }
   }
 
-  private void startImagePickHiddenActivity(int imageSource) {
+  private void startImagePickHiddenActivity(int imageSource, boolean isAvatar) {
     Intent intent = new Intent(context, MediaHiddenActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     intent.putExtra(MediaHiddenActivity.IMAGE_SOURCE, imageSource);
+    if (isAvatar) intent.putExtra(MediaHiddenActivity.IS_AVATAR, isAvatar);
     context.startActivity(intent);
   }
 

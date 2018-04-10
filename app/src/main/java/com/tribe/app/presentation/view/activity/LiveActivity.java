@@ -320,8 +320,9 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
 
           if (room.getId().equals(payload.getSessionId())) {
             String action = payload.getAction();
-            if (action != null && (action.equals(NotificationPayload.ACTION_LEFT) || action.equals(
-                NotificationPayload.ACTION_JOINED))) {
+            if (action != null &&
+                (action.equals(NotificationPayload.ACTION_LEFT) ||
+                    action.equals(NotificationPayload.ACTION_JOINED))) {
               shouldDisplay = false;
             }
           }
@@ -372,12 +373,12 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
     super.onWindowFocusChanged(hasFocus);
     if (hasFocus) {
       getWindow().getDecorView()
-          .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-              | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-              | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-              | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-              | View.SYSTEM_UI_FLAG_FULLSCREEN
-              | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+          .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+              View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+              View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+              View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+              View.SYSTEM_UI_FLAG_FULLSCREEN |
+              View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
   }
 
@@ -566,8 +567,8 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
 
   private void initChatView(Shortcut shortcut) {
     Timber.i("init chat view from live activity");
-    if (live.getSource().equals(SOURCE_CALL_ROULETTE) || (live.getRoom() != null && live.getRoom()
-        .acceptsRandom())) {
+    if (live.getSource().equals(SOURCE_CALL_ROULETTE) ||
+        (live.getRoom() != null && live.getRoom().acceptsRandom())) {
       return;
     }
     if (shortcut != null) {
@@ -640,13 +641,14 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
 
         List<User> allUsers = ShortcutUtil.removeMe(room.getAllUsers(), user);
 
-        if (chatView != null
-            && chatView.getShortcut() != null
-            && chatView.getShortcut().getMembers() != null
-            && !chatView.getShortcut().getMembers().isEmpty()) {
+        if (chatView != null &&
+            chatView.getShortcut() != null &&
+            chatView.getShortcut().getMembers() != null &&
+            !chatView.getShortcut().getMembers().isEmpty()) {
 
-          if (!allUsers.isEmpty() && !ShortcutUtil.equalShortcutMembers(
-              chatView.getShortcut().getMembers(), allUsers, user)) {
+          if (!allUsers.isEmpty() &&
+              !ShortcutUtil.equalShortcutMembers(chatView.getShortcut().getMembers(), allUsers,
+                  user)) {
             chatView.dispose();
             Shortcut shortcut = getShortcut();
             if (shortcut != null) {
@@ -673,9 +675,8 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
       }));
     } else {
       subscriptions.add(live.onRoomUpdated().subscribe(room1 -> {
-        boolean isCallRoulette =
-            live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) || (live.getRoom() != null
-                && live.getRoom().acceptsRandom());
+        boolean isCallRoulette = live.getSource().equals(LiveActivity.SOURCE_CALL_ROULETTE) ||
+            (live.getRoom() != null && live.getRoom().acceptsRandom());
         userInfosNotificationView.setCallRoulette(isCallRoulette);
       }));
     }
@@ -692,8 +693,9 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
 
     subscriptions.add(viewLive.onJoined().doOnNext(tribeJoinRoom -> {
       if (!live.getSource().equals(SOURCE_CALL_ROULETTE)) {
-        if (live.fromRoom() && (tribeJoinRoom.getSessionList() == null
-            || tribeJoinRoom.getSessionList().size() == 0)) {
+        if (live.fromRoom() &&
+            (tribeJoinRoom.getSessionList() == null ||
+                tribeJoinRoom.getSessionList().size() == 0)) {
           if (room.getInviter() != null) {
             Toast.makeText(this,
                 getString(R.string.live_other_user_hung_up, room.getInviter().getDisplayName()),
@@ -707,13 +709,6 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
         }
       }
     }).subscribe(tribeJoinRoom -> initRoomSubscription()));
-
-    subscriptions.add(viewLive.onNotify().subscribe(aVoid -> {
-      if (viewLive.getWebRTCRoom() != null && viewLive.getWebRTCRoom().getOptions() != null) {
-        soundManager.playSound(SoundManager.WIZZ, SoundManager.SOUND_MID);
-        livePresenter.buzzRoom(room.getId());
-      }
-    }));
 
     subscriptions.add(
         viewLive.onLeave().observeOn(AndroidSchedulers.mainThread()).subscribe(aVoid -> leave()));
@@ -741,11 +736,11 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
         .filter(labelType -> labelType.getTypeDef().equals(LabelType.CHANGE_PICTURE))
         .flatMap(pair -> DialogFactory.showBottomSheetForCamera(this), (pair, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA, true)
                 .subscribe(uri -> livePresenter.updateShortcutPicture(live.getShortcutId(),
                     uri.toString())));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY, true)
                 .subscribe(uri -> livePresenter.updateShortcutPicture(live.getShortcutId(),
                     uri.toString())));
           }
@@ -1018,8 +1013,8 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
   }
 
   @Override public boolean dispatchTouchEvent(MotionEvent ev) {
-    if (userInfosNotificationView.getVisibility() == VISIBLE && !ViewUtils.isIn(
-        userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
+    if (userInfosNotificationView.getVisibility() == VISIBLE &&
+        !ViewUtils.isIn(userInfosNotificationView, (int) ev.getX(), (int) ev.getY())) {
       userInfosNotificationView.hideView();
     }
 
@@ -1085,11 +1080,11 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
             byte[] data = baos.toByteArray();
-            StorageReference riversRef = storageRef.child("app/uploads/reported-users/"
-                + user.getId()
-                + "/"
-                + dateUtils.getUTCDateAsString()
-                + suffix);
+            StorageReference riversRef = storageRef.child("app/uploads/reported-users/" +
+                user.getId() +
+                "/" +
+                dateUtils.getUTCDateAsString() +
+                suffix);
             UploadTask uploadTask = riversRef.putBytes(data);
             uploadTask.addOnFailureListener(exception -> {
               Timber.e("error fetching image on firebase ");
@@ -1128,9 +1123,9 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
         String hashMembersInvite = ShortcutUtils.hashShortcut(getCurrentUser().getId(),
             usersInviteList.toArray(new String[usersInviteList.size()]));
 
-        if (hashMembersShortcut.equals(hashMembersInvite)
-            && invite.getRoom() != null
-            && !invite.getRoom().isUserInitiator(getCurrentUser().getId())) {
+        if (hashMembersShortcut.equals(hashMembersInvite) &&
+            invite.getRoom() != null &&
+            !invite.getRoom().isUserInitiator(getCurrentUser().getId())) {
           Live.Builder builder = new Live.Builder(Live.FRIEND_CALL).source(live.getSource());
           live = builder.room(invite.getRoom()).build();
           getRoomInfos();
@@ -1224,9 +1219,9 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
   }
 
   private void setExtraForShortcut() {
-    if (usersThatWereLive.size() > 0
-        && !live.getSource().equals(SOURCE_CALL_ROULETTE)
-        && !room.acceptsRandom()) {
+    if (usersThatWereLive.size() > 0 &&
+        !live.getSource().equals(SOURCE_CALL_ROULETTE) &&
+        !room.acceptsRandom()) {
       returnIntent.putExtra(USER_IDS_FOR_NEW_SHORTCUT, usersThatWereLive);
       setResult(Activity.RESULT_OK, returnIntent);
     }
@@ -1242,7 +1237,10 @@ public class LiveActivity extends BaseBroadcastReceiverActivity
       isFirstLeaveRoom = false;
     }
 
-    if (!viewLive.hasJoined() && room != null && !live.getSource().equals(SOURCE_CALL_ROULETTE)) {
+    if (!viewLive.hasJoined() &&
+        room != null &&
+        !StringUtils.isEmpty(room.getId()) &&
+        !live.getSource().equals(SOURCE_CALL_ROULETTE)) {
       livePresenter.deleteRoom(room.getId());
     }
 

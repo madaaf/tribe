@@ -1,13 +1,18 @@
 package com.tribe.app.presentation.view.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -51,13 +56,19 @@ import com.tribe.app.presentation.view.notification.NotificationUtils;
 import com.tribe.app.presentation.view.popup.PopupManager;
 import com.tribe.app.presentation.view.popup.listener.PopupDigestListener;
 import com.tribe.app.presentation.view.popup.view.PopupDigest;
+import com.tribe.app.presentation.view.popup.view.PopupParentView;
 import com.tribe.app.presentation.view.utils.DeviceUtils;
 import com.tribe.app.presentation.view.utils.ScreenUtils;
+import com.tribe.app.presentation.view.utils.StateManager;
+import com.tribe.app.presentation.view.utils.UIUtils;
+import com.tribe.app.presentation.view.utils.ViewPagerScroller;
+import com.tribe.app.presentation.view.widget.CustomViewPager;
 import com.tribe.app.presentation.view.widget.PulseLayout;
 import com.tribe.app.presentation.view.widget.avatar.AvatarView;
 import com.tribe.app.presentation.view.widget.chat.model.Conversation;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameFooter;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -76,7 +87,6 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import timber.log.Timber;
 
-import static com.tribe.app.presentation.navigation.Navigator.FROM_GAMESTORE;
 import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
 
 /**
@@ -85,6 +95,8 @@ import static com.tribe.app.presentation.navigation.Navigator.FROM_GAME_DETAILS;
 
 public class GamePagerActivity extends GameActivity implements AppStateListener {
 
+  private static final int PAGER_SPEED = 600;
+  private static final float TRANS_IMAGE = 300f;
   private static final float DOT_MAX_SIZE = 1.5f;
 
   private static final int DURATION = 400;
@@ -107,26 +119,29 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   private List<User> usersChallenge;
   private NotifView notifView;
   private boolean shouldDisplayDigest = true;
+  private int previousAnimationValue = 0;
+  private GameDetailsView currentGameDetailsView;
 
   @Inject @LastSyncGameData Preference<Long> lastSyncGameData;
   @Inject @LastSync Preference<Long> lastSync;
   @Inject @ChallengeNotifications Preference<String> challengeNotificationsPref;
   @Inject @DaysOfUsage Preference<Integer> daysOfUsage;
   @Inject @PreviousDateUsage Preference<Long> previousDateUsage;
+  @Inject StateManager stateManager;
+  @Inject ScreenUtils screenUtils;
 
-  @BindView(R.id.pager) ViewPager viewpager;
+  @BindView(R.id.pager) CustomViewPager viewpager;
   @BindView(R.id.dotsContainer) LinearLayout dotsContainer;
   @BindView(R.id.imgAnimation1) ImageView imgAnimation1;
   @BindView(R.id.imgAnimation2) ImageView imgAnimation2;
   @BindView(R.id.imgAnimation3) ImageView imgAnimation3;
-  @BindView(R.id.test) ImageView test;
-
   @BindView(R.id.layoutPulse) PulseLayout layoutPulse;
   @BindView(R.id.layoutCall) FrameLayout layoutCall;
   @BindView(R.id.btnFriends) ImageView btnFriends;
   @BindView(R.id.btnNewMessage) ImageView btnNewMessage;
-
-  @Inject ScreenUtils screenUtils;
+  @BindView(R.id.topbar) FrameLayout topbar;
+  @BindView(R.id.btnSingle) FrameLayout btnSingle;
+  @BindView(R.id.btnMulti) FrameLayout btnMulti;
 
   // OBSERVABLES
   private PublishSubject<User> onUser = PublishSubject.create();
@@ -140,34 +155,48 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   private void initViewPager() {
     adapter = new GamePagerAdapter(this);
     pageListener = new PageListener(dotsContainer, this);
+    viewpager.setScrollDurationFactor(2);
     viewpager.addOnPageChangeListener(pageListener);
     viewpager.setAdapter(adapter);
+    changePagerScroller();
+  }
+
+  private void changePagerScroller() {
+    try {
+      Field mScroller = null;
+      mScroller = ViewPager.class.getDeclaredField("mScroller");
+      mScroller.setAccessible(true);
+      ViewPagerScroller scroller = new ViewPagerScroller(viewpager.getContext(), null, PAGER_SPEED);
+      mScroller.set(viewpager, scroller);
+    } catch (Exception e) {
+      Timber.e("error of change scroller " + e);
+    }
   }
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     singleThreadExecutor = Schedulers.from(Executors.newSingleThreadExecutor());
     super.onCreate(savedInstanceState);
+
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      getWindow().setStatusBarColor(Color.TRANSPARENT);
+    }
+
     mapAnimator = new HashMap<>();
+
+    if (hasSoftKeys != null && hasSoftKeys.get()) {
+      UIUtils.changeBottomMarginOfView(dotsContainer, screenUtils.dpToPx(30));
+      UIUtils.changeTopMarginOfView(topbar, screenUtils.dpToPx(20));
+    }
 
     initViewPager();
     if (gameManager.getGames() != null && !gameManager.getGames().isEmpty()) {
-      initUI();
       adapter.setItems(gameManager.getGames());
-    } else {
-      gameMVPViewAdapter = new GameMVPViewAdapter() {
-        @Override public Context context() {
-          return GamePagerActivity.this;
-        }
-
-        @Override public void onGameList(List<Game> gameList) {
-          gameManager.addGames(gameList);
-          adapter.setItems(gameList);
-          initUI();
-        }
-      };
-
-      gamePresenter.getGames();
+      initUI();
     }
+
     initParams(getIntent());
     initAppStateMonitor();
     loadChallengeNotificationData();
@@ -183,8 +212,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
-          GameDetailsView gameDetailsView = adapter.getItemAtPosition(0);
-          if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
+          currentGameDetailsView = adapter.getItemAtPosition(0);
+          if (currentGameDetailsView != null) currentGameDetailsView.onCurrentViewVisible();
         }));
   }
 
@@ -295,7 +324,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
     if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
         rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
-      userPresenter.syncContacts(lastSync);
+      userPresenter.syncContacts(lastSync, this);
     }
 
     if (System.currentTimeMillis() - lastSyncGameData.get() > TWENTY_FOUR_HOURS) {
@@ -330,14 +359,39 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     onGames.onNext(gameManager.getGames());
     setAnimImageAnimation();
     initDots(gameManager.getGames().size());
+    viewpager.setCurrentItem(0);
     GameDetailsView gameDetailsView = adapter.getItemAtPosition(0);
     if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
+
+    if (stateManager.shouldDisplay(StateManager.FIRST_SWIPE_GAME_STORE) && adapter.getCount() > 0) {
+      subscriptions.add(Observable.timer(5, TimeUnit.SECONDS)
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(aLong -> {
+            if (viewpager.isFakeDragging()) return;
+            viewpager.beginFakeDrag();
+            previousAnimationValue = 0;
+            ValueAnimator animatorPeekViewPager =
+                ValueAnimator.ofInt(0, -screenUtils.dpToPx(30), 0);
+            animatorPeekViewPager.setDuration(1000);
+            animatorPeekViewPager.setInterpolator(new DecelerateInterpolator());
+            animatorPeekViewPager.addUpdateListener(animation -> {
+              int value = (int) animation.getAnimatedValue();
+              viewpager.fakeDragBy(-previousAnimationValue + value);
+              previousAnimationValue = value;
+            });
+            animatorPeekViewPager.addListener(new AnimatorListenerAdapter() {
+              @Override public void onAnimationEnd(Animator animation) {
+                animation.cancel();
+                stateManager.addTutorialKey(StateManager.FIRST_SWIPE_GAME_STORE);
+                viewpager.endFakeDrag();
+              }
+            });
+            animatorPeekViewPager.start();
+          }));
+    }
   }
 
-  private void setAnimImageAnimation() {
-    Game currentGame = getCurrentGame();
-    if (currentGame == null) return;
-
+  private void setImages() {
     for (int i = 0; i < getCurrentGame().getAnimation_icons().size(); i++) {
       String url = getCurrentGame().getAnimation_icons().get(i);
       ImageView imageView = null;
@@ -352,34 +406,16 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       Glide.with(this).load(url).into(imageView);
     }
+  }
 
+  private void setAnimImageAnimation() {
+    setImages();
     animateImg(imgAnimation1, true);
     animateImg(imgAnimation1, false);
     animateImg(imgAnimation2, true);
     animateImg(imgAnimation2, false);
     animateImg(imgAnimation3, true);
     animateImg(imgAnimation3, false);
-  }
-
-  private void showImgAnimations() {
-    imgAnimation1.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-    imgAnimation2.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
-    imgAnimation3.animate()
-        .scaleX(1)
-        .scaleY(1)
-        .setInterpolator(new DecelerateInterpolator())
-        .setDuration(DURATION)
-        .start();
   }
 
   private void animateImg(ImageView imgAnimation, boolean isX) {
@@ -432,7 +468,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       @Override public void onGameList(List<Game> gameList) {
         gameManager.addGames(gameList);
-        onGames.onNext(gameList);
+        adapter.setItems(gameManager.getGames());
+        initUI();
+        onGames.onNext(gameManager.getGames());
       }
     };
 
@@ -516,7 +554,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
                   (PopupDigest) getLayoutInflater().inflate(R.layout.view_popup_digest, null);
               popupDigest.setItems(items);
 
-              PopupManager popupManager = PopupManager.create(
+              PopupParentView popupParentView = PopupManager.create(
                   new PopupManager.Builder().activity(this)
                       .dimBackground(false)
                       .listener(new PopupDigestListener() {
@@ -541,7 +579,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
                       .view(popupDigest));
 
               notificationModelList.add(
-                  new NotificationModel.Builder().view(popupManager.getView()).build());
+                  new NotificationModel.Builder().view(popupParentView).build());
             } else {
               shouldDisplayDigest = true;
             }
@@ -617,24 +655,21 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   private void initDots(int dotsNbr) {
     dotsContainer.removeAllViews();
-    int sizeDot = getResources().getDimensionPixelSize(R.dimen.vertical_margin_small);
+    int sizeDot = getResources().getDimensionPixelSize(R.dimen.dots_pager_size);
     for (int i = 0; i < dotsNbr; i++) {
       AvatarView v = new AvatarView(this);
       v.load(gameManager.getGames().get(i).getIcon());
-      //GlideUtils.Builder(context).url("").size(sizeDot).target(v).hasPlaceholder(false).load();
 
       v.setTag(DOTS_TAG_MARKER + i);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
-      lp.setMargins(0, 0, screenUtils.dpToPx(15), 0);
+      lp.setMargins(0, 0, 30, 0);
       lp.gravity = Gravity.CENTER;
       v.setLayoutParams(lp);
       dotsContainer.addView(v);
       if (i == 0) {
-        //v.setBackgroundResource(R.drawable.shape_oval_white);
         v.setScaleX(DOT_MAX_SIZE);
         v.setScaleY(DOT_MAX_SIZE);
       } else {
-        //v.setBackgroundResource(R.drawable.shape_oval_white50);
         v.setScaleX(1f);
         v.setScaleY(1f);
       }
@@ -644,8 +679,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   public class PageListener extends ViewPager.SimpleOnPageChangeListener {
     private LinearLayout dotsContainer;
     private Context context;
-    private int positionViewPager, statePager;
-    private float firstValue = 0f, xTrans = 0, yTrans = 0;
+    private int positionViewPager = 0, statePager;
+    private float firstValue = 0f;
+    private boolean onPageChange = false;
 
     public PageListener(LinearLayout dotsContainer, Context context) {
       this.dotsContainer = dotsContainer;
@@ -656,6 +692,25 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       return positionViewPager;
     }
 
+    private void slideNext(View v, float positionOffset, float transX, float transY) {
+      float scale = 1 + (positionOffset * 2);
+      v.setScaleX(scale);
+      v.setScaleY(scale);
+      v.setAlpha(1 - (positionOffset * 3));
+
+      v.setTranslationX(transX);
+      v.setTranslationY(transY);
+    }
+
+    private void slideBefore(View v, float positionOffset, float transX, float transY) {
+      float scale = 1 + ((1 - positionOffset) * 2);
+      v.setAlpha(positionOffset * 3);
+      v.setTranslationX(transX);
+      v.setTranslationY(transY);
+      v.setScaleX(scale);
+      v.setScaleY(scale);
+    }
+
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
       super.onPageScrolled(position, positionOffset, positionOffsetPixels);
@@ -663,89 +718,80 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       if (mapAnimator != null) {
         for (ValueAnimator animator : mapAnimator.values()) animator.cancel();
       }
-      imgAnimation3.clearAnimation();
-      imgAnimation2.clearAnimation();
-      imgAnimation1.clearAnimation();
+
       if (firstValue == 0f) {
         firstValue = positionOffset;
       }
 
-      if (positionOffset != 0f) {
-        xTrans += screenUtils.dpToPx(1);
-        yTrans += screenUtils.dpToPx(1);
+      if (firstValue < 0.5 && positionOffset > 0.5 && statePager == 1) {
+        firstValue = 0f;
+      }
 
+      if (firstValue > 0.5 && positionOffset < 0.5 && statePager == 1) {
+        firstValue = 0f;
+      }
+
+      if (positionOffset != 0f) { // positionOffset from 1 to 0
         if (firstValue > 0.5) {
-          imgAnimation3.setAlpha(positionOffset);
-          imgAnimation2.setAlpha(positionOffset);
-          imgAnimation1.setAlpha(positionOffset);
-          // Timber.e("SOEF LOL INVERSE " + positionOffset + " " + positionOffsetPixels + " " + position);
-        } else {
-          // slide normal  positionOffset :0 to 1
-          imgAnimation3.setScaleX(1 + positionOffset);
-          imgAnimation3.setScaleY(1 + positionOffset);
-          imgAnimation3.setAlpha(1 - positionOffset);
 
-          // imgAnimation3.setTranslationX(xTrans);
-          // imgAnimation3.setTranslationX(yTrans);
+          if (currentGameDetailsView != null) {
+            currentGameDetailsView.slidePager(positionOffset, false);
+          }
+          float trans = (1 - positionOffset) * screenUtils.dpToPx(TRANS_IMAGE);
+          slideBefore(imgAnimation3, positionOffset, trans, trans);
+          slideBefore(imgAnimation2, positionOffset, trans, -trans);
+          slideBefore(imgAnimation1, positionOffset, -trans, -trans);
 
-          imgAnimation2.setScaleX(1 + positionOffset);
-          imgAnimation2.setScaleY(1 + positionOffset);
-          imgAnimation2.setAlpha(1 - positionOffset);
+          if (positionOffset < 0.5f) {
+            firstValue = 0f;
+          }
 
-          imgAnimation1.setScaleX(1 + positionOffset);
-          imgAnimation1.setScaleY(1 + positionOffset);
-          imgAnimation1.setAlpha(1 - positionOffset);
-          // Timber.e("SOEF LOL NORMAL " + imgAnimation3.getTranslationX() + " " + xTrans + " ");
+          if (positionOffset > 0.6) {
+            setImages();
+          }
+        } else {  // positionOffset from 0 to 1
+          if (currentGameDetailsView != null) {
+            currentGameDetailsView.slidePager(positionOffset, true);
+          }
+          float trans = positionOffset * screenUtils.dpToPx(TRANS_IMAGE);
+          slideNext(imgAnimation3, positionOffset, trans, trans);
+          slideNext(imgAnimation2, positionOffset, trans, -trans);
+          slideNext(imgAnimation1, positionOffset, -trans, -trans);
+
+          if (positionOffset < 0.5f) {
+            firstValue = 0f;
+          }
+          if (positionOffset > 0.3) {
+            setImages();
+          }
         }
-      } else {
-        setAnimImageAnimation();
       }
     }
 
-    private void ok(View v, float translationX, float translationY) {
-      v.setAlpha(0f);
-      v.setScaleX(2f);
-      v.setScaleY(2f);
-
-      v.setTranslationX(translationX);
-      v.setTranslationY(translationY);
-
-      v.animate()
-          .setDuration(500)
-          .scaleX(1)
-          .scaleY(1)
-          .alpha(1)
-          .translationX(0)
-          .translationY(0)
-          .start();
-    }
-
     @Override public void onPageScrollStateChanged(int state) {
-      //Timber.d("SOEF onPageScrollStateChanged " + state);
       statePager = state;
-      if (state == 0f) {
+      if (state == 0f && onPageChange) {
         firstValue = 0f;
-        xTrans = 0f;
-        yTrans = 0f;
-
-        ok(imgAnimation3, screenUtils.dpToPx(200), screenUtils.dpToPx(200));
-        ok(imgAnimation2, screenUtils.dpToPx(200), -screenUtils.dpToPx(100));
-        ok(imgAnimation1, -screenUtils.dpToPx(200), -screenUtils.dpToPx(100));
+        //if (currentGameDetailsView != null) currentGameDetailsView.resetPager();
+        setAnimImageAnimation();
+      }
+      if (state == 2f) {
+        onPageChange = false;
       }
     }
 
     public void onPageSelected(int position) {
-      //Timber.w("SOEF onPageSelected " + position);
+      onPageChange = true;
+      this.positionViewPager = position;
       positionViewPager = position;
-      GameDetailsView gameDetailsView = adapter.getItemAtPosition(position);
-      if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
+      currentGameDetailsView = adapter.getItemAtPosition(position);
+      //if (currentGameDetailsView != null) currentGameDetailsView.resetPager();
+      if (currentGameDetailsView != null) currentGameDetailsView.onCurrentViewVisible();
       for (int i = 0; i < dotsContainer.getChildCount(); i++) {
         View v = dotsContainer.getChildAt(i);
         if (v.getTag().toString().startsWith(DOTS_TAG_MARKER + position)) {
-          // v.setBackgroundResource(R.drawable.shape_oval_white);
           v.animate().scaleX(DOT_MAX_SIZE).scaleY(DOT_MAX_SIZE).setDuration(100).start();
         } else {
-          // v.setBackgroundResource(R.drawable.shape_oval_white50);
           v.setScaleX(1f);
           v.setScaleY(1f);
         }
@@ -754,7 +800,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private Game getCurrentGame() {
-    if (pageListener.getPositionViewPage() > gameManager.getGames().size()) {
+    if (pageListener.getPositionViewPage() > gameManager.getGames().size() - 1) {
       return gameManager.getGames().get(0);
     }
 

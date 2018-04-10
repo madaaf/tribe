@@ -1,5 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
+import android.app.Activity;
 import android.content.Context;
 import com.birbit.android.jobqueue.JobManager;
 import com.tribe.app.data.network.job.RemoveNewStatusContactJob;
@@ -269,9 +270,10 @@ public class HomePresenter implements Presenter {
     }
   }
 
-  public void lookupContacts() {
+  public void lookupContacts(Activity c) {
     if (lookupContactsSubscriber != null) lookupContactsSubscriber.unsubscribe();
     lookupContactsSubscriber = new LookupContactsSubscriber();
+    synchroContactList.setParams(c);
     synchroContactList.execute(lookupContactsSubscriber);
     if (homeGridView != null) homeGridView.onSyncStart();
   }

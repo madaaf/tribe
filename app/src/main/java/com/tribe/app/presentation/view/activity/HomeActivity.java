@@ -272,7 +272,6 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
   @Override protected void onRestart() {
     super.onRestart();
-
     // https://stackoverflow.com/questions/36634008/why-notificationmanagercompatcancelall-gets-securityexception
     try {
       notificationManager.cancelAll();
@@ -289,9 +288,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
 
   @Override protected void onResume() {
     super.onResume();
-
     if (finish) return;
-
     if (shouldOverridePendingTransactions) {
       overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
       shouldOverridePendingTransactions = false;
@@ -555,11 +552,11 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
         .filter(pair -> pair.first.getTypeDef().equals(LabelType.CHANGE_PICTURE))
         .flatMap(pair -> DialogFactory.showBottomSheetForCamera(this), (pair, labelType) -> {
           if (labelType.getTypeDef().equals(LabelType.OPEN_CAMERA)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA)
+            subscriptions.add(rxImagePicker.requestImage(Sources.CAMERA, true)
                 .subscribe(uri -> homeGridPresenter.updateShortcutPicture(pair.second.getId(),
                     uri.toString())));
           } else if (labelType.getTypeDef().equals(LabelType.OPEN_PHOTOS)) {
-            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY)
+            subscriptions.add(rxImagePicker.requestImage(Sources.GALLERY, true)
                 .subscribe(uri -> homeGridPresenter.updateShortcutPicture(pair.second.getId(),
                     uri.toString())));
           }
@@ -837,7 +834,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
   @Override public void successFacebookLogin() {
     homeGridPresenter.updateUserFacebook(getCurrentUser().getId(),
         AccessToken.getCurrentAccessToken().getToken());
-    homeGridPresenter.lookupContacts();
+    homeGridPresenter.lookupContacts(this);
     syncContacts();
   }
 
@@ -1056,7 +1053,7 @@ public class HomeActivity extends BaseBroadcastReceiverActivity
       if (hasPermission) {
         addressBook.set(hasPermission);
       }
-      homeGridPresenter.lookupContacts();
+      homeGridPresenter.lookupContacts(this);
       searchView.refactorActions();
     });
   }

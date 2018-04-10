@@ -7,11 +7,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
-import android.support.transition.ChangeBounds;
-import android.support.transition.Transition;
-import android.support.transition.TransitionListenerAdapter;
-import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
@@ -48,6 +43,7 @@ import com.tribe.app.presentation.view.widget.TextViewScore;
 import com.tribe.app.presentation.view.widget.avatar.NewAvatarView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
+import java.text.NumberFormat;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import rx.Observable;
@@ -71,6 +67,7 @@ public class GameDetailsView extends FrameLayout {
   @BindView(R.id.imgLogo) ImageView imgLogo;
   @BindView(R.id.txtBaseline) TextViewFont txtBaseline;
   @BindView(R.id.imgRays) ImageView imgRays;
+  @BindView(R.id.leaderbordArrow) ImageView leaderbordArrow;
   @BindView(R.id.layoutConstraint) ConstraintLayout layoutConstraint;
   @BindView(R.id.cardAvatarMyScore) CardView cardAvatarMyScore;
   @BindView(R.id.avatarMyScore) NewAvatarView avatarMyScore;
@@ -78,11 +75,7 @@ public class GameDetailsView extends FrameLayout {
   @BindView(R.id.txtMyScoreScore) TextViewScore txtMyScoreScore;
   @BindView(R.id.txtMyScoreName) TextViewFont txtMyScoreName;
   @BindView(R.id.leaderbordContainer) View leaderbordContainer;
-  @BindView(R.id.leaderbordLabel) TextViewFont leaderbordLabel;
   @BindView(R.id.playsCounter) TextViewFont playsCounter;
- // @BindView(R.id.leaderbordPictoStart) ImageView leaderbordPictoStart;
-//  @BindView(R.id.leaderbordPictoEnd) ImageView leaderbordPictoEnd;
- // @BindView(R.id.leaderbordSeparator) View leaderbordSeparator;
 
   // VARIABLES
   private UserComponent userComponent;
@@ -153,27 +146,13 @@ public class GameDetailsView extends FrameLayout {
     subscriptions = new CompositeSubscription();
   }
 
-  private void resetView(View v) {
-    v.setAlpha(0f);
-    v.setTranslationX(0);
-    v.setTranslationY(0);
-    v.clearAnimation();
-  }
-
-  private void initLeaderbord() {
-    resetView(leaderbordContainer);
-    resetView(leaderbordLabel);
-   // resetView(leaderbordPictoStart);
-   // resetView(leaderbordPictoEnd);
-   // resetView(leaderbordSeparator);
-  }
-
   private void initUI() {
-    initLeaderbord();
     txtBaseline.setText(game.getBaseline().toUpperCase());
-    playsCounter.setText(
-        context.getString(R.string.new_game_plays, String.valueOf(game.getPlays_count()))
-            .toUpperCase());
+
+    NumberFormat nf = NumberFormat.getInstance();
+    String nbr = nf.format(game.getPlays_count());
+
+    playsCounter.setText(context.getString(R.string.new_game_plays, nbr).toUpperCase());
     new GlideUtils.GameImageBuilder(context, screenUtils).url(game.getIcon())
         .hasBorder(false)
         .hasPlaceholder(true)
@@ -196,10 +175,6 @@ public class GameDetailsView extends FrameLayout {
         .subscribe(aLong -> {
           animateRays();
         }));
-
-    subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(aLong -> showButtons()));
 
     Score score = user.getScoreForGame(game.getId());
     if (score == null) {
@@ -239,34 +214,13 @@ public class GameDetailsView extends FrameLayout {
     imgRays.startAnimation(rotate);
   }
 
-  private void showButtons() {
-    ConstraintSet set = new ConstraintSet();
-    set.clone(layoutConstraint);
-    set.connect(R.id.btnSingle, ConstraintSet.BOTTOM, R.id.btnMulti, ConstraintSet.TOP);
-    set.clear(R.id.btnSingle, ConstraintSet.TOP);
-    set.connect(R.id.btnMulti, ConstraintSet.BOTTOM, layoutConstraint.getId(),
-        ConstraintSet.BOTTOM);
-    set.clear(R.id.btnMulti, ConstraintSet.TOP);
-    set.setAlpha(R.id.btnSingle, 1);
-    set.setAlpha(R.id.btnMulti, 1);
-
-    animateLayoutWithConstraintSet(set, new TransitionListenerAdapter() {
-      @Override public void onTransitionEnd(@NonNull Transition transition) {
-
-      }
-    });
-  }
-
   private void showScores() {
     animateViewEntry(cardAvatarMyScore);
     animateViewEntry(txtMyScoreName);
     animateViewEntry(txtMyScoreRanking);
     animateViewEntry(txtMyScoreScore);
     animateViewEntry(leaderbordContainer);
-    animateViewEntry(leaderbordLabel);
-   // animateViewEntry(leaderbordPictoStart);
-   // animateViewEntry(leaderbordPictoEnd);
-    //animateViewEntry(leaderbordSeparator);
+    animateViewEntry(leaderbordArrow);
   }
 
   private void hideScores() {
@@ -275,20 +229,7 @@ public class GameDetailsView extends FrameLayout {
     hideViewEntry(txtMyScoreRanking);
     hideViewEntry(txtMyScoreScore);
     hideViewEntry(leaderbordContainer);
-    hideViewEntry(leaderbordLabel);
-  //  hideViewEntry(leaderbordPictoStart);
-  //  hideViewEntry(leaderbordPictoEnd);
-  //  hideViewEntry(leaderbordSeparator);
-  }
-
-  private void animateLayoutWithConstraintSet(ConstraintSet constraintSet,
-      Transition.TransitionListener transitionListener) {
-    Transition transition = new ChangeBounds();
-    transition.setDuration(DURATION);
-    transition.setInterpolator(new OvershootInterpolator(0.45f));
-    if (transitionListener != null) transition.addListener(transitionListener);
-    TransitionManager.beginDelayedTransition(layoutConstraint, transition);
-    constraintSet.applyTo(layoutConstraint);
+    hideViewEntry(leaderbordArrow);
   }
 
   private void showView(View v) {
@@ -303,6 +244,7 @@ public class GameDetailsView extends FrameLayout {
     v.setTranslationY(screenUtils.dpToPx(50));
     v.animate()
         .alpha(1)
+        .withStartAction(() -> v.setAlpha(0f))
         .translationY(0)
         .setDuration(DURATION)
         .setInterpolator(new OvershootInterpolator(0.45f))
@@ -312,7 +254,7 @@ public class GameDetailsView extends FrameLayout {
 
   private void hideViewEntry(View v) {
     v.clearAnimation();
-    v.setAlpha(0);
+    v.setAlpha(0f);
   }
 
   /**
@@ -324,12 +266,60 @@ public class GameDetailsView extends FrameLayout {
   }
 
   public void onCurrentViewVisible() {
-    //if (game.hasScores())
     hideScores();
-    subscriptions.add(Observable.timer(500, TimeUnit.MILLISECONDS)
+    subscriptions.add(Observable.timer(1000, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe(aLong -> {
           showScores();
         }));
+  }
+
+  private void animLeaderbord(float positionOffset, float trans, boolean naturalSlide) {
+    if (naturalSlide) {
+      cardAvatarMyScore.setAlpha(positionOffset);
+      txtMyScoreName.setAlpha(positionOffset);
+      txtMyScoreRanking.setAlpha(positionOffset);
+      txtMyScoreScore.setAlpha(positionOffset);
+      leaderbordContainer.setAlpha(positionOffset);
+      leaderbordArrow.setAlpha(positionOffset);
+
+      cardAvatarMyScore.setTranslationY(trans);
+      txtMyScoreName.setTranslationY(trans);
+      txtMyScoreRanking.setTranslationY(trans);
+      txtMyScoreScore.setTranslationY(trans);
+      leaderbordContainer.setTranslationY(trans);
+      leaderbordArrow.setTranslationY(trans);
+    } else {
+
+      cardAvatarMyScore.setAlpha(0);
+      txtMyScoreName.setAlpha(0);
+      txtMyScoreRanking.setAlpha(0);
+      txtMyScoreScore.setAlpha(0);
+      leaderbordContainer.setAlpha(0);
+      leaderbordArrow.setAlpha(0f);
+    }
+  }
+
+  public void slidePager(float positionOffset, boolean naturalSlide) {
+    if (naturalSlide) { // O to 1
+      float trans = positionOffset * screenUtils.dpToPx(200);
+      animLeaderbord(1 - positionOffset, trans, naturalSlide);
+    } else {
+      float trans = (1 - positionOffset) * screenUtils.dpToPx(200);
+      animLeaderbord(positionOffset, trans, naturalSlide);
+    }
+  }
+
+  public void resetPager() {
+    /*
+    cardAvatarMyScore.setTranslationY(0);
+    txtMyScoreName.setTranslationY(0);
+    txtMyScoreRanking.setTranslationY(0);
+    txtMyScoreScore.setTranslationY(0);
+    leaderbordContainer.setTranslationY(0);
+    leaderbordArrow.setTranslationY(0);
+
+    */
+    hideScores();
   }
 }

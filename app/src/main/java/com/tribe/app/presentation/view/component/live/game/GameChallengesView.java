@@ -195,7 +195,7 @@ public class GameChallengesView extends GameView {
       mScroller = ViewPager.class.getDeclaredField("mScroller");
       mScroller.setAccessible(true);
       ViewPagerScroller scroller =
-          new ViewPagerScroller(viewpager.getContext(), new OvershootInterpolator(1.3f));
+          new ViewPagerScroller(viewpager.getContext(), new OvershootInterpolator(1.3f), 1000);
       mScroller.set(viewpager, scroller);
     } catch (Exception e) {
       Timber.e("error of change scroller " + e);
@@ -282,6 +282,10 @@ public class GameChallengesView extends GameView {
           GameChallenge gameChallenge = (GameChallenge) gameManager.getCurrentGame();
           if (gameChallenge.hasDatas()) setNextGame();
         }));
+  }
+
+  @Override protected void initGameMasterManagerSubscriptions() {
+
   }
 
   /**

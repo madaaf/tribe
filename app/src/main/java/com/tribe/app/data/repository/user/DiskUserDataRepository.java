@@ -1,5 +1,7 @@
 package com.tribe.app.data.repository.user;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Pair;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.tribe.app.data.network.entity.LoginEntity;
@@ -189,6 +191,10 @@ import rx.Observable;
     return null;
   }
 
+  @Override public Observable<User> updateUserAge(List<Pair<String, String>> values) {
+    return null;
+  }
+
   @Override public Observable<User> updateUserFacebook(String userId, String accessToken) {
     return null;
   }
@@ -210,14 +216,14 @@ import rx.Observable;
     return null;
   }
 
-  @Override public Observable<List<Contact>> contacts() {
+  @Override public Observable<List<Contact>> contacts(Context c) {
     final UserDataStore userDataStore = this.userDataStoreFactory.createDiskDataStore();
-    return userDataStore.contacts()
+    return userDataStore.contacts(c)
         .map(collection -> contactRealmDataMapper.transform(
             new ArrayList<ContactInterface>(collection)));
   }
 
-  @Override public Observable<List<ContactFB>> requestInvitableFriends(int nbr) {
+  @Override public Observable<List<ContactFB>> requestInvitableFriends(Context c, int nbr) {
     return null;
   }
 

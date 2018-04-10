@@ -1,5 +1,7 @@
 package com.tribe.app.domain.interactor.user;
 
+import android.app.Activity;
+import android.content.Context;
 import com.tribe.app.data.repository.user.CloudUserDataRepository;
 import com.tribe.app.domain.executor.PostExecutionThread;
 import com.tribe.app.domain.executor.ThreadExecutor;
@@ -14,6 +16,7 @@ public class GetContactFbList extends UseCase {
 
   private UserRepository userRepository;
   private int number;
+  private Context c;
 
   @Inject
   public GetContactFbList(CloudUserDataRepository userRepository, ThreadExecutor threadExecutor,
@@ -22,11 +25,12 @@ public class GetContactFbList extends UseCase {
     this.userRepository = userRepository;
   }
 
-  public void setParams(int number) {
+  public void setParams(int number, Context c) {
     this.number = number;
+    this.c = c;
   }
 
   @Override protected Observable buildUseCaseObservable() {
-    return this.userRepository.requestInvitableFriends(number);
+    return this.userRepository.requestInvitableFriends(c, number);
   }
 }
