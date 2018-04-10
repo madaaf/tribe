@@ -112,9 +112,7 @@ exports.addBullet = function(gameGroup, gamemaster, myPlayer, byPlayer, id, x, y
 
 	bullet:addEventListener('collision', function (event)
 
-		log('onCollision bullet')
 		if event.other.type == BODY_TYPE_MY_PLAYER and myPlayer then
-			log('onCollision bullet my player')
 			gamemaster.hitByBullet(id, weapon.pts, myPlayer:scoreByAddingPoints(weapon.pts)) -- pts is negative here
 			myPlayer:shot()
 			vibrator.sendImpact()

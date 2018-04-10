@@ -41,8 +41,7 @@ local function fadeInAndMoveUp(target, params, alpha)
 end
 
 local function showMessage (message, params) 
-	log('texts - showMessage - ' .. message)
-
+	
 	local text = display.newText( message, screenW/2, (screenH/3 + 20) + verticalOffset, fontName, defaultSize )
 	text.align = 'center'
  	text.alpha = 0
@@ -55,9 +54,9 @@ end
 local currentInstructions
 local currentMode
 local currentModeBg
+local connectionIssue
 
 local function hideCurrentInstructions()
-	log('hideCurrentInstructions')
 	if currentInstructions then
 		verticalOffset = verticalOffset - currentInstructions.height
 		display.remove(currentInstructions)
@@ -66,7 +65,6 @@ local function hideCurrentInstructions()
 end
 
 local function hideCurrentMode()
-	log('hideCurrentMode')
 	if currentMode then
 		display.remove(currentMode)
 		currentMode = nil
@@ -78,7 +76,6 @@ local function hideCurrentMode()
 end
 
 local function showInstructions (message) 
-	log('texts - showInstructions - ' .. message)
 
 	hideCurrentInstructions()
 
@@ -90,8 +87,7 @@ local function showInstructions (message)
 end
 
 local function showMode(message)
-	log('texts - showMode - ' .. message)
-
+	
 	hideCurrentMode()
 
 	currentMode = display.newText({ text=message, x=screenW/2, y=screenH*2/3 - 20, font=fontName, fontSize=15, align='center' })
@@ -135,6 +131,24 @@ end
 
 ---------------------------------------------------------------------------------
 -- Export Functions
+
+exports.showConnectionIssue = function ()
+	exports.hideConnectionIssue()
+
+	connectionIssue = display.newText({ text=strings('connection_issue'), x=screenW/2, y=(screenH/3 + 20) + verticalOffset, font=fontName, fontSize=30, align='center' })
+ 	connectionIssue.alpha = 0
+	connectionIssue.rotation = -2
+
+ 	fadeInAndMoveUp(connectionIssue, {}, 0.1)
+end
+
+exports.hideConnectionIssue = function ()
+	if connectionIssue then
+		verticalOffset = verticalOffset - connectionIssue.height
+		display.remove(connectionIssue)
+		connectionIssue = nil
+	end
+end
 
 exports.showTitle = function (onComplete) 
 	local topTitle = display.newImageRect('assets/images/logo_top.png', 138, 59)

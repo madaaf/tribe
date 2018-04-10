@@ -195,20 +195,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     if (gameManager.getGames() != null && !gameManager.getGames().isEmpty()) {
       adapter.setItems(gameManager.getGames());
       initUI();
-    } else {
-      gameMVPViewAdapter = new GameMVPViewAdapter() {
-        @Override public Context context() {
-          return GamePagerActivity.this;
-        }
-
-        @Override public void onGameList(List<Game> gameList) {
-          gameManager.addGames(gameList);
-          adapter.setItems(gameList);
-          initUI();
-        }
-      };
-
-      gamePresenter.getGames();
     }
 
     initParams(getIntent());
@@ -373,6 +359,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     onGames.onNext(gameManager.getGames());
     setAnimImageAnimation();
     initDots(gameManager.getGames().size());
+    viewpager.setCurrentItem(0);
     GameDetailsView gameDetailsView = adapter.getItemAtPosition(0);
     if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
 
@@ -481,7 +468,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       @Override public void onGameList(List<Game> gameList) {
         gameManager.addGames(gameList);
-        onGames.onNext(gameList);
+        adapter.setItems(gameManager.getGames());
+        initUI();
+        onGames.onNext(gameManager.getGames());
       }
     };
 

@@ -87,7 +87,6 @@ exports.getPlayer = function(playerId)
 end
 
 exports.removeAllPlayers = function() 
-	log('Corona - removeAllPlayers')
 	exports.myPlayer = nil
 	for k,v in pairs(players) do
 		v:hide() -- TODO : Scale down
@@ -96,8 +95,7 @@ exports.removeAllPlayers = function()
 end
 
 exports.showPlayingPlayers = function(playersGroup, miniMap, camera, game) 
-	log('Corona - showPlayingPlayers')
-
+	
 	local defaultWeapon = bonusLibrary.defaultWeapon()
 
 	for k,v in pairs(game.players) do
@@ -113,8 +111,7 @@ exports.showPlayingPlayers = function(playersGroup, miniMap, camera, game)
 end
 
 exports.showStartingPlayers = function(playersGroup, miniMap, camera, game) 
-	log('Corona - showStartingPlayers')
-
+	
 	local myPos = { 500, 500 }
 	for k,v in pairs(game.players) do
 		if v.id == exports.myUserId then
@@ -169,7 +166,6 @@ exports.createTrainingPlayer = function (playersGroup, miniMap, camera)
 end
 
 exports.createPlayer = function (playersGroup, miniMap, camera, parameters)
-	log('createPlayer')
 	
 	if not players[parameters.id] then
 		local color = colors(parameters.color)
@@ -292,7 +288,6 @@ exports.createPlayer = function (playersGroup, miniMap, camera, parameters)
 		end
 
 		function player:expulse()
-			log('expulse (' .. self.deltaX .. ', ' .. self.deltaY .. ')')
 			self.image:applyForce(-self.deltaX, -self.deltaY, self.image.x, self.image.y)
 		end
 

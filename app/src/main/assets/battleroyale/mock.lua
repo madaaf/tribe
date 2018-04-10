@@ -69,7 +69,6 @@ startGame = function (receive)
 			end)
 
 			timer.performWithDelay(1000, function ()
-				log('receive utility')
 				receive('&&u:r1LxkKbsG,potion_small,200,200')
 				receive('&&w:r1LxkKbsG2,m16,300,300')
 			end)

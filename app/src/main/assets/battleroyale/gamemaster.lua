@@ -1,6 +1,7 @@
 local listeners = {}
 
-local json = require 'json'
+local json  = require 'json'
+local texts = require 'texts'
 
 local CMD_SEPARATOR 			= '#'
 local CMD_SEND_POSITION 		= 'p:'
@@ -12,7 +13,34 @@ local CMD_SEND_UTILITY			= 'u:'
 local CMD_SEND_WEAPON			= 'w:'
 local CMD_SEND_GET_BONUS 		= 'g:'
 
+---------------------------------------------------------------------------------
+-- Connection Timer Functions
+
+local connectionTimer
+
+local function startConnectionTimer()
+
+	connectionTimer = timer.performWithDelay(1000, function ()
+		listeners['onConnectionIssueEvent']()
+	end)
+end
+
+local function stopConnectionTimer()
+	
+	if connectionTimer then
+		timer.cancel(connectionTimer)
+		connectionTimer = nil
+	end
+
+	texts.hideConnectionIssue()
+end
+
+---------------------------------------------------------------------------------
+-- Basic Functions
+
 local function receive(data)
+
+	stopConnectionTimer()
 
 	-- Commands
 	if data:starts('&&') then
@@ -27,13 +55,11 @@ local function receive(data)
 				listeners['onPositionEvent'](event)
 
 			elseif cmd:starts(CMD_SEND_BULLET) then
-				log('receive - ' .. cmd)
 				local event = {}
 				event.userId, event.id, event.x, event.y, event.angle, event.speed, event.pts, event.weaponSubtype = cmd:match(CMD_SEND_BULLET .. '([A-Za-z0-9\-_]+),([0-9.\-]+),([0-9.\-]+),([0-9.\-]+),([0-9.\-]+),([0-9.\-]+),([0-9.\-]+),([a-z0-9]+)')
 				listeners['onAddBulletEvent'](event)
 
 			elseif cmd:starts(CMD_SEND_HIT_BY_BULLET) then
-				log('receive - ' .. cmd)
 				local event = {}
 				event.userId, event.id = cmd:match(CMD_SEND_HIT_BY_BULLET .. '([A-Za-z0-9\-_]+),([0-9.\-]+)')
 				listeners['onRemoveBulletEvent'](event)
@@ -44,19 +70,16 @@ local function receive(data)
 				listeners['onScoreEvent'](event)
 
 			elseif cmd:starts(CMD_SEND_UTILITY) then
-				log('receive - ' .. cmd)
 				local event = { type = 'utility' }
 				event.id, event.subtype, event.x, event.y = cmd:match(CMD_SEND_UTILITY .. '([A-Za-z0-9\-_]+),([A-Za-z0-9\-_]+),([0-9.\-]+),([0-9.\-]+)')
 				listeners['onBonusEvent'](event)
 
 			elseif cmd:starts(CMD_SEND_WEAPON) then
-				log('receive - ' .. cmd)
 				local event = { type = 'weapon' }
 				event.id, event.subtype, event.x, event.y = cmd:match(CMD_SEND_WEAPON .. '([A-Za-z0-9\-_]+),([A-Za-z0-9\-_]+),([0-9.\-]+),([0-9.\-]+)')
 				listeners['onBonusEvent'](event)
 
 			elseif cmd:starts(CMD_SEND_GET_BONUS) then
-				log('receive - ' .. cmd)
 				local event = {}
 				event.userId, event.id = cmd:match(CMD_SEND_GET_BONUS .. '([A-Za-z0-9\-_]+),([A-Za-z0-9\-_]+)')
 				listeners['onGetBonusEvent'](event)
@@ -67,16 +90,12 @@ local function receive(data)
 	elseif data:starts('??') then
 		local event = { session=json.decode(data, 3) }
 
-		log('receive - ' .. data)
-
 		listeners['onSessionEvent'](event)
 
 	-- Game event from the server
 	elseif data:starts('**') then
 		local n,d = data:match('**([A-Z_]+)**(.*)')
 		
-		log('receive - ' .. data)
-
 		if n then
 			local event = { name=n }
 			if d then
@@ -148,7 +167,14 @@ exports.start = function ()
 		end
 	end)
 
+	startConnectionTimer()
 	dispatch('?')
+end
+
+exports.loadGame = function ()
+
+	startConnectionTimer()
+	dispatch('>battleroyale')
 end
 
 exports.joinPlayers = function ()

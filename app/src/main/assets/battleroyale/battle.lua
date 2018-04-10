@@ -43,7 +43,6 @@ sessionStateText.y = safeScreenOriginY + 76
 -- Sound
 
 local function toggleVolume(event)
-	log('level - toggleVolume')
 	if not (sounds.isVolumeEnabled == event.isEnabled) then
 		sounds.isVolumeEnabled = event.isEnabled
 		if not event.isEnabled then
@@ -147,13 +146,12 @@ end
 ---------------------------------------------------------------------------------
 -- Splash
 
+local splashMap
 local function showSplash()
-	local map = mapLibrary.newMap({ width = 1000, height = 1000, radius = 10 })
-	camera:add(map, 4)
+	splashMap = mapLibrary.newMap({ width = 1000, height = 1000, radius = 10 })
+	camera:add(splashMap, 4)
 
 	texts.showTitle(function ()
-		camera:remove(map)
-		display.remove(map)
 	 	gamemaster.start()
 	end)
 end
@@ -162,7 +160,6 @@ end
 -- Weapons
 
 local function shotBullet(bulletId, x, y, angle, weapon)
-	log('bulletId - shotBullet - ' .. bulletId) 
 	gamemaster.addBullet(bulletId, x, y, angle, weapon)
 	bodiesLibrary.addBullet(gameGroup, gamemaster, users.myPlayer, users.myPlayer, bulletId, x, y, angle, weapon)
 	sounds.playShot(weapon)
@@ -190,7 +187,6 @@ local function chargeWeapon(weapon, animated)
 			local x = player.image.x + ((40 + weapon.bulletOffset) * math.sin(angle))
 			local y = player.image.y + ((40 + weapon.bulletOffset) * -math.cos(angle))
 
-			log('bulletId - ' .. bulletId) 
 			shotBullet(bulletId, x, y, angle, weapon)
 
 			if (weapon.subtype == 'shotgun') then
@@ -298,6 +294,11 @@ local function updateSessionState(state, game)
 			end)
 		end
 
+	elseif state == 'IDLE' then
+		-- Normally, the game is already loaded, but in case of network problems, the status will be reset to IDLE.
+		-- In that case, we relaunch the game.
+		gamemaster.loadGame()
+
 	elseif state == 'FINISHING' then
 		joystickLibrary:hide()
 		users.removeAllPlayers()
@@ -334,6 +335,12 @@ end
 local function onSessionEvent(event) 
 	users.updatePeers(event.session)
 	updateSessionState(event.session.state, event.session.game)
+
+	if splashMap then
+		camera:remove(splashMap)
+		display.remove(splashMap)
+		splashMap = nil
+	end
 end
 
 local function onGameEvent(event) 
@@ -482,6 +489,11 @@ local function onScoreEvent(event)
 	end
 end
 
+local function onConnectionIssueEvent()
+
+	texts.showConnectionIssue()
+end
+
 ---------------------------------------------------------------------------------
 -- Game Flow
 
@@ -496,8 +508,7 @@ end
 -- Scene
 
 function scene:create(event)
-	log('battle - scene:create')
-
+	
 	if system.getInfo('environment') ~= 'simulator' then
 		system.activate('multitouch')
 	end
@@ -522,13 +533,13 @@ function scene:create(event)
 	gamemaster.setEventListener('onScoreEvent',		   onScoreEvent)
 	gamemaster.setEventListener('onBonusEvent',		   onBonusEvent)
 	gamemaster.setEventListener('onGetBonusEvent', 	   onGetBonusEvent)
+	gamemaster.setEventListener('onConnectionIssueEvent', onConnectionIssueEvent)
 
 	Runtime:addEventListener('startGame', 	 scene)
 	Runtime:addEventListener('toggleVolume', toggleVolume)
 end
 
 function scene:show(event)
-	log('battle - scene:show ' .. event.phase)
 	if event.phase == "did" then
 		physics.start()
 
@@ -540,14 +551,12 @@ function scene:show(event)
 end
 
 function scene:hide(event)
-	log('battle - scene:hide ' .. event.phase)
 	if event.phase == "will" then
 		physics.stop()
 	end
 end
 
 function scene:destroy(event)
-	log('battle - scene:destroy')
 	package.loaded[physics] = nil
 	physics = nil
 end

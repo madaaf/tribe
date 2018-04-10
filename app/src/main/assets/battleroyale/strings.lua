@@ -12,7 +12,8 @@ local strings = {
 		someone_won = '%s won!',
 		baseline = 'Be the last to survive!',
 		shoot = 'shoot',
-		move = 'move'
+		move = 'move',
+		connection_issue = 'Connection issue'
 	},
 	fr = {
 		training_mode = 'MODE ENTRAINEMENT',
@@ -27,7 +28,8 @@ local strings = {
 		someone_won = '%s a gagné !',
 		baseline = 'Sois le dernier\nà survivre !',
 		shoot = 'tirer',
-		move = 'bouger'
+		move = 'bouger',
+		connection_issue = 'Problème de connexion'
 	}
 }
 

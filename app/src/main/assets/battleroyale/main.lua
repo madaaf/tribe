@@ -22,8 +22,6 @@ function log(string)
 	print('🍺 - Corona - ' .. string)
 end
 
-log(system.getInfo('appVersionString'))
-
 ---------------------------------------------------------------------------------
 
 composer.gotoScene("battle")
