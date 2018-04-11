@@ -356,8 +356,8 @@ local function onGameEvent(event)
 	-- Players
 
 	-- elseif event.name == 'NEW_PLAYER'  then users.createOrUpdatePlayer(playersGroup, miniMap, camera, event.payload)
-	elseif event.name == 'PLAYER_LEFT' then users.removePlayer(event.payload, camera)
 
+	elseif event.name == 'PLAYER_LEFT' then users.removePlayer(event.payload, camera, showViewerMode)
 	-- Peers
 
 	elseif event.name == 'PEER_JOINED' then users.addPeer(event.payload)

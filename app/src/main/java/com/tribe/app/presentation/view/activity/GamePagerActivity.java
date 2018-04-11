@@ -376,12 +376,15 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
             animatorPeekViewPager.setInterpolator(new DecelerateInterpolator());
             animatorPeekViewPager.addUpdateListener(animation -> {
               int value = (int) animation.getAnimatedValue();
-              viewpager.fakeDragBy(-previousAnimationValue + value);
+              if (viewpager.isFakeDragging()) {
+                viewpager.fakeDragBy(-previousAnimationValue + value);
+              } else {
+                animation.cancel();
+              }
               previousAnimationValue = value;
             });
             animatorPeekViewPager.addListener(new AnimatorListenerAdapter() {
               @Override public void onAnimationEnd(Animator animation) {
-                animation.cancel();
                 stateManager.addTutorialKey(StateManager.FIRST_SWIPE_GAME_STORE);
                 viewpager.endFakeDrag();
               }

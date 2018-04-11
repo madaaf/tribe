@@ -165,12 +165,12 @@ exports.showTitle = function (onComplete)
 	moveToCenterAndOut(bottomTitle, {})
 end
 
-exports.showYouLost = function ()
-	showMessage(strings('you_lost'))
+exports.showYouLost = function (params)
+	showMessage(strings('you_lost'), params)
 end
 
-exports.showSomeoneLost = function (name)
-	showMessage(string.format(strings('someone_lost'), name))
+exports.showSomeoneLost = function (name, params)
+	showMessage(string.format(strings('someone_lost'), name), params)
 end
 
 exports.showYouWon = function ()
