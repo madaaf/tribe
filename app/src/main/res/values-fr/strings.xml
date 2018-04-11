@@ -1125,4 +1125,7 @@
 	<!-- Play Menu -->
 	<string name="play_menu_action_match">Match strangers</string>
 	<string name="play_menu_action_pick_friends">Pick friends</string>
+	
+	<!-- Match Making -->
+	<string name="match_making_finding_friends">FINDING FRIENDS...</string>
 </resources>

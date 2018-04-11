@@ -463,7 +463,7 @@ exports.removePeer = function (peerId)
 	peers[peerId] = nil
 end
 
-exports.removePlayer = function (playerId, camera)
+exports.removePlayer = function (playerId, camera, showViewerMode)
 
 	isDead[playerId] = true
 
@@ -472,9 +472,11 @@ exports.removePlayer = function (playerId, camera)
 
 		players[playerId] = nil
 
+		local cameraWasRemoved = false
 		if camera:layer(1) and camera:layer(1)[1] == player.image then
 			camera:remove(player.image)
 			camera:cancel()
+			cameraWasRemoved = true
 		end
 
 		local remainingPlayer = nil
@@ -485,12 +487,15 @@ exports.removePlayer = function (playerId, camera)
 		end
 
 		if nbRemainingPlayers > 1 then
-			exports.followBestRemainingPlayer(camera)
-
 			if exports.myUserId == playerId then
-				texts.showYouLost()
+				showViewerMode()
+				texts.showYouLost({ onComplete= function () texts.showPendingInstructions() end })
 			else
 				texts.showSomeoneLost(player.display_name)
+			end
+
+			if cameraWasRemoved then
+				exports.followBestRemainingPlayer(camera)
 			end
 
 		elseif nbRemainingPlayers == 1 then
