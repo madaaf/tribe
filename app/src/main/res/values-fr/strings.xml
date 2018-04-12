@@ -913,6 +913,7 @@
 	<string name="chat_not_seen">Non lu</string>
 	<string name="chat_attachment_more_save">Sauvegarder</string>
 	<string name="chat_attachment_more_save_success">Sauvegardé !</string>
+	<string name="chat_action_challenge">Défier %1$s</string>
 	
 	<!-- Walkthrough -->
 	<string name="walkthrough_action_step1">Petit tour</string>

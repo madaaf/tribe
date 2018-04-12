@@ -205,7 +205,6 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   @Override protected void onResume() {
     super.onResume();
-    gamePresenter.getGames(); // TODO SOEF
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
