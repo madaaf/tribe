@@ -773,15 +773,13 @@ public class RecyclerMessageView extends IChat {
   }
 
   @Override public void isReadingUpdate(String userId) {
-    if (shortcut != null) {
-      for (ShortcutLastSeen shortcutLastSeen : shortcut.getShortcutLastSeen()) {
-        if (shortcutLastSeen.getUserId().equals(userId)) {
-          shortcutLastSeen.setDate(dateUtils.getUTCDateAsString());
-        }
+    for (ShortcutLastSeen shortcutLastSeen : shortcut.getShortcutLastSeen()) {
+      if (shortcutLastSeen.getUserId().equals(userId)) {
+        shortcutLastSeen.setDate(dateUtils.getUTCDateAsString());
       }
-      setShortcut(shortcut);
-      notifyDataSetChanged();
     }
+    setShortcut(shortcut);
+    notifyDataSetChanged();
   }
 
   private void shrankRecyclerViewGrp() {

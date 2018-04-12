@@ -5,6 +5,7 @@
     android:layout_height="90dp"
     android:background="@drawable/selectable_button_light"
     android:clickable="true"
+    android:id="@+id/container"
     >
 
   <com.tribe.app.presentation.view.widget.avatar.NewAvatarView

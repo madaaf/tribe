@@ -451,7 +451,11 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
               this);
         } else {
           Recipient recipient = ShortcutUtil.getRecipientFromId(score.getUser().getId(), user);
-          navigator.navigateToChat(this, recipient, null, null, false);
+          if (recipient != null) {
+            navigator.navigateToChat(this, recipient, null, null, false);
+          } else {
+            messagePresenter.createShortcut(false, score.getUser().getId());
+          }
         }
       }
     }));
@@ -615,8 +619,8 @@ public class GameLeaderboardActivity extends BaseBroadcastReceiverActivity {
     bundle.putInt(TagManagerUtils.RANK, score.getRanking());
     tagManager.trackEvent(TagManagerUtils.Poke, bundle);
 
-    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null &&
-        score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
+        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
 
     if (isAbove) {
       soundManager.playSound(SoundManager.POKE_LAUGH, SoundManager.SOUND_LOW);
