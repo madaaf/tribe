@@ -39,6 +39,11 @@ public class GameRealm extends RealmObject {
   private String logo;
   private String background;
   private RealmList<AnimationIconRealm> animated_icons;
+  private boolean in_home;
+  private int min_android_version;
+  private boolean uses_gamemaster;
+  private int priority;
+
 
   @Ignore private ScoreRealm friendLeader;
   @Ignore RealmList<ScoreRealm> scores;
@@ -85,6 +90,38 @@ public class GameRealm extends RealmObject {
 
   public boolean isNew() {
     return isNew;
+  }
+
+  public boolean isIn_home() {
+    return in_home;
+  }
+
+  public void setIn_home(boolean in_home) {
+    this.in_home = in_home;
+  }
+
+  public int getMin_android_version() {
+    return min_android_version;
+  }
+
+  public void setMin_android_version(int min_android_version) {
+    this.min_android_version = min_android_version;
+  }
+
+  public boolean isUses_gamemaster() {
+    return uses_gamemaster;
+  }
+
+  public void setUses_gamemaster(boolean uses_gamemaster) {
+    this.uses_gamemaster = uses_gamemaster;
+  }
+
+  public int getPriority() {
+    return priority;
+  }
+
+  public void setPriority(int priority) {
+    this.priority = priority;
   }
 
   public void setNew(boolean aNew) {

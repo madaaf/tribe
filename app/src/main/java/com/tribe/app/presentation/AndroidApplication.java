@@ -160,7 +160,7 @@ public class AndroidApplication extends Application {
   }
 
   private void prepareRealm() {
-    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(20)
+    RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().schemaVersion(21)
         .migration((realm, oldVersion, newVersion) -> {
           RealmSchema schema = realm.getSchema();
 
@@ -487,6 +487,13 @@ public class AndroidApplication extends Application {
             schema.get("ContactFBRealm")
                 .addRealmListField("commonFriendsNameList", schema.get("StringRealm"));
             oldVersion++;
+          }
+          if (oldVersion == 20) {
+            schema.get("GameRealm")
+                .addField("in_home", boolean.class)
+                .addField("uses_gamemaster", boolean.class)
+                .addField("priority", int.class)
+                .addField("min_android_version", int.class);
           }
         })
         .build();

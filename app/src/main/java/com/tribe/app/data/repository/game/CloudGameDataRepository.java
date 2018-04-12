@@ -1,6 +1,8 @@
 package com.tribe.app.data.repository.game;
 
+import com.tribe.app.BuildConfig;
 import com.tribe.app.data.network.entity.AddScoreEntity;
+import com.tribe.app.data.realm.GameRealm;
 import com.tribe.app.data.realm.mapper.GameRealmDataMapper;
 import com.tribe.app.data.realm.mapper.ScoreRealmDataMapper;
 import com.tribe.app.data.repository.game.datasource.GameDataStore;
@@ -12,6 +14,7 @@ import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.domain.interactor.game.GameRepository;
 import com.tribe.tribelivesdk.game.Game;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -44,12 +47,18 @@ import timber.log.Timber;
 
   @Override public Observable<List<Game>> getGames() {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
-    return gameDataStore.getGames()
-        .map(gameRealm -> gameRealmDataMapper.transform(gameRealm))
-        .doOnError(throwable -> Timber.e(throwable));
+    return gameDataStore.getGames().map(gameRealmList -> {
+      List<GameRealm> filtred = new ArrayList<>();
+      for (GameRealm g : gameRealmList) {
+        boolean ignored = (BuildConfig.VERSION_CODE < g.getMin_android_version());
+        if (!ignored) filtred.add(g);
+      }
+      return gameRealmDataMapper.transform(filtred);
+    }).doOnError(Timber::e);
   }
 
-  @Override public Observable<List<Score>> getGameLeaderBoard(String gameId, List<Contact> usersId) {
+  @Override
+  public Observable<List<Score>> getGameLeaderBoard(String gameId, List<Contact> usersId) {
     GameDataStore gameDataStore = dataStoreFactory.createCloudDataStore();
     return gameDataStore.getGameLeaderBoard(gameId, usersId)
         .map(scoreRealmList -> scoreRealmDataMapper.transform(scoreRealmList));

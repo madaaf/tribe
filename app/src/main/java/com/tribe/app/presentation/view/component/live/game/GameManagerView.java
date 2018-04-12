@@ -139,8 +139,8 @@ public class GameManagerView extends FrameLayout {
 
   private void initSubscriptions() {
     subscriptions.add(gameManager.onCurrentUserStartGame().subscribe(game -> {
-      if (game.getId().equals(Game.GAME_BATTLE_ROYALE) && gameMasterManager != null) {
-        gameMasterManager.send(">battleroyale");
+      if (game.isUses_gamemaster() && gameMasterManager != null) {
+        gameMasterManager.send(">" + game.getId());
       }
     }));
     subscriptions.add(Observable.merge(gameManager.onCurrentUserStartGame()
@@ -265,8 +265,8 @@ public class GameManagerView extends FrameLayout {
       subscriptionsGame.add(gameDrawView.onNextDraw()
           .map(aBoolean -> gameManager.getCurrentGame())
           .subscribe(onRestartGame));
-    } else if (game.getId().equals(Game.GAME_INVADERS) ||
-        game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
+    } else if (game.getId().equals(Game.GAME_INVADERS) || game.getId()
+        .equals(Game.GAME_BATTLE_ROYALE)) {
       GameCoronaView gameCoronaView;
       if (game.getId().equals(Game.GAME_BATTLE_ROYALE)) {
         GameBattleRoyaleCoronaView gameBattleRoyaleCoronaView =

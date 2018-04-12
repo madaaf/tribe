@@ -137,6 +137,8 @@ public class LeaderboardActivity extends BaseBroadcastReceiverActivity {
     gamePresenter.onViewDetached();
   }
 
+
+
   @Override protected void onDestroy() {
     if (subscriptions != null && subscriptions.hasSubscriptions()) subscriptions.unsubscribe();
     super.onDestroy();

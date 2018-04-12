@@ -205,6 +205,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   @Override protected void onResume() {
     super.onResume();
+    gamePresenter.getGames(); // TODO SOEF
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
@@ -242,9 +243,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       if (calendarPreviousDate.before(calendarYesterday)) {
         nbDays = 1;
-      } else if ((calendarPreviousDate.after(calendarYesterday) ||
-          calendarPreviousDate.equals(calendarYesterday)) &&
-          calendarPreviousDate.before(calendarToday)) {
+      } else if ((calendarPreviousDate.after(calendarYesterday) || calendarPreviousDate.equals(
+          calendarYesterday)) && calendarPreviousDate.before(calendarToday)) {
         nbDays += 1;
       }
     } else {
@@ -260,9 +260,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private void loadChallengeNotificationData() {
-    if (challengeNotificationsPref != null &&
-        challengeNotificationsPref.get() != null &&
-        !challengeNotificationsPref.get().isEmpty()) {
+    if (challengeNotificationsPref != null
+        && challengeNotificationsPref.get() != null
+        && !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
@@ -322,8 +322,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
-        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
+        PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync, this);
     }
 
@@ -470,7 +470,11 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       }
 
       @Override public void onGameList(List<Game> gameList) {
-        gameManager.addGames(gameList);
+        List<Game> list = new ArrayList<>();
+        for (Game g : gameList) {
+          if (g.isIn_home()) list.add(g);
+        }
+        gameManager.addGames(list);
         adapter.setItems(gameManager.getGames());
         initUI();
         onGames.onNext(gameManager.getGames());
@@ -539,8 +543,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
               if (shortcut.isSingle()) {
                 User member = shortcut.getSingleFriend();
                 if (member.isPlayingAGame()) {
-                  if (!userIdsDigest.contains(member.getId()) &&
-                      !roomIdsDigest.contains(member.getId())) {
+                  if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
+                      member.getId())) {
                     userIdsDigest.add(member.getId());
                     items.add(shortcut);
                   }
