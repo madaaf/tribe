@@ -150,12 +150,14 @@ import javax.inject.Singleton;
 
   public static int getRandomColorExcluding(int excludeColor) {
     Random r = new Random();
-    int randomPosition = r.nextInt(getLength() - 0) + 0;
+    int length = getLength();
+    if (length == 0) return excludeColor;
+    int randomPosition = r.nextInt(length - 0) + 0;
 
     int color = excludeColor;
     while (color == excludeColor) {
       color = get(randomPosition);
-      randomPosition = r.nextInt(getLength() - 0) + 0;
+      randomPosition = r.nextInt(length - 0) + 0;
       if (color != excludeColor) break;
     }
 

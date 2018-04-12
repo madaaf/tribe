@@ -35,6 +35,7 @@ public class GameBattleRoyaleCoronaView extends GameCoronaView {
   @Override protected void handleCoronaMessage(String event, Hashtable<Object, Object> hashtable) {
     super.handleCoronaMessage(event, hashtable);
     if (event.equals("gameMaster")) {
+      if (gameMasterManager == null) return;
       String message = hashtable.get("string").toString();
       gameMasterManager.send(message);
     } else if (event.equals("statusesUpdated")) {
