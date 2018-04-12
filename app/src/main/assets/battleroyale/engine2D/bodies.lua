@@ -96,7 +96,12 @@ end
 
 
 exports.addBullet = function(gameGroup, gamemaster, myPlayer, byPlayer, id, x, y, angle, weapon)	
-	local bullet = display.newImageRect(gameGroup, weapon.spriteBulletPrefix .. byPlayer.color .. '.png', weapon.bulletSize, weapon.bulletSize)
+	local color = byPlayer.color
+	if not byPlayer.color then
+	 	color = 'pink'
+	end
+
+	local bullet = display.newImageRect(gameGroup, weapon.spriteBulletPrefix .. color .. '.png', weapon.bulletSize, weapon.bulletSize)
 	bullet.x, bullet.y = x, y
 	bullet.isBullet = true
 	local deltaX = weapon.speed * math.sin(angle)

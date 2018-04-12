@@ -418,10 +418,12 @@ public class LiveRoomView extends FrameLayout {
     } else if (type == TYPE_LIST || type == TYPE_EMBED) {
       translation = (getMeasuredHeight() >> 1) - screenUtils.dpToPx(60);
       setBackgroundColor(Color.TRANSPARENT);
-      MarginLayoutParams params =
-          new MarginLayoutParams(screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST),
-              screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
-      constraintLayout.addView(liveRowViewAddFriend, params);
+      if (liveRowViewAddFriend.getParent() == null) {
+        MarginLayoutParams params =
+            new MarginLayoutParams(screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST),
+                screenUtils.dpToPx(LiveStreamView.MAX_HEIGHT_LIST));
+        constraintLayout.addView(liveRowViewAddFriend, params);
+      }
     }
 
     diceView.translateDice(translation, true);
