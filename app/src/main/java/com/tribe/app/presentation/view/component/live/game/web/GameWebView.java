@@ -30,7 +30,6 @@ import com.tribe.app.presentation.utils.StringUtils;
 import com.tribe.app.presentation.view.component.live.LiveStreamView;
 import com.tribe.app.presentation.view.component.live.game.common.GameViewWithEngine;
 import com.tribe.app.presentation.view.utils.AnimationUtils;
-import com.tribe.app.presentation.view.utils.PaletteGrid;
 import com.tribe.app.presentation.view.widget.LoadingGameView;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.model.TribeGuest;
@@ -73,8 +72,6 @@ public class GameWebView extends GameViewWithEngine {
     unbinder = ButterKnife.bind(this);
 
     mainHandler = new Handler(context.getMainLooper());
-
-    layoutProgress.setBackgroundColor(PaletteGrid.getRandomColorExcluding(Color.BLACK));
 
     webView.setFocusable(true);
     webView.setFocusableInTouchMode(true);
@@ -305,9 +302,25 @@ public class GameWebView extends GameViewWithEngine {
       Observable<Map<String, TribeGuest>> mapInvitedObservable,
       Observable<Map<String, LiveStreamView>> liveViewsObservable, String userId) {
     wordingPrefix = "game_webv1_";
+    loader.start();
+    layoutProgress.setBackgroundColor(Color.parseColor("#" + game.getPrimary_color()));
     super.start(game, masterMapObs, mapObservable, mapInvitedObservable, liveViewsObservable,
         userId);
-    if (!StringUtils.isEmpty(game.getUrl())) webView.loadUrl(game.getUrl());
+    if (!StringUtils.isEmpty(game.getUrl())) {
+      webView.loadUrl(game.getUrl());
+      //webView.onPause();
+      webView.setWebViewClient(new WebViewClient() {
+        @Override public void onPageFinished(WebView view, String url) {
+          loader.setNotifEventListener(() -> {
+            super.onPageFinished(view, url);
+            //   webView.setVisibility(VISIBLE);
+            //  webView.onResume();
+          });
+          loader.finish();
+        }
+      });
+      //   webView.setVisibility(GONE);
+    }
   }
 
   @Override public void stop() {

@@ -117,7 +117,7 @@ public class CloudGameDataStore implements GameDataStore {
     String body = context.getString(R.string.games_infos);
     final String request = context.getString(R.string.query, body);
     return this.tribeApi.getGames(request)
-        .doOnNext(gameList -> gameCache.putGames(gameList))
+        .doOnNext(gameCache::putGames)
         .onErrorResumeNext(throwable -> Observable.just(gameCache.getGames()))
         .doOnError(Throwable::printStackTrace);
   }

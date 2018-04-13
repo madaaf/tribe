@@ -541,6 +541,7 @@ public class GameCoronaView extends GameView {
     Timber.d("start");
     super.start(game, masterMapObs, mapObservable, mapInvitedObservable, liveViewsObservable,
         userId);
+    loader.start();
     this.masterMapObs = masterMapObs;
     currentMasterId = userId;
     game.setCurrentMaster(peerMap.get(userId));

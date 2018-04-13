@@ -88,6 +88,10 @@ public class Game {
   protected String background;
   protected List<String> animation_icons;
   protected int roundCount = 0;
+  protected boolean in_home;
+  protected int min_android_version;
+  protected boolean uses_gamemaster;
+  protected int priority;
 
   // OBSERVABLE / SUBSCRIPTIONS
   protected CompositeSubscription subscriptions = new CompositeSubscription();
@@ -100,11 +104,9 @@ public class Game {
     this.id = id;
     this.localFrameDifferent = id.equals(GAME_POST_IT);
     this.hasView = !id.equals(GAME_POST_IT);
-    this.isOverLive = id.equals(GAME_INVADERS) ||
-        id.equals(GAME_SPEED_RACER) ||
-        id.equals(GAME_SLICE_FRUIT) ||
-        id.equals(GAME_BIRD_RUSH) ||
-        id.equals(GAME_INVADERS_CORONA);
+    this.isOverLive =
+        id.equals(GAME_INVADERS) || id.equals(GAME_SPEED_RACER) || id.equals(GAME_SLICE_FRUIT) || id
+            .equals(GAME_BIRD_RUSH) || id.equals(GAME_INVADERS_CORONA);
     this.isOverLiveEmbed = id.equals(GAME_BATTLE_ROYALE);
     this.isNotOverLiveWithScores =
         id.equals(GAME_TRIVIA) || id.equals(GAME_BATTLE_MUSIC) || id.equals(GAME_COOL_CAMS);
@@ -220,6 +222,38 @@ public class Game {
 
   public void setBaseline(String baseline) {
     this.baseline = baseline;
+  }
+
+  public int getMin_android_version() {
+    return min_android_version;
+  }
+
+  public void setMin_android_version(int min_android_version) {
+    this.min_android_version = min_android_version;
+  }
+
+  public boolean isUses_gamemaster() {
+    return uses_gamemaster;
+  }
+
+  public void setUses_gamemaster(boolean uses_gamemaster) {
+    this.uses_gamemaster = uses_gamemaster;
+  }
+
+  public int getPriority() {
+    return priority;
+  }
+
+  public void setPriority(int priority) {
+    this.priority = priority;
+  }
+
+  public boolean isIn_home() {
+    return in_home;
+  }
+
+  public void setIn_home(boolean in_home) {
+    this.in_home = in_home;
   }
 
   public String getIcon() {

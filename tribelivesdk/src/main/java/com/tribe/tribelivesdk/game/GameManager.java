@@ -2,6 +2,7 @@ package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
 import android.util.Pair;
+import com.tribe.tribelivesdk.BuildConfig;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -89,23 +90,29 @@ import rx.subscriptions.CompositeSubscription;
 
     if (games != null) {
       for (Game game : games) {
-        if (Arrays.asList(playableGames).contains(game.getId()) &&
-            game.isOnline() &&
-            (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N ||
-                !game.isWeb()) &&
-            (game.get__typename().equals(Game.TYPE_NAME_NATIVE) ||
-                game.get__typename().equals(Game.TYPE_NAME_WEBV1) ||
-                game.get__typename().equals(Game.TYPE_NAME_CORONA))) {
+        if (Arrays.asList(playableGames).contains(game.getId())
+            && game.isOnline()
+            && (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N
+            || !game.isWeb())
+            && (game.get__typename().equals(Game.TYPE_NAME_NATIVE) || game.get__typename()
+            .equals(Game.TYPE_NAME_WEBV1) || game.get__typename().equals(Game.TYPE_NAME_CORONA))) {
           gameList.add(game);
         }
       }
     }
 
     Collections.sort(gameList, (o1, o2) -> {
+      int prio = ((Integer) o2.getPriority()).compareTo(o1.getPriority());
       int res = ((Boolean) o2.isFeatured()).compareTo(o1.isFeatured());
-      if (res != 0) return res;
+      int playsCount = ((Integer) o2.getPlays_count()).compareTo(o1.getPlays_count());
 
-      return ((Integer) o2.getPlays_count()).compareTo(o1.getPlays_count());
+      if (prio != 0) {
+        return prio;
+      } else if (res == 0) {
+        return playsCount;
+      } else {
+        return res;
+      }
     });
   }
 
@@ -184,6 +191,16 @@ import rx.subscriptions.CompositeSubscription;
     return gameList;
   }
 
+
+  public List<Game> getHomeGames() {
+    List<Game> filtred = new ArrayList<>();
+    for (Game g : gameList) {
+      boolean enable = (BuildConfig.VERSION_CODE >= g.getMin_android_version());
+      if (g.isIn_home() && enable) filtred.add(g);
+    }
+    return filtred;
+  }
+
   public Game getGameById(String id) {
     for (Game game : gameList) {
       if (game.getId().equals(id)) return game;
@@ -218,9 +235,8 @@ import rx.subscriptions.CompositeSubscription;
   }
 
   public boolean isFacialRecognitionNeeded() {
-    return currentGame != null &&
-        (currentGame.getId().equals(Game.GAME_POST_IT) ||
-            currentGame.getId().equals(Game.GAME_COOL_CAMS));
+    return currentGame != null && (currentGame.getId().equals(Game.GAME_POST_IT)
+        || currentGame.getId().equals(Game.GAME_COOL_CAMS));
   }
 
   public void dispose() {

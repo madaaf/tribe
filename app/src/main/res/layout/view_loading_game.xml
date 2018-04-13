@@ -1,33 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <FrameLayout
-      android:layout_width="100dp"
-      android:layout_height="100dp"
+  <RelativeLayout
+      android:id="@+id/container"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:gravity="center"
       >
-    <ImageView
-        android:id="@+id/loading_game_back"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <FrameLayout
+        android:id="@+id/loader"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:layout_centerInParent="true"
         android:layout_gravity="center"
         android:gravity="center"
-        android:scaleType="fitCenter"
-        android:src="@drawable/loading_game_back"
-        />
+        >
+      <ImageView
+          android:id="@+id/loading_game_back"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_gravity="center"
+          android:gravity="center"
+          android:scaleType="fitCenter"
+          android:src="@drawable/loading_game_back"
+          />
 
-    <ImageView
-        android:id="@+id/loading_game_btn"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_margin="14dp"
-        android:gravity="center"
-        android:scaleType="fitCenter"
-        android:src="@drawable/loading_game_btn"
+      <ImageView
+          android:id="@+id/loading_game_btn"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_gravity="center"
+          android:layout_margin="10dp"
+          android:gravity="center"
+          android:scaleType="fitCenter"
+          android:src="@drawable/loading_game_btn"
+          />
+
+    </FrameLayout>
+    <com.tribe.app.presentation.view.widget.TextViewFont
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/loader"
+        android:layout_marginTop="60dp"
+        android:maxLines="1"
+        android:text="@string/game_loading"
+        android:textAllCaps="true"
+        style="@style/Headline.White.2"
+
         />
-  </FrameLayout>
+  </RelativeLayout>
 
 
 </merge>

@@ -60,6 +60,7 @@ public class LeaderboardUserView extends ConstraintLayout {
   @BindView(R.id.imgConnectTop) ImageView imgConnectTop;
   @BindView(R.id.imgConnectBottom) ImageView imgConnectBottom;
   @BindView(R.id.pokeEmoji) TextView pokeEmoji;
+  @BindView(R.id.container) ConstraintLayout container;
 
   // VARIABLES
   private Score score;
@@ -151,7 +152,7 @@ public class LeaderboardUserView extends ConstraintLayout {
         R.string.leaderboards_you) : score.getUser().getDisplayName());
     txtScore.setScore(score.getValue());
 
-    setOnClickListener(v -> onClick.onNext(score));
+    container.setOnClickListener(v -> onClick.onNext(score));
   }
 
   public void initPoke(Score score) {
@@ -159,8 +160,8 @@ public class LeaderboardUserView extends ConstraintLayout {
 
     pokeEmoji.setVisibility(View.VISIBLE);
 
-    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null &&
-        score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
+    boolean isAbove = user.getScoreForGame(score.getGame().getId()) != null
+        && score.getRanking() > user.getScoreForGame(score.getGame().getId()).getRanking();
 
     if (score.getUser().getId().equals(user.getId())) {
       emo = EmojiParser.demojizedText(getContext().getString(R.string.poke_emoji_own));

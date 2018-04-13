@@ -60,6 +60,10 @@ import javax.inject.Singleton;
       game.setPlays_count(gameRealm.getPlays_count());
       game.setPrimary_color(gameRealm.getPrimary_color());
       game.setSecondary_color(gameRealm.getSecondary_color());
+      game.setIn_home(gameRealm.isIn_home());
+      game.setPriority(gameRealm.getPriority());
+      game.setUses_gamemaster(gameRealm.isUses_gamemaster());
+      game.setMin_android_version(gameRealm.getMin_android_version());
 
       List<String> animation_icons = new ArrayList<>();
       for (AnimationIconRealm iconRealm : gameRealm.getAnimation_icons())
@@ -110,6 +114,10 @@ import javax.inject.Singleton;
       gameRealm.setUrl(game.getUrl());
       gameRealm.setLogo(game.getLogo());
       gameRealm.setBackground(game.getBackground());
+      gameRealm.setPriority(game.getPriority());
+      gameRealm.setIn_home(game.isIn_home());
+      gameRealm.setMin_android_version(game.getMin_android_version());
+      gameRealm.setUses_gamemaster(game.isUses_gamemaster());
     }
 
     return gameRealm;

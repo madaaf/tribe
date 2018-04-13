@@ -751,6 +751,10 @@
       background
       animation_icons
       emoji
+      in_home
+      min_android_version
+      uses_gamemaster
+      priority
       friendLeader {
         user {
           id

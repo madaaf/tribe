@@ -192,8 +192,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     }
 
     initViewPager();
-    if (gameManager.getGames() != null && !gameManager.getGames().isEmpty()) {
-      adapter.setItems(gameManager.getGames());
+    if (gameManager.getHomeGames() != null && !gameManager.getHomeGames().isEmpty()) {
+      adapter.setItems(gameManager.getHomeGames());
       initUI();
     }
 
@@ -205,6 +205,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   @Override protected void onResume() {
     super.onResume();
+    
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
@@ -242,9 +243,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
       if (calendarPreviousDate.before(calendarYesterday)) {
         nbDays = 1;
-      } else if ((calendarPreviousDate.after(calendarYesterday) ||
-          calendarPreviousDate.equals(calendarYesterday)) &&
-          calendarPreviousDate.before(calendarToday)) {
+      } else if ((calendarPreviousDate.after(calendarYesterday) || calendarPreviousDate.equals(
+          calendarYesterday)) && calendarPreviousDate.before(calendarToday)) {
         nbDays += 1;
       }
     } else {
@@ -260,9 +260,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private void loadChallengeNotificationData() {
-    if (challengeNotificationsPref != null &&
-        challengeNotificationsPref.get() != null &&
-        !challengeNotificationsPref.get().isEmpty()) {
+    if (challengeNotificationsPref != null
+        && challengeNotificationsPref.get() != null
+        && !challengeNotificationsPref.get().isEmpty()) {
       ArrayList usersIds =
           new ArrayList<>(Arrays.asList(challengeNotificationsPref.get().split(",")));
       userPresenter.getUsersInfoListById(usersIds);
@@ -322,8 +322,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     userPresenter.onViewAttached(userMVPViewAdapter);
     userPresenter.getUserInfos();
 
-    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS &&
-        rxPermissions.isGranted(PermissionUtils.PERMISSIONS_CONTACTS)) {
+    if (System.currentTimeMillis() - lastSync.get() > TWENTY_FOUR_HOURS && rxPermissions.isGranted(
+        PermissionUtils.PERMISSIONS_CONTACTS)) {
       userPresenter.syncContacts(lastSync, this);
     }
 
@@ -356,9 +356,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private void initUI() {
-    onGames.onNext(gameManager.getGames());
+    onGames.onNext(gameManager.getHomeGames());
     setAnimImageAnimation();
-    initDots(gameManager.getGames().size());
+    initDots(gameManager.getHomeGames().size());
     viewpager.setCurrentItem(0);
     GameDetailsView gameDetailsView = adapter.getItemAtPosition(0);
     if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
@@ -470,10 +470,14 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
       }
 
       @Override public void onGameList(List<Game> gameList) {
-        gameManager.addGames(gameList);
-        adapter.setItems(gameManager.getGames());
+        List<Game> list = new ArrayList<>();
+        for (Game g : gameList) {
+          if (g.isIn_home()) list.add(g);
+        }
+        gameManager.addGames(list);
+        adapter.setItems(gameManager.getHomeGames());
         initUI();
-        onGames.onNext(gameManager.getGames());
+        onGames.onNext(gameManager.getHomeGames());
       }
     };
 
@@ -539,8 +543,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
               if (shortcut.isSingle()) {
                 User member = shortcut.getSingleFriend();
                 if (member.isPlayingAGame()) {
-                  if (!userIdsDigest.contains(member.getId()) &&
-                      !roomIdsDigest.contains(member.getId())) {
+                  if (!userIdsDigest.contains(member.getId()) && !roomIdsDigest.contains(
+                      member.getId())) {
                     userIdsDigest.add(member.getId());
                     items.add(shortcut);
                   }
@@ -661,7 +665,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     int sizeDot = getResources().getDimensionPixelSize(R.dimen.dots_pager_size);
     for (int i = 0; i < dotsNbr; i++) {
       AvatarView v = new AvatarView(this);
-      v.load(gameManager.getGames().get(i).getIcon());
+      v.load(gameManager.getHomeGames().get(i).getIcon());
 
       v.setTag(DOTS_TAG_MARKER + i);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
@@ -803,11 +807,11 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private Game getCurrentGame() {
-    if (pageListener.getPositionViewPage() > gameManager.getGames().size() - 1) {
-      return gameManager.getGames().get(0);
+    if (pageListener.getPositionViewPage() > gameManager.getHomeGames().size() - 1) {
+      return gameManager.getHomeGames().get(0);
     }
 
-    return gameManager.getGames().get(pageListener.getPositionViewPage());
+    return gameManager.getHomeGames().get(pageListener.getPositionViewPage());
   }
 
   /**

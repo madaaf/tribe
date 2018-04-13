@@ -1,7 +1,6 @@
 package com.tribe.app.presentation.mvp.presenter;
 
 import android.app.Activity;
-import android.content.Context;
 import com.f2prateek.rx.preferences.Preference;
 import com.tribe.app.domain.entity.Contact;
 import com.tribe.app.domain.entity.GameFile;
@@ -9,7 +8,6 @@ import com.tribe.app.domain.entity.Score;
 import com.tribe.app.domain.entity.battlemusic.BattleMusicPlaylist;
 import com.tribe.app.domain.entity.trivia.TriviaQuestion;
 import com.tribe.app.domain.interactor.common.DefaultSubscriber;
-import com.tribe.app.domain.interactor.common.UseCase;
 import com.tribe.app.domain.interactor.game.GetBattleMusicData;
 import com.tribe.app.domain.interactor.game.GetCloudFriendsScores;
 import com.tribe.app.domain.interactor.game.GetCloudGameLeaderboard;
@@ -30,10 +28,10 @@ import com.tribe.app.presentation.utils.facebook.FacebookUtils;
 import com.tribe.app.presentation.utils.facebook.RxFacebook;
 import com.tribe.tribelivesdk.game.Game;
 import com.tribe.tribelivesdk.game.GameManager;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Named;
 import timber.log.Timber;
 
 public class GamePresenter implements Presenter {
@@ -63,7 +61,6 @@ public class GamePresenter implements Presenter {
   private GetUserBestScore getUserBestScore;
   private SynchroContactList synchroContactList;
 
-
   // SUBSCRIBERS
   private GameLeaderboardSubscriber cloudGameLeaderboardSubscriber;
   private GameLeaderboardSubscriber diskGameLeaderboardSubscriber;
@@ -79,7 +76,7 @@ public class GamePresenter implements Presenter {
       GetCloudFriendsScores cloudFriendsScores, GetTriviaData getTriviaData,
       GetBattleMusicData getBattleMusicData, GetCloudGames getGames, GetGamesData getGamesData,
       GetGameFile getGameFile, GetGameData getGameData, GetUserBestScore getUserBestScore,
-      RxFacebook rxFacebook,  SynchroContactList synchroContactList) {
+      RxFacebook rxFacebook, SynchroContactList synchroContactList) {
     this.cloudGameLeaderboard = cloudGameLeaderboard;
     this.diskGameLeaderboard = diskGameLeaderboard;
     this.cloudUserLeaderboard = cloudUserLeaderboard;
@@ -162,6 +159,7 @@ public class GamePresenter implements Presenter {
       gameMVPView.successFacebookLogin();
     }
   }
+
   private final class GameLeaderboardSubscriber extends DefaultSubscriber<List<Score>> {
 
     private boolean cloud;
@@ -218,8 +216,12 @@ public class GamePresenter implements Presenter {
 
     }
 
-    @Override public void onNext(List<Score> score) {
-      if (gameMVPView != null) gameMVPView.onUserLeaderboard(score, cloud);
+    @Override public void onNext(List<Score> scoreListe) {
+
+     /* for(Score score : scoreListe){
+        if(score.getGame().isIn_home())
+      }*/
+      if (gameMVPView != null) gameMVPView.onUserLeaderboard(scoreListe, cloud);
     }
   }
 

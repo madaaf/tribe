@@ -913,6 +913,7 @@
 	<string name="chat_not_seen">Non lu</string>
 	<string name="chat_attachment_more_save">Sauvegarder</string>
 	<string name="chat_attachment_more_save_success">Sauvegardé !</string>
+	<string name="chat_action_challenge">Défier %1$s</string>
 	
 	<!-- Walkthrough -->
 	<string name="walkthrough_action_step1">Petit tour</string>
@@ -1001,8 +1002,8 @@
 	<!-- Game Mode -->
 	<string name="gamemode_title">Mode de jeu</string>
 	<string name="gamemode_alone_title">ENTRAINEMENT</string>
-	<string name="gamemode_multi_title">MULTIJOUEUR</string>
-	<string name="gamemode_match_title">RECHERCHER DES JOUEURS</string>
+	<string name="gamemode_multi_title">DÉFI ENTRE AMIS</string>
+	<string name="gamemode_match_title">JOUEURS AU HASARD</string>
 	<string name="gamemode_leaderboard">CLASSEMENT</string>
 	
 	<!-- Hang Up Popup -->
@@ -1123,9 +1124,9 @@
 	<string name="mute_menu_unmute_both">Unmute both</string>
 	
 	<!-- Play Menu -->
-	<string name="play_menu_action_match">Match strangers</string>
-	<string name="play_menu_action_pick_friends">Pick friends</string>
+	<string name="play_menu_action_match">Joueurs au hasard</string>
+	<string name="play_menu_action_pick_friends">Défi entre amis</string>
 	
 	<!-- Match Making -->
-	<string name="match_making_finding_friends">FINDING FRIENDS...</string>
+	<string name="match_making_finding_friends">RECHERCHE DE JOUEURS...</string>
 </resources>
