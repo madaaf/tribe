@@ -61,8 +61,8 @@ public class GamePagerAdapter extends PagerAdapter {
     List<Game> filtred = new ArrayList<>();
 
     for (Game g : gamesList) {
-      boolean ignored = (BuildConfig.VERSION_CODE < g.getMin_android_version());
-      if (!ignored && g.isIn_home()) filtred.add(g);
+      boolean enable = (BuildConfig.VERSION_CODE >= g.getMin_android_version());
+      if (g.isIn_home() && enable) filtred.add(g);
     }
 
     this.gamesList.clear();
@@ -79,5 +79,9 @@ public class GamePagerAdapter extends PagerAdapter {
       return viewList.get(gamesList.get(position).getId());
     }
     return null;
+  }
+
+  public List<Game> getGamesList() {
+    return gamesList;
   }
 }

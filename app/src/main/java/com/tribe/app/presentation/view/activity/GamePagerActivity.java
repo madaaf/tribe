@@ -192,8 +192,8 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     }
 
     initViewPager();
-    if (gameManager.getGames() != null && !gameManager.getGames().isEmpty()) {
-      adapter.setItems(gameManager.getGames());
+    if (gameManager.getHomeGames() != null && !gameManager.getHomeGames().isEmpty()) {
+      adapter.setItems(gameManager.getHomeGames());
       initUI();
     }
 
@@ -205,6 +205,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
 
   @Override protected void onResume() {
     super.onResume();
+    
     gamePresenter.loadUserLeaderboard(getCurrentUser().getId());
     startService(WSService.
         getCallingIntent(this, null, null));
@@ -355,9 +356,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private void initUI() {
-    onGames.onNext(gameManager.getGames());
+    onGames.onNext(gameManager.getHomeGames());
     setAnimImageAnimation();
-    initDots(gameManager.getGames().size());
+    initDots(gameManager.getHomeGames().size());
     viewpager.setCurrentItem(0);
     GameDetailsView gameDetailsView = adapter.getItemAtPosition(0);
     if (gameDetailsView != null) gameDetailsView.onCurrentViewVisible();
@@ -474,9 +475,9 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
           if (g.isIn_home()) list.add(g);
         }
         gameManager.addGames(list);
-        adapter.setItems(gameManager.getGames());
+        adapter.setItems(gameManager.getHomeGames());
         initUI();
-        onGames.onNext(gameManager.getGames());
+        onGames.onNext(gameManager.getHomeGames());
       }
     };
 
@@ -664,7 +665,7 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
     int sizeDot = getResources().getDimensionPixelSize(R.dimen.dots_pager_size);
     for (int i = 0; i < dotsNbr; i++) {
       AvatarView v = new AvatarView(this);
-      v.load(gameManager.getGames().get(i).getIcon());
+      v.load(gameManager.getHomeGames().get(i).getIcon());
 
       v.setTag(DOTS_TAG_MARKER + i);
       FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sizeDot, sizeDot);
@@ -806,11 +807,11 @@ public class GamePagerActivity extends GameActivity implements AppStateListener 
   }
 
   private Game getCurrentGame() {
-    if (pageListener.getPositionViewPage() > gameManager.getGames().size() - 1) {
-      return gameManager.getGames().get(0);
+    if (pageListener.getPositionViewPage() > gameManager.getHomeGames().size() - 1) {
+      return gameManager.getHomeGames().get(0);
     }
 
-    return gameManager.getGames().get(pageListener.getPositionViewPage());
+    return gameManager.getHomeGames().get(pageListener.getPositionViewPage());
   }
 
   /**

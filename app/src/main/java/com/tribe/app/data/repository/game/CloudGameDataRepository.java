@@ -50,10 +50,10 @@ import timber.log.Timber;
     return gameDataStore.getGames().map(gameRealmList -> {
       List<GameRealm> filtred = new ArrayList<>();
       for (GameRealm g : gameRealmList) {
-        boolean ignored = (BuildConfig.VERSION_CODE < g.getMin_android_version());
-        if (!ignored) filtred.add(g);
+        boolean enable = (BuildConfig.VERSION_CODE >= g.getMin_android_version());
+        if (enable) filtred.add(g);
       }
-      return gameRealmDataMapper.transform(filtred);
+      return gameRealmDataMapper.transform(gameRealmList);
     }).doOnError(Timber::e);
   }
 

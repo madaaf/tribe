@@ -2,6 +2,7 @@ package com.tribe.tribelivesdk.game;
 
 import android.content.Context;
 import android.util.Pair;
+import com.tribe.tribelivesdk.BuildConfig;
 import com.tribe.tribelivesdk.core.WebRTCRoom;
 import com.tribe.tribelivesdk.model.TribeGuest;
 import com.tribe.tribelivesdk.model.TribeSession;
@@ -188,6 +189,16 @@ import rx.subscriptions.CompositeSubscription;
 
   public List<Game> getGames() {
     return gameList;
+  }
+
+
+  public List<Game> getHomeGames() {
+    List<Game> filtred = new ArrayList<>();
+    for (Game g : gameList) {
+      boolean enable = (BuildConfig.VERSION_CODE >= g.getMin_android_version());
+      if (g.isIn_home() && enable) filtred.add(g);
+    }
+    return filtred;
   }
 
   public Game getGameById(String id) {
