@@ -1003,7 +1003,7 @@
 	<string name="gamemode_title">Game mode</string>
 	<string name="gamemode_alone_title">SOLO TRAINING</string>
 	<string name="gamemode_multi_title">CHALLENGE FRIENDS</string>
-	<string name="gamemode_match_title">MATCH STRANGERS</string>
+	<string name="gamemode_match_title">RANDOM PLAYERS</string>
 	<string name="gamemode_leaderboard">LEADERBOARD</string>
 	
 	<!-- Hang Up Popup -->
@@ -1124,9 +1124,9 @@
 	<string name="mute_menu_unmute_both">Unmute both</string>
 	
 	<!-- Play Menu -->
-	<string name="play_menu_action_match">Match strangers</string>
-	<string name="play_menu_action_pick_friends">Pick friends</string>
+	<string name="play_menu_action_match">Random players</string>
+	<string name="play_menu_action_pick_friends">Challenge friends</string>
 	
 	<!-- Match Making -->
-	<string name="match_making_finding_friends">FINDING FRIENDS...</string>
+	<string name="match_making_finding_friends">FINDING PLAYERS...</string>
 </resources>

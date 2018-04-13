@@ -6,6 +6,7 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.tribe.app.BuildConfig;
 import com.tribe.app.presentation.view.activity.GameDetailsView;
 import com.tribe.tribelivesdk.game.Game;
 import java.util.ArrayList;
@@ -57,8 +58,15 @@ public class GamePagerAdapter extends PagerAdapter {
 
   public void setItems(List<Game> gamesList) {
     if (gamesList == null) return;
+    List<Game> filtred = new ArrayList<>();
+
+    for (Game g : gamesList) {
+      boolean ignored = (BuildConfig.VERSION_CODE < g.getMin_android_version());
+      if (!ignored && g.isIn_home()) filtred.add(g);
+    }
+
     this.gamesList.clear();
-    this.gamesList.addAll(gamesList);
+    this.gamesList.addAll(filtred);
     notifyDataSetChanged();
   }
 

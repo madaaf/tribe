@@ -152,11 +152,7 @@ public class LeaderboardUserView extends ConstraintLayout {
         R.string.leaderboards_you) : score.getUser().getDisplayName());
     txtScore.setScore(score.getValue());
 
-    container.setOnClickListener(new OnClickListener() { // SOEF
-      @Override public void onClick(View v) {
-        onClick.onNext(score);
-      }
-    });
+    container.setOnClickListener(v -> onClick.onNext(score));
   }
 
   public void initPoke(Score score) {

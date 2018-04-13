@@ -275,7 +275,7 @@ public class RecyclerMessageView extends IChat {
       Message m = ((Message) obj.get(1));
 
       String lastSeenString = "Seen by ";
-      List<ShortcutLastSeen> list = shortcut.getShortcutLastSeen(); // TODO SOEF
+      List<ShortcutLastSeen> list = shortcut.getShortcutLastSeen();
       List<String> lastSeenListId = new ArrayList<>();
 
       for (ShortcutLastSeen item : list) {
